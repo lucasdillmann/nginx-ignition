@@ -9,7 +9,7 @@ fun Application.hostRoutes() {
     val listHandler by inject<ListHostsHandler>()
     val getByIdHandler by inject<GetHostByIdHandler>()
     val putByIdHandler by inject<PutHostByIdHandler>()
-    val deleteByIdHandler by inject<DeleteHostByIdHandler>()
+    val deleteByIdHandler by inject<NginxStartHandler>()
     val postHandler by inject<PostHostHandler>()
 
     routing {

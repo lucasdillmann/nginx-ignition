@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 internal class HostMigrations: StartupCommand {
     override val priority: Int = 100
 
-    override fun execute() {
+    override suspend fun execute() {
         transaction {
             SchemaUtils.create(
                 HostTable,

@@ -2,7 +2,7 @@ package br.com.dillmann.nginxsidewheel.database.host.mapping
 
 import org.jetbrains.exposed.sql.Table
 
-internal object HostBindingTable: Table() {
+internal object HostBindingTable: Table("host_binding") {
     val id = uuid("id")
     val hostId = uuid("host_id") references HostTable.id
     val type = varchar("type", 64)

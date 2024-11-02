@@ -21,8 +21,11 @@ internal class HostService(
     }
 
     override suspend fun list(pageSize: Int, pageNumber: Int): Page<Host> =
-        repository.findAll(pageSize, pageNumber)
+        repository.findPage(pageSize, pageNumber)
 
     override suspend fun getById(id: UUID): Host? =
         repository.findById(id)
+
+    suspend fun getAll(): List<Host> =
+        repository.findAll()
 }

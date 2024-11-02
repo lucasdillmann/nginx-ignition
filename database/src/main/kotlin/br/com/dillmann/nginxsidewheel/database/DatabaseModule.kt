@@ -9,7 +9,7 @@ import org.koin.dsl.module
 object DatabaseModule {
     fun initialize() =
         module {
-            factory { DatabaseStartup() } bind StartupCommand::class
+            single { DatabaseStartup(get()) } bind StartupCommand::class
             hostBeans()
         }
 }

@@ -1,10 +1,16 @@
 ktor:
   application:
+    id: nginx-sidewheel
     modules:
       - br.com.dillmann.nginxsidewheel.application.ApplicationKt.module
   deployment:
     port: 8080
-jwt:
-  domain: "https://jwt-provider-domain/"
-  audience: "jwt-audience"
-  realm: "ktor sample app"
+
+nginx-sidewheel:
+  nginx:
+    binary-path: nginx
+    config-directory: /tmp/nginx-sidewheel/config
+  database:
+    url: "jdbc:h2:mem:nginx-sidewheel;DB_CLOSE_DELAY=-1"
+    username: root
+    password: root

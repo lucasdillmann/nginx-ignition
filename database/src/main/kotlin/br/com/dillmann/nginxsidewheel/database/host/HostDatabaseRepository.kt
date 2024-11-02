@@ -59,19 +59,10 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
         }
     }
 
-    override suspend fun findAll(pageSize: Int, pageNumber: Int): Page<Host> =
+    override suspend fun findPage(pageSize: Int, pageNumber: Int): Page<Host> =
         transaction {
             val totalCount = HostTable.select(HostTable.id).count()
-            val hosts = HostTable
-                .select(HostTable.fields)
-                .limit(pageSize, pageSize.toLong() * pageNumber)
-                .orderBy(HostTable.id)
-                .toList()
-                .map { host ->
-                    val id = host[HostTable.id]
-                    val (bindings, routes) = findRelated(id)
-                    converter.toHost(host, bindings, routes)
-                }
+            val hosts = findHosts(pageSize, pageNumber)
 
             Page(
                 contents = hosts,
@@ -80,6 +71,28 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
                 totalItems = totalCount,
             )
         }
+
+    override suspend fun findAll(): List<Host> =
+        transaction {
+            findHosts(null, null)
+        }
+
+    private fun findHosts(pageSize: Int?, pageNumber: Int?): List<Host> =
+        HostTable
+            .select(HostTable.fields)
+            .also {
+                if (pageSize != null && pageNumber != null) {
+                    it.limit(pageSize, pageSize.toLong() * pageNumber)
+                }
+            }
+
+            .orderBy(HostTable.id)
+            .toList()
+            .map { host ->
+                val id = host[HostTable.id]
+                val (bindings, routes) = findRelated(id)
+                converter.toHost(host, bindings, routes)
+            }
 
     private fun findRelated(id: UUID): Related {
         val bindings = HostBindingTable

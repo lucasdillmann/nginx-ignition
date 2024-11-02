@@ -2,7 +2,7 @@ package br.com.dillmann.nginxsidewheel.database.host.mapping
 
 import org.jetbrains.exposed.sql.Table
 
-internal object HostTable: Table() {
+internal object HostTable: Table("host") {
     val id = uuid("id")
     val enabled = bool("enabled")
     val default = bool("default")

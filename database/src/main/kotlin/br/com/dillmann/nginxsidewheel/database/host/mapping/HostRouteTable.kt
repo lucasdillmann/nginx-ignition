@@ -2,7 +2,7 @@ package br.com.dillmann.nginxsidewheel.database.host.mapping
 
 import org.jetbrains.exposed.sql.Table
 
-internal object HostRouteTable: Table() {
+internal object HostRouteTable: Table("host_route") {
     val id = uuid("id")
     val hostId = uuid("host_id") references HostTable.id
     val priority = integer("priority")
