@@ -4,10 +4,10 @@ plugins {
     kotlin("jvm") version "2.0.21"
 }
 
-group = "br.com.dillmann.nginxsidewheel"
-version = "1.0.0"
-
 allprojects {
+    group = "br.com.dillmann.nginxsidewheel"
+    version = "1.0.0"
+
     repositories {
         mavenCentral()
     }
@@ -15,8 +15,12 @@ allprojects {
 
 subprojects {
     apply(plugin = "kotlin")
-
+    
     dependencies {
         implementation("io.insert-koin:koin-core-jvm:$koinVersion")
     }
+}
+
+kotlin {
+    jvmToolchain(21)
 }

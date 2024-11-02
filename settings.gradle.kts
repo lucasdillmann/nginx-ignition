@@ -3,5 +3,5 @@ plugins {
 }
 
 rootProject.name = "nginx-sidewheel"
-include("core", "database", "application", "third-party")
+include("core", "database", "application", "third-party", "frontend")
 

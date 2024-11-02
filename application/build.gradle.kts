@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":database"))
     implementation(project(":third-party"))
+    implementation(project(":frontend"))
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-auth-jvm")
     implementation("io.ktor:ktor-server-auth-jwt-jvm")
@@ -30,6 +31,16 @@ dependencies {
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("io.ktor:ktor-server-config-yaml")
+    implementation("ch.qos.logback:logback-classic:1.5.12")
     implementation("org.mapstruct:mapstruct:$mapStructVersion")
     kapt("org.mapstruct:mapstruct-processor:$mapStructVersion")
+}
+
+ktor {
+    docker {
+        customBaseImage = "eclipse-temurin:21-jre-alpine"
+        jreVersion = JavaVersion.VERSION_21
+        localImageName = "dillmann/nginx-sidewheel"
+        imageTag = rootProject.version.toString()
+    }
 }

@@ -5,9 +5,11 @@ import br.com.dillmann.nginxsidewheel.core.common.pagination.Page
 import br.com.dillmann.nginxsidewheel.core.host.Host
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
+import org.mapstruct.ReportingPolicy
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface HostConverter {
+
     fun toResponse(input: Host): HostResponse
 
     fun toResponse(page: Page<Host>): PageResponse<HostResponse>
