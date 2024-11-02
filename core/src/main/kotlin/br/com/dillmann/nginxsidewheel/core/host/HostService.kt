@@ -9,9 +9,10 @@ import java.util.*
 
 internal class HostService(
     private val repository: HostRepository,
+    private val validator: HostValidator,
 ): SaveHostCommand, DeleteHostCommand, ListHostCommand, GetHostCommand {
     override suspend fun save(input: Host) {
-        HostValidator.validate(input)
+        validator.validate(input)
         repository.save(input)
     }
 

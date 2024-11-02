@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import java.util.*
 
-internal object HostConverter {
+internal class HostConverter {
     fun apply(host: Host, scope: InsertStatement<out Any>) {
         with(HostTable) {
             scope[id] = host.id

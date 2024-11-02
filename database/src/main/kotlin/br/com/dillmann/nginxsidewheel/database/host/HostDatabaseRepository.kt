@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-class HostDatabaseRepository: HostRepository {
+internal class HostDatabaseRepository(private val converter: HostConverter): HostRepository {
     data class Related(
         val bindings: List<ResultRow>,
         val routes: List<ResultRow>,
@@ -28,7 +28,7 @@ class HostDatabaseRepository: HostRepository {
                 ?: return@transaction null
 
             val (bindings, routes) = findRelated(id)
-            HostConverter.toHost(host, bindings, routes)
+            converter.toHost(host, bindings, routes)
         }
 
     override suspend fun deleteById(id: UUID) {
@@ -42,18 +42,18 @@ class HostDatabaseRepository: HostRepository {
             cleanupById(host.id)
 
             HostTable.insert {
-                HostConverter.apply(host, it)
+                converter.apply(host, it)
             }
 
             host.routes.forEach { route ->
                 HostRouteTable.insert {
-                    HostConverter.apply(host.id, route, it)
+                    converter.apply(host.id, route, it)
                 }
             }
 
             host.bindings.forEach { binding ->
                 HostRouteTable.insert {
-                    HostConverter.apply(host.id, binding, it)
+                    converter.apply(host.id, binding, it)
                 }
             }
         }
@@ -70,7 +70,7 @@ class HostDatabaseRepository: HostRepository {
                 .map { host ->
                     val id = host[HostTable.id]
                     val (bindings, routes) = findRelated(id)
-                    HostConverter.toHost(host, bindings, routes)
+                    converter.toHost(host, bindings, routes)
                 }
 
             Page(

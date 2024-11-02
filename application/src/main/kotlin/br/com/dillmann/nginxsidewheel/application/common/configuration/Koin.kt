@@ -1,4 +1,4 @@
-package br.com.dillmann.nginxsidewheel.application.configuration
+package br.com.dillmann.nginxsidewheel.application.common.configuration
 
 import br.com.dillmann.nginxsidewheel.application.ApplicationModule
 import br.com.dillmann.nginxsidewheel.core.CoreModule

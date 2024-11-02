@@ -1,4 +1,4 @@
-package br.com.dillmann.nginxsidewheel.application.configuration
+package br.com.dillmann.nginxsidewheel.application.common.configuration
 
 import io.ktor.http.*
 import io.ktor.http.content.*

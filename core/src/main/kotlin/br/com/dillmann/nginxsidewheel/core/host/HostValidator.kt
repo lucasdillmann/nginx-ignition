@@ -1,6 +1,6 @@
 package br.com.dillmann.nginxsidewheel.core.host
 
-internal object HostValidator {
+internal class HostValidator {
     fun validate(host: Host) {
         // TODO: Implement this
     }
