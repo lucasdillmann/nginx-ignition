@@ -1,0 +1,10 @@
+ktor:
+  application:
+    modules:
+      - br.com.dillmann.nginxsidewheel.application.ApplicationKt.module
+  deployment:
+    port: 8080
+jwt:
+  domain: "https://jwt-provider-domain/"
+  audience: "jwt-audience"
+  realm: "ktor sample app"
