@@ -10,6 +10,6 @@ internal fun Module.hostBeans() {
     single { DeleteHostByIdHandler(get()) }
     single { GetHostByIdHandler(get(), get()) }
     single { ListHostsHandler(get(), get()) }
-    single { PutHostByIdHandler(get(), get()) }
-    single { PostHostHandler(get(), get()) }
+    single { UpdateHostByIdHandler(get(), get()) }
+    single { CreateHostHandler(get(), get()) }
 }

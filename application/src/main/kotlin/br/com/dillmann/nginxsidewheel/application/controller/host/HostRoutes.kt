@@ -8,9 +8,9 @@ import org.koin.ktor.ext.inject
 fun Application.hostRoutes() {
     val listHandler by inject<ListHostsHandler>()
     val getByIdHandler by inject<GetHostByIdHandler>()
-    val putByIdHandler by inject<PutHostByIdHandler>()
-    val deleteByIdHandler by inject<NginxStartHandler>()
-    val postHandler by inject<PostHostHandler>()
+    val putByIdHandler by inject<UpdateHostByIdHandler>()
+    val deleteByIdHandler by inject<DeleteHostByIdHandler>()
+    val postHandler by inject<CreateHostHandler>()
 
     routing {
         route("/api/hosts") {

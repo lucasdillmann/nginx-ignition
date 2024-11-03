@@ -1,4 +1,4 @@
-package br.com.dillmann.nginxsidewheel.application.controller.host.handler
+package br.com.dillmann.nginxsidewheel.application.controller.nginx.handler
 
 import br.com.dillmann.nginxsidewheel.application.controller.nginx.model.NginxConverter
 import br.com.dillmann.nginxsidewheel.core.common.log.logger

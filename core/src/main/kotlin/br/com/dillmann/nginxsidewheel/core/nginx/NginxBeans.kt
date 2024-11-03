@@ -1,6 +1,7 @@
 package br.com.dillmann.nginxsidewheel.core.nginx
 
 import br.com.dillmann.nginxsidewheel.core.common.startup.StartupCommand
+import br.com.dillmann.nginxsidewheel.core.nginx.command.GetStatusNginxCommand
 import br.com.dillmann.nginxsidewheel.core.nginx.command.ReloadNginxCommand
 import br.com.dillmann.nginxsidewheel.core.nginx.command.StartNginxCommand
 import br.com.dillmann.nginxsidewheel.core.nginx.command.StopNginxCommand
@@ -13,6 +14,7 @@ internal fun Module.nginxBeans() {
         ReloadNginxCommand::class,
         StartNginxCommand::class,
         StopNginxCommand::class,
+        GetStatusNginxCommand::class,
     )
     single { NginxStartup(get()) } bind StartupCommand::class
     single { NginxConfigurationFiles(get(), get()) }
