@@ -3,6 +3,7 @@ package br.com.dillmann.nginxsidewheel.database.host
 import br.com.dillmann.nginxsidewheel.core.common.pagination.Page
 import br.com.dillmann.nginxsidewheel.core.host.Host
 import br.com.dillmann.nginxsidewheel.core.host.HostRepository
+import br.com.dillmann.nginxsidewheel.database.common.coTransaction
 import br.com.dillmann.nginxsidewheel.database.host.mapping.HostBindingTable
 import br.com.dillmann.nginxsidewheel.database.host.mapping.HostRouteTable
 import br.com.dillmann.nginxsidewheel.database.host.mapping.HostTable
@@ -10,7 +11,6 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 internal class HostDatabaseRepository(private val converter: HostConverter): HostRepository {
@@ -20,25 +20,25 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
     )
 
     override suspend fun findById(id: UUID): Host? =
-        transaction {
+        coTransaction {
             val host = HostTable
                 .select(HostTable.fields)
                 .where { HostTable.id eq id }
                 .singleOrNull()
-                ?: return@transaction null
+                ?: return@coTransaction null
 
             val (bindings, routes) = findRelated(id)
             converter.toHost(host, bindings, routes)
         }
 
     override suspend fun deleteById(id: UUID) {
-        transaction {
+        coTransaction {
             cleanupById(id)
         }
     }
 
     override suspend fun save(host: Host) {
-        transaction {
+        coTransaction {
             cleanupById(host.id)
 
             HostTable.insert {
@@ -60,7 +60,7 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
     }
 
     override suspend fun findPage(pageSize: Int, pageNumber: Int): Page<Host> =
-        transaction {
+        coTransaction {
             val totalCount = HostTable.select(HostTable.id).count()
             val hosts = findHosts(pageSize, pageNumber)
 
@@ -73,7 +73,7 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
         }
 
     override suspend fun findAll(): List<Host> =
-        transaction {
+        coTransaction {
             findHosts(null, null)
         }
 

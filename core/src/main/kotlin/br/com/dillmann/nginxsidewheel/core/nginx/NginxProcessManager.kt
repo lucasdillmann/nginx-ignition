@@ -6,7 +6,8 @@ import br.com.dillmann.nginxsidewheel.core.nginx.exception.NginxCommandException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-internal class NginxProcessManager(private val configurationProvider: ConfigurationProvider) {
+internal class NginxProcessManager(configurationProvider: ConfigurationProvider) {
+    private val configurationProvider = configurationProvider.withPrefix("nginx-sidewheel.nginx")
     private val logger = logger<NginxProcessManager>()
 
     suspend fun sendReloadSignal() {
@@ -25,8 +26,8 @@ internal class NginxProcessManager(private val configurationProvider: Configurat
     }
 
     private suspend fun runCommand(vararg extraArguments: String) {
-        val binaryPath = configurationProvider.get("nginx-sidewheel.nginx.binary-path")
-        val configDirectory = configurationProvider.get("nginx-sidewheel.nginx.config-directory")
+        val binaryPath = configurationProvider.get("binary-path")
+        val configDirectory = configurationProvider.get("config-directory")
         val arguments = arrayOf(binaryPath, "-c", "$configDirectory/nginx.conf", *extraArguments)
         val command = withContext(Dispatchers.IO) { ProcessBuilder().command(*arguments).start() }
 

@@ -3,12 +3,12 @@ package br.com.dillmann.nginxsidewheel.database.user
 import br.com.dillmann.nginxsidewheel.core.common.pagination.Page
 import br.com.dillmann.nginxsidewheel.core.user.User
 import br.com.dillmann.nginxsidewheel.core.user.UserRepository
+import br.com.dillmann.nginxsidewheel.database.common.coTransaction
 import br.com.dillmann.nginxsidewheel.database.user.mapping.UserTable
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.upsert
 import java.util.*
 
@@ -20,19 +20,19 @@ internal class UserDatabaseRepository(private val converter: UserConverter): Use
         findOneWhere { UserTable.username eq username }
 
     override suspend fun deleteById(id: UUID) {
-        transaction {
+        coTransaction {
             UserTable.deleteWhere { UserTable.id eq id }
         }
     }
 
     override suspend fun save(user: User) {
-        transaction {
+        coTransaction {
             UserTable.upsert { converter.apply(user, it) }
         }
     }
 
     override suspend fun findPage(pageSize: Int, pageNumber: Int): Page<User> =
-        transaction {
+        coTransaction {
             val totalCount = UserTable.select(UserTable.id).count()
             val users = UserTable
                 .select(UserTable.columns)
@@ -48,18 +48,18 @@ internal class UserDatabaseRepository(private val converter: UserConverter): Use
         }
 
     override suspend fun count(): Long =
-        transaction {
+        coTransaction {
             UserTable.select(UserTable.id).count()
         }
 
-    private fun findOneWhere(predicate: SqlExpressionBuilder.() -> Op<Boolean>): User? =
-        transaction {
+    private suspend fun findOneWhere(predicate: SqlExpressionBuilder.() -> Op<Boolean>): User? =
+        coTransaction {
             val user = UserTable
                 .select(UserTable.columns)
                 .where(predicate)
                 .limit(1)
                 .firstOrNull()
-                ?: return@transaction null
+                ?: return@coTransaction null
 
             converter.toUser(user)
         }

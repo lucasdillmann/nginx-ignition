@@ -9,6 +9,9 @@ class CompositeConfigurationProvider: ConfigurationProvider {
     override fun get(key: String): String =
         resolveFromEnvironmentVariables(key) ?: ktorDelegate.property(key).getString()
 
+    override fun withPrefix(prefix: String): ConfigurationProvider =
+        PrefixedConfigurationProvider(this, prefix)
+
     private fun resolveFromEnvironmentVariables(key: String): String? =
         System.getenv(key) ?: System.getenv(key.toSnakeCase())
 

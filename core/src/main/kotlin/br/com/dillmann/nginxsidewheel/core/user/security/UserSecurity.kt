@@ -12,17 +12,14 @@ internal class UserSecurity(configurationProvider: ConfigurationProvider) {
         val salt: String,
     )
 
-    private val hashAlgorithm =
-        configurationProvider.get("nginx-sidewheel.security.user-password-hashing.algorithm")
-    private val saltSize =
-        configurationProvider.get("nginx-sidewheel.security.user-password-hashing.salt-size").toInt()
-    private val hashIterations =
-        configurationProvider.get("nginx-sidewheel.security.user-password-hashing.iterations").toInt()
+    private val configurationProvider =
+        configurationProvider.withPrefix("nginx-sidewheel.security.user-password-hashing")
     private val randomGenerator =
         SecureRandom()
 
     @OptIn(ExperimentalEncodingApi::class)
     fun hash(password: String): Output {
+        val saltSize = configurationProvider.get("salt-size").toInt()
         val passwordBytes = password.encodeToByteArray()
         val saltBytes = ByteArray(saltSize)
         randomGenerator.nextBytes(saltBytes)
@@ -47,6 +44,8 @@ internal class UserSecurity(configurationProvider: ConfigurationProvider) {
     }
 
     private fun hash(password: ByteArray, salt: ByteArray): ByteArray {
+        val hashAlgorithm = configurationProvider.get("algorithm")
+        val hashIterations = configurationProvider.get("iterations").toInt()
         val hashGenerator = MessageDigest.getInstance(hashAlgorithm)
         var hashOutput = password + salt
         repeat(hashIterations) {
