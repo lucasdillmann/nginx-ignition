@@ -14,3 +14,8 @@ nginx-sidewheel:
     url: "jdbc:h2:mem:nginx-sidewheel;DB_CLOSE_DELAY=-1"
     username: root
     password: root
+  security:
+    user-password-hashing:
+      algorithm: SHA-512
+      salt-size: 64
+      iterations: 1024
