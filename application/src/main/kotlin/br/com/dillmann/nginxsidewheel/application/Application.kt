@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    logger("Application").info("Welcome to nginx sidewheel")
+    logger("Application").info("Welcome to nginx side wheel")
 
     runBlocking {
         configureKoin()

@@ -40,7 +40,7 @@ ktor {
     docker {
         customBaseImage = "eclipse-temurin:21-jre-alpine"
         jreVersion = JavaVersion.VERSION_21
-        localImageName = "dillmann/nginx-sidewheel"
+        localImageName = "dillmann/nginx-side-wheel"
         imageTag = rootProject.version.toString()
     }
 }

@@ -9,7 +9,7 @@ ktor:
 nginx-sidewheel:
   nginx:
     binary-path: nginx
-    config-directory: /tmp/nginx-sidewheel/nginx
+    config-directory: /tmp/nginx-side-wheel/nginx
   database:
     url: "jdbc:h2:mem:nginx-sidewheel;DB_CLOSE_DELAY=-1"
     username: root
