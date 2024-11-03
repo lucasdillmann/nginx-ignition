@@ -1,5 +1,6 @@
 package br.com.dillmann.nginxsidewheel.application
 
+import br.com.dillmann.nginxsidewheel.application.common.lifecycle.LifecycleManager
 import br.com.dillmann.nginxsidewheel.application.common.provider.CompositeConfigurationProvider
 import br.com.dillmann.nginxsidewheel.application.controller.host.hostBeans
 import br.com.dillmann.nginxsidewheel.application.controller.nginx.nginxBeans
@@ -11,6 +12,7 @@ object ApplicationModule {
     fun initialize() =
         module {
             single { CompositeConfigurationProvider() } bind ConfigurationProvider::class
+            single { LifecycleManager(getAll(), getAll()) }
 
             hostBeans()
             nginxBeans()

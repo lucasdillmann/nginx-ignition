@@ -3,7 +3,7 @@ package br.com.dillmann.nginxsidewheel.database.host
 import br.com.dillmann.nginxsidewheel.core.common.pagination.Page
 import br.com.dillmann.nginxsidewheel.core.host.Host
 import br.com.dillmann.nginxsidewheel.core.host.HostRepository
-import br.com.dillmann.nginxsidewheel.database.common.coTransaction
+import br.com.dillmann.nginxsidewheel.database.common.transaction.coTransaction
 import br.com.dillmann.nginxsidewheel.database.host.mapping.HostBindingTable
 import br.com.dillmann.nginxsidewheel.database.host.mapping.HostRouteTable
 import br.com.dillmann.nginxsidewheel.database.host.mapping.HostTable
@@ -52,7 +52,7 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
             }
 
             host.bindings.forEach { binding ->
-                HostRouteTable.insert {
+                HostBindingTable.insert {
                     converter.apply(host.id, binding, it)
                 }
             }

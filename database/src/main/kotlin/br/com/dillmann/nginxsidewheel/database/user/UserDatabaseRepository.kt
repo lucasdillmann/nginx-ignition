@@ -3,7 +3,7 @@ package br.com.dillmann.nginxsidewheel.database.user
 import br.com.dillmann.nginxsidewheel.core.common.pagination.Page
 import br.com.dillmann.nginxsidewheel.core.user.User
 import br.com.dillmann.nginxsidewheel.core.user.UserRepository
-import br.com.dillmann.nginxsidewheel.database.common.coTransaction
+import br.com.dillmann.nginxsidewheel.database.common.transaction.coTransaction
 import br.com.dillmann.nginxsidewheel.database.user.mapping.UserTable
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder

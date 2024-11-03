@@ -1,8 +1,8 @@
-package br.com.dillmann.nginxsidewheel.database.common
+package br.com.dillmann.nginxsidewheel.database.common.lifecycle
 
 import br.com.dillmann.nginxsidewheel.core.common.log.logger
 import br.com.dillmann.nginxsidewheel.core.common.provider.ConfigurationProvider
-import br.com.dillmann.nginxsidewheel.core.common.startup.StartupCommand
+import br.com.dillmann.nginxsidewheel.core.common.lifecycle.StartupCommand
 import org.jetbrains.exposed.sql.Database
 
 internal class DatabaseStartup(configurationProvider: ConfigurationProvider): StartupCommand {
@@ -16,6 +16,7 @@ internal class DatabaseStartup(configurationProvider: ConfigurationProvider): St
 
         logger<DatabaseStartup>().info("Starting database connection to $url with username $username")
 
+        // TODO: Migrate to a pooled connection source
         Database.connect(
             url = url,
             user = username,

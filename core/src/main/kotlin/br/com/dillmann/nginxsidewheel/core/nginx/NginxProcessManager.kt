@@ -28,7 +28,7 @@ internal class NginxProcessManager(configurationProvider: ConfigurationProvider)
     private suspend fun runCommand(vararg extraArguments: String) {
         val binaryPath = configurationProvider.get("binary-path")
         val configDirectory = configurationProvider.get("config-directory")
-        val arguments = arrayOf(binaryPath, "-c", "$configDirectory/nginx.conf", *extraArguments)
+        val arguments = arrayOf(binaryPath, "-c", "$configDirectory/config/nginx.conf", *extraArguments)
         val command = withContext(Dispatchers.IO) { ProcessBuilder().command(*arguments).start() }
 
         val exitCode = withContext(Dispatchers.IO) { command.waitFor() }

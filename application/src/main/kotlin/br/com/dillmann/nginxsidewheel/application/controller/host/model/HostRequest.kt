@@ -21,6 +21,7 @@ data class HostRequest(
         val sourcePath: String,
         val targetUri: String? = null,
         val customSettings: String? = null,
+        val redirectCode: Int? = null,
         val response: StaticResponse? = null,
     )
 

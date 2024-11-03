@@ -18,6 +18,7 @@ data class Host(
         val sourcePath: String,
         val targetUri: String?,
         val customSettings: String?,
+        val redirectCode: Int?,
         val response: StaticResponse?,
     )
 

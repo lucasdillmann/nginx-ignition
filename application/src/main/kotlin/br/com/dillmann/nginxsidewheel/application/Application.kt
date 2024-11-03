@@ -2,8 +2,8 @@ package br.com.dillmann.nginxsidewheel.application
 
 import br.com.dillmann.nginxsidewheel.application.common.configuration.configureHttp
 import br.com.dillmann.nginxsidewheel.application.common.configuration.configureKoin
+import br.com.dillmann.nginxsidewheel.application.common.configuration.configureLifecycle
 import br.com.dillmann.nginxsidewheel.application.common.configuration.configureRoutes
-import br.com.dillmann.nginxsidewheel.application.common.configuration.runStartupCommands
 import br.com.dillmann.nginxsidewheel.core.common.log.logger
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
@@ -20,6 +20,6 @@ fun Application.module() {
         configureKoin()
         configureHttp()
         configureRoutes()
-        runStartupCommands()
+        configureLifecycle()
     }
 }

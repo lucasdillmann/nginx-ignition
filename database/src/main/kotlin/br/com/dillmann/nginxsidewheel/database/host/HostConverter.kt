@@ -32,6 +32,7 @@ internal class HostConverter {
             scope[sourcePath] = route.sourcePath
             scope[targetUri] = route.targetUri
             scope[customSettings] = route.customSettings
+            scope[redirectCode] = route.redirectCode
             scope[staticResponseCode] = route.response?.statusCode
             scope[staticResponsePayload] = route.response?.payload
             scope[staticResponseHeaders] = route.response?.headers?.let(Json::encodeToString)
@@ -80,6 +81,7 @@ internal class HostConverter {
             customSettings = route[HostRouteTable.customSettings],
             sourcePath = route[HostRouteTable.sourcePath],
             targetUri = route[HostRouteTable.targetUri],
+            redirectCode = route[HostRouteTable.redirectCode],
             response = response,
         )
     }

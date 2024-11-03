@@ -1,7 +1,8 @@
-package br.com.dillmann.nginxsidewheel.core.nginx
+package br.com.dillmann.nginxsidewheel.core.nginx.lifecycle
 
 import br.com.dillmann.nginxsidewheel.core.common.log.logger
-import br.com.dillmann.nginxsidewheel.core.common.startup.StartupCommand
+import br.com.dillmann.nginxsidewheel.core.common.lifecycle.StartupCommand
+import br.com.dillmann.nginxsidewheel.core.nginx.NginxService
 
 internal class NginxStartup(private val service: NginxService): StartupCommand {
     private val logger = logger<NginxStartup>()

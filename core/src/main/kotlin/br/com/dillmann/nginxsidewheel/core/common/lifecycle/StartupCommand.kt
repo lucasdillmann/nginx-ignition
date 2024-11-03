@@ -1,4 +1,4 @@
-package br.com.dillmann.nginxsidewheel.core.common.startup
+package br.com.dillmann.nginxsidewheel.core.common.lifecycle
 
 interface StartupCommand {
     val priority: Int

@@ -1,7 +1,7 @@
-package br.com.dillmann.nginxsidewheel.core.user.startup
+package br.com.dillmann.nginxsidewheel.core.user.lifecycle
 
 import br.com.dillmann.nginxsidewheel.core.common.log.logger
-import br.com.dillmann.nginxsidewheel.core.common.startup.StartupCommand
+import br.com.dillmann.nginxsidewheel.core.common.lifecycle.StartupCommand
 import br.com.dillmann.nginxsidewheel.core.user.User
 import br.com.dillmann.nginxsidewheel.core.user.UserService
 import br.com.dillmann.nginxsidewheel.core.user.model.SaveUserRequest

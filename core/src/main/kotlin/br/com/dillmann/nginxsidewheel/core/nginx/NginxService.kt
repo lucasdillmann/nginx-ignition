@@ -4,15 +4,16 @@ import br.com.dillmann.nginxsidewheel.core.nginx.command.GetStatusNginxCommand
 import br.com.dillmann.nginxsidewheel.core.nginx.command.ReloadNginxCommand
 import br.com.dillmann.nginxsidewheel.core.nginx.command.StartNginxCommand
 import br.com.dillmann.nginxsidewheel.core.nginx.command.StopNginxCommand
+import br.com.dillmann.nginxsidewheel.core.nginx.configuration.NginxConfigurationFacade
 
 internal class NginxService(
-    private val configurationFiles: NginxConfigurationFiles,
+    private val nginxConfiguration: NginxConfigurationFacade,
     private val processManager: NginxProcessManager,
     private val semaphore: NginxSemaphore,
 ): ReloadNginxCommand, StartNginxCommand, StopNginxCommand, GetStatusNginxCommand {
     override suspend fun reload() {
         semaphore.changeState(NginxSemaphore.State.RUNNING) {
-            configurationFiles.generate()
+            nginxConfiguration.replaceConfigurationFiles()
             processManager.sendReloadSignal()
         }
     }
@@ -22,7 +23,7 @@ internal class NginxService(
             return
 
         semaphore.changeState(NginxSemaphore.State.RUNNING) {
-            configurationFiles.generate()
+            nginxConfiguration.replaceConfigurationFiles()
             processManager.start()
         }
     }
