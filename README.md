@@ -1,6 +1,6 @@
-# nginx side wheel
+# nginx ignition
 
-The nginx side wheel is a user interface for the nginx web server, aimed for developers and enthusiasts that don't
+The nginx ignition is a user interface for the nginx web server, aimed for developers and enthusiasts that don't
 want to manage configuration files manually for their use-cases. Though, isn't the goal to be feature-complete
 (if your use case is quite advanced or complex, you probably will not use a UI anyway).
 

@@ -1,17 +1,17 @@
 ktor:
   application:
-    id: nginx-sidewheel
+    id: nginx-ignition
     modules:
-      - br.com.dillmann.nginxsidewheel.application.ApplicationKt.module
+      - br.com.dillmann.nginxignition.application.ApplicationKt.module
   deployment:
     port: 8080
 
-nginx-sidewheel:
+nginx-ignition:
   nginx:
     binary-path: nginx
     config-directory: /tmp/nginx-side-wheel/nginx
   database:
-    url: "jdbc:h2:mem:nginx-sidewheel;DB_CLOSE_DELAY=-1"
+    url: "jdbc:h2:mem:nginx-ignition;DB_CLOSE_DELAY=-1"
     username: root
     password: root
   security:

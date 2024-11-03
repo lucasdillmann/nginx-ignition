@@ -1,5 +1,5 @@
 {
-  "name": "nginx-sidewheel",
+  "name": "nginx-ignition",
   "version": "0.0.0",
   "private": true,
   "dependencies": {

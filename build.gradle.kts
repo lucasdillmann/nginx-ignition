@@ -7,7 +7,7 @@ plugins {
 }
 
 allprojects {
-    group = "br.com.dillmann.nginxsidewheel"
+    group = "br.com.dillmann.nginxignition"
     version = "1.0.0"
 
     repositories {
