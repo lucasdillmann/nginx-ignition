@@ -1,5 +1,6 @@
 package br.com.dillmann.nginxignition.application.controller.host
 
+import br.com.dillmann.nginxignition.application.common.rbac.requireAuthentication
 import br.com.dillmann.nginxignition.application.controller.host.handler.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -13,12 +14,14 @@ fun Application.hostRoutes() {
     val postHandler by inject<CreateHostHandler>()
 
     routing {
-        route("/api/hosts") {
-            get { listHandler.handle(call) }
-            get("/{id}") { getByIdHandler.handle(call) }
-            put("/{id}") { putByIdHandler.handle(call) }
-            delete("/{id}") { deleteByIdHandler.handle(call) }
-            post { postHandler.handle(call) }
+        requireAuthentication {
+            route("/api/hosts") {
+                get { listHandler.handle(call) }
+                get("/{id}") { getByIdHandler.handle(call) }
+                put("/{id}") { putByIdHandler.handle(call) }
+                delete("/{id}") { deleteByIdHandler.handle(call) }
+                post { postHandler.handle(call) }
+            }
         }
     }
 }

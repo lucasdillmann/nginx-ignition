@@ -13,6 +13,7 @@ internal fun Module.userBeans() {
         AuthenticateUserCommand::class,
         DeleteUserCommand::class,
         GetUserCommand::class,
+        GetUserStatusCommand::class,
         ListUserCommand::class,
         SaveUserCommand::class,
     )

@@ -19,3 +19,8 @@ nginx-ignition:
       algorithm: SHA-512
       salt-size: 64
       iterations: 1024
+    jwt:
+      secret: ""
+      ttl-seconds: 3600
+      clock-skew-seconds: 60
+      renew-window-seconds: 900

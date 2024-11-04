@@ -25,6 +25,15 @@ internal class UserDatabaseRepository(private val converter: UserConverter): Use
         }
     }
 
+    override suspend fun findEnabledById(id: UUID): Boolean? =
+        coTransaction {
+            UserTable
+                .select(UserTable.enabled)
+                .where { UserTable.id eq id }
+                .firstOrNull()
+                ?.let { it[UserTable.enabled] }
+        }
+
     override suspend fun save(user: User) {
         coTransaction {
             UserTable.upsert { converter.apply(user, it) }

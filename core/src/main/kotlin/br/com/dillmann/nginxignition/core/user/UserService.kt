@@ -10,7 +10,7 @@ internal class UserService(
     private val repository: UserRepository,
     private val validator: UserValidator,
     private val security: UserSecurity,
-): AuthenticateUserCommand, DeleteUserCommand, GetUserCommand, ListUserCommand, SaveUserCommand {
+): AuthenticateUserCommand, DeleteUserCommand, GetUserCommand, ListUserCommand, SaveUserCommand, GetUserStatusCommand {
     override suspend fun authenticate(username: String, password: String): User? {
         val user = repository.findByUsername(username)?.takeIf { it.enabled } ?: return null
         val passwordsMatch = security.check(password, user.passwordHash, user.passwordSalt)
@@ -46,6 +46,9 @@ internal class UserService(
         validator.validate(newState, databaseState)
         repository.save(newState)
     }
+
+    override suspend fun isEnabled(id: UUID): Boolean =
+        repository.findEnabledById(id) == true
 
     suspend fun count() =
         repository.count()

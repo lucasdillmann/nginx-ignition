@@ -1,9 +1,6 @@
 package br.com.dillmann.nginxignition.application
 
-import br.com.dillmann.nginxignition.application.common.configuration.configureHttp
-import br.com.dillmann.nginxignition.application.common.configuration.configureKoin
-import br.com.dillmann.nginxignition.application.common.configuration.configureLifecycle
-import br.com.dillmann.nginxignition.application.common.configuration.configureRoutes
+import br.com.dillmann.nginxignition.application.common.configuration.*
 import br.com.dillmann.nginxignition.core.common.log.logger
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
@@ -18,6 +15,7 @@ fun Application.module() {
 
     runBlocking {
         configureKoin()
+        configureRbac()
         configureHttp()
         configureRoutes()
         configureLifecycle()
