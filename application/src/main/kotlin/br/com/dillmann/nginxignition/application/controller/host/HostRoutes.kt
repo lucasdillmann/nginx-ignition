@@ -21,6 +21,8 @@ fun Application.hostRoutes() {
                 put("/{id}") { putByIdHandler.handle(call) }
                 delete("/{id}") { deleteByIdHandler.handle(call) }
                 post { postHandler.handle(call) }
+                get("/{id}/access-logs") { TODO() }
+                get("/{id}/error-logs") { TODO() }
             }
         }
     }

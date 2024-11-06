@@ -22,6 +22,8 @@ fun Application.nginxRoutes() {
                 post("/stop") { stopHandler.handle(call) }
                 post("/reload") { reloadHandler.handle(call) }
                 get("/status") { statusHandler.handle(call) }
+                get("/access-logs") { TODO() }
+                get("/error-logs") { TODO() }
             }
         }
     }

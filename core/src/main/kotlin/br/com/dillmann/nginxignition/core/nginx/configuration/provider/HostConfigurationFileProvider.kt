@@ -28,6 +28,7 @@ internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
             }
         """.trimIndent()
 
+        // TODO: Implement host features (such as websocket support)
         return NginxConfigurationFileProvider.Output(
             name = "host-${host.id}.conf",
             contents = contents,
