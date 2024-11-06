@@ -1,6 +1,7 @@
 import React from 'react';
 import ApiClientEventDispatcher from "../core/apiclient/event/ApiClientEventDispatcher";
 import AuthenticationApiClientEventListener from "../core/authentication/AuthenticationApiClientEventListener";
+import { App, ConfigProvider } from "antd";
 
 export default class NginxIgnite extends React.PureComponent {
     constructor(props: any) {
@@ -16,7 +17,11 @@ export default class NginxIgnite extends React.PureComponent {
     render() {
         return (
             <React.StrictMode>
-                <p>Hello there</p>
+                <ConfigProvider>
+                    <App>
+                        <p>Hello there</p>
+                    </App>
+                </ConfigProvider>
             </React.StrictMode>
         );
     }
