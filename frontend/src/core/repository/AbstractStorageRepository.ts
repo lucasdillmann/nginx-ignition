@@ -7,7 +7,7 @@ export default abstract class AbstractStorageRepository<T> {
         this.key = key
     }
 
-    store(value: T) {
+    set(value: T) {
         const json = JSON.stringify(value)
         this.delegate.setItem(this.key, json)
     }
@@ -32,11 +32,5 @@ export default abstract class AbstractStorageRepository<T> {
         }
 
         return JSON.parse(json)
-    }
-
-    update(defaultValue: T, valueTransformer: (value: T) => T) {
-        const currentValue = this.getOrDefault(defaultValue)
-        const newValue = valueTransformer(currentValue)
-        this.store(newValue)
     }
 }

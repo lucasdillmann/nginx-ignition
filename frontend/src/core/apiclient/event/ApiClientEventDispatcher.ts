@@ -1,7 +1,7 @@
 import ApiClientEventListener from "./ApiClientEventListener";
 import ApiResponse from "../ApiResponse";
 
-class Dispatcher {
+class ApiClientEventDispatcher {
     private readonly listeners: ApiClientEventListener[]
 
     constructor() {
@@ -31,5 +31,4 @@ class Dispatcher {
     }
 }
 
-const ApiClientEventDispatcher = new Dispatcher()
-export default ApiClientEventDispatcher
+export default new ApiClientEventDispatcher()

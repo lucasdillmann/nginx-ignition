@@ -1,19 +1,23 @@
-import React, {useEffect} from 'react';
+import React from 'react';
+import ApiClientEventDispatcher from "../core/apiclient/event/ApiClientEventDispatcher";
+import AuthenticationApiClientEventListener from "../core/authentication/AuthenticationApiClientEventListener";
 
-function NginxIgnite() {
-  useEffect(
-      () => {
+export default class NginxIgnite extends React.PureComponent {
+    constructor(props: any) {
+        super(props);
+        ApiClientEventDispatcher.register(new AuthenticationApiClientEventListener())
+    }
+
+    componentDidMount() {
         const preloader = document.getElementById('preloader') as HTMLElement
         preloader.remove()
-      },
-      [],
-  )
+    }
 
-  return (
-      <React.StrictMode>
-        <p>Hello there</p>
-      </React.StrictMode>
-  )
+    render() {
+        return (
+            <React.StrictMode>
+                <p>Hello there</p>
+            </React.StrictMode>
+        );
+    }
 }
-
-export default NginxIgnite
