@@ -3,7 +3,7 @@ import ApiClientEventDispatcher from "../core/apiclient/event/ApiClientEventDisp
 import AuthenticationApiClientEventListener from "../core/authentication/AuthenticationApiClientEventListener";
 import { App, ConfigProvider } from "antd";
 
-export default class NginxIgnite extends React.PureComponent {
+export default class NginxIgnition extends React.PureComponent {
     constructor(props: any) {
         super(props);
         ApiClientEventDispatcher.register(new AuthenticationApiClientEventListener())

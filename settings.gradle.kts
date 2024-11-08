@@ -3,5 +3,13 @@ plugins {
 }
 
 rootProject.name = "nginx-ignition"
-include("core", "database", "application", "letsencrypt", "frontend")
+include(
+    "core",
+    "database",
+    "application",
+    "frontend",
+    "lets-encrypt-certificate",
+    "custom-certificate",
+    "self-signed-certificate",
+)
 

@@ -20,24 +20,33 @@ internal class CertificateService(
     override suspend fun getById(id: UUID): Certificate? =
         repository.findById(id)
 
-    override suspend fun issue(request: CertificateRequest): UUID {
+    override suspend fun issue(request: CertificateRequest): IssueCertificateCommand.Output {
         validator.validate(request)
         val provider = providers.first { it.uniqueId == request.providerId }
-        val certificate = provider.issue(request)
-        repository.save(certificate)
-        return certificate.id
+        val providerOutput = provider.issue(request)
+        if (providerOutput.success)
+            repository.save(providerOutput.certificate!!)
+
+        return IssueCertificateCommand.Output(
+            success = providerOutput.success,
+            errorReason = providerOutput.errorReason,
+            certificateId = providerOutput.certificate?.id,
+        )
     }
 
     override suspend fun list(pageSize: Int, pageNumber: Int): Page<Certificate> =
         repository.findPage(pageSize, pageNumber)
 
-    override suspend fun renewById(id: UUID) {
+    override suspend fun renewById(id: UUID): RenewCertificateCommand.Output {
         val certificate = repository.findById(id)
         require(certificate != null) { "No certificate found with ID $id" }
 
         val provider = providers.first { it.uniqueId == certificate.providerId }
-        val updatedCertificate = provider.renew(certificate)
-        repository.save(updatedCertificate)
+        val providerOutput = provider.renew(certificate)
+        if (providerOutput.success)
+            repository.save(providerOutput.certificate!!)
+
+        return RenewCertificateCommand.Output(providerOutput.success, providerOutput.errorReason)
     }
 
     override suspend fun getAvailableProviders(): List<AvailableCertificateProvider> =

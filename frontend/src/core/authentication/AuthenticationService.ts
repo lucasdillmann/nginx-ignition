@@ -4,7 +4,7 @@ class AuthenticationService {
     private readonly repository: LocalStorageRepository<string>
 
     constructor() {
-        this.repository = new LocalStorageRepository("nginxIgnite.authentication.token")
+        this.repository = new LocalStorageRepository("nginxIgnition.authentication.token")
     }
 
     getCurrentToken(): string | null {

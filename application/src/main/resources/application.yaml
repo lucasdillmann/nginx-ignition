@@ -10,10 +10,12 @@ nginx-ignition:
   nginx:
     binary-path: nginx
     config-directory: /tmp/nginx-ignition/nginx
+
   database:
     url: "jdbc:h2:mem:nginx-ignition;DB_CLOSE_DELAY=-1"
     username: root
     password: root
+
   security:
     user-password-hashing:
       algorithm: SHA-512
@@ -24,3 +26,7 @@ nginx-ignition:
       ttl-seconds: 3600
       clock-skew-seconds: 60
       renew-window-seconds: 900
+
+  certificate:
+    lets-encrypt:
+      production: true

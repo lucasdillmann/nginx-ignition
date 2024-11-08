@@ -11,6 +11,7 @@ internal fun Module.certificateBeans() {
         IssueCertificateCommand::class,
         ListCertificateCommand::class,
         RenewCertificateCommand::class,
+        GetAvailableProvidersCommand::class,
     )
     single { CertificateValidator() }
 }

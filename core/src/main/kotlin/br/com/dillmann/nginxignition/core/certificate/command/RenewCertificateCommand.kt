@@ -3,5 +3,10 @@ package br.com.dillmann.nginxignition.core.certificate.command
 import java.util.UUID
 
 interface RenewCertificateCommand {
-    suspend fun renewById(id: UUID)
+    data class Output(
+        val success: Boolean,
+        val errorReason: String? = null,
+    )
+
+    suspend fun renewById(id: UUID): Output
 }

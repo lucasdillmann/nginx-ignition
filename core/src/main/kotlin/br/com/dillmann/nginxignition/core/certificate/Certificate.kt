@@ -5,7 +5,7 @@ import java.util.UUID
 
 data class Certificate(
     val id: UUID,
-    val hosts: List<String>,
+    val domainNames: List<String>,
     val providerId: String,
     val issuedAt: OffsetDateTime,
     val validUntil: OffsetDateTime,
@@ -13,6 +13,7 @@ data class Certificate(
     val renewAfter: OffsetDateTime?,
     val privateKey: String,
     val publicKey: String,
-    val certificationChain: String?,
-    val metadata: Map<String, Any>,
+    val certificationChain: List<String>,
+    val answers: Map<String, Any?>,
+    val metadata: String?,
 )

@@ -17,7 +17,9 @@ application {
 dependencies {
     implementation(project(":core"))
     implementation(project(":database"))
-    implementation(project(":letsencrypt"))
+    implementation(project(":custom-certificate"))
+    implementation(project(":self-signed-certificate"))
+    implementation(project(":lets-encrypt-certificate"))
     implementation(project(":frontend"))
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-auth-jvm")
