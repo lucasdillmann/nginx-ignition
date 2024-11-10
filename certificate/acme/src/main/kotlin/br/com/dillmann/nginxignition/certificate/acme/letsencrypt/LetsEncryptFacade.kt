@@ -127,7 +127,7 @@ internal class LetsEncryptFacade(
     }
 
     private fun certificateAuthorityUrl(productionEnvironment: Boolean): String {
-        val environment = if (productionEnvironment) "production" else "staging"
+        val environment = if (productionEnvironment) "" else "staging"
         return "acme://letsencrypt.org/$environment"
     }
 
