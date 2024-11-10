@@ -60,19 +60,19 @@ internal class AcmeIssuer {
         context.createDnsRecordAction(challengeRecords)
         order.authorizations.forEach { it.dnsChallenge().trigger() }
 
-        order.waitForCompletion(context.timeout).requireSuccess(order)
+        order.waitUntilReady(context.timeout).requireSuccess(order)
         order.execute(context.domainKeys)
-        order.waitForCompletion(context.timeout).requireSuccess(order)
+        order.waitUntilReady(context.timeout).requireSuccess(order)
 
         return Output(success = true, certificate = order.certificate)
     }
 
     private fun Status.requireSuccess(order: Order) {
-        if (this != Status.VALID) {
+        if (this !in listOf(Status.VALID, Status.READY)) {
             val reason = order.error.map { it.toString() }.getOrNull()
                 ?: order.authorizations.mapNotNull { it.dnsChallenge().error.getOrNull() }.joinToString().takeIf { it.isNotBlank() }
                 ?: "unknown error"
-            error("Certificate failed to be issued: $reason")
+            error("Certificate failed to be issued: [$this] $reason")
         }
     }
 

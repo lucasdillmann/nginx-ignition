@@ -18,7 +18,7 @@ internal object LetsEncryptDynamicFields {
     )
 
     val DNS_PROVIDER = CertificateProviderDynamicField(
-        id = "callengeDnsProvider",
+        id = "challengeDnsProvider",
         description = "DNS provider (for the DNS challenge)",
         required = true,
         type = CertificateProviderDynamicField.Type.ENUM,

@@ -46,7 +46,7 @@ internal class UserDatabaseRepository(private val converter: UserConverter): Use
             val users = UserTable
                 .select(UserTable.columns)
                 .limit(pageSize, pageSize.toLong() * pageNumber)
-                .map { converter.toUser(it) }
+                .map { converter.toDomainModel(it) }
 
             Page(
                 contents = users,
@@ -70,6 +70,6 @@ internal class UserDatabaseRepository(private val converter: UserConverter): Use
                 .firstOrNull()
                 ?: return@coTransaction null
 
-            converter.toUser(user)
+            converter.toDomainModel(user)
         }
 }

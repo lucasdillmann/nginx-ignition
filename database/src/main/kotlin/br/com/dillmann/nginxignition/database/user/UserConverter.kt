@@ -21,7 +21,7 @@ internal class UserConverter {
         }
     }
 
-    fun toUser(user: ResultRow) =
+    fun toDomainModel(user: ResultRow) =
         with(UserTable) {
             User(
                 id = user[id],

@@ -10,6 +10,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-json:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
     implementation("org.postgresql:postgresql:$postgresDriverVersion")
     implementation("org.mariadb.jdbc:mariadb-java-client:$mariaDbDriverVersion")
