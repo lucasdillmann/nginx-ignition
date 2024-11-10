@@ -20,8 +20,8 @@ internal class CustomCertificateProvider(
 
     override suspend fun issue(request: CertificateRequest): CertificateProvider.Output {
         validator.validate(request)
-        val certificateFile = request.answers[DynamicFields.CERTIFICATE_MAIN_FILE.id] as ByteArray
-        val chainFile = request.answers[DynamicFields.CERTIFICATE_CHAIN_FILE.id] as ByteArray?
+        val certificateFile = request.parameters[DynamicFields.CERTIFICATE_MAIN_FILE.id] as ByteArray
+        val chainFile = request.parameters[DynamicFields.CERTIFICATE_CHAIN_FILE.id] as ByteArray?
         TODO()
     }
 

@@ -1,20 +1,27 @@
 package br.com.dillmann.nginxignition.certificate.letsencrypt.dns
 
 import br.com.dillmann.nginxignition.certificate.letsencrypt.DynamicFields
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.await
-import org.shredzone.acme4j.challenge.Dns01Challenge
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.services.route53.Route53AsyncClient
 import software.amazon.awssdk.services.route53.model.*
 
 class Route53DnsProvider: DnsProvider {
+    private data class RecordMetadata(
+        val record: DnsProvider.ChallengeRecord,
+        val hostedZoneId: String,
+    )
+
     override val uniqueId = "ROUTE_53"
 
-    override suspend fun writeChallengeRecord(authorization: Dns01Challenge, dynamicFields: Map<String, Any?>) {
+    override suspend fun writeChallengeRecords(
+        records: List<DnsProvider.ChallengeRecord>,
+        dynamicFields: Map<String, Any?>,
+    ) {
         val client = startClient(dynamicFields)
-        val domainName = authorization.location.host
-        val hostedZoneId = findHostedZoneId(client, domainName) ?: error("No Route53 hosted zone found for $domainName")
-        upsertRecord(client, hostedZoneId, domainName, authorization.authorization)
+        val recordsMetadata = findHostedZoneIds(client, records)
+        upsertRecords(client, recordsMetadata)
     }
 
     private fun startClient(dynamicFields: Map<String, Any?>): Route53AsyncClient {
@@ -26,25 +33,68 @@ class Route53DnsProvider: DnsProvider {
             .build()
     }
 
-    private suspend fun findHostedZoneId(client: Route53AsyncClient, domainName: String): String? {
-        val response = client.listHostedZones().await()
-        return response
+    private suspend fun findHostedZoneIds(
+        client: Route53AsyncClient,
+        records: List<DnsProvider.ChallengeRecord>,
+    ): List<RecordMetadata> {
+        val hostedZones = client
+            .listHostedZones()
+            .await()
             .hostedZones()
-            .filter { domainName.endsWith(it.name()) }
-            .maxByOrNull { it.name().length }
-            ?.id()
+            .map { it.id() to it.name().dropLastWhile { it == '.' } }
+
+        return records.map {
+            RecordMetadata(
+                record = it,
+                hostedZoneId = findHostedZoneId(hostedZones, it.domainName),
+            )
+        }
     }
 
-    private suspend fun upsertRecord(
+    private fun findHostedZoneId(hostedZones: List<Pair<String, String>>, domainName: String) =
+        hostedZones
+            .filter { (_, name) -> domainName.endsWith(name) }
+            .maxBy { (_, name) -> name.length }
+            .first
+
+    private suspend fun upsertRecords(
+        client: Route53AsyncClient,
+        records: List<RecordMetadata>,
+    ) {
+        val changeIds = records
+            .groupBy { it.hostedZoneId }
+            .map { (hostedZoneId, items) -> upsertRecords(client, hostedZoneId, items.map { it.record }) }
+
+        changeIds.forEach { changeId ->
+            do {
+                delay(250)
+                val status = client.getChange { it.id(changeId) }.await().changeInfo().status()
+            } while (status != ChangeStatus.INSYNC)
+        }
+    }
+
+    private suspend fun upsertRecords(
         client: Route53AsyncClient,
         hostedZoneId: String,
-        domainName: String,
-        contents: String,
-    ) {
-        val record = ResourceRecord.builder().value(contents).build()
-        val recordSet = ResourceRecordSet.builder().name(domainName).type(RRType.TXT).resourceRecords(record).build()
-        val change = Change.builder().action(ChangeAction.UPSERT).resourceRecordSet(recordSet).build()
-        val batch = ChangeBatch.builder().changes(change).build()
-        client.changeResourceRecordSets { it.hostedZoneId(hostedZoneId).changeBatch(batch) }.await()
+        records: List<DnsProvider.ChallengeRecord>,
+    ): String {
+        val changes = records.map { (domainName, token) ->
+            val record = ResourceRecord.builder().value("\"$token\"").build()
+            val recordSet = ResourceRecordSet
+                .builder()
+                .name(domainName)
+                .type(RRType.TXT)
+                .resourceRecords(record)
+                .ttl(30)
+                .build()
+            Change.builder().action(ChangeAction.UPSERT).resourceRecordSet(recordSet).build()
+        }
+
+        val batch = ChangeBatch.builder().changes(changes).build()
+        return client
+            .changeResourceRecordSets { it.hostedZoneId(hostedZoneId).changeBatch(batch) }
+            .await()
+            .changeInfo()
+            .id()
     }
 }

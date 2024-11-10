@@ -28,7 +28,7 @@ internal class LetsEncryptFacade(
     private val acmeIssuer: AcmeIssuer,
 ) {
     private companion object {
-        private val TIMEOUT = Duration.ofMinutes(1)
+        private val TIMEOUT = Duration.ofMinutes(2)
         private const val DNS_PROVIDER_ID = "ROUTE_53"
         private const val SECURITY_KEYS_ALGORITHM = "secp384r1"
     }
@@ -38,21 +38,21 @@ internal class LetsEncryptFacade(
 
     suspend fun issue(request: CertificateRequest): CertificateProvider.Output {
         val userKeys = KeyPairUtils.createKeyPair()
-        val userMail = request.answers[DynamicFields.EMAIL_ADDRESS.id] as String
+        val userMail = request.parameters[DynamicFields.EMAIL_ADDRESS.id] as String
         val domainKeys = KeyPairUtils.createKeyPair()
         val domainNames = request.domainNames
 
-        return issue(UUID.randomUUID(), userKeys, userMail, domainKeys, domainNames, request.answers)
+        return issue(UUID.randomUUID(), userKeys, userMail, domainKeys, domainNames, request.parameters)
     }
 
     suspend fun renew(certificate: Certificate): CertificateProvider.Output {
         val metadata = Json.decodeFromString<LetsEncryptMetadata>(certificate.metadata!!)
         val userKeys = buildKeyPair(metadata.userPrivateKey.decodeBase64(), metadata.userPublicKey.decodeBase64())
         val domainKeys = KeyPairUtils.createKeyPair()
-        val answers = certificate.answers
+        val parameters = certificate.parameters
         val domainNames = certificate.domainNames
         val userMail = metadata.userMail
-        return issue(certificate.id, userKeys, userMail, domainKeys, domainNames, answers)
+        return issue(certificate.id, userKeys, userMail, domainKeys, domainNames, parameters)
     }
 
     private suspend fun issue(
@@ -61,7 +61,7 @@ internal class LetsEncryptFacade(
         userMail: String,
         domainKeys: KeyPair,
         domainNames: List<String>,
-        answers: Map<String, Any?>,
+        parameters: Map<String, Any?>,
     ): CertificateProvider.Output {
         val acmeContext = AcmeIssuer.Context(
             userKeys = userKeys,
@@ -70,7 +70,7 @@ internal class LetsEncryptFacade(
             domainNames = domainNames,
             issuerUrl = certificateAuthorityUrl(),
             timeout = TIMEOUT,
-            createDnsRecordAction = { dnsProvider.writeChallengeRecord(DNS_PROVIDER_ID, it, answers) },
+            createDnsRecordAction = { dnsProvider.writeChallengeRecord(DNS_PROVIDER_ID, it, parameters) },
         )
         val acmeResult = acmeIssuer.issue(acmeContext)
         if (!acmeResult.success) {
@@ -99,15 +99,19 @@ internal class LetsEncryptFacade(
             privateKey = domainKeys.private.encoded.encodeBase64(),
             publicKey = certificateContents.encoded.encodeBase64(),
             certificationChain = certificateChain.map { it.encoded.encodeBase64() },
-            answers = answers,
+            parameters = parameters,
             metadata = Json.encodeToString(metadata),
         )
         return CertificateProvider.Output(success = true, certificate = certificate)
     }
 
-    private fun certificateAuthorityUrl() =
-        if (configurationProvider.get("production").toBoolean()) "acme://letsencrypt.com/production"
-        else "acme://letsencrypt.com/staging"
+    private fun certificateAuthorityUrl(): String {
+        val environment =
+            if (configurationProvider.get("production").toBoolean()) "production"
+            else "staging"
+
+        return "acme://letsencrypt.org/$environment"
+    }
 
     private fun buildKeyPair(private: ByteArray, public: ByteArray): KeyPair {
         val keyFactory = KeyFactory.getInstance(SECURITY_KEYS_ALGORITHM)

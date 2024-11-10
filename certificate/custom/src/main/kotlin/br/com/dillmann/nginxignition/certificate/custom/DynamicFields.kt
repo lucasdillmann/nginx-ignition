@@ -4,14 +4,14 @@ import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProvid
 
 internal object DynamicFields {
     val CERTIFICATE_MAIN_FILE = CertificateProviderDynamicField(
-        id = "CERTIFICATE_MAIN_FILE",
+        id = "certificateMainFile",
         description = "Certificate file (PEM encoded) with the private key",
         required = true,
         type = CertificateProviderDynamicField.Type.FILE,
     )
 
     val CERTIFICATE_CHAIN_FILE = CertificateProviderDynamicField(
-        id = "CERTIFICATE_CHAIN_FILE",
+        id = "certificateChainFile",
         description = "Certification chain file (PEM encoded)",
         required = false,
         type = CertificateProviderDynamicField.Type.FILE,

@@ -14,6 +14,6 @@ data class Certificate(
     val privateKey: String,
     val publicKey: String,
     val certificationChain: List<String>,
-    val answers: Map<String, Any?>,
+    val parameters: Map<String, Any?>,
     val metadata: String?,
 )

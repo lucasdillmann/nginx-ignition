@@ -47,7 +47,7 @@ internal class SelfSignedCertificateProvider(
             privateKey = privateKey.encodeBase64(),
             publicKey = certificate.signature.encodeBase64(),
             certificationChain = emptyList(),
-            answers = emptyMap(),
+            parameters = emptyMap(),
             metadata = null,
         )
 
