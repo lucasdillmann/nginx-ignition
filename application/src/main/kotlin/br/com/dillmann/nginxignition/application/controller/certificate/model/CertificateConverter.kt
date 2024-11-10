@@ -1,8 +1,11 @@
 package br.com.dillmann.nginxignition.application.controller.certificate.model
 
+import br.com.dillmann.nginxignition.application.common.pagination.PageResponse
+import br.com.dillmann.nginxignition.core.certificate.Certificate
 import br.com.dillmann.nginxignition.core.certificate.command.IssueCertificateCommand
 import br.com.dillmann.nginxignition.core.certificate.model.AvailableCertificateProvider
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateRequest
+import br.com.dillmann.nginxignition.core.common.pagination.Page
 import kotlinx.serialization.json.*
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -14,6 +17,10 @@ abstract class CertificateConverter {
     abstract fun toResponse(input: AvailableCertificateProvider): AvailableProviderResponse
 
     abstract fun toResponse(input: IssueCertificateCommand.Output): IssueCertificateResponse
+
+    abstract fun toResponse(input: Page<Certificate>): PageResponse<CertificateResponse>
+
+    abstract fun toResponse(input: Certificate): CertificateResponse
 
     @Mapping(source = "parameters", target = "parameters", qualifiedByName = ["toDomainModelParameters"])
     abstract fun toDomainModel(input: IssueCertificateRequest): CertificateRequest
