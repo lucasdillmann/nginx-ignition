@@ -1,5 +1,6 @@
 package br.com.dillmann.nginxignition.application.controller.user.handler
 
+import br.com.dillmann.nginxignition.application.common.routing.template.IdAwareRequestHandler
 import br.com.dillmann.nginxignition.application.controller.user.model.UserConverter
 import br.com.dillmann.nginxignition.application.controller.user.model.UserRequest
 import br.com.dillmann.nginxignition.core.user.command.SaveUserCommand
@@ -14,23 +15,17 @@ import java.util.*
 class UpdateUserByIdHandler(
     private val saveCommand: SaveUserCommand,
     private val converter: UserConverter,
-) {
-    suspend fun handle(call: RoutingCall) {
-        val userId = runCatching { call.request.pathVariables["id"].let(UUID::fromString) }.getOrNull()
-        if (userId == null) {
-            call.respond(HttpStatusCode.BadRequest)
-            return
-        }
-
+): IdAwareRequestHandler {
+    override suspend fun handle(call: RoutingCall, id: UUID) {
         val payload = call.receive<UserRequest>()
         val currentUser = call.principal<JWTPrincipal>()
-        if (currentUser?.subject == userId.toString() && !payload.enabled) {
+        if (currentUser?.subject == id.toString() && !payload.enabled) {
             val responsePayload = mapOf("message" to "You cannot disable your own user")
             call.respond(HttpStatusCode.BadRequest, responsePayload)
             return
         }
 
-        val user = converter.toDomainModel(payload).copy(id = userId)
+        val user = converter.toDomainModel(payload).copy(id = id)
         saveCommand.save(user)
         call.respond(HttpStatusCode.NoContent)
     }

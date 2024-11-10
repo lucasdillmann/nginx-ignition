@@ -1,5 +1,6 @@
 package br.com.dillmann.nginxignition.application.controller.host.handler
 
+import br.com.dillmann.nginxignition.application.common.routing.RequestHandler
 import br.com.dillmann.nginxignition.application.controller.host.model.HostConverter
 import br.com.dillmann.nginxignition.application.controller.host.model.HostRequest
 import br.com.dillmann.nginxignition.core.host.command.SaveHostCommand
@@ -12,8 +13,8 @@ import java.util.UUID
 class CreateHostHandler(
     private val saveCommand: SaveHostCommand,
     private val converter: HostConverter,
-) {
-    suspend fun handle(call: RoutingCall) {
+): RequestHandler {
+    override suspend fun handle(call: RoutingCall) {
         val payload = call.receive<HostRequest>()
         val host = converter.toDomainModel(payload).copy(id = UUID.randomUUID())
         saveCommand.save(host)

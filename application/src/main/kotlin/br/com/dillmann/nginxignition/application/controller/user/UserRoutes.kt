@@ -2,6 +2,7 @@ package br.com.dillmann.nginxignition.application.controller.user
 
 import br.com.dillmann.nginxignition.application.common.rbac.requireAuthentication
 import br.com.dillmann.nginxignition.application.common.rbac.requireRole
+import br.com.dillmann.nginxignition.application.common.routing.*
 import br.com.dillmann.nginxignition.application.controller.user.handler.*
 import br.com.dillmann.nginxignition.core.user.User
 import io.ktor.server.application.*
@@ -19,18 +20,18 @@ fun Application.userRoutes() {
 
     routing {
         route("/api/users") {
-            post("/login") { loginHandler.handle(call) }
+            post("/login", loginHandler)
 
             requireAuthentication {
-                post("/logout") { logoutHandler.handle(call) }
+                post("/logout", logoutHandler)
             }
 
             requireRole(User.Role.ADMIN) {
-                get { listHandler.handle(call) }
-                get("/{id}") { getByIdHandler.handle(call) }
-                put("/{id}") { putByIdHandler.handle(call) }
-                delete("/{id}") { deleteByIdHandler.handle(call) }
-                post { postHandler.handle(call) }
+                get(listHandler)
+                get("/{id}", getByIdHandler)
+                put("/{id}", putByIdHandler)
+                delete("/{id}", deleteByIdHandler)
+                post(postHandler)
             }
         }
     }
