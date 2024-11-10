@@ -13,7 +13,7 @@ internal class Route53DnsProvider: DnsProvider {
         val hostedZoneId: String,
     )
 
-    override val uniqueId = "ROUTE_53"
+    override val uniqueId = "AWS_ROUTE53"
 
     override suspend fun writeChallengeRecords(
         records: List<DnsProvider.ChallengeRecord>,

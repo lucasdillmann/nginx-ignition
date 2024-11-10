@@ -39,7 +39,12 @@ internal class CertificateService(
 
     override suspend fun renewById(id: UUID): RenewCertificateCommand.Output {
         val certificate = repository.findById(id)
-        require(certificate != null) { "No certificate found with ID $id" }
+        if (certificate == null) {
+            return RenewCertificateCommand.Output(
+                success = false,
+                errorReason = "No certificate found with ID $id",
+            )
+        }
 
         val provider = providers.first { it.uniqueId == certificate.providerId }
         val providerOutput = provider.renew(certificate)

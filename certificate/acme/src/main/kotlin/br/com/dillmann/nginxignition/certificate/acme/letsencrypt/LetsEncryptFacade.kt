@@ -29,8 +29,7 @@ internal class LetsEncryptFacade(
 ) {
     private companion object {
         private val TIMEOUT = Duration.ofMinutes(2)
-        private const val DNS_PROVIDER_ID = "ROUTE_53"
-        private const val SECURITY_KEYS_ALGORITHM = "secp384r1"
+        private const val SECURITY_KEYS_ALGORITHM = "ECDSA"
     }
 
     private val logger = logger<LetsEncryptFacade>()
@@ -83,6 +82,7 @@ internal class LetsEncryptFacade(
         parameters: Map<String, Any?>,
         productionEnvironment: Boolean,
     ): CertificateProvider.Output {
+        val dnsProviderId = parameters[LetsEncryptDynamicFields.DNS_PROVIDER.id] as String
         val acmeContext = AcmeIssuer.Context(
             userKeys = userKeys,
             userMail = userMail,
@@ -90,7 +90,7 @@ internal class LetsEncryptFacade(
             domainNames = domainNames,
             issuerUrl = certificateAuthorityUrl(productionEnvironment),
             timeout = TIMEOUT,
-            createDnsRecordAction = { dnsProvider.writeChallengeRecord(DNS_PROVIDER_ID, it, parameters) },
+            createDnsRecordAction = { dnsProvider.writeChallengeRecord(dnsProviderId, it, parameters) },
         )
         val acmeResult = acmeIssuer.issue(acmeContext)
         if (!acmeResult.success) {

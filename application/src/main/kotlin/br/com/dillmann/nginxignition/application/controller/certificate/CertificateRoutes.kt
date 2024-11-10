@@ -13,6 +13,7 @@ fun Application.certificateRoutes() {
     val listHandler by inject<ListCertificatesHandler>()
     val deleteByIdHandler by inject<DeleteCertificateByIdHandler>()
     val getByIdHandler by inject<GetCertificateByIdHandler>()
+    val renewByIdHandler by inject<RenewCertificateByIdHandler>()
 
     routing {
         requireAuthentication {
@@ -20,7 +21,7 @@ fun Application.certificateRoutes() {
                 get(listHandler)
                 get("/{id}", getByIdHandler)
                 delete("/{id}", deleteByIdHandler)
-                post("/{id}/renew") { TODO() }
+                post("/{id}/renew", renewByIdHandler)
                 post("/issue", issueHandler)
                 get("/available-providers", listProvidersHandler)
             }

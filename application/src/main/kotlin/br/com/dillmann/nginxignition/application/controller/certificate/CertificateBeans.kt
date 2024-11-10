@@ -12,4 +12,5 @@ internal fun Module.certificateBeans() {
     single { ListCertificatesHandler(get(), get()) }
     single { GetCertificateByIdHandler(get(), get()) }
     single { DeleteCertificateByIdHandler(get()) }
+    single { RenewCertificateByIdHandler(get(), get()) }
 }
