@@ -7,4 +7,5 @@ internal data class LetsEncryptMetadata(
     val userMail: String,
     val userPrivateKey: String,
     val userPublicKey: String,
+    val productionEnvironment: Boolean,
 )

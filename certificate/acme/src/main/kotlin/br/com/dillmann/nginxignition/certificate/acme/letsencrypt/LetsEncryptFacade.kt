@@ -41,8 +41,17 @@ internal class LetsEncryptFacade(
         val userMail = request.parameters[LetsEncryptDynamicFields.EMAIL_ADDRESS.id] as String
         val domainKeys = KeyPairUtils.createKeyPair()
         val domainNames = request.domainNames
+        val productionEnvironment = configurationProvider.get("production").toBoolean()
 
-        return issue(UUID.randomUUID(), userKeys, userMail, domainKeys, domainNames, request.parameters)
+        return issue(
+            UUID.randomUUID(),
+            userKeys,
+            userMail,
+            domainKeys,
+            domainNames,
+            request.parameters,
+            productionEnvironment,
+        )
     }
 
     suspend fun renew(certificate: Certificate): CertificateProvider.Output {
@@ -52,7 +61,17 @@ internal class LetsEncryptFacade(
         val parameters = certificate.parameters
         val domainNames = certificate.domainNames
         val userMail = metadata.userMail
-        return issue(certificate.id, userKeys, userMail, domainKeys, domainNames, parameters)
+        val productionEnvironment = metadata.productionEnvironment
+
+        return issue(
+            certificate.id,
+            userKeys,
+            userMail,
+            domainKeys,
+            domainNames,
+            parameters,
+            productionEnvironment,
+        )
     }
 
     private suspend fun issue(
@@ -62,13 +81,14 @@ internal class LetsEncryptFacade(
         domainKeys: KeyPair,
         domainNames: List<String>,
         parameters: Map<String, Any?>,
+        productionEnvironment: Boolean,
     ): CertificateProvider.Output {
         val acmeContext = AcmeIssuer.Context(
             userKeys = userKeys,
             userMail = userMail,
             domainKeys = domainKeys,
             domainNames = domainNames,
-            issuerUrl = certificateAuthorityUrl(),
+            issuerUrl = certificateAuthorityUrl(productionEnvironment),
             timeout = TIMEOUT,
             createDnsRecordAction = { dnsProvider.writeChallengeRecord(DNS_PROVIDER_ID, it, parameters) },
         )
@@ -86,6 +106,7 @@ internal class LetsEncryptFacade(
             userMail = userMail,
             userPrivateKey = userKeys.private.encoded.encodeBase64(),
             userPublicKey = userKeys.public.encoded.encodeBase64(),
+            productionEnvironment = productionEnvironment,
         )
 
         val certificate = Certificate(
@@ -105,11 +126,8 @@ internal class LetsEncryptFacade(
         return CertificateProvider.Output(success = true, certificate = certificate)
     }
 
-    private fun certificateAuthorityUrl(): String {
-        val environment =
-            if (configurationProvider.get("production").toBoolean()) "production"
-            else "staging"
-
+    private fun certificateAuthorityUrl(productionEnvironment: Boolean): String {
+        val environment = if (productionEnvironment) "production" else "staging"
         return "acme://letsencrypt.org/$environment"
     }
 
