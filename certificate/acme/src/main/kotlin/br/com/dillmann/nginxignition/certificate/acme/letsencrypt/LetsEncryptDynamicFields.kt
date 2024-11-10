@@ -1,8 +1,8 @@
-package br.com.dillmann.nginxignition.certificate.letsencrypt
+package br.com.dillmann.nginxignition.certificate.acme.letsencrypt
 
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProviderDynamicField
 
-internal object DynamicFields {
+internal object LetsEncryptDynamicFields {
     val TERMS_OF_SERVICE = CertificateProviderDynamicField(
         id = "acceptTheTermsOfService",
         description = "I agree to the Let's Encrypt terms of service available at theirs site",

@@ -1,4 +1,4 @@
-package br.com.dillmann.nginxignition.certificate.letsencrypt
+package br.com.dillmann.nginxignition.certificate.acme.letsencrypt
 
 import br.com.dillmann.nginxignition.core.certificate.Certificate
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProvider
@@ -15,10 +15,10 @@ internal class LetsEncryptCertificateProvider(
     override val name = "Let's Encrypt"
     override val uniqueId = UNIQUE_ID
     override val dynamicFields = listOf(
-        DynamicFields.EMAIL_ADDRESS,
-        DynamicFields.AWS_ACCESS_KEY,
-        DynamicFields.AWS_SECRET_KEY,
-        DynamicFields.TERMS_OF_SERVICE,
+        LetsEncryptDynamicFields.EMAIL_ADDRESS,
+        LetsEncryptDynamicFields.AWS_ACCESS_KEY,
+        LetsEncryptDynamicFields.AWS_SECRET_KEY,
+        LetsEncryptDynamicFields.TERMS_OF_SERVICE,
     )
 
     override suspend fun issue(request: CertificateRequest): CertificateProvider.Output {

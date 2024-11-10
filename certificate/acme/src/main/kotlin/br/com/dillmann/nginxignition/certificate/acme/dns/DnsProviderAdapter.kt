@@ -1,6 +1,6 @@
-package br.com.dillmann.nginxignition.certificate.letsencrypt.dns
+package br.com.dillmann.nginxignition.certificate.acme.dns
 
-class DnsProviderAdapter(private val providers: List<DnsProvider>) {
+internal class DnsProviderAdapter(private val providers: List<DnsProvider>) {
     suspend fun writeChallengeRecord(
         providerId: String,
         challengeRecords: List<DnsProvider.ChallengeRecord>,

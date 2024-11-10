@@ -19,7 +19,7 @@ dependencies {
     implementation(project(":database"))
     implementation(project(":custom-certificate"))
     implementation(project(":self-signed-certificate"))
-    implementation(project(":lets-encrypt-certificate"))
+    implementation(project(":acme-certificate"))
     implementation(project(":frontend"))
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-auth-jvm")

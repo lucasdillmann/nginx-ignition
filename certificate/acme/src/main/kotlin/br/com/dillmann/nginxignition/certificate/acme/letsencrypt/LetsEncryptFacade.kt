@@ -1,15 +1,15 @@
-package br.com.dillmann.nginxignition.certificate.letsencrypt
+package br.com.dillmann.nginxignition.certificate.acme.letsencrypt
 
 import br.com.dillmann.nginxignition.core.certificate.Certificate
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProvider
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateRequest
 import br.com.dillmann.nginxignition.core.common.log.logger
 import br.com.dillmann.nginxignition.core.common.provider.ConfigurationProvider
-import br.com.dillmann.nginxignition.certificate.letsencrypt.acme.AcmeIssuer
-import br.com.dillmann.nginxignition.certificate.letsencrypt.dns.DnsProviderAdapter
-import br.com.dillmann.nginxignition.certificate.letsencrypt.utils.decodeBase64
-import br.com.dillmann.nginxignition.certificate.letsencrypt.utils.encodeBase64
-import br.com.dillmann.nginxignition.certificate.letsencrypt.utils.toOffsetDateTime
+import br.com.dillmann.nginxignition.certificate.acme.AcmeIssuer
+import br.com.dillmann.nginxignition.certificate.acme.dns.DnsProviderAdapter
+import br.com.dillmann.nginxignition.certificate.acme.utils.decodeBase64
+import br.com.dillmann.nginxignition.certificate.acme.utils.encodeBase64
+import br.com.dillmann.nginxignition.certificate.acme.utils.toOffsetDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.shredzone.acme4j.util.KeyPairUtils
@@ -38,7 +38,7 @@ internal class LetsEncryptFacade(
 
     suspend fun issue(request: CertificateRequest): CertificateProvider.Output {
         val userKeys = KeyPairUtils.createKeyPair()
-        val userMail = request.parameters[DynamicFields.EMAIL_ADDRESS.id] as String
+        val userMail = request.parameters[LetsEncryptDynamicFields.EMAIL_ADDRESS.id] as String
         val domainKeys = KeyPairUtils.createKeyPair()
         val domainNames = request.domainNames
 

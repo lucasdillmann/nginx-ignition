@@ -1,7 +1,6 @@
-package br.com.dillmann.nginxignition.certificate.letsencrypt.dns
+package br.com.dillmann.nginxignition.certificate.acme.dns
 
-
-interface DnsProvider {
+internal interface DnsProvider {
     data class ChallengeRecord(
         val domainName: String,
         val token: String,

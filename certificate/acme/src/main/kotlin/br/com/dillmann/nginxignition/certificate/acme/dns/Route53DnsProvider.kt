@@ -1,13 +1,13 @@
-package br.com.dillmann.nginxignition.certificate.letsencrypt.dns
+package br.com.dillmann.nginxignition.certificate.acme.dns
 
-import br.com.dillmann.nginxignition.certificate.letsencrypt.DynamicFields
+import br.com.dillmann.nginxignition.certificate.acme.letsencrypt.LetsEncryptDynamicFields
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.await
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.services.route53.Route53AsyncClient
 import software.amazon.awssdk.services.route53.model.*
 
-class Route53DnsProvider: DnsProvider {
+internal class Route53DnsProvider: DnsProvider {
     private data class RecordMetadata(
         val record: DnsProvider.ChallengeRecord,
         val hostedZoneId: String,
@@ -25,8 +25,8 @@ class Route53DnsProvider: DnsProvider {
     }
 
     private fun startClient(dynamicFields: Map<String, Any?>): Route53AsyncClient {
-        val accessKey = dynamicFields[DynamicFields.AWS_ACCESS_KEY.id] as String
-        val secretKey = dynamicFields[DynamicFields.AWS_SECRET_KEY.id] as String
+        val accessKey = dynamicFields[LetsEncryptDynamicFields.AWS_ACCESS_KEY.id] as String
+        val secretKey = dynamicFields[LetsEncryptDynamicFields.AWS_SECRET_KEY.id] as String
         return Route53AsyncClient
             .builder()
             .credentialsProvider { AwsBasicCredentials.create(accessKey, secretKey) }

@@ -1,4 +1,4 @@
-package br.com.dillmann.nginxignition.certificate.letsencrypt
+package br.com.dillmann.nginxignition.certificate.acme.letsencrypt
 
 import br.com.dillmann.nginxignition.core.certificate.Certificate
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateRequest

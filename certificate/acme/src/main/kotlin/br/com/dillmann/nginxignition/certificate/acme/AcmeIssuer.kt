@@ -1,6 +1,6 @@
-package br.com.dillmann.nginxignition.certificate.letsencrypt.acme
+package br.com.dillmann.nginxignition.certificate.acme
 
-import br.com.dillmann.nginxignition.certificate.letsencrypt.dns.DnsProvider
+import br.com.dillmann.nginxignition.certificate.acme.dns.DnsProvider
 import org.shredzone.acme4j.AccountBuilder
 import org.shredzone.acme4j.Authorization
 import org.shredzone.acme4j.Certificate
@@ -12,7 +12,7 @@ import java.security.KeyPair
 import java.time.Duration
 import kotlin.jvm.optionals.getOrNull
 
-class AcmeIssuer {
+internal class AcmeIssuer {
     data class Context(
         val userKeys: KeyPair,
         val userMail: String,
