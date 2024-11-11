@@ -12,6 +12,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
 import java.math.BigInteger
 import java.security.KeyPair
 import java.security.KeyPairGenerator
+import java.security.PrivateKey
 import java.security.SecureRandom
 import java.security.Security
 import java.time.OffsetDateTime
@@ -27,7 +28,7 @@ class SelfSignedCertificateFactory {
         }
     }
 
-    fun build(domainNames: List<String>): Pair<X509CertificateHolder, ByteArray> {
+    fun build(domainNames: List<String>): Pair<X509CertificateHolder, PrivateKey> {
         val mainDomainName = domainNames.first()
         val principal = X500Principal("CN=$mainDomainName")
         val keyPair = buildKeyPair()
@@ -47,7 +48,7 @@ class SelfSignedCertificateFactory {
                 .addExtension(Extension.subjectAlternativeName, true, DERSequence(alternativeNames.toTypedArray()))
                 .build(signer)
 
-        return certificate to keyPair.private.encoded
+        return certificate to keyPair.private
     }
 
     private fun buildKeyPair(): KeyPair {

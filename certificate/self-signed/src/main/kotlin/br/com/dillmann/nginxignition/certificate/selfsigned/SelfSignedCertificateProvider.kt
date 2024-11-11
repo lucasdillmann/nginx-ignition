@@ -30,7 +30,7 @@ internal class SelfSignedCertificateProvider(
     override suspend fun renew(certificate: Certificate): CertificateProvider.Output =
         buildCertificate(certificate.id, certificate.domainNames)
 
-    private suspend fun buildCertificate(
+    private fun buildCertificate(
         certificateId: UUID,
         domainNames: List<String>,
     ): CertificateProvider.Output {
@@ -44,8 +44,8 @@ internal class SelfSignedCertificateProvider(
             validFrom = certificate.notBefore.toOffsetDateTime(),
             validUntil = expirationDate,
             renewAfter = expirationDate.minusDays(1),
-            privateKey = privateKey.encodeBase64(),
-            publicKey = certificate.signature.encodeBase64(),
+            privateKey = privateKey.encoded.encodeBase64(),
+            publicKey = certificate.encoded.encodeBase64(),
             certificationChain = emptyList(),
             parameters = emptyMap(),
             metadata = null,
