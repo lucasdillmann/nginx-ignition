@@ -9,7 +9,6 @@ internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
 
     private fun buildHost(basePath: String, host: Host): NginxConfigurationFileProvider.Output {
         val routes = host.routes.sortedBy { it.priority }.joinToString("\n") { buildRoute(it, host.featureSet) }
-        val bindings = host.bindings.joinToString("\n") { buildBinding(it, host.default, basePath, host.featureSet) }
         val serverNames =
             if (host.default) "server_name _;"
             else host.domainNames.joinToString("\n") { "server_name $it;" }
@@ -21,21 +20,13 @@ internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
                     }
                 """.trimIndent()
             else ""
+        val http2 =
+            if (host.featureSet.http2Support) "http2 on;"
+            else ""
 
-        val contents = """
-            server {
-                root /dev/null;
-                access_log $basePath/logs/host-${host.id}.access.log;
-                error_log $basePath/logs/host-${host.id}.error.log;
-                gzip on;
-                client_max_body_size 1024G;
-                
-                $httpsRedirect
-                $bindings
-                $serverNames
-                $routes
-            }
-        """.trimIndent()
+        val contents = host.bindings.joinToString("\n") {
+            buildBinding(basePath, host, it, routes, serverNames, httpsRedirect, http2)
+        }
 
         return NginxConfigurationFileProvider.Output(
             name = "host-${host.id}.conf",
@@ -44,42 +35,52 @@ internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
     }
 
     private fun buildBinding(
-        binding: Host.Binding,
-        default: Boolean,
         basePath: String,
-        features: Host.FeatureSet,
-    ): String =
-        when (binding.type) {
-            Host.BindingType.HTTP -> buildHttpBinding(binding, default, features)
-            Host.BindingType.HTTPS -> buildHttpsBinding(binding, default, basePath, features)
-        }
-
-    private fun buildHttpBinding(
+        host: Host,
         binding: Host.Binding,
-        default: Boolean,
-        features: Host.FeatureSet,
-    ): String =
-        "listen ${binding.ip}:${binding.port} ${buildBindingAdditionalParams(default, features)};"
+        routes: String,
+        serverNames: String,
+        httpsRedirect: String,
+        http2: String,
+    ): String {
+        val listen =
+            when(binding.type) {
+                Host.BindingType.HTTP ->
+                    "listen ${binding.ip}:${binding.port} ${buildBindingAdditionalParams(host)};"
+                Host.BindingType.HTTPS ->
+                    """
+                        listen ${binding.ip}:${binding.port} ssl ${buildBindingAdditionalParams(host)};
+                        ssl_certificate $basePath/config/certificate-${binding.certificateId}.pem;
+                        ssl_certificate_key $basePath/config/certificate-${binding.certificateId}.pem;
+                        ssl_protocols TLSv1.2 TLSv1.3;
+                        ssl_ciphers HIGH:!aNULL:!MD5;
+                    """.trimIndent()
+            }
 
-    private fun buildHttpsBinding(
-        binding: Host.Binding,
-        default: Boolean,
-        basePath: String,
-        features: Host.FeatureSet,
-    ): String =
-        """
-            listen ${binding.ip}:${binding.port} ssl ${buildBindingAdditionalParams(default, features)};
-            ssl_certificate $basePath/config/certificate-${binding.certificateId}.pem;
-            ssl_certificate_key $basePath/config/certificate-${binding.certificateId}.pem;
-            ssl_protocols TLSv1.2 TLSv1.3;
-            ssl_ciphers HIGH:!aNULL:!MD5;
+        val conditionalHttpsRedirect =
+            if (binding.type == Host.BindingType.HTTP) httpsRedirect
+            else ""
+
+        return """
+            server {
+                root /dev/null;
+                access_log $basePath/logs/host-${host.id}.access.log;
+                error_log $basePath/logs/host-${host.id}.error.log;
+                gzip on;
+                client_max_body_size 1024G;
+                
+                $conditionalHttpsRedirect
+                $http2
+                $listen
+                $serverNames
+                $routes
+            }
         """.trimIndent()
+    }
 
-    private fun buildBindingAdditionalParams(default: Boolean, features: Host.FeatureSet): String {
+    private fun buildBindingAdditionalParams(host: Host): String {
         var additionalParams = ""
-        if (features.http2Support)
-            additionalParams += " http2"
-        if (default)
+        if (host.default)
             additionalParams += " default_server"
 
         return additionalParams
