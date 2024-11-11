@@ -31,4 +31,5 @@ internal fun Module.nginxBeans() {
     single { MainConfigurationFileProvider() } bind NginxConfigurationFileProvider::class
     single { MimeTypesConfigurationFileProvider() } bind NginxConfigurationFileProvider::class
     single { HostConfigurationFileProvider() } bind NginxConfigurationFileProvider::class
+    single { HostCertificateFileProvider(get()) } bind NginxConfigurationFileProvider::class
 }
