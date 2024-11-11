@@ -1,4 +1,4 @@
-package br.com.dillmann.nginxignition.certificate.acme.utils
+package br.com.dillmann.nginxignition.certificate.custom.extensions
 
 import java.time.OffsetDateTime
 import java.time.ZoneOffset

@@ -7,9 +7,9 @@ import br.com.dillmann.nginxignition.core.common.log.logger
 import br.com.dillmann.nginxignition.core.common.provider.ConfigurationProvider
 import br.com.dillmann.nginxignition.certificate.acme.AcmeIssuer
 import br.com.dillmann.nginxignition.certificate.acme.dns.DnsProviderAdapter
-import br.com.dillmann.nginxignition.certificate.acme.utils.decodeBase64
-import br.com.dillmann.nginxignition.certificate.acme.utils.encodeBase64
-import br.com.dillmann.nginxignition.certificate.acme.utils.toOffsetDateTime
+import br.com.dillmann.nginxignition.certificate.acme.extensions.decodeBase64
+import br.com.dillmann.nginxignition.certificate.acme.extensions.encodeBase64
+import br.com.dillmann.nginxignition.certificate.acme.extensions.toOffsetDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.shredzone.acme4j.util.KeyPairUtils
