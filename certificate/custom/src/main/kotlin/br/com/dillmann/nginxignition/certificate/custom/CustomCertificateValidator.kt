@@ -4,6 +4,6 @@ import br.com.dillmann.nginxignition.core.certificate.provider.CertificateReques
 
 internal class CustomCertificateValidator {
     suspend fun validate(request: CertificateRequest) {
-        // TODO
+        // TODO: Implement this
     }
 }

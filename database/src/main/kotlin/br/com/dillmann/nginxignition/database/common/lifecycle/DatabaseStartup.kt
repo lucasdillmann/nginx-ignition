@@ -1,8 +1,9 @@
 package br.com.dillmann.nginxignition.database.common.lifecycle
 
+import br.com.dillmann.nginxignition.core.common.lifecycle.StartupCommand
 import br.com.dillmann.nginxignition.core.common.log.logger
 import br.com.dillmann.nginxignition.core.common.provider.ConfigurationProvider
-import br.com.dillmann.nginxignition.core.common.lifecycle.StartupCommand
+import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
 
 internal class DatabaseStartup(configurationProvider: ConfigurationProvider): StartupCommand {
@@ -12,15 +13,16 @@ internal class DatabaseStartup(configurationProvider: ConfigurationProvider): St
     override suspend fun execute() {
         val url = configurationProvider.get("url")
         val username = configurationProvider.get("username")
-        val password = configurationProvider.get("password")
 
         logger<DatabaseStartup>().info("Starting database connection to $url with username $username")
 
-        // TODO: Migrate to a pooled connection source
-        Database.connect(
-            url = url,
-            user = username,
-            password = password,
-        )
+        val dataSource = HikariDataSource()
+        dataSource.jdbcUrl = url
+        dataSource.username = username
+        dataSource.password = configurationProvider.get("password")
+        dataSource.maximumPoolSize = configurationProvider.get("connection-pool.maximum-size").toInt()
+        dataSource.minimumIdle = configurationProvider.get("connection-pool.minimum-size").toInt()
+
+        Database.connect(dataSource)
     }
 }

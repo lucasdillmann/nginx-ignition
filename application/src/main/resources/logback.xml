@@ -10,4 +10,7 @@
     <logger name="Exposed" level="error">
         <appender-ref ref="STDOUT" />
     </logger>
+    <logger name="com.zaxxer.hikari" level="error">
+        <appender-ref ref="STDOUT" />
+    </logger>
 </configuration>
