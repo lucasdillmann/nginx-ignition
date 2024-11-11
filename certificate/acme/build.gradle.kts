@@ -8,6 +8,7 @@ plugins {
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":certificate-commons"))
     implementation("org.shredzone.acme4j:acme4j-client:$acme4jVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJsonVersion")
     implementation("software.amazon.awssdk:route53:$awsSdkVersion")

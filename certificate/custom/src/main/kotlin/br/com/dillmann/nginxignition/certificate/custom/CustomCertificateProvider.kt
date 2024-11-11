@@ -1,5 +1,10 @@
 package br.com.dillmann.nginxignition.certificate.custom
 
+import br.com.dillmann.nginxignition.certificate.commons.CertificateConstants.PRIVATE_KEY_ALGORITHM
+import br.com.dillmann.nginxignition.certificate.commons.CertificateConstants.PRIVATE_KEY_FOOTER
+import br.com.dillmann.nginxignition.certificate.commons.CertificateConstants.PRIVATE_KEY_HEADER
+import br.com.dillmann.nginxignition.certificate.commons.CertificateConstants.PUBLIC_KEY_FOOTER
+import br.com.dillmann.nginxignition.certificate.commons.CertificateConstants.PUBLIC_KEY_HEADER
 import br.com.dillmann.nginxignition.certificate.custom.extensions.decodeBase64
 import br.com.dillmann.nginxignition.certificate.custom.extensions.encodeBase64
 import br.com.dillmann.nginxignition.certificate.custom.extensions.toOffsetDateTime
@@ -18,12 +23,7 @@ internal class CustomCertificateProvider(
     private val validator: CustomCertificateValidator,
 ): CertificateProvider {
     private companion object {
-        const val UNIQUE_ID = "CUSTOM"
-        private const val PRIVATE_KEY_HEADER = "-----BEGIN PRIVATE KEY-----"
-        private const val PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----"
-        private const val PUBLIC_KEY_HEADER = "-----BEGIN CERTIFICATE-----"
-        private const val PUBLIC_KEY_FOOTER = "-----END CERTIFICATE-----"
-        private const val SECURITY_KEYS_ALGORITHM = "ECDSA"
+        private const val UNIQUE_ID = "CUSTOM"
     }
 
     override val name = "Custom certificate"
@@ -65,7 +65,7 @@ internal class CustomCertificateProvider(
     }
 
     private fun parseCertificate(publicKey: String, privateKey: String): Pair<X509Certificate, PrivateKey> {
-        val keyFactory = KeyFactory.getInstance(SECURITY_KEYS_ALGORITHM)
+        val keyFactory = KeyFactory.getInstance(PRIVATE_KEY_ALGORITHM)
         val certFactory = CertificateFactory.getInstance("X.509")
 
         val parsedPrivateKey = String(privateKey.decodeBase64())

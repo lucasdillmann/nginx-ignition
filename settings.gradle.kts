@@ -8,11 +8,13 @@ include(
     "database",
     "application",
     "frontend",
+    "certificate-commons",
     "acme-certificate",
     "custom-certificate",
     "self-signed-certificate",
 )
 
 project(":custom-certificate").projectDir = file("certificate/custom")
+project(":certificate-commons").projectDir = file("certificate/commons")
 project(":acme-certificate").projectDir = file("certificate/acme")
 project(":self-signed-certificate").projectDir = file("certificate/self-signed")

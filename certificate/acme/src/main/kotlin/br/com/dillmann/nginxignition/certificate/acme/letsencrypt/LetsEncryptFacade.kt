@@ -7,9 +7,10 @@ import br.com.dillmann.nginxignition.core.common.log.logger
 import br.com.dillmann.nginxignition.core.common.provider.ConfigurationProvider
 import br.com.dillmann.nginxignition.certificate.acme.AcmeIssuer
 import br.com.dillmann.nginxignition.certificate.acme.dns.DnsProviderAdapter
-import br.com.dillmann.nginxignition.certificate.acme.extensions.decodeBase64
-import br.com.dillmann.nginxignition.certificate.acme.extensions.encodeBase64
-import br.com.dillmann.nginxignition.certificate.acme.extensions.toOffsetDateTime
+import br.com.dillmann.nginxignition.certificate.commons.CertificateConstants
+import br.com.dillmann.nginxignition.certificate.commons.extensions.decodeBase64
+import br.com.dillmann.nginxignition.certificate.commons.extensions.encodeBase64
+import br.com.dillmann.nginxignition.certificate.commons.extensions.toOffsetDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.shredzone.acme4j.util.KeyPairUtils
@@ -29,7 +30,6 @@ internal class LetsEncryptFacade(
 ) {
     private companion object {
         private val TIMEOUT = Duration.ofMinutes(2)
-        private const val SECURITY_KEYS_ALGORITHM = "ECDSA"
     }
 
     private val logger = logger<LetsEncryptFacade>()
@@ -132,7 +132,7 @@ internal class LetsEncryptFacade(
     }
 
     private fun buildKeyPair(private: ByteArray, public: ByteArray): KeyPair {
-        val keyFactory = KeyFactory.getInstance(SECURITY_KEYS_ALGORITHM)
+        val keyFactory = KeyFactory.getInstance(CertificateConstants.PRIVATE_KEY_ALGORITHM)
         val privateKey = keyFactory.generatePrivate(PKCS8EncodedKeySpec(private))
         val publicKey = keyFactory.generatePublic(X509EncodedKeySpec(public))
         return KeyPair(publicKey, privateKey)
