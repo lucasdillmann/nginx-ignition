@@ -18,6 +18,7 @@ fun Application.module() {
         configureRbac()
         configureHttp()
         configureRoutes()
+        configureExceptionHandling()
         configureLifecycle()
     }
 }

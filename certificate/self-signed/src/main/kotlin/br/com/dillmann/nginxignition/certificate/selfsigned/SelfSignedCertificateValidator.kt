@@ -1,9 +1,5 @@
 package br.com.dillmann.nginxignition.certificate.selfsigned
 
-import br.com.dillmann.nginxignition.core.certificate.provider.CertificateRequest
+import br.com.dillmann.nginxignition.certificate.commons.validation.BaseCertificateValidator
 
-internal class SelfSignedCertificateValidator {
-    suspend fun validate(request: CertificateRequest) {
-        // TODO: Implement this
-    }
-}
+internal class SelfSignedCertificateValidator: BaseCertificateValidator(emptyList())

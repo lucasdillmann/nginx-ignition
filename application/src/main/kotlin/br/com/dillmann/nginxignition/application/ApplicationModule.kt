@@ -1,5 +1,6 @@
 package br.com.dillmann.nginxignition.application
 
+import br.com.dillmann.nginxignition.application.common.exception.ConsistencyExceptionHandler
 import br.com.dillmann.nginxignition.application.common.lifecycle.LifecycleManager
 import br.com.dillmann.nginxignition.application.common.provider.CompositeConfigurationProvider
 import br.com.dillmann.nginxignition.application.common.rbac.RbacJwtFacade
@@ -17,6 +18,7 @@ object ApplicationModule {
             single { CompositeConfigurationProvider() } bind ConfigurationProvider::class
             single { LifecycleManager(getAll(), getAll()) }
             single { RbacJwtFacade(get(), get(), get()) }
+            single { ConsistencyExceptionHandler() }
 
             certificateBeans()
             hostBeans()

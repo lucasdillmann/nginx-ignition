@@ -5,7 +5,6 @@ data class ConsistencyException(
 ): RuntimeException() {
     data class Violation(
         val path: String,
-        val value: Any?,
         val message: String,
     )
 }

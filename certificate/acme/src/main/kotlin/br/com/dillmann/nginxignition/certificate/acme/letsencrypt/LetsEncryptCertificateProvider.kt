@@ -19,6 +19,7 @@ internal class LetsEncryptCertificateProvider(
         LetsEncryptDynamicFields.AWS_ACCESS_KEY,
         LetsEncryptDynamicFields.AWS_SECRET_KEY,
         LetsEncryptDynamicFields.TERMS_OF_SERVICE,
+        LetsEncryptDynamicFields.DNS_PROVIDER,
     )
 
     override suspend fun issue(request: CertificateRequest): CertificateProvider.Output {
@@ -27,7 +28,6 @@ internal class LetsEncryptCertificateProvider(
     }
 
     override suspend fun renew(certificate: Certificate): CertificateProvider.Output {
-        validator.validate(certificate)
         return facade.renew(certificate)
     }
 }
