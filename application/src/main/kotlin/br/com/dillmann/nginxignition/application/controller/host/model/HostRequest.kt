@@ -1,9 +1,8 @@
 package br.com.dillmann.nginxignition.application.controller.host.model
 
-import br.com.dillmann.nginxignition.application.common.serialization.UuidSerializer
+import br.com.dillmann.nginxignition.application.common.serialization.UuidString
 import br.com.dillmann.nginxignition.core.host.Host
 import kotlinx.serialization.Serializable
-import java.util.*
 
 @Serializable
 data class HostRequest(
@@ -44,7 +43,6 @@ data class HostRequest(
         val type: Host.BindingType,
         val ip: String,
         val port: Int,
-        @Serializable(with = UuidSerializer::class)
-        val certificateId: UUID? = null,
+        val certificateId: UuidString? = null,
     )
 }

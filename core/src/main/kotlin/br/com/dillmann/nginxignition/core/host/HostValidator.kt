@@ -14,9 +14,7 @@ internal class HostValidator(
 ) {
     suspend fun validate(host: Host) {
         val violations = mutableListOf<ConsistencyException.Violation>()
-        val addError: ErrorCreator = { path, message ->
-            violations += ConsistencyException.Violation(path, message)
-        }
+        val addError: ErrorCreator = { path, message -> violations += ConsistencyException.Violation(path, message) }
 
         validateDefaultFlag(host, addError)
         validateDomainNames(host, addError)

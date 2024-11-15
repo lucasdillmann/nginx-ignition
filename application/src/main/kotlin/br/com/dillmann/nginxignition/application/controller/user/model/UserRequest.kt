@@ -8,6 +8,6 @@ data class UserRequest(
     val enabled: Boolean,
     val name: String,
     val username: String,
-    val password: String?,
+    val password: String? = null,
     val role: Role,
 )
