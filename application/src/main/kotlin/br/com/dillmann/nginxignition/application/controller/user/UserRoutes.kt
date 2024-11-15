@@ -17,6 +17,7 @@ fun Application.userRoutes() {
     val postHandler by inject<CreateUserHandler>()
     val loginHandler by inject<UserLoginHandler>()
     val logoutHandler by inject<UserLogoutHandler>()
+    val currentUserHandler by inject<CurrentUserHandler>()
 
     routing {
         route("/api/users") {
@@ -24,6 +25,7 @@ fun Application.userRoutes() {
 
             requireAuthentication {
                 post("/logout", logoutHandler)
+                get("/current", currentUserHandler)
             }
 
             requireRole(User.Role.ADMIN) {

@@ -14,4 +14,5 @@ internal fun Module.userBeans() {
     single { UpdateUserByIdHandler(get(), get()) }
     single { UserLoginHandler(get(), get()) }
     single { UserLogoutHandler(get()) }
+    single { CurrentUserHandler(get(), get()) }
 }

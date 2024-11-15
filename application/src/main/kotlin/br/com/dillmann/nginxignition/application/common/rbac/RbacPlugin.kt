@@ -17,13 +17,22 @@ val RbacPlugin = createRouteScopedPlugin(
     createConfiguration = ::RbacPluginConfiguration,
 ) {
     on(AuthenticationChecked) { call ->
-        val credentials = call.principal<JWTPrincipal>()!!
+        val replyWithAccessDenied: suspend () -> Unit = {
+            val payload = mapOf("message" to "Access denied")
+            call.respond(HttpStatusCode.Unauthorized, payload)
+        }
+
+        val credentials = call.principal<JWTPrincipal>()
+        if (credentials == null) {
+            replyWithAccessDenied()
+            return@on
+        }
+
         val userRole = runCatching { credentials.payload.getClaim("role").`as`(User.Role::class.java) }.getOrNull()
         val requiredRoles = pluginConfig.requiredRoles
         val authorized = requiredRoles.isNullOrEmpty() || userRole != null && userRole in requiredRoles
         if (!authorized) {
-            val payload = mapOf("message" to "Access denied")
-            call.respond(HttpStatusCode.Unauthorized, payload)
+            replyWithAccessDenied()
             return@on
         }
 
