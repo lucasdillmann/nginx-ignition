@@ -5,6 +5,7 @@ import java.util.*
 
 interface CertificateRepository {
     suspend fun findById(id: UUID): Certificate?
+    suspend fun existsById(id: UUID): Boolean
     suspend fun deleteById(id: UUID)
     suspend fun save(certificate: Certificate)
     suspend fun findPage(pageSize: Int, pageNumber: Int): Page<Certificate>

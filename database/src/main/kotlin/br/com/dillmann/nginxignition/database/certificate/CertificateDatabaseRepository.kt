@@ -22,6 +22,14 @@ internal class CertificateDatabaseRepository(private val converter: CertificateC
             converter.toDomainModel(certificate)
         }
 
+    override suspend fun existsById(id: UUID): Boolean =
+        coTransaction {
+            CertificateTable
+                .select(CertificateTable.id)
+                .where { CertificateTable.id eq id }
+                .count() > 0
+        }
+
     override suspend fun deleteById(id: UUID) {
         coTransaction {
             CertificateTable.deleteWhere { CertificateTable.id eq id }

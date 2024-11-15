@@ -14,5 +14,5 @@ internal fun Module.hostBeans() {
         GetHostCommand::class,
         ListHostCommand::class,
     )
-    single { HostValidator() }
+    single { HostValidator(get(), get()) }
 }

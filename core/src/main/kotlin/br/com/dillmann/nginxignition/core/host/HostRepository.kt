@@ -9,4 +9,5 @@ interface HostRepository {
     suspend fun save(host: Host)
     suspend fun findPage(pageSize: Int, pageNumber: Int): Page<Host>
     suspend fun findAll(): List<Host>
+    suspend fun findDefault(): Host?
 }

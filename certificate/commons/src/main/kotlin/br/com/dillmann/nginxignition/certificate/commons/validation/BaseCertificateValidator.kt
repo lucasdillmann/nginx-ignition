@@ -4,16 +4,13 @@ import br.com.dillmann.nginxignition.certificate.commons.extensions.decodeBase64
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProviderDynamicField
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProviderDynamicField.Type.*
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateRequest
+import br.com.dillmann.nginxignition.core.common.GlobalConstants.EMAIL_PATTERN
+import br.com.dillmann.nginxignition.core.common.GlobalConstants.TLD_PATTERN
 import br.com.dillmann.nginxignition.core.common.validation.ConsistencyException
 
 abstract class BaseCertificateValidator(
     private val dynamicFields: List<CertificateProviderDynamicField>,
 ) {
-    private companion object {
-        private val EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$".toPattern()
-        private val TLD_PATTERN = "(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]".toPattern()
-    }
-
     fun validate(request: CertificateRequest) {
         val violations = validateBaseFields(request) + validateDynamicFields(request) + getDomainViolations(request)
         if (violations.isNotEmpty()) {

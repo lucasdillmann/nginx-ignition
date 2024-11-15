@@ -7,10 +7,8 @@ import br.com.dillmann.nginxignition.database.common.transaction.coTransaction
 import br.com.dillmann.nginxignition.database.host.mapping.HostBindingTable
 import br.com.dillmann.nginxignition.database.host.mapping.HostRouteTable
 import br.com.dillmann.nginxignition.database.host.mapping.HostTable
-import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
 import java.util.*
 
 internal class HostDatabaseRepository(private val converter: HostConverter): HostRepository {
@@ -20,22 +18,16 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
     )
 
     override suspend fun findById(id: UUID): Host? =
-        coTransaction {
-            val host = HostTable
-                .select(HostTable.fields)
-                .where { HostTable.id eq id }
-                .singleOrNull()
-                ?: return@coTransaction null
-
-            val (bindings, routes) = findRelated(id)
-            converter.toHost(host, bindings, routes)
-        }
+        findOneWhere { HostTable.id eq id }
 
     override suspend fun deleteById(id: UUID) {
         coTransaction {
             cleanupById(id)
         }
     }
+
+    override suspend fun findDefault(): Host? =
+        findOneWhere { HostTable.default eq true }
 
     override suspend fun save(host: Host) {
         coTransaction {
@@ -77,6 +69,18 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
     override suspend fun findAll(): List<Host> =
         coTransaction {
             findHosts(null, null)
+        }
+
+    private suspend fun findOneWhere(expression: SqlExpressionBuilder.() -> Op<Boolean>): Host? =
+        coTransaction {
+            val host = HostTable
+                .select(HostTable.fields)
+                .where(expression)
+                .singleOrNull()
+                ?: return@coTransaction null
+
+            val (bindings, routes) = findRelated(host[HostTable.id])
+            converter.toHost(host, bindings, routes)
         }
 
     private fun findHosts(pageSize: Int?, pageNumber: Int?): List<Host> =
