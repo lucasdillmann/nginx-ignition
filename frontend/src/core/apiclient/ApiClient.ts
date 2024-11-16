@@ -52,12 +52,13 @@ export default class ApiClient {
     }
 
     private async buildRequest<T>(method: string, headers?: Header[], payload?: T): Promise<RequestInit> {
-        const requestHeaders = new Headers()
-        requestHeaders.append("Accept", "application/json")
-        requestHeaders.append("Content-type", "application/json")
+        const requestHeaders: {[key: string]: string} = {
+            "Accept": "application/json",
+            "Content-type": "application/json",
+        }
 
         headers?.forEach(({ key, value }) => {
-            requestHeaders.append(key, value)
+            requestHeaders[key] = value
         })
 
         const body = JSON.stringify(payload)

@@ -2,11 +2,14 @@ import React from 'react';
 import ApiClientEventDispatcher from "../core/apiclient/event/ApiClientEventDispatcher";
 import AuthenticationApiClientEventListener from "../core/authentication/AuthenticationApiClientEventListener";
 import { App, ConfigProvider } from "antd";
-import ApplicationContext, { ApplicationContextData, startApplicationContext } from "../core/components/context/ApplicationContext";
+import AppContext, { AppContextData, loadAppContextData } from "../core/components/context/AppContext";
 import ErrorBoundary from "../core/components/errorboundary/ErrorBoundary";
+import AppRouter from "../core/components/router/AppRouter";
+import Routes from "./Routes";
+import FullPagePreloader from "../core/components/preloader/FullPagePreloader";
 
 interface NginxIgnitionState {
-    context?: ApplicationContextData
+    context?: AppContextData
 }
 
 export default class NginxIgnition extends React.Component<unknown, NginxIgnitionState> {
@@ -17,7 +20,7 @@ export default class NginxIgnition extends React.Component<unknown, NginxIgnitio
     }
 
     componentDidMount() {
-        startApplicationContext()
+        loadAppContextData()
             .then(context => {
                 this.setState((current) => ({
                     ...current,
@@ -46,14 +49,12 @@ export default class NginxIgnition extends React.Component<unknown, NginxIgnitio
     render() {
         const { context } = this.state
         if (context == null)
-            return this.renderContainer(
-                <p>Loading</p>
-            )
+            return this.renderContainer(<FullPagePreloader />)
 
         return this.renderContainer(
-            <ApplicationContext.Provider value={context}>
-                <p>Hello there</p>
-            </ApplicationContext.Provider>
+            <AppContext.Provider value={context}>
+                <AppRouter routes={Routes} />
+            </AppContext.Provider>
         )
     }
 }

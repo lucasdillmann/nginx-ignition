@@ -7,14 +7,11 @@ export default class AuthenticationApiClientEventListener implements ApiClientEv
         const token = AuthenticationService.getCurrentToken()
         if (token == null) return
 
-        const headers = request.headers as Headers
-        headers.append(
-            "Authorization",
-            `Bearer ${token},`
-        )
+        const headers = request.headers as {[key: string]: string}
+        headers["Authorization"] = `Bearer ${token}`
     }
 
-    handleResponse(request: RequestInit, response: ApiResponse<any>): void {
+    handleResponse(_: RequestInit, response: ApiResponse<any>): void {
         const updatedAuthorization =
             response.headers.find(header => header.key.toLowerCase() === "authorization")
 
