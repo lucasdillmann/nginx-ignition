@@ -6,32 +6,9 @@ import {Navigate} from "react-router-dom";
 import AppContext, {AppContextData} from "../../core/components/context/AppContext";
 import Preloader from "../../core/components/preloader/Preloader";
 import NotificationFacade from "../../core/components/notification/NotificationFacade";
+import styles from "./LoginPage.styles"
 
 const {Text, Title} = Typography;
-const styles = {
-    container: {
-        margin: "0 auto",
-        width: "380px"
-    },
-    section: {
-        alignItems: "center",
-        display: "flex",
-    },
-    title: {
-        marginTop: 0,
-        fontSize: 24,
-    },
-    header: {
-        marginTop: 40,
-        marginBottom: 30,
-    },
-    text: {
-        fontSize: 14,
-    },
-    formInput: {
-        marginBottom: 10,
-    }
-}
 
 interface LoginPageState {
     loading: boolean,

@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Form, FormInstance, Input, Typography} from "antd";
+import {Button, Form, Input, Typography} from "antd";
 import {LockOutlined, UserOutlined, IdcardOutlined} from "@ant-design/icons";
 import {Navigate} from "react-router-dom";
 import AppContext, {AppContextData} from "../../core/components/context/AppContext";
@@ -9,32 +9,8 @@ import ValidationResult from "../../core/validation/ValidationResult";
 import OnboardingService from "./OnboardingService";
 import {UnexpectedResponseError} from "../../core/apiclient/ApiResponse";
 import ValidationResultConverter from "../../core/validation/ValidationResultConverter";
-
+import styles from "./OnboardingPage.styles"
 const {Text, Title} = Typography;
-const styles = {
-    container: {
-        margin: "0 auto",
-        width: "380px"
-    },
-    section: {
-        alignItems: "center",
-        display: "flex",
-    },
-    title: {
-        marginTop: 0,
-        fontSize: 24,
-    },
-    header: {
-        marginTop: 40,
-        marginBottom: 30,
-    },
-    text: {
-        fontSize: 14,
-    },
-    formInput: {
-        marginBottom: 10,
-    }
-}
 
 interface OnboardingPageState {
     loading: boolean,

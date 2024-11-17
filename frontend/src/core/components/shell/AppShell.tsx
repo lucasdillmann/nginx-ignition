@@ -1,4 +1,4 @@
-import React, {CSSProperties, PropsWithChildren} from "react";
+import React, {PropsWithChildren} from "react";
 import {MenuFoldOutlined, MenuUnfoldOutlined} from "@ant-design/icons";
 import {Button, Layout, Menu} from "antd";
 import LocalStorageRepository from "../../repository/LocalStorageRepository";
@@ -6,41 +6,8 @@ import {MenuItemType} from "antd/es/menu/interface";
 import {NavLink} from "react-router-dom";
 import NginxService from "../../../domain/nginx/NginxService";
 import NginxStatus from "./NginxStatus";
+import styles from "./AppShell.styles"
 const {Header, Sider, Content} = Layout;
-
-const styles: { [key: string]: CSSProperties } = {
-    container: {
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        top: 0,
-        left: 0,
-    },
-    header: {
-        padding: 0,
-        background: "#FFF",
-    },
-    content: {
-        margin: "24px 16px",
-        padding: 24,
-        minHeight: 280,
-        background: "#FFF",
-        borderRadius: 4,
-    },
-    toggleButton: {
-        fontSize: "16px",
-        width: 64,
-        height: 64,
-    },
-    logo: {
-        color: "#FFF",
-        fontSize: 18,
-        padding: "30px 20px 20px",
-    },
-    logoLink: {
-        color: "#FFF",
-    },
-}
 
 interface AppShellState {
     collapsed: boolean,

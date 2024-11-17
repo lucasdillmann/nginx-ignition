@@ -1,22 +1,13 @@
-import React, {CSSProperties} from "react";
+import React from "react";
 import {Badge, Button, ConfigProvider, Flex} from "antd";
 import Preloader from "../preloader/Preloader";
 import NginxService from "../../../domain/nginx/NginxService";
 import NotificationFacade from "../notification/NotificationFacade";
+import styles from "./NginxStatus.styles"
 
 interface NginxStatusState {
     loading: boolean,
     running?: boolean,
-}
-
-const styles: { [key: string]: CSSProperties } = {
-    container: {
-        padding: "10px 20px",
-        margin: "0 0 10px",
-        background: "#032c53",
-        borderRadius: 0,
-        color: "#FFF",
-    },
 }
 
 export default class NginxStatus extends React.Component<any, NginxStatusState> {

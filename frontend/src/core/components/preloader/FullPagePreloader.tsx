@@ -1,29 +1,11 @@
-import React, {CSSProperties} from "react";
+import React from "react";
 import {Flex} from "antd";
 import Preloader from "./Preloader";
+import styles from "./FullPagePreloader.styles"
 
 export interface FullPagePreloaderProps {
     title?: string
     message?: string
-}
-
-const styles: {[key: string]: CSSProperties} = {
-    mainContainer: {
-        width: "100%",
-        height: "100%",
-        position: "absolute",
-        top: 0,
-        left: 0,
-    },
-    textContainer: {
-        paddingLeft: 40,
-    },
-    title: {
-        marginBottom: 0,
-    },
-    message: {
-        marginTop: 0,
-    }
 }
 
 export default class FullPagePreloader extends React.Component<FullPagePreloaderProps> {
