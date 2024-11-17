@@ -38,12 +38,3 @@ dependencies {
     implementation("org.mapstruct:mapstruct:$mapStructVersion")
     kapt("org.mapstruct:mapstruct-processor:$mapStructVersion")
 }
-
-ktor {
-    docker {
-        customBaseImage = "eclipse-temurin:21-jre-alpine"
-        jreVersion = JavaVersion.VERSION_21
-        localImageName = "dillmann/nginx-ignition"
-        imageTag = rootProject.version.toString()
-    }
-}
