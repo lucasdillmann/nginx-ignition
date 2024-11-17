@@ -6,12 +6,26 @@ export default interface ApiResponse<T> {
     body?: T
 }
 
-export function requireSuccessResponse<T>(response: ApiResponse<T>): T {
-    if (response.statusCode < 200 || response.statusCode > 299)
-        throw Error(`Unexpected status code: ${response.statusCode}`)
+export class UnexpectedResponseError<T> extends Error {
+    readonly response: ApiResponse<T>
 
-    if (response.body == null)
-        throw Error("Null or empty response body")
+    constructor(response: ApiResponse<T>) {
+        super();
+        this.response = response;
+    }
+}
+
+export function requireSuccessResponse<T>(response: ApiResponse<T>): T | undefined {
+    if (response.statusCode < 200 || response.statusCode > 299)
+        throw new UnexpectedResponseError(response)
 
     return response.body
+}
+
+export function requireSuccessPayload<T>(response: ApiResponse<T>): T {
+    const payload = requireSuccessResponse(response)
+    if (payload == null)
+        throw new UnexpectedResponseError(response)
+
+    return payload
 }

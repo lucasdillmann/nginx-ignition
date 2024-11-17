@@ -5,12 +5,19 @@ import br.com.dillmann.nginxignition.core.common.validation.ConsistencyException
 private typealias ErrorCreator = (String, String) -> Unit
 
 internal class UserValidator(private val repository: UserRepository) {
-    suspend fun validate(updatedState: User, currentState: User?) {
+    suspend fun validate(
+        updatedState: User,
+        currentState: User?,
+        suppliedPassword: String?,
+    ) {
         val violations = mutableListOf<ConsistencyException.Violation>()
         val addError: ErrorCreator = { path, message -> violations += ConsistencyException.Violation(path, message) }
 
-        if (updatedState.passwordHash.isBlank() && currentState == null)
-            addError("password", "Value is required")
+        if (suppliedPassword.isNullOrBlank() && currentState == null)
+            addError("password", "A password is required")
+
+        if (suppliedPassword != null && suppliedPassword.length < 8)
+            addError("password", "Your password should have at least 8 characters")
 
         val databaseUser = repository.findByUsername(updatedState.username)
         if (databaseUser != null && databaseUser.id != updatedState.id)

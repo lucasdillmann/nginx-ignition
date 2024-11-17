@@ -125,10 +125,14 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
 
     render() {
         const {loading} = this.state
-        const {user} = this.context
+        const {user, onboardingStatus} = this.context
 
         if (user?.id != null) {
             return <Navigate to="/" />
+        }
+
+        if (!onboardingStatus.finished) {
+            return <Navigate to="/onboarding" />
         }
 
         if (loading) {

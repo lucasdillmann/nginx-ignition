@@ -18,10 +18,14 @@ fun Application.userRoutes() {
     val loginHandler by inject<UserLoginHandler>()
     val logoutHandler by inject<UserLogoutHandler>()
     val currentUserHandler by inject<CurrentUserHandler>()
+    val onboardingStatusHandler by inject<UserOnboardingStatusHandler>()
+    val onboardingFinishHandler by inject<UserOnboardingFinishHandler>()
 
     routing {
         route("/api/users") {
             post("/login", loginHandler)
+            get("/onboarding/status", onboardingStatusHandler)
+            post("/onboarding/finish", onboardingFinishHandler)
 
             requireAuthentication {
                 post("/logout", logoutHandler)

@@ -15,4 +15,6 @@ internal fun Module.userBeans() {
     single { UserLoginHandler(get(), get()) }
     single { UserLogoutHandler(get()) }
     single { CurrentUserHandler(get(), get()) }
+    single { UserOnboardingStatusHandler(get()) }
+    single { UserOnboardingFinishHandler(get(), get(), get(), get(), get()) }
 }
