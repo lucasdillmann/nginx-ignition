@@ -12,6 +12,10 @@ export default {
         padding: 0,
         background: "#FFF",
     },
+    title: {
+        padding: "30px 20px 0",
+        margin: 0,
+    },
     content: {
         margin: "24px 16px",
         padding: 24,
@@ -31,5 +35,6 @@ export default {
     },
     logoLink: {
         color: "#FFF",
+        fontSize: 22,
     },
 } as StyleBook

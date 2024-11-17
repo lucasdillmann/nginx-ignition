@@ -24,7 +24,7 @@ export default class AppRouter extends React.Component<AppRouterProps> {
     }
 
     private buildRouteComponent(route: AppRoute): any {
-        const {component, requiresAuthentication, fullPage, activeMenuItemPath} = route
+        const {component, requiresAuthentication, fullPage} = route
         const {user} = this.context
 
         if (requiresAuthentication && user?.id == null) {
@@ -35,9 +35,11 @@ export default class AppRouter extends React.Component<AppRouterProps> {
             return component
         }
 
-        const menuItemPath = activeMenuItemPath ?? route.path
         return (
-            <AppShell menuItems={this.buildMenuItemsAdapter()} activeMenuItemPath={menuItemPath}>
+            <AppShell
+                menuItems={this.buildMenuItemsAdapter()}
+                activeRoute={route}
+            >
                 {component}
             </AppShell>
         )

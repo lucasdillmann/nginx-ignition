@@ -7,6 +7,7 @@ export interface AppRouteMenuItem {
 
 export default interface AppRoute {
     path: string
+    title?: string
     requiresAuthentication: boolean
     fullPage: boolean
     component: React.ReactElement

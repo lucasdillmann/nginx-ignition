@@ -1,5 +1,7 @@
 import NginxGateway from "./NginxGateway";
 import {requireSuccessPayload, requireSuccessResponse} from "../../core/apiclient/ApiResponse";
+import NginxEventDispatcher from "./listener/NginxEventDispatcher";
+import {NginxOperation} from "./listener/NginxEventListener";
 
 export default class NginxService {
     private gateway: NginxGateway
@@ -15,15 +17,24 @@ export default class NginxService {
             .then(response => response.running)
     }
 
-    async start(): Promise<undefined> {
-        return this.gateway.start().then(requireSuccessResponse)
+    async start(): Promise<void> {
+        return this.gateway
+            .start()
+            .then(requireSuccessResponse)
+            .then(() => NginxEventDispatcher.notify(NginxOperation.START))
     }
 
-    async stop(): Promise<undefined> {
-        return this.gateway.stop().then(requireSuccessResponse)
+    async stop(): Promise<void> {
+        return this.gateway
+            .stop()
+            .then(requireSuccessResponse)
+            .then(() => NginxEventDispatcher.notify(NginxOperation.STOP))
     }
 
-    async reloadConfiguration(): Promise<undefined> {
-        return this.gateway.reload().then(requireSuccessResponse)
+    async reloadConfiguration(): Promise<void> {
+        return this.gateway
+            .reload()
+            .then(requireSuccessResponse)
+            .then(() => NginxEventDispatcher.notify(NginxOperation.RELOAD))
     }
 }

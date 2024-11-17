@@ -3,15 +3,18 @@ import {Badge, Button, ConfigProvider, Flex} from "antd";
 import Preloader from "../preloader/Preloader";
 import NginxService from "../../../domain/nginx/NginxService";
 import NotificationFacade from "../notification/NotificationFacade";
-import styles from "./NginxStatus.styles"
+import styles from "./NginxControl.styles"
+import {NginxEventListener} from "../../../domain/nginx/listener/NginxEventListener";
+import NginxEventDispatcher from "../../../domain/nginx/listener/NginxEventDispatcher";
 
 interface NginxStatusState {
     loading: boolean,
     running?: boolean,
 }
 
-export default class NginxStatus extends React.Component<any, NginxStatusState> {
-    private service: NginxService
+export default class NginxControl extends React.Component<any, NginxStatusState> {
+    private readonly service: NginxService
+    private readonly listener: NginxEventListener
 
     constructor(props: any) {
         super(props);
@@ -19,7 +22,26 @@ export default class NginxStatus extends React.Component<any, NginxStatusState> 
         this.state = {
             loading: true,
         }
+        this.listener = () => this.handleNginxEvent()
+    }
+
+    componentDidMount() {
+        NginxEventDispatcher.register(this.listener)
         this.refreshNginxStatus()
+    }
+
+    componentWillUnmount() {
+        NginxEventDispatcher.remove(this.listener)
+    }
+
+    private handleNginxEvent() {
+        const {loading} = this.state
+        if (loading) return
+
+        this.setState(
+            { loading: true },
+            () => this.refreshNginxStatus(),
+        )
     }
 
     private refreshNginxStatus() {
@@ -27,7 +49,7 @@ export default class NginxStatus extends React.Component<any, NginxStatusState> 
             .isRunning()
             .catch(() => undefined)
             .then(running => this.setState({
-                running,
+                running: running,
                 loading: false,
             }))
     }
@@ -83,7 +105,7 @@ export default class NginxStatus extends React.Component<any, NginxStatusState> 
         actionName: string,
         successMessage: string,
         errorMessage: string,
-        action: () => Promise<undefined>
+        action: () => Promise<void>,
     ) {
         this.setState(
             { loading: true },

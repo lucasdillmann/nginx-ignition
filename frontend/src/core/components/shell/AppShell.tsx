@@ -1,17 +1,11 @@
 import React, {PropsWithChildren} from "react";
-import {MenuFoldOutlined, MenuUnfoldOutlined} from "@ant-design/icons";
-import {Button, Layout, Menu} from "antd";
-import LocalStorageRepository from "../../repository/LocalStorageRepository";
+import {Layout, Menu} from "antd";
 import {MenuItemType} from "antd/es/menu/interface";
 import {NavLink} from "react-router-dom";
-import NginxService from "../../../domain/nginx/NginxService";
-import NginxStatus from "./NginxStatus";
+import NginxControl from "./NginxControl";
 import styles from "./AppShell.styles"
-const {Header, Sider, Content} = Layout;
-
-interface AppShellState {
-    collapsed: boolean,
-}
+import AppRoute from "../router/AppRoute";
+const {Sider, Content} = Layout;
 
 export interface AppShellMenuItem {
     icon: React.ReactNode
@@ -21,28 +15,10 @@ export interface AppShellMenuItem {
 
 export interface AppShellProps extends PropsWithChildren {
     menuItems: AppShellMenuItem[]
-    activeMenuItemPath?: string
+    activeRoute: AppRoute
 }
 
-export default class AppShell extends React.Component<AppShellProps, AppShellState> {
-    private repository: LocalStorageRepository<boolean>
-    private nginxService: NginxService
-
-    constructor(props: AppShellProps) {
-        super(props);
-        this.repository = new LocalStorageRepository("nginxIgnition.shell.collapsed")
-        this.nginxService = new NginxService()
-        this.state = {
-            collapsed: this.repository.getOrDefault(false),
-        }
-    }
-
-    private toggleCollapsed() {
-        const {collapsed} = this.state
-        this.repository.set(!collapsed)
-        this.setState({collapsed: !collapsed})
-    }
-
+export default class AppShell extends React.Component<AppShellProps> {
     private buildMenuItemsAdapters(): MenuItemType[] {
         const {menuItems} = this.props
         return menuItems.map(item => ({
@@ -53,19 +29,19 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
     }
 
     render() {
-        const {collapsed} = this.state
-        const {children, activeMenuItemPath} = this.props
+        const {children, activeRoute} = this.props
+        const activeMenuItemPath = activeRoute.activeMenuItemPath ?? activeRoute.path
 
         return (
             <Layout style={styles.container}>
-                <Sider trigger={null} width={250} collapsible collapsed={collapsed}>
+                <Sider trigger={null} width={250}>
                     <div style={styles.logo}>
                         <NavLink to="/" style={styles.logoLink}>
                             nginx ignition
                         </NavLink>
                     </div>
                     <div>
-                        <NginxStatus />
+                        <NginxControl />
                     </div>
                     <Menu
                         theme="dark"
@@ -75,14 +51,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                     />
                 </Sider>
                 <Layout>
-                    <Header style={styles.header}>
-                        <Button
-                            type="text"
-                            icon={collapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>}
-                            onClick={() => this.toggleCollapsed()}
-                            style={styles.toggleButton}
-                        />
-                    </Header>
+                    <h1 style={styles.title}>{activeRoute.title}</h1>
                     <Content style={styles.content}>
                         {children}
                     </Content>
