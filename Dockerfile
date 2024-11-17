@@ -5,7 +5,7 @@ WORKDIR /home/gradle/nginx-ignition
 RUN gradle assemble --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine AS runtime
-EXPOSE 8080:8080
+EXPOSE 8090:8090
 ENV NGINX_IGNITION_NGINX_BINARY_PATH="/usr/sbin/nginx"
 ENV NGINX_IGNITION_DATABASE_URL="jdbc:h2:/opt/nginx-ignition/data/nginx-ignition;DB_CLOSE_DELAY=-1"
 ENV NGINX_IGNITION_DATABASE_USERNAME="sa"

@@ -4,7 +4,7 @@ ktor:
     modules:
       - br.com.dillmann.nginxignition.application.ApplicationKt.module
   deployment:
-    port: 8080
+    port: 8090
 
 nginx-ignition:
   nginx:

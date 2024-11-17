@@ -6,6 +6,7 @@ import NotificationFacade from "../notification/NotificationFacade";
 import styles from "./NginxControl.styles"
 import {NginxEventListener} from "../../../domain/nginx/listener/NginxEventListener";
 import NginxEventDispatcher from "../../../domain/nginx/listener/NginxEventDispatcher";
+import UserConfirmation from "../confirmation/UserConfirmation";
 
 interface NginxStatusState {
     loading: boolean,
@@ -75,12 +76,18 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
     }
 
     private stopNginx() {
-        this.performNginxAction(
-            "Stop nginx",
-            "Nginx server was stopped successfully",
-            "Nginx server failed to stop. Please check the logs for more details.",
-            () => this.service.stop(),
-        )
+        UserConfirmation
+            .ask("Do you really want to stop the nginx server?")
+            .then(response => {
+                if (!response) return
+
+                this.performNginxAction(
+                    "Stop nginx",
+                    "Nginx server was stopped successfully",
+                    "Nginx server failed to stop. Please check the logs for more details.",
+                    () => this.service.stop(),
+                )
+            })
     }
 
     private reloadNginx() {

@@ -2,7 +2,7 @@ import React, {PropsWithChildren} from "react";
 import {Layout, Menu} from "antd";
 import {MenuItemType} from "antd/es/menu/interface";
 import {NavLink} from "react-router-dom";
-import NginxControl from "./NginxControl";
+import NginxControl from "../nginxcontrol/NginxControl";
 import styles from "./AppShell.styles"
 import AppRoute from "../router/AppRoute";
 const {Sider, Content} = Layout;
