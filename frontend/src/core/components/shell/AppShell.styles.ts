@@ -37,4 +37,10 @@ export default {
         color: "#FFF",
         fontSize: 22,
     },
+    menuItem: {
+        margin: "5px 10px",
+        padding: 10,
+        width: 230,
+        borderRadius: 4,
+    },
 } as StyleBook

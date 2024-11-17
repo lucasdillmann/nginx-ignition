@@ -9,4 +9,5 @@ interface CertificateRepository {
     suspend fun deleteById(id: UUID)
     suspend fun save(certificate: Certificate)
     suspend fun findPage(pageSize: Int, pageNumber: Int): Page<Certificate>
+    suspend fun findAllDueToRenew(): List<Certificate>
 }

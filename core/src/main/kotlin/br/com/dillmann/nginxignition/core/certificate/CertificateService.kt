@@ -4,15 +4,20 @@ import br.com.dillmann.nginxignition.core.certificate.command.*
 import br.com.dillmann.nginxignition.core.certificate.model.AvailableCertificateProvider
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProvider
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateRequest
+import br.com.dillmann.nginxignition.core.common.log.logger
 import br.com.dillmann.nginxignition.core.common.pagination.Page
+import br.com.dillmann.nginxignition.core.nginx.NginxService
 import java.util.*
 
 internal class CertificateService(
     private val repository: CertificateRepository,
     private val validator: CertificateValidator,
     private val providers: List<CertificateProvider>,
-): DeleteCertificateCommand, GetCertificateCommand, IssueCertificateCommand,
-   ListCertificateCommand, RenewCertificateCommand, GetAvailableProvidersCommand {
+    private val nginxService: NginxService,
+) : DeleteCertificateCommand, GetCertificateCommand, IssueCertificateCommand,
+    ListCertificateCommand, RenewCertificateCommand, GetAvailableProvidersCommand {
+    private val logger = logger<CertificateService>()
+
     override suspend fun deleteById(id: UUID) {
         repository.deleteById(id)
     }
@@ -46,12 +51,17 @@ internal class CertificateService(
             )
         }
 
+        val providerOutput = renew(certificate)
+        return RenewCertificateCommand.Output(providerOutput.success, providerOutput.errorReason)
+    }
+
+    private suspend fun renew(certificate: Certificate): CertificateProvider.Output {
         val provider = providers.first { it.uniqueId == certificate.providerId }
         val providerOutput = provider.renew(certificate)
         if (providerOutput.success)
             repository.save(providerOutput.certificate!!)
 
-        return RenewCertificateCommand.Output(providerOutput.success, providerOutput.errorReason)
+        return providerOutput
     }
 
     override suspend fun getAvailableProviders(): List<AvailableCertificateProvider> =
@@ -62,4 +72,24 @@ internal class CertificateService(
                 dynamicFields = it.dynamicFields,
             )
         }
+
+    suspend fun renewAllDue() {
+        val certificatesToRenew = repository.findAllDueToRenew()
+        if (certificatesToRenew.isEmpty()) {
+            logger.info("Certificates auto-renew triggered, but no certificates are due to be renewed yet")
+            return
+        }
+
+        logger.info("${certificatesToRenew.size} certificates due to be renewed")
+        certificatesToRenew.forEach { certificate ->
+            val providerOutput = renew(certificate)
+            if (providerOutput.success)
+                logger.info("Certificate ${certificate.id} renewed successfully")
+            else
+                logger.warn("Certificate ${certificate.id} failed to be renewed: ${providerOutput.errorReason}")
+        }
+
+        nginxService.reload()
+        logger.info("Certificate auto-renew cycle completed")
+    }
 }

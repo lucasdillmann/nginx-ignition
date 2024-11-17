@@ -159,7 +159,7 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
         const components = (
             <Flex style={styles.container} vertical>
                 <Flex wrap>
-                    <span>nginx status</span>
+                    <span>server status</span>
                 </Flex>
                 <Flex style={{ marginTop: 15 }} wrap>
                     <Flex style={{ width: "50%", height: 20 }} align="start" justify="start">

@@ -6,8 +6,10 @@ import br.com.dillmann.nginxignition.core.common.pagination.Page
 import br.com.dillmann.nginxignition.database.certificate.mapping.CertificateTable
 import br.com.dillmann.nginxignition.database.common.transaction.coTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.upsert
+import java.time.OffsetDateTime
 import java.util.*
 
 internal class CertificateDatabaseRepository(private val converter: CertificateConverter): CertificateRepository {
@@ -56,5 +58,17 @@ internal class CertificateDatabaseRepository(private val converter: CertificateC
                 pageSize = pageSize,
                 totalItems = totalCount,
             )
+        }
+
+    override suspend fun findAllDueToRenew(): List<Certificate> =
+        coTransaction {
+            CertificateTable
+                .select(CertificateTable.columns)
+                .where {
+                    val renewAfterNotNull = CertificateTable.renewAfter neq null
+                    val renewAfterInThePast = CertificateTable.renewAfter lessEq OffsetDateTime.now()
+                    renewAfterNotNull and renewAfterInThePast
+                }
+                .map { converter.toDomainModel(it) }
         }
 }

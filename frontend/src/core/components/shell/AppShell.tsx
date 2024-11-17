@@ -25,6 +25,7 @@ export default class AppShell extends React.Component<AppShellProps> {
             key: item.path,
             icon: item.icon,
             label: <NavLink to={item.path}>{item.description}</NavLink>,
+            style: styles.menuItem,
         }))
     }
 
