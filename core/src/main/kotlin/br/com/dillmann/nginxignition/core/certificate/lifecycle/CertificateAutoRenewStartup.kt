@@ -11,8 +11,6 @@ internal class CertificateAutoRenewStartup(
     private val configurationProvider: ConfigurationProvider,
     private val service: CertificateService,
 ): StartupCommand {
-    override val priority = 100
-
     override suspend fun execute() {
         val intervalMinutes =
             configurationProvider.get("nginx-ignition.certificate.auto-renew-interval-minutes").toLong()

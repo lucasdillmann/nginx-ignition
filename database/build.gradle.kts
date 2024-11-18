@@ -2,9 +2,9 @@ val h2Version: String by project
 val exposedVersion: String by project
 val mapStructVersion: String by project
 val postgresDriverVersion: String by project
-val mariaDbDriverVersion: String by project
 val kotlinSerializationVersion: String by project
 val hikariCpVersion: String by project
+val flywayVersion: String by project
 
 dependencies {
     implementation(project(":core"))
@@ -15,6 +15,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-json:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
     implementation("org.postgresql:postgresql:$postgresDriverVersion")
-    implementation("org.mariadb.jdbc:mariadb-java-client:$mariaDbDriverVersion")
     implementation("com.zaxxer:HikariCP:$hikariCpVersion")
+    implementation("org.flywaydb:flyway-core:10.21.0")
+    implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 }
