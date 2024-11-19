@@ -4,7 +4,7 @@ import br.com.dillmann.nginxignition.core.user.command.GetUserCommand
 import br.com.dillmann.nginxignition.api.common.authorization.Authorizer
 import br.com.dillmann.nginxignition.api.common.authorization.Subject
 
-class JwtAuthorizer(
+class RbacJwtAuthorizer(
     private val jwtFacade: RbacJwtFacade,
     private val getUser: GetUserCommand,
 ): Authorizer {
