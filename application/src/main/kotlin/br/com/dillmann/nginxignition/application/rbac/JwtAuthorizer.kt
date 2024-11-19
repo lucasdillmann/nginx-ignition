@@ -1,6 +1,5 @@
-package br.com.dillmann.nginxignition.application.api
+package br.com.dillmann.nginxignition.application.rbac
 
-import br.com.dillmann.nginxignition.application.rbac.RbacJwtFacade
 import br.com.dillmann.nginxignition.core.user.command.GetUserCommand
 import br.com.dillmann.nginxignition.api.common.authorization.Authorizer
 import br.com.dillmann.nginxignition.api.common.authorization.Subject
