@@ -1,4 +1,4 @@
-package br.com.dillmann.nginxignition.application.adapter
+package br.com.dillmann.nginxignition.application.api
 
 import br.com.dillmann.nginxignition.application.rbac.RbacJwtFacade
 import br.com.dillmann.nginxignition.core.user.command.GetUserCommand

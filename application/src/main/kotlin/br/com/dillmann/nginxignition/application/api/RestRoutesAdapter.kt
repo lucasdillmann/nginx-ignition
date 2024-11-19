@@ -1,4 +1,4 @@
-package br.com.dillmann.nginxignition.application.adapter
+package br.com.dillmann.nginxignition.application.api
 
 import br.com.dillmann.nginxignition.application.rbac.requireAuthentication
 import br.com.dillmann.nginxignition.application.rbac.requireRole

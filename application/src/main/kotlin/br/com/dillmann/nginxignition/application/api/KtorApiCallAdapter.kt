@@ -1,4 +1,4 @@
-package br.com.dillmann.nginxignition.application.adapter
+package br.com.dillmann.nginxignition.application.api
 
 import br.com.dillmann.nginxignition.api.common.authorization.Subject
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
