@@ -1,0 +1,27 @@
+.login-container {
+    margin: 0 auto;
+    width: 380px
+}
+
+.login-section {
+    align-items: center;
+    display: flex;
+}
+
+.login-title {
+    margin-top: 0;
+    font-size: 24px;
+}
+
+.login-header {
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+.login-text {
+    font-size: 14px;
+}
+
+.login-form-input {
+    margin-bottom: 10px;
+}

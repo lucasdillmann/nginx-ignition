@@ -6,7 +6,7 @@ import {Navigate} from "react-router-dom";
 import AppContext, {AppContextData} from "../../core/components/context/AppContext";
 import Preloader from "../../core/components/preloader/Preloader";
 import NotificationFacade from "../../core/components/notification/NotificationFacade";
-import styles from "./LoginPage.styles"
+import "./LoginPage.css"
 
 const {Text, Title} = Typography;
 
@@ -60,11 +60,11 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
         const inputStatus = attemptFailed ? "error" : undefined
 
         return (
-            <section style={styles.section}>
-                <div style={styles.container}>
-                    <div style={styles.header}>
-                        <Title style={styles.title}>nginx ignition</Title>
-                        <Text style={styles.text}>
+            <section className="login-section">
+                <div className="login-container">
+                    <div className="login-header">
+                        <Title className="login-title">nginx ignition</Title>
+                        <Text className="login-text">
                             Welcome back. Please enter your username and password to continue.
                         </Text>
                     </div>
@@ -73,7 +73,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                         layout="vertical"
                         requiredMark="optional"
                     >
-                        <Form.Item name="username" style={styles.formInput}>
+                        <Form.Item name="username" className="login-form-input">
                             <Input
                                 prefix={<UserOutlined/>}
                                 placeholder="Username"
@@ -112,14 +112,10 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
             return <Navigate to="/onboarding" />
         }
 
-        if (loading) {
-            return (
-                <Preloader>
-                    {this.renderForm()}
-                </Preloader>
-            )
-        }
-
-        return this.renderForm()
+        return (
+            <Preloader loading={loading}>
+                {this.renderForm()}
+            </Preloader>
+        )
     }
 }

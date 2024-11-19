@@ -12,7 +12,7 @@ export default class ApiClient {
     async get<T>(
         path?: string,
         headers?: Header[],
-        queryParams?: Map<string, string>,
+        queryParams?: { [key: string]: any },
     ): Promise<ApiResponse<T>> {
         const request = await this.buildRequest("GET", headers)
         const fullPath = this.buildFullPath(path, queryParams)
@@ -22,7 +22,7 @@ export default class ApiClient {
     async delete<T>(
         path?: string,
         headers?: Header[],
-        queryParams?: Map<string, string>,
+        queryParams?: { [key: string]: any },
     ): Promise<ApiResponse<T>> {
         const request = await this.buildRequest("DELETE", headers)
         const fullPath = this.buildFullPath(path, queryParams)
@@ -33,7 +33,7 @@ export default class ApiClient {
         path?: string,
         payload?: I,
         headers?: Header[],
-        queryParams?: Map<string, string>
+        queryParams?: { [key: string]: any },
     ): Promise<ApiResponse<O>> {
         const request = await this.buildRequest("POST", headers, payload)
         const fullPath = this.buildFullPath(path, queryParams)
@@ -44,7 +44,7 @@ export default class ApiClient {
         path?: string,
         payload?: I,
         headers?: Header[],
-        queryParams?: Map<string, string>
+        queryParams?: { [key: string]: any },
     ): Promise<ApiResponse<O>> {
         const request = await this.buildRequest("PUT", headers, payload)
         const fullPath = this.buildFullPath(path, queryParams)
@@ -70,15 +70,13 @@ export default class ApiClient {
         }
     }
 
-    private buildFullPath(path?: string, queryParams?: Map<string, string>): string {
-        const queryString = !queryParams
-            ? ""
-            : "?" +
-              Array.from(queryParams.entries())
-                  .map(([key, value]) => `${key}=${value}`)
-                  .join("&")
-        if (path == null) return this.basePath
-        else return `${this.basePath}${path}${queryString}`
+    private buildFullPath(path?: string, queryParams?: { [key: string]: any }): string {
+        const queryString  = Array
+            .from(Object.entries(queryParams ?? {}))
+            .map(([key, value]) => `${key}=${value}`)
+            .join("&")
+
+        return `${this.basePath}${path ?? ""}?${queryString}`
     }
 
     private async executeRequest<T>(path: string, request: RequestInit): Promise<ApiResponse<T>> {

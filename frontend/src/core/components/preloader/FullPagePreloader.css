@@ -1,0 +1,19 @@
+.preloader-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.preloader-text-container {
+    padding-left: 40px;
+}
+
+.preloader-title {
+    margin-bottom: 0;
+}
+
+.preloader-message {
+    margin-top: 0;
+}

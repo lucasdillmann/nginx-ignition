@@ -3,8 +3,8 @@ import {Layout, Menu} from "antd";
 import {MenuItemType} from "antd/es/menu/interface";
 import {NavLink} from "react-router-dom";
 import NginxControl from "../nginxcontrol/NginxControl";
-import styles from "./AppShell.styles"
 import AppRoute from "../router/AppRoute";
+import "./AppShell.css"
 const {Sider, Content} = Layout;
 
 export interface AppShellMenuItem {
@@ -25,7 +25,7 @@ export default class AppShell extends React.Component<AppShellProps> {
             key: item.path,
             icon: item.icon,
             label: <NavLink to={item.path}>{item.description}</NavLink>,
-            style: styles.menuItem,
+            className: "shell-menu-item",
         }))
     }
 
@@ -34,10 +34,10 @@ export default class AppShell extends React.Component<AppShellProps> {
         const activeMenuItemPath = activeRoute.activeMenuItemPath ?? activeRoute.path
 
         return (
-            <Layout style={styles.container}>
+            <Layout className="shell-container">
                 <Sider trigger={null} width={250}>
-                    <div style={styles.logo}>
-                        <NavLink to="/" style={styles.logoLink}>
+                    <div className="shell-logo">
+                        <NavLink to="/" className="shell-logo-link">
                             nginx ignition
                         </NavLink>
                     </div>
@@ -52,8 +52,8 @@ export default class AppShell extends React.Component<AppShellProps> {
                     />
                 </Sider>
                 <Layout>
-                    <h1 style={styles.title}>{activeRoute.title}</h1>
-                    <Content style={styles.content}>
+                    <h1 className="shell-title">{activeRoute.title}</h1>
+                    <Content className="shell-content">
                         {children}
                     </Content>
                 </Layout>

@@ -1,7 +1,7 @@
 import React from "react";
 import {Flex} from "antd";
 import Preloader from "./Preloader";
-import styles from "./FullPagePreloader.styles"
+import "./FullPagePreloader.css"
 
 export interface FullPagePreloaderProps {
     title?: string
@@ -14,12 +14,12 @@ export default class FullPagePreloader extends React.Component<FullPagePreloader
         const message = this.props.message ?? "Hang on tight, we're loading some stuff"
 
         return (
-            <Flex align="center" justify="center" style={styles.mainContainer}>
+            <Flex align="center" justify="center" className="preloader-container">
                 <Flex align="center">
-                    <Preloader />
-                    <Flex style={styles.textContainer} vertical>
-                        <h2 style={styles.title}>{title}</h2>
-                        <p style={styles.message}>{message}</p>
+                    <Preloader loading />
+                    <Flex className="preloader-text-container" vertical>
+                        <h2 className="preloader-title">{title}</h2>
+                        <p className="preloader-message">{message}</p>
                     </Flex>
                 </Flex>
             </Flex>

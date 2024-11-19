@@ -9,7 +9,7 @@ import ValidationResult from "../../core/validation/ValidationResult";
 import OnboardingService from "./OnboardingService";
 import {UnexpectedResponseError} from "../../core/apiclient/ApiResponse";
 import ValidationResultConverter from "../../core/validation/ValidationResultConverter";
-import styles from "./OnboardingPage.styles"
+import "./OnboardingPage.css"
 const {Text, Title} = Typography;
 
 interface OnboardingPageState {
@@ -68,11 +68,11 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
         const {validationResult, values} = this.state
 
         return (
-            <section style={styles.section}>
-                <div style={styles.container}>
-                    <div style={styles.header}>
-                    <Title style={styles.title}>nginx ignition</Title>
-                        <Text style={styles.text}>
+            <section className="onboarding-section">
+                <div className="onboarding-container">
+                    <div className="onboarding-header">
+                    <Title className="onboarding-title">nginx ignition</Title>
+                        <Text className="onboarding-text">
                             Welcome to the nginx ignition. This seems to be your first access, and we need to create
                             the first user of the application. Please fill the form below with your details and you
                             will be ready to go.
@@ -86,7 +86,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                             name="name"
                             validateStatus={validationResult.getStatus("name")}
                             help={validationResult.getMessage("name")}
-                            style={styles.formInput}
+                            className="onboarding-form-input"
                             initialValue={values.name}>
                             <Input
                                 prefix={<IdcardOutlined />}
@@ -98,7 +98,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                             name="username"
                             validateStatus={validationResult.getStatus("username")}
                             help={validationResult.getMessage("username")}
-                            style={styles.formInput}
+                            className="onboarding-form-input"
                             initialValue={values.username}>
                             <Input
                                 prefix={<UserOutlined />}
@@ -135,14 +135,10 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
             return <Navigate to="/" />
         }
 
-        if (loading) {
-            return (
-                <Preloader>
-                    {this.renderForm()}
-                </Preloader>
-            )
-        }
-
-        return this.renderForm()
+        return (
+            <Preloader loading={loading}>
+                {this.renderForm()}
+            </Preloader>
+        )
     }
 }

@@ -1,0 +1,20 @@
+.nginx-control-container {
+    padding: 10px 20px;
+    margin: 0 0 10px;
+    background: #032c53;
+    border-radius: 0;
+    color: #FFF;
+}
+
+.nginx-status {
+    margin-top: 15px;
+}
+
+.nginx-status-line {
+    width: 50%;
+    height: 20px;
+}
+
+.nginx-reload-button {
+    margin-left: 5px;
+}
