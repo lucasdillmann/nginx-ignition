@@ -1,7 +1,7 @@
 package br.com.dillmann.nginxignition.core.nginx.configuration
 
 import br.com.dillmann.nginxignition.core.common.log.logger
-import br.com.dillmann.nginxignition.core.common.provider.ConfigurationProvider
+import br.com.dillmann.nginxignition.core.common.configuration.ConfigurationProvider
 import br.com.dillmann.nginxignition.core.host.HostService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

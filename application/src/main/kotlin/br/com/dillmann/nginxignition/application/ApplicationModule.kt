@@ -1,14 +1,12 @@
 package br.com.dillmann.nginxignition.application
 
-import br.com.dillmann.nginxignition.application.common.exception.ConsistencyExceptionHandler
-import br.com.dillmann.nginxignition.application.common.lifecycle.LifecycleManager
-import br.com.dillmann.nginxignition.application.common.provider.CompositeConfigurationProvider
-import br.com.dillmann.nginxignition.application.common.rbac.RbacJwtFacade
-import br.com.dillmann.nginxignition.application.controller.certificate.certificateBeans
-import br.com.dillmann.nginxignition.application.controller.host.hostBeans
-import br.com.dillmann.nginxignition.application.controller.nginx.nginxBeans
-import br.com.dillmann.nginxignition.application.controller.user.userBeans
-import br.com.dillmann.nginxignition.core.common.provider.ConfigurationProvider
+import br.com.dillmann.nginxignition.application.exception.ConsistencyExceptionHandler
+import br.com.dillmann.nginxignition.application.lifecycle.LifecycleManager
+import br.com.dillmann.nginxignition.application.provider.CompositeConfigurationProvider
+import br.com.dillmann.nginxignition.application.rbac.RbacJwtFacade
+import br.com.dillmann.nginxignition.application.adapter.JwtAuthorizer
+import br.com.dillmann.nginxignition.core.common.configuration.ConfigurationProvider
+import br.com.dillmann.nginxignition.api.common.authorization.Authorizer
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -16,13 +14,9 @@ object ApplicationModule {
     fun initialize() =
         module {
             single { CompositeConfigurationProvider() } bind ConfigurationProvider::class
+            single { JwtAuthorizer(get(), get()) } bind Authorizer::class
             single { LifecycleManager(getAll(), getAll()) }
             single { RbacJwtFacade(get(), get(), get()) }
             single { ConsistencyExceptionHandler() }
-
-            certificateBeans()
-            hostBeans()
-            nginxBeans()
-            userBeans()
         }
 }

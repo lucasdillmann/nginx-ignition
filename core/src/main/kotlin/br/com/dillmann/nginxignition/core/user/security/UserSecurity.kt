@@ -1,6 +1,6 @@
 package br.com.dillmann.nginxignition.core.user.security
 
-import br.com.dillmann.nginxignition.core.common.provider.ConfigurationProvider
+import br.com.dillmann.nginxignition.core.common.configuration.ConfigurationProvider
 import java.security.MessageDigest
 import java.security.SecureRandom
 import kotlin.io.encoding.Base64

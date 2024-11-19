@@ -4,7 +4,7 @@ import br.com.dillmann.nginxignition.core.certificate.Certificate
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProvider
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateRequest
 import br.com.dillmann.nginxignition.core.common.log.logger
-import br.com.dillmann.nginxignition.core.common.provider.ConfigurationProvider
+import br.com.dillmann.nginxignition.core.common.configuration.ConfigurationProvider
 import br.com.dillmann.nginxignition.certificate.acme.AcmeIssuer
 import br.com.dillmann.nginxignition.certificate.acme.dns.DnsProviderAdapter
 import br.com.dillmann.nginxignition.certificate.commons.CertificateConstants

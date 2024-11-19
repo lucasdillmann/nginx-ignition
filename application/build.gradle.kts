@@ -21,6 +21,7 @@ dependencies {
     implementation(project(":self-signed-certificate"))
     implementation(project(":acme-certificate"))
     implementation(project(":frontend"))
+    implementation(project(":api"))
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-auth-jvm")
     implementation("io.ktor:ktor-server-auth-jwt-jvm")

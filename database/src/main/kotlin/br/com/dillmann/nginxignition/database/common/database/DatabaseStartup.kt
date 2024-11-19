@@ -2,7 +2,7 @@ package br.com.dillmann.nginxignition.database.common.database
 
 import br.com.dillmann.nginxignition.core.common.lifecycle.StartupCommand
 import br.com.dillmann.nginxignition.core.common.log.logger
-import br.com.dillmann.nginxignition.core.common.provider.ConfigurationProvider
+import br.com.dillmann.nginxignition.core.common.configuration.ConfigurationProvider
 import com.zaxxer.hikari.HikariDataSource
 import org.h2.Driver as H2Driver
 import org.jetbrains.exposed.sql.Database

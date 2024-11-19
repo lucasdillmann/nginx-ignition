@@ -8,6 +8,7 @@ include(
     "database",
     "application",
     "frontend",
+    "api",
     "certificate-commons",
     "acme-certificate",
     "custom-certificate",
