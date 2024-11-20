@@ -66,9 +66,9 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
             )
         }
 
-    override suspend fun findAll(): List<Host> =
+    override suspend fun findAllEnabled(): List<Host> =
         coTransaction {
-            findHosts(null, null)
+            findHosts(null, null) { HostTable.enabled eq true }
         }
 
     private suspend fun findOneWhere(expression: SqlExpressionBuilder.() -> Op<Boolean>): Host? =
@@ -83,15 +83,22 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
             converter.toHost(host, bindings, routes)
         }
 
-    private fun findHosts(pageSize: Int?, pageNumber: Int?): List<Host> =
+    private fun findHosts(
+        pageSize: Int?,
+        pageNumber: Int?,
+        predicate: (SqlExpressionBuilder.() -> Op<Boolean>)? = null,
+    ): List<Host> =
         HostTable
             .select(HostTable.fields)
             .also {
                 if (pageSize != null && pageNumber != null) {
                     it.limit(pageSize, pageSize.toLong() * pageNumber)
                 }
-            }
 
+                if (predicate != null) {
+                    it.where(predicate)
+                }
+            }
             .orderBy(HostTable.id)
             .toList()
             .map { host ->

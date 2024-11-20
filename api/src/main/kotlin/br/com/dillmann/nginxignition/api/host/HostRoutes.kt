@@ -9,15 +9,17 @@ internal class HostRoutes(
     private val putByIdHandler: UpdateHostByIdHandler,
     private val deleteByIdHandler: DeleteHostByIdHandler,
     private val postHandler: CreateHostHandler,
+    private val toggleEnabledHandler: ToggleHostEnabledByIdHandler,
 ): RouteProvider {
     override fun apiRoutes(): RouteNode =
         routes("/api/hosts") {
             requireAuthentication {
                 get(listHandler)
+                post(postHandler)
                 get("/{id}", getByIdHandler)
                 put("/{id}", putByIdHandler)
                 delete("/{id}", deleteByIdHandler)
-                post(postHandler)
+                post("/{id}/toggle-enabled", toggleEnabledHandler)
                 get("/{id}/access-logs") { TODO() }
                 get("/{id}/error-logs") { TODO() }
             }

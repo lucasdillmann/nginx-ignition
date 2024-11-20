@@ -11,7 +11,7 @@ export default class OnboardingService {
         this.gateway = new UserGateway()
     }
 
-    finish(name: string, username: string, password: string): Promise<any> {
+    async finish(name: string, username: string, password: string): Promise<any> {
         const request: UserRequest = {
             name: name ?? "",
             username: username ?? "",

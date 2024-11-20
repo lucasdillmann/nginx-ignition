@@ -10,15 +10,16 @@ export default class HostService {
         this.gateway = new HostGateway()
     }
 
-    list(pageSize?: number, pageNumber?: number): Promise<PageResponse<HostResponse>> {
+    async list(pageSize?: number, pageNumber?: number): Promise<PageResponse<HostResponse>> {
         return this.gateway.getPage(pageSize, pageNumber).then(requireSuccessPayload)
     }
 
-    delete(id: string): Promise<void> {
+    async delete(id: string): Promise<void> {
         return this.gateway.delete(id).then(requireSuccessResponse)
     }
 
-    toggleStatus(id: string): Promise<void> {
-        return this.gateway.toggleStatus(id).then(requireSuccessResponse)
+    async toggleEnabled(id: string): Promise<void> {
+        const response = await this.gateway.toggleEnabled(id);
+        return requireSuccessResponse(response);
     }
 }

@@ -10,7 +10,7 @@ export default class LoginService {
         this.gateway = new UserGateway()
     }
 
-    login(username: string, password: string): Promise<any> {
+    async login(username: string, password: string): Promise<any> {
         const request: UserLoginRequest = { username, password }
         return this.gateway
             .login(request)

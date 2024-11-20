@@ -10,6 +10,7 @@ import "./HostListPage.css"
 import {Link} from "react-router-dom";
 import UserConfirmation from "../../core/components/confirmation/UserConfirmation";
 import NotificationFacade from "../../core/components/notification/NotificationFacade";
+import NginxReload from "../../core/components/nginx/NginxReload";
 
 const MAXIMUM_DOMAIN_NAMES = 3
 
@@ -80,12 +81,13 @@ export default class HostListPage extends React.PureComponent {
         const action = host.enabled ? "disable" : "enable"
         UserConfirmation
             .ask(`Do you really want to ${action} the host?`)
-            .then(() => this.service.toggleStatus(host.id))
+            .then(() => this.service.toggleEnabled(host.id))
             .then(() => NotificationFacade.success(
                 `Host ${action}d`,
                 `The host was ${action}d successfully`,
             ))
             .then(() => this.table.current?.refresh())
+            .then(() => NginxReload.ask())
             .catch(() => NotificationFacade.error(
                 `Unable to ${action} the host`,
                 `An unexpected error was found while trying to ${action} the host. Please try again later.`,
@@ -101,6 +103,7 @@ export default class HostListPage extends React.PureComponent {
                 `The host was deleted successfully`,
             ))
             .then(() => this.table.current?.refresh())
+            .then(() => NginxReload.ask())
             .catch(() => NotificationFacade.error(
                 `Unable to delete the host`,
                 `An unexpected error was found while trying to delete the host. Please try again later.`,

@@ -16,7 +16,7 @@ internal class NginxConfigurationFacade(
     private val configurationProvider = configurationProvider.withPrefix("nginx-ignition.nginx")
 
     suspend fun replaceConfigurationFiles() {
-        val hosts = hostService.getAll()
+        val hosts = hostService.getAllEnabled()
         logger.info("Rebuilding nginx configuration files for ${hosts.size} hosts")
 
         val basePath = configurationProvider.get("config-directory")

@@ -26,6 +26,6 @@ internal class HostService(
     override suspend fun getById(id: UUID): Host? =
         repository.findById(id)
 
-    suspend fun getAll(): List<Host> =
-        repository.findAll()
+    suspend fun getAllEnabled(): List<Host> =
+        repository.findAllEnabled()
 }

@@ -14,5 +14,6 @@ internal fun Module.hostBeans() {
     single { ListHostsHandler(get(), get()) }
     single { UpdateHostByIdHandler(get(), get()) }
     single { CreateHostHandler(get(), get()) }
-    single { HostRoutes(get(), get(), get(), get(), get()) } bind RouteProvider::class
+    single { ToggleHostEnabledByIdHandler(get(), get()) }
+    single { HostRoutes(get(), get(), get(), get(), get(), get()) } bind RouteProvider::class
 }

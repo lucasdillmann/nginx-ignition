@@ -13,19 +13,19 @@ export default class UserGateway {
         this.client = new ApiClient("/api/users")
     }
 
-    getCurrent(): Promise<ApiResponse<UserResponse>> {
+    async getCurrent(): Promise<ApiResponse<UserResponse>> {
         return this.client.get<UserResponse>("/current")
     }
 
-    getOnboardingStatus(): Promise<ApiResponse<UserOnboardingStatusResponse>> {
+    async getOnboardingStatus(): Promise<ApiResponse<UserOnboardingStatusResponse>> {
         return this.client.get<UserOnboardingStatusResponse>("/onboarding/status")
     }
 
-    finishOnboarding(request: UserRequest): Promise<ApiResponse<UserLoginResponse>> {
+    async finishOnboarding(request: UserRequest): Promise<ApiResponse<UserLoginResponse>> {
         return this.client.post("/onboarding/finish", request)
     }
 
-    login(request: UserLoginRequest): Promise<ApiResponse<UserLoginResponse>> {
+    async login(request: UserLoginRequest): Promise<ApiResponse<UserLoginResponse>> {
         return this.client.post("/login", request)
     }
 }
