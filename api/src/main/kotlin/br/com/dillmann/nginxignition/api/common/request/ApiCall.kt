@@ -5,7 +5,7 @@ import kotlin.reflect.KClass
 
 interface ApiCall {
     suspend fun <T: Any> payload(contract: KClass<T>): T
-    suspend fun respond(status: HttpStatus = HttpStatus.NO_CONTENT, payload: Any? = null)
+    suspend fun respond(status: HttpStatus, payload: Any? = null)
     suspend fun headers(): Map<String, List<String>>
     suspend fun queryParams(): Map<String, String>
     suspend fun pathVariables(): Map<String, String>

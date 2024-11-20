@@ -1,6 +1,6 @@
 package br.com.dillmann.nginxignition.api.host.model
 
-import br.com.dillmann.nginxignition.application.common.pagination.PageResponse
+import br.com.dillmann.nginxignition.api.common.pagination.PageResponse
 import br.com.dillmann.nginxignition.core.common.pagination.Page
 import br.com.dillmann.nginxignition.core.host.Host
 import org.mapstruct.Mapper

@@ -1,6 +1,6 @@
 package br.com.dillmann.nginxignition.api.certificate.model
 
-import br.com.dillmann.nginxignition.application.common.pagination.PageResponse
+import br.com.dillmann.nginxignition.api.common.pagination.PageResponse
 import br.com.dillmann.nginxignition.core.certificate.Certificate
 import br.com.dillmann.nginxignition.core.certificate.command.IssueCertificateCommand
 import br.com.dillmann.nginxignition.core.certificate.command.RenewCertificateCommand

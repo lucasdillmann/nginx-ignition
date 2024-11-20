@@ -1,6 +1,6 @@
 package br.com.dillmann.nginxignition.api.user.model
 
-import br.com.dillmann.nginxignition.application.common.pagination.PageResponse
+import br.com.dillmann.nginxignition.api.common.pagination.PageResponse
 import br.com.dillmann.nginxignition.core.common.pagination.Page
 import br.com.dillmann.nginxignition.core.user.User
 import br.com.dillmann.nginxignition.core.user.model.SaveUserRequest
