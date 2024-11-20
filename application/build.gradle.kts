@@ -39,3 +39,9 @@ dependencies {
     implementation("org.mapstruct:mapstruct:$mapStructVersion")
     kapt("org.mapstruct:mapstruct-processor:$mapStructVersion")
 }
+
+tasks {
+    shadowJar {
+        mergeServiceFiles()
+    }
+}

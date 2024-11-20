@@ -44,6 +44,7 @@ internal class MigrationsService {
             .failOnMissingLocations(true)
             .locations("classpath:migrations/$databaseId")
             .executeInTransaction(true)
+            .communityDBSupportEnabled(true)
             .load()
             .migrate()
     }
