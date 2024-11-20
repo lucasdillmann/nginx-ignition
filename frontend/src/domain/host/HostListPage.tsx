@@ -4,15 +4,13 @@ import HostResponse from "./model/HostResponse";
 import PageResponse from "../../core/pagination/PageResponse";
 import HostService from "./HostService";
 import DataTableRenderers from "../../core/components/datatable/DataTableRenderers";
-import {Tag} from "antd";
 import {EditOutlined, PoweroffOutlined, DeleteOutlined} from "@ant-design/icons";
 import "./HostListPage.css"
 import {Link} from "react-router-dom";
 import UserConfirmation from "../../core/components/confirmation/UserConfirmation";
 import NotificationFacade from "../../core/components/notification/NotificationFacade";
 import NginxReload from "../../core/components/nginx/NginxReload";
-
-const MAXIMUM_DOMAIN_NAMES = 3
+import TagGroup from "../../core/components/taggroup/TagGroup";
 
 export default class HostListPage extends React.PureComponent {
     private readonly service: HostService
@@ -29,18 +27,7 @@ export default class HostListPage extends React.PureComponent {
             {
                 id: "domainNames",
                 description: "Domain names",
-                renderer: ({domainNames}) => {
-                    const tags = domainNames
-                        .slice(0, MAXIMUM_DOMAIN_NAMES)
-                        .map(name => <Tag>{name}</Tag>)
-                    const additionalMessage = domainNames.length > MAXIMUM_DOMAIN_NAMES
-                        ? `and ${domainNames.length - MAXIMUM_DOMAIN_NAMES} more`
-                        : ""
-
-                    return (
-                        <>{tags} {additionalMessage}</>
-                    )
-                },
+                renderer: (item) => <TagGroup values={item.domainNames} />,
             },
             {
                 id: "default",
