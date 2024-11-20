@@ -1,0 +1,23 @@
+.error-page-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.error-page-text-container {
+    padding-left: 40px;
+}
+
+.error-page-title {
+    margin-bottom: 0;
+}
+
+.error-page-message {
+    margin-top: 0;
+}
+
+.error-page-details-button {
+    margin-top: 10px;
+}

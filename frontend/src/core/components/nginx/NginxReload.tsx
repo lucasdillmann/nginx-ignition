@@ -42,7 +42,7 @@ class NginxReload {
                     if (skipRef.current?.input?.checked)
                         this.repository.set(true)
 
-                    this.reload().then(resolve)
+                    return this.reload().then(resolve)
                 },
                 type: "confirm",
                 title: "Reload nginx configuration?",

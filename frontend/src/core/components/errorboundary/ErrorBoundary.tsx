@@ -1,4 +1,5 @@
 import React, {PropsWithChildren} from "react";
+import FullPageError from "../error/FullPageError";
 
 interface ErrorBoundaryState {
     error?: Error
@@ -20,14 +21,6 @@ export default class ErrorBoundary extends React.Component<PropsWithChildren, Er
     render() {
         const { error } = this.state
         const { children } = this.props
-
-        if (error === undefined) {
-            return children
-        }
-
-        // TODO: Improve this
-        return (
-            <p>Fatal error: ${error.message}</p>
-        )
+        return error === undefined ? children : <FullPageError error={error} />
     }
 }
