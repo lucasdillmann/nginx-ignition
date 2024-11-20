@@ -38,7 +38,7 @@ private fun Route.install(node: RouteNode) {
         is HandlerRouteNode ->
             route(
                 path = node.path ?: "",
-                method = HttpMethod.parse(node.verb.name),
+                method = HttpMethod.parse(node.method.name),
             ) {
                 handle {
                     val callAdapter = KtorApiCallAdapter(call)

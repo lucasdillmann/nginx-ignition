@@ -1,41 +1,41 @@
 package br.com.dillmann.nginxignition.api.common.routing
 
 import br.com.dillmann.nginxignition.core.user.User
-import br.com.dillmann.nginxignition.api.common.request.HttpVerb
+import br.com.dillmann.nginxignition.api.common.request.HttpMethod
 import br.com.dillmann.nginxignition.api.common.request.handler.RequestHandler
 
 internal typealias RouteConfigurer = RouteNodeBuilder.() -> Unit
 
 internal class RouteNodeBuilder(private val parent: CompositeRouteNode) {
     fun get(path: String, handler: RequestHandler) =
-        configureHandlerNode(HttpVerb.GET, path, handler)
+        configureHandlerNode(HttpMethod.GET, path, handler)
 
     fun get(handler: RequestHandler) =
-        configureHandlerNode(HttpVerb.GET, null, handler)
+        configureHandlerNode(HttpMethod.GET, null, handler)
 
     fun post(path: String, handler: RequestHandler) =
-        configureHandlerNode(HttpVerb.POST, path, handler)
+        configureHandlerNode(HttpMethod.POST, path, handler)
 
     fun post(handler: RequestHandler) =
-        configureHandlerNode(HttpVerb.POST, null, handler)
+        configureHandlerNode(HttpMethod.POST, null, handler)
 
     fun put(path: String, handler: RequestHandler) =
-        configureHandlerNode(HttpVerb.PUT, path, handler)
+        configureHandlerNode(HttpMethod.PUT, path, handler)
 
     fun put(handler: RequestHandler) =
-        configureHandlerNode(HttpVerb.PUT, null, handler)
+        configureHandlerNode(HttpMethod.PUT, null, handler)
 
     fun delete(path: String, handler: RequestHandler) =
-        configureHandlerNode(HttpVerb.DELETE, path, handler)
+        configureHandlerNode(HttpMethod.DELETE, path, handler)
 
     fun delete(handler: RequestHandler) =
-        configureHandlerNode(HttpVerb.DELETE, null, handler)
+        configureHandlerNode(HttpMethod.DELETE, null, handler)
 
     fun patch(path: String, handler: RequestHandler) =
-        configureHandlerNode(HttpVerb.PATCH, path, handler)
+        configureHandlerNode(HttpMethod.PATCH, path, handler)
 
     fun patch(handler: RequestHandler) =
-        configureHandlerNode(HttpVerb.PATCH, null, handler)
+        configureHandlerNode(HttpMethod.PATCH, null, handler)
 
     fun requireAuthentication(configurer: RouteConfigurer) =
         configureCompositeNode(AuthenticationRequiredRouteNode(), configurer)
@@ -51,8 +51,8 @@ internal class RouteNodeBuilder(private val parent: CompositeRouteNode) {
         parent.addChild(child)
     }
 
-    private fun configureHandlerNode(verb: HttpVerb, path: String?, handler: RequestHandler) {
-        val route = HandlerRouteNode(verb, path, handler)
+    private fun configureHandlerNode(method: HttpMethod, path: String?, handler: RequestHandler) {
+        val route = HandlerRouteNode(method, path, handler)
         parent.addChild(route)
     }
 }
