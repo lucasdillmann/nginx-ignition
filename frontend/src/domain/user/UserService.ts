@@ -1,7 +1,8 @@
 import UserGateway from "./UserGateway";
 import UserResponse from "./model/UserResponse";
 import UserOnboardingStatusResponse from "./model/UserOnboardingStatusResponse";
-import {requireSuccessPayload} from "../../core/apiclient/ApiResponse";
+import {requireSuccessPayload, requireSuccessResponse} from "../../core/apiclient/ApiResponse";
+import PageResponse from "../../core/pagination/PageResponse";
 
 export default class UserService {
     private gateway: UserGateway
@@ -19,5 +20,13 @@ export default class UserService {
 
     async onboardingStatus(): Promise<UserOnboardingStatusResponse> {
         return this.gateway.getOnboardingStatus().then(requireSuccessPayload)
+    }
+
+    async list(pageSize?: number, pageNumber?: number): Promise<PageResponse<UserResponse>> {
+        return this.gateway.getPage(pageSize, pageNumber).then(requireSuccessPayload)
+    }
+
+    async delete(id: string): Promise<void> {
+        return this.gateway.deleteById(id).then(requireSuccessResponse)
     }
 }

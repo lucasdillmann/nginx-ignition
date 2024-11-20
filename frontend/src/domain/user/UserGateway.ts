@@ -5,6 +5,7 @@ import UserLoginRequest from "./model/UserLoginRequest";
 import UserLoginResponse from "./model/UserLoginResponse";
 import UserOnboardingStatusResponse from "./model/UserOnboardingStatusResponse";
 import UserRequest from "./model/UserRequest";
+import PageResponse from "../../core/pagination/PageResponse";
 
 export default class UserGateway {
     private client: ApiClient
@@ -27,5 +28,13 @@ export default class UserGateway {
 
     async login(request: UserLoginRequest): Promise<ApiResponse<UserLoginResponse>> {
         return this.client.post("/login", request)
+    }
+
+    async getPage(pageSize?: number, pageNumber?: number): Promise<ApiResponse<PageResponse<UserResponse>>> {
+        return this.client.get(undefined, undefined, { pageSize, pageNumber })
+    }
+
+    async deleteById(id: string): Promise<ApiResponse<void>> {
+        return this.client.delete(`/${id}`)
     }
 }
