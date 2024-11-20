@@ -9,6 +9,7 @@ import br.com.dillmann.nginxignition.api.common.authorization.Subject
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
 import br.com.dillmann.nginxignition.api.common.request.payload
+import br.com.dillmann.nginxignition.api.common.request.respond
 
 internal class UserLoginHandler(
     private val authenticateCommand: AuthenticateUserCommand,

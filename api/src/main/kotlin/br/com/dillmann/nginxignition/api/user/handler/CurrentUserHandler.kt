@@ -5,6 +5,7 @@ import br.com.dillmann.nginxignition.api.user.model.UserConverter
 import br.com.dillmann.nginxignition.core.user.command.GetUserCommand
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
+import br.com.dillmann.nginxignition.api.common.request.respond
 
 internal class CurrentUserHandler(
     private val getUserCommand: GetUserCommand,

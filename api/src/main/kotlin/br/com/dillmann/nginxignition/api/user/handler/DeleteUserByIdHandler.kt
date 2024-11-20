@@ -4,6 +4,7 @@ import br.com.dillmann.nginxignition.api.common.request.handler.IdAwareRequestHa
 import br.com.dillmann.nginxignition.core.user.command.DeleteUserCommand
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
+import br.com.dillmann.nginxignition.api.common.request.respond
 import java.util.*
 
 internal class DeleteUserByIdHandler(

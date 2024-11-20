@@ -5,6 +5,7 @@ import br.com.dillmann.nginxignition.core.host.command.ListHostCommand
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
 import br.com.dillmann.nginxignition.api.common.request.handler.PageAwareRequestHandler
+import br.com.dillmann.nginxignition.api.common.request.respond
 
 internal class ListHostsHandler(
     private val listCommand: ListHostCommand,

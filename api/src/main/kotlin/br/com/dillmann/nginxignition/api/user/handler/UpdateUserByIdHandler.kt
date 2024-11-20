@@ -7,6 +7,7 @@ import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
 import br.com.dillmann.nginxignition.api.common.request.handler.IdAwareRequestHandler
 import br.com.dillmann.nginxignition.api.common.request.payload
+import br.com.dillmann.nginxignition.api.common.request.respond
 import java.util.*
 
 internal class UpdateUserByIdHandler(

@@ -5,6 +5,7 @@ import br.com.dillmann.nginxignition.core.certificate.command.GetAvailableProvid
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
 import br.com.dillmann.nginxignition.api.common.request.handler.RequestHandler
+import br.com.dillmann.nginxignition.api.common.request.respond
 
 internal class ListAvailableProvidersHandler(
     private val listProvidersCommand: GetAvailableProvidersCommand,

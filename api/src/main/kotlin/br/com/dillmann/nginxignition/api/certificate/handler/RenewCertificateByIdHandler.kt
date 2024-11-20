@@ -5,6 +5,7 @@ import br.com.dillmann.nginxignition.core.certificate.command.RenewCertificateCo
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
 import br.com.dillmann.nginxignition.api.common.request.handler.IdAwareRequestHandler
+import br.com.dillmann.nginxignition.api.common.request.respond
 import java.util.UUID
 
 internal class RenewCertificateByIdHandler(

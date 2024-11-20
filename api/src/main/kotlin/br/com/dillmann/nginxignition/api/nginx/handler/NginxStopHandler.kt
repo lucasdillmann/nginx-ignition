@@ -7,6 +7,7 @@ import br.com.dillmann.nginxignition.core.nginx.exception.NginxCommandException
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
 import br.com.dillmann.nginxignition.api.common.request.handler.RequestHandler
+import br.com.dillmann.nginxignition.api.common.request.respond
 
 internal class NginxStopHandler(
     private val stopCommand: StopNginxCommand,

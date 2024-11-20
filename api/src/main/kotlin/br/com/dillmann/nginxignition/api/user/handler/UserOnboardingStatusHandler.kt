@@ -5,6 +5,7 @@ import br.com.dillmann.nginxignition.api.user.model.UserOnboardingStatusResponse
 import br.com.dillmann.nginxignition.core.user.command.GetUserCountCommand
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
+import br.com.dillmann.nginxignition.api.common.request.respond
 
 internal class UserOnboardingStatusHandler(private val userCountCommand: GetUserCountCommand): RequestHandler {
     override suspend fun handle(call: ApiCall) {

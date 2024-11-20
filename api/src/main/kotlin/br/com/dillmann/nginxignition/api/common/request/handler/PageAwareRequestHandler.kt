@@ -2,6 +2,7 @@ package br.com.dillmann.nginxignition.api.common.request.handler
 
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
+import br.com.dillmann.nginxignition.api.common.request.respond
 
 internal interface PageAwareRequestHandler: RequestHandler {
     private companion object {
