@@ -3,6 +3,7 @@ import React from "react";
 import AppContext from "../context/AppContext";
 import {RouteObject, createBrowserRouter, RouterProvider, Navigate} from "react-router-dom";
 import AppShell, {AppShellMenuItem} from "../shell/AppShell";
+import ErrorBoundary from "../errorboundary/ErrorBoundary";
 
 export interface AppRouterProps {
     routes: AppRoute[]
@@ -48,12 +49,14 @@ export default class AppRouter extends React.Component<AppRouterProps> {
         }
 
         return (
-            <AppShell
-                menuItems={this.buildMenuItemsAdapter()}
-                activeRoute={route}
-            >
-                {component}
-            </AppShell>
+            <ErrorBoundary>
+                <AppShell
+                    menuItems={this.buildMenuItemsAdapter()}
+                    activeRoute={route}
+                >
+                    {component}
+                </AppShell>
+            </ErrorBoundary>
         )
     }
 
@@ -64,6 +67,7 @@ export default class AppRouter extends React.Component<AppRouterProps> {
             .map(route => ({
                 path: route.path,
                 element: this.buildRouteComponent(route),
+                hasErrorBoundary: true,
             }))
     }
 

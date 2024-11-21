@@ -2,7 +2,7 @@ import React from "react";
 import {Badge, Button, ConfigProvider, Flex} from "antd";
 import Preloader from "../preloader/Preloader";
 import NginxService from "../../../domain/nginx/NginxService";
-import NotificationFacade from "../notification/NotificationFacade";
+import Notification from "../notification/Notification";
 import {NginxEventListener} from "../../../domain/nginx/listener/NginxEventListener";
 import NginxEventDispatcher from "../../../domain/nginx/listener/NginxEventDispatcher";
 import UserConfirmation from "../confirmation/UserConfirmation";
@@ -116,8 +116,8 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
             { loading: true },
             () => {
                 action()
-                    .then(() => NotificationFacade.success(actionName, successMessage))
-                    .catch(() => NotificationFacade.error(actionName, errorMessage))
+                    .then(() => Notification.success(actionName, successMessage))
+                    .catch(() => Notification.error(actionName, errorMessage))
                     .then(() => this.refreshNginxStatus())
             }
         )

@@ -5,7 +5,7 @@ import LoginService from "./LoginService";
 import {Navigate} from "react-router-dom";
 import AppContext, {AppContextData} from "../../core/components/context/AppContext";
 import Preloader from "../../core/components/preloader/Preloader";
-import NotificationFacade from "../../core/components/notification/NotificationFacade";
+import Notification from "../../core/components/notification/Notification";
 import "./LoginPage.css"
 
 const {Text, Title} = Typography;
@@ -49,7 +49,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
 
     private handleLoginError() {
         this.setState({attemptFailed: true})
-        NotificationFacade.error(
+        Notification.error(
             "Login failed",
             "Please check your username and password.",
         )

@@ -44,7 +44,7 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
     render() {
         const title = this.props.title ?? "Well, that didn't work"
         const message =
-            this.props.message ?? "We've found an error and don't know what to do with it. " +
+            this.props.message ?? "We ran into an error and don't know what to do with it. " +
             "Please refresh the page and try again."
 
         return (

@@ -8,11 +8,12 @@ import {EditOutlined, PoweroffOutlined, DeleteOutlined} from "@ant-design/icons"
 import "./HostListPage.css"
 import {Link} from "react-router-dom";
 import UserConfirmation from "../../core/components/confirmation/UserConfirmation";
-import NotificationFacade from "../../core/components/notification/NotificationFacade";
+import Notification from "../../core/components/notification/Notification";
 import NginxReload from "../../core/components/nginx/NginxReload";
 import TagGroup from "../../core/components/taggroup/TagGroup";
+import ShellAwareComponent, {ShellConfig} from "../../core/components/shell/ShellAwareComponent";
 
-export default class HostListPage extends React.PureComponent {
+export default class HostListPage extends ShellAwareComponent {
     private readonly service: HostService
     private readonly table: React.RefObject<DataTable<HostResponse>>
 
@@ -69,13 +70,13 @@ export default class HostListPage extends React.PureComponent {
         UserConfirmation
             .ask(`Do you really want to ${action} the host?`)
             .then(() => this.service.toggleEnabled(host.id))
-            .then(() => NotificationFacade.success(
+            .then(() => Notification.success(
                 `Host ${action}d`,
                 `The host was ${action}d successfully`,
             ))
             .then(() => this.table.current?.refresh())
             .then(() => NginxReload.ask())
-            .catch(() => NotificationFacade.error(
+            .catch(() => Notification.error(
                 `Unable to ${action} the host`,
                 `An unexpected error was found while trying to ${action} the host. Please try again later.`,
             ))
@@ -85,13 +86,13 @@ export default class HostListPage extends React.PureComponent {
         UserConfirmation
             .ask("Do you really want to delete the host?")
             .then(() => this.service.delete(host.id))
-            .then(() => NotificationFacade.success(
+            .then(() => Notification.success(
                 `Host deleted`,
                 `The host was deleted successfully`,
             ))
             .then(() => this.table.current?.refresh())
             .then(() => NginxReload.ask())
-            .catch(() => NotificationFacade.error(
+            .catch(() => Notification.error(
                 `Unable to delete the host`,
                 `An unexpected error was found while trying to delete the host. Please try again later.`,
             ))
@@ -99,6 +100,19 @@ export default class HostListPage extends React.PureComponent {
 
     private fetchData(pageSize: number, pageNumber: number): Promise<PageResponse<HostResponse>> {
         return this.service.list(pageSize, pageNumber)
+    }
+
+    shellConfig(): ShellConfig {
+        return {
+            title: "Hosts",
+            subtitle: "Relation of all nginx's virtual hosts definitions",
+            actions: [
+                {
+                    description: "New host",
+                    onClick: "/hosts/new",
+                },
+            ],
+        }
     }
 
     render() {

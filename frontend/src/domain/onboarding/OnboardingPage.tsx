@@ -4,7 +4,7 @@ import {LockOutlined, UserOutlined, IdcardOutlined} from "@ant-design/icons";
 import {Navigate} from "react-router-dom";
 import AppContext, {AppContextData} from "../../core/components/context/AppContext";
 import Preloader from "../../core/components/preloader/Preloader";
-import NotificationFacade from "../../core/components/notification/NotificationFacade";
+import Notification from "../../core/components/notification/Notification";
 import ValidationResult from "../../core/validation/ValidationResult";
 import OnboardingService from "./OnboardingService";
 import {UnexpectedResponseError} from "../../core/apiclient/ApiResponse";
@@ -58,7 +58,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                 this.setState({ validationResult })
         }
 
-        NotificationFacade.error(
+        Notification.error(
             "That didn't work",
             "Please check the form to see if everything seems correct",
         )

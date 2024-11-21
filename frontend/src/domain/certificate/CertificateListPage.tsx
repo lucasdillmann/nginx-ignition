@@ -4,7 +4,7 @@ import {Flex} from "antd";
 import {Link} from "react-router-dom";
 import {DeleteOutlined, EyeOutlined, ReloadOutlined} from "@ant-design/icons";
 import UserConfirmation from "../../core/components/confirmation/UserConfirmation";
-import NotificationFacade from "../../core/components/notification/NotificationFacade";
+import Notification from "../../core/components/notification/Notification";
 import NginxReload from "../../core/components/nginx/NginxReload";
 import PageResponse from "../../core/pagination/PageResponse";
 import CertificateService from "./CertificateService";
@@ -14,13 +14,14 @@ import {RenewCertificateResponse} from "./model/RenewCertificateResponse";
 import AvailableProviderResponse from "./model/AvailableProviderResponse";
 import Preloader from "../../core/components/preloader/Preloader";
 import TagGroup from "../../core/components/taggroup/TagGroup";
+import ShellAwareComponent, {ShellConfig} from "../../core/components/shell/ShellAwareComponent";
 
 interface CertificateListPageState {
     loading: boolean
     providers: AvailableProviderResponse[]
 }
 
-export default class CertificateListPage extends React.Component<any, CertificateListPageState> {
+export default class CertificateListPage extends ShellAwareComponent<any, CertificateListPageState> {
     private readonly service: CertificateService
     private readonly table: React.RefObject<DataTable<CertificateResponse>>
 
@@ -79,13 +80,13 @@ export default class CertificateListPage extends React.Component<any, Certificat
     private async invokeCertificateRenew(certificate: CertificateResponse): Promise<void> {
         return this.service
             .renew(certificate.id)
-            .then(() => NotificationFacade.success(
+            .then(() => Notification.success(
                 `Certificate renewed`,
                 `The certificate was renewed successfully`,
             ))
             .then(() => this.table.current?.refresh())
             .then(() => NginxReload.ask())
-            .catch((error: UnexpectedResponseError<RenewCertificateResponse>) => NotificationFacade.error(
+            .catch((error: UnexpectedResponseError<RenewCertificateResponse>) => Notification.error(
                 `Unable to renew the certificate`,
                 error.response.body?.errorReason ??
                 `An unexpected error was found while trying to renew the certificate. Please try again later.`,
@@ -103,13 +104,13 @@ export default class CertificateListPage extends React.Component<any, Certificat
         UserConfirmation
             .ask("Do you really want to delete the certificate?")
             .then(() => this.service.delete(certificate.id))
-            .then(() => NotificationFacade.success(
+            .then(() => Notification.success(
                 `Certificate deleted`,
                 `The certificate was deleted successfully`,
             ))
             .then(() => this.table.current?.refresh())
             .then(() => NginxReload.ask())
-            .catch(() => NotificationFacade.error(
+            .catch(() => Notification.error(
                 `Unable to delete the certificate`,
                 `An unexpected error was found while trying to delete the certificate. Please try again later.`,
             ))
@@ -117,6 +118,19 @@ export default class CertificateListPage extends React.Component<any, Certificat
 
     private fetchData(pageSize: number, pageNumber: number): Promise<PageResponse<CertificateResponse>> {
         return this.service.list(pageSize, pageNumber)
+    }
+
+    shellConfig(): ShellConfig {
+        return {
+            title: "SSL certificates",
+            subtitle: "Relation of issued SSL certificates for use in the nginx's virtual hosts",
+            actions: [
+                {
+                    description: "Issue certificate",
+                    onClick: "/certificates/new",
+                },
+            ],
+        }
     }
 
     componentDidMount() {

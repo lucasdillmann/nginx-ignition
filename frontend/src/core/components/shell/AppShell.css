@@ -16,12 +16,23 @@
     margin: 0;
 }
 
+.shell-subtitle {
+    padding: 0 20px 0;
+    margin: 0;
+    font-weight: normal;
+    font-size: 16px;
+}
+
 .shell-content {
     margin: 24px 16px;
     padding: 24px;
     min-height: 280px;
     background: #FFF;
     border-radius: 4px;
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-direction: column;
 }
 
 .shell-toggle-button {
@@ -46,4 +57,16 @@
     padding: 10px;
     width: 230px;
     border-radius: 4px;
+}
+
+.shell-actions-container {
+    align-items: center;
+    justify-content: end;
+    flex-grow: 1;
+    flex-shrink: 1;
+    padding: 30px 20px 0;
+}
+
+.shell-actions-container button {
+    margin-left: 10px;
 }

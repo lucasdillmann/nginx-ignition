@@ -4,15 +4,16 @@ import DataTableRenderers from "../../core/components/datatable/DataTableRendere
 import {Link} from "react-router-dom";
 import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
 import UserConfirmation from "../../core/components/confirmation/UserConfirmation";
-import NotificationFacade from "../../core/components/notification/NotificationFacade";
+import Notification from "../../core/components/notification/Notification";
 import PageResponse from "../../core/pagination/PageResponse";
 import UserService from "./UserService";
 import UserResponse from "./model/UserResponse";
 import {UserRole} from "./model/UserRole";
 import AppContext from "../../core/components/context/AppContext";
 import {Tooltip} from "antd";
+import ShellAwareComponent, {ShellConfig} from "../../core/components/shell/ShellAwareComponent";
 
-export default class UserListPage extends React.PureComponent {
+export default class UserListPage extends ShellAwareComponent {
     static contextType = AppContext
     context!: React.ContextType<typeof AppContext>
     private readonly service: UserService
@@ -94,12 +95,12 @@ export default class UserListPage extends React.PureComponent {
         UserConfirmation
             .ask("Do you really want to delete the user?")
             .then(() => this.service.delete(user.id))
-            .then(() => NotificationFacade.success(
+            .then(() => Notification.success(
                 `User deleted`,
                 `The user was deleted successfully`,
             ))
             .then(() => this.table.current?.refresh())
-            .catch(() => NotificationFacade.error(
+            .catch(() => Notification.error(
                 `Unable to delete the user`,
                 `An unexpected error was found while trying to delete the user. Please try again later.`,
             ))
@@ -107,6 +108,19 @@ export default class UserListPage extends React.PureComponent {
 
     private fetchData(pageSize: number, pageNumber: number): Promise<PageResponse<UserResponse>> {
         return this.service.list(pageSize, pageNumber)
+    }
+
+    shellConfig(): ShellConfig {
+        return {
+            title: "Users",
+            subtitle: "Relation of the nginx ignition's users",
+            actions: [
+                {
+                    description: "New user",
+                    onClick: "/users/new",
+                }
+            ],
+        };
     }
 
     render() {

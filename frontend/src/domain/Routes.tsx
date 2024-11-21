@@ -28,7 +28,6 @@ const Routes: AppRoute[] = [
     },
     {
         path: "/hosts/:id",
-        title: "Host details",
         requiresAuthentication: true,
         fullPage: false,
         component: <HostFormPage />,
@@ -36,7 +35,6 @@ const Routes: AppRoute[] = [
     },
     {
         path: "/hosts",
-        title: "Hosts",
         requiresAuthentication: true,
         fullPage: false,
         component: <HostListPage />,
@@ -47,7 +45,6 @@ const Routes: AppRoute[] = [
     },
     {
         path: "/certificates/new",
-        title: "New SSL certificate",
         requiresAuthentication: true,
         fullPage: false,
         component: <CertificateFormPage />,
@@ -55,7 +52,6 @@ const Routes: AppRoute[] = [
     },
     {
         path: "/certificates/:id",
-        title: "SSL certificate details",
         requiresAuthentication: true,
         fullPage: false,
         component: <CertificateDetailsPage />,
@@ -63,7 +59,6 @@ const Routes: AppRoute[] = [
     },
     {
         path: "/certificates",
-        title: "SSL certificates",
         requiresAuthentication: true,
         fullPage: false,
         component: <CertificateListPage />,
@@ -74,7 +69,6 @@ const Routes: AppRoute[] = [
     },
     {
         path: "/logs",
-        title: "Logs",
         requiresAuthentication: true,
         fullPage: false,
         component: <LogsPage />,
@@ -85,7 +79,6 @@ const Routes: AppRoute[] = [
     },
     {
         path: "/users/:id",
-        title: "User details",
         requiresAuthentication: true,
         fullPage: false,
         component: <UserFormPage />,
@@ -94,7 +87,6 @@ const Routes: AppRoute[] = [
     },
     {
         path: "/users",
-        title: "Users",
         requiresAuthentication: true,
         fullPage: false,
         component: <UserListPage />,

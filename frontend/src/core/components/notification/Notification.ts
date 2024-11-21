@@ -14,7 +14,7 @@ function showNotification(title: string, message: string, type: IconType) {
     })
 }
 
-class NotificationFacade {
+class Notification {
     warning(title: string, message: string) {
         showNotification(title, message, "warning")
     }
@@ -29,4 +29,4 @@ class NotificationFacade {
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default new NotificationFacade()
+export default new Notification()

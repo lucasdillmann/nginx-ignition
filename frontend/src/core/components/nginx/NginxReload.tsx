@@ -1,6 +1,6 @@
 import LocalStorageRepository from "../../repository/LocalStorageRepository";
 import NginxService from "../../../domain/nginx/NginxService";
-import NotificationFacade from "../notification/NotificationFacade";
+import Notification from "../notification/Notification";
 import {Checkbox, CheckboxRef, Modal} from "antd";
 import React from "react";
 import "./NginxReload.css"
@@ -18,11 +18,11 @@ class NginxReload {
         const messageTitle = "Reload nginx configuration";
         return this.service
             .reloadConfiguration()
-            .then(() => NotificationFacade.success(
+            .then(() => Notification.success(
                 messageTitle,
                 "Nginx server configuration was reloaded successfully",
             ))
-            .catch(() => NotificationFacade.error(
+            .catch(() => Notification.error(
                 messageTitle,
                 "Nginx server failed to reload the configuration. Please check the logs for more details.",
             ))
