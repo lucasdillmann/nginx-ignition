@@ -1,16 +1,13 @@
 package br.com.dillmann.nginxignition.core.host
 
 import br.com.dillmann.nginxignition.core.common.pagination.Page
-import br.com.dillmann.nginxignition.core.host.command.DeleteHostCommand
-import br.com.dillmann.nginxignition.core.host.command.GetHostCommand
-import br.com.dillmann.nginxignition.core.host.command.ListHostCommand
-import br.com.dillmann.nginxignition.core.host.command.SaveHostCommand
+import br.com.dillmann.nginxignition.core.host.command.*
 import java.util.*
 
 internal class HostService(
     private val repository: HostRepository,
     private val validator: HostValidator,
-): SaveHostCommand, DeleteHostCommand, ListHostCommand, GetHostCommand {
+): SaveHostCommand, DeleteHostCommand, ListHostCommand, GetHostCommand, HostExistsByIdCommand {
     override suspend fun save(input: Host) {
         validator.validate(input)
         repository.save(input)
@@ -28,4 +25,7 @@ internal class HostService(
 
     suspend fun getAllEnabled(): List<Host> =
         repository.findAllEnabled()
+
+    override suspend fun existsById(id: UUID) =
+        repository.existsById(id)
 }

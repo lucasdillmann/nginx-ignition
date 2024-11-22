@@ -10,4 +10,5 @@ interface HostRepository {
     suspend fun findPage(pageSize: Int, pageNumber: Int): Page<Host>
     suspend fun findAllEnabled(): List<Host>
     suspend fun findDefault(): Host?
+    suspend fun existsById(id: UUID): Boolean
 }

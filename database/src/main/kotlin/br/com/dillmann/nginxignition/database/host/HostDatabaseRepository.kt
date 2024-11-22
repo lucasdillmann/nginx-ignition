@@ -71,6 +71,11 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
             findHosts(null, null) { HostTable.enabled eq true }
         }
 
+    override suspend fun existsById(id: UUID): Boolean =
+        coTransaction {
+            HostTable.select(HostTable.id).where { HostTable.id eq id }.count() > 0
+        }
+
     private suspend fun findOneWhere(expression: SqlExpressionBuilder.() -> Op<Boolean>): Host? =
         coTransaction {
             val host = HostTable

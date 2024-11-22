@@ -7,7 +7,7 @@ internal class MainConfigurationFileProvider: NginxConfigurationFileProvider {
     override suspend fun provide(basePath: String, hosts: List<Host>): List<NginxConfigurationFileProvider.Output> {
         val contents = """
             worker_processes 2;
-            error_log $basePath/logs/main.error.log;
+            error_log $basePath/logs/main.log;
             pid $basePath/nginx.pid;
             
             events {
