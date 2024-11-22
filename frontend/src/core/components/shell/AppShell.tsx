@@ -122,6 +122,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                         <NginxControl />
                     </div>
                     <Menu
+                        className="shell-menu-container"
                         theme="dark"
                         mode="inline"
                         defaultSelectedKeys={activeMenuItemPath ? [activeMenuItemPath] : undefined}

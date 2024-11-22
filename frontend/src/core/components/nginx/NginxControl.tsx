@@ -68,7 +68,7 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
 
         return (
             <Badge
-                className="site-badge-count-109"
+                className="nginx-control-status-badge"
                 count={metadata.description}
                 style={{ backgroundColor: metadata.color, borderColor: metadata.color }}
             />
@@ -164,11 +164,11 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
         return (
             <Preloader loading={loading} size={32}>
                 <Flex className="nginx-control-container" vertical>
-                    <Flex wrap>
+                    <Flex className="nginx-control-status-title" wrap>
                         <span>server status</span>
                     </Flex>
                     <Flex className="nginx-status" wrap>
-                        <Flex className="nginx-status-line" align="start" justify="start">
+                        <Flex className="nginx-status-line nginx-status-badge" align="start" justify="start">
                             {this.renderStatusBadge()}
                         </Flex>
                         <Flex className="nginx-status-line" align="end" justify="end">

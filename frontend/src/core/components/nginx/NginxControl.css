@@ -1,9 +1,17 @@
 .nginx-control-container {
-    padding: 10px 20px;
+    padding: 15px 20px;
     margin: 0 0 10px;
     background: #032c53;
     border-radius: 0;
     color: #FFF;
+}
+
+.nginx-control-status-title {
+    font-size: 16px;
+}
+
+.nginx-control-status-badge sup {
+    font-size: 13px !important;
 }
 
 .nginx-status {

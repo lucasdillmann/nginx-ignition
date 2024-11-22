@@ -49,13 +49,17 @@
 
 .shell-logo-link {
     color: #FFF;
-    font-size: 22px;
+    font-size: 26px;
+}
+
+.shell-menu-container {
+    margin-top: 20px;
 }
 
 .shell-menu-item {
-    margin: 5px 10px;
-    padding: 10px;
-    width: 230px;
+    margin: 5px 10px !important;
+    padding: 10px 10px 10px 15px !important;
+    width: 225px !important;
     border-radius: 4px;
 }
 

@@ -49,7 +49,7 @@ class NginxReload {
                 content: (
                     <div className="reload-confirmation-content">
                         <p>In order to apply your changes, we need to reload the nginx server configuration.</p>
-                        <Checkbox ref={skipRef}>Always reload automatically and don't ask again</Checkbox>
+                        <Checkbox ref={skipRef}>Always reload automatically</Checkbox>
                     </div>
                 ),
                 okText: "Reload now",
