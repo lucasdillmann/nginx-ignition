@@ -3,8 +3,10 @@ import React from "react";
 import {ColumnType, TablePaginationConfig} from "antd/es/table";
 import {AlignType} from "rc-table/lib/interface";
 import Preloader from "../preloader/Preloader";
-import {Pagination, Table} from "antd";
+import {Empty, Pagination, Table} from "antd";
 import "./DataTable.css"
+import {ExclamationCircleOutlined} from "@ant-design/icons";
+import Notification from "../notification/Notification";
 
 const DEFAULT_PAGE_SIZE = 10
 const PAGE_SIZES = [10, 25, 50, 100, 250, 500]
@@ -28,6 +30,7 @@ export interface DataTableProps<T> {
 interface DataTableState<T> {
     loading: boolean
     data: PageResponse<T>
+    error?: Error
 }
 
 export default class DataTable<T> extends React.Component<DataTableProps<T>, DataTableState<T>> {
@@ -68,6 +71,14 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
         const {dataProvider} = this.props
         return dataProvider(pageSize, pageNumber)
             .then(data => this.setState({ loading: false, data }))
+            .catch(error =>{
+                Notification.error(
+                    "Unable to fetch the data",
+                    "We're unable to fetch the data at this time. Please try again later.",
+                )
+
+                this.setState({ loading: false, error })
+            })
     }
 
     private buildPaginationProps(): TablePaginationConfig {
@@ -76,7 +87,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
         return {
             align: "end",
             className: "pagination-container",
-            defaultCurrent: data.pageNumber,
+            defaultCurrent: data.pageNumber + 1,
             total: data.totalItems,
             pageSize: data.pageSize,
             pageSizeOptions: PAGE_SIZES,
@@ -98,8 +109,16 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
     }
 
     render() {
-        const {loading, data} = this.state
+        const {loading, data, error} = this.state
         const {rowKey} = this.props
+
+        if (error !== undefined)
+            return (
+                <Empty
+                    image={<ExclamationCircleOutlined style={{ fontSize: 70, color: "#b8b8b8" }} />}
+                    description="Unable to fetch the data. Please try again later."
+                />
+            )
 
         return (
             <Preloader loading={loading}>

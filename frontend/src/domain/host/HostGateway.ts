@@ -21,4 +21,8 @@ export default class HostGateway {
     async toggleEnabled(id: string): Promise<ApiResponse<void>> {
         return this.client.post(`/${id}/toggle-enabled`)
     }
+
+    async getLogs(id: string, type: string, lines: number): Promise<ApiResponse<string[]>> {
+        return this.client.get(`/${id}/logs/${type}`, undefined, { lines })
+    }
 }

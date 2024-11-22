@@ -1,0 +1,42 @@
+.log-container {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.log-settings-option {
+    margin-right: 10px;
+}
+
+.log-settings-option:last-of-type {
+    margin-right: 0;
+}
+
+.log-settings-line-count {
+    min-width: 100px;
+}
+
+.log-settings-auto-refresh {
+    min-width: 160px;
+}
+
+.log-settings-host {
+    flex-grow: 1;
+}
+
+.log-contents-container {
+    margin-top: 20px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.log-contents-container .log-contents-lines {
+    display: flex;
+    flex-shrink: 1;
+    flex-grow: 1;
+    height: 100%;
+    font-family: monospace;
+    font-size: 12px;
+}

@@ -140,6 +140,10 @@ export default class CertificateListPage extends ShellAwareComponent<any, Certif
                 loading: false,
                 providers,
             }))
+            .catch(() => Notification.error(
+                "Unable to fetch the data",
+                "We're unable to fetch the data at this moment. Please try again later.",
+            ))
     }
 
     render() {

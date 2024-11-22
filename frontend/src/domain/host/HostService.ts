@@ -19,7 +19,10 @@ export default class HostService {
     }
 
     async toggleEnabled(id: string): Promise<void> {
-        const response = await this.gateway.toggleEnabled(id);
-        return requireSuccessResponse(response);
+        return this.gateway.toggleEnabled(id).then(requireSuccessResponse)
+    }
+
+    async logs(id: string, type: string, lines: number): Promise<string[]> {
+        return this.gateway.getLogs(id, type, lines).then(requireSuccessPayload)
     }
 }

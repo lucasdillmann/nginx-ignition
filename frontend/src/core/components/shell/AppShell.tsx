@@ -53,12 +53,21 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         if (typeof onClick === "string") {
             return (
                 <Link to={onClick}>
-                    <Button variant={type ?? "solid"} color={color ?? "primary"}>{description}</Button>
+                    <Button
+                        variant={type ?? "solid"}
+                        color={color ?? "primary"}>
+                        {description}
+                    </Button>
                 </Link>
             )
         } else {
             return (
-                <Button variant={type ?? "solid"} color={color ?? "primary"} onClick={onClick}>{description}</Button>
+                <Button
+                    variant={type ?? "solid"}
+                    color={color ?? "primary"}
+                    onClick={() => onClick()}>
+                    {description}
+                </Button>
             )
         }
     }

@@ -24,4 +24,8 @@ export default class NginxGateway {
     async getStatus(): Promise<ApiResponse<NginxStatusResponse>> {
         return this.client.get("/status")
     }
+
+    async getLogs(lines: number): Promise<ApiResponse<string[]>> {
+        return this.client.get("/logs", undefined, { lines })
+    }
 }

@@ -37,4 +37,8 @@ export default class NginxService {
             .then(requireSuccessResponse)
             .then(() => NginxEventDispatcher.notify(NginxOperation.RELOAD))
     }
+
+    async logs(lines: number): Promise<string[]> {
+        return this.gateway.getLogs(lines).then(requireSuccessPayload)
+    }
 }

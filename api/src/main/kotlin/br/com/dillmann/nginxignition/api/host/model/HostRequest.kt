@@ -27,7 +27,7 @@ internal data class HostRequest(
     @Serializable
     data class StaticResponse(
         val statusCode: Int,
-        val payload: String?,
+        val payload: String? = null,
         val headers: Map<String, List<String>> = emptyMap(),
     )
 

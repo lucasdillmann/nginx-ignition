@@ -70,7 +70,7 @@ internal class HostConverter {
             if (route[HostRouteTable.staticResponseCode] == null) null
             else Host.StaticResponse(
                 statusCode = route[HostRouteTable.staticResponseCode]!!,
-                payload = route[HostRouteTable.staticResponsePayload]!!,
+                payload = route[HostRouteTable.staticResponsePayload],
                 headers = Json.decodeFromString(route[HostRouteTable.staticResponseHeaders]!!),
             )
 
