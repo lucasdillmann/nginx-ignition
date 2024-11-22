@@ -22,6 +22,7 @@ interface PaginatedSelectState<T> {
 }
 
 export interface PaginatedSelectProps<T> {
+    placeholder?: string
     onChange: (selected?: T) => void
     pageProvider: (pageSize: number, pageNumber: number) => Promise<PageResponse<T>>
     itemKey: (item: T) => string
@@ -115,11 +116,12 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
     }
 
     render() {
-        const {allowEmpty, disabled, status, value, onChange} = this.props
+        const {allowEmpty, disabled, status, value, onChange, placeholder} = this.props
         const {loading} = this.state
 
         return (
             <Select
+                placeholder={placeholder}
                 disabled={disabled}
                 allowClear={allowEmpty}
                 options={this.buildOptions()}

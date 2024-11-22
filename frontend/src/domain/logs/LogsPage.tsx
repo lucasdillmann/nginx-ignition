@@ -163,6 +163,7 @@ export default class LogsPage extends ShellAwareComponent<any, LogsPageState> {
                 <Flex className="log-settings-option log-settings-auto-refresh" vertical>
                     <p>Auto-refresh</p>
                     <Select
+                        placeholder="Disabled"
                         options={this.buildAutoRefreshOptions()}
                         value={autoRefreshSeconds}
                         onSelect={value => this.setAutoRefreshSeconds(value)}
@@ -174,6 +175,7 @@ export default class LogsPage extends ShellAwareComponent<any, LogsPageState> {
                     <Flex className="log-settings-option log-settings-host" vertical>
                         <p>Host</p>
                         <PaginatedSelect
+                            placeholder="Select one"
                             onChange={host => this.handleHostChange(host)}
                             pageProvider={(pageSize, pageNumber) => this.hostService.list(pageSize, pageNumber)}
                             value={selectedHost}
@@ -224,7 +226,7 @@ export default class LogsPage extends ShellAwareComponent<any, LogsPageState> {
     shellConfig(): ShellConfig {
         return {
             title: "Logs",
-            subtitle: "Query the nginx's produced logs for the main process or each virtual host",
+            subtitle: "nginx's logs for the main process or each virtual host",
             actions: [
                 {
                     description: "Refresh",
