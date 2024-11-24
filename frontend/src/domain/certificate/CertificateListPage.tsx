@@ -95,7 +95,8 @@ export default class CertificateListPage extends ShellAwareComponent<any, Certif
 
     private renewCertificate(certificate: CertificateResponse) {
         return UserConfirmation.askWithCallback(
-            `Do you really want to renew the certificate? Please be aware that this action can take several seconds.`,
+            `Renewing the certificate can take several seconds and is only recommended when something is wrong with it
+            since, by default, nginx ignition will renew it automatically when it's close to expiring. Continue anyway?`,
             () => this.invokeCertificateRenew(certificate),
         )
     }

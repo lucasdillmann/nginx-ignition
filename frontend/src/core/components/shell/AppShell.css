@@ -1,14 +1,22 @@
 .shell-container {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
+    padding-left: 250px;
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 100vh;
+    height: fit-content;
 }
 
 .shell-header {
     padding: 0;
     background: #FFF;
+}
+
+.shell-sider-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
 }
 
 .shell-title {
@@ -24,9 +32,8 @@
 }
 
 .shell-content {
-    margin: 24px 16px;
+    margin: 24px 0 0;
     padding: 24px;
-    min-height: 280px;
     background: #FFF;
     border-radius: 4px;
     display: flex;

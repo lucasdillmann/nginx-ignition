@@ -112,7 +112,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
 
         return (
             <Layout className="shell-container">
-                <Sider trigger={null} width={250}>
+                <Sider trigger={null} width={250} className="shell-sider-container">
                     <div className="shell-logo">
                         <NavLink to="/" className="shell-logo-link">
                             nginx ignition
