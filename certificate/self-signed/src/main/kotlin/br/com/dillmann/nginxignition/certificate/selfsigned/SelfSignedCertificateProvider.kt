@@ -19,7 +19,7 @@ internal class SelfSignedCertificateProvider(
     }
 
     override val name = "Self-signed certificate"
-    override val uniqueId = UNIQUE_ID
+    override val id = UNIQUE_ID
     override val dynamicFields = emptyList<CertificateProviderDynamicField>()
 
     override suspend fun issue(request: CertificateRequest): CertificateProvider.Output {

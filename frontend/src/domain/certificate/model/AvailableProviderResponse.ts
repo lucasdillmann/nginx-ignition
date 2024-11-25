@@ -1,5 +1,5 @@
 export default interface AvailableProviderResponse {
-    uniqueId: string
+    id: string
     name: string
     dynamicFields: DynamicField[]
 }

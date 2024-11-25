@@ -37,7 +37,7 @@ export default class CertificateListPage extends ShellAwareComponent<any, Certif
 
     private translateProviderName(providerId: string): string {
         const {providers} = this.state
-        return providers.find(provider => provider.uniqueId === providerId)?.name ?? providerId
+        return providers.find(provider => provider.id === providerId)?.name ?? providerId
     }
 
     private buildColumns(): DataTableColumn<CertificateResponse>[] {

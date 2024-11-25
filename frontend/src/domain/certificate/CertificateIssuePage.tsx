@@ -92,14 +92,14 @@ export default class CertificateIssuePage extends ShellAwareComponent<unknown, C
     private buildProviderSelectOptions() {
         const {availableProviders} = this.state
         return availableProviders.map(provider => ({
-            value: provider.uniqueId,
+            value: provider.id,
             label: provider.name,
         }))
     }
 
     private renderDynamicFields() {
         const {formValues, availableProviders, validationResult} = this.state
-        const provider = availableProviders.find(item => item.uniqueId === formValues.providerId)
+        const provider = availableProviders.find(item => item.id === formValues.providerId)
         return provider
             ?.dynamicFields
             .sort((left, right) => left.priority > right.priority ? 1 : -1)
@@ -147,7 +147,7 @@ export default class CertificateIssuePage extends ShellAwareComponent<unknown, C
                     availableProviders: providers,
                     loading: false,
                     formValues: {
-                        providerId: providers[0].uniqueId,
+                        providerId: providers[0].id,
                         domainNames: [""],
                         parameters: {},
                     }

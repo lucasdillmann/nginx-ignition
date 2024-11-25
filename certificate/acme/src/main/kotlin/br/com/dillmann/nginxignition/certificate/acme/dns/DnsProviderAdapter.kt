@@ -7,7 +7,7 @@ internal class DnsProviderAdapter(private val providers: List<DnsProvider>) {
         dynamicFields: Map<String, Any?>,
     ) {
         providers
-            .first { provider -> provider.uniqueId == providerId }
+            .first { provider -> provider.id == providerId }
             .writeChallengeRecords(challengeRecords, dynamicFields)
     }
 }

@@ -5,7 +5,7 @@ import br.com.dillmann.nginxignition.core.certificate.provider.CertificateReques
 import br.com.dillmann.nginxignition.core.common.validation.ConsistencyException
 
 internal class CertificateValidator(providers: List<CertificateProvider>) {
-    private val knownProviders = providers.map { it.uniqueId }
+    private val knownProviders = providers.map { it.id }
 
     fun validate(request: CertificateRequest) {
         if (request.providerId !in knownProviders) {

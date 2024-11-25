@@ -6,7 +6,7 @@ internal interface DnsProvider {
         val token: String,
     )
 
-    val uniqueId: String
+    val id: String
 
     suspend fun writeChallengeRecords(
         records: List<ChallengeRecord>,

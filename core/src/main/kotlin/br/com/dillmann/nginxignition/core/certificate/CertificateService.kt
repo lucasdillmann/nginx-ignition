@@ -27,7 +27,7 @@ internal class CertificateService(
 
     override suspend fun issue(request: CertificateRequest): IssueCertificateCommand.Output {
         validator.validate(request)
-        val provider = providers.first { it.uniqueId == request.providerId }
+        val provider = providers.first { it.id == request.providerId }
         val providerOutput = provider.issue(request)
         if (providerOutput.success)
             repository.save(providerOutput.certificate!!)
@@ -56,7 +56,7 @@ internal class CertificateService(
     }
 
     private suspend fun renew(certificate: Certificate): CertificateProvider.Output {
-        val provider = providers.first { it.uniqueId == certificate.providerId }
+        val provider = providers.first { it.id == certificate.providerId }
         val providerOutput = provider.renew(certificate)
         if (providerOutput.success)
             repository.save(providerOutput.certificate!!)
@@ -68,7 +68,7 @@ internal class CertificateService(
         providers.map {
             AvailableCertificateProvider(
                 name = it.name,
-                uniqueId = it.uniqueId,
+                id = it.id,
                 dynamicFields = it.dynamicFields,
             )
         }

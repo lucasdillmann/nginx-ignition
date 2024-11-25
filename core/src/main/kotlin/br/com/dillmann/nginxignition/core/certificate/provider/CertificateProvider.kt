@@ -9,8 +9,8 @@ interface CertificateProvider {
         val certificate: Certificate? = null,
     )
 
+    val id: String
     val name: String
-    val uniqueId: String
     val dynamicFields: List<CertificateProviderDynamicField>
 
     suspend fun issue(request: CertificateRequest): Output
