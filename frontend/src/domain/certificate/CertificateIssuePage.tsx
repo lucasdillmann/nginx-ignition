@@ -1,5 +1,4 @@
 import React from "react";
-import ShellAwareComponent, {ShellConfig} from "../../core/components/shell/ShellAwareComponent";
 import ValidationResult from "../../core/validation/ValidationResult";
 import CertificateService from "./CertificateService";
 import AvailableProviderResponse from "./model/AvailableProviderResponse";
@@ -16,6 +15,7 @@ import {UnexpectedResponseError} from "../../core/apiclient/ApiResponse";
 import ValidationResultConverter from "../../core/validation/ValidationResultConverter";
 import DomainNamesList from "./components/DomainNamesList";
 import {navigateTo} from "../../core/components/router/AppRouter";
+import AppShellContext from "../../core/components/shell/AppShellContext";
 
 interface CertificateIssuePageState {
     availableProviders: AvailableProviderResponse[]
@@ -24,7 +24,10 @@ interface CertificateIssuePageState {
     formValues: IssueCertificateRequest
 }
 
-export default class CertificateIssuePage extends ShellAwareComponent<unknown, CertificateIssuePageState> {
+export default class CertificateIssuePage extends React.Component<unknown, CertificateIssuePageState> {
+    static contextType = AppShellContext
+    context!: React.ContextType<typeof AppShellContext>
+
     private readonly service: CertificateService
     private readonly saveModal: ModalPreloader
 
@@ -139,6 +142,20 @@ export default class CertificateIssuePage extends ShellAwareComponent<unknown, C
         )
     }
 
+    private updateShellConfig(enableActions: boolean) {
+        this.context.updateConfig({
+            title: "New SSL certificate",
+            subtitle: "Issue or upload a SSL certificate for use with the nginx's virtual hosts",
+            actions: [
+                {
+                    description: "Issue and save",
+                    disabled: !enableActions,
+                    onClick: () => this.submit(),
+                },
+            ],
+        })
+    }
+
     componentDidMount() {
         this.service
             .availableProviders()
@@ -152,20 +169,11 @@ export default class CertificateIssuePage extends ShellAwareComponent<unknown, C
                         parameters: {},
                     }
                 })
-            })
-    }
 
-    shellConfig(): ShellConfig {
-        return {
-            title: "New SSL certificate",
-            subtitle: "Issue or upload a SSL certificate for use with the nginx's virtual hosts",
-            actions: [
-                {
-                    description: "Issue and save",
-                    onClick: () => this.submit(),
-                },
-            ],
-        }
+                this.updateShellConfig(true)
+            })
+
+        this.updateShellConfig(false)
     }
 
     render() {

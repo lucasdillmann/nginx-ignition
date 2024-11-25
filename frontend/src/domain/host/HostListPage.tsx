@@ -11,9 +11,12 @@ import UserConfirmation from "../../core/components/confirmation/UserConfirmatio
 import Notification from "../../core/components/notification/Notification";
 import NginxReload from "../../core/components/nginx/NginxReload";
 import TagGroup from "../../core/components/taggroup/TagGroup";
-import ShellAwareComponent, {ShellConfig} from "../../core/components/shell/ShellAwareComponent";
+import AppShellContext from "../../core/components/shell/AppShellContext";
 
-export default class HostListPage extends ShellAwareComponent {
+export default class HostListPage extends React.PureComponent {
+    static contextType = AppShellContext
+    context!: React.ContextType<typeof AppShellContext>
+
     private readonly service: HostService
     private readonly table: React.RefObject<DataTable<HostResponse>>
 
@@ -102,8 +105,8 @@ export default class HostListPage extends ShellAwareComponent {
         return this.service.list(pageSize, pageNumber)
     }
 
-    shellConfig(): ShellConfig {
-        return {
+    componentDidMount() {
+        this.context.updateConfig({
             title: "Hosts",
             subtitle: "Relation of all nginx's virtual hosts definitions",
             actions: [
@@ -112,7 +115,7 @@ export default class HostListPage extends ShellAwareComponent {
                     onClick: "/hosts/new",
                 },
             ],
-        }
+        })
     }
 
     render() {

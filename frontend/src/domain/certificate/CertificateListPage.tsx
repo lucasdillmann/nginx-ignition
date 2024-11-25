@@ -10,16 +10,19 @@ import {CertificateResponse} from "./model/CertificateResponse";
 import AvailableProviderResponse from "./model/AvailableProviderResponse";
 import Preloader from "../../core/components/preloader/Preloader";
 import TagGroup from "../../core/components/taggroup/TagGroup";
-import ShellAwareComponent, {ShellConfig} from "../../core/components/shell/ShellAwareComponent";
 import RenewCertificateAction from "./actions/RenewCertificateAction";
 import DeleteCertificateAction from "./actions/DeleteCertificateAction";
+import AppShellContext from "../../core/components/shell/AppShellContext";
 
 interface CertificateListPageState {
     loading: boolean
     providers: AvailableProviderResponse[]
 }
 
-export default class CertificateListPage extends ShellAwareComponent<any, CertificateListPageState> {
+export default class CertificateListPage extends React.Component<any, CertificateListPageState> {
+    static contextType = AppShellContext
+    context!: React.ContextType<typeof AppShellContext>
+
     private readonly service: CertificateService
     private readonly table: React.RefObject<DataTable<CertificateResponse>>
 
@@ -91,19 +94,6 @@ export default class CertificateListPage extends ShellAwareComponent<any, Certif
         return this.service.list(pageSize, pageNumber)
     }
 
-    shellConfig(): ShellConfig {
-        return {
-            title: "SSL certificates",
-            subtitle: "Relation of issued SSL certificates for use in the nginx's virtual hosts",
-            actions: [
-                {
-                    description: "Issue certificate",
-                    onClick: "/certificates/new",
-                },
-            ],
-        }
-    }
-
     componentDidMount() {
         this.service
             .availableProviders()
@@ -115,6 +105,17 @@ export default class CertificateListPage extends ShellAwareComponent<any, Certif
                 "Unable to fetch the data",
                 "We're unable to fetch the data at this moment. Please try again later.",
             ))
+
+        this.context.updateConfig({
+            title: "SSL certificates",
+            subtitle: "Relation of issued SSL certificates for use in the nginx's virtual hosts",
+            actions: [
+                {
+                    description: "Issue certificate",
+                    onClick: "/certificates/new",
+                },
+            ],
+        })
     }
 
     render() {

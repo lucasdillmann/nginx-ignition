@@ -1,13 +1,10 @@
-import React from "react";
 import {ButtonColorType, ButtonVariantType} from "antd/es/button";
-
-export default abstract class ShellAwareComponent<P = any, S = any, SS = any> extends React.Component<P, S, SS>{
-    abstract shellConfig(): ShellConfig
-}
+import React from "react";
 
 export interface ShellAction {
     description: string
     onClick: string | (() => void)
+    disabled?: boolean
     type?: ButtonVariantType
     color?: ButtonColorType
 }
@@ -17,3 +14,12 @@ export interface ShellConfig {
     subtitle?: string
     actions?: ShellAction[]
 }
+
+export interface ShellOperations {
+    updateConfig(config: ShellConfig): void
+}
+
+const AppShellContext = React.createContext<ShellOperations>({
+    updateConfig: (_: ShellConfig) => {},
+})
+export default AppShellContext

@@ -5,9 +5,13 @@ import {Link} from "react-router-dom";
 import NginxControl from "../nginx/NginxControl";
 import AppRoute from "../router/AppRoute";
 import "./AppShell.css"
-import ShellAwareComponent, {ShellAction, ShellConfig} from "./ShellAwareComponent";
 import If from "../flowcontrol/If";
+import AppShellContext, {ShellAction, ShellConfig} from "./AppShellContext";
 const {Sider, Content} = Layout;
+
+const EmptyConfig : ShellConfig = {
+    title: "",
+}
 
 export interface AppShellMenuItem {
     icon: React.ReactNode
@@ -26,15 +30,10 @@ interface AppShellState {
 }
 
 export default class AppShell extends React.Component<AppShellProps, AppShellState> {
-    private childRef: React.RefObject<ShellAwareComponent>
-
     constructor(props: AppShellProps) {
         super(props);
-        this.childRef = React.createRef()
         this.state = {
-            config: {
-                title: "",
-            }
+            config: EmptyConfig,
         }
     }
 
@@ -49,13 +48,14 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
     }
 
     private renderActionButton(action: ShellAction): React.ReactNode {
-        const {description, type, color, onClick} = action
+        const {description, type, color, onClick, disabled} = action
         if (typeof onClick === "string") {
             return (
                 <Link to={onClick} key={action.description}>
                     <Button
                         variant={type ?? "solid"}
-                        color={color ?? "primary"}>
+                        color={color ?? "primary"}
+                        disabled={disabled}>
                         {description}
                     </Button>
                 </Link>
@@ -66,7 +66,8 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                     key={action.description}
                     variant={type ?? "solid"}
                     color={color ?? "primary"}
-                    onClick={onClick}>
+                    onClick={onClick}
+                    disabled={disabled}>
                     {description}
                 </Button>
             )
@@ -85,22 +86,12 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         )
     }
 
-    private applyShellConfig() {
-        this.setState({
-            config: this.childRef.current!!.shellConfig(),
-        })
-    }
-
-    componentDidMount() {
-       this.applyShellConfig()
-    }
-
     componentDidUpdate(prevProps: Readonly<AppShellProps>) {
         const {children: previous} = prevProps
         const {children: current} = this.props
 
         if (previous !== current) {
-            this.applyShellConfig()
+            this.setState({config: EmptyConfig})
         }
     }
 
@@ -109,7 +100,6 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         const {config} = this.state
         const activeMenuItemPath = activeRoute.activeMenuItemPath ?? activeRoute.path
         const {title, subtitle} = config
-        const enhancedChild = React.cloneElement(children, { ref: this.childRef })
 
         return (
             <Layout className="shell-container">
@@ -143,7 +133,11 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                         </Flex>
                     </Flex>
                     <Content className="shell-content">
-                        {enhancedChild}
+                        <AppShellContext.Provider value={{
+                            updateConfig: (config: ShellConfig) => this.setState({config}),
+                        }}>
+                            {children}
+                        </AppShellContext.Provider>
                     </Content>
                 </Layout>
             </Layout>

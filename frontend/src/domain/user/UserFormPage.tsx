@@ -1,5 +1,4 @@
 import React from "react";
-import ShellAwareComponent, {ShellConfig} from "../../core/components/shell/ShellAwareComponent";
 import {navigateTo, routeParams} from "../../core/components/router/AppRouter";
 import UserRequest from "./model/UserRequest";
 import {UserRole} from "./model/UserRole";
@@ -14,6 +13,7 @@ import Notification from "../../core/components/notification/Notification";
 import {UnexpectedResponseError} from "../../core/apiclient/ApiResponse";
 import ValidationResultConverter from "../../core/validation/ValidationResultConverter";
 import UserResponse from "./model/UserResponse";
+import AppShellContext from "../../core/components/shell/AppShellContext";
 
 interface UserFormState {
     formValues: UserRequest
@@ -22,7 +22,10 @@ interface UserFormState {
     notFound: boolean
 }
 
-export default class UserFormPage extends ShellAwareComponent<unknown, UserFormState> {
+export default class UserFormPage extends React.Component<unknown, UserFormState> {
+    static contextType = AppShellContext
+    context!: React.ContextType<typeof AppShellContext>
+
     private readonly userId?: string
     private readonly service: UserService
     private readonly saveModal: ModalPreloader
@@ -150,9 +153,24 @@ export default class UserFormPage extends ShellAwareComponent<unknown, UserFormS
         return {enabled, name, username, role}
     }
 
+    private updateShellConfig(enableActions: boolean) {
+        this.context.updateConfig({
+            title: "User details",
+            subtitle: "Full details and configurations of the nginx ignition's user",
+            actions: [
+                {
+                    description: "Save",
+                    disabled: !enableActions,
+                    onClick: () => this.submit(),
+                },
+            ],
+        })
+    }
+
     componentDidMount() {
         if (this.userId === undefined) {
             this.setState({loading: false})
+            this.updateShellConfig(true)
             return
         }
 
@@ -161,22 +179,13 @@ export default class UserFormPage extends ShellAwareComponent<unknown, UserFormS
             .then(userDetails => {
                 if (userDetails === undefined)
                     this.setState({loading: false, notFound: true})
-                else
+                else {
                     this.setState({loading: false, formValues: this.convertToUserRequest(userDetails)})
+                    this.updateShellConfig(true)
+                }
             })
-    }
 
-    shellConfig(): ShellConfig {
-        return {
-            title: "User details",
-            subtitle: "Full details and configurations of the nginx ignition's user",
-            actions: [
-                {
-                    description: "Save",
-                    onClick: () => this.submit(),
-                },
-            ],
-        };
+        this.updateShellConfig(false)
     }
 
     render() {

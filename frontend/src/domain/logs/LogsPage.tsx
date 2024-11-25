@@ -1,5 +1,4 @@
 import React from "react";
-import ShellAwareComponent, {ShellConfig} from "../../core/components/shell/ShellAwareComponent";
 import HostService from "../host/HostService";
 import HostResponse from "../host/model/HostResponse";
 import PaginatedSelect from "../../core/components/select/PaginatedSelect";
@@ -11,6 +10,7 @@ import NginxService from "../nginx/NginxService";
 import Preloader from "../../core/components/preloader/Preloader";
 import TextArea, {TextAreaRef} from "antd/es/input/TextArea";
 import Notification from "../../core/components/notification/Notification"
+import AppShellContext from "../../core/components/shell/AppShellContext";
 
 interface LogsPageState {
     hostMode: boolean
@@ -22,7 +22,10 @@ interface LogsPageState {
     logs: string[]
 }
 
-export default class LogsPage extends ShellAwareComponent<any, LogsPageState> {
+export default class LogsPage extends React.Component<any, LogsPageState> {
+    static contextType = AppShellContext
+    context!: React.ContextType<typeof AppShellContext>
+
     private readonly hostService: HostService
     private readonly nginxService: NginxService
     private readonly contentsRef: React.RefObject<TextAreaRef>
@@ -44,6 +47,16 @@ export default class LogsPage extends ShellAwareComponent<any, LogsPageState> {
 
     componentDidMount() {
         this.fetchLogs()
+        this.context.updateConfig({
+            title: "Logs",
+            subtitle: "nginx's logs for the main process or each virtual host",
+            actions: [
+                {
+                    description: "Refresh",
+                    onClick: () => this.refreshLogs(),
+                }
+            ]
+        })
     }
 
     componentDidUpdate() {
@@ -221,19 +234,6 @@ export default class LogsPage extends ShellAwareComponent<any, LogsPageState> {
                 readOnly
             />
         )
-    }
-
-    shellConfig(): ShellConfig {
-        return {
-            title: "Logs",
-            subtitle: "nginx's logs for the main process or each virtual host",
-            actions: [
-                {
-                    description: "Refresh",
-                    onClick: () => this.refreshLogs(),
-                }
-            ]
-        }
     }
 
     render() {

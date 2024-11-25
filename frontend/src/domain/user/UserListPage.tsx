@@ -11,11 +11,12 @@ import UserResponse from "./model/UserResponse";
 import {UserRole} from "./model/UserRole";
 import AppContext from "../../core/components/context/AppContext";
 import {Tooltip} from "antd";
-import ShellAwareComponent, {ShellConfig} from "../../core/components/shell/ShellAwareComponent";
+import AppShellContext from "../../core/components/shell/AppShellContext";
 
-export default class UserListPage extends ShellAwareComponent {
-    static contextType = AppContext
-    context!: React.ContextType<typeof AppContext>
+export default class UserListPage extends React.PureComponent {
+    static contextType = AppShellContext
+    context!: React.ContextType<typeof AppShellContext>
+
     private readonly service: UserService
     private readonly table: React.RefObject<DataTable<UserResponse>>
 
@@ -25,8 +26,7 @@ export default class UserListPage extends ShellAwareComponent {
         this.table = React.createRef()
     }
 
-    private renderDeleteButton(item: UserResponse): React.ReactNode {
-        const {user} = this.context
+    private renderDeleteButton(item: UserResponse, user?: UserResponse): React.ReactNode {
         if (user?.id !== item.id)
             return (
                 <Link to="" onClick={() => this.deleteUser(item)}>
@@ -75,7 +75,9 @@ export default class UserListPage extends ShellAwareComponent {
                             <EditOutlined className="action-icon" />
                         </Link>
 
-                        {this.renderDeleteButton(item)}
+                        <AppContext.Consumer>
+                            {context => this.renderDeleteButton(item, context.user)}
+                        </AppContext.Consumer>
                     </>
                 ),
                 fixed: true,
@@ -110,8 +112,8 @@ export default class UserListPage extends ShellAwareComponent {
         return this.service.list(pageSize, pageNumber)
     }
 
-    shellConfig(): ShellConfig {
-        return {
+    componentDidMount() {
+        this.context.updateConfig({
             title: "Users",
             subtitle: "Relation of the nginx ignition's users",
             actions: [
@@ -120,7 +122,7 @@ export default class UserListPage extends ShellAwareComponent {
                     onClick: "/users/new",
                 }
             ],
-        };
+        })
     }
 
     render() {

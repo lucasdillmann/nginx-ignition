@@ -1,9 +1,12 @@
 import React from "react";
-import ShellAwareComponent, {ShellConfig} from "../../core/components/shell/ShellAwareComponent";
+import AppShellContext from "../../core/components/shell/AppShellContext";
 
-export default class CertificateDetailsPage extends ShellAwareComponent {
-    shellConfig(): ShellConfig {
-        return {
+export default class CertificateDetailsPage extends React.PureComponent {
+    static contextType = AppShellContext
+    context!: React.ContextType<typeof AppShellContext>
+
+    componentDidMount() {
+        this.context.updateConfig({
             title: "SSL certificate details",
             subtitle: "Details of a uploaded or issued SSL certificate",
             actions: [
@@ -17,7 +20,7 @@ export default class CertificateDetailsPage extends ShellAwareComponent {
                     onClick: () => {},
                 },
             ],
-        }
+        })
     }
 
     render() {
