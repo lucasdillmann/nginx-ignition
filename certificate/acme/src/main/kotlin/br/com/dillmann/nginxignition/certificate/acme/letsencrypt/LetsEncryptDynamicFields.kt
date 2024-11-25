@@ -5,13 +5,16 @@ import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProvid
 internal object LetsEncryptDynamicFields {
     val TERMS_OF_SERVICE = CertificateProviderDynamicField(
         id = "acceptTheTermsOfService",
-        description = "I agree to the Let's Encrypt terms of service available at theirs site",
-        required = true,
+        priority = 99,
+        description = "Terms of service",
+        helpText = "I agree to the Let's Encrypt terms of service available at theirs site",
+        required = false,
         type = CertificateProviderDynamicField.Type.BOOLEAN,
     )
 
     val EMAIL_ADDRESS = CertificateProviderDynamicField(
         id = "emailAddress",
+        priority = 0,
         description = "E-mail address",
         required = true,
         type = CertificateProviderDynamicField.Type.EMAIL,
@@ -19,6 +22,7 @@ internal object LetsEncryptDynamicFields {
 
     val DNS_PROVIDER = CertificateProviderDynamicField(
         id = "challengeDnsProvider",
+        priority = 1,
         description = "DNS provider (for the DNS challenge)",
         required = true,
         type = CertificateProviderDynamicField.Type.ENUM,
@@ -29,6 +33,7 @@ internal object LetsEncryptDynamicFields {
 
     val AWS_ACCESS_KEY = CertificateProviderDynamicField(
         id = "awsAccessKey",
+        priority = 2,
         description = "AWS access key (for the Route 53 DNS challenge)",
         required = true,
         type = CertificateProviderDynamicField.Type.SINGLE_LINE_TEXT,
@@ -40,6 +45,7 @@ internal object LetsEncryptDynamicFields {
 
     val AWS_SECRET_KEY = CertificateProviderDynamicField(
         id = "awsSecretKey",
+        priority = 3,
         description = "AWS secret key",
         required = true,
         type = CertificateProviderDynamicField.Type.SINGLE_LINE_TEXT,

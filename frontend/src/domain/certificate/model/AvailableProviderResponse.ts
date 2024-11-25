@@ -6,11 +6,13 @@ export default interface AvailableProviderResponse {
 
 export interface DynamicField {
     id: string
+    priority: number
     description: string
     required: boolean
     type: DynamicFieldType
     enumOptions: DynamicFieldEnumOption[]
     condition?: DynamicFieldCondition
+    helpText?: string
 }
 
 export enum DynamicFieldType {

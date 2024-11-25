@@ -7,5 +7,5 @@ import kotlinx.serialization.json.JsonObject
 internal data class IssueCertificateRequest(
     val providerId: String,
     val domainNames: List<String>,
-    val parameters: JsonObject,
+    val parameters: JsonObject? = null,
 )

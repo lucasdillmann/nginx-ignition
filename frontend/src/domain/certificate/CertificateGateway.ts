@@ -4,6 +4,8 @@ import PageResponse from "../../core/pagination/PageResponse";
 import {RenewCertificateResponse} from "./model/RenewCertificateResponse";
 import {CertificateResponse} from "./model/CertificateResponse";
 import AvailableProviderResponse from "./model/AvailableProviderResponse";
+import {IssueCertificateRequest} from "./model/IssueCertificateRequest";
+import {IssueCertificateResponse} from "./model/IssueCertificateResponse";
 
 export default class CertificateGateway {
     private readonly client: ApiClient
@@ -26,5 +28,9 @@ export default class CertificateGateway {
 
     async getAvailableProviders(): Promise<ApiResponse<AvailableProviderResponse[]>> {
         return this.client.get("/available-providers")
+    }
+
+    async issue(certificate: IssueCertificateRequest): Promise<ApiResponse<IssueCertificateResponse>> {
+        return this.client.post("/issue", certificate)
     }
 }

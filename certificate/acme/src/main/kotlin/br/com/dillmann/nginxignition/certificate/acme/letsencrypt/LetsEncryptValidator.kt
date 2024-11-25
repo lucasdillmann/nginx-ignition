@@ -15,7 +15,7 @@ internal class LetsEncryptValidator: BaseCertificateValidator(
 ) {
     override fun getDomainViolations(request: CertificateRequest): List<ConsistencyException.Violation> {
         val tosField = LetsEncryptDynamicFields.TERMS_OF_SERVICE.id
-        val termsOfService = request.parameters[tosField] as? Boolean? ?: return emptyList()
+        val termsOfService = request.parameters[tosField] as? Boolean? ?: false
         if (!termsOfService) {
             return listOf(
                 ConsistencyException.Violation(

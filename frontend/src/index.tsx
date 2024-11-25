@@ -4,7 +4,8 @@ import './index.css';
 import NginxIgnition from './domain/NginxIgnition';
 import reportWebVitals from "./web-vitals";
 
-const reactRoot = ReactDOM.createRoot(document.body)
+const rootElement = document.getElementById('nginx-ignition-root') as HTMLElement
+const reactRoot = ReactDOM.createRoot(rootElement)
 const nginxIgnition = <NginxIgnition />
 reactRoot.render(nginxIgnition);
 reportWebVitals();

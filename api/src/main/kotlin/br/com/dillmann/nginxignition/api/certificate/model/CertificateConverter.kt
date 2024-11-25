@@ -29,16 +29,18 @@ internal abstract class CertificateConverter {
     abstract fun toDomainModel(input: IssueCertificateRequest): CertificateRequest
 
     @Named("toDomainModelParameters")
-    protected fun toDomainModelParameters(input: JsonObject): Map<String, Any?> =
-        input.entries
-            .map { (key, rawValue) ->
+    protected fun toDomainModelParameters(input: JsonObject?): Map<String, Any?> =
+        input
+            ?.entries
+            ?.map { (key, rawValue) ->
                 val value =
                     if (rawValue is JsonObject) toDomainModelParameters(rawValue)
                     else rawValue.jsonPrimitive.unwrap()
 
                 key to value
             }
-            .toMap()
+            ?.toMap()
+            ?: emptyMap()
 
     private fun JsonPrimitive.unwrap(): Any? =
         booleanOrNull

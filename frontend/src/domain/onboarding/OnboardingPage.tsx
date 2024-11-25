@@ -13,9 +13,9 @@ import "./OnboardingPage.css"
 const {Text, Title} = Typography;
 
 interface OnboardingPageState {
-    loading: boolean,
-    validationResult: ValidationResult,
-    values: any,
+    loading: boolean
+    validationResult: ValidationResult
+    values: any
 }
 
 export default class OnboardingPage extends React.Component<any, OnboardingPageState> {

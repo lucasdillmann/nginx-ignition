@@ -11,10 +11,12 @@ internal data class AvailableProviderResponse(
     @Serializable
     data class DynamicField(
         val id: String,
+        val priority: Int,
         val description: String,
         val required: Boolean,
         val type: Type,
         val enumOptions: List<EnumOption> = emptyList(),
+        val helpText: String? = null,
         val condition: Condition? = null,
     ) {
         @Serializable
