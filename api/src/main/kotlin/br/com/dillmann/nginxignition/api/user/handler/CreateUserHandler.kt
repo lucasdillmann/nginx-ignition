@@ -16,7 +16,8 @@ internal class CreateUserHandler(
     override suspend fun handle(call: ApiCall) {
         val payload = call.payload<UserRequest>()
         val user = converter.toDomainModel(payload).copy(id = UUID.randomUUID())
-        saveCommand.save(user)
+        val currentUser = call.principal()
+        saveCommand.save(user, currentUser?.userId)
         call.respond(HttpStatus.NO_CONTENT)
     }
 }

@@ -29,3 +29,10 @@ export function requireSuccessPayload<T>(response: ApiResponse<T>): T {
 
     return payload
 }
+
+export function requireNullablePayload<T>(response: ApiResponse<T>): T | undefined {
+    if (response.statusCode === 404)
+        return undefined
+
+    return requireSuccessPayload(response)
+}

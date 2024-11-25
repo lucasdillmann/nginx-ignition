@@ -1,7 +1,7 @@
 import React from "react";
 import {Button, Flex, Layout, Menu} from "antd";
 import {MenuItemType} from "antd/es/menu/interface";
-import {Link, NavLink} from "react-router-dom";
+import {Link} from "react-router-dom";
 import NginxControl from "../nginx/NginxControl";
 import AppRoute from "../router/AppRoute";
 import "./AppShell.css"
@@ -43,7 +43,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         return menuItems.map(item => ({
             key: item.path,
             icon: item.icon,
-            label: <NavLink to={item.path}>{item.description}</NavLink>,
+            label: <Link to={item.path}>{item.description}</Link>,
             className: "shell-menu-item",
         }))
     }
@@ -52,7 +52,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         const {description, type, color, onClick} = action
         if (typeof onClick === "string") {
             return (
-                <Link to={onClick}>
+                <Link to={onClick} key={action.description}>
                     <Button
                         variant={type ?? "solid"}
                         color={color ?? "primary"}>
@@ -63,9 +63,10 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         } else {
             return (
                 <Button
+                    key={action.description}
                     variant={type ?? "solid"}
                     color={color ?? "primary"}
-                    onClick={() => onClick()}>
+                    onClick={onClick}>
                     {description}
                 </Button>
             )
@@ -114,9 +115,9 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
             <Layout className="shell-container">
                 <Sider trigger={null} width={250} className="shell-sider-container">
                     <div className="shell-logo">
-                        <NavLink to="/" className="shell-logo-link">
+                        <Link to="/" className="shell-logo-link">
                             nginx ignition
-                        </NavLink>
+                        </Link>
                     </div>
                     <div>
                         <NginxControl />

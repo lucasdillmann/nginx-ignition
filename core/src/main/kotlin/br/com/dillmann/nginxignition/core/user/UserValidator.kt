@@ -1,6 +1,7 @@
 package br.com.dillmann.nginxignition.core.user
 
 import br.com.dillmann.nginxignition.core.common.validation.ConsistencyException
+import java.util.UUID
 
 private typealias ErrorCreator = (String, String) -> Unit
 
@@ -9,9 +10,13 @@ internal class UserValidator(private val repository: UserRepository) {
         updatedState: User,
         currentState: User?,
         suppliedPassword: String?,
+        currentUserId: UUID?,
     ) {
         val violations = mutableListOf<ConsistencyException.Violation>()
         val addError: ErrorCreator = { path, message -> violations += ConsistencyException.Violation(path, message) }
+
+        if (!updatedState.enabled && currentState != null && currentState.id == currentUserId)
+            addError("enabled", "You cannot disable your own user")
 
         if (suppliedPassword.isNullOrBlank() && currentState == null)
             addError("password", "A password is required")

@@ -36,7 +36,7 @@ internal class UserOnboardingFinishHandler(
                 role = User.Role.ADMIN,
             )
 
-        saveUserCommand.save(userRequest)
+        saveUserCommand.save(userRequest, null)
 
         val user = authenticateCommand.authenticate(userRequest.username, userRequest.password!!)!!
         val subject = Subject(userId = user.id)

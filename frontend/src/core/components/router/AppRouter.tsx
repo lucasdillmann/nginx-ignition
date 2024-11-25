@@ -1,17 +1,42 @@
 import AppRoute from "./AppRoute";
 import React from "react";
-import AppContext from "../context/AppContext";
-import {RouteObject, createBrowserRouter, RouterProvider, Navigate} from "react-router-dom";
+import AppContext, {AppContextData} from "../context/AppContext";
+import {RouteObject, createBrowserRouter, RouterProvider, Navigate, Params} from "react-router-dom";
 import AppShell, {AppShellMenuItem} from "../shell/AppShell";
 import ErrorBoundary from "../errorboundary/ErrorBoundary";
+import {Router} from "@remix-run/router/dist/router";
+
+let currentInstance: AppRouter
+
+function router() {
+    return currentInstance.state.router
+}
+
+export function navigateTo(destination: string) {
+    return router()?.navigate(destination)
+}
+
+export function routeParams(): Params {
+    return router()?.state.matches[0]?.params ?? {}
+}
+
+interface AppRouterState {
+    router?: Router
+}
 
 export interface AppRouterProps {
     routes: AppRoute[]
 }
 
-export default class AppRouter extends React.Component<AppRouterProps> {
+export default class AppRouter extends React.Component<AppRouterProps, AppRouterState> {
     static contextType = AppContext
     context!: React.ContextType<typeof AppContext>
+
+    constructor(props: AppRouterProps, context: AppContextData) {
+        super(props, context);
+        this.state = {}
+        currentInstance = this
+    }
 
     private isRouteVisible(route: AppRoute): boolean {
         if (!Array.isArray(route.visibleRoles))
@@ -71,9 +96,20 @@ export default class AppRouter extends React.Component<AppRouterProps> {
             }))
     }
 
-    render() {
+    componentDidMount() {
+        if (this.state.router !== undefined)
+            return
+
         const routes = this.buildRouteAdapters()
-        const router = createBrowserRouter(routes)
+        const router = createBrowserRouter(routes, { window })
+        this.setState({router})
+    }
+
+    render() {
+        const {router} = this.state
+        if (router === undefined)
+            return <></>
+
         return <RouterProvider router={router}/>
     }
 }

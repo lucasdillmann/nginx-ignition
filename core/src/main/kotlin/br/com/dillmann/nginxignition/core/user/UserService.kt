@@ -28,7 +28,7 @@ internal class UserService(
     override suspend fun list(pageSize: Int, pageNumber: Int): Page<User> =
         repository.findPage(pageSize, pageNumber)
 
-    override suspend fun save(request: SaveUserRequest) {
+    override suspend fun save(request: SaveUserRequest, currentUserId: UUID?) {
         val databaseState = repository.findById(request.id)
         val (passwordHash, passwordSalt) =
             if (request.password != null) with(security.hash(request.password)) { hash to salt }
@@ -44,7 +44,7 @@ internal class UserService(
             passwordHash = passwordHash,
             passwordSalt = passwordSalt,
         )
-        validator.validate(newState, databaseState, request.password)
+        validator.validate(newState, databaseState, request.password, currentUserId)
         repository.save(newState)
     }
 

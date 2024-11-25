@@ -4,7 +4,7 @@ import ValidationResult from "../../core/validation/ValidationResult";
 import CertificateService from "./CertificateService";
 import AvailableProviderResponse from "./model/AvailableProviderResponse";
 import Preloader from "../../core/components/preloader/Preloader";
-import {Form, FormInstance, Select} from "antd";
+import {Form, Select} from "antd";
 import If from "../../core/components/flowcontrol/If";
 import FormLayout from "../../core/components/form/FormLayout";
 import DynamicInput from "./components/DynamicInput";
@@ -15,26 +15,23 @@ import Notification from "../../core/components/notification/Notification";
 import {UnexpectedResponseError} from "../../core/apiclient/ApiResponse";
 import ValidationResultConverter from "../../core/validation/ValidationResultConverter";
 import DomainNamesList from "./components/DomainNamesList";
-import {Navigate} from "react-router-dom";
+import {navigateTo} from "../../core/components/router/AppRouter";
 
 interface CertificateFormPageState {
     availableProviders: AvailableProviderResponse[]
     loading: boolean
     validationResult: ValidationResult
     formValues: IssueCertificateRequest
-    certificateId?: string
 }
 
 export default class CertificateFormPage extends ShellAwareComponent<unknown, CertificateFormPageState> {
     private readonly service: CertificateService
     private readonly saveModal: ModalPreloader
-    private readonly formRef: React.RefObject<FormInstance>
 
     constructor(props: any) {
         super(props);
         this.service = new CertificateService()
         this.saveModal = new ModalPreloader()
-        this.formRef = React.createRef()
         this.state = {
             loading: true,
             validationResult: new ValidationResult(),
@@ -70,7 +67,7 @@ export default class CertificateFormPage extends ShellAwareComponent<unknown, Ce
                 "Certificate issued",
                 "The SSL certificate was issued and is now ready to be used"
             )
-            this.setState({ certificateId })
+            navigateTo(`/certificates/${certificateId}`)
         } else {
             Notification.error(
                 "Issue failed",
@@ -100,10 +97,6 @@ export default class CertificateFormPage extends ShellAwareComponent<unknown, Ce
         }))
     }
 
-    private updateFormState(formValues: IssueCertificateRequest) {
-        this.setState({ formValues })
-    }
-
     private renderDynamicFields() {
         const {formValues, availableProviders, validationResult} = this.state
         const provider = availableProviders.find(item => item.uniqueId === formValues.providerId)
@@ -125,8 +118,7 @@ export default class CertificateFormPage extends ShellAwareComponent<unknown, Ce
         return (
             <Form<IssueCertificateRequest>
                 {...FormLayout.FormDefaults}
-                ref={this.formRef}
-                onValuesChange={(_, values) => this.updateFormState(values)}
+                onValuesChange={(_, formValues) => this.setState({formValues})}
                 initialValues={formValues}
             >
                 <Form.Item
@@ -177,11 +169,7 @@ export default class CertificateFormPage extends ShellAwareComponent<unknown, Ce
     }
 
     render() {
-        const {loading, availableProviders, certificateId} = this.state
-
-        if (certificateId !== undefined)
-            return <Navigate to={`/certificates/${certificateId}`} />
-
+        const {loading, availableProviders} = this.state
         return (
             <Preloader loading={loading}>
                 <If condition={availableProviders.length > 0}>

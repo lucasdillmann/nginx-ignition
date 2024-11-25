@@ -34,7 +34,19 @@ export default class UserGateway {
         return this.client.get(undefined, undefined, { pageSize, pageNumber })
     }
 
+    async getById(id: string): Promise<ApiResponse<UserResponse>> {
+        return this.client.get(`/${id}`)
+    }
+
+    async putById(id: string, user: UserRequest): Promise<ApiResponse<void>> {
+        return this.client.put(`/${id}`, user)
+    }
+
     async deleteById(id: string): Promise<ApiResponse<void>> {
         return this.client.delete(`/${id}`)
+    }
+
+    async post(user: UserRequest): Promise<ApiResponse<void>> {
+        return this.client.post("", user)
     }
 }

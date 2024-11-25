@@ -71,12 +71,15 @@ export default class ApiClient {
     }
 
     private buildFullPath(path?: string, queryParams?: { [key: string]: any }): string {
-        const queryString  = Array
+        const queryStringValues  = Array
             .from(Object.entries(queryParams ?? {}))
             .map(([key, value]) => `${key}=${value}`)
             .join("&")
+        const queryString = queryStringValues.length > 0
+            ? `?${queryStringValues}`
+            : ""
 
-        return `${this.basePath}${path ?? ""}?${queryString}`
+        return `${this.basePath}${path ?? ""}${queryString}`
     }
 
     private async executeRequest<T>(path: string, request: RequestInit): Promise<ApiResponse<T>> {

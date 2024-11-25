@@ -24,7 +24,7 @@ export interface DataTableColumn<T> {
 export interface DataTableProps<T> {
     columns: DataTableColumn<T>[]
     dataProvider: (pageSize: number, pageNumber: number) => Promise<PageResponse<T>>
-    rowKey: (row: T, index?: number) => React.Key
+    rowKey: (row: T) => React.Key
 }
 
 interface DataTableState<T> {
@@ -125,7 +125,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
                 <Table
                     columns={this.buildColumnAdapters()}
                     dataSource={data.contents}
-                    rowKey={(row, index) => rowKey(row, index)}
+                    rowKey={row => rowKey(row)}
                     pagination={false}
                     tableLayout="fixed"
                     virtual
