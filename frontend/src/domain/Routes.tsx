@@ -6,7 +6,7 @@ import {FileProtectOutlined, FileSearchOutlined, HddOutlined, TeamOutlined} from
 import HostListPage from "./host/HostListPage";
 import HostFormPage from "./host/HostFormPage";
 import CertificateListPage from "./certificate/CertificateListPage";
-import CertificateFormPage from "./certificate/CertificateFormPage";
+import CertificateIssuePage from "./certificate/CertificateIssuePage";
 import CertificateDetailsPage from "./certificate/CertificateDetailsPage";
 import LogsPage from "./logs/LogsPage";
 import UserListPage from "./user/UserListPage";
@@ -47,7 +47,7 @@ const Routes: AppRoute[] = [
         path: "/certificates/new",
         requiresAuthentication: true,
         fullPage: false,
-        component: <CertificateFormPage />,
+        component: <CertificateIssuePage />,
         activeMenuItemPath: "/certificates",
     },
     {

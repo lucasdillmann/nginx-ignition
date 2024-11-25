@@ -66,6 +66,7 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
     }
 
     private renderFileUpload() {
+        // TODO: Read the file, encode as Base64 and use the encoded form as the value
         return (
             <Upload>
                 <button style={{border: 0, background: 'none'}} type="button">

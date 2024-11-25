@@ -17,14 +17,14 @@ import ValidationResultConverter from "../../core/validation/ValidationResultCon
 import DomainNamesList from "./components/DomainNamesList";
 import {navigateTo} from "../../core/components/router/AppRouter";
 
-interface CertificateFormPageState {
+interface CertificateIssuePageState {
     availableProviders: AvailableProviderResponse[]
     loading: boolean
     validationResult: ValidationResult
     formValues: IssueCertificateRequest
 }
 
-export default class CertificateFormPage extends ShellAwareComponent<unknown, CertificateFormPageState> {
+export default class CertificateIssuePage extends ShellAwareComponent<unknown, CertificateIssuePageState> {
     private readonly service: CertificateService
     private readonly saveModal: ModalPreloader
 
