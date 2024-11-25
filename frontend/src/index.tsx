@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import NginxIgnition from './domain/NginxIgnition';
 import reportWebVitals from "./web-vitals";
 
