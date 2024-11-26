@@ -5,6 +5,7 @@ import ValidationResult from "../../../core/validation/ValidationResult";
 import TextArea from "antd/es/input/TextArea";
 import {PlusOutlined} from "@ant-design/icons";
 import {IssueCertificateRequest} from "../model/IssueCertificateRequest";
+import Password from "antd/es/input/Password";
 
 export interface DynamicFieldProps {
     formValues: IssueCertificateRequest
@@ -42,9 +43,11 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
     }
 
     private renderSingleLineText() {
-        return (
-            <Input value={this.initialValue()} />
-        )
+        const {field: {sensitive}} = this.props
+        if (sensitive)
+            return <Password value={this.initialValue()} />
+        else
+            return <Input value={this.initialValue()} />
     }
 
     private renderMultiLineText() {

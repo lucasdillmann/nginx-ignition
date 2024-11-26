@@ -23,7 +23,7 @@ internal class CertificateService(
     }
 
     override suspend fun getById(id: UUID): Certificate? =
-        repository.findById(id)
+        repository.findById(id)?.let(::removeSensitiveParameters)
 
     override suspend fun issue(request: CertificateRequest): IssueCertificateCommand.Output {
         validator.validate(request)
@@ -40,7 +40,12 @@ internal class CertificateService(
     }
 
     override suspend fun list(pageSize: Int, pageNumber: Int): Page<Certificate> =
-        repository.findPage(pageSize, pageNumber)
+        repository
+            .findPage(pageSize, pageNumber)
+            .let {
+                val updatedContents = it.contents.map(::removeSensitiveParameters)
+                it.copy(contents = updatedContents)
+            }
 
     override suspend fun renewById(id: UUID): RenewCertificateCommand.Output {
         val certificate = repository.findById(id)
@@ -61,7 +66,9 @@ internal class CertificateService(
         if (providerOutput.success)
             repository.save(providerOutput.certificate!!)
 
-        return providerOutput
+        return providerOutput.copy(
+            certificate = providerOutput.certificate?.let(::removeSensitiveParameters),
+        )
     }
 
     override suspend fun getAvailableProviders(): List<AvailableCertificateProvider> =
@@ -91,5 +98,12 @@ internal class CertificateService(
 
         nginxService.reload()
         logger.info("Certificate auto-renew cycle completed")
+    }
+
+    private fun removeSensitiveParameters(certificate: Certificate): Certificate {
+        val provider = providers.first { it.id == certificate.providerId }
+        val fieldsToRemove = provider.dynamicFields.filter { it.sensitive }.map { it.id }.toSet()
+        val updatedParameters = certificate.parameters - fieldsToRemove
+        return certificate.copy(parameters = updatedParameters)
     }
 }

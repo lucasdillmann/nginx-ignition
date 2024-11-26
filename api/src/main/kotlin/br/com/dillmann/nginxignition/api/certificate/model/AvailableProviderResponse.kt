@@ -14,6 +14,7 @@ internal data class AvailableProviderResponse(
         val priority: Int,
         val description: String,
         val required: Boolean,
+        val sensitive: Boolean,
         val type: Type,
         val enumOptions: List<EnumOption> = emptyList(),
         val helpText: String? = null,

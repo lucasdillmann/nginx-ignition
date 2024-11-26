@@ -9,6 +9,7 @@ export interface DynamicField {
     priority: number
     description: string
     required: boolean
+    sensitive: boolean
     type: DynamicFieldType
     enumOptions: DynamicFieldEnumOption[]
     condition?: DynamicFieldCondition

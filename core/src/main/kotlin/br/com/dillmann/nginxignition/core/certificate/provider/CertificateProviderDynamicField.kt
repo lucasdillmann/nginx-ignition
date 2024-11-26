@@ -7,6 +7,7 @@ data class CertificateProviderDynamicField(
     val required: Boolean,
     val type: Type,
     val enumOptions: List<EnumOption> = emptyList(),
+    val sensitive: Boolean = false,
     val condition: Condition? = null,
     val helpText: String? = null,
 ) {

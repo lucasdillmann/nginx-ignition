@@ -8,7 +8,7 @@ internal object LetsEncryptDynamicFields {
         priority = 99,
         description = "Terms of service",
         helpText = "I agree to the Let's Encrypt terms of service available at theirs site",
-        required = false,
+        required = true,
         type = CertificateProviderDynamicField.Type.BOOLEAN,
     )
 
@@ -48,6 +48,7 @@ internal object LetsEncryptDynamicFields {
         priority = 3,
         description = "AWS secret key",
         required = true,
+        sensitive = true,
         type = CertificateProviderDynamicField.Type.SINGLE_LINE_TEXT,
         condition = CertificateProviderDynamicField.Condition(
             parentField = DNS_PROVIDER.id,

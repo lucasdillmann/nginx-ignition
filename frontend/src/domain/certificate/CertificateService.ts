@@ -1,6 +1,11 @@
 import CertificateGateway from "./CertificateGateway";
 import PageResponse from "../../core/pagination/PageResponse";
-import {requireSuccessPayload, requireSuccessResponse, UnexpectedResponseError} from "../../core/apiclient/ApiResponse";
+import {
+    requireNullablePayload,
+    requireSuccessPayload,
+    requireSuccessResponse,
+    UnexpectedResponseError
+} from "../../core/apiclient/ApiResponse";
 import {CertificateResponse} from "./model/CertificateResponse";
 import {RenewCertificateResponse} from "./model/RenewCertificateResponse";
 import AvailableProviderResponse from "./model/AvailableProviderResponse";
@@ -39,5 +44,9 @@ export default class CertificateService {
                 else
                     throw new UnexpectedResponseError(response)
             })
+    }
+
+    async getById(id: string): Promise<CertificateResponse | undefined> {
+        return this.gateway.getById(id).then(requireNullablePayload)
     }
 }

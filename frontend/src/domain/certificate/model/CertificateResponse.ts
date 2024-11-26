@@ -6,4 +6,5 @@ export interface CertificateResponse {
     validUntil: string
     validFrom: string
     renewAfter?: string
+    parameters: Record<string, any>
 }

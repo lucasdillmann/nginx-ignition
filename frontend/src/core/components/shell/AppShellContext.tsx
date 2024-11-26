@@ -3,7 +3,7 @@ import React from "react";
 
 export interface ShellAction {
     description: string
-    onClick: string | (() => void)
+    onClick: string | (() => Promise<void>) | (() => void)
     disabled?: boolean
     type?: ButtonVariantType
     color?: ButtonColorType

@@ -9,7 +9,6 @@ internal class LetsEncryptValidator: BaseCertificateValidator(
         LetsEncryptDynamicFields.EMAIL_ADDRESS,
         LetsEncryptDynamicFields.AWS_ACCESS_KEY,
         LetsEncryptDynamicFields.AWS_SECRET_KEY,
-        LetsEncryptDynamicFields.TERMS_OF_SERVICE,
         LetsEncryptDynamicFields.DNS_PROVIDER,
     ),
 ) {

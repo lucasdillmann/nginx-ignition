@@ -16,6 +16,7 @@ internal object CustomCertificateDynamicFields {
         priority = 1,
         description = "Certificate file (PEM encoded) with the private key",
         required = true,
+        sensitive = true,
         type = CertificateProviderDynamicField.Type.FILE,
     )
 

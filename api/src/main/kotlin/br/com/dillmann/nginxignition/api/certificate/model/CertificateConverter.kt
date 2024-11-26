@@ -23,6 +23,7 @@ internal abstract class CertificateConverter {
 
     abstract fun toResponse(input: Page<Certificate>): PageResponse<CertificateResponse>
 
+    @Mapping(source = "parameters", target = "parameters", qualifiedByName = ["toResponseParameters"])
     abstract fun toResponse(input: Certificate): CertificateResponse
 
     @Mapping(source = "parameters", target = "parameters", qualifiedByName = ["toDomainModelParameters"])
@@ -41,6 +42,21 @@ internal abstract class CertificateConverter {
             }
             ?.toMap()
             ?: emptyMap()
+
+    @Named("toResponseParameters")
+    protected fun toResponseParameters(input: Map<String, Any>?): JsonObject {
+        val contents = input?.map { (key, value) -> key to value.wrap() }?.toMap() ?: emptyMap()
+        return JsonObject(contents)
+    }
+
+    private fun Any?.wrap(): JsonPrimitive =
+        when (this) {
+            null -> JsonNull
+            is Number -> JsonPrimitive(this)
+            is Boolean -> JsonPrimitive(this)
+            is String -> JsonPrimitive(this)
+            else -> JsonPrimitive(toString())
+        }
 
     private fun JsonPrimitive.unwrap(): Any? =
         booleanOrNull

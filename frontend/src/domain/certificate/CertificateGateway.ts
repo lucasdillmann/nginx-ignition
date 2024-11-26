@@ -33,4 +33,8 @@ export default class CertificateGateway {
     async issue(certificate: IssueCertificateRequest): Promise<ApiResponse<IssueCertificateResponse>> {
         return this.client.post("/issue", certificate)
     }
+
+    async getById(id: string): Promise<ApiResponse<CertificateResponse>> {
+        return this.client.get(`/${id}`)
+    }
 }
