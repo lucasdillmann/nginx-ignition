@@ -3,8 +3,6 @@ import DataTable, {DataTableColumn} from "../../core/components/datatable/DataTa
 import DataTableRenderers from "../../core/components/datatable/DataTableRenderers";
 import {Link} from "react-router-dom";
 import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
-import UserConfirmation from "../../core/components/confirmation/UserConfirmation";
-import Notification from "../../core/components/notification/Notification";
 import PageResponse from "../../core/pagination/PageResponse";
 import UserService from "./UserService";
 import UserResponse from "./model/UserResponse";
@@ -12,6 +10,7 @@ import {UserRole} from "./model/UserRole";
 import AppContext from "../../core/components/context/AppContext";
 import {Tooltip} from "antd";
 import AppShellContext from "../../core/components/shell/AppShellContext";
+import DeleteUserAction from "./actions/DeleteUserAction";
 
 export default class UserListPage extends React.PureComponent {
     static contextType = AppShellContext
@@ -93,19 +92,10 @@ export default class UserListPage extends React.PureComponent {
         }
     }
 
-    private deleteUser(user: UserResponse) {
-        UserConfirmation
-            .ask("Do you really want to delete the user?")
-            .then(() => this.service.delete(user.id))
-            .then(() => Notification.success(
-                `User deleted`,
-                `The user was deleted successfully`,
-            ))
+    private async deleteUser(user: UserResponse) {
+        return DeleteUserAction
+            .execute(user.id)
             .then(() => this.table.current?.refresh())
-            .catch(() => Notification.error(
-                `Unable to delete the user`,
-                `An unexpected error was found while trying to delete the user. Please try again later.`,
-            ))
     }
 
     private fetchData(pageSize: number, pageNumber: number): Promise<PageResponse<UserResponse>> {

@@ -27,7 +27,7 @@ class RenewCertificateAction {
             ))
     }
 
-    execute(certificateId: string): Promise<void> {
+    async execute(certificateId: string): Promise<void> {
         return UserConfirmation.askWithCallback(
             `Renewing the certificate can take several seconds and is only recommended when something is wrong with it
             since, by default, nginx ignition will renew it automatically when it's close to expiring. Continue anyway?`,
@@ -36,4 +36,5 @@ class RenewCertificateAction {
     }
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default new RenewCertificateAction()

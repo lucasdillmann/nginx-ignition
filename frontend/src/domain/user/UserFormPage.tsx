@@ -13,7 +13,9 @@ import Notification from "../../core/components/notification/Notification";
 import {UnexpectedResponseError} from "../../core/apiclient/ApiResponse";
 import ValidationResultConverter from "../../core/validation/ValidationResultConverter";
 import UserResponse from "./model/UserResponse";
-import AppShellContext from "../../core/components/shell/AppShellContext";
+import AppShellContext, {ShellAction} from "../../core/components/shell/AppShellContext";
+import DeleteUserAction from "./actions/DeleteUserAction";
+import AppContext, {AppContextData} from "../../core/components/context/AppContext";
 
 interface UserFormState {
     formValues: UserRequest
@@ -29,6 +31,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
     private readonly userId?: string
     private readonly service: UserService
     private readonly saveModal: ModalPreloader
+    private appContext?: AppContextData
 
     constructor(props: any, context: any) {
         super(props, context);
@@ -153,17 +156,37 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
         return {enabled, name, username, role}
     }
 
+    private async delete() {
+        if (this.userId === undefined)
+            return
+
+        return DeleteUserAction
+            .execute(this.userId)
+            .then(() => navigateTo("/users"))
+    }
+
     private updateShellConfig(enableActions: boolean) {
+        const actions: ShellAction[] = [
+            {
+                description: "Save",
+                disabled: !enableActions,
+                onClick: () => this.submit(),
+            },
+        ]
+
+        if (this.userId !== undefined)
+            actions.unshift({
+                description: "Delete",
+                disabled: !enableActions || this.userId === this.appContext?.user?.id,
+                color: "danger",
+                onClick: () => this.delete(),
+            })
+
+
         this.context.updateConfig({
             title: "User details",
             subtitle: "Full details and configurations of the nginx ignition's user",
-            actions: [
-                {
-                    description: "Save",
-                    disabled: !enableActions,
-                    onClick: () => this.submit(),
-                },
-            ],
+            actions,
         })
     }
 
@@ -195,7 +218,17 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
             return <Empty description="Not found" />
 
         if (loading)
-            return <Preloader loading />
+            return (
+                <>
+                    <AppContext.Consumer>
+                        {context => {
+                            this.appContext = context
+                            return undefined
+                        }}
+                    </AppContext.Consumer>
+                    <Preloader loading />
+                </>
+            )
 
         return this.renderForm()
     }
