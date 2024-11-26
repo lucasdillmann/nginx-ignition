@@ -12,6 +12,8 @@ import AvailableProviderResponse, {DynamicField, DynamicFieldType} from "./model
 import {ProDescriptions} from "@ant-design/pro-components";
 import DescriptionLayout from "../../core/components/description/DescriptionLayout";
 import {ProFieldValueType} from "@ant-design/pro-utils/es/typing";
+import If from "../../core/components/flowcontrol/If";
+import "./CertificateDetailsPage.css"
 
 interface CertificateDetailsPageState {
     loading: boolean
@@ -154,35 +156,48 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
         const dateTimeFormat = "DD/MM/YYYY HH:mm:ss"
 
         return (
-            <ProDescriptions {...DescriptionLayout.Defaults} dataSource={certificate}>
-                <ProDescriptions.Item title="Provider">
-                    {provider?.name}
-                </ProDescriptions.Item>
-                <ProDescriptions.Item title="Domain names">
-                    {certificate?.domainNames.map(domain => <>{domain}<br /></>)}
-                </ProDescriptions.Item>
-                <ProDescriptions.Item
-                    title="Issued at"
-                    dataIndex="issuedAt"
-                    valueType="dateTime"
-                    fieldProps={{format: dateTimeFormat}} />
-                <ProDescriptions.Item
-                    title="Valid from"
-                    dataIndex="validFrom"
-                    valueType="dateTime"
-                    fieldProps={{format: dateTimeFormat}} />
-                <ProDescriptions.Item
-                    title="Valid until"
-                    dataIndex="validUntil"
-                    valueType="dateTime"
-                    fieldProps={{format: dateTimeFormat}} />
-                <ProDescriptions.Item
-                    title="Renew recommended after"
-                    dataIndex="renewAfter"
-                    valueType="dateTime"
-                    fieldProps={{format: dateTimeFormat}} />
-                {this.renderDynamicFields()}
-            </ProDescriptions>
+            <>
+                <h2 className="certificate-details-section-name">General</h2>
+                <ProDescriptions {...DescriptionLayout.Defaults} dataSource={certificate}>
+                    <ProDescriptions.Item title="Provider">
+                        {provider?.name}
+                    </ProDescriptions.Item>
+                    <ProDescriptions.Item title="Domain names">
+                        {certificate?.domainNames.map(domain => <>{domain}<br/></>)}
+                    </ProDescriptions.Item>
+                </ProDescriptions>
+
+                <h2 className="certificate-details-section-name">Validity</h2>
+                <ProDescriptions {...DescriptionLayout.Defaults} dataSource={certificate}>
+                    <ProDescriptions.Item
+                        title="Issued at"
+                        dataIndex="issuedAt"
+                        valueType="dateTime"
+                        fieldProps={{format: dateTimeFormat}}/>
+                    <ProDescriptions.Item
+                        title="Valid from"
+                        dataIndex="validFrom"
+                        valueType="dateTime"
+                        fieldProps={{format: dateTimeFormat}}/>
+                    <ProDescriptions.Item
+                        title="Valid until"
+                        dataIndex="validUntil"
+                        valueType="dateTime"
+                        fieldProps={{format: dateTimeFormat}}/>
+                    <ProDescriptions.Item
+                        title="Renew recommended after"
+                        dataIndex="renewAfter"
+                        valueType="dateTime"
+                        fieldProps={{format: dateTimeFormat}}/>
+                </ProDescriptions>
+
+                <If condition={Object.keys(certificate!!.parameters).length > 0}>
+                    <h2 className="certificate-details-section-name">Additional parameters</h2>
+                    <ProDescriptions {...DescriptionLayout.Defaults} dataSource={certificate}>
+                        {this.renderDynamicFields()}
+                    </ProDescriptions>
+                </If>
+            </>
         )
     }
 

@@ -1,0 +1,9 @@
+.certificate-details-section-name {
+    font-size: 19px;
+    margin: 50px 0 20px 0;
+    padding: 0;
+}
+
+.certificate-details-section-name:first-of-type {
+    margin-top: 0;
+}
