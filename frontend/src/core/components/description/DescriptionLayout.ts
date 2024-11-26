@@ -7,7 +7,7 @@ const Defaults: ProDescriptionsProps = {
     layout: "horizontal",
     size: "middle",
     labelStyle: {
-        width: 250,
+        width: 200,
     },
     formProps: FormLayout.FormDefaults,
 }
