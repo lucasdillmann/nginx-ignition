@@ -69,9 +69,8 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
     }
 
     private renderFileUpload() {
-        // TODO: Read the file, encode as Base64 and use the encoded form as the value
         return (
-            <Upload>
+            <Upload type="drag" maxCount={1} beforeUpload={() => false}>
                 <button style={{border: 0, background: 'none'}} type="button">
                     <PlusOutlined />
                     <div style={{marginTop: 8}}>Select file</div>

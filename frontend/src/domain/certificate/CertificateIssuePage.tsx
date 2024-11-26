@@ -1,7 +1,7 @@
 import React from "react";
 import ValidationResult from "../../core/validation/ValidationResult";
 import CertificateService from "./CertificateService";
-import AvailableProviderResponse from "./model/AvailableProviderResponse";
+import AvailableProviderResponse, {DynamicFieldType} from "./model/AvailableProviderResponse";
 import Preloader from "../../core/components/preloader/Preloader";
 import {Form, Select} from "antd";
 import If from "../../core/components/flowcontrol/If";
@@ -47,14 +47,54 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
         }
     }
 
-    private submit() {
+    private async fileToBase64(file: File): Promise<string | null> {
+        if (typeof file.arrayBuffer !== "function")
+            return null
+
+        const contents =  await file.arrayBuffer()
+        return btoa(
+            new Uint8Array(contents).reduce(
+                (data, byte) => data + String.fromCharCode(byte),
+                '',
+            )
+        )
+    }
+
+    private async buildFileParameters() {
+        const {availableProviders, formValues} = this.state
+        const fileFields = availableProviders
+            .find(provider => provider.id === formValues.providerId)
+            ?.dynamicFields
+            ?.filter(field => field.type === DynamicFieldType.FILE)
+            ?? []
+
+        const output: Record<string, any> = {}
+        for (const field of fileFields) {
+            const value = formValues.parameters?.[field.id]
+            if (value !== undefined && value.file !== undefined)
+                output[field.id] = await this.fileToBase64(value.file)
+            else
+                output[field.id] = null
+        }
+
+        return output
+    }
+
+    private async submit() {
+        const {formValues} = this.state
         this.saveModal.show(
             "Hang on tight",
             "We're issuing your certificate. This can take several seconds, feel free to grab a cup of coffee."
         )
 
-        const certificateRequest = { ...this.state.formValues }
-        certificateRequest.domainNames = certificateRequest.domainNames.map(item => item ?? "")
+        const certificateRequest: IssueCertificateRequest = {
+            ...formValues,
+            domainNames: formValues.domainNames.map(item => item ?? ""),
+            parameters: {
+                ...formValues.parameters,
+                ...(await this.buildFileParameters()),
+            },
+        }
 
         this.service
             .issue(certificateRequest)

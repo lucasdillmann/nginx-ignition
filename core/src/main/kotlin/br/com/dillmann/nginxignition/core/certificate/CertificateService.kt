@@ -28,7 +28,14 @@ internal class CertificateService(
     override suspend fun issue(request: CertificateRequest): IssueCertificateCommand.Output {
         validator.validate(request)
         val provider = providers.first { it.id == request.providerId }
-        val providerOutput = provider.issue(request)
+        val providerResult = runCatching { provider.issue(request) }
+        if (providerResult.isFailure)
+            return IssueCertificateCommand.Output(
+                success = false,
+                errorReason = providerResult.exceptionOrNull()?.message,
+            )
+
+        val providerOutput = providerResult.getOrThrow()
         if (providerOutput.success)
             repository.save(providerOutput.certificate!!)
 

@@ -24,6 +24,7 @@ internal class CustomCertificateProvider(
 ): CertificateProvider {
     private companion object {
         private const val UNIQUE_ID = "CUSTOM"
+        private val ALGORITHMS = listOf("RSA", "ECDSA")
     }
 
     override val name = "Custom certificate"
@@ -65,7 +66,21 @@ internal class CustomCertificateProvider(
     }
 
     private fun parseCertificate(publicKey: String, privateKey: String): Pair<X509Certificate, PrivateKey> {
-        val keyFactory = KeyFactory.getInstance(PRIVATE_KEY_ALGORITHM)
+        for (algorithm in ALGORITHMS) {
+            val result = runCatching { parseCertificate(publicKey, privateKey, algorithm) }
+            if (result.isSuccess)
+                return result.getOrThrow()
+        }
+
+        error("Certificate keys must be encoded using either the RSA or ECDSA algorithms")
+    }
+
+    private fun parseCertificate(
+        publicKey: String,
+        privateKey: String,
+        algorithm: String,
+    ): Pair<X509Certificate, PrivateKey> {
+        val keyFactory = KeyFactory.getInstance(algorithm)
         val certFactory = CertificateFactory.getInstance("X.509")
 
         val parsedPrivateKey = String(privateKey.decodeBase64())
