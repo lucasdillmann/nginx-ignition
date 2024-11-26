@@ -192,7 +192,7 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
                 </ProDescriptions>
 
                 <If condition={Object.keys(certificate!!.parameters).length > 0}>
-                    <h2 className="certificate-details-section-name">Additional parameters</h2>
+                    <h2 className="certificate-details-section-name">Provider-specific parameters</h2>
                     <ProDescriptions {...DescriptionLayout.Defaults} dataSource={certificate}>
                         {this.renderDynamicFields()}
                     </ProDescriptions>
