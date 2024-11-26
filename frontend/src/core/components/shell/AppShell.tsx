@@ -86,13 +86,15 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         )
     }
 
-    componentDidUpdate(prevProps: Readonly<AppShellProps>) {
-        const {children: previous} = prevProps
+    shouldComponentUpdate(nextProps: Readonly<AppShellProps>): boolean {
+        const {children: previous} = nextProps
         const {children: current} = this.props
 
         if (previous !== current) {
             this.setState({config: EmptyConfig})
         }
+
+        return true
     }
 
     render() {

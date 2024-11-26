@@ -65,11 +65,11 @@ create index idx_host_route_host_id on host_route (host_id);
 create table "user" (
     id uuid not null,
     enabled boolean not null,
-    name varchar(256) not null,
+    "name" varchar(256) not null,
     username varchar(256) not null,
     password_hash varchar(2048) not null,
     password_salt varchar(512) not null,
-    role varchar(32) not null,
+    "role" varchar(32) not null,
     constraint pk_user primary key (id)
 );
 
