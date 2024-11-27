@@ -23,7 +23,7 @@ interface PaginatedSelectState<T> {
 
 export interface PaginatedSelectProps<T> {
     placeholder?: string
-    onChange: (selected?: T) => void
+    onChange?: (selected?: T) => void
     pageProvider: (pageSize: number, pageNumber: number) => Promise<PageResponse<T>>
     itemKey: (item: T) => string
     itemDescription: (item: T) => string
@@ -127,8 +127,8 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
                 options={this.buildOptions()}
                 status={status}
                 value={value !== undefined ? this.buildOption(value) : undefined}
-                onChange={(_, option) => onChange((option as SelectOption<T>).item)}
-                onDeselect={() => onChange(undefined)}
+                onChange={(_, option) => onChange?.((option as SelectOption<T>).item)}
+                onDeselect={() => onChange?.(undefined)}
                 onPopupScroll={event => this.handleScrollEvent(event)}
                 onDropdownVisibleChange={open => this.handleDropdownVisibilityChange(open)}
                 loading={loading}

@@ -11,6 +11,15 @@ const LabeledItem: FormItemProps = {
     },
 }
 
+const ExpandedLabeledItem: FormItemProps = {
+    labelCol: {
+        flex: "auto",
+    },
+    wrapperCol: {
+        flex: "auto",
+    },
+}
+
 const FormDefaults: FormProps = {
     labelCol: LabeledItem.labelCol,
     wrapperCol: LabeledItem.wrapperCol,
@@ -28,8 +37,16 @@ const UnlabeledItem: FormItemProps = {
     },
 }
 
+const ExpandedUnlabeledItem: FormItemProps = {
+    wrapperCol: {
+        flex: "auto",
+    },
+}
+
 export default Object.freeze({
     FormDefaults,
     LabeledItem,
+    ExpandedLabeledItem,
     UnlabeledItem,
+    ExpandedUnlabeledItem,
 })

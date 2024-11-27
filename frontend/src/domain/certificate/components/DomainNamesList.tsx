@@ -7,15 +7,17 @@ import ValidationResult from "../../../core/validation/ValidationResult";
 
 export interface DomainNamesListProps {
     validationResult: ValidationResult
+    expandedLabelSize?: boolean
 }
 
 export default class DomainNamesList extends React.PureComponent<DomainNamesListProps> {
     private renderFields(fields: FormListFieldData[], operations: FormListOperation) {
-        const {validationResult} = this.props
+        const {validationResult, expandedLabelSize} = this.props
+        const layout = expandedLabelSize === true ? FormLayout.ExpandedUnlabeledItem : FormLayout.UnlabeledItem
 
         const domainNameFields = fields.map((field, index) => (
             <Form.Item
-                {...(index > 0 ? FormLayout.UnlabeledItem : undefined)}
+                {...(index > 0 ? layout : undefined)}
                 label={index === 0 ? "Domain names": ""}
                 key={field.key}
                 required
@@ -40,7 +42,7 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
         ))
 
         const addAction = (
-            <Form.Item {...FormLayout.UnlabeledItem}>
+            <Form.Item {...layout}>
                 <Button
                     type="dashed"
                     onClick={() => operations.add()}

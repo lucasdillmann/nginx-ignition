@@ -2,12 +2,17 @@ import ApiClient from "../../core/apiclient/ApiClient";
 import ApiResponse from "../../core/apiclient/ApiResponse";
 import PageResponse from "../../core/pagination/PageResponse";
 import HostResponse from "./model/HostResponse";
+import HostRequest from "./model/HostRequest";
 
 export default class HostGateway {
     private readonly client: ApiClient
 
     constructor() {
         this.client = new ApiClient("/api/hosts")
+    }
+
+    async getById(id: string): Promise<ApiResponse<HostResponse>> {
+        return this.client.get(`/${id}`)
     }
 
     async getPage(pageSize?: number, pageNumber?: number): Promise<ApiResponse<PageResponse<HostResponse>>> {
@@ -24,5 +29,13 @@ export default class HostGateway {
 
     async getLogs(id: string, type: string, lines: number): Promise<ApiResponse<string[]>> {
         return this.client.get(`/${id}/logs/${type}`, undefined, { lines })
+    }
+
+    async putById(id: string, user: HostRequest): Promise<ApiResponse<void>> {
+        return this.client.put(`/${id}`, user)
+    }
+
+    async post(user: HostRequest): Promise<ApiResponse<void>> {
+        return this.client.post("", user)
     }
 }

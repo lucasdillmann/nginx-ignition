@@ -1,0 +1,31 @@
+.host-form-binding-container {
+    width: 100%;
+    height: fit-content;
+    margin-bottom: 20px;
+}
+
+.host-form-binding-container .ant-form-item {
+    height: auto;
+    margin-bottom: 0;
+    margin-right: 20px;
+}
+
+.host-form-binding-container .ant-form-item:last-of-type {
+    margin-right: 0;
+}
+
+.host-form-binding-protocol {
+    min-width: 120px;
+}
+
+.host-form-binding-ip {
+    min-width: 250px;
+}
+
+.host-form-binding-port {
+    min-width: 120px;
+}
+
+.host-form-binding-certificate {
+    flex-grow: 1;
+}

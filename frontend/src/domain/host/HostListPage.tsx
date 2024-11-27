@@ -12,6 +12,7 @@ import Notification from "../../core/components/notification/Notification";
 import NginxReload from "../../core/components/nginx/NginxReload";
 import TagGroup from "../../core/components/taggroup/TagGroup";
 import AppShellContext from "../../core/components/shell/AppShellContext";
+import DeleteHostAction from "./actions/DeleteHostAction";
 
 export default class HostListPage extends React.PureComponent {
     static contextType = AppShellContext
@@ -85,20 +86,10 @@ export default class HostListPage extends React.PureComponent {
             ))
     }
 
-    private deleteHost(host: HostResponse) {
-        UserConfirmation
-            .ask("Do you really want to delete the host?")
-            .then(() => this.service.delete(host.id))
-            .then(() => Notification.success(
-                `Host deleted`,
-                `The host was deleted successfully`,
-            ))
+    private async deleteHost(host: HostResponse) {
+        return DeleteHostAction
+            .execute(host.id)
             .then(() => this.table.current?.refresh())
-            .then(() => NginxReload.ask())
-            .catch(() => Notification.error(
-                `Unable to delete the host`,
-                `An unexpected error was found while trying to delete the host. Please try again later.`,
-            ))
     }
 
     private fetchData(pageSize: number, pageNumber: number): Promise<PageResponse<HostResponse>> {
