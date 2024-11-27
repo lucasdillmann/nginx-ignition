@@ -26,10 +26,10 @@ internal class HostValidator(
     }
 
     private suspend fun validateDefaultFlag(host: Host, addError: ErrorCreator) {
-        if (host.default) {
+        if (host.defaultServer) {
             val currentId = hostRepository.findDefault()?.id
             if (currentId != null && host.id != currentId)
-                addError("default", "There's already another host marked as the default one")
+                addError("defaultServer", "There's already another host marked as the default one")
         }
     }
 

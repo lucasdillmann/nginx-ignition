@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class HostResponse(
     val id: UuidString,
-    val default: Boolean,
     val enabled: Boolean,
+    val defaultServer: Boolean,
     val domainNames: List<String>,
     val routes: List<Route>,
     val bindings: List<Binding>,

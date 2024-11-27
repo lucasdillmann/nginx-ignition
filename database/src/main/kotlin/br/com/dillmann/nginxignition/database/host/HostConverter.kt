@@ -14,7 +14,7 @@ internal class HostConverter {
     fun apply(host: Host, scope: InsertStatement<out Any>) {
         with(HostTable) {
             scope[id] = host.id
-            scope[default] = host.default
+            scope[defaultServer] = host.defaultServer
             scope[enabled] = host.enabled
             scope[domainNames] = Json.encodeToString(host.domainNames)
             scope[websocketSupport] = host.featureSet.websocketsSupport
@@ -53,7 +53,7 @@ internal class HostConverter {
     fun toHost(host: ResultRow, bindings: List<ResultRow>, routes: List<ResultRow>) =
         Host(
             id = host[HostTable.id],
-            default = host[HostTable.default],
+            defaultServer = host[HostTable.defaultServer],
             enabled = host[HostTable.enabled],
             domainNames = Json.decodeFromString(host[HostTable.domainNames]),
             routes = routes.map(::toRoute),

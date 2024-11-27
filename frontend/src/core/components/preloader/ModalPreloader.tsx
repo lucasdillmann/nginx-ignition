@@ -14,6 +14,7 @@ export default class ModalPreloader {
             footer: null,
             icon: <LoadingOutlined className="modal-preloader-spinner" spin  />,
         })
+        this.timeoutId = undefined
     }
 
     show(title: string, content: string) {

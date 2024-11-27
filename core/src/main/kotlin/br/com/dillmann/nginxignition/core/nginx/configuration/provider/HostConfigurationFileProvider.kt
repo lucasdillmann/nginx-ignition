@@ -10,7 +10,7 @@ internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
     private fun buildHost(basePath: String, host: Host): NginxConfigurationFileProvider.Output {
         val routes = host.routes.sortedBy { it.priority }.joinToString("\n") { buildRoute(it, host.featureSet) }
         val serverNames =
-            if (host.default) "server_name _;"
+            if (host.defaultServer) "server_name _;"
             else host.domainNames.joinToString("\n") { "server_name $it;" }
         val httpsRedirect =
             if (host.featureSet.redirectHttpToHttps)
@@ -80,7 +80,7 @@ internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
 
     private fun buildBindingAdditionalParams(host: Host): String {
         var additionalParams = ""
-        if (host.default)
+        if (host.defaultServer)
             additionalParams += " default_server"
 
         return additionalParams

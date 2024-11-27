@@ -4,8 +4,8 @@ import java.util.UUID
 
 data class Host(
     val id: UUID,
-    val default: Boolean,
     val enabled: Boolean,
+    val defaultServer: Boolean,
     val domainNames: List<String>,
     val routes: List<Route>,
     val bindings: List<Binding>,

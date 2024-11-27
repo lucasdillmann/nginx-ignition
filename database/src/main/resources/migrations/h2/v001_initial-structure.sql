@@ -19,7 +19,7 @@ create index idx_certificate_renew_after on certificate (renew_after);
 create table host (
     id uuid not null,
     enabled boolean not null,
-    "default" boolean not null,
+    default_server boolean not null,
     domain_names varchar(512) not null,
     websocket_support boolean not null,
     http2_support boolean not null,
@@ -28,7 +28,7 @@ create table host (
 );
 
 create index idx_host_enabled on host (enabled);
-create index idx_host_default on host ("default");
+create index idx_host_default on host (default_server);
 
 create table host_binding (
     id uuid not null,

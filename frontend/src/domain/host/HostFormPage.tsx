@@ -21,7 +21,7 @@ import NginxReload from "../../core/components/nginx/NginxReload";
 
 const DEFAULT_HOST: HostRequest = {
     enabled: true,
-    default: false,
+    defaultServer: false,
     domainNames: [""],
     bindings: [
         {
@@ -104,7 +104,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
             routes,
             bindings,
             featureSet,
-            default: response.default,
+            defaultServer: response.defaultServer,
         }
     }
 
@@ -209,10 +209,10 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             <Switch/>
                         </Form.Item>
                         <Form.Item
-                            name="default"
-                            validateStatus={validationResult.getStatus("default")}
-                            help={validationResult.getMessage("default")}
-                            label="Default"
+                            name="defaultServer"
+                            validateStatus={validationResult.getStatus("defaultServer")}
+                            help={validationResult.getMessage("defaultServer")}
+                            label="Default server"
                             required
                         >
                             <Switch/>

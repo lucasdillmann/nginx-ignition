@@ -38,8 +38,8 @@ export interface HostRoute {
 }
 
 export default interface HostRequest {
-    default: boolean
     enabled: boolean
+    defaultServer: boolean
     domainNames: string[]
     routes: HostRoute[]
     bindings: HostBinding[]

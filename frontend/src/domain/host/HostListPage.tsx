@@ -35,9 +35,9 @@ export default class HostListPage extends React.PureComponent {
                 renderer: (item) => <TagGroup values={item.domainNames} />,
             },
             {
-                id: "default",
+                id: "defaultServer",
                 description: "Default",
-                renderer: (item) => DataTableRenderers.yesNo(item.default),
+                renderer: (item) => DataTableRenderers.yesNo(item.defaultServer),
                 width: 100,
             },
             {

@@ -27,7 +27,7 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
     }
 
     override suspend fun findDefault(): Host? =
-        findOneWhere { HostTable.default eq true }
+        findOneWhere { HostTable.defaultServer eq true }
 
     override suspend fun save(host: Host) {
         coTransaction {
