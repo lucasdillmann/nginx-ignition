@@ -175,18 +175,30 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         })
     }
 
+    private handleChange(host: HostRequest) {
+        const orderedData: HostRequest = {
+            ...host,
+            routes: host.routes.sort((left, right) => left.priority > right.priority ? 1 : -1)
+        }
+        this.setState({formValues: orderedData})
+    }
+
     private renderForm() {
         const {validationResult, formValues} = this.state
 
         return (
             <Form<HostRequest>
                 {...FormLayout.FormDefaults}
-                onValuesChange={(_, formValues) => this.setState({formValues})}
+                onValuesChange={(_, formValues) => this.handleChange(formValues)}
                 initialValues={formValues}
             >
                 <h2 className="hosts-form-section-name">General</h2>
+                <p className="hosts-form-section-help-text">
+                    General configurations properties of the nginx's virtual host
+                </p>
                 <Flex className="hosts-form-inner-flex-container">
-                    <Flex className="hosts-form-inner-flex-container-column hosts-form-expanded-label-size" style={{ maxWidth: "30%" }}>
+                    <Flex className="hosts-form-inner-flex-container-column hosts-form-expanded-label-size"
+                          style={{maxWidth: "30%"}}>
                         <Form.Item
                             name="enabled"
                             validateStatus={validationResult.getStatus("enabled")}
@@ -194,7 +206,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             label="Enabled"
                             required
                         >
-                            <Switch />
+                            <Switch/>
                         </Form.Item>
                         <Form.Item
                             name="default"
@@ -234,14 +246,21 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                         </Form.Item>
                     </Flex>
                     <Flex className="hosts-form-inner-flex-container-column">
-                        <DomainNamesList validationResult={validationResult} />
+                        <DomainNamesList validationResult={validationResult}/>
                     </Flex>
                 </Flex>
 
                 <h2 className="hosts-form-section-name">Routing</h2>
+                <p className="hosts-form-section-help-text">
+                    Routes to be configured in the host. The nginx will evaluate them from top to bottom,
+                    executing the first one that matches the source path.
+                </p>
                 <HostRoutes routes={formValues.routes} validationResult={validationResult}/>
 
                 <h2 className="hosts-form-section-name">Bindings</h2>
+                <p className="hosts-form-section-help-text">
+                    Relation of IPs and ports where the host will listen for requests
+                </p>
                 <HostBindings bindings={formValues.bindings} validationResult={validationResult}/>
             </Form>
         )

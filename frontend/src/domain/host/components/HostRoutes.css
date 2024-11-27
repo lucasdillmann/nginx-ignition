@@ -1,0 +1,28 @@
+.host-form-route-container {
+    width: 100%;
+    height: fit-content;
+    margin-bottom: 20px;
+}
+
+.host-form-route-container .ant-form-item {
+    height: auto;
+    margin-bottom: 0;
+    margin-right: 20px;
+}
+
+.host-form-route-container .ant-form-item:last-of-type {
+    margin-right: 0;
+}
+
+.host-form-route-type {
+    min-width: 150px;
+}
+
+.host-form-route-source-path {
+    min-width: 300px;
+}
+
+.host-form-route-target-uri,
+.host-form-route-response-payload {
+    flex-grow: 1;
+}
