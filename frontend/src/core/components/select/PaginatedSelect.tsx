@@ -126,7 +126,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
                 allowClear={allowEmpty}
                 options={this.buildOptions()}
                 status={status}
-                value={value !== undefined ? this.buildOption(value) : undefined}
+                value={value !== undefined && value !== null ? this.buildOption(value) : undefined}
                 onChange={(_, option) => onChange?.((option as SelectOption<T>).item)}
                 onDeselect={() => onChange?.(undefined)}
                 onPopupScroll={event => this.handleScrollEvent(event)}
