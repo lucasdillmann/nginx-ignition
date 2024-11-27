@@ -17,6 +17,7 @@ import ModalPreloader from "../../core/components/preloader/ModalPreloader";
 import HostRoutes from "./components/HostRoutes";
 import HostBindings from "./components/HostBindings";
 import "./HostFormPage.css"
+import NginxReload from "../../core/components/nginx/NginxReload";
 
 const DEFAULT_HOST: HostRequest = {
     enabled: true,
@@ -132,6 +133,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
     private handleSuccess() {
         Notification.success("Host saved", "The host was saved successfully")
+        NginxReload.ask()
         navigateTo("/hosts")
     }
 
