@@ -63,7 +63,6 @@ export default class HostListPage extends React.PureComponent {
                         </Link>
                     </>
                 ),
-                fixed: true,
                 width: 120,
             }
         ]

@@ -3,7 +3,8 @@ import ValidationResult from "../../../core/validation/ValidationResult";
 import {Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Select} from "antd";
 import If from "../../../core/components/flowcontrol/If";
 import {CloseOutlined, PlusOutlined, ArrowUpOutlined, ArrowDownOutlined} from "@ant-design/icons";
-import {HostRoute, HostRouteType} from "../model/HostRequest";
+import {HostFormRoute} from "../model/HostFormValues";
+import {HostRouteType} from "../model/HostRequest";
 import FormLayout from "../../../core/components/form/FormLayout";
 import "./HostRoutes.css"
 import TextArea from "antd/es/input/TextArea";
@@ -24,7 +25,7 @@ const ENABLED_ACTION_ICON_STYLE = {
     color: "#000000",
 }
 
-const DEFAULT_VALUES: HostRoute = {
+const DEFAULT_VALUES: HostFormRoute = {
     priority: 0,
     type: HostRouteType.PROXY,
     sourcePath: "/",
@@ -32,7 +33,7 @@ const DEFAULT_VALUES: HostRoute = {
 }
 
 export interface HostRoutesProps {
-    routes: HostRoute[]
+    routes: HostFormRoute[]
     validationResult: ValidationResult
 }
 
@@ -117,7 +118,10 @@ export default class HostRoutes extends React.Component<HostRoutesProps> {
                     layout="vertical"
                     name={[name, "response", "headers"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].response.headers`)}
-                    help={validationResult.getMessage(`routes[${index}].response.headers`) ?? "One per line, separated by a comma"}
+                    help={
+                        validationResult.getMessage(`routes[${index}].response.headers`)
+                        ?? "One per line, as [key]: [value]"
+                    }
                     label="Headers"
                     required
                 >

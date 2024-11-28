@@ -79,7 +79,6 @@ export default class UserListPage extends React.PureComponent {
                         </AppContext.Consumer>
                     </>
                 ),
-                fixed: true,
                 width: 120,
             }
         ]

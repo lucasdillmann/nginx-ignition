@@ -31,7 +31,7 @@ data class Host(
     data class StaticResponse(
         val statusCode: Int,
         val payload: String?,
-        val headers: Map<String, List<String>>,
+        val headers: Map<String, String>,
     )
 
     data class FeatureSet(

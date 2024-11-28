@@ -17,7 +17,6 @@ export interface DataTableColumn<T> {
     renderer: (row: T, index: number) => React.ReactNode
     width?: number
     minWidth?: number
-    fixed?: boolean
     align?: AlignType,
 }
 
@@ -55,7 +54,6 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
             render: (_, row, index) => column.renderer(row, index),
             width: column.width,
             minWidth: column.minWidth,
-            fixed: column.fixed,
             align: column.align,
         }))
     }

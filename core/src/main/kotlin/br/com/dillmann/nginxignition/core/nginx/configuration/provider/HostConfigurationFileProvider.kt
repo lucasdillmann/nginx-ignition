@@ -97,7 +97,7 @@ internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
     private fun buildStaticResponseRoute(route: Host.Route, features: Host.FeatureSet): String {
         val (statusCode, payload, headers) = route.response!!
         val headerInstructions = headers
-            .flatMap { (key, values) -> values.map { key to it } }
+            .entries
             .joinToString(separator = "\n") { (key, value) -> "add_header \"${key.scape()}\" \"${value.scape()}\";" }
         val escapedPayload = (payload ?: "").scape()
 

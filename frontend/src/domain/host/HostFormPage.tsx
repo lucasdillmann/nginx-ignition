@@ -6,8 +6,7 @@ import DomainNamesList from "../certificate/components/DomainNamesList";
 import {navigateTo, routeParams} from "../../core/components/router/AppRouter";
 import HostService from "./HostService";
 import ValidationResult from "../../core/validation/ValidationResult";
-import HostRequest, {HostBindingType, HostRouteType} from "./model/HostRequest";
-import HostResponse from "./model/HostResponse";
+import {HostBindingType, HostRouteType} from "./model/HostRequest";
 import Preloader from "../../core/components/preloader/Preloader";
 import DeleteHostAction from "./actions/DeleteHostAction";
 import Notification from "../../core/components/notification/Notification";
@@ -18,8 +17,10 @@ import HostRoutes from "./components/HostRoutes";
 import HostBindings from "./components/HostBindings";
 import "./HostFormPage.css"
 import NginxReload from "../../core/components/nginx/NginxReload";
+import HostFormValues from "./model/HostFormValues";
+import HostConverter from "./HostConverter";
 
-const DEFAULT_HOST: HostRequest = {
+const DEFAULT_HOST: HostFormValues = {
     enabled: true,
     defaultServer: false,
     domainNames: [""],
@@ -33,12 +34,9 @@ const DEFAULT_HOST: HostRequest = {
     routes: [
         {
             priority: 0,
-            type: HostRouteType.STATIC_RESPONSE,
+            type: HostRouteType.PROXY,
             sourcePath: "/",
-            response: {
-                statusCode: 200,
-                payload: "Hello world",
-            }
+            targetUri: "",
         }
     ],
     featureSet: {
@@ -49,7 +47,7 @@ const DEFAULT_HOST: HostRequest = {
 }
 
 interface HostFormPageState {
-    formValues: HostRequest
+    formValues: HostFormValues
     validationResult: ValidationResult
     loading: boolean
     notFound: boolean
@@ -78,36 +76,6 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         }
     }
 
-    private buildPayload(): HostRequest {
-        const {formValues} = this.state
-
-        const bindings = formValues.bindings.map(binding => {
-            const certificateDetails = binding.certificateId as any
-            const certificateId = certificateDetails?.id
-            return {
-                ...binding,
-                certificateId,
-            }
-        })
-
-        return {
-            ...formValues,
-            bindings,
-        }
-    }
-
-    private convertToHostRequest(response: HostResponse): HostRequest {
-        const {enabled, domainNames, routes, bindings, featureSet} = response
-        return {
-            enabled,
-            domainNames,
-            routes,
-            bindings,
-            featureSet,
-            defaultServer: response.defaultServer,
-        }
-    }
-
     private async delete() {
         if (this.hostId === undefined)
             return
@@ -118,7 +86,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     private submit() {
-        const payload = this.buildPayload()
+        const payload = HostConverter.formValuesToRequest(this.state.formValues)
         this.saveModal.show("Hang on tight", "We're saving the host")
 
         const action = this.hostId === undefined
@@ -175,8 +143,8 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         })
     }
 
-    private handleChange(host: HostRequest) {
-        const orderedData: HostRequest = {
+    private handleChange(host: HostFormValues) {
+        const orderedData: HostFormValues = {
             ...host,
             routes: host.routes.sort((left, right) => left.priority > right.priority ? 1 : -1)
         }
@@ -187,7 +155,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         const {validationResult, formValues} = this.state
 
         return (
-            <Form<HostRequest>
+            <Form<HostFormValues>
                 {...FormLayout.FormDefaults}
                 onValuesChange={(_, formValues) => this.handleChange(formValues)}
                 initialValues={formValues}
@@ -275,11 +243,14 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
         this.service
             .getById(this.hostId!!)
-            .then(hostDetails => {
-                if (hostDetails === undefined)
+            .then(response =>
+                response === undefined ? undefined : HostConverter.responseToFormValues(response)
+            )
+            .then(formValues => {
+                if (formValues === undefined)
                     this.setState({loading: false, notFound: true})
                 else {
-                    this.setState({loading: false, formValues: this.convertToHostRequest(hostDetails)})
+                    this.setState({loading: false, formValues})
                     this.updateShellConfig(true)
                 }
             })

@@ -3,7 +3,8 @@ import ValidationResult from "../../../core/validation/ValidationResult";
 import {Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Select} from "antd";
 import If from "../../../core/components/flowcontrol/If";
 import {CloseOutlined, PlusOutlined} from "@ant-design/icons";
-import {HostBinding, HostBindingType} from "../model/HostRequest";
+import {HostFormBinding} from "../model/HostFormValues";
+import {HostBindingType} from "../model/HostRequest";
 import PaginatedSelect from "../../../core/components/select/PaginatedSelect";
 import CertificateService from "../../certificate/CertificateService";
 import PageResponse from "../../../core/pagination/PageResponse";
@@ -11,14 +12,14 @@ import {CertificateResponse} from "../../certificate/model/CertificateResponse";
 import "./HostBindings.css"
 import FormLayout from "../../../core/components/form/FormLayout";
 
-const DEFAULT_VALUES: HostBinding = {
+const DEFAULT_VALUES: HostFormBinding = {
     type: HostBindingType.HTTP,
     ip: "0.0.0.0",
     port: 8080,
 }
 
 export interface HostBindingsProps {
-    bindings: HostBinding[]
+    bindings: HostFormBinding[]
     validationResult: ValidationResult
 }
 
@@ -89,7 +90,7 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     {...FormLayout.ExpandedLabeledItem}
                     className="host-form-binding-certificate"
                     layout="vertical"
-                    name={[name, "certificateId"]}
+                    name={[name, "certificate"]}
                     validateStatus={validationResult.getStatus(`bindings[${index}].certificateId`)}
                     help={validationResult.getMessage(`bindings[${index}].certificateId`)}
                     label={index === 0 ? "SSL certificate" : undefined}

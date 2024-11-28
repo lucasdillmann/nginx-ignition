@@ -71,7 +71,6 @@ export default class CertificateListPage extends React.Component<any, Certificat
                         </Link>
                     </>
                 ),
-                fixed: true,
                 width: 120,
             }
         ]

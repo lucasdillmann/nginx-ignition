@@ -25,7 +25,7 @@ export interface HostBinding {
 export interface HostRouteStaticResponse {
     statusCode: number
     payload?: string
-    headers?: Record<string, string[]>
+    headers?: Record<string, string>
 }
 
 export interface HostRoute {
