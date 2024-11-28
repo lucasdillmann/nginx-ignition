@@ -11,6 +11,7 @@ import PageResponse from "../../../core/pagination/PageResponse";
 import {CertificateResponse} from "../../certificate/model/CertificateResponse";
 import "./HostBindings.css"
 import FormLayout from "../../../core/components/form/FormLayout";
+import TagGroup from "../../../core/components/taggroup/TagGroup";
 
 const DEFAULT_VALUES: HostFormBinding = {
     type: HostBindingType.HTTP,
@@ -100,7 +101,7 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                         disabled={bindings[index].type === HostBindingType.HTTP}
                         pageProvider={(pageSize, pageNumber) => this.fetchCertificates(pageSize, pageNumber)}
                         itemKey={certificate => certificate.id}
-                        itemDescription={certificate => certificate.domainNames[0]}
+                        itemDescription={certificate => <TagGroup values={certificate.domainNames} maximumSize={1} />}
                     />
                 </Form.Item>
                 <If condition={totalAmount > 1}>

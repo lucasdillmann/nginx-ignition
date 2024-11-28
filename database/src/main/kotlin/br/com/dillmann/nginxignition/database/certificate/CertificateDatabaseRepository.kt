@@ -50,6 +50,7 @@ internal class CertificateDatabaseRepository(private val converter: CertificateC
             val certificates = CertificateTable
                 .select(CertificateTable.columns)
                 .limit(pageSize, pageSize.toLong() * pageNumber)
+                .orderBy(CertificateTable.domainNames)
                 .map { converter.toDomainModel(it) }
 
             Page(

@@ -9,7 +9,7 @@ const PAGE_SIZE = 10
 interface SelectOption<T> {
     item: T,
     value: string,
-    label: string,
+    label: React.ReactNode,
     disabled?: boolean
 }
 
@@ -26,7 +26,7 @@ export interface PaginatedSelectProps<T> {
     onChange?: (selected?: T) => void
     pageProvider: (pageSize: number, pageNumber: number) => Promise<PageResponse<T>>
     itemKey: (item: T) => string
-    itemDescription: (item: T) => string
+    itemDescription: (item: T) => React.ReactNode
     disabled?: boolean
     allowEmpty?: boolean
     status?: InputStatus

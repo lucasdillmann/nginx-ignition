@@ -104,7 +104,7 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
                     it.where(predicate)
                 }
             }
-            .orderBy(HostTable.id)
+            .orderBy(HostTable.domainNames)
             .toList()
             .map { host ->
                 val id = host[HostTable.id]

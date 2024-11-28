@@ -11,6 +11,7 @@ import Preloader from "../../core/components/preloader/Preloader";
 import TextArea, {TextAreaRef} from "antd/es/input/TextArea";
 import Notification from "../../core/components/notification/Notification"
 import AppShellContext from "../../core/components/shell/AppShellContext";
+import TagGroup from "../../core/components/taggroup/TagGroup";
 
 interface LogsPageState {
     hostMode: boolean
@@ -192,7 +193,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                             onChange={host => this.handleHostChange(host)}
                             pageProvider={(pageSize, pageNumber) => this.hostService.list(pageSize, pageNumber)}
                             value={selectedHost}
-                            itemDescription={item => item.domainNames[0]}
+                            itemDescription={item => <TagGroup values={item.domainNames} maximumSize={1} />}
                             itemKey={item => item.id}
                         />
                     </Flex>
