@@ -97,12 +97,16 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     label={index === 0 ? "SSL certificate" : undefined}
                     required
                 >
-                    <PaginatedSelect<CertificateResponse>
-                        disabled={bindings[index].type === HostBindingType.HTTP}
-                        pageProvider={(pageSize, pageNumber) => this.fetchCertificates(pageSize, pageNumber)}
-                        itemKey={certificate => certificate.id}
-                        itemDescription={certificate => <TagGroup values={certificate.domainNames} maximumSize={1} />}
-                    />
+                    <If condition={bindings[index].type === HostBindingType.HTTP}>
+                        N/A
+                    </If>
+                    <If condition={bindings[index].type === HostBindingType.HTTPS}>
+                        <PaginatedSelect<CertificateResponse>
+                            pageProvider={(pageSize, pageNumber) => this.fetchCertificates(pageSize, pageNumber)}
+                            itemKey={certificate => certificate.id}
+                            itemDescription={certificate => <TagGroup values={certificate.domainNames} maximumSize={1} />}
+                        />
+                    </If>
                 </Form.Item>
                 <If condition={totalAmount > 1}>
                     <CloseOutlined

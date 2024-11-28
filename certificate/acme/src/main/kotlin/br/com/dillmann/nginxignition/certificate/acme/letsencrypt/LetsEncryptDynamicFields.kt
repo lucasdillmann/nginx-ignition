@@ -7,7 +7,7 @@ internal object LetsEncryptDynamicFields {
         id = "acceptTheTermsOfService",
         priority = 99,
         description = "Terms of service",
-        helpText = "I agree to the Let's Encrypt terms of service available at theirs site",
+        helpText = "I agree to the Let's Encrypt terms of service available at theirs website",
         required = true,
         type = CertificateProviderDynamicField.Type.BOOLEAN,
     )
