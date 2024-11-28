@@ -47,12 +47,14 @@ internal class CertificateDatabaseRepository(private val converter: CertificateC
 
             if (DatabaseState.type == DatabaseType.H2) {
                 // H2 in the current version has a bug on upsert/merge operations where arrays values end up merged
-                // as if they were only one (["a", "b"] becomes ["a, b"]).
-                // This update on the domainNames (which is an array) fixes that while H2 doesn't fix it in the DBMS
-                // itself.
+                // as if they were only one (["a", "b"] becomes ["a, b"]). This update fixes that while H2 doesn't fix
+                // it in the DBMS itself.
                 CertificateTable.update(
                     where = { CertificateTable.id eq certificate.id },
-                    body = { it[domainNames] = certificate.domainNames }
+                    body = {
+                        it[domainNames] = certificate.domainNames
+                        it[certificationChain] = certificate.certificationChain
+                    }
                 )
             }
         }
