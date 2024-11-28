@@ -1,8 +1,8 @@
 import React from "react";
 import ValidationResult from "../../../core/validation/ValidationResult";
-import {Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Select} from "antd";
+import {Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Modal, Select} from "antd";
 import If from "../../../core/components/flowcontrol/If";
-import {CloseOutlined, PlusOutlined, ArrowUpOutlined, ArrowDownOutlined} from "@ant-design/icons";
+import {CloseOutlined, PlusOutlined, ArrowUpOutlined, ArrowDownOutlined, SettingOutlined} from "@ant-design/icons";
 import {HostFormRoute} from "../model/HostFormValues";
 import {HostRouteType} from "../model/HostRequest";
 import FormLayout from "../../../core/components/form/FormLayout";
@@ -37,7 +37,16 @@ export interface HostRoutesProps {
     validationResult: ValidationResult
 }
 
-export default class HostRoutes extends React.Component<HostRoutesProps> {
+interface HostRoutesState {
+    customSettingsOpenModalIndex?: number
+}
+
+export default class HostRoutes extends React.Component<HostRoutesProps, HostRoutesState> {
+    constructor(props: HostRoutesProps) {
+        super(props);
+        this.state = {}
+    }
+
     private renderProxyRoute(field: FormListFieldData, index: number): React.ReactNode {
         const {validationResult} = this.props
         const {name} = field
@@ -164,8 +173,17 @@ export default class HostRoutes extends React.Component<HostRoutesProps> {
         operations.add(newPosition)
     }
 
+    private openCustomSettingsModal(index: number) {
+        this.setState({customSettingsOpenModalIndex: index})
+    }
+
+    private closeCustomSettingsModal() {
+        this.setState({customSettingsOpenModalIndex: undefined})
+    }
+
     private renderRoute(field: FormListFieldData, operations: FormListOperation, index: number) {
         const {validationResult, routes} = this.props
+        const {customSettingsOpenModalIndex} = this.state
         const {name} = field
         const type = routes[index].type
 
@@ -210,12 +228,50 @@ export default class HostRoutes extends React.Component<HostRoutesProps> {
                     {this.renderStaticResponseRoute(field, index)}
                 </If>
 
+                <Modal
+                    title="Advanced settings"
+                    open={index === customSettingsOpenModalIndex}
+                    onClose={() => this.closeCustomSettingsModal()}
+                    onCancel={() => this.closeCustomSettingsModal()}
+                    footer={null}>
+                    <p>
+                        Any instruction placed here will be placed in the nginx configuration files as-is. Use this
+                        field for any customized configuration parameters that you need in the host route.
+                    </p>
+                    <p>
+                        Please note that the text below must be in the syntax expected by the nginx. Please refer
+                        to the documentation at
+                        &nbsp;<a
+                            href="https://nginx.org/en/docs/http/ngx_http_core_module.html#location"
+                            target="_blank">
+                            this link
+                        </a>&nbsp;
+                        for more details. If you isn't sure about what to place here, it's probably the best to leave
+                        it empty.
+                    </p>
+
+                    <Form.Item
+                        {...FormLayout.ExpandedLabeledItem}
+                        className="host-form-route-custom-settings"
+                        name={[name, "customSettings"]}
+                        validateStatus={validationResult.getStatus(`routes[${index}].customSettings`)}
+                        help={validationResult.getMessage(`routes[${index}].customSettings`)}
+                        required
+                    >
+                        <TextArea rows={10} />
+                    </Form.Item>
+                </Modal>
+
                 <ArrowUpOutlined
                     onClick={() => this.moveRoute(operations, index, -1)}
                     style={index === 0 ? DISABLED_ACTION_ICON_STYLE : ENABLED_ACTION_ICON_STYLE} />
                 <ArrowDownOutlined
                     onClick={() => this.moveRoute(operations, index, 1)}
                     style={index === routes.length - 1 ? DISABLED_ACTION_ICON_STYLE : ENABLED_ACTION_ICON_STYLE} />
+                <SettingOutlined
+                    onClick={() => this.openCustomSettingsModal(index)}
+                    style={ENABLED_ACTION_ICON_STYLE} />
+
                 <If condition={routes.length > 1}>
                     <CloseOutlined
                         onClick={() => operations.remove(field.name)}
