@@ -44,7 +44,7 @@ internal class UserDatabaseRepository(private val converter: UserConverter): Use
         coTransaction {
             val totalCount = UserTable.select(UserTable.id).count()
             val users = UserTable
-                .select(UserTable.columns)
+                .select(UserTable.fields)
                 .limit(pageSize, pageSize.toLong() * pageNumber)
                 .orderBy(UserTable.name)
                 .map { converter.toDomainModel(it) }
@@ -65,7 +65,7 @@ internal class UserDatabaseRepository(private val converter: UserConverter): Use
     private suspend fun findOneWhere(predicate: SqlExpressionBuilder.() -> Op<Boolean>): User? =
         coTransaction {
             val user = UserTable
-                .select(UserTable.columns)
+                .select(UserTable.fields)
                 .where(predicate)
                 .limit(1)
                 .firstOrNull()

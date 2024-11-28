@@ -16,7 +16,7 @@ internal class HostConverter {
             scope[id] = host.id
             scope[defaultServer] = host.defaultServer
             scope[enabled] = host.enabled
-            scope[domainNames] = Json.encodeToString(host.domainNames)
+            scope[domainNames] = host.domainNames
             scope[websocketSupport] = host.featureSet.websocketsSupport
             scope[http2Support] = host.featureSet.http2Support
             scope[redirectHttpToHttps] = host.featureSet.redirectHttpToHttps
@@ -55,7 +55,7 @@ internal class HostConverter {
             id = host[HostTable.id],
             defaultServer = host[HostTable.defaultServer],
             enabled = host[HostTable.enabled],
-            domainNames = Json.decodeFromString(host[HostTable.domainNames]),
+            domainNames = host[HostTable.domainNames],
             routes = routes.map(::toRoute),
             bindings = bindings.map(::toBinding),
             featureSet = Host.FeatureSet(

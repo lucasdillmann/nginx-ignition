@@ -20,7 +20,7 @@ create table host (
     id uuid not null,
     enabled boolean not null,
     default_server boolean not null,
-    domain_names varchar(512) not null,
+    domain_names varchar[] not null,
     websocket_support boolean not null,
     http2_support boolean not null,
     redirect_http_to_https boolean not null,
