@@ -6,6 +6,7 @@ import UserLoginResponse from "./model/UserLoginResponse";
 import UserOnboardingStatusResponse from "./model/UserOnboardingStatusResponse";
 import UserRequest from "./model/UserRequest";
 import PageResponse from "../../core/pagination/PageResponse";
+import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest";
 
 export default class UserGateway {
     private client: ApiClient
@@ -30,6 +31,10 @@ export default class UserGateway {
         return this.client.post("/login", request)
     }
 
+    async logout(): Promise<ApiResponse<void>> {
+        return this.client.post("/logout")
+    }
+
     async getPage(pageSize?: number, pageNumber?: number): Promise<ApiResponse<PageResponse<UserResponse>>> {
         return this.client.get(undefined, undefined, { pageSize, pageNumber })
     }
@@ -48,5 +53,9 @@ export default class UserGateway {
 
     async post(user: UserRequest): Promise<ApiResponse<void>> {
         return this.client.post("", user)
+    }
+
+    async updatePassword(request: UserUpdatePasswordRequest): Promise<ApiResponse<void>> {
+        return this.client.post("/current/update-password", request)
     }
 }

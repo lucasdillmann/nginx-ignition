@@ -1,12 +1,12 @@
 import React from "react";
 import {Button, Form, Input, Typography} from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
-import LoginService from "./LoginService";
 import {Navigate} from "react-router-dom";
 import AppContext, {AppContextData} from "../../core/components/context/AppContext";
 import Preloader from "../../core/components/preloader/Preloader";
 import Notification from "../../core/components/notification/Notification";
 import "./LoginPage.css"
+import UserService from "../user/UserService";
 
 const {Text, Title} = Typography;
 
@@ -19,12 +19,12 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
     static contextType = AppContext
     context!: React.ContextType<typeof AppContext>
 
-    private service: LoginService
+    private service: UserService
 
     constructor(props: any, context: AppContextData) {
         super(props, context);
 
-        this.service = new LoginService();
+        this.service = new UserService();
         this.state = {
             loading: false,
             attemptFailed: false,

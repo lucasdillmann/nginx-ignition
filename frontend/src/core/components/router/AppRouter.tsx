@@ -35,6 +35,8 @@ interface AppRouterState {
 
 export interface AppRouterProps {
     routes: AppRoute[]
+    userMenu: React.ReactNode
+    serverControl: React.ReactNode
 }
 
 export default class AppRouter extends React.Component<AppRouterProps, AppRouterState> {
@@ -71,6 +73,7 @@ export default class AppRouter extends React.Component<AppRouterProps, AppRouter
     }
 
     private buildRouteComponent(route: AppRoute): any {
+        const {userMenu, serverControl} = this.props
         const {component, requiresAuthentication, fullPage} = route
         const {user} = this.context
 
@@ -87,6 +90,8 @@ export default class AppRouter extends React.Component<AppRouterProps, AppRouter
                 <AppShell
                     menuItems={this.buildMenuItemsAdapter()}
                     activeRoute={route}
+                    userMenu={userMenu}
+                    serverControl={serverControl}
                 >
                     {component}
                 </AppShell>

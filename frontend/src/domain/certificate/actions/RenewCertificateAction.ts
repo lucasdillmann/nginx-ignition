@@ -1,7 +1,7 @@
 import CertificateService from "../CertificateService";
 import UserConfirmation from "../../../core/components/confirmation/UserConfirmation";
 import Notification from "../../../core/components/notification/Notification";
-import NginxReload from "../../../core/components/nginx/NginxReload";
+import ReloadNginxAction from "../../nginx/actions/ReloadNginxAction";
 import {UnexpectedResponseError} from "../../../core/apiclient/ApiResponse";
 import {RenewCertificateResponse} from "../model/RenewCertificateResponse";
 
@@ -19,7 +19,7 @@ class RenewCertificateAction {
                 `Certificate renewed`,
                 `The certificate was renewed successfully`,
             ))
-            .then(() => NginxReload.ask())
+            .then(() => ReloadNginxAction.execute())
             .catch((error: UnexpectedResponseError<RenewCertificateResponse>) => Notification.error(
                 `Unable to renew the certificate`,
                 error.response.body?.errorReason ??

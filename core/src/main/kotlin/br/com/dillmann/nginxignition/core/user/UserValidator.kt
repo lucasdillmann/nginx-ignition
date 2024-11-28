@@ -1,11 +1,15 @@
 package br.com.dillmann.nginxignition.core.user
 
 import br.com.dillmann.nginxignition.core.common.validation.ConsistencyException
+import br.com.dillmann.nginxignition.core.user.security.UserSecurity
 import java.util.UUID
 
 private typealias ErrorCreator = (String, String) -> Unit
 
-internal class UserValidator(private val repository: UserRepository) {
+internal class UserValidator(
+    private val repository: UserRepository,
+    private val security: UserSecurity,
+) {
     suspend fun validate(
         updatedState: User,
         currentState: User?,
@@ -22,7 +26,7 @@ internal class UserValidator(private val repository: UserRepository) {
             addError("password", "A password is required")
 
         if (suppliedPassword != null && suppliedPassword.length < 8)
-            addError("password", "Your password should have at least 8 characters")
+            addError("password", "Password should have at least 8 characters")
 
         val databaseUser = repository.findByUsername(updatedState.username)
         if (databaseUser != null && databaseUser.id != updatedState.id)
@@ -33,6 +37,24 @@ internal class UserValidator(private val repository: UserRepository) {
 
         if (updatedState.name.length < 3 || updatedState.name.isBlank())
             addError("name", "The name should have at least 3 characters")
+
+        if (violations.isNotEmpty())
+            throw ConsistencyException(violations)
+    }
+
+    fun validatePasswordUpdate(
+        user: User,
+        currentPassword: String,
+        newPassword: String,
+    ) {
+        val violations = mutableListOf<ConsistencyException.Violation>()
+        val addError: ErrorCreator = { path, message -> violations += ConsistencyException.Violation(path, message) }
+
+        if (!security.check(currentPassword, user.passwordHash, user.passwordSalt))
+            addError("currentPassword", "Not your current password")
+
+        if (newPassword.length < 8)
+            addError("newPassword", "Your new password should have at least 8 characters")
 
         if (violations.isNotEmpty())
             throw ConsistencyException(violations)

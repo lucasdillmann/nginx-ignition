@@ -1,11 +1,11 @@
-import LocalStorageRepository from "../../repository/LocalStorageRepository";
-import NginxService from "../../../domain/nginx/NginxService";
-import Notification from "../notification/Notification";
+import LocalStorageRepository from "../../../core/repository/LocalStorageRepository";
+import NginxService from "../NginxService";
+import Notification from "../../../core/components/notification/Notification";
 import {Checkbox, CheckboxRef, Modal} from "antd";
 import React from "react";
-import "./NginxReload.css"
+import "./ReloadNginxAction.css"
 
-class NginxReload {
+class ReloadNginxAction {
     private readonly repository: LocalStorageRepository<boolean>
     private readonly service: NginxService
 
@@ -28,7 +28,7 @@ class NginxReload {
             ))
     }
 
-    async ask(): Promise<void> {
+    async execute(): Promise<void> {
         const skipConfirmation = this.repository.getOrDefault(false)
         if (skipConfirmation)
             return this.reload()
@@ -60,4 +60,4 @@ class NginxReload {
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default new NginxReload()
+export default new ReloadNginxAction()

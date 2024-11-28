@@ -17,6 +17,7 @@ internal class UserRoutes(
     private val currentUserHandler: CurrentUserHandler,
     private val onboardingStatusHandler: UserOnboardingStatusHandler,
     private val onboardingFinishHandler: UserOnboardingFinishHandler,
+    private val updatePasswordHandler: UpdateCurrentUserPasswordHandler,
 ): RouteProvider {
     override fun apiRoutes(): RouteNode =
         routes("/api/users") {
@@ -27,6 +28,7 @@ internal class UserRoutes(
             requireAuthentication {
                 post("/logout", logoutHandler)
                 get("/current", currentUserHandler)
+                post("/current/update-password", updatePasswordHandler)
             }
 
             requireRole(User.Role.ADMIN) {

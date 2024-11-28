@@ -1,7 +1,7 @@
 import CertificateService from "../CertificateService";
 import UserConfirmation from "../../../core/components/confirmation/UserConfirmation";
 import Notification from "../../../core/components/notification/Notification";
-import NginxReload from "../../../core/components/nginx/NginxReload";
+import ReloadNginxAction from "../../nginx/actions/ReloadNginxAction";
 
 class DeleteCertificateAction {
     private readonly service: CertificateService
@@ -18,7 +18,7 @@ class DeleteCertificateAction {
                 `Certificate deleted`,
                 `The certificate was deleted successfully`,
             ))
-            .then(() => NginxReload.ask())
+            .then(() => ReloadNginxAction.execute())
             .catch(() => Notification.error(
                 `Unable to delete the certificate`,
                 `An unexpected error was found while trying to delete the certificate. Please try again later.`,

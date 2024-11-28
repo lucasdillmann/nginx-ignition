@@ -16,7 +16,7 @@ import ModalPreloader from "../../core/components/preloader/ModalPreloader";
 import HostRoutes from "./components/HostRoutes";
 import HostBindings from "./components/HostBindings";
 import "./HostFormPage.css"
-import NginxReload from "../../core/components/nginx/NginxReload";
+import ReloadNginxAction from "../nginx/actions/ReloadNginxAction";
 import HostFormValues from "./model/HostFormValues";
 import HostConverter from "./HostConverter";
 
@@ -101,7 +101,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
     private handleSuccess() {
         Notification.success("Host saved", "The host was saved successfully")
-        NginxReload.ask()
+        ReloadNginxAction.execute()
         navigateTo("/hosts")
     }
 

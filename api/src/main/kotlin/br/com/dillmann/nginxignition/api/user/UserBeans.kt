@@ -19,7 +19,8 @@ internal fun Module.userBeans() {
     single { CurrentUserHandler(get(), get()) }
     single { UserOnboardingStatusHandler(get()) }
     single { UserOnboardingFinishHandler(get(), get(), get(), get(), get()) }
+    single { UpdateCurrentUserPasswordHandler(get()) }
     single {
-        UserRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+        UserRoutes(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
     } bind RouteProvider::class
 }

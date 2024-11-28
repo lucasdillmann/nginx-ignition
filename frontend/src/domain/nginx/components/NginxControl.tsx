@@ -1,11 +1,11 @@
 import React from "react";
 import {Badge, Button, ConfigProvider, Flex} from "antd";
-import Preloader from "../preloader/Preloader";
-import NginxService from "../../../domain/nginx/NginxService";
-import Notification from "../notification/Notification";
-import {NginxEventListener} from "../../../domain/nginx/listener/NginxEventListener";
-import NginxEventDispatcher from "../../../domain/nginx/listener/NginxEventDispatcher";
-import UserConfirmation from "../confirmation/UserConfirmation";
+import Preloader from "../../../core/components/preloader/Preloader";
+import NginxService from "../NginxService";
+import Notification from "../../../core/components/notification/Notification";
+import {NginxEventListener} from "../listener/NginxEventListener";
+import NginxEventDispatcher from "../listener/NginxEventDispatcher";
+import UserConfirmation from "../../../core/components/confirmation/UserConfirmation";
 import "./NginxControl.css"
 
 interface NginxStatusState {

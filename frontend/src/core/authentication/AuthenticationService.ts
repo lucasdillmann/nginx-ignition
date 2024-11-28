@@ -14,6 +14,10 @@ class AuthenticationService {
     setToken(token: string) {
         this.repository.set(token)
     }
+
+    deleteToken() {
+        this.repository.clear()
+    }
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

@@ -11,7 +11,7 @@ internal class UserService(
     private val validator: UserValidator,
     private val security: UserSecurity,
 ): AuthenticateUserCommand, DeleteUserCommand, GetUserCommand, ListUserCommand, SaveUserCommand,
-   GetUserStatusCommand, GetUserCountCommand {
+   GetUserStatusCommand, GetUserCountCommand, UpdateUserPasswordCommand {
     override suspend fun authenticate(username: String, password: String): User? {
         val user = repository.findByUsername(username)?.takeIf { it.enabled } ?: return null
         val passwordsMatch = security.check(password, user.passwordHash, user.passwordSalt)
@@ -53,4 +53,13 @@ internal class UserService(
 
     override suspend fun count() =
         repository.count()
+
+    override suspend fun updatePassword(userId: UUID, currentPassword: String, newPassword: String) {
+        val userDetails = repository.findById(userId)!!
+        validator.validatePasswordUpdate(userDetails, currentPassword, newPassword)
+
+        val (passwordHash, passwordSalt) = security.hash(newPassword)
+        val updatedUser = userDetails.copy(passwordHash = passwordHash, passwordSalt = passwordSalt)
+        repository.save(updatedUser)
+    }
 }

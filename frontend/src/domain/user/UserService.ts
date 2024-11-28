@@ -4,12 +4,32 @@ import UserOnboardingStatusResponse from "./model/UserOnboardingStatusResponse";
 import {requireNullablePayload, requireSuccessPayload, requireSuccessResponse} from "../../core/apiclient/ApiResponse";
 import PageResponse from "../../core/pagination/PageResponse";
 import UserRequest from "./model/UserRequest";
+import UserLoginRequest from "./model/UserLoginRequest";
+import AuthenticationService from "../../core/authentication/AuthenticationService";
+import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest";
 
 export default class UserService {
     private gateway: UserGateway
 
     constructor() {
         this.gateway = new UserGateway()
+    }
+
+    async login(username: string, password: string): Promise<void> {
+        const request: UserLoginRequest = { username, password }
+        return this.gateway
+            .login(request)
+            .then(requireSuccessPayload)
+            .then((response) => {
+                AuthenticationService.setToken(response.token)
+            })
+    }
+
+    async logout(): Promise<void> {
+        return this.gateway
+            .logout()
+            .catch(() => undefined)
+            .then(() => AuthenticationService.deleteToken())
     }
 
     async current(): Promise<UserResponse | undefined> {
@@ -41,5 +61,9 @@ export default class UserService {
 
     async create(user: UserRequest): Promise<void> {
         return this.gateway.post(user).then(requireSuccessResponse)
+    }
+
+    async changePassword(request: UserUpdatePasswordRequest): Promise<void> {
+        return this.gateway.updatePassword(request).then(requireSuccessResponse)
     }
 }

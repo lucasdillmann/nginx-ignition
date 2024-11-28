@@ -81,3 +81,9 @@
 .shell-actions-container button {
     margin-left: 10px;
 }
+
+.shell-user-menu {
+    position: fixed;
+    bottom: 0;
+    width: 250px;
+}

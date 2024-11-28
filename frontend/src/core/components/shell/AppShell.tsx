@@ -2,7 +2,6 @@ import React from "react";
 import {Button, Flex, Layout, Menu} from "antd";
 import {MenuItemType} from "antd/es/menu/interface";
 import {Link} from "react-router-dom";
-import NginxControl from "../nginx/NginxControl";
 import AppRoute from "../router/AppRoute";
 import "./AppShell.css"
 import If from "../flowcontrol/If";
@@ -23,6 +22,8 @@ export interface AppShellProps {
     menuItems: AppShellMenuItem[]
     activeRoute: AppRoute
     children: React.ReactElement
+    userMenu: React.ReactNode
+    serverControl: React.ReactNode
 }
 
 interface AppShellState {
@@ -98,7 +99,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
     }
 
     render() {
-        const {activeRoute, children} = this.props
+        const {activeRoute, children, userMenu, serverControl} = this.props
         const {config} = this.state
         const activeMenuItemPath = activeRoute.activeMenuItemPath ?? activeRoute.path
         const {title, subtitle} = config
@@ -111,8 +112,8 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                             nginx ignition
                         </Link>
                     </div>
-                    <div>
-                        <NginxControl />
+                    <div className="shell-server-control">
+                        {serverControl}
                     </div>
                     <Menu
                         className="shell-menu-container"
@@ -121,6 +122,9 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                         defaultSelectedKeys={activeMenuItemPath ? [activeMenuItemPath] : undefined}
                         items={this.buildMenuItemsAdapters()}
                     />
+                    <div className="shell-user-menu">
+                        {userMenu}
+                    </div>
                 </Sider>
                 <Layout>
                     <Flex>

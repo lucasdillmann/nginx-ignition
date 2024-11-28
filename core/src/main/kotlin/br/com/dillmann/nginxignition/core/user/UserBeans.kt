@@ -14,7 +14,8 @@ internal fun Module.userBeans() {
         ListUserCommand::class,
         SaveUserCommand::class,
         GetUserCountCommand::class,
+        UpdateUserPasswordCommand::class,
     )
-    single { UserValidator(get()) }
+    single { UserValidator(get(), get()) }
     single { UserSecurity(get()) }
 }

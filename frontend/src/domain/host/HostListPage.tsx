@@ -9,7 +9,7 @@ import "./HostListPage.css"
 import {Link} from "react-router-dom";
 import UserConfirmation from "../../core/components/confirmation/UserConfirmation";
 import Notification from "../../core/components/notification/Notification";
-import NginxReload from "../../core/components/nginx/NginxReload";
+import ReloadNginxAction from "../nginx/actions/ReloadNginxAction";
 import TagGroup from "../../core/components/taggroup/TagGroup";
 import AppShellContext from "../../core/components/shell/AppShellContext";
 import DeleteHostAction from "./actions/DeleteHostAction";
@@ -81,7 +81,7 @@ export default class HostListPage extends React.PureComponent {
                 `The host was ${action}d successfully`,
             ))
             .then(() => this.table.current?.refresh())
-            .then(() => NginxReload.ask())
+            .then(() => ReloadNginxAction.execute())
             .catch(() => Notification.error(
                 `Unable to ${action} the host`,
                 `An unexpected error was found while trying to ${action} the host. Please try again later.`,

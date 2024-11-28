@@ -4,6 +4,8 @@ import AppRouter from "../core/components/router/AppRouter";
 import Routes from "./Routes";
 import FullPagePreloader from "../core/components/preloader/FullPagePreloader";
 import FullPageError from "../core/components/error/FullPageError";
+import ShellUserMenu from "./user/components/ShellUserMenu";
+import NginxControl from "./nginx/components/NginxControl";
 
 interface AppContainerState {
     context?: AppContextData
@@ -38,7 +40,11 @@ export default class AppContainer extends React.Component<unknown, AppContainerS
 
         return (
             <AppContext.Provider value={context}>
-                <AppRouter routes={Routes} />
+                <AppRouter
+                    routes={Routes}
+                    userMenu={<ShellUserMenu />}
+                    serverControl={<NginxControl />}
+                />
             </AppContext.Provider>
         )
     }

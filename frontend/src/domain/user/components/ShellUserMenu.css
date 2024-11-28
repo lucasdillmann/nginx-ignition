@@ -1,0 +1,20 @@
+.shell-user-menu-container {
+    color: white;
+    padding: 20px;
+    background-color: #032c53;
+    width: 100%;
+    font-size: 16px;
+}
+
+.shell-user-menu-icon {
+    padding-right: 10px;
+}
+
+.shell-user-menu-actions span {
+    padding-left: 10px;
+}
+
+.shell-user-menu-user-name {
+    flex-grow: 1;
+    font-size: 14px;
+}
