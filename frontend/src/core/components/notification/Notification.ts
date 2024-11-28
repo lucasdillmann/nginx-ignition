@@ -6,7 +6,7 @@ function showNotification(title: string, message: string, type: IconType) {
         closable: true,
         duration: 5,
         pauseOnHover: true,
-        placement: "topRight",
+        placement: "bottomRight",
         showProgress: true,
         message: title,
         description: message,

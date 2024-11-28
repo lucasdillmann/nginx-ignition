@@ -4,7 +4,7 @@ import HostResponse from "./model/HostResponse";
 import PageResponse from "../../core/pagination/PageResponse";
 import HostService from "./HostService";
 import DataTableRenderers from "../../core/components/datatable/DataTableRenderers";
-import {EditOutlined, PoweroffOutlined, DeleteOutlined} from "@ant-design/icons";
+import {EditOutlined, PoweroffOutlined, DeleteOutlined, CopyOutlined} from "@ant-design/icons";
 import "./HostListPage.css"
 import {Link} from "react-router-dom";
 import UserConfirmation from "../../core/components/confirmation/UserConfirmation";
@@ -54,6 +54,9 @@ export default class HostListPage extends React.PureComponent {
                         <Link to={`/hosts/${item.id}`}>
                             <EditOutlined className="action-icon" />
                         </Link>
+                        <Link to={`/hosts/new?copyFrom=${item.id}`}>
+                            <CopyOutlined className="action-icon" />
+                        </Link>
                         <Link to="" onClick={() => this.toggleHostStatus(item)}>
                             <PoweroffOutlined className="action-icon" />
                         </Link>
@@ -63,7 +66,7 @@ export default class HostListPage extends React.PureComponent {
                         </Link>
                     </>
                 ),
-                width: 120,
+                width: 160,
             }
         ]
     }

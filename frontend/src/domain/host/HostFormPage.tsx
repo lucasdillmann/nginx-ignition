@@ -3,7 +3,7 @@ import AppShellContext, {ShellAction, ShellOperations} from "../../core/componen
 import {Empty, Flex, Form, Switch} from "antd";
 import FormLayout from "../../core/components/form/FormLayout";
 import DomainNamesList from "../certificate/components/DomainNamesList";
-import {navigateTo, routeParams} from "../../core/components/router/AppRouter";
+import {navigateTo, queryParams, routeParams} from "../../core/components/router/AppRouter";
 import HostService from "./HostService";
 import ValidationResult from "../../core/validation/ValidationResult";
 import {HostBindingType, HostRouteType} from "./model/HostRequest";
@@ -235,14 +235,15 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     componentDidMount() {
-        if (this.hostId === undefined) {
+        const copyFrom = queryParams().copyFrom as string | undefined
+        if (this.hostId === undefined && copyFrom === undefined) {
             this.setState({loading: false})
             this.updateShellConfig(true)
             return
         }
 
         this.service
-            .getById(this.hostId!!)
+            .getById((this.hostId ?? copyFrom)!!)
             .then(response =>
                 response === undefined ? undefined : HostConverter.responseToFormValues(response)
             )
@@ -250,6 +251,12 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                 if (formValues === undefined)
                     this.setState({loading: false, notFound: true})
                 else {
+                    if (copyFrom !== undefined)
+                        Notification.success(
+                            "Host values copied",
+                            "The values from the selected host where successfully copied as a new host",
+                        )
+
                     this.setState({loading: false, formValues})
                     this.updateShellConfig(true)
                 }

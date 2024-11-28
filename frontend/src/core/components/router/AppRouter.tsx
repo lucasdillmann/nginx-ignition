@@ -5,6 +5,7 @@ import {RouteObject, createBrowserRouter, RouterProvider, Navigate, Params} from
 import AppShell, {AppShellMenuItem} from "../shell/AppShell";
 import ErrorBoundary from "../errorboundary/ErrorBoundary";
 import {Router} from "@remix-run/router/dist/router";
+import qs, {ParsedQs} from "qs";
 
 let currentInstance: AppRouter
 
@@ -18,6 +19,14 @@ export function navigateTo(destination: string) {
 
 export function routeParams(): Params {
     return router()?.state.matches[0]?.params ?? {}
+}
+
+export function queryParams(): ParsedQs {
+    let queryString = router()?.state.location.search ?? ""
+    if (queryString.startsWith("?"))
+        queryString = queryString.substring(1)
+
+    return qs.parse(queryString)
 }
 
 interface AppRouterState {
