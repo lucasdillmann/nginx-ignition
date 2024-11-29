@@ -17,8 +17,8 @@ allprojects {
 
     sonarqube {
         properties {
-            property("sonar.organization", "lucasdillmann_nginx-ignition")
-            property("sonar.projectKey", "lucasdillmann")
+            property("sonar.projectKey", "lucasdillmann_nginx-ignition")
+            property("sonar.organization", "lucasdillmann")
         }
     }
 }
