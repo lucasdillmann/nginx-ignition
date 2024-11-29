@@ -41,7 +41,7 @@ jobs:
         run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
       - run: |
           ./gradlew assemble && \
-          docker buildx \
+          docker buildx build \
             --tag dillmann/nginx-ignition:${{ steps.tag.outputs.VERSION }} \
             --platform linux/amd64,linux/arm64 \
             --builder docker-container \
