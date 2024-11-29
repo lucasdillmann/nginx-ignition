@@ -14,6 +14,13 @@ allprojects {
     repositories {
         mavenCentral()
     }
+
+    sonarqube {
+        properties {
+            property("sonar.organization", "lucasdillmann_nginx-ignition")
+            property("sonar.projectKey", "lucasdillmann")
+        }
+    }
 }
 
 subprojects {
