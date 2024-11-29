@@ -243,7 +243,8 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         to the documentation at
                         &nbsp;<a
                             href="https://nginx.org/en/docs/http/ngx_http_core_module.html#location"
-                            target="_blank">
+                            target="_blank"
+                            rel="noreferrer">
                             this link
                         </a>&nbsp;
                         for more details. If you isn't sure about what to place here, it's probably the best to leave
