@@ -10,11 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: tag
-        uses: actions/github-script@0.2.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            return context.payload.ref.replace('refs/tags/', '').replace('"', '');
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
       - uses: docker/setup-buildx-action@v3
         with:
           driver-opts: |
@@ -27,4 +23,5 @@ jobs:
       - uses: docker/build-push-action@v6
         with:
           push: true
-          tags: dillmann/nginx-ignition:${{ steps.tag.outputs.result }}
+          tags: dillmann/nginx-ignition:${{ steps.tag.outputs.VERSION }}
+
