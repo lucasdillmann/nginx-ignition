@@ -6,6 +6,7 @@ import br.com.dillmann.nginxignition.api.common.routing.RouteNode
 import br.com.dillmann.nginxignition.api.common.routing.RouteProvider
 import br.com.dillmann.nginxignition.api.common.routing.routes
 
+@Suppress("LongParameterList")
 internal class UserRoutes(
     private val listHandler: ListUsersHandler,
     private val getByIdHandler: GetUserByIdHandler,
@@ -19,6 +20,7 @@ internal class UserRoutes(
     private val onboardingFinishHandler: UserOnboardingFinishHandler,
     private val updatePasswordHandler: UpdateCurrentUserPasswordHandler,
 ): RouteProvider {
+    @Suppress("StringLiteralDuplication")
     override fun apiRoutes(): RouteNode =
         routes("/api/users") {
             post("/login", loginHandler)

@@ -1,3 +1,4 @@
+@file:Suppress("MatchingDeclarationName")
 package br.com.dillmann.nginxignition.application.rbac
 
 import br.com.dillmann.nginxignition.core.user.User

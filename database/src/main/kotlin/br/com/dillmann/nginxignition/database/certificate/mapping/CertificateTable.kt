@@ -3,6 +3,7 @@ package br.com.dillmann.nginxignition.database.certificate.mapping
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.timestampWithTimeZone
 
+@Suppress("MagicNumber")
 internal object CertificateTable: Table("certificate") {
     val id = uuid("id")
     val domainNames = array<String>("domain_names")

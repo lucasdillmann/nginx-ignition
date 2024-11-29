@@ -2,6 +2,7 @@ package br.com.dillmann.nginxignition.database.user.mapping
 
 import org.jetbrains.exposed.sql.Table
 
+@Suppress("MagicNumber")
 internal object UserTable: Table("user") {
     val id = uuid("id")
     val enabled = bool("enabled")

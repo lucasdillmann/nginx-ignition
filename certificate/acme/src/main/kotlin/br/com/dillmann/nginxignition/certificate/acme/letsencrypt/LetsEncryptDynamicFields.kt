@@ -1,5 +1,6 @@
 package br.com.dillmann.nginxignition.certificate.acme.letsencrypt
 
+import br.com.dillmann.nginxignition.certificate.acme.dns.Route53DnsProvider
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProviderDynamicField
 
 internal object LetsEncryptDynamicFields {
@@ -27,7 +28,7 @@ internal object LetsEncryptDynamicFields {
         required = true,
         type = CertificateProviderDynamicField.Type.ENUM,
         enumOptions = listOf(
-            CertificateProviderDynamicField.EnumOption("AWS_ROUTE53", "AWS Route53"),
+            CertificateProviderDynamicField.EnumOption(Route53DnsProvider.ID, "AWS Route53"),
         ),
     )
 
@@ -39,7 +40,7 @@ internal object LetsEncryptDynamicFields {
         type = CertificateProviderDynamicField.Type.SINGLE_LINE_TEXT,
         condition = CertificateProviderDynamicField.Condition(
             parentField = DNS_PROVIDER.id,
-            value = "AWS_ROUTE53",
+            value = Route53DnsProvider.ID,
         ),
     )
 
@@ -52,7 +53,7 @@ internal object LetsEncryptDynamicFields {
         type = CertificateProviderDynamicField.Type.SINGLE_LINE_TEXT,
         condition = CertificateProviderDynamicField.Condition(
             parentField = DNS_PROVIDER.id,
-            value = "AWS_ROUTE53",
+            value = Route53DnsProvider.ID,
         ),
     )
 }

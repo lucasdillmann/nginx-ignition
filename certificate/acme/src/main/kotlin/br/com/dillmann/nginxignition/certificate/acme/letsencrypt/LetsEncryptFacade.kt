@@ -29,7 +29,8 @@ internal class LetsEncryptFacade(
     private val acmeIssuer: AcmeIssuer,
 ) {
     private companion object {
-        private val TIMEOUT = Duration.ofMinutes(2)
+        private const val TIMEOUT_MINUTES = 5L
+        private val TIMEOUT = Duration.ofMinutes(TIMEOUT_MINUTES)
     }
 
     private val logger = logger<LetsEncryptFacade>()

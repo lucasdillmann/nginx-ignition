@@ -10,6 +10,11 @@ internal class UserValidator(
     private val repository: UserRepository,
     private val security: UserSecurity,
 ) {
+    private companion object {
+        private const val MINIMUM_PASSWORD_LENGTH = 8
+        private const val MINIMUM_USERNAME_LENGTH = 3
+    }
+
     suspend fun validate(
         updatedState: User,
         currentState: User?,
@@ -25,18 +30,18 @@ internal class UserValidator(
         if (suppliedPassword.isNullOrBlank() && currentState == null)
             addError("password", "A password is required")
 
-        if (suppliedPassword != null && suppliedPassword.length < 8)
-            addError("password", "Password should have at least 8 characters")
+        if (suppliedPassword != null && suppliedPassword.length < MINIMUM_PASSWORD_LENGTH)
+            addError("password", "Password should have at least $MINIMUM_PASSWORD_LENGTH characters")
 
         val databaseUser = repository.findByUsername(updatedState.username)
         if (databaseUser != null && databaseUser.id != updatedState.id)
             addError("username", "There's already a user with the same username")
 
-        if (updatedState.username.length < 3 || updatedState.username.isBlank())
-            addError("username", "The username should have at least 3 characters")
+        if (updatedState.username.length < MINIMUM_USERNAME_LENGTH || updatedState.username.isBlank())
+            addError("username", "The username should have at least $MINIMUM_USERNAME_LENGTH characters")
 
-        if (updatedState.name.length < 3 || updatedState.name.isBlank())
-            addError("name", "The name should have at least 3 characters")
+        if (updatedState.name.length < MINIMUM_USERNAME_LENGTH || updatedState.name.isBlank())
+            addError("name", "The name should have at least $MINIMUM_USERNAME_LENGTH characters")
 
         if (violations.isNotEmpty())
             throw ConsistencyException(violations)
@@ -53,7 +58,7 @@ internal class UserValidator(
         if (!security.check(currentPassword, user.passwordHash, user.passwordSalt))
             addError("currentPassword", "Not your current password")
 
-        if (newPassword.length < 8)
+        if (newPassword.length < MINIMUM_PASSWORD_LENGTH)
             addError("newPassword", "Your new password should have at least 8 characters")
 
         if (violations.isNotEmpty())

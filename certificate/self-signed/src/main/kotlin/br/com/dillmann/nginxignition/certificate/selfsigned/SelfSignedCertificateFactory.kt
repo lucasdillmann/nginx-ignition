@@ -21,6 +21,10 @@ import java.util.*
 import javax.security.auth.x500.X500Principal
 
 class SelfSignedCertificateFactory {
+    private companion object {
+        private const val KEY_SIZE = 2048
+    }
+
     private val caPrivateKey: PrivateKey
     private val caCertificate: X509CertificateHolder
     private val caPrincipal: X500Principal
@@ -72,7 +76,11 @@ class SelfSignedCertificateFactory {
             .addExtension(Extension.keyUsage, true, KeyUsage(KeyUsage.digitalSignature + KeyUsage.keyEncipherment))
             .also {
                 if (!alternativeNames.isNullOrEmpty()) {
-                    it.addExtension(Extension.subjectAlternativeName, true, DERSequence(alternativeNames.toTypedArray()))
+                    it.addExtension(
+                        Extension.subjectAlternativeName,
+                        true,
+                        DERSequence(alternativeNames.toTypedArray()),
+                    )
                 }
             }
             .build(signer)
@@ -80,7 +88,7 @@ class SelfSignedCertificateFactory {
 
     private fun buildKeyPair(): KeyPair {
         val generator = KeyPairGenerator.getInstance("RSA")
-        generator.initialize(2048, SecureRandom())
+        generator.initialize(KEY_SIZE, SecureRandom())
         return generator.generateKeyPair()
     }
 }

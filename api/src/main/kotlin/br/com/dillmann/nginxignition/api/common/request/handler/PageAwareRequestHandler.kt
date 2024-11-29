@@ -7,11 +7,13 @@ import br.com.dillmann.nginxignition.api.common.request.respond
 internal interface PageAwareRequestHandler: RequestHandler {
     private companion object {
         private val ALLOWED_SIZE_RANGE = 1..1000
+        private const val DEFAULT_PAGE_SIZE = 25
+        private const val DEFAULT_PAGE_NUMBER = 0
     }
 
     override suspend fun handle(call: ApiCall) {
-        val pageSize = call.queryParam("pageSize") ?: 25
-        val pageNumber = call.queryParam("pageNumber") ?: 0
+        val pageSize = call.queryParam("pageSize") ?: DEFAULT_PAGE_SIZE
+        val pageNumber = call.queryParam("pageNumber") ?: DEFAULT_PAGE_NUMBER
 
         if (pageSize !in ALLOWED_SIZE_RANGE) {
             call.sendErrorMessage(

@@ -2,6 +2,7 @@ package br.com.dillmann.nginxignition.database.host.mapping
 
 import org.jetbrains.exposed.sql.Table
 
+@Suppress("MagicNumber")
 internal object HostBindingTable: Table("host_binding") {
     val id = uuid("id")
     val hostId = uuid("host_id") references HostTable.id

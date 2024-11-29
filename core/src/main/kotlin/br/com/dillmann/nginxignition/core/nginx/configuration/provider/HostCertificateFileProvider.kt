@@ -6,11 +6,11 @@ import br.com.dillmann.nginxignition.core.host.Host
 import br.com.dillmann.nginxignition.core.nginx.configuration.NginxConfigurationFileProvider
 import java.util.*
 
-
 internal class HostCertificateFileProvider(
     private val certificateRepository: CertificateRepository,
 ): NginxConfigurationFileProvider {
     private companion object {
+        private const val LINE_LENGTH = 64
         private const val LINE_SEPARATOR = "\n"
         private const val PRIVATE_KEY_HEADER = "-----BEGIN PRIVATE KEY-----"
         private const val PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----"
@@ -45,7 +45,7 @@ internal class HostCertificateFileProvider(
         publicKey: String,
         privateKey: String?,
     ): String {
-        val encoder = Base64.getMimeEncoder(64, LINE_SEPARATOR.encodeToByteArray())
+        val encoder = Base64.getMimeEncoder(LINE_LENGTH, LINE_SEPARATOR.encodeToByteArray())
         val publicKeyBytes = publicKey.decodeBase64()
         val buffer = StringBuffer()
 

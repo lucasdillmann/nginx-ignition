@@ -70,7 +70,7 @@ internal class AcmeIssuer {
     private fun Status.requireSuccess(order: Order) {
         if (this !in listOf(Status.VALID, Status.READY)) {
             val reason = order.error.map { it.toString() }.getOrNull()
-                ?: order.authorizations.mapNotNull { it.dnsChallenge().error.getOrNull() }.joinToString().takeIf { it.isNotBlank() }
+                ?: order.authorizations.mergedErrorMessage()
                 ?: "unknown error"
             error("Certificate failed to be issued: [$this] $reason")
         }
@@ -78,4 +78,7 @@ internal class AcmeIssuer {
 
     private fun Authorization.dnsChallenge() =
         findChallenge(Dns01Challenge::class.java).get()
+
+    private fun List<Authorization>.mergedErrorMessage() =
+        mapNotNull { it.dnsChallenge().error.getOrNull() }.joinToString().takeIf { it.isNotBlank() }
 }

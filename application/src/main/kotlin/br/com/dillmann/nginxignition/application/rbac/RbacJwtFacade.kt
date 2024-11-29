@@ -21,6 +21,8 @@ class RbacJwtFacade(
     companion object {
         const val UNIQUE_IDENTIFIER = "nginx-ignition"
         private val REVOKED_IDS = mutableSetOf<String>()
+        private const val EXPECTED_JWT_SECRET_SIZE_CHARS = 64
+        private const val EXPECTED_JWT_SECRET_SIZE_BYTES = 512
     }
 
     private val logger = logger<RbacJwtFacade>()
@@ -86,8 +88,9 @@ class RbacJwtFacade(
     private fun initializeSecret(): ByteArray {
         val secret = configurationProvider.get("secret")
         if (secret.isNotBlank()) {
-            if(secret.length != 64) {
-                val message = "JWT secret should be 64 characters long (512 bytes) but is ${secret.length} characters long"
+            if(secret.length != EXPECTED_JWT_SECRET_SIZE_CHARS) {
+                val message =
+                    "JWT secret should be 64 characters long (512 bytes) but is ${secret.length} characters long"
                 logger.error(message)
                 throw IllegalArgumentException(message)
             }
@@ -96,11 +99,11 @@ class RbacJwtFacade(
         }
 
         logger.warn(
-            "Application was initialized without a JWT secret and a random one will be generated. This will lead to " +
-                "users being logged-out every time the app restarts or they hit a different instance. Please refer to " +
-                "the documentation in order to provide a custom secret.",
+            "Application was initialized without a JWT secret and a random one will be generated. This will lead " +
+                "to users being logged-out every time the app restarts or they hit a different instance. Please " +
+                "refer to the documentation in order to provide a custom secret.",
         )
 
-        return ByteArray(512).also(SecureRandom()::nextBytes)
+        return ByteArray(EXPECTED_JWT_SECRET_SIZE_BYTES).also(SecureRandom()::nextBytes)
     }
 }

@@ -29,6 +29,8 @@ internal class NginxProcessManager(configurationProvider: ConfigurationProvider)
         val binaryPath = configurationProvider.get("binary-path")
         val configDirectory = configurationProvider.get("config-directory")
         val arguments = arrayOf(binaryPath, "-c", "$configDirectory/config/nginx.conf", *extraArguments)
+
+        @Suppress("SpreadOperator")
         val command = withContext(Dispatchers.IO) { ProcessBuilder().command(*arguments).start() }
 
         val exitCode = withContext(Dispatchers.IO) { command.waitFor() }

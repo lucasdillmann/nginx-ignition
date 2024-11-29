@@ -12,6 +12,15 @@ internal class HostValidator(
     private val hostRepository: HostRepository,
     private val certificateRepository: CertificateRepository,
 ) {
+    private companion object {
+        private const val MINIMUM_PORT = 1
+        private const val MAXIMUM_PORT = 65535
+        private const val MINIMUM_REDIRECT_STATUS_CODE = 300
+        private const val MAXIMUM_REDIRECT_STATUS_CODE = 399
+        private const val MINIMUM_STATUS_CODE = 100
+        private const val MAXIMUM_STATUS_CODE = 599
+    }
+
     suspend fun validate(host: Host) {
         val violations = mutableListOf<ConsistencyException.Violation>()
         val addError: ErrorCreator = { path, message -> violations += ConsistencyException.Violation(path, message) }
@@ -56,16 +65,17 @@ internal class HostValidator(
         if (!InetAddressValidator.getInstance().isValid(binding.ip))
             addError("bindings[$index].ip", "Not a valid IPv4 or IPv6 address")
 
-        if (binding.port !in 1..65535)
-            addError("bindings[$index].port", "Value must be between 1 and 65535")
+        if (binding.port !in MINIMUM_PORT..MAXIMUM_PORT)
+            addError("bindings[$index].port", "Value must be between $MINIMUM_PORT and $MAXIMUM_PORT")
 
+        val certificateIdField = "bindings[$index].certificateId"
         when {
             binding.type == Host.BindingType.HTTP && binding.certificateId != null ->
-                addError("bindings[$index].certificateId", "Value cannot be informed for a HTTP binding")
+                addError(certificateIdField, "Value cannot be informed for a HTTP binding")
             binding.type == Host.BindingType.HTTPS && binding.certificateId == null ->
-                addError("bindings[$index].certificateId", "Value must be informed for a HTTPS binding")
+                addError(certificateIdField, "Value must be informed for a HTTPS binding")
             binding.type == Host.BindingType.HTTPS && !certificateRepository.existsById(binding.certificateId!!) ->
-                addError("bindings[$index].certificateId", "No SSL certificate found with provided ID")
+                addError(certificateIdField, "No SSL certificate found with provided ID")
         }
     }
 
@@ -94,15 +104,17 @@ internal class HostValidator(
     }
 
     private fun validateProxyRoute(route: Host.Route, index: Int, addError: ErrorCreator) {
+        @Suppress("StringLiteralDuplication")
+        val targetUriField = "routes[$index].targetUri"
         if (route.targetUri.isNullOrBlank()) {
             addError(
-                "routes[$index].targetUri",
+                targetUriField,
                 "Value is required when the type of the route is ${Host.RouteType.PROXY}",
             )
         } else {
             val parseResult = runCatching { URI(route.targetUri) }
             if (parseResult.isFailure)
-                addError("routes[$index].targetUri", "Value is not a valid URI")
+                addError(targetUriField, "Value is not a valid URI")
         }
     }
 
@@ -118,8 +130,11 @@ internal class HostValidator(
                 addError("routes[$index].targetUri", "Value is not a valid URI")
         }
 
-        if (route.redirectCode !in 300..399)
-            addError("routes[$index].redirectCode", "Value must be between 300 and 399")
+        if (route.redirectCode !in MINIMUM_REDIRECT_STATUS_CODE..MAXIMUM_REDIRECT_STATUS_CODE)
+            addError(
+                "routes[$index].redirectCode",
+                "Value must be between $MINIMUM_REDIRECT_STATUS_CODE and $MAXIMUM_REDIRECT_STATUS_CODE",
+            )
     }
 
     private fun validateStaticResponseRoute(route: Host.Route, index: Int, addError: ErrorCreator) {
@@ -131,7 +146,10 @@ internal class HostValidator(
             return
         }
 
-        if (route.response.statusCode !in 100..599)
-            addError("routes[$index].response.statusCode", "Value must be between 100 and 599")
+        if (route.response.statusCode !in MINIMUM_STATUS_CODE..MAXIMUM_STATUS_CODE)
+            addError(
+                "routes[$index].response.statusCode",
+                "Value must be between $MINIMUM_STATUS_CODE and $MAXIMUM_STATUS_CODE",
+            )
     }
 }

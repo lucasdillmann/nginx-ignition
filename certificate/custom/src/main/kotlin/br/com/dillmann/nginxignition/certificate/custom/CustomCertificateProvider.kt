@@ -1,6 +1,5 @@
 package br.com.dillmann.nginxignition.certificate.custom
 
-import br.com.dillmann.nginxignition.certificate.commons.CertificateConstants.PRIVATE_KEY_ALGORITHM
 import br.com.dillmann.nginxignition.certificate.commons.CertificateConstants.PRIVATE_KEY_FOOTER
 import br.com.dillmann.nginxignition.certificate.commons.CertificateConstants.PRIVATE_KEY_HEADER
 import br.com.dillmann.nginxignition.certificate.commons.CertificateConstants.PUBLIC_KEY_FOOTER

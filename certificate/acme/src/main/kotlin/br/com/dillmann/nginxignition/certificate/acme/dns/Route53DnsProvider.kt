@@ -9,12 +9,18 @@ import software.amazon.awssdk.services.route53.Route53AsyncClient
 import software.amazon.awssdk.services.route53.model.*
 
 internal class Route53DnsProvider: DnsProvider {
+    companion object {
+        private const val CHECK_CHANGE_STATUS_DELAY_MS = 250L
+        private const val RECORD_TIME_TO_LIVE_SECONDS = 30L
+        const val ID = "AWS_ROUTE53"
+    }
+
     private data class RecordMetadata(
         val record: DnsProvider.ChallengeRecord,
         val hostedZoneId: String,
     )
 
-    override val id = "AWS_ROUTE53"
+    override val id = ID
 
     override suspend fun writeChallengeRecords(
         records: List<DnsProvider.ChallengeRecord>,
@@ -70,7 +76,7 @@ internal class Route53DnsProvider: DnsProvider {
 
         changeIds.forEach { changeId ->
             do {
-                delay(250)
+                delay(CHECK_CHANGE_STATUS_DELAY_MS)
                 val status = client.getChange { it.id(changeId) }.await().changeInfo().status()
             } while (status != ChangeStatus.INSYNC)
         }
@@ -88,7 +94,7 @@ internal class Route53DnsProvider: DnsProvider {
                 .name(domainName)
                 .type(RRType.TXT)
                 .resourceRecords(record)
-                .ttl(30)
+                .ttl(RECORD_TIME_TO_LIVE_SECONDS)
                 .build()
             Change.builder().action(ChangeAction.UPSERT).resourceRecordSet(recordSet).build()
         }

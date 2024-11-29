@@ -6,15 +6,16 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 object TaskScheduler {
+    private const val STOP_TIMEOUT_SECONDS = 30L
     private val logger = logger<TaskScheduler>()
     private val delegate = Executors.newScheduledThreadPool(4)
 
     fun shutdown() {
-        logger.info("Stopping the task scheduler (30s timeout)")
+        logger.info("Stopping the task scheduler (${STOP_TIMEOUT_SECONDS}s timeout)")
         delegate.shutdown()
 
         try {
-            delegate.awaitTermination(30, TimeUnit.SECONDS)
+            delegate.awaitTermination(STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         } catch (ex: Exception) {
             logger.warn("Task scheduler graceful shutdown failed", ex)
         }

@@ -12,6 +12,7 @@ internal class HostRoutes(
     private val toggleEnabledHandler: ToggleHostEnabledByIdHandler,
     private val getLogsHandler: GetHostLogsByIdHandler,
 ): RouteProvider {
+    @Suppress("StringLiteralDuplication")
     override fun apiRoutes(): RouteNode =
         routes("/api/hosts") {
             requireAuthentication {

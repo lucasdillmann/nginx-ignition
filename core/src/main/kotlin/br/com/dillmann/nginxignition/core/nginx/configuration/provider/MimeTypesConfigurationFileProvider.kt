@@ -4,6 +4,7 @@ import br.com.dillmann.nginxignition.core.host.Host
 import br.com.dillmann.nginxignition.core.nginx.configuration.NginxConfigurationFileProvider
 
 internal class MimeTypesConfigurationFileProvider: NginxConfigurationFileProvider {
+    @Suppress("LongMethod")
     override suspend fun provide(basePath: String, hosts: List<Host>): List<NginxConfigurationFileProvider.Output> {
         val contents = """
             types {
