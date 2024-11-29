@@ -76,10 +76,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: |
-          ./gradlew assemble && \
+      - name: Gradle assemble
+        run: ./gradlew assemble
+      - name: Build and push Docker images
+        run: |
           docker buildx build \
             --tag dillmann/nginx-ignition:snapshot \
             --platform linux/amd64,linux/arm64 \
-            --builder docker-container \
             --push .

@@ -37,13 +37,16 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - id: tag
+      - name: Resolve version number from tag
+        id: tag
         run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
-      - run: |
-          ./gradlew assemble && \
+      - name: Gradle assemble
+        run: ./gradlew assemble
+      - name: Build and push Docker images
+        run: |
           docker buildx build \
             --tag dillmann/nginx-ignition:${{ steps.tag.outputs.VERSION }} \
+            --tag dillmann/nginx-ignition:latest \
             --platform linux/amd64,linux/arm64 \
-            --builder docker-container \
             --push .
 
