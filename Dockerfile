@@ -1,9 +1,3 @@
-FROM gradle:8.10.2 AS build
-RUN mkdir -p /home/gradle/nginx-ignition
-COPY --chown=gradle:gradle . /home/gradle/nginx-ignition
-WORKDIR /home/gradle/nginx-ignition
-RUN gradle assemble --no-daemon
-
 FROM eclipse-temurin:21-jre-alpine AS runtime
 EXPOSE 8090:8090
 ENV NGINX_IGNITION_NGINX_BINARY_PATH="/usr/sbin/nginx"
@@ -15,4 +9,4 @@ RUN mkdir -p /opt/nginx-ignition/data && \
     apk update && \
     apk add nginx && \
     apk cache clean
-COPY --from=build /home/gradle/nginx-ignition/application/build/libs/application-all.jar /opt/nginx-ignition/nginx-ignition.jar
+COPY application/build/libs/application-all.jar /opt/nginx-ignition/nginx-ignition.jar
