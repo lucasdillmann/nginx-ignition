@@ -106,6 +106,7 @@ internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
                 $headerInstructions
                 return $statusCode "$escapedPayload";
                 ${buildRouteFeatures(features)}
+                ${route.customSettings ?: ""}
             }
         """.trimIndent()
     }
@@ -114,11 +115,8 @@ internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
         """
            location ${route.sourcePath} {
                 proxy_pass ${route.targetUri!!};
-                proxy_set_header Host ${'$'}http_host;
-                proxy_set_header X-Real-IP ${'$'}remote_addr;
-                proxy_set_header X-Forwarded-For ${'$'}proxy_add_x_forwarded_for;
-                proxy_set_header X-Forwarded-Proto ${'$'}scheme;
                 ${buildRouteFeatures(features)}
+                ${route.customSettings ?: ""}
            } 
         """.trimIndent()
 
@@ -127,6 +125,7 @@ internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
            location ${route.sourcePath} {
                 return ${route.redirectCode!!} ${route.targetUri!!};
                 ${buildRouteFeatures(features)}
+                ${route.customSettings ?: ""}
            } 
         """.trimIndent()
 

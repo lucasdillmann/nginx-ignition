@@ -4,6 +4,7 @@ val coroutinesVersion: String by project
 
 plugins {
     kotlin("jvm") version "2.0.21"
+    id("org.sonarqube") version "6.0.1.5171"
 }
 
 allprojects {
@@ -17,6 +18,7 @@ allprojects {
 
 subprojects {
     apply(plugin = "kotlin")
+    apply(plugin = "org.sonarqube")
 
     dependencies {
         implementation("io.insert-koin:koin-core-jvm:$koinVersion")
