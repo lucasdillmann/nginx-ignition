@@ -1,21 +1,5 @@
 # Configuration properties 
 
-The following configuration properties are available through environment variables. Use them freely to customize
-nginx ignition to suit you better, if needed.
-
-| Environment variable                                   | Description                                                                                        | Example                                    | Default value                                |
-|--------------------------------------------------------|----------------------------------------------------------------------------------------------------|--------------------------------------------|----------------------------------------------|
-| NGINX_IGNITION_DATABASE_URL                            | Connection URL (JDBC formatted) to the database                                                    | jdbc:postgresql://localhost/nginx_ignition | jdbc:h2:mem:nginx-ignition;DB_CLOSE_DELAY=-1 |
-| NGINX_IGNITION_DATABASE_USERNAME                       | Database username                                                                                  | postgres                                   | sa                                           |
-| NGINX_IGNITION_DATABASE_PASSWORD                       | Database username                                                                                  | postgres                                   |                                              |
-| NGINX_IGNITION_DATABASE_CONNECTION_POOL_MINIMUM_SIZE   | Minimum amount of database connections tha the app will keep open                                  | 1                                          | 1                                            |
-| NGINX_IGNITION_DATABASE_CONNECTION_POOL_MAXIMUM_SIZE   | Maximum amount of database connections tha the app will open at any time                           | 10                                         | 10                                           |
-| NGINX_IGNITION_SECURITY_JWT_SECRET                     | Secret key (64 chars long) for the authentication tokens                                           |                                            |                                              |
-| NGINX_IGNITION_SECURITY_JWT_TTL_SECONDS                | Amount of seconds that an authentication token will be valid before logout by inactivity           | 3600                                       | 3600                                         |
-| NGINX_IGNITION_SECURITY_JWT_RENEW_WINDOW_SECONDS       | Amount of seconds that an authentication token will be automatically renewed before its expiration | 900                                        | 900                                          |
-| NGINX_IGNITION_SECURITY_JWT_CLOCK_SKEW_SECONDS         | Amount of seconds that the token's dates can variate from the server dates                         | 60                                         | 60                                           |
-| NGINX_IGNITION_CERTIFICATE_AUTO_RENEW_INTERVAL_MINUTES | Amount of minutes between the SSL certificates auto renew procedures executions                    | 60                                         | 60                                           |
-
 ## Common configuration scenarios
 
 ### Defining a custom authentication token secret
@@ -55,3 +39,20 @@ NGINX_IGNITION_DATABASE_PASSWORD="supersecretpassword"
 
 nginx ignition will create all the required tables, indexes and alike when it boots. In future updates, any changes
 will be applied automatically also.
+
+## All configurations properties available
+The following configuration properties are available through environment variables. Use them freely to customize
+nginx ignition to suit you better, if needed.
+
+| Environment variable                                   | Description                                                                                        | Example                                    | Default value                                |
+|--------------------------------------------------------|----------------------------------------------------------------------------------------------------|--------------------------------------------|----------------------------------------------|
+| NGINX_IGNITION_DATABASE_URL                            | Connection URL (JDBC formatted) to the database                                                    | jdbc:postgresql://localhost/nginx_ignition | jdbc:h2:mem:nginx-ignition;DB_CLOSE_DELAY=-1 |
+| NGINX_IGNITION_DATABASE_USERNAME                       | Database username                                                                                  | postgres                                   | sa                                           |
+| NGINX_IGNITION_DATABASE_PASSWORD                       | Database username                                                                                  | postgres                                   |                                              |
+| NGINX_IGNITION_DATABASE_CONNECTION_POOL_MINIMUM_SIZE   | Minimum amount of database connections tha the app will keep open                                  | 1                                          | 1                                            |
+| NGINX_IGNITION_DATABASE_CONNECTION_POOL_MAXIMUM_SIZE   | Maximum amount of database connections tha the app will open at any time                           | 10                                         | 10                                           |
+| NGINX_IGNITION_SECURITY_JWT_SECRET                     | Secret key (64 chars long) for the authentication tokens                                           |                                            |                                              |
+| NGINX_IGNITION_SECURITY_JWT_TTL_SECONDS                | Amount of seconds that an authentication token will be valid before logout by inactivity           | 3600                                       | 3600                                         |
+| NGINX_IGNITION_SECURITY_JWT_RENEW_WINDOW_SECONDS       | Amount of seconds that an authentication token will be automatically renewed before its expiration | 900                                        | 900                                          |
+| NGINX_IGNITION_SECURITY_JWT_CLOCK_SKEW_SECONDS         | Amount of seconds that the token's dates can variate from the server dates                         | 60                                         | 60                                           |
+| NGINX_IGNITION_CERTIFICATE_AUTO_RENEW_INTERVAL_MINUTES | Amount of minutes between the SSL certificates auto renew procedures executions                    | 60                                         | 60                                           |

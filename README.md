@@ -20,8 +20,8 @@ Some of the available features include:
 
 ## Getting started
 
-To run nginx ignition, run the following in your terminal. If you don't have it already, you will need to install Docker
-first (more details on hot to do it, follow [this link](https://www.docker.com/get-started/)).
+To run nginx ignition, run the following in your terminal. If you don't have Docker already, you will need to install 
+it first (follow [this link](https://www.docker.com/get-started/) for instructions).
 
 ```shell
 docker run -p8090:8090 dillmann/nginx-ignition
