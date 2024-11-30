@@ -45,7 +45,7 @@ jobs:
         run: ./gradlew detekt
       - name: Prettier
         run: ./gradlew :frontend:npxPrettierCheck
-      - name: Detekt
+      - name: Eslint
         run: ./gradlew :frontend:npmLint
 
   build:
