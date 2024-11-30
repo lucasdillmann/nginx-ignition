@@ -11,12 +11,13 @@ node {
 }
 
 tasks {
-    val npmLint = create<NpmTask>("npmLint") {
+    val eslint = create<NpxTask>("eslint") {
         dependsOn(npmSetup, npmInstall)
-        args = listOf("run", "lint")
+        command = "npx"
+        args = listOf("eslint", "--max-warnings", "0", "src")
     }
 
-    val prettierCheck = create<NpxTask>("npxPrettierCheck") {
+    val prettierCheck = create<NpxTask>("prettierCheck") {
         dependsOn(npmSetup, npmInstall)
         command = "npx"
         args = listOf("prettier", "--check", "src")
@@ -33,7 +34,7 @@ tasks {
     }
 
     jar {
-        dependsOn(npmLint, prettierCheck, npmBuild)
+        dependsOn(eslint, prettierCheck, npmBuild)
 
         from(layout.buildDirectory.dir("frontend")) {
             into("/nginx-ignition/frontend/")

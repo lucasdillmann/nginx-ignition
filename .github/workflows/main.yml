@@ -44,9 +44,9 @@ jobs:
       - name: Detekt
         run: ./gradlew detekt
       - name: Prettier
-        run: ./gradlew :frontend:npxPrettierCheck
+        run: ./gradlew :frontend:prettierCheck
       - name: Eslint
-        run: ./gradlew :frontend:npmLint
+        run: ./gradlew :frontend:eslint
 
   build:
     runs-on: ubuntu-latest
