@@ -13,6 +13,7 @@ use a UI anyway), the project does aim to provide an intuitive and powerful way 
 
 Some of the available features include:
 - Multiple nginx virtual hosts, each one with its customized set of domain, routes and bindings (port listeners)
+- Each host route can act as a proxy, redirection or reply with a static response
 - SSL certificates (Let's Encrypt, self-signed or bring your custom one) with automatic renew (when applicable)
 - Server and virtual hosts access and error logs
 - Multiple users with role-based access control (RBAC)
