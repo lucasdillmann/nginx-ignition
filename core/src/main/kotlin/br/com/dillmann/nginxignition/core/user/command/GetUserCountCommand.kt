@@ -1,5 +1,5 @@
 package br.com.dillmann.nginxignition.core.user.command
 
-interface GetUserCountCommand {
+fun interface GetUserCountCommand {
     suspend fun count(): Long
 }

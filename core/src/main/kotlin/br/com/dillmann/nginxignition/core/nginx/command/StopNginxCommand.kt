@@ -1,5 +1,5 @@
 package br.com.dillmann.nginxignition.core.nginx.command
 
-interface StopNginxCommand {
+fun interface StopNginxCommand {
     suspend fun stop()
 }

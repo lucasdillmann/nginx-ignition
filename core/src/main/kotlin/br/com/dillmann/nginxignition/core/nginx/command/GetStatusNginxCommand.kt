@@ -1,5 +1,5 @@
 package br.com.dillmann.nginxignition.core.nginx.command
 
-interface GetStatusNginxCommand {
+fun interface GetStatusNginxCommand {
     suspend fun isRunning(): Boolean
 }

@@ -34,20 +34,7 @@ abstract class BaseCertificateValidator(
 
             if (value != null) {
                 val enumOptions = field.enumOptions.map { it.id }
-                val incompatibleMessage =
-                    when {
-                        field.type in listOf(ENUM, SINGLE_LINE_TEXT, MULTI_LINE_TEXT) && value !is String ->
-                            "A text value is expected"
-                        field.type == ENUM && value !in enumOptions ->
-                            "Not a recognized option. Valid values: $enumOptions."
-                        field.type == FILE && !canDecodeFile(value) ->
-                            "A file is expected, encoded in a Base64 String"
-                        field.type == BOOLEAN && value !is Boolean ->
-                            "A boolean value is expected"
-                        field.type == EMAIL && !isAnEmail(value) ->
-                            "A email is expected"
-                        else -> null
-                    }
+                val incompatibleMessage = resolveErrorMessage(field, value, enumOptions)
 
                 if (incompatibleMessage != null) {
                     violations += ConsistencyException.Violation(
@@ -60,6 +47,30 @@ abstract class BaseCertificateValidator(
 
         return violations
     }
+
+    private fun resolveErrorMessage(
+        field: CertificateProviderDynamicField,
+        value: Any,
+        enumOptions: List<String>
+    ): String? =
+        when {
+            field.type in listOf(ENUM, SINGLE_LINE_TEXT, MULTI_LINE_TEXT) && value !is String ->
+                "A text value is expected"
+
+            field.type == ENUM && value !in enumOptions ->
+                "Not a recognized option. Valid values: $enumOptions."
+
+            field.type == FILE && !canDecodeFile(value) ->
+                "A file is expected, encoded in a Base64 String"
+
+            field.type == BOOLEAN && value !is Boolean ->
+                "A boolean value is expected"
+
+            field.type == EMAIL && !isAnEmail(value) ->
+                "A email is expected"
+
+            else -> null
+        }
 
     private fun canDecodeFile(value: Any): Boolean =
         runCatching { (value as String).decodeBase64() }.getOrNull() != null

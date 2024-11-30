@@ -16,6 +16,6 @@ dependencies {
     implementation("com.h2database:h2:$h2Version")
     implementation("org.postgresql:postgresql:$postgresDriverVersion")
     implementation("com.zaxxer:HikariCP:$hikariCpVersion")
-    implementation("org.flywaydb:flyway-core:10.21.0")
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 }

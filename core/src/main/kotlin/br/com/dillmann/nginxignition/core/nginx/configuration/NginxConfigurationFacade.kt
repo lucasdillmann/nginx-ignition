@@ -39,7 +39,7 @@ internal class NginxConfigurationFacade(
             listOf("logs", "config").forEach { folderName ->
                 val folder = File(basePath, folderName)
                 if (folder.exists() && !folder.isDirectory)
-                    folder.delete()
+                    require(folder.delete()) { "Unable to cleanup the nginx configuration folder" }
                 if (!folder.exists())
                     folder.mkdirs()
             }

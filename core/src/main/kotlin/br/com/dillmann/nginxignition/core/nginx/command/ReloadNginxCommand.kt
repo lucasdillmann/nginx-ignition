@@ -1,5 +1,5 @@
 package br.com.dillmann.nginxignition.core.nginx.command
 
-interface ReloadNginxCommand {
+fun interface ReloadNginxCommand {
     suspend fun reload()
 }

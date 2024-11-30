@@ -1,5 +1,6 @@
 val koinVersion: String by project
 val mapStructVersion: String by project
+val logbackVersion: String by project
 
 plugins {
     kotlin("kapt")
@@ -35,7 +36,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
-    implementation("ch.qos.logback:logback-classic:1.5.12")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("org.mapstruct:mapstruct:$mapStructVersion")
     kapt("org.mapstruct:mapstruct-processor:$mapStructVersion")
 }

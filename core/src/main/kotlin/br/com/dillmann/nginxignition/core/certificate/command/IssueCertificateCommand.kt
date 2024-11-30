@@ -3,7 +3,7 @@ package br.com.dillmann.nginxignition.core.certificate.command
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateRequest
 import java.util.UUID
 
-interface IssueCertificateCommand {
+fun interface IssueCertificateCommand {
     data class Output(
         val success: Boolean,
         val errorReason: String? = null,

@@ -5,6 +5,6 @@ import org.mapstruct.Mapper
 import org.mapstruct.ReportingPolicy
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-internal interface NginxConverter {
+internal fun interface NginxConverter {
     fun toResponse(exception: NginxCommandException): NginxActionErrorResponse
 }
