@@ -39,8 +39,12 @@ tasks {
         args = listOf("run", "clean")
     }
 
+    check {
+        dependsOn(eslint, prettierCheck)
+    }
+
     jar {
-        dependsOn(eslint, prettierCheck, npmBuild)
+        dependsOn(npmBuild)
 
         from(layout.buildDirectory.dir("frontend")) {
             into("/nginx-ignition/frontend/")
