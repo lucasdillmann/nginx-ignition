@@ -1,6 +1,8 @@
 <p align="center">
-    <img src="docs/readme-screenshots.png" alt="" /> 
-    <h1>nginx ignition</h1>
+    <img src="docs/readme-screenshots.png" alt="" width="600" />
+</p>
+<p align="center" style="font-size: 32px">
+    nginx ignition
 </p>
 
 The nginx ignition is a user interface for the nginx web server, aimed for developers and enthusiasts that don't
