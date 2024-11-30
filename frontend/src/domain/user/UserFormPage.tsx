@@ -15,7 +15,7 @@ import ValidationResultConverter from "../../core/validation/ValidationResultCon
 import UserResponse from "./model/UserResponse"
 import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
 import DeleteUserAction from "./actions/DeleteUserAction"
-import AppContext, { AppContextData } from "../../core/components/context/AppContext"
+import AppContext from "../../core/components/context/AppContext"
 
 interface UserFormState {
     formValues: UserRequest
@@ -25,16 +25,12 @@ interface UserFormState {
 }
 
 export default class UserFormPage extends React.Component<unknown, UserFormState> {
-    static readonly contextType = AppShellContext
-    context!: React.ContextType<typeof AppShellContext>
-
     private readonly userId?: string
     private readonly service: UserService
     private readonly saveModal: ModalPreloader
-    private appContext?: AppContextData
 
-    constructor(props: any, context: any) {
-        super(props, context)
+    constructor(props: any) {
+        super(props)
         const userId = routeParams().id
         this.userId = userId === "new" ? undefined : userId
         this.service = new UserService()
@@ -169,12 +165,12 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
         if (this.userId !== undefined)
             actions.unshift({
                 description: "Delete",
-                disabled: !enableActions || this.userId === this.appContext?.user?.id,
+                disabled: !enableActions || this.userId === AppContext.get().user?.id,
                 color: "danger",
                 onClick: () => this.delete(),
             })
 
-        this.context.updateConfig({
+        AppShellContext.get().updateConfig({
             title: "User details",
             subtitle: "Full details and configurations of the nginx ignition's user",
             actions,
@@ -203,19 +199,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
         const { loading, notFound } = this.state
 
         if (notFound) return <Empty description="Not found" />
-
-        if (loading)
-            return (
-                <>
-                    <AppContext.Consumer>
-                        {context => {
-                            this.appContext = context
-                            return undefined
-                        }}
-                    </AppContext.Consumer>
-                    <Preloader loading />
-                </>
-            )
+        if (loading) return <Preloader loading />
 
         return this.renderForm()
     }

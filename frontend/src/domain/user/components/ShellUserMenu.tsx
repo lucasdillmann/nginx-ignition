@@ -28,9 +28,6 @@ interface ShellUserMenuState {
 }
 
 export default class ShellUserMenu extends React.Component<any, ShellUserMenuState> {
-    static readonly contextType = AppContext
-    context!: React.ContextType<typeof AppContext>
-
     private readonly formRef: React.RefObject<FormInstance>
     private readonly service: UserService
 
@@ -51,7 +48,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
             .then(() => this.service.logout())
             .then(() => Notification.success("See ya", "You was logged-out successfully"))
             .then(() => {
-                this.context.user = undefined
+                AppContext.get().user = undefined
             })
             .then(() => navigateTo("/login"))
     }
@@ -131,7 +128,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
     }
 
     render() {
-        const { user } = this.context
+        const { user } = AppContext.get()
         return (
             <Flex className="shell-user-menu-container">
                 <Flex className="shell-user-menu-icon">

@@ -82,8 +82,10 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         return <>{actions.map(action => this.renderActionButton(action))}</>
     }
 
-    private handleConfigUpdate(config: ShellConfig) {
-        this.setState({ config })
+    componentDidMount() {
+        AppShellContext.replace({
+            updateConfig: config => this.setState({ config }),
+        })
     }
 
     shouldComponentUpdate(nextProps: Readonly<AppShellProps>): boolean {
@@ -131,15 +133,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                         </Flex>
                         <Flex className="shell-actions-container">{this.renderActions()}</Flex>
                     </Flex>
-                    <Content className="shell-content">
-                        <AppShellContext.Provider
-                            value={{
-                                updateConfig: config => this.handleConfigUpdate(config),
-                            }}
-                        >
-                            {children}
-                        </AppShellContext.Provider>
-                    </Content>
+                    <Content className="shell-content">{children}</Content>
                 </Layout>
             </Layout>
         )

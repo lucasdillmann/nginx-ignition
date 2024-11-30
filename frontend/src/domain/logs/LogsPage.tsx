@@ -30,9 +30,6 @@ interface LogsPageState {
 }
 
 export default class LogsPage extends React.Component<any, LogsPageState> {
-    static readonly contextType = AppShellContext
-    context!: React.ContextType<typeof AppShellContext>
-
     private readonly hostService: HostService
     private readonly nginxService: NginxService
     private readonly contentsRef: React.RefObject<TextAreaRef>
@@ -54,7 +51,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
 
     componentDidMount() {
         this.fetchLogs()
-        this.context.updateConfig({
+        AppShellContext.get().updateConfig({
             title: "Logs",
             subtitle: "nginx's logs for the main process or each virtual host",
             actions: [

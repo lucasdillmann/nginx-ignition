@@ -13,9 +13,6 @@ import AppShellContext from "../../core/components/shell/AppShellContext"
 import DeleteUserAction from "./actions/DeleteUserAction"
 
 export default class UserListPage extends React.PureComponent {
-    static readonly contextType = AppShellContext
-    context!: React.ContextType<typeof AppShellContext>
-
     private readonly service: UserService
     private readonly table: React.RefObject<DataTable<UserResponse>>
 
@@ -25,7 +22,8 @@ export default class UserListPage extends React.PureComponent {
         this.table = React.createRef()
     }
 
-    private renderDeleteButton(item: UserResponse, user?: UserResponse): React.ReactNode {
+    private renderDeleteButton(item: UserResponse): React.ReactNode {
+        const { user } = AppContext.get()
         if (user?.id !== item.id)
             return (
                 <Link to="" onClick={() => this.deleteUser(item)}>
@@ -74,9 +72,7 @@ export default class UserListPage extends React.PureComponent {
                             <EditOutlined className="action-icon" />
                         </Link>
 
-                        <AppContext.Consumer>
-                            {context => this.renderDeleteButton(item, context.user)}
-                        </AppContext.Consumer>
+                        {this.renderDeleteButton(item)}
                     </>
                 ),
                 width: 120,
@@ -102,7 +98,7 @@ export default class UserListPage extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.context.updateConfig({
+        AppShellContext.get().updateConfig({
             title: "Users",
             subtitle: "Relation of the nginx ignition's users",
             actions: [

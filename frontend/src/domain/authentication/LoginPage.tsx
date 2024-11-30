@@ -2,7 +2,7 @@ import React from "react"
 import { Button, Form, Input, Typography } from "antd"
 import { LockOutlined, UserOutlined } from "@ant-design/icons"
 import { Navigate } from "react-router-dom"
-import AppContext, { AppContextData } from "../../core/components/context/AppContext"
+import AppContext from "../../core/components/context/AppContext"
 import Preloader from "../../core/components/preloader/Preloader"
 import Notification from "../../core/components/notification/Notification"
 import "./LoginPage.css"
@@ -16,14 +16,10 @@ interface LoginPageState {
 }
 
 export default class LoginPage extends React.Component<any, LoginPageState> {
-    static readonly contextType = AppContext
-    context!: React.ContextType<typeof AppContext>
-
     private readonly service: UserService
 
-    constructor(props: any, context: AppContextData) {
-        super(props, context)
-
+    constructor(props: any) {
+        super(props)
         this.service = new UserService()
         this.state = {
             loading: false,
@@ -90,7 +86,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
 
     render() {
         const { loading } = this.state
-        const { user, onboardingStatus } = this.context
+        const { user, onboardingStatus } = AppContext.get()
 
         if (user?.id != null) {
             return <Navigate to="/" />

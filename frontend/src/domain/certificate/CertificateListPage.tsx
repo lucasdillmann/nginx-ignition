@@ -20,9 +20,6 @@ interface CertificateListPageState {
 }
 
 export default class CertificateListPage extends React.Component<any, CertificateListPageState> {
-    static readonly contextType = AppShellContext
-    context!: React.ContextType<typeof AppShellContext>
-
     private readonly service: CertificateService
     private readonly table: React.RefObject<DataTable<CertificateResponse>>
 
@@ -104,7 +101,7 @@ export default class CertificateListPage extends React.Component<any, Certificat
                 ),
             )
 
-        this.context.updateConfig({
+        AppShellContext.get().updateConfig({
             title: "SSL certificates",
             subtitle: "Relation of issued SSL certificates for use in the nginx's virtual hosts",
             actions: [

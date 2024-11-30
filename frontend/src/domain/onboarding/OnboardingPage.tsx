@@ -2,7 +2,7 @@ import React from "react"
 import { Button, Form, Input, Typography } from "antd"
 import { LockOutlined, UserOutlined, IdcardOutlined } from "@ant-design/icons"
 import { Navigate } from "react-router-dom"
-import AppContext, { AppContextData } from "../../core/components/context/AppContext"
+import AppContext from "../../core/components/context/AppContext"
 import Preloader from "../../core/components/preloader/Preloader"
 import Notification from "../../core/components/notification/Notification"
 import ValidationResult from "../../core/validation/ValidationResult"
@@ -19,13 +19,10 @@ interface OnboardingPageState {
 }
 
 export default class OnboardingPage extends React.Component<any, OnboardingPageState> {
-    static readonly contextType = AppContext
-    context!: React.ContextType<typeof AppContext>
-
     private readonly service: OnboardingService
 
-    constructor(props: any, context: AppContextData) {
-        super(props, context)
+    constructor(props: any) {
+        super(props)
 
         this.service = new OnboardingService()
         this.state = {
@@ -114,7 +111,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
 
     render() {
         const { loading } = this.state
-        const { user, onboardingStatus } = this.context
+        const { user, onboardingStatus } = AppContext.get()
 
         if (user?.id != null || onboardingStatus?.finished) {
             return <Navigate to="/" />

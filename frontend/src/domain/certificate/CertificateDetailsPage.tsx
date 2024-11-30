@@ -1,5 +1,4 @@
 import React from "react"
-import AppShellContext from "../../core/components/shell/AppShellContext"
 import { CertificateResponse } from "./model/CertificateResponse"
 import RenewCertificateAction from "./actions/RenewCertificateAction"
 import DeleteCertificateAction from "./actions/DeleteCertificateAction"
@@ -14,6 +13,7 @@ import DescriptionLayout from "../../core/components/description/DescriptionLayo
 import { ProFieldValueType } from "@ant-design/pro-utils/es/typing"
 import If from "../../core/components/flowcontrol/If"
 import "./CertificateDetailsPage.css"
+import AppShellContext from "../../core/components/shell/AppShellContext"
 
 interface CertificateDetailsPageState {
     loading: boolean
@@ -22,9 +22,6 @@ interface CertificateDetailsPageState {
 }
 
 export default class CertificateDetailsPage extends React.Component<unknown, CertificateDetailsPageState> {
-    static readonly contextType = AppShellContext
-    context!: React.ContextType<typeof AppShellContext>
-
     private readonly certificateId: string
     private readonly service: CertificateService
 
@@ -49,7 +46,7 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
     }
 
     private updateShellConfig(enableActions: boolean) {
-        this.context.updateConfig({
+        AppShellContext.get().updateConfig({
             title: "SSL certificate details",
             subtitle: "Details of a uploaded or issued SSL certificate",
             actions: [

@@ -1,6 +1,6 @@
 import AppRoute from "./AppRoute"
 import React from "react"
-import AppContext, { AppContextData } from "../context/AppContext"
+import AppContext from "../context/AppContext"
 import { RouteObject, createBrowserRouter, RouterProvider, Navigate, Params } from "react-router-dom"
 import AppShell, { AppShellMenuItem } from "../shell/AppShell"
 import ErrorBoundary from "../errorboundary/ErrorBoundary"
@@ -39,11 +39,8 @@ export interface AppRouterProps {
 }
 
 export default class AppRouter extends React.Component<AppRouterProps, AppRouterState> {
-    static readonly contextType = AppContext
-    context!: React.ContextType<typeof AppContext>
-
-    constructor(props: AppRouterProps, context: AppContextData) {
-        super(props, context)
+    constructor(props: AppRouterProps) {
+        super(props)
         this.state = {}
         currentInstance = this
     }
@@ -51,7 +48,7 @@ export default class AppRouter extends React.Component<AppRouterProps, AppRouter
     private isRouteVisible(route: AppRoute): boolean {
         if (!Array.isArray(route.visibleRoles)) return true
 
-        const { user } = this.context
+        const { user } = AppContext.get()
         if (user === undefined) return false
 
         return route.visibleRoles.includes(user.role)
@@ -72,7 +69,7 @@ export default class AppRouter extends React.Component<AppRouterProps, AppRouter
     private buildRouteComponent(route: AppRoute): any {
         const { userMenu, serverControl } = this.props
         const { component, requiresAuthentication, fullPage } = route
-        const { user } = this.context
+        const { user } = AppContext.get()
 
         if (requiresAuthentication && user?.id == null) {
             return <Navigate to="/login" replace />

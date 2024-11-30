@@ -15,9 +15,6 @@ import AppShellContext from "../../core/components/shell/AppShellContext"
 import DeleteHostAction from "./actions/DeleteHostAction"
 
 export default class HostListPage extends React.PureComponent {
-    static readonly contextType = AppShellContext
-    context!: React.ContextType<typeof AppShellContext>
-
     private readonly service: HostService
     private readonly table: React.RefObject<DataTable<HostResponse>>
 
@@ -95,7 +92,7 @@ export default class HostListPage extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.context.updateConfig({
+        AppShellContext.get().updateConfig({
             title: "Hosts",
             subtitle: "Relation of all nginx's virtual hosts definitions",
             actions: [

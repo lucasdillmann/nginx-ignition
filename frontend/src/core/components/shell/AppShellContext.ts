@@ -1,5 +1,5 @@
 import { ButtonColorType, ButtonVariantType } from "antd/es/button"
-import React from "react"
+import ContextHolder from "../../context/ContextHolder"
 
 export interface ShellAction {
     description: string
@@ -19,7 +19,7 @@ export interface ShellOperations {
     updateConfig(config: ShellConfig): void
 }
 
-const AppShellContext = React.createContext<ShellOperations>({
+// eslint-disable-next-line import/no-anonymous-default-export
+export default new ContextHolder<ShellOperations>({
     updateConfig: (_: ShellConfig) => {},
 })
-export default AppShellContext

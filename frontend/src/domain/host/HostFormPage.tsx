@@ -1,5 +1,5 @@
 import React from "react"
-import AppShellContext, { ShellAction, ShellOperations } from "../../core/components/shell/AppShellContext"
+import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
 import { Empty, Flex, Form, Switch } from "antd"
 import FormLayout from "../../core/components/form/FormLayout"
 import DomainNamesList from "../certificate/components/DomainNamesList"
@@ -54,15 +54,12 @@ interface HostFormPageState {
 }
 
 export default class HostFormPage extends React.Component<any, HostFormPageState> {
-    static readonly contextType = AppShellContext
-    context!: React.ContextType<typeof AppShellContext>
-
     private readonly service: HostService
     private readonly hostId?: string
     private readonly saveModal: ModalPreloader
 
-    constructor(props: any, context: ShellOperations) {
-        super(props, context)
+    constructor(props: any) {
+        super(props)
 
         const hostId = routeParams().id
         this.hostId = hostId === "new" ? undefined : hostId
@@ -127,7 +124,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                 onClick: () => this.delete(),
             })
 
-        this.context.updateConfig({
+        AppShellContext.get().updateConfig({
             title: "Host details",
             subtitle: "Full details and configurations of the nginx's virtual host",
             actions,
@@ -135,9 +132,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     private handleChange(host: HostFormValues) {
-        const sortedRoutes = host.routes.sort(
-            (left, right) => (left.priority > right.priority ? 1 : -1),
-        )
+        const sortedRoutes = host.routes.sort((left, right) => (left.priority > right.priority ? 1 : -1))
         const orderedData: HostFormValues = {
             ...host,
             routes: sortedRoutes,

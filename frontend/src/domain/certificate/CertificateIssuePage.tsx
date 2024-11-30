@@ -25,9 +25,6 @@ interface CertificateIssuePageState {
 }
 
 export default class CertificateIssuePage extends React.Component<unknown, CertificateIssuePageState> {
-    static readonly contextType = AppShellContext
-    context!: React.ContextType<typeof AppShellContext>
-
     private readonly service: CertificateService
     private readonly saveModal: ModalPreloader
 
@@ -129,7 +126,14 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
         const provider = availableProviders.find(item => item.id === formValues.providerId)
         return provider?.dynamicFields
             .sort((left, right) => (left.priority > right.priority ? 1 : -1))
-            .map(field => <DynamicInput key={field.id} validationResult={validationResult} formValues={formValues} field={field} />)
+            .map(field => (
+                <DynamicInput
+                    key={field.id}
+                    validationResult={validationResult}
+                    formValues={formValues}
+                    field={field}
+                />
+            ))
     }
 
     private renderForm() {
@@ -157,7 +161,7 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
     }
 
     private updateShellConfig(enableActions: boolean) {
-        this.context.updateConfig({
+        AppShellContext.get().updateConfig({
             title: "New SSL certificate",
             subtitle: "Issue or upload a SSL certificate for use with the nginx's virtual hosts",
             actions: [
