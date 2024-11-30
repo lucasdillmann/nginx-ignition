@@ -5,17 +5,17 @@
     nginx ignition
 </h1>
 
-The nginx ignition is a user interface for the nginx web server, aimed for developers and enthusiasts that don't
+The nginx ignition is a user interface for the nginx web server, aimed at developers and enthusiasts that don't
 want to manage configuration files manually for their use-cases. 
 
-Although isn't the goal to be feature-complete (if your use case is quite advanced or complex, you probably will not 
-use a UI anyway), the project does aim to provide a intuitive and powerful way to configure and run nginx.
+Although it isn't the goal to be feature-complete (if your use-case is quite advanced or complex, you probably will not 
+use a UI anyway), the project does aim to provide an intuitive and powerful way to configure and run nginx.
 
 Some of the available features include:
 - Multiple nginx virtual hosts, each one with its customized set of domain, routes and bindings (port listeners)
 - SSL certificates (Let's Encrypt, self-signed or bring your custom one) with automatic renew (when applicable)
 - Server and virtual hosts access and error logs
-- Multiple users with role based access control (RBAC)
+- Multiple users with role-based access control (RBAC)
 
 ## Getting started
 
@@ -29,14 +29,14 @@ docker run -p8090:8090 dillmann/nginx-ignition
 After a few seconds, you can open your favorite browser at http://localhost:8090 and start using it. There's no 
 default username or password, the nginx ignition will guide you to create your user.
 
-Please note that in its default configuration, the app will start using an embedded database. While this is fine for
-testing and some experiments, is not recommended for a production-like scenario. For that, please refer to the 
+Please note that in its default configuration the app will start using an embedded H2 database. While this is fine for
+testing and some experiments, is not recommended for a long-term scenario. For that, please refer to the 
 configuration section below to use PostgreSQL instead.
 
 ## Configuration
 
-Please refer to [this documentation file](docs/configuration-properties.md) for more details about the available 
-configuration properties and some common use-case examples
+Check [this documentation file](docs/configuration-properties.md) for more details about the available 
+configuration properties and some common use-case examples.
 
 ## Contributing and feedback
 
