@@ -100,6 +100,7 @@ internal class HostValidator(
             Host.RouteType.PROXY -> validateProxyRoute(route, index, addError)
             Host.RouteType.REDIRECT -> validateRedirectRoute(route, index, addError)
             Host.RouteType.STATIC_RESPONSE -> validateStaticResponseRoute(route, index, addError)
+            Host.RouteType.INTEGRATION -> validateIntegrationRoute(route, index, addError)
         }
     }
 
@@ -138,18 +139,24 @@ internal class HostValidator(
     }
 
     private fun validateStaticResponseRoute(route: Host.Route, index: Int, addError: ErrorCreator) {
-        if (route.response == null) {
-            addError(
-                "routes[$index].response",
-                "Value is required when the type of the route is ${Host.RouteType.STATIC_RESPONSE}",
-            )
-            return
-        }
-
-        if (route.response.statusCode !in MINIMUM_STATUS_CODE..MAXIMUM_STATUS_CODE)
+        if (route.response?.statusCode !in MINIMUM_STATUS_CODE..MAXIMUM_STATUS_CODE)
             addError(
                 "routes[$index].response.statusCode",
                 "Value must be between $MINIMUM_STATUS_CODE and $MAXIMUM_STATUS_CODE",
+            )
+    }
+
+    private fun validateIntegrationRoute(route: Host.Route, index: Int, addError: ErrorCreator) {
+        if (route.integration?.integrationId.isNullOrBlank())
+            addError(
+                "routes[$index].integration.integrationId",
+                "Value is required when the type of the route is ${Host.RouteType.INTEGRATION}",
+            )
+
+        if (route.integration?.optionId.isNullOrBlank())
+            addError(
+                "routes[$index].integration.optionId",
+                "Value is required when the type of the route is ${Host.RouteType.INTEGRATION}",
             )
     }
 }

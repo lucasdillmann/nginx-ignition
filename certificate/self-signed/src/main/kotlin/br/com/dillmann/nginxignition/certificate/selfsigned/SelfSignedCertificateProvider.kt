@@ -2,7 +2,7 @@ package br.com.dillmann.nginxignition.certificate.selfsigned
 
 import br.com.dillmann.nginxignition.core.certificate.Certificate
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProvider
-import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProviderDynamicField
+import br.com.dillmann.nginxignition.core.common.dynamicfield.DynamicField
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateRequest
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -20,7 +20,7 @@ internal class SelfSignedCertificateProvider(
 
     override val name = "Self-signed certificate"
     override val id = UNIQUE_ID
-    override val dynamicFields = emptyList<CertificateProviderDynamicField>()
+    override val dynamicFields = emptyList<DynamicField>()
 
     override suspend fun issue(request: CertificateRequest): CertificateProvider.Output {
         validator.validate(request)

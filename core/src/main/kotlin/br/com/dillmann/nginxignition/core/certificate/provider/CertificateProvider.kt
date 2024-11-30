@@ -1,6 +1,7 @@
 package br.com.dillmann.nginxignition.core.certificate.provider
 
 import br.com.dillmann.nginxignition.core.certificate.Certificate
+import br.com.dillmann.nginxignition.core.common.dynamicfield.DynamicField
 
 interface CertificateProvider {
     data class Output(
@@ -11,7 +12,7 @@ interface CertificateProvider {
 
     val id: String
     val name: String
-    val dynamicFields: List<CertificateProviderDynamicField>
+    val dynamicFields: List<DynamicField>
 
     suspend fun issue(request: CertificateRequest): Output
 

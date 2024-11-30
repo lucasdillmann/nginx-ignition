@@ -1,14 +1,18 @@
 package br.com.dillmann.nginxignition.core.nginx.configuration.provider
 
 import br.com.dillmann.nginxignition.core.host.Host
+import br.com.dillmann.nginxignition.core.integration.IntegrationService
 import br.com.dillmann.nginxignition.core.nginx.configuration.NginxConfigurationFileProvider
 
-internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
+internal class HostConfigurationFileProvider(
+    private val integrationService: IntegrationService,
+): NginxConfigurationFileProvider {
     override suspend fun provide(basePath: String, hosts: List<Host>): List<NginxConfigurationFileProvider.Output> =
         hosts.filter { it.enabled }.map { buildHost(basePath, it) }
 
-    private fun buildHost(basePath: String, host: Host): NginxConfigurationFileProvider.Output {
-        val routes = host.routes.sortedBy { it.priority }.joinToString("\n") { buildRoute(it, host.featureSet) }
+    private suspend fun buildHost(basePath: String, host: Host): NginxConfigurationFileProvider.Output {
+        val routes =
+            host.routes.sortedBy { it.priority }.map { buildRoute(it, host.featureSet) }.joinToString("\n")
         val serverNames =
             if (host.defaultServer) "server_name _;"
             else host.domainNames.joinToString("\n") { "server_name $it;" }
@@ -87,11 +91,12 @@ internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
     }
 
 
-    private fun buildRoute(route: Host.Route, features: Host.FeatureSet): String =
+    private suspend fun buildRoute(route: Host.Route, features: Host.FeatureSet): String =
         when (route.type) {
             Host.RouteType.STATIC_RESPONSE -> buildStaticResponseRoute(route, features)
             Host.RouteType.PROXY -> buildProxyRoute(route, features)
             Host.RouteType.REDIRECT -> buildRedirectRoute(route, features)
+            Host.RouteType.INTEGRATION -> buildIntegrationRoute(route, features)
         }
 
     private fun buildStaticResponseRoute(route: Host.Route, features: Host.FeatureSet): String {
@@ -119,6 +124,19 @@ internal class HostConfigurationFileProvider: NginxConfigurationFileProvider {
                 ${route.customSettings ?: ""}
            } 
         """.trimIndent()
+
+    private suspend fun buildIntegrationRoute(route: Host.Route, features: Host.FeatureSet): String {
+        val (integrationId, integrationOption) = route.integration!!
+        val proxyUrl = integrationService.getIntegrationOptionUrl(integrationId, integrationOption)
+        return """
+           location ${route.sourcePath} {
+                proxy_pass $proxyUrl;
+                ${buildRouteFeatures(features)}
+                ${route.customSettings ?: ""}
+           }
+        """.trimIndent()
+    }
+
 
     private fun buildRedirectRoute(route: Host.Route, features: Host.FeatureSet) =
         """

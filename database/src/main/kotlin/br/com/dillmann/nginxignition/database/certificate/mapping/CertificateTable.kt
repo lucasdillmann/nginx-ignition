@@ -15,8 +15,8 @@ internal object CertificateTable: Table("certificate") {
     val privateKey = varchar("private_key", 2048)
     val publicKey = varchar("public_key", 2048)
     val certificationChain = array<String>("certification_chain")
-    var parameters = text("parameters")
-    var metadata = text("metadata").nullable()
+    val parameters = text("parameters")
+    val metadata = text("metadata").nullable()
 
     override val primaryKey = PrimaryKey(id)
 }

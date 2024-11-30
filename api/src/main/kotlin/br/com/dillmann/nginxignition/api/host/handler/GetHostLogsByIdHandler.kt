@@ -3,7 +3,7 @@ package br.com.dillmann.nginxignition.api.host.handler
 import br.com.dillmann.nginxignition.api.common.logs.LogRequestHandler
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
-import br.com.dillmann.nginxignition.api.common.request.handler.IdAwareRequestHandler
+import br.com.dillmann.nginxignition.api.common.request.handler.UuidAwareRequestHandler
 import br.com.dillmann.nginxignition.api.common.request.respond
 import br.com.dillmann.nginxignition.core.host.command.HostExistsByIdCommand
 import br.com.dillmann.nginxignition.core.nginx.command.GetNginxHostLogsCommand
@@ -12,7 +12,7 @@ import java.util.*
 internal class GetHostLogsByIdHandler(
     private val existsCommand: HostExistsByIdCommand,
     private val getLogsCommand: GetNginxHostLogsCommand,
-): IdAwareRequestHandler, LogRequestHandler {
+): UuidAwareRequestHandler, LogRequestHandler {
     private companion object {
         private val ALLOWED_QUALIFIERS = listOf("access", "error")
     }

@@ -1,6 +1,6 @@
 package br.com.dillmann.nginxignition.api.nginx.handler
 
-import br.com.dillmann.nginxignition.api.nginx.model.NginxConverter
+import br.com.dillmann.nginxignition.api.nginx.NginxConverter
 import br.com.dillmann.nginxignition.core.common.log.logger
 import br.com.dillmann.nginxignition.core.nginx.command.StartNginxCommand
 import br.com.dillmann.nginxignition.core.nginx.exception.NginxCommandException

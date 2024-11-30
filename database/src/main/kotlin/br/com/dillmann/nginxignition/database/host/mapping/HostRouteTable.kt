@@ -15,6 +15,8 @@ internal object HostRouteTable: Table("host_route") {
     val staticResponseCode = integer("static_response_code").nullable()
     val staticResponsePayload = text("static_response_payload").nullable()
     val staticResponseHeaders = text("static_response_headers").nullable()
+    val integrationId = varchar("integration_id", 128).nullable()
+    val integrationOptionId = varchar("integration_option_id", 255).nullable()
 
     override val primaryKey = PrimaryKey(id)
 }

@@ -13,9 +13,11 @@ include(
     "acme-certificate",
     "custom-certificate",
     "self-signed-certificate",
+    "truenas-integration",
 )
 
 project(":custom-certificate").projectDir = file("certificate/custom")
 project(":certificate-commons").projectDir = file("certificate/commons")
 project(":acme-certificate").projectDir = file("certificate/acme")
 project(":self-signed-certificate").projectDir = file("certificate/self-signed")
+project(":truenas-integration").projectDir = file("integration/truenas")

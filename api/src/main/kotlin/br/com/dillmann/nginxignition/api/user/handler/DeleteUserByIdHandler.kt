@@ -1,6 +1,6 @@
 package br.com.dillmann.nginxignition.api.user.handler
 
-import br.com.dillmann.nginxignition.api.common.request.handler.IdAwareRequestHandler
+import br.com.dillmann.nginxignition.api.common.request.handler.UuidAwareRequestHandler
 import br.com.dillmann.nginxignition.core.user.command.DeleteUserCommand
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
@@ -9,7 +9,7 @@ import java.util.*
 
 internal class DeleteUserByIdHandler(
     private val deleteCommand: DeleteUserCommand,
-): IdAwareRequestHandler {
+): UuidAwareRequestHandler {
     override suspend fun handle(call: ApiCall, id: UUID) {
         val currentUser = call.principal()
         if (currentUser?.userId == id) {

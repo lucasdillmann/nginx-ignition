@@ -1,6 +1,8 @@
-package br.com.dillmann.nginxignition.api.host.model
+package br.com.dillmann.nginxignition.api.host
 
 import br.com.dillmann.nginxignition.api.common.pagination.PageResponse
+import br.com.dillmann.nginxignition.api.host.model.HostRequest
+import br.com.dillmann.nginxignition.api.host.model.HostResponse
 import br.com.dillmann.nginxignition.core.common.pagination.Page
 import br.com.dillmann.nginxignition.core.host.Host
 import org.mapstruct.Mapper

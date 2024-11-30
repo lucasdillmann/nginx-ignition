@@ -1,5 +1,12 @@
-package br.com.dillmann.nginxignition.api.certificate.model
+package br.com.dillmann.nginxignition.api.certificate
 
+import br.com.dillmann.nginxignition.api.certificate.model.AvailableProviderResponse
+import br.com.dillmann.nginxignition.api.certificate.model.CertificateResponse
+import br.com.dillmann.nginxignition.api.certificate.model.IssueCertificateRequest
+import br.com.dillmann.nginxignition.api.certificate.model.IssueCertificateResponse
+import br.com.dillmann.nginxignition.api.certificate.model.RenewCertificateResponse
+import br.com.dillmann.nginxignition.api.common.jsonobject.toJsonObject
+import br.com.dillmann.nginxignition.api.common.jsonobject.toUnwrappedMap
 import br.com.dillmann.nginxignition.api.common.pagination.PageResponse
 import br.com.dillmann.nginxignition.core.certificate.Certificate
 import br.com.dillmann.nginxignition.core.certificate.command.IssueCertificateCommand
@@ -30,37 +37,9 @@ internal abstract class CertificateConverter {
     abstract fun toDomainModel(input: IssueCertificateRequest): CertificateRequest
 
     @Named("toDomainModelParameters")
-    protected fun toDomainModelParameters(input: JsonObject?): Map<String, Any?> =
-        input
-            ?.entries
-            ?.map { (key, rawValue) ->
-                val value =
-                    if (rawValue is JsonObject) toDomainModelParameters(rawValue)
-                    else rawValue.jsonPrimitive.unwrap()
-
-                key to value
-            }
-            ?.toMap()
-            ?: emptyMap()
+    protected fun toDomainModelParameters(input: JsonObject?): Map<String, Any?> = input?.toUnwrappedMap() ?: emptyMap()
 
     @Named("toResponseParameters")
-    protected fun toResponseParameters(input: Map<String, Any>?): JsonObject {
-        val contents = input?.map { (key, value) -> key to value.wrap() }?.toMap() ?: emptyMap()
-        return JsonObject(contents)
-    }
-
-    private fun Any?.wrap(): JsonPrimitive =
-        when (this) {
-            null -> JsonNull
-            is Number -> JsonPrimitive(this)
-            is Boolean -> JsonPrimitive(this)
-            is String -> JsonPrimitive(this)
-            else -> JsonPrimitive(toString())
-        }
-
-    private fun JsonPrimitive.unwrap(): Any? =
-        booleanOrNull
-            ?: longOrNull?.toBigInteger()
-            ?: doubleOrNull?.toBigDecimal()
-            ?: contentOrNull
+    protected fun toResponseParameters(input: Map<String, Any>?): JsonObject =
+        input?.toJsonObject() ?: JsonObject(emptyMap())
 }

@@ -7,6 +7,7 @@ import br.com.dillmann.nginxignition.core.CoreModule
 import br.com.dillmann.nginxignition.database.DatabaseModule
 import br.com.dillmann.nginxignition.certificate.acme.AcmeCertificateModule
 import br.com.dillmann.nginxignition.api.ApiModule
+import br.com.dillmann.nginxignition.integration.truenas.TrueNasIntegrationModule
 import io.ktor.server.application.*
 import org.koin.ktor.plugin.Koin
 
@@ -18,6 +19,7 @@ fun Application.configureKoin() {
             AcmeCertificateModule.initialize(),
             CustomCertificateModule.initialize(),
             SelfSignedCertificateModule.initialize(),
+            TrueNasIntegrationModule.initialize(),
             ApiModule.initialize(),
             ApplicationModule.initialize(),
         )

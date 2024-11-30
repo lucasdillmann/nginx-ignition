@@ -1,15 +1,15 @@
 package br.com.dillmann.nginxignition.certificate.commons.validation
 
 import br.com.dillmann.nginxignition.certificate.commons.extensions.decodeBase64
-import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProviderDynamicField
-import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProviderDynamicField.Type.*
+import br.com.dillmann.nginxignition.core.common.dynamicfield.DynamicField
+import br.com.dillmann.nginxignition.core.common.dynamicfield.DynamicField.Type.*
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateRequest
 import br.com.dillmann.nginxignition.core.common.GlobalConstants.EMAIL_PATTERN
 import br.com.dillmann.nginxignition.core.common.GlobalConstants.TLD_PATTERN
 import br.com.dillmann.nginxignition.core.common.validation.ConsistencyException
 
 abstract class BaseCertificateValidator(
-    private val dynamicFields: List<CertificateProviderDynamicField>,
+    private val dynamicFields: List<DynamicField>,
 ) {
     fun validate(request: CertificateRequest) {
         val violations = validateBaseFields(request) + validateDynamicFields(request) + getDomainViolations(request)
@@ -49,7 +49,7 @@ abstract class BaseCertificateValidator(
     }
 
     private fun resolveErrorMessage(
-        field: CertificateProviderDynamicField,
+        field: DynamicField,
         value: Any,
         enumOptions: List<String>
     ): String? =

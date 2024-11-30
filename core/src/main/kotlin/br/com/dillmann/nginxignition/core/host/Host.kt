@@ -20,18 +20,25 @@ data class Host(
         val customSettings: String?,
         val redirectCode: Int?,
         val response: StaticResponse?,
+        val integration: IntegrationConfig?,
     )
 
     enum class RouteType {
         PROXY,
         REDIRECT,
         STATIC_RESPONSE,
+        INTEGRATION,
     }
 
     data class StaticResponse(
         val statusCode: Int,
         val payload: String?,
         val headers: Map<String, String>,
+    )
+
+    data class IntegrationConfig(
+        val integrationId: String,
+        val optionId: String,
     )
 
     data class FeatureSet(

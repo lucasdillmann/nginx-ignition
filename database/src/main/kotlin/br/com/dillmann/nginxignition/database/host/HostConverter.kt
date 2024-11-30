@@ -36,6 +36,8 @@ internal class HostConverter {
             scope[staticResponseCode] = route.response?.statusCode
             scope[staticResponsePayload] = route.response?.payload
             scope[staticResponseHeaders] = route.response?.headers?.let(Json::encodeToString)
+            scope[integrationId] = route.integration?.integrationId
+            scope[integrationOptionId] = route.integration?.optionId
         }
     }
 
@@ -74,6 +76,13 @@ internal class HostConverter {
                 headers = Json.decodeFromString(route[HostRouteTable.staticResponseHeaders]!!),
             )
 
+        val integration =
+            if (route[HostRouteTable.type] != Host.RouteType.INTEGRATION.name) null
+            else Host.IntegrationConfig(
+                integrationId = route[HostRouteTable.integrationId]!!,
+                optionId = route[HostRouteTable.integrationOptionId]!!,
+            )
+
         return Host.Route(
             id = route[HostRouteTable.id],
             priority = route[HostRouteTable.priority],
@@ -83,6 +92,7 @@ internal class HostConverter {
             targetUri = route[HostRouteTable.targetUri],
             redirectCode = route[HostRouteTable.redirectCode],
             response = response,
+            integration = integration,
         )
     }
 

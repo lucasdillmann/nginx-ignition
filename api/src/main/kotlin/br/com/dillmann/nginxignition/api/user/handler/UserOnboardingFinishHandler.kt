@@ -1,7 +1,7 @@
 package br.com.dillmann.nginxignition.api.user.handler
 
 import br.com.dillmann.nginxignition.api.common.request.handler.RequestHandler
-import br.com.dillmann.nginxignition.api.user.model.UserConverter
+import br.com.dillmann.nginxignition.api.user.UserConverter
 import br.com.dillmann.nginxignition.api.user.model.UserLoginResponse
 import br.com.dillmann.nginxignition.api.user.model.UserRequest
 import br.com.dillmann.nginxignition.core.user.User

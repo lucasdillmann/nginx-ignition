@@ -1,7 +1,6 @@
 package br.com.dillmann.nginxignition.api.certificate
 
 import br.com.dillmann.nginxignition.api.certificate.handler.*
-import br.com.dillmann.nginxignition.api.certificate.model.CertificateConverter
 import br.com.dillmann.nginxignition.api.common.routing.RouteProvider
 import org.koin.core.module.Module
 import org.koin.dsl.bind

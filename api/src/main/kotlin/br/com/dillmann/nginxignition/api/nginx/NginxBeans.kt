@@ -1,6 +1,5 @@
 package br.com.dillmann.nginxignition.api.nginx
 
-import br.com.dillmann.nginxignition.api.nginx.model.NginxConverter
 import br.com.dillmann.nginxignition.api.common.routing.RouteProvider
 import br.com.dillmann.nginxignition.api.nginx.handler.*
 import br.com.dillmann.nginxignition.api.nginx.handler.NginxReloadHandler

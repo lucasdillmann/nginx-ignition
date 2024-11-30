@@ -1,6 +1,6 @@
 package br.com.dillmann.nginxignition.api.user.handler
 
-import br.com.dillmann.nginxignition.api.user.model.UserConverter
+import br.com.dillmann.nginxignition.api.user.UserConverter
 import br.com.dillmann.nginxignition.core.user.command.ListUserCommand
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus

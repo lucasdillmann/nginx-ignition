@@ -1,6 +1,6 @@
 package br.com.dillmann.nginxignition.api.certificate.handler
 
-import br.com.dillmann.nginxignition.api.certificate.model.CertificateConverter
+import br.com.dillmann.nginxignition.api.certificate.CertificateConverter
 import br.com.dillmann.nginxignition.core.certificate.command.ListCertificateCommand
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus

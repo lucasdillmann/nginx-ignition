@@ -1,6 +1,8 @@
-package br.com.dillmann.nginxignition.api.user.model
+package br.com.dillmann.nginxignition.api.user
 
 import br.com.dillmann.nginxignition.api.common.pagination.PageResponse
+import br.com.dillmann.nginxignition.api.user.model.UserRequest
+import br.com.dillmann.nginxignition.api.user.model.UserResponse
 import br.com.dillmann.nginxignition.core.common.pagination.Page
 import br.com.dillmann.nginxignition.core.user.User
 import br.com.dillmann.nginxignition.core.user.model.SaveUserRequest

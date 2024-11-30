@@ -2,7 +2,6 @@ package br.com.dillmann.nginxignition.api.user
 
 import br.com.dillmann.nginxignition.api.common.routing.RouteProvider
 import br.com.dillmann.nginxignition.api.user.handler.*
-import br.com.dillmann.nginxignition.api.user.model.UserConverter
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.mapstruct.factory.Mappers

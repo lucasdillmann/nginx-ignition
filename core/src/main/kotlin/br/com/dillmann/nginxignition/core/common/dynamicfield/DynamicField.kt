@@ -1,6 +1,6 @@
-package br.com.dillmann.nginxignition.core.certificate.provider
+package br.com.dillmann.nginxignition.core.common.dynamicfield
 
-data class CertificateProviderDynamicField(
+data class DynamicField(
     val id: String,
     val priority: Int,
     val description: String,

@@ -1,6 +1,6 @@
 package br.com.dillmann.nginxignition.api.host.handler
 
-import br.com.dillmann.nginxignition.api.host.model.HostConverter
+import br.com.dillmann.nginxignition.api.host.HostConverter
 import br.com.dillmann.nginxignition.api.host.model.HostRequest
 import br.com.dillmann.nginxignition.core.host.command.SaveHostCommand
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
