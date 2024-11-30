@@ -1,16 +1,16 @@
-import React from "react";
-import {Badge, Button, ConfigProvider, Flex} from "antd";
-import Preloader from "../../../core/components/preloader/Preloader";
-import NginxService from "../NginxService";
-import Notification from "../../../core/components/notification/Notification";
-import {NginxEventListener} from "../listener/NginxEventListener";
-import NginxEventDispatcher from "../listener/NginxEventDispatcher";
-import UserConfirmation from "../../../core/components/confirmation/UserConfirmation";
+import React from "react"
+import { Badge, Button, ConfigProvider, Flex } from "antd"
+import Preloader from "../../../core/components/preloader/Preloader"
+import NginxService from "../NginxService"
+import Notification from "../../../core/components/notification/Notification"
+import { NginxEventListener } from "../listener/NginxEventListener"
+import NginxEventDispatcher from "../listener/NginxEventDispatcher"
+import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
 import "./NginxControl.css"
 
 interface NginxStatusState {
-    loading: boolean,
-    running?: boolean,
+    loading: boolean
+    running?: boolean
 }
 
 export default class NginxControl extends React.Component<any, NginxStatusState> {
@@ -18,7 +18,7 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
     private readonly listener: NginxEventListener
 
     constructor(props: any) {
-        super(props);
+        super(props)
         this.service = new NginxService()
         this.state = {
             loading: true,
@@ -36,35 +36,31 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
     }
 
     private handleNginxEvent() {
-        const {loading} = this.state
+        const { loading } = this.state
         if (loading) return
 
-        this.setState(
-            { loading: true },
-            () => this.refreshNginxStatus(),
-        )
+        this.setState({ loading: true }, () => this.refreshNginxStatus())
     }
 
     private refreshNginxStatus() {
         this.service
             .isRunning()
             .catch(() => undefined)
-            .then(running => this.setState({
-                running: running,
-                loading: false,
-            }))
+            .then(running =>
+                this.setState({
+                    running: running,
+                    loading: false,
+                }),
+            )
     }
 
     private renderStatusBadge(): React.ReactNode {
-        const {running} = this.state
+        const { running } = this.state
 
-        let metadata: { color: string, description: string };
-        if (running === undefined)
-            metadata = { color: "#a67a17", description: "unknown" }
-        else if (running)
-            metadata = { color: "#3f831a", description: "online" }
-        else
-            metadata = { color: "#af1f1f", description: "offline" }
+        let metadata: { color: string; description: string }
+        if (running === undefined) metadata = { color: "#a67a17", description: "unknown" }
+        else if (running) metadata = { color: "#3f831a", description: "online" }
+        else metadata = { color: "#af1f1f", description: "offline" }
 
         return (
             <Badge
@@ -76,16 +72,14 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
     }
 
     private stopNginx() {
-        UserConfirmation
-            .ask("Do you really want to stop the nginx server?")
-            .then(() => {
-                this.performNginxAction(
-                    "Stop nginx",
-                    "Nginx server was stopped successfully",
-                    "Nginx server failed to stop. Please check the logs for more details.",
-                    () => this.service.stop(),
-                )
-            })
+        UserConfirmation.ask("Do you really want to stop the nginx server?").then(() => {
+            this.performNginxAction(
+                "Stop nginx",
+                "Nginx server was stopped successfully",
+                "Nginx server failed to stop. Please check the logs for more details.",
+                () => this.service.stop(),
+            )
+        })
     }
 
     private reloadNginx() {
@@ -102,7 +96,7 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
             "Start nginx",
             "Nginx server was started successfully",
             "Nginx server failed to start. Please check the logs for more details.",
-            () => this.service.start()
+            () => this.service.start(),
         )
     }
 
@@ -112,38 +106,27 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
         errorMessage: string,
         action: () => Promise<void>,
     ) {
-        this.setState(
-            { loading: true },
-            () => {
-                action()
-                    .then(() => Notification.success(actionName, successMessage))
-                    .catch(() => Notification.error(actionName, errorMessage))
-                    .then(() => this.refreshNginxStatus())
-            }
-        )
+        this.setState({ loading: true }, () => {
+            action()
+                .then(() => Notification.success(actionName, successMessage))
+                .catch(() => Notification.error(actionName, errorMessage))
+                .then(() => this.refreshNginxStatus())
+        })
     }
 
     private renderActionButtons() {
-        const {running} = this.state
+        const { running } = this.state
 
         if (!running)
             return (
-                <Button
-                    color="primary"
-                    variant="filled"
-                    onClick={() => this.startNginx()}
-                >
+                <Button color="primary" variant="filled" onClick={() => this.startNginx()}>
                     start
                 </Button>
             )
 
         return (
             <>
-                <Button
-                    color="danger"
-                    variant="filled"
-                    onClick={() => this.stopNginx()}
-                >
+                <Button color="danger" variant="filled" onClick={() => this.stopNginx()}>
                     stop
                 </Button>
                 <Button
@@ -159,7 +142,7 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
     }
 
     render() {
-        const {loading} = this.state
+        const { loading } = this.state
 
         return (
             <Preloader loading={loading} size={32}>
@@ -172,9 +155,7 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
                             {this.renderStatusBadge()}
                         </Flex>
                         <Flex className="nginx-status-line" align="end" justify="end">
-                            <ConfigProvider componentSize="small">
-                                {this.renderActionButtons()}
-                            </ConfigProvider>
+                            <ConfigProvider componentSize="small">{this.renderActionButtons()}</ConfigProvider>
                         </Flex>
                     </Flex>
                 </Flex>

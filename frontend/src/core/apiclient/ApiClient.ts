@@ -1,6 +1,6 @@
 import ApiResponse from "./ApiResponse"
 import Header from "./Header"
-import ApiClientEventDispatcher from "./event/ApiClientEventDispatcher";
+import ApiClientEventDispatcher from "./event/ApiClientEventDispatcher"
 
 export default class ApiClient {
     private readonly basePath: string
@@ -9,21 +9,13 @@ export default class ApiClient {
         this.basePath = basePath || ""
     }
 
-    async get<T>(
-        path?: string,
-        headers?: Header[],
-        queryParams?: { [key: string]: any },
-    ): Promise<ApiResponse<T>> {
+    async get<T>(path?: string, headers?: Header[], queryParams?: { [key: string]: any }): Promise<ApiResponse<T>> {
         const request = await this.buildRequest("GET", headers)
         const fullPath = this.buildFullPath(path, queryParams)
         return await this.executeRequest(fullPath, request)
     }
 
-    async delete<T>(
-        path?: string,
-        headers?: Header[],
-        queryParams?: { [key: string]: any },
-    ): Promise<ApiResponse<T>> {
+    async delete<T>(path?: string, headers?: Header[], queryParams?: { [key: string]: any }): Promise<ApiResponse<T>> {
         const request = await this.buildRequest("DELETE", headers)
         const fullPath = this.buildFullPath(path, queryParams)
         return await this.executeRequest(fullPath, request)
@@ -52,8 +44,8 @@ export default class ApiClient {
     }
 
     private async buildRequest<T>(method: string, headers?: Header[], payload?: T): Promise<RequestInit> {
-        const requestHeaders: {[key: string]: string} = {
-            "Accept": "application/json",
+        const requestHeaders: { [key: string]: string } = {
+            Accept: "application/json",
             "Content-type": "application/json",
         }
 
@@ -71,13 +63,10 @@ export default class ApiClient {
     }
 
     private buildFullPath(path?: string, queryParams?: { [key: string]: any }): string {
-        const queryStringValues  = Array
-            .from(Object.entries(queryParams ?? {}))
+        const queryStringValues = Array.from(Object.entries(queryParams ?? {}))
             .map(([key, value]) => `${key}=${value}`)
             .join("&")
-        const queryString = queryStringValues.length > 0
-            ? `?${queryStringValues}`
-            : ""
+        const queryString = queryStringValues.length > 0 ? `?${queryStringValues}` : ""
 
         return `${this.basePath}${path ?? ""}${queryString}`
     }
@@ -86,15 +75,12 @@ export default class ApiClient {
         ApiClientEventDispatcher.notifyRequest(request)
 
         const response = await fetch(path, request)
-        const headers: Header[] = Array
-            .from(response.headers.entries())
-            .map(([key, value]) => ({ key, value }))
+        const headers: Header[] = Array.from(response.headers.entries()).map(([key, value]) => ({ key, value }))
 
         let body
         try {
             body = await response.json()
-        } catch (e) {
-        }
+        } catch (e) {}
 
         const apiResponse: ApiResponse<T> = {
             statusCode: response.status,
@@ -103,6 +89,6 @@ export default class ApiClient {
         }
 
         ApiClientEventDispatcher.notifyResponse(request, apiResponse)
-        return apiResponse;
+        return apiResponse
     }
 }

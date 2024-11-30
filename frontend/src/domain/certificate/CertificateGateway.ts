@@ -1,11 +1,11 @@
-import ApiClient from "../../core/apiclient/ApiClient";
-import ApiResponse from "../../core/apiclient/ApiResponse";
-import PageResponse from "../../core/pagination/PageResponse";
-import {RenewCertificateResponse} from "./model/RenewCertificateResponse";
-import {CertificateResponse} from "./model/CertificateResponse";
-import AvailableProviderResponse from "./model/AvailableProviderResponse";
-import {IssueCertificateRequest} from "./model/IssueCertificateRequest";
-import {IssueCertificateResponse} from "./model/IssueCertificateResponse";
+import ApiClient from "../../core/apiclient/ApiClient"
+import ApiResponse from "../../core/apiclient/ApiResponse"
+import PageResponse from "../../core/pagination/PageResponse"
+import { RenewCertificateResponse } from "./model/RenewCertificateResponse"
+import { CertificateResponse } from "./model/CertificateResponse"
+import AvailableProviderResponse from "./model/AvailableProviderResponse"
+import { IssueCertificateRequest } from "./model/IssueCertificateRequest"
+import { IssueCertificateResponse } from "./model/IssueCertificateResponse"
 
 export default class CertificateGateway {
     private readonly client: ApiClient

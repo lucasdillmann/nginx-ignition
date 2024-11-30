@@ -1,8 +1,8 @@
-import UserGateway from "../user/UserGateway";
-import {requireSuccessPayload} from "../../core/apiclient/ApiResponse";
-import AuthenticationService from "../../core/authentication/AuthenticationService";
-import UserRequest from "../user/model/UserRequest";
-import {UserRole} from "../user/model/UserRole";
+import UserGateway from "../user/UserGateway"
+import { requireSuccessPayload } from "../../core/apiclient/ApiResponse"
+import AuthenticationService from "../../core/authentication/AuthenticationService"
+import UserRequest from "../user/model/UserRequest"
+import { UserRole } from "../user/model/UserRole"
 
 export default class OnboardingService {
     private readonly gateway: UserGateway
@@ -23,7 +23,7 @@ export default class OnboardingService {
         return this.gateway
             .finishOnboarding(request)
             .then(requireSuccessPayload)
-            .then((response) => {
+            .then(response => {
                 AuthenticationService.setToken(response.token)
             })
     }

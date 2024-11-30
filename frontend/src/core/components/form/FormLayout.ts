@@ -1,13 +1,13 @@
-import {FormItemProps, FormProps} from "antd";
+import { FormItemProps, FormProps } from "antd"
 
 const LabeledItem: FormItemProps = {
     labelCol: {
-        xs: {span: 24},
-        sm: {span: 5},
+        xs: { span: 24 },
+        sm: { span: 5 },
     },
     wrapperCol: {
-        xs: {span: 24},
-        sm: {span: 20},
+        xs: { span: 24 },
+        sm: { span: 20 },
     },
 }
 
@@ -32,8 +32,8 @@ const FormDefaults: FormProps = {
 
 const UnlabeledItem: FormItemProps = {
     wrapperCol: {
-        xs: {span: 24, offset: 0},
-        sm: {span: 20, offset: 5},
+        xs: { span: 24, offset: 0 },
+        sm: { span: 20, offset: 5 },
     },
 }
 

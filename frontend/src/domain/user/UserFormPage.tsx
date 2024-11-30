@@ -1,21 +1,21 @@
-import React from "react";
-import {navigateTo, routeParams} from "../../core/components/router/AppRouter";
-import UserRequest from "./model/UserRequest";
-import {UserRole} from "./model/UserRole";
-import UserService from "./UserService";
-import {Empty, Form, Input, Select, Switch} from "antd";
-import Preloader from "../../core/components/preloader/Preloader";
-import FormLayout from "../../core/components/form/FormLayout";
-import ValidationResult from "../../core/validation/ValidationResult";
-import Password from "antd/es/input/Password";
-import ModalPreloader from "../../core/components/preloader/ModalPreloader";
-import Notification from "../../core/components/notification/Notification";
-import {UnexpectedResponseError} from "../../core/apiclient/ApiResponse";
-import ValidationResultConverter from "../../core/validation/ValidationResultConverter";
-import UserResponse from "./model/UserResponse";
-import AppShellContext, {ShellAction} from "../../core/components/shell/AppShellContext";
-import DeleteUserAction from "./actions/DeleteUserAction";
-import AppContext, {AppContextData} from "../../core/components/context/AppContext";
+import React from "react"
+import { navigateTo, routeParams } from "../../core/components/router/AppRouter"
+import UserRequest from "./model/UserRequest"
+import { UserRole } from "./model/UserRole"
+import UserService from "./UserService"
+import { Empty, Form, Input, Select, Switch } from "antd"
+import Preloader from "../../core/components/preloader/Preloader"
+import FormLayout from "../../core/components/form/FormLayout"
+import ValidationResult from "../../core/validation/ValidationResult"
+import Password from "antd/es/input/Password"
+import ModalPreloader from "../../core/components/preloader/ModalPreloader"
+import Notification from "../../core/components/notification/Notification"
+import { UnexpectedResponseError } from "../../core/apiclient/ApiResponse"
+import ValidationResultConverter from "../../core/validation/ValidationResultConverter"
+import UserResponse from "./model/UserResponse"
+import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
+import DeleteUserAction from "./actions/DeleteUserAction"
+import AppContext, { AppContextData } from "../../core/components/context/AppContext"
 
 interface UserFormState {
     formValues: UserRequest
@@ -34,7 +34,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
     private appContext?: AppContextData
 
     constructor(props: any, context: any) {
-        super(props, context);
+        super(props, context)
         const userId = routeParams().id
         this.userId = userId === "new" ? undefined : userId
         this.service = new UserService()
@@ -53,12 +53,13 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
     }
 
     private submit() {
-        const {formValues} = this.state
+        const { formValues } = this.state
         this.saveModal.show("Hang on tight", "We're saving the user")
 
-        const action = this.userId === undefined
-            ? this.service.create(formValues)
-            : this.service.updateById(this.userId, formValues)
+        const action =
+            this.userId === undefined
+                ? this.service.create(formValues)
+                : this.service.updateById(this.userId, formValues)
 
         action
             .then(() => this.handleSuccess())
@@ -74,29 +75,23 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
     private handleError(error: Error) {
         if (error instanceof UnexpectedResponseError) {
             const validationResult = ValidationResultConverter.parse(error.response)
-            if (validationResult != null)
-                this.setState({ validationResult })
+            if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error(
-            "That didn't work",
-            "Please check the form to see if everything seems correct",
-        )
+        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
     }
 
     private passwordHelpText() {
-        return this.userId === undefined
-            ? undefined
-            : "Leave empty if you want to keep the user's password unchanged"
+        return this.userId === undefined ? undefined : "Leave empty if you want to keep the user's password unchanged"
     }
 
     private renderForm() {
-        const {validationResult, formValues} = this.state
+        const { validationResult, formValues } = this.state
 
         return (
             <Form<UserRequest>
                 {...FormLayout.FormDefaults}
-                onValuesChange={(_, formValues) => this.setState({formValues})}
+                onValuesChange={(_, formValues) => this.setState({ formValues })}
                 initialValues={formValues}
             >
                 <Form.Item
@@ -152,17 +147,14 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
     }
 
     private convertToUserRequest(response: UserResponse): UserRequest {
-        const {enabled, name, username, role} = response
-        return {enabled, name, username, role}
+        const { enabled, name, username, role } = response
+        return { enabled, name, username, role }
     }
 
     private async delete() {
-        if (this.userId === undefined)
-            return
+        if (this.userId === undefined) return
 
-        return DeleteUserAction
-            .execute(this.userId)
-            .then(() => navigateTo("/users"))
+        return DeleteUserAction.execute(this.userId).then(() => navigateTo("/users"))
     }
 
     private updateShellConfig(enableActions: boolean) {
@@ -182,7 +174,6 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                 onClick: () => this.delete(),
             })
 
-
         this.context.updateConfig({
             title: "User details",
             subtitle: "Full details and configurations of the nginx ignition's user",
@@ -192,30 +183,26 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
 
     componentDidMount() {
         if (this.userId === undefined) {
-            this.setState({loading: false})
+            this.setState({ loading: false })
             this.updateShellConfig(true)
             return
         }
 
-        this.service
-            .getById(this.userId!!)
-            .then(userDetails => {
-                if (userDetails === undefined)
-                    this.setState({loading: false, notFound: true})
-                else {
-                    this.setState({loading: false, formValues: this.convertToUserRequest(userDetails)})
-                    this.updateShellConfig(true)
-                }
-            })
+        this.service.getById(this.userId!!).then(userDetails => {
+            if (userDetails === undefined) this.setState({ loading: false, notFound: true })
+            else {
+                this.setState({ loading: false, formValues: this.convertToUserRequest(userDetails) })
+                this.updateShellConfig(true)
+            }
+        })
 
         this.updateShellConfig(false)
     }
 
     render() {
-        const {loading, notFound} = this.state
+        const { loading, notFound } = this.state
 
-        if (notFound)
-            return <Empty description="Not found" />
+        if (notFound) return <Empty description="Not found" />
 
         if (loading)
             return (

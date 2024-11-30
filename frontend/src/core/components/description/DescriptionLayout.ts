@@ -1,5 +1,5 @@
-import {ProDescriptionsProps} from "@ant-design/pro-components";
-import FormLayout from "../form/FormLayout";
+import { ProDescriptionsProps } from "@ant-design/pro-components"
+import FormLayout from "../form/FormLayout"
 
 const Defaults: ProDescriptionsProps = {
     colon: false,

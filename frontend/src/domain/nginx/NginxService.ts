@@ -1,7 +1,7 @@
-import NginxGateway from "./NginxGateway";
-import {requireSuccessPayload, requireSuccessResponse} from "../../core/apiclient/ApiResponse";
-import NginxEventDispatcher from "./listener/NginxEventDispatcher";
-import {NginxOperation} from "./listener/NginxEventListener";
+import NginxGateway from "./NginxGateway"
+import { requireSuccessPayload, requireSuccessResponse } from "../../core/apiclient/ApiResponse"
+import NginxEventDispatcher from "./listener/NginxEventDispatcher"
+import { NginxOperation } from "./listener/NginxEventListener"
 
 export default class NginxService {
     private gateway: NginxGateway

@@ -1,18 +1,18 @@
-import React from "react";
-import AppShellContext from "../../core/components/shell/AppShellContext";
-import {CertificateResponse} from "./model/CertificateResponse";
-import RenewCertificateAction from "./actions/RenewCertificateAction";
-import DeleteCertificateAction from "./actions/DeleteCertificateAction";
-import {navigateTo, routeParams} from "../../core/components/router/AppRouter";
-import CertificateService from "./CertificateService";
-import Notification from "../../core/components/notification/Notification";
-import Preloader from "../../core/components/preloader/Preloader";
-import {Empty} from "antd";
-import AvailableProviderResponse, {DynamicField, DynamicFieldType} from "./model/AvailableProviderResponse";
-import {ProDescriptions} from "@ant-design/pro-components";
-import DescriptionLayout from "../../core/components/description/DescriptionLayout";
-import {ProFieldValueType} from "@ant-design/pro-utils/es/typing";
-import If from "../../core/components/flowcontrol/If";
+import React from "react"
+import AppShellContext from "../../core/components/shell/AppShellContext"
+import { CertificateResponse } from "./model/CertificateResponse"
+import RenewCertificateAction from "./actions/RenewCertificateAction"
+import DeleteCertificateAction from "./actions/DeleteCertificateAction"
+import { navigateTo, routeParams } from "../../core/components/router/AppRouter"
+import CertificateService from "./CertificateService"
+import Notification from "../../core/components/notification/Notification"
+import Preloader from "../../core/components/preloader/Preloader"
+import { Empty } from "antd"
+import AvailableProviderResponse, { DynamicField, DynamicFieldType } from "./model/AvailableProviderResponse"
+import { ProDescriptions } from "@ant-design/pro-components"
+import DescriptionLayout from "../../core/components/description/DescriptionLayout"
+import { ProFieldValueType } from "@ant-design/pro-utils/es/typing"
+import If from "../../core/components/flowcontrol/If"
 import "./CertificateDetailsPage.css"
 
 interface CertificateDetailsPageState {
@@ -39,15 +39,12 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
     }
 
     private async deleteCertificate() {
-        return DeleteCertificateAction
-            .execute(this.certificateId)
-            .then(() => navigateTo("/certificates"))
+        return DeleteCertificateAction.execute(this.certificateId).then(() => navigateTo("/certificates"))
     }
 
     private async renewCertificate() {
-        return RenewCertificateAction
-            .execute(this.certificateId)
-            .then(() => this.setState({loading: true}))
+        return RenewCertificateAction.execute(this.certificateId)
+            .then(() => this.setState({ loading: true }))
             .then(() => this.fetchData())
     }
 
@@ -75,47 +72,41 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
         const certificate = this.service.getById(this.certificateId)
         const providers = this.service.availableProviders()
 
-        return Promise
-            .all([certificate, providers])
+        return Promise.all([certificate, providers])
             .then(([certificate, availableProviders]) => {
-                this.setState({loading: false, certificate, availableProviders})
+                this.setState({ loading: false, certificate, availableProviders })
                 this.updateShellConfig(certificate !== undefined)
             })
-            .catch(() => Notification.error(
-                "Unable to fetch the certificate details",
-                "We're unable to fetch the certificate details at this time. Please try again later.",
-            ))
+            .catch(() =>
+                Notification.error(
+                    "Unable to fetch the certificate details",
+                    "We're unable to fetch the certificate details at this time. Please try again later.",
+                ),
+            )
     }
 
     private dynamicFieldValue(field: DynamicField) {
-        const {certificate} = this.state
+        const { certificate } = this.state
         const value = certificate!!.parameters[field.id]
 
-        if (field.type === DynamicFieldType.BOOLEAN)
-            return value ? "Yes / Accepted" : "No / Rejected"
+        if (field.type === DynamicFieldType.BOOLEAN) return value ? "Yes / Accepted" : "No / Rejected"
 
-        if (field.type !== DynamicFieldType.ENUM)
-            return value
+        if (field.type !== DynamicFieldType.ENUM) return value
 
-        return field
-            .enumOptions
-            .find(option => option.id === value)
-            ?.description
+        return field.enumOptions.find(option => option.id === value)?.description
     }
 
     private evaluateConditions(field: DynamicField) {
-        const {certificate} = this.state
-        const {condition} = field
-        if (condition === undefined || condition === null)
-            return true
+        const { certificate } = this.state
+        const { condition } = field
+        if (condition === undefined || condition === null) return true
 
-        const {parentField, value} = condition
+        const { parentField, value } = condition
         return certificate!!.parameters !== undefined && certificate!!.parameters[parentField] === value
     }
 
     private renderDynamicField(field: DynamicField) {
-        if (!this.evaluateConditions(field))
-            return undefined
+        if (!this.evaluateConditions(field)) return undefined
 
         let valueType: ProFieldValueType
         switch (field.type) {
@@ -139,19 +130,18 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
     }
 
     private renderDynamicFields(): React.ReactNode[] {
-        const {certificate, availableProviders} = this.state
+        const { certificate, availableProviders } = this.state
         const provider = availableProviders.find(provider => provider.id === certificate?.providerId)
-        const fieldsToRender = provider
-            ?.dynamicFields
-            ?.filter(field => !field.sensitive)
-            ?.sort((first, second) => first.priority > second.priority ? 1 : -1)
-            ?? []
+        const fieldsToRender =
+            provider?.dynamicFields
+                ?.filter(field => !field.sensitive)
+                ?.sort((first, second) => (first.priority > second.priority ? 1 : -1)) ?? []
 
         return fieldsToRender.map(field => this.renderDynamicField(field))
     }
 
     private renderContents() {
-        const {certificate, availableProviders} = this.state
+        const { certificate, availableProviders } = this.state
         const provider = availableProviders.find(provider => provider.id === certificate?.providerId)
         const dateTimeFormat = "DD/MM/YYYY HH:mm:ss"
 
@@ -159,11 +149,14 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
             <>
                 <h2 className="certificate-details-section-name">General</h2>
                 <ProDescriptions {...DescriptionLayout.Defaults} dataSource={certificate}>
-                    <ProDescriptions.Item title="Provider">
-                        {provider?.name}
-                    </ProDescriptions.Item>
+                    <ProDescriptions.Item title="Provider">{provider?.name}</ProDescriptions.Item>
                     <ProDescriptions.Item title="Domain names">
-                        {certificate?.domainNames.map(domain => <>{domain}<br/></>)}
+                        {certificate?.domainNames.map(domain => (
+                            <>
+                                {domain}
+                                <br />
+                            </>
+                        ))}
                     </ProDescriptions.Item>
                 </ProDescriptions>
 
@@ -173,22 +166,26 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
                         title="Issued at"
                         dataIndex="issuedAt"
                         valueType="dateTime"
-                        fieldProps={{format: dateTimeFormat}}/>
+                        fieldProps={{ format: dateTimeFormat }}
+                    />
                     <ProDescriptions.Item
                         title="Valid from"
                         dataIndex="validFrom"
                         valueType="dateTime"
-                        fieldProps={{format: dateTimeFormat}}/>
+                        fieldProps={{ format: dateTimeFormat }}
+                    />
                     <ProDescriptions.Item
                         title="Valid until"
                         dataIndex="validUntil"
                         valueType="dateTime"
-                        fieldProps={{format: dateTimeFormat}}/>
+                        fieldProps={{ format: dateTimeFormat }}
+                    />
                     <ProDescriptions.Item
                         title="Renew recommended after"
                         dataIndex="renewAfter"
                         valueType="dateTime"
-                        fieldProps={{format: dateTimeFormat}}/>
+                        fieldProps={{ format: dateTimeFormat }}
+                    />
                 </ProDescriptions>
 
                 <If condition={Object.keys(certificate!!.parameters).length > 0}>
@@ -207,13 +204,11 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
     }
 
     render() {
-        const {certificate, loading} = this.state
-        if (loading)
-            return <Preloader loading />
+        const { certificate, loading } = this.state
+        if (loading) return <Preloader loading />
 
-        if (certificate === undefined)
-            return <Empty description="Not found" />
+        if (certificate === undefined) return <Empty description="Not found" />
 
-        return this.renderContents();
+        return this.renderContents()
     }
 }

@@ -1,16 +1,16 @@
-import CertificateGateway from "./CertificateGateway";
-import PageResponse from "../../core/pagination/PageResponse";
+import CertificateGateway from "./CertificateGateway"
+import PageResponse from "../../core/pagination/PageResponse"
 import {
     requireNullablePayload,
     requireSuccessPayload,
     requireSuccessResponse,
-    UnexpectedResponseError
-} from "../../core/apiclient/ApiResponse";
-import {CertificateResponse} from "./model/CertificateResponse";
-import {RenewCertificateResponse} from "./model/RenewCertificateResponse";
-import AvailableProviderResponse from "./model/AvailableProviderResponse";
-import {IssueCertificateRequest} from "./model/IssueCertificateRequest";
-import {IssueCertificateResponse} from "./model/IssueCertificateResponse";
+    UnexpectedResponseError,
+} from "../../core/apiclient/ApiResponse"
+import { CertificateResponse } from "./model/CertificateResponse"
+import { RenewCertificateResponse } from "./model/RenewCertificateResponse"
+import AvailableProviderResponse from "./model/AvailableProviderResponse"
+import { IssueCertificateRequest } from "./model/IssueCertificateRequest"
+import { IssueCertificateResponse } from "./model/IssueCertificateResponse"
 
 export default class CertificateService {
     private readonly gateway: CertificateGateway
@@ -36,14 +36,10 @@ export default class CertificateService {
     }
 
     async issue(certificate: IssueCertificateRequest): Promise<IssueCertificateResponse> {
-        return this.gateway
-            .issue(certificate)
-            .then(response => {
-                if (response.body?.success !== undefined)
-                    return response.body as IssueCertificateResponse
-                else
-                    throw new UnexpectedResponseError(response)
-            })
+        return this.gateway.issue(certificate).then(response => {
+            if (response.body?.success !== undefined) return response.body as IssueCertificateResponse
+            else throw new UnexpectedResponseError(response)
+        })
     }
 
     async getById(id: string): Promise<CertificateResponse | undefined> {

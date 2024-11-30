@@ -1,18 +1,18 @@
-import React from "react";
-import {Button, Form, Input, Typography} from "antd";
-import {LockOutlined, UserOutlined} from "@ant-design/icons";
-import {Navigate} from "react-router-dom";
-import AppContext, {AppContextData} from "../../core/components/context/AppContext";
-import Preloader from "../../core/components/preloader/Preloader";
-import Notification from "../../core/components/notification/Notification";
+import React from "react"
+import { Button, Form, Input, Typography } from "antd"
+import { LockOutlined, UserOutlined } from "@ant-design/icons"
+import { Navigate } from "react-router-dom"
+import AppContext, { AppContextData } from "../../core/components/context/AppContext"
+import Preloader from "../../core/components/preloader/Preloader"
+import Notification from "../../core/components/notification/Notification"
 import "./LoginPage.css"
-import UserService from "../user/UserService";
+import UserService from "../user/UserService"
 
-const {Text, Title} = Typography;
+const { Text, Title } = Typography
 
 interface LoginPageState {
-    loading: boolean,
-    attemptFailed: boolean,
+    loading: boolean
+    attemptFailed: boolean
 }
 
 export default class LoginPage extends React.Component<any, LoginPageState> {
@@ -22,24 +22,24 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
     private service: UserService
 
     constructor(props: any, context: AppContextData) {
-        super(props, context);
+        super(props, context)
 
-        this.service = new UserService();
+        this.service = new UserService()
         this.state = {
             loading: false,
             attemptFailed: false,
         }
     }
 
-    private handleSubmit(values: { username: string, password: string }) {
-        const {username, password} = values
+    private handleSubmit(values: { username: string; password: string }) {
+        const { username, password } = values
 
-        this.setState({loading: true})
+        this.setState({ loading: true })
         this.service
             .login(username, password)
             .then(() => this.handleSuccessfulLogin())
             .catch(() => this.handleLoginError())
-            .then(() => this.setState({loading: false}))
+            .then(() => this.setState({ loading: false }))
     }
 
     private handleSuccessfulLogin() {
@@ -48,15 +48,12 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
     }
 
     private handleLoginError() {
-        this.setState({attemptFailed: true})
-        Notification.error(
-            "Login failed",
-            "Please check your username and password.",
-        )
+        this.setState({ attemptFailed: true })
+        Notification.error("Login failed", "Please check your username and password.")
     }
 
     private renderForm() {
-        const {attemptFailed} = this.state
+        const { attemptFailed } = this.state
         const inputStatus = attemptFailed ? "error" : undefined
 
         return (
@@ -68,22 +65,13 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                             Welcome back. Please enter your username and password to continue.
                         </Text>
                     </div>
-                    <Form
-                        onFinish={(values) => this.handleSubmit(values)}
-                        layout="vertical"
-                        requiredMark="optional"
-                    >
+                    <Form onFinish={values => this.handleSubmit(values)} layout="vertical" requiredMark="optional">
                         <Form.Item name="username" className="login-form-input">
-                            <Input
-                                prefix={<UserOutlined/>}
-                                placeholder="Username"
-                                status={inputStatus}
-                                autoFocus
-                            />
+                            <Input prefix={<UserOutlined />} placeholder="Username" status={inputStatus} autoFocus />
                         </Form.Item>
                         <Form.Item name="password">
                             <Input.Password
-                                prefix={<LockOutlined/>}
+                                prefix={<LockOutlined />}
                                 type="password"
                                 placeholder="Password"
                                 status={inputStatus}
@@ -101,8 +89,8 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
     }
 
     render() {
-        const {loading} = this.state
-        const {user, onboardingStatus} = this.context
+        const { loading } = this.state
+        const { user, onboardingStatus } = this.context
 
         if (user?.id != null) {
             return <Navigate to="/" />
@@ -112,10 +100,6 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
             return <Navigate to="/onboarding" />
         }
 
-        return (
-            <Preloader loading={loading}>
-                {this.renderForm()}
-            </Preloader>
-        )
+        return <Preloader loading={loading}>{this.renderForm()}</Preloader>
     }
 }

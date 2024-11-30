@@ -1,16 +1,16 @@
-import React from "react";
-import DataTable, {DataTableColumn} from "../../core/components/datatable/DataTable";
-import DataTableRenderers from "../../core/components/datatable/DataTableRenderers";
-import {Link} from "react-router-dom";
-import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
-import PageResponse from "../../core/pagination/PageResponse";
-import UserService from "./UserService";
-import UserResponse from "./model/UserResponse";
-import {UserRole} from "./model/UserRole";
-import AppContext from "../../core/components/context/AppContext";
-import {Tooltip} from "antd";
-import AppShellContext from "../../core/components/shell/AppShellContext";
-import DeleteUserAction from "./actions/DeleteUserAction";
+import React from "react"
+import DataTable, { DataTableColumn } from "../../core/components/datatable/DataTable"
+import DataTableRenderers from "../../core/components/datatable/DataTableRenderers"
+import { Link } from "react-router-dom"
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons"
+import PageResponse from "../../core/pagination/PageResponse"
+import UserService from "./UserService"
+import UserResponse from "./model/UserResponse"
+import { UserRole } from "./model/UserRole"
+import AppContext from "../../core/components/context/AppContext"
+import { Tooltip } from "antd"
+import AppShellContext from "../../core/components/shell/AppShellContext"
+import DeleteUserAction from "./actions/DeleteUserAction"
 
 export default class UserListPage extends React.PureComponent {
     static contextType = AppShellContext
@@ -45,30 +45,30 @@ export default class UserListPage extends React.PureComponent {
             {
                 id: "name",
                 description: "Name",
-                renderer: (item) => item.name,
+                renderer: item => item.name,
             },
             {
                 id: "username",
                 description: "Username",
-                renderer: (item) => item.username,
+                renderer: item => item.username,
                 width: 250,
             },
             {
                 id: "role",
                 description: "Role",
-                renderer: (item) => this.translateRole(item.role),
+                renderer: item => this.translateRole(item.role),
                 width: 150,
             },
             {
                 id: "enabled",
                 description: "Enabled",
-                renderer: (item) => DataTableRenderers.yesNo(item.enabled),
+                renderer: item => DataTableRenderers.yesNo(item.enabled),
                 width: 100,
             },
             {
                 id: "actions",
                 description: "",
-                renderer: (item) => (
+                renderer: item => (
                     <>
                         <Link to={`/users/${item.id}`}>
                             <EditOutlined className="action-icon" />
@@ -80,21 +80,21 @@ export default class UserListPage extends React.PureComponent {
                     </>
                 ),
                 width: 120,
-            }
+            },
         ]
     }
 
     private translateRole(role: UserRole): string {
         switch (role) {
-            case UserRole.REGULAR_USER: return "Regular user"
-            case UserRole.ADMIN: return "Admin"
+            case UserRole.REGULAR_USER:
+                return "Regular user"
+            case UserRole.ADMIN:
+                return "Admin"
         }
     }
 
     private async deleteUser(user: UserResponse) {
-        return DeleteUserAction
-            .execute(user.id)
-            .then(() => this.table.current?.refresh())
+        return DeleteUserAction.execute(user.id).then(() => this.table.current?.refresh())
     }
 
     private fetchData(pageSize: number, pageNumber: number): Promise<PageResponse<UserResponse>> {
@@ -109,7 +109,7 @@ export default class UserListPage extends React.PureComponent {
                 {
                     description: "New user",
                     onClick: "/users/new",
-                }
+                },
             ],
         })
     }
@@ -122,6 +122,6 @@ export default class UserListPage extends React.PureComponent {
                 dataProvider={(pageSize, pageNumber) => this.fetchData(pageSize, pageNumber)}
                 rowKey={item => item.id}
             />
-        );
+        )
     }
 }

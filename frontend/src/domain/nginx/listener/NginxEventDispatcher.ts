@@ -1,4 +1,4 @@
-import {NginxEventListener, NginxOperation} from "./NginxEventListener";
+import { NginxEventListener, NginxOperation } from "./NginxEventListener"
 
 class NginxEventDispatcher {
     private listeners: NginxEventListener[]

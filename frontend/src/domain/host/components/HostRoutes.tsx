@@ -1,18 +1,18 @@
-import React from "react";
-import ValidationResult from "../../../core/validation/ValidationResult";
-import {Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Modal, Select} from "antd";
-import If from "../../../core/components/flowcontrol/If";
-import {CloseOutlined, PlusOutlined, ArrowUpOutlined, ArrowDownOutlined, SettingOutlined} from "@ant-design/icons";
-import {HostFormRoute} from "../model/HostFormValues";
-import {HostRouteType} from "../model/HostRequest";
-import FormLayout from "../../../core/components/form/FormLayout";
+import React from "react"
+import ValidationResult from "../../../core/validation/ValidationResult"
+import { Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Modal, Select } from "antd"
+import If from "../../../core/components/flowcontrol/If"
+import { CloseOutlined, PlusOutlined, ArrowUpOutlined, ArrowDownOutlined, SettingOutlined } from "@ant-design/icons"
+import { HostFormRoute } from "../model/HostFormValues"
+import { HostRouteType } from "../model/HostRequest"
+import FormLayout from "../../../core/components/form/FormLayout"
 import "./HostRoutes.css"
-import TextArea from "antd/es/input/TextArea";
+import TextArea from "antd/es/input/TextArea"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
     alignItems: "start",
-    marginTop: 37
+    marginTop: 37,
 }
 
 const DISABLED_ACTION_ICON_STYLE = {
@@ -43,13 +43,13 @@ interface HostRoutesState {
 
 export default class HostRoutes extends React.Component<HostRoutesProps, HostRoutesState> {
     constructor(props: HostRoutesProps) {
-        super(props);
+        super(props)
         this.state = {}
     }
 
     private renderProxyRoute(field: FormListFieldData, index: number): React.ReactNode {
-        const {validationResult} = this.props
-        const {name} = field
+        const { validationResult } = this.props
+        const { name } = field
 
         return (
             <>
@@ -70,8 +70,8 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
     }
 
     private renderRedirectRoute(field: FormListFieldData, index: number): React.ReactNode {
-        const {validationResult} = this.props
-        const {name} = field
+        const { validationResult } = this.props
+        const { name } = field
 
         return (
             <>
@@ -104,8 +104,8 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
     }
 
     private renderStaticResponseRoute(field: FormListFieldData, index: number): React.ReactNode {
-        const {validationResult} = this.props
-        const {name} = field
+        const { validationResult } = this.props
+        const { name } = field
 
         return (
             <>
@@ -128,8 +128,8 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     name={[name, "response", "headers"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].response.headers`)}
                     help={
-                        validationResult.getMessage(`routes[${index}].response.headers`)
-                        ?? "One per line, as [key]: [value]"
+                        validationResult.getMessage(`routes[${index}].response.headers`) ??
+                        "One per line, as [key]: [value]"
                     }
                     label="Headers"
                     required
@@ -153,12 +153,10 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
     }
 
     private moveRoute(operations: FormListOperation, index: number, offset: number) {
-        const {routes} = this.props
+        const { routes } = this.props
 
-        if (index === 0 && offset < 0)
-            return
-        if (index === routes.length && offset > 0)
-            return
+        if (index === 0 && offset < 0) return
+        if (index === routes.length && offset > 0) return
 
         const currentPosition = routes[index]
         const newPosition = routes[index + offset]
@@ -174,17 +172,17 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
     }
 
     private openCustomSettingsModal(index: number) {
-        this.setState({customSettingsOpenModalIndex: index})
+        this.setState({ customSettingsOpenModalIndex: index })
     }
 
     private closeCustomSettingsModal() {
-        this.setState({customSettingsOpenModalIndex: undefined})
+        this.setState({ customSettingsOpenModalIndex: undefined })
     }
 
     private renderRoute(field: FormListFieldData, operations: FormListOperation, index: number) {
-        const {validationResult, routes} = this.props
-        const {customSettingsOpenModalIndex} = this.state
-        const {name} = field
+        const { validationResult, routes } = this.props
+        const { customSettingsOpenModalIndex } = this.state
+        const { name } = field
         const type = routes[index].type
 
         return (
@@ -218,12 +216,8 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     <Input />
                 </Form.Item>
 
-                <If condition={type === HostRouteType.PROXY}>
-                    {this.renderProxyRoute(field, index)}
-                </If>
-                <If condition={type === HostRouteType.REDIRECT}>
-                    {this.renderRedirectRoute(field, index)}
-                </If>
+                <If condition={type === HostRouteType.PROXY}>{this.renderProxyRoute(field, index)}</If>
+                <If condition={type === HostRouteType.REDIRECT}>{this.renderRedirectRoute(field, index)}</If>
                 <If condition={type === HostRouteType.STATIC_RESPONSE}>
                     {this.renderStaticResponseRoute(field, index)}
                 </If>
@@ -233,22 +227,24 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     open={index === customSettingsOpenModalIndex}
                     onClose={() => this.closeCustomSettingsModal()}
                     onCancel={() => this.closeCustomSettingsModal()}
-                    footer={null}>
+                    footer={null}
+                >
                     <p>
                         Any instruction placed here will be placed in the nginx configuration files as-is. Use this
                         field for any customized configuration parameters that you need in the host route.
                     </p>
                     <p>
-                        Please note that the text below must be in the syntax expected by the nginx. Please refer
-                        to the documentation at
-                        &nbsp;<a
+                        Please note that the text below must be in the syntax expected by the nginx. Please refer to the
+                        documentation at &nbsp;
+                        <a
                             href="https://nginx.org/en/docs/http/ngx_http_core_module.html#location"
                             target="_blank"
-                            rel="noreferrer">
+                            rel="noreferrer"
+                        >
                             this link
-                        </a>&nbsp;
-                        for more details. If you isn't sure about what to place here, it's probably the best to leave
-                        it empty.
+                        </a>
+                        &nbsp; for more details. If you isn't sure about what to place here, it's probably the best to
+                        leave it empty.
                     </p>
 
                     <Form.Item
@@ -265,35 +261,37 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
 
                 <ArrowUpOutlined
                     onClick={() => this.moveRoute(operations, index, -1)}
-                    style={index === 0 ? DISABLED_ACTION_ICON_STYLE : ENABLED_ACTION_ICON_STYLE} />
+                    style={index === 0 ? DISABLED_ACTION_ICON_STYLE : ENABLED_ACTION_ICON_STYLE}
+                />
                 <ArrowDownOutlined
                     onClick={() => this.moveRoute(operations, index, 1)}
-                    style={index === routes.length - 1 ? DISABLED_ACTION_ICON_STYLE : ENABLED_ACTION_ICON_STYLE} />
+                    style={index === routes.length - 1 ? DISABLED_ACTION_ICON_STYLE : ENABLED_ACTION_ICON_STYLE}
+                />
                 <SettingOutlined
                     onClick={() => this.openCustomSettingsModal(index)}
-                    style={ENABLED_ACTION_ICON_STYLE} />
+                    style={ENABLED_ACTION_ICON_STYLE}
+                />
 
                 <If condition={routes.length > 1}>
-                    <CloseOutlined
-                        onClick={() => operations.remove(field.name)}
-                        style={ACTION_ICON_STYLE} />
+                    <CloseOutlined onClick={() => operations.remove(field.name)} style={ACTION_ICON_STYLE} />
                 </If>
             </Flex>
         )
     }
 
     private renderRoutes(fields: FormListFieldData[], operations: FormListOperation) {
-        const bindings = fields
-            .map((field, index) => this.renderRoute(field, operations, index));
+        const bindings = fields.map((field, index) => this.renderRoute(field, operations, index))
 
         const addAction = (
             <Form.Item>
                 <Button
                     type="dashed"
-                    onClick={() => operations.add({
-                        ...DEFAULT_VALUES,
-                        priority: fields.length,
-                    })}
+                    onClick={() =>
+                        operations.add({
+                            ...DEFAULT_VALUES,
+                            priority: fields.length,
+                        })
+                    }
                     icon={<PlusOutlined />}
                 >
                     Add route
@@ -305,10 +303,6 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
     }
 
     render() {
-        return (
-            <Form.List name="routes">
-                {(fields, operations) => this.renderRoutes(fields, operations)}
-            </Form.List>
-        )
+        return <Form.List name="routes">{(fields, operations) => this.renderRoutes(fields, operations)}</Form.List>
     }
 }

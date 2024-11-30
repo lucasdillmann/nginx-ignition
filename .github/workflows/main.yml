@@ -43,6 +43,10 @@ jobs:
         run: ./gradlew sonar
       - name: Detekt
         run: ./gradlew detekt
+      - name: Prettier
+        run: ./gradlew :frontend:npxPrettierCheck
+      - name: Detekt
+        run: ./gradlew :frontend:npmLint
 
   build:
     runs-on: ubuntu-latest

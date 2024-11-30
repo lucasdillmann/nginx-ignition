@@ -1,5 +1,5 @@
-import {notification} from "antd";
-import {IconType} from "antd/es/notification/interface";
+import { notification } from "antd"
+import { IconType } from "antd/es/notification/interface"
 
 function showNotification(title: string, message: string, type: IconType) {
     notification.open({

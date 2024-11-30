@@ -1,11 +1,11 @@
-import AppRoute from "./AppRoute";
-import React from "react";
-import AppContext, {AppContextData} from "../context/AppContext";
-import {RouteObject, createBrowserRouter, RouterProvider, Navigate, Params} from "react-router-dom";
-import AppShell, {AppShellMenuItem} from "../shell/AppShell";
-import ErrorBoundary from "../errorboundary/ErrorBoundary";
-import {Router} from "@remix-run/router/dist/router";
-import qs, {ParsedQs} from "qs";
+import AppRoute from "./AppRoute"
+import React from "react"
+import AppContext, { AppContextData } from "../context/AppContext"
+import { RouteObject, createBrowserRouter, RouterProvider, Navigate, Params } from "react-router-dom"
+import AppShell, { AppShellMenuItem } from "../shell/AppShell"
+import ErrorBoundary from "../errorboundary/ErrorBoundary"
+import { Router } from "@remix-run/router/dist/router"
+import qs, { ParsedQs } from "qs"
 
 let currentInstance: AppRouter
 
@@ -23,8 +23,7 @@ export function routeParams(): Params {
 
 export function queryParams(): ParsedQs {
     let queryString = router()?.state.location.search ?? ""
-    if (queryString.startsWith("?"))
-        queryString = queryString.substring(1)
+    if (queryString.startsWith("?")) queryString = queryString.substring(1)
 
     return qs.parse(queryString)
 }
@@ -44,24 +43,22 @@ export default class AppRouter extends React.Component<AppRouterProps, AppRouter
     context!: React.ContextType<typeof AppContext>
 
     constructor(props: AppRouterProps, context: AppContextData) {
-        super(props, context);
+        super(props, context)
         this.state = {}
         currentInstance = this
     }
 
     private isRouteVisible(route: AppRoute): boolean {
-        if (!Array.isArray(route.visibleRoles))
-            return true
+        if (!Array.isArray(route.visibleRoles)) return true
 
-        const {user} = this.context
-        if (user === undefined)
-            return false
+        const { user } = this.context
+        if (user === undefined) return false
 
         return route.visibleRoles.includes(user.role)
     }
 
     private buildMenuItemsAdapter(): AppShellMenuItem[] {
-        const {routes} = this.props
+        const { routes } = this.props
         return routes
             .filter(route => route.menuItem !== undefined)
             .filter(route => this.isRouteVisible(route))
@@ -73,9 +70,9 @@ export default class AppRouter extends React.Component<AppRouterProps, AppRouter
     }
 
     private buildRouteComponent(route: AppRoute): any {
-        const {userMenu, serverControl} = this.props
-        const {component, requiresAuthentication, fullPage} = route
-        const {user} = this.context
+        const { userMenu, serverControl } = this.props
+        const { component, requiresAuthentication, fullPage } = route
+        const { user } = this.context
 
         if (requiresAuthentication && user?.id == null) {
             return <Navigate to="/login" replace />
@@ -100,7 +97,7 @@ export default class AppRouter extends React.Component<AppRouterProps, AppRouter
     }
 
     private buildRouteAdapters(): RouteObject[] {
-        const {routes} = this.props
+        const { routes } = this.props
         return routes
             .filter(route => this.isRouteVisible(route))
             .map(route => ({
@@ -111,19 +108,17 @@ export default class AppRouter extends React.Component<AppRouterProps, AppRouter
     }
 
     componentDidMount() {
-        if (this.state.router !== undefined)
-            return
+        if (this.state.router !== undefined) return
 
         const routes = this.buildRouteAdapters()
         const router = createBrowserRouter(routes, { window })
-        this.setState({router})
+        this.setState({ router })
     }
 
     render() {
-        const {router} = this.state
-        if (router === undefined)
-            return <></>
+        const { router } = this.state
+        if (router === undefined) return <></>
 
-        return <RouterProvider router={router}/>
+        return <RouterProvider router={router} />
     }
 }

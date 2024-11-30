@@ -1,8 +1,8 @@
-import LocalStorageRepository from "../../../core/repository/LocalStorageRepository";
-import NginxService from "../NginxService";
-import Notification from "../../../core/components/notification/Notification";
-import {Checkbox, CheckboxRef, Modal} from "antd";
-import React from "react";
+import LocalStorageRepository from "../../../core/repository/LocalStorageRepository"
+import NginxService from "../NginxService"
+import Notification from "../../../core/components/notification/Notification"
+import { Checkbox, CheckboxRef, Modal } from "antd"
+import React from "react"
 import "./ReloadNginxAction.css"
 
 class ReloadNginxAction {
@@ -15,23 +15,21 @@ class ReloadNginxAction {
     }
 
     private async reload(): Promise<void> {
-        const messageTitle = "Reload nginx configuration";
+        const messageTitle = "Reload nginx configuration"
         return this.service
             .reloadConfiguration()
-            .then(() => Notification.success(
-                messageTitle,
-                "Nginx server configuration was reloaded successfully",
-            ))
-            .catch(() => Notification.error(
-                messageTitle,
-                "Nginx server failed to reload the configuration. Please check the logs for more details.",
-            ))
+            .then(() => Notification.success(messageTitle, "Nginx server configuration was reloaded successfully"))
+            .catch(() =>
+                Notification.error(
+                    messageTitle,
+                    "Nginx server failed to reload the configuration. Please check the logs for more details.",
+                ),
+            )
     }
 
     async execute(): Promise<void> {
         const skipConfirmation = this.repository.getOrDefault(false)
-        if (skipConfirmation)
-            return this.reload()
+        if (skipConfirmation) return this.reload()
 
         return new Promise(resolve => {
             const skipRef = React.createRef<CheckboxRef>()
@@ -39,8 +37,7 @@ class ReloadNginxAction {
             Modal.confirm({
                 onCancel: () => resolve(),
                 onOk: () => {
-                    if (skipRef.current?.input?.checked)
-                        this.repository.set(true)
+                    if (skipRef.current?.input?.checked) this.repository.set(true)
 
                     return this.reload().then(resolve)
                 },

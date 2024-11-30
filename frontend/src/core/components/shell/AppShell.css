@@ -9,7 +9,7 @@
 
 .shell-header {
     padding: 0;
-    background: #FFF;
+    background: #fff;
 }
 
 .shell-sider-container {
@@ -34,7 +34,7 @@
 .shell-content {
     margin: 24px 0 0;
     padding: 24px;
-    background: #FFF;
+    background: #fff;
     border-radius: 4px;
     display: flex;
     flex-grow: 1;
@@ -49,13 +49,13 @@
 }
 
 .shell-logo {
-    color: #FFF;
+    color: #fff;
     font-size: 18px;
     padding: 62px 20px 20px;
 }
 
 .shell-logo-link {
-    color: #FFF;
+    color: #fff;
     font-size: 26px;
 }
 

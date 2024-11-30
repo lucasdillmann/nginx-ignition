@@ -1,5 +1,5 @@
-import React from "react";
-import {UserRole} from "../../../domain/user/model/UserRole";
+import React from "react"
+import { UserRole } from "../../../domain/user/model/UserRole"
 
 export interface AppRouteMenuItem {
     icon: React.ReactNode

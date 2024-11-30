@@ -1,5 +1,5 @@
-import ApiResponse from "../apiclient/ApiResponse";
-import ValidationResult from "./ValidationResult";
+import ApiResponse from "../apiclient/ApiResponse"
+import ValidationResult from "./ValidationResult"
 
 interface ErrorDetails {
     fieldPath: string
@@ -9,8 +9,7 @@ interface ErrorDetails {
 class ValidationResultConverter {
     parse(response: ApiResponse<any>): ValidationResult | null {
         const body = response.body
-        if (!Array.isArray(body?.consistencyProblems))
-            return null
+        if (!Array.isArray(body?.consistencyProblems)) return null
 
         const details = body.consistencyProblems as Array<ErrorDetails>
         const errors = new Map<String, Array<String>>()

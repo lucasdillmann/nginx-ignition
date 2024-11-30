@@ -1,12 +1,12 @@
-import ApiClient from "../../core/apiclient/ApiClient";
-import UserResponse from "./model/UserResponse";
-import ApiResponse from "../../core/apiclient/ApiResponse";
-import UserLoginRequest from "./model/UserLoginRequest";
-import UserLoginResponse from "./model/UserLoginResponse";
-import UserOnboardingStatusResponse from "./model/UserOnboardingStatusResponse";
-import UserRequest from "./model/UserRequest";
-import PageResponse from "../../core/pagination/PageResponse";
-import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest";
+import ApiClient from "../../core/apiclient/ApiClient"
+import UserResponse from "./model/UserResponse"
+import ApiResponse from "../../core/apiclient/ApiResponse"
+import UserLoginRequest from "./model/UserLoginRequest"
+import UserLoginResponse from "./model/UserLoginResponse"
+import UserOnboardingStatusResponse from "./model/UserOnboardingStatusResponse"
+import UserRequest from "./model/UserRequest"
+import PageResponse from "../../core/pagination/PageResponse"
+import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest"
 
 export default class UserGateway {
     private client: ApiClient

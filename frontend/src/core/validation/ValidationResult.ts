@@ -1,4 +1,4 @@
-import type {ValidateStatus} from "antd/es/form/FormItem";
+import type { ValidateStatus } from "antd/es/form/FormItem"
 
 export default class ValidationResult {
     private readonly errors: Map<String, Array<String>>

@@ -1,4 +1,4 @@
-import ApiResponse from "../ApiResponse";
+import ApiResponse from "../ApiResponse"
 
 export default interface ApiClientEventListener {
     handleRequest(request: RequestInit): void

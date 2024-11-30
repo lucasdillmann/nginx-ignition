@@ -1,17 +1,17 @@
-import LoginPage from "./authentication/LoginPage";
-import HomePage from "./home/HomePage";
-import AppRoute from "../core/components/router/AppRoute";
-import OnboardingPage from "./onboarding/OnboardingPage";
-import {FileProtectOutlined, FileSearchOutlined, HddOutlined, TeamOutlined} from "@ant-design/icons"
-import HostListPage from "./host/HostListPage";
-import HostFormPage from "./host/HostFormPage";
-import CertificateListPage from "./certificate/CertificateListPage";
-import CertificateIssuePage from "./certificate/CertificateIssuePage";
-import CertificateDetailsPage from "./certificate/CertificateDetailsPage";
-import LogsPage from "./logs/LogsPage";
-import UserListPage from "./user/UserListPage";
-import UserFormPage from "./user/UserFormPage";
-import {UserRole} from "./user/model/UserRole";
+import LoginPage from "./authentication/LoginPage"
+import HomePage from "./home/HomePage"
+import AppRoute from "../core/components/router/AppRoute"
+import OnboardingPage from "./onboarding/OnboardingPage"
+import { FileProtectOutlined, FileSearchOutlined, HddOutlined, TeamOutlined } from "@ant-design/icons"
+import HostListPage from "./host/HostListPage"
+import HostFormPage from "./host/HostFormPage"
+import CertificateListPage from "./certificate/CertificateListPage"
+import CertificateIssuePage from "./certificate/CertificateIssuePage"
+import CertificateDetailsPage from "./certificate/CertificateDetailsPage"
+import LogsPage from "./logs/LogsPage"
+import UserListPage from "./user/UserListPage"
+import UserFormPage from "./user/UserFormPage"
+import { UserRole } from "./user/model/UserRole"
 
 const Routes: AppRoute[] = [
     {

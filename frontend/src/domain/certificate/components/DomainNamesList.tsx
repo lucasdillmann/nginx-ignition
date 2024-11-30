@@ -1,9 +1,9 @@
-import React from "react";
-import {Button, Flex, Form, FormListFieldData, FormListOperation, Input} from "antd";
-import FormLayout from "../../../core/components/form/FormLayout";
-import If from "../../../core/components/flowcontrol/If";
-import {CloseOutlined, PlusOutlined} from "@ant-design/icons";
-import ValidationResult from "../../../core/validation/ValidationResult";
+import React from "react"
+import { Button, Flex, Form, FormListFieldData, FormListOperation, Input } from "antd"
+import FormLayout from "../../../core/components/form/FormLayout"
+import If from "../../../core/components/flowcontrol/If"
+import { CloseOutlined, PlusOutlined } from "@ant-design/icons"
+import ValidationResult from "../../../core/validation/ValidationResult"
 
 export interface DomainNamesListProps {
     validationResult: ValidationResult
@@ -12,13 +12,13 @@ export interface DomainNamesListProps {
 
 export default class DomainNamesList extends React.PureComponent<DomainNamesListProps> {
     private renderFields(fields: FormListFieldData[], operations: FormListOperation) {
-        const {validationResult, expandedLabelSize} = this.props
+        const { validationResult, expandedLabelSize } = this.props
         const layout = expandedLabelSize === true ? FormLayout.ExpandedUnlabeledItem : FormLayout.UnlabeledItem
 
         const domainNameFields = fields.map((field, index) => (
             <Form.Item
                 {...(index > 0 ? layout : undefined)}
-                label={index === 0 ? "Domain names": ""}
+                label={index === 0 ? "Domain names" : ""}
                 key={field.key}
                 required
             >
@@ -43,11 +43,7 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
 
         const addAction = (
             <Form.Item {...layout}>
-                <Button
-                    type="dashed"
-                    onClick={() => operations.add()}
-                    icon={<PlusOutlined />}
-                >
+                <Button type="dashed" onClick={() => operations.add()} icon={<PlusOutlined />}>
                     Add domain
                 </Button>
             </Form.Item>
@@ -57,10 +53,6 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
     }
 
     render() {
-        return (
-            <Form.List name="domainNames">
-                {(fields, operations) => this.renderFields(fields, operations)}
-            </Form.List>
-        )
+        return <Form.List name="domainNames">{(fields, operations) => this.renderFields(fields, operations)}</Form.List>
     }
 }

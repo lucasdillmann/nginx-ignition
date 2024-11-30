@@ -1,14 +1,14 @@
-import React from "react";
-import {Button, Flex, Layout, Menu} from "antd";
-import {MenuItemType} from "antd/es/menu/interface";
-import {Link} from "react-router-dom";
-import AppRoute from "../router/AppRoute";
+import React from "react"
+import { Button, Flex, Layout, Menu } from "antd"
+import { MenuItemType } from "antd/es/menu/interface"
+import { Link } from "react-router-dom"
+import AppRoute from "../router/AppRoute"
 import "./AppShell.css"
-import If from "../flowcontrol/If";
-import AppShellContext, {ShellAction, ShellConfig} from "./AppShellContext";
-const {Sider, Content} = Layout;
+import If from "../flowcontrol/If"
+import AppShellContext, { ShellAction, ShellConfig } from "./AppShellContext"
+const { Sider, Content } = Layout
 
-const EmptyConfig : ShellConfig = {
+const EmptyConfig: ShellConfig = {
     title: "",
 }
 
@@ -32,14 +32,14 @@ interface AppShellState {
 
 export default class AppShell extends React.Component<AppShellProps, AppShellState> {
     constructor(props: AppShellProps) {
-        super(props);
+        super(props)
         this.state = {
             config: EmptyConfig,
         }
     }
 
     private buildMenuItemsAdapters(): MenuItemType[] {
-        const {menuItems} = this.props
+        const { menuItems } = this.props
         return menuItems.map(item => ({
             key: item.path,
             icon: item.icon,
@@ -49,14 +49,11 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
     }
 
     private renderActionButton(action: ShellAction): React.ReactNode {
-        const {description, type, color, onClick, disabled} = action
+        const { description, type, color, onClick, disabled } = action
         if (typeof onClick === "string") {
             return (
                 <Link to={onClick} key={action.description}>
-                    <Button
-                        variant={type ?? "solid"}
-                        color={color ?? "primary"}
-                        disabled={disabled}>
+                    <Button variant={type ?? "solid"} color={color ?? "primary"} disabled={disabled}>
                         {description}
                     </Button>
                 </Link>
@@ -68,7 +65,8 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                     variant={type ?? "solid"}
                     color={color ?? "primary"}
                     onClick={onClick}
-                    disabled={disabled}>
+                    disabled={disabled}
+                >
                     {description}
                 </Button>
             )
@@ -76,33 +74,30 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
     }
 
     private renderActions() {
-        const {config: {actions}} = this.state
-        if (!actions)
-            return null
+        const {
+            config: { actions },
+        } = this.state
+        if (!actions) return null
 
-        return (
-            <>
-                {actions.map(action => this.renderActionButton(action))}
-            </>
-        )
+        return <>{actions.map(action => this.renderActionButton(action))}</>
     }
 
     shouldComponentUpdate(nextProps: Readonly<AppShellProps>): boolean {
-        const {children: previous} = nextProps
-        const {children: current} = this.props
+        const { children: previous } = nextProps
+        const { children: current } = this.props
 
         if (previous !== current) {
-            this.setState({config: EmptyConfig})
+            this.setState({ config: EmptyConfig })
         }
 
         return true
     }
 
     render() {
-        const {activeRoute, children, userMenu, serverControl} = this.props
-        const {config} = this.state
+        const { activeRoute, children, userMenu, serverControl } = this.props
+        const { config } = this.state
         const activeMenuItemPath = activeRoute.activeMenuItemPath ?? activeRoute.path
-        const {title, subtitle} = config
+        const { title, subtitle } = config
 
         return (
             <Layout className="shell-container">
@@ -112,9 +107,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                             nginx ignition
                         </Link>
                     </div>
-                    <div className="shell-server-control">
-                        {serverControl}
-                    </div>
+                    <div className="shell-server-control">{serverControl}</div>
                     <Menu
                         className="shell-menu-container"
                         theme="dark"
@@ -122,9 +115,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                         defaultSelectedKeys={activeMenuItemPath ? [activeMenuItemPath] : undefined}
                         items={this.buildMenuItemsAdapters()}
                     />
-                    <div className="shell-user-menu">
-                        {userMenu}
-                    </div>
+                    <div className="shell-user-menu">{userMenu}</div>
                 </Sider>
                 <Layout>
                     <Flex>
@@ -134,19 +125,19 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                                 <h2 className="shell-subtitle">{subtitle}</h2>
                             </If>
                         </Flex>
-                        <Flex className="shell-actions-container">
-                            {this.renderActions()}
-                        </Flex>
+                        <Flex className="shell-actions-container">{this.renderActions()}</Flex>
                     </Flex>
                     <Content className="shell-content">
-                        <AppShellContext.Provider value={{
-                            updateConfig: (config: ShellConfig) => this.setState({config}),
-                        }}>
+                        <AppShellContext.Provider
+                            value={{
+                                updateConfig: (config: ShellConfig) => this.setState({ config }),
+                            }}
+                        >
                             {children}
                         </AppShellContext.Provider>
                     </Content>
                 </Layout>
             </Layout>
-        );
+        )
     }
 }

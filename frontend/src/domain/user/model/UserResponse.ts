@@ -1,4 +1,4 @@
-import {UserRole} from "./UserRole";
+import { UserRole } from "./UserRole"
 
 export default interface UserResponse {
     id: string
@@ -7,5 +7,3 @@ export default interface UserResponse {
     username: string
     role: UserRole
 }
-
-

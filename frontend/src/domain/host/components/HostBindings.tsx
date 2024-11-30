@@ -1,17 +1,17 @@
-import React from "react";
-import ValidationResult from "../../../core/validation/ValidationResult";
-import {Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Select} from "antd";
-import If from "../../../core/components/flowcontrol/If";
-import {CloseOutlined, PlusOutlined} from "@ant-design/icons";
-import {HostFormBinding} from "../model/HostFormValues";
-import {HostBindingType} from "../model/HostRequest";
-import PaginatedSelect from "../../../core/components/select/PaginatedSelect";
-import CertificateService from "../../certificate/CertificateService";
-import PageResponse from "../../../core/pagination/PageResponse";
-import {CertificateResponse} from "../../certificate/model/CertificateResponse";
+import React from "react"
+import ValidationResult from "../../../core/validation/ValidationResult"
+import { Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Select } from "antd"
+import If from "../../../core/components/flowcontrol/If"
+import { CloseOutlined, PlusOutlined } from "@ant-design/icons"
+import { HostFormBinding } from "../model/HostFormValues"
+import { HostBindingType } from "../model/HostRequest"
+import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
+import CertificateService from "../../certificate/CertificateService"
+import PageResponse from "../../../core/pagination/PageResponse"
+import { CertificateResponse } from "../../certificate/model/CertificateResponse"
 import "./HostBindings.css"
-import FormLayout from "../../../core/components/form/FormLayout";
-import TagGroup from "../../../core/components/taggroup/TagGroup";
+import FormLayout from "../../../core/components/form/FormLayout"
+import TagGroup from "../../../core/components/taggroup/TagGroup"
 
 const DEFAULT_VALUES: HostFormBinding = {
     type: HostBindingType.HTTP,
@@ -28,7 +28,7 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
     private service: CertificateService
 
     constructor(props: HostBindingsProps) {
-        super(props);
+        super(props)
         this.service = new CertificateService()
     }
 
@@ -36,14 +36,9 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
         return this.service.list(pageSize, pageNumber)
     }
 
-    private renderBinding(
-        field: FormListFieldData,
-        operations: FormListOperation,
-        index: number,
-        totalAmount: number,
-    ) {
-        const {validationResult, bindings} = this.props
-        const {name} = field
+    private renderBinding(field: FormListFieldData, operations: FormListOperation, index: number, totalAmount: number) {
+        const { validationResult, bindings } = this.props
+        const { name } = field
 
         return (
             <Flex className="host-form-binding-container">
@@ -109,7 +104,7 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                         style={{
                             marginLeft: 15,
                             alignItems: "start",
-                            marginTop: index === 0 ? 37 : 7
+                            marginTop: index === 0 ? 37 : 7,
                         }}
                         onClick={() => operations.remove(field.name)}
                     />
@@ -119,17 +114,11 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
     }
 
     private renderBindings(fields: FormListFieldData[], operations: FormListOperation) {
-        const bindings = fields.map(
-            (field, index) => this.renderBinding(field, operations, index, fields.length)
-        );
+        const bindings = fields.map((field, index) => this.renderBinding(field, operations, index, fields.length))
 
         const addAction = (
             <Form.Item>
-                <Button
-                    type="dashed"
-                    onClick={() => operations.add(DEFAULT_VALUES)}
-                    icon={<PlusOutlined />}
-                >
+                <Button type="dashed" onClick={() => operations.add(DEFAULT_VALUES)} icon={<PlusOutlined />}>
                     Add binding
                 </Button>
             </Form.Item>
@@ -139,10 +128,6 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
     }
 
     render() {
-        return (
-            <Form.List name="bindings">
-                {(fields, operations) => this.renderBindings(fields, operations)}
-            </Form.List>
-        )
+        return <Form.List name="bindings">{(fields, operations) => this.renderBindings(fields, operations)}</Form.List>
     }
 }

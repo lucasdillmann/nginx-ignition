@@ -1,4 +1,4 @@
-import React, {PropsWithChildren} from "react";
+import React, { PropsWithChildren } from "react"
 
 export interface IfProps extends PropsWithChildren {
     condition: boolean
@@ -6,7 +6,7 @@ export interface IfProps extends PropsWithChildren {
 
 export default class If extends React.PureComponent<IfProps> {
     render() {
-        const {condition, children} = this.props
-        return condition ? children : undefined;
+        const { condition, children } = this.props
+        return condition ? children : undefined
     }
 }

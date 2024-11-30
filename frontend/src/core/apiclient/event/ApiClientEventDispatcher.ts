@@ -1,5 +1,5 @@
-import ApiClientEventListener from "./ApiClientEventListener";
-import ApiResponse from "../ApiResponse";
+import ApiClientEventListener from "./ApiClientEventListener"
+import ApiResponse from "../ApiResponse"
 
 class ApiClientEventDispatcher {
     private readonly listeners: ApiClientEventListener[]
@@ -13,20 +13,18 @@ class ApiClientEventDispatcher {
     }
 
     notifyRequest(request: RequestInit) {
-        for(const listener of this.listeners) {
+        for (const listener of this.listeners) {
             try {
                 listener.handleRequest(request)
-            } catch (ex) {
-            }
+            } catch (ex) {}
         }
     }
 
     notifyResponse(request: RequestInit, response: ApiResponse<any>) {
-        for(const listener of this.listeners) {
+        for (const listener of this.listeners) {
             try {
                 listener.handleResponse(request, response)
-            } catch (ex) {
-            }
+            } catch (ex) {}
         }
     }
 }

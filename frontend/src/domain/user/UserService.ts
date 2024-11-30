@@ -1,12 +1,12 @@
-import UserGateway from "./UserGateway";
-import UserResponse from "./model/UserResponse";
-import UserOnboardingStatusResponse from "./model/UserOnboardingStatusResponse";
-import {requireNullablePayload, requireSuccessPayload, requireSuccessResponse} from "../../core/apiclient/ApiResponse";
-import PageResponse from "../../core/pagination/PageResponse";
-import UserRequest from "./model/UserRequest";
-import UserLoginRequest from "./model/UserLoginRequest";
-import AuthenticationService from "../../core/authentication/AuthenticationService";
-import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest";
+import UserGateway from "./UserGateway"
+import UserResponse from "./model/UserResponse"
+import UserOnboardingStatusResponse from "./model/UserOnboardingStatusResponse"
+import { requireNullablePayload, requireSuccessPayload, requireSuccessResponse } from "../../core/apiclient/ApiResponse"
+import PageResponse from "../../core/pagination/PageResponse"
+import UserRequest from "./model/UserRequest"
+import UserLoginRequest from "./model/UserLoginRequest"
+import AuthenticationService from "../../core/authentication/AuthenticationService"
+import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest"
 
 export default class UserService {
     private gateway: UserGateway
@@ -20,7 +20,7 @@ export default class UserService {
         return this.gateway
             .login(request)
             .then(requireSuccessPayload)
-            .then((response) => {
+            .then(response => {
                 AuthenticationService.setToken(response.token)
             })
     }

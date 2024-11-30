@@ -1,7 +1,7 @@
-import HostResponse from "./model/HostResponse";
-import HostFormValues, {HostFormBinding, HostFormRoute, HostFormStaticResponse} from "./model/HostFormValues";
-import HostRequest, {HostBinding, HostRoute, HostRouteStaticResponse} from "./model/HostRequest";
-import CertificateService from "../certificate/CertificateService";
+import HostResponse from "./model/HostResponse"
+import HostFormValues, { HostFormBinding, HostFormRoute, HostFormStaticResponse } from "./model/HostFormValues"
+import HostRequest, { HostBinding, HostRoute, HostRouteStaticResponse } from "./model/HostRequest"
+import CertificateService from "../certificate/CertificateService"
 
 class HostConverter {
     private certificateService: CertificateService
@@ -15,10 +15,13 @@ class HostConverter {
     }
 
     private staticResponseToFormValues(response: HostRouteStaticResponse): HostFormStaticResponse {
-        const {statusCode, payload} = response
-        const headers = response.headers !== undefined
-            ? Object.entries(response.headers).map(([key, value]) => `${key}: ${value}`).join("\n")
-            : ""
+        const { statusCode, payload } = response
+        const headers =
+            response.headers !== undefined
+                ? Object.entries(response.headers)
+                      .map(([key, value]) => `${key}: ${value}`)
+                      .join("\n")
+                : ""
 
         return {
             headers,
@@ -28,9 +31,7 @@ class HostConverter {
     }
 
     private routeToFormValues(route: HostRoute): HostFormRoute {
-        const response = this.notNull(route.response)
-            ? this.staticResponseToFormValues(route.response!!)
-            : undefined
+        const response = this.notNull(route.response) ? this.staticResponseToFormValues(route.response!!) : undefined
 
         return {
             ...route,
@@ -50,9 +51,7 @@ class HostConverter {
     }
 
     private formValuesToHeaders(headers: string): Record<string, string> {
-        const lines = headers
-            .split("\n")
-            .filter(line => line.trim().length > 0)
+        const lines = headers.split("\n").filter(line => line.trim().length > 0)
         const pairs = lines
             .map(line => line.split(":"))
             .filter(line => line.length >= 2)
@@ -66,10 +65,8 @@ class HostConverter {
     }
 
     private formValuesToStaticResponse(response: HostFormStaticResponse): HostRouteStaticResponse {
-        const {statusCode, payload} = response
-        const headers = this.notNull(response.headers)
-            ? this.formValuesToHeaders(response.headers!!)
-            : {}
+        const { statusCode, payload } = response
+        const headers = this.notNull(response.headers) ? this.formValuesToHeaders(response.headers!!) : {}
 
         return {
             statusCode,
@@ -79,10 +76,8 @@ class HostConverter {
     }
 
     private formValuesToRoute(route: HostFormRoute): HostRoute {
-        const {priority, type, customSettings, targetUri, sourcePath} = route
-        const response = this.notNull(route.response)
-            ? this.formValuesToStaticResponse(route.response!!)
-            : undefined
+        const { priority, type, customSettings, targetUri, sourcePath } = route
+        const response = this.notNull(route.response) ? this.formValuesToStaticResponse(route.response!!) : undefined
 
         return {
             priority,
@@ -105,12 +100,10 @@ class HostConverter {
     }
 
     async responseToFormValues(response: HostResponse): Promise<HostFormValues> {
-        const {enabled, domainNames, featureSet, defaultServer} = response
+        const { enabled, domainNames, featureSet, defaultServer } = response
 
-        const routes =
-            response.routes.map(route => this.routeToFormValues(route))
-        const bindings =
-            await Promise.all(response.bindings.map(binding => this.bindingToFormValues(binding)))
+        const routes = response.routes.map(route => this.routeToFormValues(route))
+        const bindings = await Promise.all(response.bindings.map(binding => this.bindingToFormValues(binding)))
 
         return {
             enabled,
@@ -123,7 +116,7 @@ class HostConverter {
     }
 
     formValuesToRequest(formValues: HostFormValues): HostRequest {
-        const {enabled, domainNames, featureSet, defaultServer} = formValues
+        const { enabled, domainNames, featureSet, defaultServer } = formValues
 
         const routes = formValues.routes.map(route => this.formValuesToRoute(route))
         const bindings = formValues.bindings.map(binding => this.formValuesToBinding(binding))

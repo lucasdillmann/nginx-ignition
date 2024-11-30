@@ -1,19 +1,19 @@
-import React from "react";
-import {Flex, Form, FormInstance, Modal} from "antd";
-import {UserOutlined, LogoutOutlined, LockOutlined} from "@ant-design/icons";
-import AppContext from "../../../core/components/context/AppContext";
+import React from "react"
+import { Flex, Form, FormInstance, Modal } from "antd"
+import { UserOutlined, LogoutOutlined, LockOutlined } from "@ant-design/icons"
+import AppContext from "../../../core/components/context/AppContext"
 import "./ShellUserMenu.css"
-import UserConfirmation from "../../../core/components/confirmation/UserConfirmation";
-import UserService from "../UserService";
-import {navigateTo} from "../../../core/components/router/AppRouter";
-import Notification from "../../../core/components/notification/Notification";
-import ValidationResult from "../../../core/validation/ValidationResult";
-import Preloader from "../../../core/components/preloader/Preloader";
-import UserUpdatePasswordRequest from "../model/UserUpdatePasswordRequest";
-import FormLayout from "../../../core/components/form/FormLayout";
-import Password from "antd/es/input/Password";
-import {UnexpectedResponseError} from "../../../core/apiclient/ApiResponse";
-import ValidationResultConverter from "../../../core/validation/ValidationResultConverter";
+import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
+import UserService from "../UserService"
+import { navigateTo } from "../../../core/components/router/AppRouter"
+import Notification from "../../../core/components/notification/Notification"
+import ValidationResult from "../../../core/validation/ValidationResult"
+import Preloader from "../../../core/components/preloader/Preloader"
+import UserUpdatePasswordRequest from "../model/UserUpdatePasswordRequest"
+import FormLayout from "../../../core/components/form/FormLayout"
+import Password from "antd/es/input/Password"
+import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
+import ValidationResultConverter from "../../../core/validation/ValidationResultConverter"
 
 const DEFAULT_FORM_VALUES: UserUpdatePasswordRequest = {
     currentPassword: "",
@@ -47,13 +47,9 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
     }
 
     private async handleLogout() {
-        return UserConfirmation
-            .ask("Are you sure you want to logout?")
+        return UserConfirmation.ask("Are you sure you want to logout?")
             .then(() => this.service.logout())
-            .then(() => Notification.success(
-                "See ya",
-                "You was logged-out successfully",
-            ))
+            .then(() => Notification.success("See ya", "You was logged-out successfully"))
             .then(() => {
                 this.context.user = undefined
             })
@@ -61,13 +57,10 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
     }
 
     private async executePasswordChange() {
-        const {formValues} = this.state
+        const { formValues } = this.state
         return this.service
             .changePassword(formValues)
-            .then(() => Notification.success(
-                "Password changed",
-                "Your password was updated successfully",
-            ))
+            .then(() => Notification.success("Password changed", "Your password was updated successfully"))
             .then(() => this.closeChangePasswordModal())
             .catch(error => this.handleErrorResponse(error))
     }
@@ -75,18 +68,14 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
     private handleErrorResponse(error: Error) {
         if (error instanceof UnexpectedResponseError) {
             const validationResult = ValidationResultConverter.parse(error.response)
-            if (validationResult != null)
-                this.setState({ validationResult })
+            if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error(
-            "That didn't work",
-            "Please check the form to see if everything seems correct",
-        )
+        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
     }
 
     private openChangePasswordModal() {
-        this.setState({modalOpen: true})
+        this.setState({ modalOpen: true })
     }
 
     private closeChangePasswordModal() {
@@ -99,7 +88,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
     }
 
     private renderPasswordChangeModal() {
-        const {modalOpen, loading, validationResult, formValues} = this.state
+        const { modalOpen, loading, validationResult, formValues } = this.state
         return (
             <Preloader loading={loading}>
                 <Modal
@@ -107,20 +96,23 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
                     onCancel={() => this.closeChangePasswordModal()}
                     onClose={() => this.closeChangePasswordModal()}
                     onOk={() => this.executePasswordChange()}
-                    open={modalOpen}>
+                    open={modalOpen}
+                >
                     <Form<UserUpdatePasswordRequest>
                         {...FormLayout.FormDefaults}
                         {...FormLayout.ExpandedLabeledItem}
                         ref={this.formRef}
                         layout="vertical"
-                        onValuesChange={(_, formValues) => this.setState({formValues})}
-                        initialValues={formValues}>
+                        onValuesChange={(_, formValues) => this.setState({ formValues })}
+                        initialValues={formValues}
+                    >
                         <Form.Item
                             name="currentPassword"
                             validateStatus={validationResult.getStatus("currentPassword")}
                             help={validationResult.getMessage("currentPassword")}
                             label="Current password"
-                            required>
+                            required
+                        >
                             <Password />
                         </Form.Item>
                         <Form.Item
@@ -128,7 +120,8 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
                             validateStatus={validationResult.getStatus("newPassword")}
                             help={validationResult.getMessage("newPassword")}
                             label="New password"
-                            required>
+                            required
+                        >
                             <Password />
                         </Form.Item>
                     </Form>
@@ -138,15 +131,13 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
     }
 
     render() {
-        const {user} = this.context
+        const { user } = this.context
         return (
             <Flex className="shell-user-menu-container">
                 <Flex className="shell-user-menu-icon">
                     <UserOutlined />
                 </Flex>
-                <Flex className="shell-user-menu-user-name">
-                    {user?.name}
-                </Flex>
+                <Flex className="shell-user-menu-user-name">{user?.name}</Flex>
                 <Flex className="shell-user-menu-actions">
                     <LockOutlined onClick={() => this.openChangePasswordModal()} />
                     <LogoutOutlined onClick={() => this.handleLogout()} />

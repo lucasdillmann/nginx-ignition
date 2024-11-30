@@ -1,5 +1,5 @@
-import React, {PropsWithChildren} from "react";
-import FullPageError from "../error/FullPageError";
+import React, { PropsWithChildren } from "react"
+import FullPageError from "../error/FullPageError"
 
 interface ErrorBoundaryState {
     error?: Error
@@ -7,12 +7,12 @@ interface ErrorBoundaryState {
 
 export default class ErrorBoundary extends React.Component<PropsWithChildren, ErrorBoundaryState> {
     constructor(props: PropsWithChildren) {
-        super(props);
+        super(props)
         this.state = {}
     }
 
     componentDidCatch(error: Error) {
-        this.setState((current) => ({
+        this.setState(current => ({
             ...current,
             error,
         }))

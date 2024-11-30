@@ -1,8 +1,8 @@
-import ApiClient from "../../core/apiclient/ApiClient";
-import ApiResponse from "../../core/apiclient/ApiResponse";
-import PageResponse from "../../core/pagination/PageResponse";
-import HostResponse from "./model/HostResponse";
-import HostRequest from "./model/HostRequest";
+import ApiClient from "../../core/apiclient/ApiClient"
+import ApiResponse from "../../core/apiclient/ApiResponse"
+import PageResponse from "../../core/pagination/PageResponse"
+import HostResponse from "./model/HostResponse"
+import HostRequest from "./model/HostRequest"
 
 export default class HostGateway {
     private readonly client: ApiClient

@@ -1,4 +1,5 @@
 import com.github.gradle.node.npm.task.NpmTask
+import com.github.gradle.node.npm.task.NpxTask
 
 plugins {
     id("com.github.node-gradle.node") version "7.1.0"
@@ -15,6 +16,12 @@ tasks {
         args = listOf("run", "lint")
     }
 
+    val prettierCheck = create<NpxTask>("npxPrettierCheck") {
+        dependsOn(npmSetup, npmInstall)
+        command = "npx"
+        args = listOf("prettier", "--check", "src")
+    }
+
     val npmBuild = create<NpmTask>("npmBuild") {
         dependsOn(npmSetup, npmInstall)
         args = listOf("run", "build")
@@ -26,10 +33,10 @@ tasks {
     }
 
     jar {
-        dependsOn(npmLint, npmBuild)
+        dependsOn(npmLint, prettierCheck, npmBuild)
 
         from(layout.buildDirectory.dir("frontend")) {
-            into("/frontend/")
+            into("/nginx-ignition/frontend/")
         }
     }
 

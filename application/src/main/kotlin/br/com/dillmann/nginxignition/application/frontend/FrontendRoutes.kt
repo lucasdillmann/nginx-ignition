@@ -8,7 +8,7 @@ fun Application.frontendRoutes() {
     routing {
         staticResources(
             remotePath = "/",
-            basePackage = "frontend",
+            basePackage = "nginx-ignition/frontend",
             index = "index.html",
         ) {
             default("index.html")

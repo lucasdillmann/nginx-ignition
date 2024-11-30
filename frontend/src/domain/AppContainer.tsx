@@ -1,11 +1,11 @@
-import React from 'react';
-import AppContext, { AppContextData, loadAppContextData } from "../core/components/context/AppContext";
-import AppRouter from "../core/components/router/AppRouter";
-import Routes from "./Routes";
-import FullPagePreloader from "../core/components/preloader/FullPagePreloader";
-import FullPageError from "../core/components/error/FullPageError";
-import ShellUserMenu from "./user/components/ShellUserMenu";
-import NginxControl from "./nginx/components/NginxControl";
+import React from "react"
+import AppContext, { AppContextData, loadAppContextData } from "../core/components/context/AppContext"
+import AppRouter from "../core/components/router/AppRouter"
+import Routes from "./Routes"
+import FullPagePreloader from "../core/components/preloader/FullPagePreloader"
+import FullPageError from "../core/components/error/FullPageError"
+import ShellUserMenu from "./user/components/ShellUserMenu"
+import NginxControl from "./nginx/components/NginxControl"
 
 interface AppContainerState {
     context?: AppContextData
@@ -14,37 +14,35 @@ interface AppContainerState {
 
 export default class AppContainer extends React.Component<unknown, AppContainerState> {
     constructor(props: any) {
-        super(props);
+        super(props)
         this.state = {}
     }
 
     componentDidMount() {
         loadAppContextData()
-            .then(context => this.setState({
-                context,
-                error: undefined,
-            }))
-            .catch(error => this.setState({
-                error,
-                context: undefined,
-            }))
+            .then(context =>
+                this.setState({
+                    context,
+                    error: undefined,
+                }),
+            )
+            .catch(error =>
+                this.setState({
+                    error,
+                    context: undefined,
+                }),
+            )
     }
 
     render() {
         const { context, error } = this.state
-        if (error !== undefined)
-            return <FullPageError error={error} />
+        if (error !== undefined) return <FullPageError error={error} />
 
-        if (context === undefined)
-            return <FullPagePreloader />
+        if (context === undefined) return <FullPagePreloader />
 
         return (
             <AppContext.Provider value={context}>
-                <AppRouter
-                    routes={Routes}
-                    userMenu={<ShellUserMenu />}
-                    serverControl={<NginxControl />}
-                />
+                <AppRouter routes={Routes} userMenu={<ShellUserMenu />} serverControl={<NginxControl />} />
             </AppContext.Provider>
         )
     }

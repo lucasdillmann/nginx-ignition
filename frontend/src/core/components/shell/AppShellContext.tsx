@@ -1,5 +1,5 @@
-import {ButtonColorType, ButtonVariantType} from "antd/es/button";
-import React from "react";
+import { ButtonColorType, ButtonVariantType } from "antd/es/button"
+import React from "react"
 
 export interface ShellAction {
     description: string

@@ -1,15 +1,15 @@
-import React from "react";
-import PageResponse from "../../pagination/PageResponse";
-import {Select} from "antd";
-import {InputStatus} from "antd/es/_util/statusUtils";
-import Notification from "../notification/Notification";
+import React from "react"
+import PageResponse from "../../pagination/PageResponse"
+import { Select } from "antd"
+import { InputStatus } from "antd/es/_util/statusUtils"
+import Notification from "../notification/Notification"
 
 const PAGE_SIZE = 10
 
 interface SelectOption<T> {
-    item: T,
-    value: string,
-    label: React.ReactNode,
+    item: T
+    value: string
+    label: React.ReactNode
     disabled?: boolean
 }
 
@@ -35,7 +35,7 @@ export interface PaginatedSelectProps<T> {
 
 export default class PaginatedSelect<T> extends React.Component<PaginatedSelectProps<T>, PaginatedSelectState<T>> {
     constructor(props: PaginatedSelectProps<T>) {
-        super(props);
+        super(props)
         this.state = {
             data: [],
             firstLoadComplete: false,
@@ -46,22 +46,19 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
     }
 
     private loadNextPage() {
-        const {loading} = this.state
+        const { loading } = this.state
         if (loading) return
 
-        this.setState(
-            {loading: true},
-            () => this.fetchNextPage(),
-        )
+        this.setState({ loading: true }, () => this.fetchNextPage())
     }
 
     private fetchNextPage() {
-        const {pageProvider} = this.props
-        const {nextPageNumber} = this.state
+        const { pageProvider } = this.props
+        const { nextPageNumber } = this.state
 
         pageProvider(PAGE_SIZE, nextPageNumber)
             .then(page => {
-                this.setState((current) => ({
+                this.setState(current => ({
                     ...current,
                     data: [...current.data, ...page.contents],
                     nextPageNumber: page.pageNumber + 1,
@@ -86,7 +83,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
     }
 
     private buildOption(item: T): SelectOption<T> {
-        const {itemDescription, itemKey} = this.props
+        const { itemDescription, itemKey } = this.props
 
         return {
             value: itemKey(item),
@@ -96,17 +93,15 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
     }
 
     private buildOptions() {
-        const {data, loading} = this.state
+        const { data, loading } = this.state
         const options = data.map(item => this.buildOption(item))
 
-        if (!loading)
-            return options
-        else
-            return [...options, { value: "", label: "Loading...", disabled: true }]
+        if (!loading) return options
+        else return [...options, { value: "", label: "Loading...", disabled: true }]
     }
 
     private handleScrollEvent(event: React.UIEvent<HTMLDivElement>) {
-        const {loading, hasMorePages} = this.state
+        const { loading, hasMorePages } = this.state
         if (loading || !hasMorePages) return
 
         const target = event.target as HTMLDivElement
@@ -116,8 +111,8 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
     }
 
     render() {
-        const {allowEmpty, disabled, status, value, onChange, placeholder} = this.props
-        const {loading} = this.state
+        const { allowEmpty, disabled, status, value, onChange, placeholder } = this.props
+        const { loading } = this.state
 
         return (
             <Select

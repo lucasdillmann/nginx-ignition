@@ -1,21 +1,21 @@
-import React from "react";
-import ValidationResult from "../../core/validation/ValidationResult";
-import CertificateService from "./CertificateService";
-import AvailableProviderResponse, {DynamicFieldType} from "./model/AvailableProviderResponse";
-import Preloader from "../../core/components/preloader/Preloader";
-import {Form, Select} from "antd";
-import If from "../../core/components/flowcontrol/If";
-import FormLayout from "../../core/components/form/FormLayout";
-import DynamicInput from "./components/DynamicInput";
-import {IssueCertificateRequest} from "./model/IssueCertificateRequest";
-import ModalPreloader from "../../core/components/preloader/ModalPreloader";
-import {IssueCertificateResponse} from "./model/IssueCertificateResponse";
-import Notification from "../../core/components/notification/Notification";
-import {UnexpectedResponseError} from "../../core/apiclient/ApiResponse";
-import ValidationResultConverter from "../../core/validation/ValidationResultConverter";
-import DomainNamesList from "./components/DomainNamesList";
-import {navigateTo} from "../../core/components/router/AppRouter";
-import AppShellContext from "../../core/components/shell/AppShellContext";
+import React from "react"
+import ValidationResult from "../../core/validation/ValidationResult"
+import CertificateService from "./CertificateService"
+import AvailableProviderResponse, { DynamicFieldType } from "./model/AvailableProviderResponse"
+import Preloader from "../../core/components/preloader/Preloader"
+import { Form, Select } from "antd"
+import If from "../../core/components/flowcontrol/If"
+import FormLayout from "../../core/components/form/FormLayout"
+import DynamicInput from "./components/DynamicInput"
+import { IssueCertificateRequest } from "./model/IssueCertificateRequest"
+import ModalPreloader from "../../core/components/preloader/ModalPreloader"
+import { IssueCertificateResponse } from "./model/IssueCertificateResponse"
+import Notification from "../../core/components/notification/Notification"
+import { UnexpectedResponseError } from "../../core/apiclient/ApiResponse"
+import ValidationResultConverter from "../../core/validation/ValidationResultConverter"
+import DomainNamesList from "./components/DomainNamesList"
+import { navigateTo } from "../../core/components/router/AppRouter"
+import AppShellContext from "../../core/components/shell/AppShellContext"
 
 interface CertificateIssuePageState {
     availableProviders: AvailableProviderResponse[]
@@ -32,7 +32,7 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
     private readonly saveModal: ModalPreloader
 
     constructor(props: any) {
-        super(props);
+        super(props)
         this.service = new CertificateService()
         this.saveModal = new ModalPreloader()
         this.state = {
@@ -41,50 +41,41 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
             formValues: {
                 providerId: "",
                 domainNames: [""],
-                parameters: {}
+                parameters: {},
             },
             availableProviders: [],
         }
     }
 
     private async fileToBase64(file: File): Promise<string | null> {
-        if (typeof file.arrayBuffer !== "function")
-            return null
+        if (typeof file.arrayBuffer !== "function") return null
 
-        const contents =  await file.arrayBuffer()
-        return btoa(
-            new Uint8Array(contents).reduce(
-                (data, byte) => data + String.fromCharCode(byte),
-                '',
-            )
-        )
+        const contents = await file.arrayBuffer()
+        return btoa(new Uint8Array(contents).reduce((data, byte) => data + String.fromCharCode(byte), ""))
     }
 
     private async buildFileParameters() {
-        const {availableProviders, formValues} = this.state
-        const fileFields = availableProviders
-            .find(provider => provider.id === formValues.providerId)
-            ?.dynamicFields
-            ?.filter(field => field.type === DynamicFieldType.FILE)
-            ?? []
+        const { availableProviders, formValues } = this.state
+        const fileFields =
+            availableProviders
+                .find(provider => provider.id === formValues.providerId)
+                ?.dynamicFields?.filter(field => field.type === DynamicFieldType.FILE) ?? []
 
         const output: Record<string, any> = {}
         for (const field of fileFields) {
             const value = formValues.parameters?.[field.id]
-            if (value !== undefined && value.file !== undefined)
-                output[field.id] = await this.fileToBase64(value.file)
-            else
-                output[field.id] = null
+            if (value !== undefined && value.file !== undefined) output[field.id] = await this.fileToBase64(value.file)
+            else output[field.id] = null
         }
 
         return output
     }
 
     private async submit() {
-        const {formValues} = this.state
+        const { formValues } = this.state
         this.saveModal.show(
             "Hang on tight",
-            "We're issuing your certificate. This can take several seconds, feel free to grab a cup of coffee."
+            "We're issuing your certificate. This can take several seconds, feel free to grab a cup of coffee.",
         )
 
         const certificateRequest: IssueCertificateRequest = {
@@ -104,12 +95,9 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
     }
 
     private handleResponse(response: IssueCertificateResponse) {
-        const {success, errorReason, certificateId} = response
+        const { success, errorReason, certificateId } = response
         if (success) {
-            Notification.success(
-                "Certificate issued",
-                "The SSL certificate was issued and is now ready to be used"
-            )
+            Notification.success("Certificate issued", "The SSL certificate was issued and is now ready to be used")
             navigateTo(`/certificates/${certificateId}`)
         } else {
             Notification.error(
@@ -122,18 +110,14 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
     private handleError(error: Error) {
         if (error instanceof UnexpectedResponseError) {
             const validationResult = ValidationResultConverter.parse(error.response)
-            if (validationResult != null)
-                this.setState({ validationResult })
+            if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error(
-            "That didn't work",
-            "Please check the form to see if everything seems correct",
-        )
+        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
     }
 
     private buildProviderSelectOptions() {
-        const {availableProviders} = this.state
+        const { availableProviders } = this.state
         return availableProviders.map(provider => ({
             value: provider.id,
             label: provider.name,
@@ -141,27 +125,20 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
     }
 
     private renderDynamicFields() {
-        const {formValues, availableProviders, validationResult} = this.state
+        const { formValues, availableProviders, validationResult } = this.state
         const provider = availableProviders.find(item => item.id === formValues.providerId)
-        return provider
-            ?.dynamicFields
-            .sort((left, right) => left.priority > right.priority ? 1 : -1)
-            .map(field => (
-                <DynamicInput
-                    validationResult={validationResult}
-                    formValues={formValues}
-                    field={field}
-                />
-            ))
+        return provider?.dynamicFields
+            .sort((left, right) => (left.priority > right.priority ? 1 : -1))
+            .map(field => <DynamicInput validationResult={validationResult} formValues={formValues} field={field} />)
     }
 
     private renderForm() {
-        const {validationResult, formValues} = this.state
+        const { validationResult, formValues } = this.state
 
         return (
             <Form<IssueCertificateRequest>
                 {...FormLayout.FormDefaults}
-                onValuesChange={(_, formValues) => this.setState({formValues})}
+                onValuesChange={(_, formValues) => this.setState({ formValues })}
                 initialValues={formValues}
             >
                 <Form.Item
@@ -171,10 +148,7 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
                     label="Certificate provider"
                     required
                 >
-                    <Select
-                        placeholder="Certificate provider"
-                        options={this.buildProviderSelectOptions()}
-                    />
+                    <Select placeholder="Certificate provider" options={this.buildProviderSelectOptions()} />
                 </Form.Item>
                 <DomainNamesList validationResult={validationResult} />
                 {this.renderDynamicFields()}
@@ -197,32 +171,28 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
     }
 
     componentDidMount() {
-        this.service
-            .availableProviders()
-            .then(providers => {
-                this.setState({
-                    availableProviders: providers,
-                    loading: false,
-                    formValues: {
-                        providerId: providers[0].id,
-                        domainNames: [""],
-                        parameters: {},
-                    }
-                })
-
-                this.updateShellConfig(true)
+        this.service.availableProviders().then(providers => {
+            this.setState({
+                availableProviders: providers,
+                loading: false,
+                formValues: {
+                    providerId: providers[0].id,
+                    domainNames: [""],
+                    parameters: {},
+                },
             })
+
+            this.updateShellConfig(true)
+        })
 
         this.updateShellConfig(false)
     }
 
     render() {
-        const {loading, availableProviders} = this.state
+        const { loading, availableProviders } = this.state
         return (
             <Preloader loading={loading}>
-                <If condition={availableProviders.length > 0}>
-                    {this.renderForm()}
-                </If>
+                <If condition={availableProviders.length > 0}>{this.renderForm()}</If>
             </Preloader>
         )
     }

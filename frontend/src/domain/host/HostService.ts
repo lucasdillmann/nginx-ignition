@@ -1,8 +1,8 @@
-import HostGateway from "./HostGateway";
-import PageResponse from "../../core/pagination/PageResponse";
-import HostResponse from "./model/HostResponse";
-import {requireNullablePayload, requireSuccessPayload, requireSuccessResponse} from "../../core/apiclient/ApiResponse";
-import HostRequest from "./model/HostRequest";
+import HostGateway from "./HostGateway"
+import PageResponse from "../../core/pagination/PageResponse"
+import HostResponse from "./model/HostResponse"
+import { requireNullablePayload, requireSuccessPayload, requireSuccessResponse } from "../../core/apiclient/ApiResponse"
+import HostRequest from "./model/HostRequest"
 
 export default class HostService {
     private readonly gateway: HostGateway

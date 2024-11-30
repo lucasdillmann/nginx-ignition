@@ -1,5 +1,5 @@
-import {CertificateResponse} from "../../certificate/model/CertificateResponse";
-import {HostBindingType, HostFeatureSet, HostRouteType} from "./HostRequest";
+import { CertificateResponse } from "../../certificate/model/CertificateResponse"
+import { HostBindingType, HostFeatureSet, HostRouteType } from "./HostRequest"
 
 export interface HostFormBinding {
     type: HostBindingType

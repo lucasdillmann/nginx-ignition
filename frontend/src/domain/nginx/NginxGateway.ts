@@ -1,6 +1,6 @@
-import ApiClient from "../../core/apiclient/ApiClient";
-import ApiResponse from "../../core/apiclient/ApiResponse";
-import {NginxStatusResponse} from "./model/NginxStatusResponse";
+import ApiClient from "../../core/apiclient/ApiClient"
+import ApiResponse from "../../core/apiclient/ApiResponse"
+import { NginxStatusResponse } from "./model/NginxStatusResponse"
 
 export default class NginxGateway {
     private client: ApiClient

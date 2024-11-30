@@ -1,24 +1,24 @@
-import React from "react";
-import AppShellContext, {ShellAction, ShellOperations} from "../../core/components/shell/AppShellContext";
-import {Empty, Flex, Form, Switch} from "antd";
-import FormLayout from "../../core/components/form/FormLayout";
-import DomainNamesList from "../certificate/components/DomainNamesList";
-import {navigateTo, queryParams, routeParams} from "../../core/components/router/AppRouter";
-import HostService from "./HostService";
-import ValidationResult from "../../core/validation/ValidationResult";
-import {HostBindingType, HostRouteType} from "./model/HostRequest";
-import Preloader from "../../core/components/preloader/Preloader";
-import DeleteHostAction from "./actions/DeleteHostAction";
-import Notification from "../../core/components/notification/Notification";
-import {UnexpectedResponseError} from "../../core/apiclient/ApiResponse";
-import ValidationResultConverter from "../../core/validation/ValidationResultConverter";
-import ModalPreloader from "../../core/components/preloader/ModalPreloader";
-import HostRoutes from "./components/HostRoutes";
-import HostBindings from "./components/HostBindings";
+import React from "react"
+import AppShellContext, { ShellAction, ShellOperations } from "../../core/components/shell/AppShellContext"
+import { Empty, Flex, Form, Switch } from "antd"
+import FormLayout from "../../core/components/form/FormLayout"
+import DomainNamesList from "../certificate/components/DomainNamesList"
+import { navigateTo, queryParams, routeParams } from "../../core/components/router/AppRouter"
+import HostService from "./HostService"
+import ValidationResult from "../../core/validation/ValidationResult"
+import { HostBindingType, HostRouteType } from "./model/HostRequest"
+import Preloader from "../../core/components/preloader/Preloader"
+import DeleteHostAction from "./actions/DeleteHostAction"
+import Notification from "../../core/components/notification/Notification"
+import { UnexpectedResponseError } from "../../core/apiclient/ApiResponse"
+import ValidationResultConverter from "../../core/validation/ValidationResultConverter"
+import ModalPreloader from "../../core/components/preloader/ModalPreloader"
+import HostRoutes from "./components/HostRoutes"
+import HostBindings from "./components/HostBindings"
 import "./HostFormPage.css"
-import ReloadNginxAction from "../nginx/actions/ReloadNginxAction";
-import HostFormValues from "./model/HostFormValues";
-import HostConverter from "./HostConverter";
+import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
+import HostFormValues from "./model/HostFormValues"
+import HostConverter from "./HostConverter"
 
 const DEFAULT_HOST: HostFormValues = {
     enabled: true,
@@ -29,7 +29,7 @@ const DEFAULT_HOST: HostFormValues = {
             ip: "0.0.0.0",
             port: 8080,
             type: HostBindingType.HTTP,
-        }
+        },
     ],
     routes: [
         {
@@ -37,7 +37,7 @@ const DEFAULT_HOST: HostFormValues = {
             type: HostRouteType.PROXY,
             sourcePath: "/",
             targetUri: "",
-        }
+        },
     ],
     featureSet: {
         websocketsSupport: true,
@@ -62,7 +62,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     private readonly saveModal: ModalPreloader
 
     constructor(props: any, context: ShellOperations) {
-        super(props, context);
+        super(props, context)
 
         const hostId = routeParams().id
         this.hostId = hostId === "new" ? undefined : hostId
@@ -77,21 +77,17 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     private async delete() {
-        if (this.hostId === undefined)
-            return
+        if (this.hostId === undefined) return
 
-        return DeleteHostAction
-            .execute(this.hostId)
-            .then(() => navigateTo("/hosts"))
+        return DeleteHostAction.execute(this.hostId).then(() => navigateTo("/hosts"))
     }
 
     private submit() {
         const payload = HostConverter.formValuesToRequest(this.state.formValues)
         this.saveModal.show("Hang on tight", "We're saving the host")
 
-        const action = this.hostId === undefined
-            ? this.service.create(payload)
-            : this.service.updateById(this.hostId, payload)
+        const action =
+            this.hostId === undefined ? this.service.create(payload) : this.service.updateById(this.hostId, payload)
 
         action
             .then(() => this.handleSuccess())
@@ -108,14 +104,10 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     private handleError(error: Error) {
         if (error instanceof UnexpectedResponseError) {
             const validationResult = ValidationResultConverter.parse(error.response)
-            if (validationResult != null)
-                this.setState({ validationResult })
+            if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error(
-            "That didn't work",
-            "Please check the form to see if everything seems correct",
-        )
+        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
     }
 
     private updateShellConfig(enableActions: boolean) {
@@ -135,7 +127,6 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                 onClick: () => this.delete(),
             })
 
-
         this.context.updateConfig({
             title: "Host details",
             subtitle: "Full details and configurations of the nginx's virtual host",
@@ -146,13 +137,13 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     private handleChange(host: HostFormValues) {
         const orderedData: HostFormValues = {
             ...host,
-            routes: host.routes.sort((left, right) => left.priority > right.priority ? 1 : -1)
+            routes: host.routes.sort((left, right) => (left.priority > right.priority ? 1 : -1)),
         }
-        this.setState({formValues: orderedData})
+        this.setState({ formValues: orderedData })
     }
 
     private renderForm() {
-        const {validationResult, formValues} = this.state
+        const { validationResult, formValues } = this.state
 
         return (
             <Form<HostFormValues>
@@ -165,8 +156,10 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                     General configurations properties of the nginx's virtual host
                 </p>
                 <Flex className="hosts-form-inner-flex-container">
-                    <Flex className="hosts-form-inner-flex-container-column hosts-form-expanded-label-size"
-                          style={{maxWidth: "30%"}}>
+                    <Flex
+                        className="hosts-form-inner-flex-container-column hosts-form-expanded-label-size"
+                        style={{ maxWidth: "30%" }}
+                    >
                         <Form.Item
                             name="enabled"
                             validateStatus={validationResult.getStatus("enabled")}
@@ -174,7 +167,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             label="Enabled"
                             required
                         >
-                            <Switch/>
+                            <Switch />
                         </Form.Item>
                         <Form.Item
                             name="defaultServer"
@@ -183,7 +176,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             label="Default server"
                             required
                         >
-                            <Switch/>
+                            <Switch />
                         </Form.Item>
                         <Form.Item
                             name={["featureSet", "websocketsSupport"]}
@@ -192,7 +185,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             label="Websockets support"
                             required
                         >
-                            <Switch/>
+                            <Switch />
                         </Form.Item>
                         <Form.Item
                             name={["featureSet", "http2Support"]}
@@ -201,7 +194,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             label="HTTP2 support"
                             required
                         >
-                            <Switch/>
+                            <Switch />
                         </Form.Item>
                         <Form.Item
                             name={["featureSet", "redirectHttpToHttps"]}
@@ -210,26 +203,26 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             label="Redirect HTTP to HTTPS"
                             required
                         >
-                            <Switch/>
+                            <Switch />
                         </Form.Item>
                     </Flex>
                     <Flex className="hosts-form-inner-flex-container-column">
-                        <DomainNamesList validationResult={validationResult}/>
+                        <DomainNamesList validationResult={validationResult} />
                     </Flex>
                 </Flex>
 
                 <h2 className="hosts-form-section-name">Routing</h2>
                 <p className="hosts-form-section-help-text">
-                    Routes to be configured in the host. The nginx will evaluate them from top to bottom,
-                    executing the first one that matches the source path.
+                    Routes to be configured in the host. The nginx will evaluate them from top to bottom, executing the
+                    first one that matches the source path.
                 </p>
-                <HostRoutes routes={formValues.routes} validationResult={validationResult}/>
+                <HostRoutes routes={formValues.routes} validationResult={validationResult} />
 
                 <h2 className="hosts-form-section-name">Bindings</h2>
                 <p className="hosts-form-section-help-text">
                     Relation of IPs and ports where the host will listen for requests
                 </p>
-                <HostBindings bindings={formValues.bindings} validationResult={validationResult}/>
+                <HostBindings bindings={formValues.bindings} validationResult={validationResult} />
             </Form>
         )
     }
@@ -237,19 +230,16 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     componentDidMount() {
         const copyFrom = queryParams().copyFrom as string | undefined
         if (this.hostId === undefined && copyFrom === undefined) {
-            this.setState({loading: false})
+            this.setState({ loading: false })
             this.updateShellConfig(true)
             return
         }
 
         this.service
             .getById((this.hostId ?? copyFrom)!!)
-            .then(response =>
-                response === undefined ? undefined : HostConverter.responseToFormValues(response)
-            )
+            .then(response => (response === undefined ? undefined : HostConverter.responseToFormValues(response)))
             .then(formValues => {
-                if (formValues === undefined)
-                    this.setState({loading: false, notFound: true})
+                if (formValues === undefined) this.setState({ loading: false, notFound: true })
                 else {
                     if (copyFrom !== undefined)
                         Notification.success(
@@ -257,7 +247,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             "The values from the selected host where successfully copied as a new host",
                         )
 
-                    this.setState({loading: false, formValues})
+                    this.setState({ loading: false, formValues })
                     this.updateShellConfig(true)
                 }
             })
@@ -266,13 +256,11 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     render() {
-        const {loading, notFound} = this.state
+        const { loading, notFound } = this.state
 
-        if (notFound)
-            return <Empty description="Not found" />
+        if (notFound) return <Empty description="Not found" />
 
-        if (loading)
-            return <Preloader loading />
+        if (loading) return <Preloader loading />
 
         return this.renderForm()
     }

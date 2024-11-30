@@ -1,4 +1,4 @@
-import LocalStorageRepository from "../repository/LocalStorageRepository";
+import LocalStorageRepository from "../repository/LocalStorageRepository"
 
 class AuthenticationService {
     private readonly repository: LocalStorageRepository<string>

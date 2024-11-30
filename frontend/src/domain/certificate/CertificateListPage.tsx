@@ -1,18 +1,18 @@
-import React from "react";
-import DataTable, {DataTableColumn} from "../../core/components/datatable/DataTable";
-import {Flex} from "antd";
-import {Link} from "react-router-dom";
-import {DeleteOutlined, EyeOutlined, ReloadOutlined} from "@ant-design/icons";
-import Notification from "../../core/components/notification/Notification";
-import PageResponse from "../../core/pagination/PageResponse";
-import CertificateService from "./CertificateService";
-import {CertificateResponse} from "./model/CertificateResponse";
-import AvailableProviderResponse from "./model/AvailableProviderResponse";
-import Preloader from "../../core/components/preloader/Preloader";
-import TagGroup from "../../core/components/taggroup/TagGroup";
-import RenewCertificateAction from "./actions/RenewCertificateAction";
-import DeleteCertificateAction from "./actions/DeleteCertificateAction";
-import AppShellContext from "../../core/components/shell/AppShellContext";
+import React from "react"
+import DataTable, { DataTableColumn } from "../../core/components/datatable/DataTable"
+import { Flex } from "antd"
+import { Link } from "react-router-dom"
+import { DeleteOutlined, EyeOutlined, ReloadOutlined } from "@ant-design/icons"
+import Notification from "../../core/components/notification/Notification"
+import PageResponse from "../../core/pagination/PageResponse"
+import CertificateService from "./CertificateService"
+import { CertificateResponse } from "./model/CertificateResponse"
+import AvailableProviderResponse from "./model/AvailableProviderResponse"
+import Preloader from "../../core/components/preloader/Preloader"
+import TagGroup from "../../core/components/taggroup/TagGroup"
+import RenewCertificateAction from "./actions/RenewCertificateAction"
+import DeleteCertificateAction from "./actions/DeleteCertificateAction"
+import AppShellContext from "../../core/components/shell/AppShellContext"
 
 interface CertificateListPageState {
     loading: boolean
@@ -32,12 +32,12 @@ export default class CertificateListPage extends React.Component<any, Certificat
         this.table = React.createRef()
         this.state = {
             loading: true,
-            providers: []
+            providers: [],
         }
     }
 
     private translateProviderName(providerId: string): string {
-        const {providers} = this.state
+        const { providers } = this.state
         return providers.find(provider => provider.id === providerId)?.name ?? providerId
     }
 
@@ -46,18 +46,18 @@ export default class CertificateListPage extends React.Component<any, Certificat
             {
                 id: "domainNames",
                 description: "Domain names",
-                renderer: (item) => <TagGroup values={item.domainNames} />,
+                renderer: item => <TagGroup values={item.domainNames} />,
             },
             {
                 id: "provider",
                 description: "Provider",
-                renderer: (item) => this.translateProviderName(item.providerId),
+                renderer: item => this.translateProviderName(item.providerId),
                 width: 250,
             },
             {
                 id: "actions",
                 description: "",
-                renderer: (item) => (
+                renderer: item => (
                     <>
                         <Link to={`/certificates/${item.id}`}>
                             <EyeOutlined className="action-icon" />
@@ -72,21 +72,16 @@ export default class CertificateListPage extends React.Component<any, Certificat
                     </>
                 ),
                 width: 120,
-            }
+            },
         ]
-
     }
 
     private async renewCertificate(certificate: CertificateResponse) {
-        return RenewCertificateAction
-            .execute(certificate.id)
-            .then(() => this.table.current?.refresh())
+        return RenewCertificateAction.execute(certificate.id).then(() => this.table.current?.refresh())
     }
 
     private async deleteCertificate(certificate: CertificateResponse) {
-        return DeleteCertificateAction
-            .execute(certificate.id)
-            .then(() => this.table.current?.refresh())
+        return DeleteCertificateAction.execute(certificate.id).then(() => this.table.current?.refresh())
     }
 
     private fetchData(pageSize: number, pageNumber: number): Promise<PageResponse<CertificateResponse>> {
@@ -96,14 +91,18 @@ export default class CertificateListPage extends React.Component<any, Certificat
     componentDidMount() {
         this.service
             .availableProviders()
-            .then(providers => this.setState({
-                loading: false,
-                providers,
-            }))
-            .catch(() => Notification.error(
-                "Unable to fetch the data",
-                "We're unable to fetch the data at this moment. Please try again later.",
-            ))
+            .then(providers =>
+                this.setState({
+                    loading: false,
+                    providers,
+                }),
+            )
+            .catch(() =>
+                Notification.error(
+                    "Unable to fetch the data",
+                    "We're unable to fetch the data at this moment. Please try again later.",
+                ),
+            )
 
         this.context.updateConfig({
             title: "SSL certificates",
@@ -118,7 +117,7 @@ export default class CertificateListPage extends React.Component<any, Certificat
     }
 
     render() {
-        const {loading} = this.state
+        const { loading } = this.state
         if (loading)
             return (
                 <Flex justify="center" align="center">
@@ -133,6 +132,6 @@ export default class CertificateListPage extends React.Component<any, Certificat
                 dataProvider={(pageSize, pageNumber) => this.fetchData(pageSize, pageNumber)}
                 rowKey={item => item.id}
             />
-        );
+        )
     }
 }

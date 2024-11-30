@@ -1,12 +1,12 @@
-import PageResponse from "../../pagination/PageResponse";
-import React from "react";
-import {ColumnType, TablePaginationConfig} from "antd/es/table";
-import {AlignType} from "rc-table/lib/interface";
-import Preloader from "../preloader/Preloader";
-import {Empty, Pagination, Table} from "antd";
+import PageResponse from "../../pagination/PageResponse"
+import React from "react"
+import { ColumnType, TablePaginationConfig } from "antd/es/table"
+import { AlignType } from "rc-table/lib/interface"
+import Preloader from "../preloader/Preloader"
+import { Empty, Pagination, Table } from "antd"
 import "./DataTable.css"
-import {ExclamationCircleOutlined} from "@ant-design/icons";
-import Notification from "../notification/Notification";
+import { ExclamationCircleOutlined } from "@ant-design/icons"
+import Notification from "../notification/Notification"
 
 const DEFAULT_PAGE_SIZE = 10
 const PAGE_SIZES = [10, 25, 50, 100, 250, 500]
@@ -17,7 +17,7 @@ export interface DataTableColumn<T> {
     renderer: (row: T, index: number) => React.ReactNode
     width?: number
     minWidth?: number
-    align?: AlignType,
+    align?: AlignType
 }
 
 export interface DataTableProps<T> {
@@ -34,7 +34,7 @@ interface DataTableState<T> {
 
 export default class DataTable<T> extends React.Component<DataTableProps<T>, DataTableState<T>> {
     constructor(props: DataTableProps<T>) {
-        super(props);
+        super(props)
         this.state = {
             loading: true,
             data: {
@@ -42,12 +42,12 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
                 pageNumber: 0,
                 totalItems: 0,
                 contents: [],
-            }
+            },
         }
     }
 
     private buildColumnAdapters(): ColumnType<T>[] {
-        const {columns} = this.props
+        const { columns } = this.props
         return columns.map(column => ({
             key: column.id,
             title: column.description,
@@ -59,17 +59,14 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
     }
 
     private changePage(pageSize: number, pageNumber: number) {
-        this.setState(
-            { loading: true,},
-            () => this.fetchData(pageSize, pageNumber),
-        )
+        this.setState({ loading: true }, () => this.fetchData(pageSize, pageNumber))
     }
 
     private fetchData(pageSize: number, pageNumber: number): Promise<void> {
-        const {dataProvider} = this.props
+        const { dataProvider } = this.props
         return dataProvider(pageSize, pageNumber)
             .then(data => this.setState({ loading: false, data }))
-            .catch(error =>{
+            .catch(error => {
                 Notification.error(
                     "Unable to fetch the data",
                     "We're unable to fetch the data at this time. Please try again later.",
@@ -80,7 +77,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
     }
 
     private buildPaginationProps(): TablePaginationConfig {
-        const {data} = this.state
+        const { data } = this.state
 
         return {
             align: "end",
@@ -98,7 +95,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
     }
 
     refresh(): Promise<void> {
-        const {data} = this.state
+        const { data } = this.state
         return this.fetchData(data.pageSize, data.pageNumber)
     }
 
@@ -107,8 +104,8 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
     }
 
     render() {
-        const {loading, data, error} = this.state
-        const {rowKey} = this.props
+        const { loading, data, error } = this.state
+        const { rowKey } = this.props
 
         if (error !== undefined)
             return (
@@ -129,9 +126,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
                     virtual
                     bordered
                 />
-                <Pagination
-                    {...this.buildPaginationProps()}
-                />
+                <Pagination {...this.buildPaginationProps()} />
             </Preloader>
         )
     }

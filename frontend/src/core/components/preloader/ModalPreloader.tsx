@@ -1,7 +1,7 @@
-import {Modal} from "antd";
-import {LoadingOutlined} from "@ant-design/icons";
-import React from "react";
-import "./ModalPreloader.css";
+import { Modal } from "antd"
+import { LoadingOutlined } from "@ant-design/icons"
+import React from "react"
+import "./ModalPreloader.css"
 
 export default class ModalPreloader {
     private timeoutId?: number
@@ -12,22 +12,19 @@ export default class ModalPreloader {
             title,
             content,
             footer: null,
-            icon: <LoadingOutlined className="modal-preloader-spinner" spin  />,
+            icon: <LoadingOutlined className="modal-preloader-spinner" spin />,
         })
         this.timeoutId = undefined
     }
 
     show(title: string, content: string) {
-        if (this.timeoutId !== undefined)
-            window.clearTimeout(this.timeoutId)
+        if (this.timeoutId !== undefined) window.clearTimeout(this.timeoutId)
 
         this.timeoutId = window.setTimeout(() => this.open(title, content), 500)
     }
 
     close() {
-        if (this.timeoutId !== undefined)
-            window.clearTimeout(this.timeoutId)
-        else
-            this.instance?.destroy()
+        if (this.timeoutId !== undefined) window.clearTimeout(this.timeoutId)
+        else this.instance?.destroy()
     }
 }
