@@ -15,7 +15,7 @@ import AppShellContext from "../../core/components/shell/AppShellContext"
 import DeleteHostAction from "./actions/DeleteHostAction"
 
 export default class HostListPage extends React.PureComponent {
-    static contextType = AppShellContext
+    static readonly contextType = AppShellContext
     context!: React.ContextType<typeof AppShellContext>
 
     private readonly service: HostService

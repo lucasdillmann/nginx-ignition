@@ -9,7 +9,7 @@ import AuthenticationService from "../../core/authentication/AuthenticationServi
 import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest"
 
 export default class UserService {
-    private gateway: UserGateway
+    private readonly gateway: UserGateway
 
     constructor() {
         this.gateway = new UserGateway()

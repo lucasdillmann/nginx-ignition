@@ -39,7 +39,7 @@ export interface AppRouterProps {
 }
 
 export default class AppRouter extends React.Component<AppRouterProps, AppRouterState> {
-    static contextType = AppContext
+    static readonly contextType = AppContext
     context!: React.ContextType<typeof AppContext>
 
     constructor(props: AppRouterProps, context: AppContextData) {

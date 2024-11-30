@@ -16,7 +16,7 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
             title: "Error details",
             type: "info",
             width: 1000,
-            content: <pre>{error?.stack || error?.message || typeof error}</pre>,
+            content: <pre>{error?.stack ?? error?.message ?? typeof error}</pre>,
         })
     }
 

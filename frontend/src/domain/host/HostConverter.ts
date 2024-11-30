@@ -4,7 +4,7 @@ import HostRequest, { HostBinding, HostRoute, HostRouteStaticResponse } from "./
 import CertificateService from "../certificate/CertificateService"
 
 class HostConverter {
-    private certificateService: CertificateService
+    private readonly certificateService: CertificateService
 
     constructor() {
         this.certificateService = new CertificateService()

@@ -30,7 +30,7 @@ interface LogsPageState {
 }
 
 export default class LogsPage extends React.Component<any, LogsPageState> {
-    static contextType = AppShellContext
+    static readonly contextType = AppShellContext
     context!: React.ContextType<typeof AppShellContext>
 
     private readonly hostService: HostService
@@ -179,7 +179,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                         options={this.buildAutoRefreshOptions()}
                         value={autoRefreshSeconds}
                         onSelect={value => this.setAutoRefreshSeconds(value)}
-                        onClear={() => this.setAutoRefreshSeconds(undefined)}
+                        onClear={() => this.setAutoRefreshSeconds()}
                         allowClear
                     />
                 </Flex>

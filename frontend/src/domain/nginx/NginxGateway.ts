@@ -3,7 +3,7 @@ import ApiResponse from "../../core/apiclient/ApiResponse"
 import { NginxStatusResponse } from "./model/NginxStatusResponse"
 
 export default class NginxGateway {
-    private client: ApiClient
+    private readonly client: ApiClient
 
     constructor() {
         this.client = new ApiClient("/api/nginx")

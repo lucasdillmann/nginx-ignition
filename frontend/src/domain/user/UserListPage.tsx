@@ -13,7 +13,7 @@ import AppShellContext from "../../core/components/shell/AppShellContext"
 import DeleteUserAction from "./actions/DeleteUserAction"
 
 export default class UserListPage extends React.PureComponent {
-    static contextType = AppShellContext
+    static readonly contextType = AppShellContext
     context!: React.ContextType<typeof AppShellContext>
 
     private readonly service: UserService

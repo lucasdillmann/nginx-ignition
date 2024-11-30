@@ -20,7 +20,7 @@ interface CertificateListPageState {
 }
 
 export default class CertificateListPage extends React.Component<any, CertificateListPageState> {
-    static contextType = AppShellContext
+    static readonly contextType = AppShellContext
     context!: React.ContextType<typeof AppShellContext>
 
     private readonly service: CertificateService

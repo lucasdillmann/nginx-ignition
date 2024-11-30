@@ -25,7 +25,7 @@ interface UserFormState {
 }
 
 export default class UserFormPage extends React.Component<unknown, UserFormState> {
-    static contextType = AppShellContext
+    static readonly contextType = AppShellContext
     context!: React.ContextType<typeof AppShellContext>
 
     private readonly userId?: string

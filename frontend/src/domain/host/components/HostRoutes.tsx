@@ -52,20 +52,18 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         const { name } = field
 
         return (
-            <>
-                <Form.Item
-                    {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-target-uri"
-                    layout="vertical"
-                    name={[name, "targetUri"]}
-                    validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
-                    help={validationResult.getMessage(`routes[${index}].targetUri`)}
-                    label="Destination URL"
-                    required
-                >
-                    <Input />
-                </Form.Item>
-            </>
+            <Form.Item
+                {...FormLayout.ExpandedLabeledItem}
+                className="host-form-route-target-uri"
+                layout="vertical"
+                name={[name, "targetUri"]}
+                validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
+                help={validationResult.getMessage(`routes[${index}].targetUri`)}
+                label="Destination URL"
+                required
+            >
+                <Input />
+            </Form.Item>
         )
     }
 

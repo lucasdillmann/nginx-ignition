@@ -10,6 +10,12 @@ node {
     version = "22.11.0"
 }
 
+sonar {
+    properties {
+        property("sonar.sources", "src")
+    }
+}
+
 tasks {
     val eslint = create<NpxTask>("eslint") {
         dependsOn(npmSetup, npmInstall)

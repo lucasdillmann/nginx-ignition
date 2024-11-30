@@ -11,8 +11,8 @@ class ValidationResultConverter {
         const body = response.body
         if (!Array.isArray(body?.consistencyProblems)) return null
 
-        const details = body.consistencyProblems as Array<ErrorDetails>
-        const errors = new Map<String, Array<String>>()
+        const details = body.consistencyProblems as ErrorDetails[]
+        const errors = new Map<string, string[]>()
         details?.forEach(errorDetails => {
             const messages = errors.get(errorDetails.fieldPath) || []
             messages.push(errorDetails.message)

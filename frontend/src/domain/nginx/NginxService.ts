@@ -4,7 +4,7 @@ import NginxEventDispatcher from "./listener/NginxEventDispatcher"
 import { NginxOperation } from "./listener/NginxEventListener"
 
 export default class NginxService {
-    private gateway: NginxGateway
+    private readonly gateway: NginxGateway
 
     constructor() {
         this.gateway = new NginxGateway()

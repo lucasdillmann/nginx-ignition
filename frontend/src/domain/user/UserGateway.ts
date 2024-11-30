@@ -9,7 +9,7 @@ import PageResponse from "../../core/pagination/PageResponse"
 import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest"
 
 export default class UserGateway {
-    private client: ApiClient
+    private readonly client: ApiClient
 
     constructor() {
         this.client = new ApiClient("/api/users")

@@ -22,7 +22,7 @@ interface CertificateDetailsPageState {
 }
 
 export default class CertificateDetailsPage extends React.Component<unknown, CertificateDetailsPageState> {
-    static contextType = AppShellContext
+    static readonly contextType = AppShellContext
     context!: React.ContextType<typeof AppShellContext>
 
     private readonly certificateId: string

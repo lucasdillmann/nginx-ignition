@@ -16,10 +16,10 @@ interface LoginPageState {
 }
 
 export default class LoginPage extends React.Component<any, LoginPageState> {
-    static contextType = AppContext
+    static readonly contextType = AppContext
     context!: React.ContextType<typeof AppContext>
 
-    private service: UserService
+    private readonly service: UserService
 
     constructor(props: any, context: AppContextData) {
         super(props, context)

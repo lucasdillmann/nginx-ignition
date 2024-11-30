@@ -54,7 +54,7 @@ interface HostFormPageState {
 }
 
 export default class HostFormPage extends React.Component<any, HostFormPageState> {
-    static contextType = AppShellContext
+    static readonly contextType = AppShellContext
     context!: React.ContextType<typeof AppShellContext>
 
     private readonly service: HostService
@@ -135,9 +135,12 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     private handleChange(host: HostFormValues) {
+        const sortedRoutes = host.routes.sort(
+            (left, right) => (left.priority > right.priority ? 1 : -1),
+        )
         const orderedData: HostFormValues = {
             ...host,
-            routes: host.routes.sort((left, right) => (left.priority > right.priority ? 1 : -1)),
+            routes: sortedRoutes,
         }
         this.setState({ formValues: orderedData })
     }

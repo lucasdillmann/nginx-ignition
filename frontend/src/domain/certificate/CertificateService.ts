@@ -37,7 +37,7 @@ export default class CertificateService {
 
     async issue(certificate: IssueCertificateRequest): Promise<IssueCertificateResponse> {
         return this.gateway.issue(certificate).then(response => {
-            if (response.body?.success !== undefined) return response.body as IssueCertificateResponse
+            if (response.body?.success !== undefined) return response.body
             else throw new UnexpectedResponseError(response)
         })
     }

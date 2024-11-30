@@ -28,7 +28,7 @@ interface ShellUserMenuState {
 }
 
 export default class ShellUserMenu extends React.Component<any, ShellUserMenuState> {
-    static contextType = AppContext
+    static readonly contextType = AppContext
     context!: React.ContextType<typeof AppContext>
 
     private readonly formRef: React.RefObject<FormInstance>

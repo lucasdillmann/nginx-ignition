@@ -6,7 +6,7 @@ export default class ApiClient {
     private readonly basePath: string
 
     constructor(basePath?: string) {
-        this.basePath = basePath || ""
+        this.basePath = basePath ?? ""
     }
 
     async get<T>(path?: string, headers?: Header[], queryParams?: { [key: string]: any }): Promise<ApiResponse<T>> {

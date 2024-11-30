@@ -25,7 +25,7 @@ export interface HostBindingsProps {
 }
 
 export default class HostBindings extends React.Component<HostBindingsProps> {
-    private service: CertificateService
+    private readonly service: CertificateService
 
     constructor(props: HostBindingsProps) {
         super(props)

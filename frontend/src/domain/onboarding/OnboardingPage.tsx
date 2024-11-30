@@ -19,10 +19,10 @@ interface OnboardingPageState {
 }
 
 export default class OnboardingPage extends React.Component<any, OnboardingPageState> {
-    static contextType = AppContext
+    static readonly contextType = AppContext
     context!: React.ContextType<typeof AppContext>
 
-    private service: OnboardingService
+    private readonly service: OnboardingService
 
     constructor(props: any, context: AppContextData) {
         super(props, context)

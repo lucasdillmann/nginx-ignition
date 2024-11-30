@@ -82,6 +82,10 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         return <>{actions.map(action => this.renderActionButton(action))}</>
     }
 
+    private handleConfigUpdate(config: ShellConfig) {
+        this.setState({ config })
+    }
+
     shouldComponentUpdate(nextProps: Readonly<AppShellProps>): boolean {
         const { children: previous } = nextProps
         const { children: current } = this.props
@@ -130,7 +134,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                     <Content className="shell-content">
                         <AppShellContext.Provider
                             value={{
-                                updateConfig: (config: ShellConfig) => this.setState({ config }),
+                                updateConfig: config => this.handleConfigUpdate(config),
                             }}
                         >
                             {children}

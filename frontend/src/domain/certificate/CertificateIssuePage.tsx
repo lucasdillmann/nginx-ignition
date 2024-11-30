@@ -25,7 +25,7 @@ interface CertificateIssuePageState {
 }
 
 export default class CertificateIssuePage extends React.Component<unknown, CertificateIssuePageState> {
-    static contextType = AppShellContext
+    static readonly contextType = AppShellContext
     context!: React.ContextType<typeof AppShellContext>
 
     private readonly service: CertificateService
@@ -129,7 +129,7 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
         const provider = availableProviders.find(item => item.id === formValues.providerId)
         return provider?.dynamicFields
             .sort((left, right) => (left.priority > right.priority ? 1 : -1))
-            .map(field => <DynamicInput validationResult={validationResult} formValues={formValues} field={field} />)
+            .map(field => <DynamicInput key={field.id} validationResult={validationResult} formValues={formValues} field={field} />)
     }
 
     private renderForm() {
