@@ -40,7 +40,7 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
         const title = this.props.title ?? "Well, that didn't work"
         const message =
             this.props.message ??
-            "We ran into an error and don't know what to do with it. " + "Please refresh the page and try again."
+            "We ran into an error and don't know what to do with it. Please refresh the page and try again."
 
         return (
             <Flex align="center" justify="center" className="error-page-container">
