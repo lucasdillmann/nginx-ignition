@@ -82,12 +82,6 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         return <>{actions.map(action => this.renderActionButton(action))}</>
     }
 
-    componentDidMount() {
-        AppShellContext.replace({
-            updateConfig: config => this.setState({ config }),
-        })
-    }
-
     shouldComponentUpdate(nextProps: Readonly<AppShellProps>): boolean {
         const { children: previous } = nextProps
         const { children: current } = this.props
@@ -100,6 +94,10 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
     }
 
     render() {
+        AppShellContext.replace({
+            updateConfig: config => this.setState({ config }),
+        })
+
         const { activeRoute, children, userMenu, serverControl } = this.props
         const { config } = this.state
         const activeMenuItemPath = activeRoute.activeMenuItemPath ?? activeRoute.path

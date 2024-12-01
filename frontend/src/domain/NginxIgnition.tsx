@@ -15,13 +15,11 @@ export default class NginxIgnition extends React.PureComponent {
     render() {
         return (
             <ErrorBoundary>
-                <React.StrictMode>
-                    <ConfigProvider>
-                        <App>
-                            <AppContainer />
-                        </App>
-                    </ConfigProvider>
-                </React.StrictMode>
+                <ConfigProvider>
+                    <App>
+                        <AppContainer />
+                    </App>
+                </ConfigProvider>
             </ErrorBoundary>
         )
     }
