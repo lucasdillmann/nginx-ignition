@@ -61,7 +61,8 @@ internal class IntegrationService(
 
     override suspend fun configureIntegration(id: String, enabled: Boolean, parameters: Map<String, Any?>) {
         val adapter = findAdapter(id)
-        validator.validate(adapter.configurationFields, parameters)
+        if (enabled)
+            validator.validate(adapter.configurationFields, parameters)
 
         val configuration = Integration(id, enabled, parameters)
         repository.save(configuration)

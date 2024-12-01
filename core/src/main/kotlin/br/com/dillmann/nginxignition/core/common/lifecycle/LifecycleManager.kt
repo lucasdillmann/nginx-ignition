@@ -1,7 +1,5 @@
-package br.com.dillmann.nginxignition.application.lifecycle
+package br.com.dillmann.nginxignition.core.common.lifecycle
 
-import br.com.dillmann.nginxignition.core.common.lifecycle.ShutdownCommand
-import br.com.dillmann.nginxignition.core.common.lifecycle.StartupCommand
 import br.com.dillmann.nginxignition.core.common.log.logger
 
 class LifecycleManager(
