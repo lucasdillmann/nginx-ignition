@@ -5,7 +5,6 @@ import br.com.dillmann.nginxignition.core.common.dynamicfield.DynamicField
 fun interface GetIntegrationByIdCommand {
     data class Output(
         val id: String,
-        val imageId: String?,
         val name: String,
         val description: String,
         val enabled: Boolean,

@@ -1,12 +1,12 @@
 import React from "react"
 import ValidationResult from "../../core/validation/ValidationResult"
 import CertificateService from "./CertificateService"
-import AvailableProviderResponse, { DynamicFieldType } from "./model/AvailableProviderResponse"
+import AvailableProviderResponse from "./model/AvailableProviderResponse"
 import Preloader from "../../core/components/preloader/Preloader"
 import { Form, Select } from "antd"
 import If from "../../core/components/flowcontrol/If"
 import FormLayout from "../../core/components/form/FormLayout"
-import DynamicInput from "./components/DynamicInput"
+import DynamicInput from "../../core/components/dynamicfield/DynamicInput"
 import { IssueCertificateRequest } from "./model/IssueCertificateRequest"
 import ModalPreloader from "../../core/components/preloader/ModalPreloader"
 import { IssueCertificateResponse } from "./model/IssueCertificateResponse"
@@ -16,6 +16,7 @@ import ValidationResultConverter from "../../core/validation/ValidationResultCon
 import DomainNamesList from "./components/DomainNamesList"
 import { navigateTo } from "../../core/components/router/AppRouter"
 import AppShellContext from "../../core/components/shell/AppShellContext"
+import { DynamicFieldType } from "../../core/dynamicfield/DynamicField"
 
 interface CertificateIssuePageState {
     availableProviders: AvailableProviderResponse[]

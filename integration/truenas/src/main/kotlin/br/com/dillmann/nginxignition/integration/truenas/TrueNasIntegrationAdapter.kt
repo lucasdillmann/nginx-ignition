@@ -8,7 +8,6 @@ import java.net.URI
 
 class TrueNasIntegrationAdapter: IntegrationAdapter {
     override val id = "TRUENAS_SCALE"
-    override val imageId = null // TODO
     override val name = "TrueNAS Scale"
     override val description =
         "TrueNAS allows, alongside many other things, to run your favorite apps under Docker containers. With this " +

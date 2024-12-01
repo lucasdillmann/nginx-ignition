@@ -25,7 +25,6 @@ internal class IntegrationService(
 
             ListIntegrationsCommand.Output(
                 id = it.id,
-                imageId = it.imageId,
                 name = it.name,
                 description = it.description,
                 enabled = settings.enabled,
@@ -38,7 +37,6 @@ internal class IntegrationService(
 
         return GetIntegrationByIdCommand.Output(
             id = id,
-            imageId = adapter.imageId,
             name = adapter.name,
             description = adapter.description,
             enabled = settings.enabled,

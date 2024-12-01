@@ -7,7 +7,6 @@ import kotlinx.serialization.json.JsonObject
 @Serializable
 internal data class IntegrationConfigurationResponse(
     val id: String,
-    val imageId: String?,
     val name: String,
     val description: String,
     val enabled: Boolean,

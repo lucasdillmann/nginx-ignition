@@ -10,7 +10,6 @@ interface IntegrationAdapter {
     )
 
     val id: String
-    val imageId: String?
     val name: String
     val description: String
     val configurationFields: List<DynamicField>

@@ -7,13 +7,14 @@ import CertificateService from "./CertificateService"
 import Notification from "../../core/components/notification/Notification"
 import Preloader from "../../core/components/preloader/Preloader"
 import { Empty } from "antd"
-import AvailableProviderResponse, { DynamicField, DynamicFieldType } from "./model/AvailableProviderResponse"
+import AvailableProviderResponse from "./model/AvailableProviderResponse"
 import { ProDescriptions } from "@ant-design/pro-components"
 import DescriptionLayout from "../../core/components/description/DescriptionLayout"
 import { ProFieldValueType } from "@ant-design/pro-utils/es/typing"
 import If from "../../core/components/flowcontrol/If"
 import "./CertificateDetailsPage.css"
 import AppShellContext from "../../core/components/shell/AppShellContext"
+import DynamicField, { DynamicFieldType } from "../../core/dynamicfield/DynamicField"
 
 interface CertificateDetailsPageState {
     loading: boolean

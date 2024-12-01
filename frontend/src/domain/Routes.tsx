@@ -2,7 +2,7 @@ import LoginPage from "./authentication/LoginPage"
 import HomePage from "./home/HomePage"
 import AppRoute from "../core/components/router/AppRoute"
 import OnboardingPage from "./onboarding/OnboardingPage"
-import { FileProtectOutlined, FileSearchOutlined, HddOutlined, TeamOutlined } from "@ant-design/icons"
+import { FileProtectOutlined, FileSearchOutlined, HddOutlined, TeamOutlined, BlockOutlined } from "@ant-design/icons"
 import HostListPage from "./host/HostListPage"
 import HostFormPage from "./host/HostFormPage"
 import CertificateListPage from "./certificate/CertificateListPage"
@@ -12,6 +12,7 @@ import LogsPage from "./logs/LogsPage"
 import UserListPage from "./user/UserListPage"
 import UserFormPage from "./user/UserFormPage"
 import { UserRole } from "./user/model/UserRole"
+import IntegrationsPage from "./integration/IntegrationsPage"
 
 const Routes: AppRoute[] = [
     {
@@ -75,6 +76,16 @@ const Routes: AppRoute[] = [
         menuItem: {
             description: "Logs",
             icon: <FileSearchOutlined />,
+        },
+    },
+    {
+        path: "/integrations",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <IntegrationsPage />,
+        menuItem: {
+            description: "Integrations",
+            icon: <BlockOutlined />,
         },
     },
     {

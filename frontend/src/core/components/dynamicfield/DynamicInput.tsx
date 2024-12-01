@@ -1,14 +1,13 @@
-import { DynamicField, DynamicFieldType } from "../model/AvailableProviderResponse"
 import React from "react"
 import { Form, Input, Select, Switch, Upload } from "antd"
-import ValidationResult from "../../../core/validation/ValidationResult"
+import ValidationResult from "../../validation/ValidationResult"
 import TextArea from "antd/es/input/TextArea"
 import { PlusOutlined } from "@ant-design/icons"
-import { IssueCertificateRequest } from "../model/IssueCertificateRequest"
 import Password from "antd/es/input/Password"
+import DynamicField, { DynamicFieldType } from "../../dynamicfield/DynamicField"
 
 export interface DynamicFieldProps {
-    formValues: IssueCertificateRequest
+    formValues: Record<string, any>
     validationResult: ValidationResult
     field: DynamicField
 }
