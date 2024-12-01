@@ -2,6 +2,7 @@ package br.com.dillmann.nginxignition.database.integration
 
 import br.com.dillmann.nginxignition.core.integration.Integration
 import br.com.dillmann.nginxignition.database.common.json.toJsonObject
+import br.com.dillmann.nginxignition.database.common.json.toPlainMap
 import br.com.dillmann.nginxignition.database.integration.mapping.IntegrationTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.statements.UpsertStatement
@@ -20,7 +21,7 @@ internal class IntegrationConverter {
             Integration(
                 id = integration[id],
                 enabled = integration[enabled],
-                parameters = integration[parameters].toJsonObject().toMap(),
+                parameters = integration[parameters].toJsonObject().toPlainMap(),
             )
         }
 }

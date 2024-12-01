@@ -4,6 +4,7 @@ import br.com.dillmann.nginxignition.core.certificate.command.*
 import br.com.dillmann.nginxignition.core.certificate.model.AvailableCertificateProvider
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProvider
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateRequest
+import br.com.dillmann.nginxignition.core.common.dynamicfield.DynamicFields
 import br.com.dillmann.nginxignition.core.common.log.logger
 import br.com.dillmann.nginxignition.core.common.pagination.Page
 import br.com.dillmann.nginxignition.core.nginx.NginxService
@@ -109,8 +110,7 @@ internal class CertificateService(
 
     private fun removeSensitiveParameters(certificate: Certificate): Certificate {
         val provider = providers.first { it.id == certificate.providerId }
-        val fieldsToRemove = provider.dynamicFields.filter { it.sensitive }.map { it.id }.toSet()
-        val updatedParameters = certificate.parameters - fieldsToRemove
-        return certificate.copy(parameters = updatedParameters)
+        return certificate
+            .copy(parameters = DynamicFields.removeSensitiveParameters(provider.dynamicFields, certificate.parameters))
     }
 }

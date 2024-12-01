@@ -12,11 +12,9 @@ internal class GetIntegrationConfigurationHandler(
     private val converter: IntegrationConverter,
 ): IdAwareRequestHandler {
     override suspend fun handle(call: ApiCall, id: String) {
-        val payload = getCommand.getIntegrationById(id)?.let(converter::toResponse)
-
-        if (payload == null)
-            call.respond(HttpStatus.NOT_FOUND)
-        else
+        withIntegrationExceptionHandler(call) {
+            val payload = getCommand.getIntegrationById(id).let(converter::toResponse)
             call.respond(HttpStatus.OK, payload)
+        }
     }
 }

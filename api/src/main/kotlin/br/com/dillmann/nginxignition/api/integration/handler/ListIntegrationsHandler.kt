@@ -12,7 +12,9 @@ internal class ListIntegrationsHandler(
     private val converter: IntegrationConverter,
 ): RequestHandler {
     override suspend fun handle(call: ApiCall) {
-        val payload = listCommand.getIntegrations().map(converter::toResponse)
-        call.respond(HttpStatus.OK, payload)
+        withIntegrationExceptionHandler(call) {
+            val payload = listCommand.getIntegrations().map(converter::toResponse)
+            call.respond(HttpStatus.OK, payload)
+        }
     }
 }

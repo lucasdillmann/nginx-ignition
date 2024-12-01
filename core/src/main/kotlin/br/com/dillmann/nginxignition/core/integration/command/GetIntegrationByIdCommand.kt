@@ -13,5 +13,5 @@ fun interface GetIntegrationByIdCommand {
         val parameters: Map<String, Any?>,
     )
 
-    suspend fun getIntegrationById(id: String): Output?
+    suspend fun getIntegrationById(id: String): Output
 }

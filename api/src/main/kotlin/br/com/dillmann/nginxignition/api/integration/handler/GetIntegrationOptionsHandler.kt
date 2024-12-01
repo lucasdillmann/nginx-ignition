@@ -12,14 +12,16 @@ internal class GetIntegrationOptionsHandler(
     private val converter: IntegrationConverter,
 ): PageAwareRequestHandler {
     override suspend fun handle(call: ApiCall, pageNumber: Int, pageSize: Int) {
-        val id = runCatching { call.pathVariables()["id"] }.getOrNull()
-        if (id == null) {
-            call.respond(HttpStatus.BAD_REQUEST)
-            return
-        }
+        withIntegrationExceptionHandler(call) {
+            val id = runCatching { call.pathVariables()["id"] }.getOrNull()
+            if (id == null) {
+                call.respond(HttpStatus.BAD_REQUEST)
+                return@withIntegrationExceptionHandler
+            }
 
-        val page = getOptionsCommand.getIntegrationOptions(id, pageNumber, pageSize)
-        val payload = converter.toResponse(page)
-        call.respond(HttpStatus.OK, payload)
+            val page = getOptionsCommand.getIntegrationOptions(id, pageNumber, pageSize)
+            val payload = converter.toResponse(page)
+            call.respond(HttpStatus.OK, payload)
+        }
     }
 }

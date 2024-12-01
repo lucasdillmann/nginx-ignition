@@ -13,8 +13,10 @@ internal class PutIntegrationConfigurationHandler(
     private val configureCommand: ConfigureIntegrationByIdCommand,
 ): IdAwareRequestHandler {
     override suspend fun handle(call: ApiCall, id: String) {
-        val payload = call.payload<IntegrationConfigurationRequest>()
-        configureCommand.configureIntegration(id, payload.enabled, payload.parameters.toUnwrappedMap())
-        call.respond(HttpStatus.NO_CONTENT, payload)
+        withIntegrationExceptionHandler(call) {
+            val payload = call.payload<IntegrationConfigurationRequest>()
+            configureCommand.configureIntegration(id, payload.enabled, payload.parameters.toUnwrappedMap())
+            call.respond(HttpStatus.NO_CONTENT, payload)
+        }
     }
 }
