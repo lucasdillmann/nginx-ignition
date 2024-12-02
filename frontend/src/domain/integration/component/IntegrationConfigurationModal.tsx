@@ -70,7 +70,14 @@ export default class IntegrationConfigurationModal extends React.Component<
         const { integration, formValues, validationResult } = this.state
         return integration?.configurationFields
             .sort((left, right) => (left.priority > right.priority ? 1 : -1))
-            .map(field => <DynamicInput formValues={formValues} validationResult={validationResult} field={field} />)
+            .map(field => (
+                <DynamicInput
+                    key={field.id}
+                    formValues={formValues}
+                    validationResult={validationResult}
+                    field={field}
+                />
+            ))
     }
 
     private renderForm() {
