@@ -3,6 +3,7 @@ import PageResponse from "../../pagination/PageResponse"
 import { Select } from "antd"
 import { InputStatus } from "antd/es/_util/statusUtils"
 import Notification from "../notification/Notification"
+import { LoadingOutlined } from "@ant-design/icons"
 
 const PAGE_SIZE = 10
 
@@ -97,7 +98,14 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
         const options = data.map(item => this.buildOption(item))
 
         if (!loading) return options
-        else return [...options, { value: "", label: "Loading...", disabled: true }]
+
+        const loadingLabel = (
+            <>
+                <LoadingOutlined style={{ fontSize: 14, marginRight: 5 }} />
+                Loading...
+            </>
+        )
+        return [...options, { value: "", label: loadingLabel, disabled: true }]
     }
 
     private handleScrollEvent(event: React.UIEvent<HTMLDivElement>) {
