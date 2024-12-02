@@ -27,4 +27,7 @@ data class Page<T>(
             totalItems = totalItems,
             contents = contents.map(converter),
         )
+
+    fun <C : Comparable<C>> sortedBy(classifier: (T) -> C): Page<T> =
+        copy(contents = contents.sortedBy(classifier))
 }

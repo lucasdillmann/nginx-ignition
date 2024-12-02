@@ -62,7 +62,6 @@ class TrueNasIntegrationAdapter: IntegrationAdapter {
             .usedPorts
             .filter { it.protocol.equals("tcp", true) }
             .flatMap { buildOptions(app, it) }
-            .sortedBy { it.name }
 
     private fun buildOptions(
         app: TrueNasAppDetailsResponse,

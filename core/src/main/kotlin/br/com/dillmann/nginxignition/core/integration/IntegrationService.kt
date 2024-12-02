@@ -56,6 +56,7 @@ internal class IntegrationService(
         return adapter
             .getAvailableOptions(settings.parameters, pageNumber, pageSize)
             .map { IntegrationOption(it.id, it.name) }
+            .sortedBy { it.name }
     }
 
     override suspend fun getIntegrationOptionById(integrationId: String, optionId: String): IntegrationOption? {
