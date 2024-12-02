@@ -245,7 +245,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
     private removeRoute(index: number, operations: FormListOperation) {
         const { routes } = this.props
         const priority = routes[index].priority
-        routes.filter(route => route.priority > priority).forEach(route => route.priority -= 1)
+        routes.filter(route => route.priority > priority).forEach(route => (route.priority -= 1))
         operations.remove(index)
     }
 
