@@ -242,6 +242,13 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         this.setState({ customSettingsOpenModalIndex: undefined })
     }
 
+    private removeRoute(index: number, operations: FormListOperation) {
+        const { routes } = this.props
+        const priority = routes[index].priority
+        routes.filter(route => route.priority > priority).forEach(route => route.priority -= 1)
+        operations.remove(index)
+    }
+
     private renderRoute(field: FormListFieldData, operations: FormListOperation, index: number) {
         const { validationResult, routes } = this.props
         const { customSettingsOpenModalIndex } = this.state
@@ -338,7 +345,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 />
 
                 <If condition={routes.length > 1}>
-                    <CloseOutlined onClick={() => operations.remove(field.name)} style={ACTION_ICON_STYLE} />
+                    <CloseOutlined onClick={() => this.removeRoute(index, operations)} style={ACTION_ICON_STYLE} />
                 </If>
             </Flex>
         )

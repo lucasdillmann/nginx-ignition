@@ -33,7 +33,7 @@ class TrueNasIntegrationAdapter: IntegrationAdapter {
             getWorkloadPort(parameters, appId, containerPort.toInt())!!.let { (app, port) ->
                 IntegrationAdapter.Option(
                     id = id,
-                    name = "${app.name} (${port.hostPorts.first().hostPort} HTTP)",
+                    name = "${app.name} (port ${port.hostPorts.first().hostPort} HTTP)",
                 )
             }
         }.getOrNull()
@@ -70,7 +70,7 @@ class TrueNasIntegrationAdapter: IntegrationAdapter {
         port.hostPorts.map {
             IntegrationAdapter.Option(
                 id = "${app.id}:${port.containerPort}",
-                name = "${app.name} (${it.hostPort} HTTP)"
+                name = "${app.name} (port ${it.hostPort} HTTP)"
             )
         }
 
