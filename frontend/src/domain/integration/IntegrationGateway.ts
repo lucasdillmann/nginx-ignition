@@ -25,6 +25,13 @@ export default class IntegrationGateway {
         return this.client.get(`/${id}/options`, undefined, { pageSize, pageNumber })
     }
 
+    async getIntegrationOptionById(
+        integrationId: string,
+        optionId: string,
+    ): Promise<ApiResponse<IntegrationOptionResponse>> {
+        return this.client.get(`/${integrationId}/options/${optionId}`)
+    }
+
     async getIntegrationConfiguration(id: string): Promise<ApiResponse<IntegrationConfigurationResponse>> {
         return this.client.get(`/${id}/configuration`)
     }

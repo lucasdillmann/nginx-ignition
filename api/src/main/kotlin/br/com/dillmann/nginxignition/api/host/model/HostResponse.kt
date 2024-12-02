@@ -22,6 +22,13 @@ internal data class HostResponse(
         val targetUri: String?,
         val customSettings: String?,
         val response: StaticResponse?,
+        val integration: IntegrationConfig?,
+    )
+
+    @Serializable
+    data class IntegrationConfig(
+        val integrationId: String,
+        val optionId: String,
     )
 
     @Serializable

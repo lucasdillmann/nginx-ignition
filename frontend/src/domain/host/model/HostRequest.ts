@@ -7,6 +7,7 @@ export enum HostRouteType {
     PROXY = "PROXY",
     REDIRECT = "REDIRECT",
     STATIC_RESPONSE = "STATIC_RESPONSE",
+    INTEGRATION = "INTEGRATION",
 }
 
 export interface HostFeatureSet {
@@ -35,6 +36,12 @@ export interface HostRoute {
     targetUri?: string
     customSettings?: string
     response?: HostRouteStaticResponse
+    integration?: HostRouteIntegration
+}
+
+export interface HostRouteIntegration {
+    integrationId: string
+    optionId: string
 }
 
 export default interface HostRequest {

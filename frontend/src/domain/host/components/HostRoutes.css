@@ -23,6 +23,11 @@
 }
 
 .host-form-route-target-uri,
-.host-form-route-response-payload {
+.host-form-route-response-payload,
+.host-form-route-integration-option {
     flex-grow: 1;
+}
+
+.host-form-route-integration-app {
+    min-width: 200px;
 }

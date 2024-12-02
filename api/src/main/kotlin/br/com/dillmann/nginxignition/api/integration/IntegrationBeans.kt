@@ -1,6 +1,7 @@
 package br.com.dillmann.nginxignition.api.integration
 
 import br.com.dillmann.nginxignition.api.common.routing.RouteProvider
+import br.com.dillmann.nginxignition.api.integration.handler.*
 import br.com.dillmann.nginxignition.api.integration.handler.GetIntegrationConfigurationHandler
 import br.com.dillmann.nginxignition.api.integration.handler.GetIntegrationOptionsHandler
 import br.com.dillmann.nginxignition.api.integration.handler.ListIntegrationsHandler
@@ -15,5 +16,6 @@ internal fun Module.integrationBeans() {
     single { ListIntegrationsHandler(get(), get()) }
     single { PutIntegrationConfigurationHandler(get()) }
     single { GetIntegrationOptionsHandler(get(), get()) }
-    single { IntegrationRoutes(get(), get(), get(), get()) } bind RouteProvider::class
+    single { GetIntegrationOptionByIdHandler(get(), get()) }
+    single { IntegrationRoutes(get(), get(), get(), get(), get()) } bind RouteProvider::class
 }

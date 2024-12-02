@@ -7,8 +7,8 @@ import br.com.dillmann.nginxignition.api.integration.model.IntegrationOptionResp
 import br.com.dillmann.nginxignition.api.integration.model.IntegrationResponse
 import br.com.dillmann.nginxignition.core.common.pagination.Page
 import br.com.dillmann.nginxignition.core.integration.command.GetIntegrationByIdCommand
-import br.com.dillmann.nginxignition.core.integration.command.ListIntegrationOptionsCommand
 import br.com.dillmann.nginxignition.core.integration.command.ListIntegrationsCommand
+import br.com.dillmann.nginxignition.core.integration.model.IntegrationOption
 import kotlinx.serialization.json.JsonObject
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -19,7 +19,9 @@ import org.mapstruct.ReportingPolicy
 internal abstract class IntegrationConverter {
     abstract fun toResponse(input: ListIntegrationsCommand.Output): IntegrationResponse
 
-    abstract fun toResponse(input: Page<ListIntegrationOptionsCommand.Output>): PageResponse<IntegrationOptionResponse>
+    abstract fun toResponse(input: Page<IntegrationOption>): PageResponse<IntegrationOptionResponse>
+
+    abstract fun toResponse(input: IntegrationOption): IntegrationOptionResponse
 
     @Mapping(source = "parameters", target = "parameters", qualifiedByName = ["toResponseParameters"])
     abstract fun toResponse(input: GetIntegrationByIdCommand.Output): IntegrationConfigurationResponse

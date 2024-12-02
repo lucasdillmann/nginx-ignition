@@ -1,6 +1,6 @@
 import IntegrationGateway from "./IntegrationGateway"
 import PageResponse from "../../core/pagination/PageResponse"
-import { requireSuccessPayload, requireSuccessResponse } from "../../core/apiclient/ApiResponse"
+import { requireNullablePayload, requireSuccessPayload, requireSuccessResponse } from "../../core/apiclient/ApiResponse"
 import { IntegrationResponse } from "./model/IntegrationResponse"
 import { IntegrationConfigurationResponse } from "./model/IntegrationConfigurationResponse"
 import { IntegrationConfigurationRequest } from "./model/IntegrationConfigurationRequest"
@@ -34,5 +34,9 @@ export default class IntegrationService {
         pageNumber?: number,
     ): Promise<PageResponse<IntegrationOptionResponse>> {
         return this.gateway.getIntegrationOptions(id, pageSize, pageNumber).then(requireSuccessPayload)
+    }
+
+    async getOptionById(integrationId: string, optionId: string): Promise<IntegrationOptionResponse | undefined> {
+        return this.gateway.getIntegrationOptionById(integrationId, optionId).then(requireNullablePayload)
     }
 }

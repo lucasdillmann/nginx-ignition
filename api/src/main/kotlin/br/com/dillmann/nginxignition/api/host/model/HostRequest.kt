@@ -22,6 +22,13 @@ internal data class HostRequest(
         val customSettings: String? = null,
         val redirectCode: Int? = null,
         val response: StaticResponse? = null,
+        val integration: IntegrationConfig? = null,
+    )
+
+    @Serializable
+    data class IntegrationConfig(
+        val integrationId: String,
+        val optionId: String,
     )
 
     @Serializable

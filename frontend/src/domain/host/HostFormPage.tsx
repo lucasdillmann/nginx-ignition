@@ -19,6 +19,8 @@ import "./HostFormPage.css"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
 import HostFormValues from "./model/HostFormValues"
 import HostConverter from "./HostConverter"
+import { IntegrationResponse } from "../integration/model/IntegrationResponse"
+import IntegrationService from "../integration/IntegrationService"
 
 const DEFAULT_HOST: HostFormValues = {
     enabled: true,
@@ -49,12 +51,14 @@ const DEFAULT_HOST: HostFormValues = {
 interface HostFormPageState {
     formValues: HostFormValues
     validationResult: ValidationResult
+    integrations: IntegrationResponse[]
     loading: boolean
     notFound: boolean
 }
 
 export default class HostFormPage extends React.Component<any, HostFormPageState> {
-    private readonly service: HostService
+    private readonly hostService: HostService
+    private readonly integrationService: IntegrationService
     private readonly hostId?: string
     private readonly saveModal: ModalPreloader
 
@@ -63,13 +67,15 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
         const hostId = routeParams().id
         this.hostId = hostId === "new" ? undefined : hostId
-        this.service = new HostService()
+        this.hostService = new HostService()
+        this.integrationService = new IntegrationService()
         this.saveModal = new ModalPreloader()
         this.state = {
             validationResult: new ValidationResult(),
             loading: true,
             notFound: false,
             formValues: DEFAULT_HOST,
+            integrations: [],
         }
     }
 
@@ -84,7 +90,9 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         this.saveModal.show("Hang on tight", "We're saving the host")
 
         const action =
-            this.hostId === undefined ? this.service.create(payload) : this.service.updateById(this.hostId, payload)
+            this.hostId === undefined
+                ? this.hostService.create(payload)
+                : this.hostService.updateById(this.hostId, payload)
 
         action
             .then(() => this.handleSuccess())
@@ -141,7 +149,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     private renderForm() {
-        const { validationResult, formValues } = this.state
+        const { validationResult, formValues, integrations } = this.state
 
         return (
             <Form<HostFormValues>
@@ -214,7 +222,11 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                     Routes to be configured in the host. The nginx will evaluate them from top to bottom, executing the
                     first one that matches the source path.
                 </p>
-                <HostRoutes routes={formValues.routes} validationResult={validationResult} />
+                <HostRoutes
+                    routes={formValues.routes}
+                    validationResult={validationResult}
+                    integrations={integrations}
+                />
 
                 <h2 className="hosts-form-section-name">Bindings</h2>
                 <p className="hosts-form-section-help-text">
@@ -233,22 +245,25 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
             return
         }
 
-        this.service
+        const formValues = this.hostService
             .getById((this.hostId ?? copyFrom)!!)
             .then(response => (response === undefined ? undefined : HostConverter.responseToFormValues(response)))
-            .then(formValues => {
-                if (formValues === undefined) this.setState({ loading: false, notFound: true })
-                else {
-                    if (copyFrom !== undefined)
-                        Notification.success(
-                            "Host values copied",
-                            "The values from the selected host where successfully copied as a new host",
-                        )
 
-                    this.setState({ loading: false, formValues })
-                    this.updateShellConfig(true)
-                }
-            })
+        const integrations = this.integrationService.getAll(true)
+
+        Promise.all([formValues, integrations]).then(([formValues, integrations]) => {
+            if (formValues === undefined) this.setState({ loading: false, notFound: true })
+            else {
+                if (copyFrom !== undefined)
+                    Notification.success(
+                        "Host values copied",
+                        "The values from the selected host where successfully copied as a new host",
+                    )
+
+                this.setState({ loading: false, formValues, integrations })
+                this.updateShellConfig(true)
+            }
+        })
 
         this.updateShellConfig(false)
     }

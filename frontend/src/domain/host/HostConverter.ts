@@ -1,13 +1,21 @@
 import HostResponse from "./model/HostResponse"
-import HostFormValues, { HostFormBinding, HostFormRoute, HostFormStaticResponse } from "./model/HostFormValues"
-import HostRequest, { HostBinding, HostRoute, HostRouteStaticResponse } from "./model/HostRequest"
+import HostFormValues, {
+    HostFormBinding,
+    HostFormRoute,
+    HostFormRouteIntegration,
+    HostFormStaticResponse,
+} from "./model/HostFormValues"
+import HostRequest, { HostBinding, HostRoute, HostRouteIntegration, HostRouteStaticResponse } from "./model/HostRequest"
 import CertificateService from "../certificate/CertificateService"
+import IntegrationService from "../integration/IntegrationService"
 
 class HostConverter {
     private readonly certificateService: CertificateService
+    private readonly integrationService: IntegrationService
 
     constructor() {
         this.certificateService = new CertificateService()
+        this.integrationService = new IntegrationService()
     }
 
     private notNull(value?: any) {
@@ -30,12 +38,26 @@ class HostConverter {
         }
     }
 
-    private routeToFormValues(route: HostRoute): HostFormRoute {
+    private async integrationToFormValues(integration: HostRouteIntegration): Promise<HostFormRouteIntegration> {
+        const { integrationId, optionId } = integration
+        const option = await this.integrationService.getOptionById(integrationId, optionId)
+
+        return {
+            integrationId,
+            option: option!!,
+        }
+    }
+
+    private async routeToFormValues(route: HostRoute): Promise<HostFormRoute> {
         const response = this.notNull(route.response) ? this.staticResponseToFormValues(route.response!!) : undefined
+        const integration = this.notNull(route.integration)
+            ? await this.integrationToFormValues(route.integration!!)
+            : undefined
 
         return {
             ...route,
             response,
+            integration,
         }
     }
 
@@ -75,9 +97,19 @@ class HostConverter {
         }
     }
 
+    private formValuesToIntegration(integration: HostFormRouteIntegration): HostRouteIntegration {
+        return {
+            integrationId: integration.integrationId,
+            optionId: integration.option.id,
+        }
+    }
+
     private formValuesToRoute(route: HostFormRoute): HostRoute {
         const { priority, type, customSettings, targetUri, sourcePath } = route
         const response = this.notNull(route.response) ? this.formValuesToStaticResponse(route.response!!) : undefined
+        const integration = this.notNull(route.integration)
+            ? this.formValuesToIntegration(route.integration!!)
+            : undefined
 
         return {
             priority,
@@ -86,6 +118,7 @@ class HostConverter {
             targetUri,
             sourcePath,
             response,
+            integration,
         }
     }
 
@@ -108,10 +141,10 @@ class HostConverter {
         return {
             enabled,
             domainNames,
-            routes,
             bindings,
             featureSet,
             defaultServer,
+            routes: await Promise.all(routes),
         }
     }
 

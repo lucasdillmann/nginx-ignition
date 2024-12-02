@@ -8,6 +8,11 @@ import { HostRouteType } from "../model/HostRequest"
 import FormLayout from "../../../core/components/form/FormLayout"
 import "./HostRoutes.css"
 import TextArea from "antd/es/input/TextArea"
+import { IntegrationResponse } from "../../integration/model/IntegrationResponse"
+import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
+import { IntegrationOptionResponse } from "../../integration/model/IntegrationOptionResponse"
+import PageResponse, { emptyPageResponse } from "../../../core/pagination/PageResponse"
+import IntegrationService from "../../integration/IntegrationService"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -35,6 +40,7 @@ const DEFAULT_VALUES: HostFormRoute = {
 export interface HostRoutesProps {
     routes: HostFormRoute[]
     validationResult: ValidationResult
+    integrations: IntegrationResponse[]
 }
 
 interface HostRoutesState {
@@ -42,8 +48,11 @@ interface HostRoutesState {
 }
 
 export default class HostRoutes extends React.Component<HostRoutesProps, HostRoutesState> {
+    private readonly integrationService: IntegrationService
+
     constructor(props: HostRoutesProps) {
         super(props)
+        this.integrationService = new IntegrationService()
         this.state = {}
     }
 
@@ -96,6 +105,62 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     required
                 >
                     <Input />
+                </Form.Item>
+            </>
+        )
+    }
+
+    private async fetchIntegrationOptions(
+        pageSize: number,
+        pageNumber: number,
+        integrationId?: string,
+    ): Promise<PageResponse<IntegrationOptionResponse>> {
+        if (integrationId === undefined) return emptyPageResponse<IntegrationOptionResponse>()
+
+        return this.integrationService.getOptions(integrationId!!, pageSize, pageNumber)
+    }
+
+    private renderIntegrationRoute(field: FormListFieldData, index: number): React.ReactNode {
+        const { validationResult, integrations, routes } = this.props
+        const { name } = field
+        const integrationOptions = integrations.map(({ id, name }) => ({
+            label: name,
+            value: id,
+        }))
+
+        const currentIntegrationId = routes[index].integration?.integrationId
+        return (
+            <>
+                <Form.Item
+                    {...FormLayout.ExpandedLabeledItem}
+                    className="host-form-route-integration-app"
+                    layout="vertical"
+                    name={[name, "integration", "integrationId"]}
+                    validateStatus={validationResult.getStatus(`routes[${index}].integration.integrationId`)}
+                    help={validationResult.getMessage(`routes[${index}].integration.integrationId`)}
+                    label="Integration"
+                    required
+                >
+                    <Select options={integrationOptions} />
+                </Form.Item>
+                <Form.Item
+                    {...FormLayout.ExpandedLabeledItem}
+                    className="host-form-route-integration-option"
+                    layout="vertical"
+                    name={[name, "integration", "option"]}
+                    validateStatus={validationResult.getStatus(`routes[${index}].integration.optionId`)}
+                    help={validationResult.getMessage(`routes[${index}].integration.optionId`)}
+                    label="Option / App"
+                    required
+                >
+                    <PaginatedSelect<IntegrationOptionResponse>
+                        disabled={currentIntegrationId === undefined}
+                        itemKey={item => item.id}
+                        itemDescription={item => item.name}
+                        pageProvider={(pageSize, pageNumber) =>
+                            this.fetchIntegrationOptions(pageSize, pageNumber, currentIntegrationId)
+                        }
+                    />
                 </Form.Item>
             </>
         )
@@ -196,6 +261,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     required
                 >
                     <Select>
+                        <Select.Option value={HostRouteType.INTEGRATION}>Integration</Select.Option>
                         <Select.Option value={HostRouteType.PROXY}>Proxy</Select.Option>
                         <Select.Option value={HostRouteType.REDIRECT}>Redirect</Select.Option>
                         <Select.Option value={HostRouteType.STATIC_RESPONSE}>Static response</Select.Option>
@@ -214,6 +280,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     <Input />
                 </Form.Item>
 
+                <If condition={type === HostRouteType.INTEGRATION}>{this.renderIntegrationRoute(field, index)}</If>
                 <If condition={type === HostRouteType.PROXY}>{this.renderProxyRoute(field, index)}</If>
                 <If condition={type === HostRouteType.REDIRECT}>{this.renderRedirectRoute(field, index)}</If>
                 <If condition={type === HostRouteType.STATIC_RESPONSE}>
