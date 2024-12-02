@@ -17,6 +17,7 @@ Some of the available features include:
 - SSL certificates (Let's Encrypt, self-signed or bring your custom one) with automatic renew (when applicable)
 - Server and virtual hosts access and error logs
 - Multiple users with role-based access control (RBAC)
+- Native integration with TrueNAS Scale, allowing to easily configure to proxy to an app hosted in your NAS
 
 ## Getting started
 
