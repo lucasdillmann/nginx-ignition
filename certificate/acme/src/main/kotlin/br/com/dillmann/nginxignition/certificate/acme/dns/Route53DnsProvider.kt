@@ -87,17 +87,19 @@ internal class Route53DnsProvider: DnsProvider {
         hostedZoneId: String,
         records: List<DnsProvider.ChallengeRecord>,
     ): String {
-        val changes = records.map { (domainName, token) ->
-            val record = ResourceRecord.builder().value("\"$token\"").build()
-            val recordSet = ResourceRecordSet
-                .builder()
-                .name(domainName)
-                .type(RRType.TXT)
-                .resourceRecords(record)
-                .ttl(RECORD_TIME_TO_LIVE_SECONDS)
-                .build()
-            Change.builder().action(ChangeAction.UPSERT).resourceRecordSet(recordSet).build()
-        }
+        val changes = records
+            .groupBy { it.domainName }
+            .map { (domainName, tokens) ->
+                val resourceRecords = tokens.map { (_, token) -> ResourceRecord.builder().value("\"$token\"").build() }
+                val recordSet = ResourceRecordSet
+                    .builder()
+                    .name(domainName)
+                    .type(RRType.TXT)
+                    .resourceRecords(resourceRecords)
+                    .ttl(RECORD_TIME_TO_LIVE_SECONDS)
+                    .build()
+                Change.builder().action(ChangeAction.UPSERT).resourceRecordSet(recordSet).build()
+            }
 
         val batch = ChangeBatch.builder().changes(changes).build()
         return client
