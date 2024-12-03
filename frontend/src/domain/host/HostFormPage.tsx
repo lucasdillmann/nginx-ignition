@@ -1,6 +1,6 @@
 import React from "react"
 import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
-import { Empty, Flex, Form, Switch } from "antd"
+import { Empty, Flex, Form, FormInstance, Switch } from "antd"
 import FormLayout from "../../core/components/form/FormLayout"
 import DomainNamesList from "../certificate/components/DomainNamesList"
 import { navigateTo, queryParams, routeParams } from "../../core/components/router/AppRouter"
@@ -61,6 +61,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     private readonly integrationService: IntegrationService
     private readonly hostId?: string
     private readonly saveModal: ModalPreloader
+    private readonly formRef: React.RefObject<FormInstance>
 
     constructor(props: any) {
         super(props)
@@ -70,6 +71,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         this.hostService = new HostService()
         this.integrationService = new IntegrationService()
         this.saveModal = new ModalPreloader()
+        this.formRef = React.createRef()
         this.state = {
             validationResult: new ValidationResult(),
             loading: true,
@@ -148,12 +150,34 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         this.setState({ formValues: orderedData })
     }
 
+    private removeRoute(index: number) {
+        const { formValues } = this.state
+        const { routes } = formValues
+
+        let priority = 0
+        const updatedValues = routes
+            .filter((_, itemIndex) => itemIndex !== index)
+            .map(route => ({
+                ...route,
+                priority: priority++,
+            }))
+
+        this.formRef.current?.setFieldValue("routes", updatedValues)
+        this.setState({
+            formValues: {
+                ...formValues,
+                routes: updatedValues,
+            }
+        })
+    }
+
     private renderForm() {
         const { validationResult, formValues, integrations } = this.state
 
         return (
             <Form<HostFormValues>
                 {...FormLayout.FormDefaults}
+                ref={this.formRef}
                 onValuesChange={(_, formValues) => this.handleChange(formValues)}
                 initialValues={formValues}
             >
@@ -226,6 +250,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                     routes={formValues.routes}
                     validationResult={validationResult}
                     integrations={integrations}
+                    onRouteRemove={index => this.removeRoute(index)}
                 />
 
                 <h2 className="hosts-form-section-name">Bindings</h2>

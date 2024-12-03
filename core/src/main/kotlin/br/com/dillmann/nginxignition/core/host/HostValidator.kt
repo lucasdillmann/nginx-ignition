@@ -90,12 +90,21 @@ internal class HostValidator(
                 addError("routes", "Priority $priority is duplicated in two or more routes")
             }
 
+        val distinctPaths = mutableSetOf<String>()
         host.routes.forEachIndexed { index, route ->
-            validateRoute(route, index, addError)
+            validateRoute(route, index, addError, distinctPaths)
         }
     }
 
-    private fun validateRoute(route: Host.Route, index: Int, addError: ErrorCreator) {
+    private fun validateRoute(
+        route: Host.Route,
+        index: Int,
+        addError: ErrorCreator,
+        distinctPaths: MutableSet<String>,
+    ) {
+        if (!distinctPaths.add(route.sourcePath))
+            addError("routes[$index].sourcePath", "Source path was already used in another route")
+
         when (route.type) {
             Host.RouteType.PROXY -> validateProxyRoute(route, index, addError)
             Host.RouteType.REDIRECT -> validateRedirectRoute(route, index, addError)

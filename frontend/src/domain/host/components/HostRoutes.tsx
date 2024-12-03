@@ -41,6 +41,7 @@ export interface HostRoutesProps {
     routes: HostFormRoute[]
     validationResult: ValidationResult
     integrations: IntegrationResponse[]
+    onRouteRemove: ((index: number) => void)
 }
 
 interface HostRoutesState {
@@ -242,11 +243,9 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         this.setState({ customSettingsOpenModalIndex: undefined })
     }
 
-    private removeRoute(index: number, operations: FormListOperation) {
-        const { routes } = this.props
-        const priority = routes[index].priority
-        routes.filter(route => route.priority > priority).forEach(route => (route.priority -= 1))
-        operations.remove(index)
+    private removeRoute(index: number) {
+        const { onRouteRemove } = this.props
+        onRouteRemove(index)
     }
 
     private renderRoute(field: FormListFieldData, operations: FormListOperation, index: number) {
@@ -345,7 +344,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 />
 
                 <If condition={routes.length > 1}>
-                    <CloseOutlined onClick={() => this.removeRoute(index, operations)} style={ACTION_ICON_STYLE} />
+                    <CloseOutlined onClick={() => this.removeRoute(index)} style={ACTION_ICON_STYLE} />
                 </If>
             </Flex>
         )

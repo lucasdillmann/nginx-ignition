@@ -101,7 +101,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
 
         const loadingLabel = (
             <>
-                <LoadingOutlined style={{ fontSize: 14, marginRight: 5 }} />
+                <LoadingOutlined style={{ fontSize: 14, marginRight: 8 }} />
                 Loading...
             </>
         )
