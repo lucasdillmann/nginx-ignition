@@ -22,9 +22,12 @@ internal class TrueNasApiClient(
         .build()
 
     fun getAvailableApps(): List<TrueNasAppDetailsResponse> =
-        executeGetRequest("app") {
+        get("app") {
             it.body?.string()?.let(jsonParser::decodeFromString) ?: emptyList()
         }
+
+    private fun <T> get(endpoint: String, handler: (Response) -> T): T =
+        TrueNasApiCache.get(endpoint) { executeGetRequest(endpoint, handler) }
 
     private fun <T> executeGetRequest(endpoint: String, handler: (Response) -> T): T {
         val request = Request.Builder().url("$baseUrl/api/v2.0/$endpoint").get().build()

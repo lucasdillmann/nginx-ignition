@@ -34,3 +34,7 @@ nginx-ignition:
     auto-renew-interval-minutes: 60
     lets-encrypt:
       production: true
+
+  integration:
+    truenas:
+      api-cache-timeout-seconds: 15

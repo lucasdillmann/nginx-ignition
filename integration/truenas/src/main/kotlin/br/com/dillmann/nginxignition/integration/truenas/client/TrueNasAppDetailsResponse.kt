@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TrueNasAppDetailsResponse(
+internal data class TrueNasAppDetailsResponse(
     val id: String,
     val name: String,
     @SerialName("active_workloads")
