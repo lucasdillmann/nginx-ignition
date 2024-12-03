@@ -12,7 +12,7 @@ internal object TrueNasApiCache {
         configProvider.get("nginx-ignition.integration.truenas.api-cache-timeout-seconds").toLong()
     private val delegate = CacheBuilder
         .newBuilder()
-        .expireAfterAccess(cacheTimeoutSeconds, TimeUnit.SECONDS)
+        .expireAfterWrite(cacheTimeoutSeconds, TimeUnit.SECONDS)
         .build<String, Any>()
 
     @Suppress("UNCHECKED_CAST")
