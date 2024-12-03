@@ -167,7 +167,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
             formValues: {
                 ...formValues,
                 routes: updatedValues,
-            }
+            },
         })
     }
 

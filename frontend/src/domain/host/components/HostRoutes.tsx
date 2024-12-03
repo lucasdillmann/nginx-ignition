@@ -41,7 +41,7 @@ export interface HostRoutesProps {
     routes: HostFormRoute[]
     validationResult: ValidationResult
     integrations: IntegrationResponse[]
-    onRouteRemove: ((index: number) => void)
+    onRouteRemove: (index: number) => void
 }
 
 interface HostRoutesState {
