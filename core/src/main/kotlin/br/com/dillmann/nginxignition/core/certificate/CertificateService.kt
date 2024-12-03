@@ -7,6 +7,7 @@ import br.com.dillmann.nginxignition.core.certificate.provider.CertificateReques
 import br.com.dillmann.nginxignition.core.common.dynamicfield.DynamicFields
 import br.com.dillmann.nginxignition.core.common.log.logger
 import br.com.dillmann.nginxignition.core.common.pagination.Page
+import br.com.dillmann.nginxignition.core.host.HostRepository
 import br.com.dillmann.nginxignition.core.nginx.NginxService
 import java.util.*
 
@@ -15,12 +16,24 @@ internal class CertificateService(
     private val validator: CertificateValidator,
     private val providers: List<CertificateProvider>,
     private val nginxService: NginxService,
+    private val hostRepository: HostRepository,
 ) : DeleteCertificateCommand, GetCertificateCommand, IssueCertificateCommand,
     ListCertificateCommand, RenewCertificateCommand, GetAvailableProvidersCommand {
     private val logger = logger<CertificateService>()
 
-    override suspend fun deleteById(id: UUID) {
+    override suspend fun deleteById(id: UUID): DeleteCertificateCommand.Output {
+        if (hostRepository.existsByCertificateId(id)) {
+            return DeleteCertificateCommand.Output(
+                deleted = false,
+                reason = "Certificate is being used by at least one host. Please update them and try again.",
+            )
+        }
+
         repository.deleteById(id)
+        return DeleteCertificateCommand.Output(
+            deleted = true,
+            reason = "Certificate deleted successfully",
+        )
     }
 
     override suspend fun getById(id: UUID): Certificate? =

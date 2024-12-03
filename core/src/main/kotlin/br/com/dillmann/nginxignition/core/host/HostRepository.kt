@@ -11,4 +11,5 @@ interface HostRepository {
     suspend fun findAllEnabled(): List<Host>
     suspend fun findDefault(): Host?
     suspend fun existsById(id: UUID): Boolean
+    suspend fun existsByCertificateId(certificateId: UUID): Boolean
 }

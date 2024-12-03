@@ -8,7 +8,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.binds
 
 internal fun Module.certificateBeans() {
-    single { CertificateService(get(), get(), getAll(), get()) } binds arrayOf(
+    single { CertificateService(get(), get(), getAll(), get(), get()) } binds arrayOf(
         DeleteCertificateCommand::class,
         GetCertificateCommand::class,
         IssueCertificateCommand::class,

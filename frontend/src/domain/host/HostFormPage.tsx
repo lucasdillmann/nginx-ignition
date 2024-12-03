@@ -264,17 +264,19 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
     componentDidMount() {
         const copyFrom = queryParams().copyFrom as string | undefined
+        const integrations = this.integrationService.getAll(true)
+
         if (this.hostId === undefined && copyFrom === undefined) {
-            this.setState({ loading: false })
-            this.updateShellConfig(true)
+            integrations.then(response => {
+                this.setState({ loading: false, integrations: response })
+                this.updateShellConfig(true)
+            })
             return
         }
 
         const formValues = this.hostService
             .getById((this.hostId ?? copyFrom)!!)
             .then(response => (response === undefined ? undefined : HostConverter.responseToFormValues(response)))
-
-        const integrations = this.integrationService.getAll(true)
 
         Promise.all([formValues, integrations]).then(([formValues, integrations]) => {
             if (formValues === undefined) this.setState({ loading: false, notFound: true })
