@@ -19,6 +19,7 @@ export default class Preloader extends React.PureComponent<PreloaderProps, Prelo
         this.state = {
             loading: false,
         }
+        this.setLoadingStateDelayed(props.loading)
     }
 
     private setLoadingStateDelayed(loading: boolean) {
