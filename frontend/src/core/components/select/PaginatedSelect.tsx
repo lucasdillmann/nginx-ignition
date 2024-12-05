@@ -35,6 +35,7 @@ export interface PaginatedSelectProps<T> {
     allowEmpty?: boolean
     status?: InputStatus
     value?: T
+    autoFocus?: boolean
 }
 
 export default class PaginatedSelect<T> extends React.Component<PaginatedSelectProps<T>, PaginatedSelectState<T>> {
@@ -111,7 +112,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
         return [...options, { value: "", label: loadingLabel, disabled: true }]
     }
 
-    private handleSearch = debounce((searchTerms?: string) => {
+    private readonly handleSearch = debounce((searchTerms?: string) => {
         this.setState(
             {
                 nextPageNumber: 0,
@@ -135,7 +136,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
     }
 
     render() {
-        const { allowEmpty, disabled, status, value, onChange, placeholder, disableSearch } = this.props
+        const { allowEmpty, disabled, status, value, onChange, placeholder, disableSearch, autoFocus } = this.props
         return (
             <Select<SelectOption<T>>
                 showSearch={disableSearch !== true}
@@ -151,6 +152,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
                 onDropdownVisibleChange={open => this.handleDropdownVisibilityChange(open)}
                 onSearch={searchTerms => this.handleSearch(searchTerms)}
                 filterOption={false}
+                autoFocus={autoFocus}
             />
         )
     }

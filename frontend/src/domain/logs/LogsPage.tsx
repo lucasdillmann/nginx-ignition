@@ -41,7 +41,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         this.nginxService = new NginxService()
         this.contentsRef = React.createRef()
         this.state = {
-            hostMode: false,
+            hostMode: true,
             logType: "access",
             lineCount: 50,
             loading: true,
@@ -68,7 +68,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
 
         AppShellContext.get().updateConfig({
             title: "Logs",
-            subtitle: "nginx's logs for the main process or each virtual host",
+            subtitle: "nginx's logs for the main process or virtual hosts",
             actions: [
                 {
                     description: "Refresh",
@@ -165,8 +165,8 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                     <p>Category</p>
                     <Segmented
                         options={[
-                            { label: "Server logs", value: false, icon: <HddOutlined /> },
                             { label: "Host logs", value: true, icon: <ClusterOutlined /> },
+                            { label: "Server logs", value: false, icon: <HddOutlined /> },
                         ]}
                         value={hostMode}
                         onChange={value => this.setHostMode(value)}
@@ -203,6 +203,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                             value={selectedHost}
                             itemDescription={item => <TagGroup values={item.domainNames} maximumSize={1} />}
                             itemKey={item => item.id}
+                            autoFocus
                         />
                     </Flex>
                     <Flex className="log-settings-option" vertical>
