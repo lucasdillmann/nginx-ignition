@@ -21,8 +21,9 @@ export default class IntegrationGateway {
         id: string,
         pageSize?: number,
         pageNumber?: number,
+        searchTerms?: string,
     ): Promise<ApiResponse<PageResponse<IntegrationOptionResponse>>> {
-        return this.client.get(`/${id}/options`, undefined, { pageSize, pageNumber })
+        return this.client.get(`/${id}/options`, undefined, { pageSize, pageNumber, searchTerms })
     }
 
     async getIntegrationOptionById(

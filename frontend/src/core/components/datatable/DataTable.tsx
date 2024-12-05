@@ -24,6 +24,7 @@ export interface DataTableProps<T> {
     columns: DataTableColumn<T>[]
     dataProvider: (pageSize: number, pageNumber: number) => Promise<PageResponse<T>>
     rowKey: (row: T) => React.Key
+    disableSearch?: boolean
 }
 
 interface DataTableState<T> {

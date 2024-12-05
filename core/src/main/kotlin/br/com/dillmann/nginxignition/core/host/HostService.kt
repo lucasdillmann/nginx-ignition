@@ -17,8 +17,8 @@ internal class HostService(
         repository.deleteById(id)
     }
 
-    override suspend fun list(pageSize: Int, pageNumber: Int): Page<Host> =
-        repository.findPage(pageSize, pageNumber)
+    override suspend fun list(pageSize: Int, pageNumber: Int, searchTerms: String?): Page<Host> =
+        repository.findPage(pageSize, pageNumber, searchTerms)
 
     override suspend fun getById(id: UUID): Host? =
         repository.findById(id)

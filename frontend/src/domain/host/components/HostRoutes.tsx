@@ -114,11 +114,12 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
     private async fetchIntegrationOptions(
         pageSize: number,
         pageNumber: number,
+        searchTerms?: string,
         integrationId?: string,
     ): Promise<PageResponse<IntegrationOptionResponse>> {
         if (integrationId === undefined) return emptyPageResponse<IntegrationOptionResponse>()
 
-        return this.integrationService.getOptions(integrationId!!, pageSize, pageNumber)
+        return this.integrationService.getOptions(integrationId!!, pageSize, pageNumber, searchTerms)
     }
 
     private renderIntegrationRoute(field: FormListFieldData, index: number): React.ReactNode {
@@ -158,8 +159,8 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         disabled={currentIntegrationId === undefined}
                         itemKey={item => item.id}
                         itemDescription={item => item.name}
-                        pageProvider={(pageSize, pageNumber) =>
-                            this.fetchIntegrationOptions(pageSize, pageNumber, currentIntegrationId)
+                        pageProvider={(pageSize, pageNumber, searchTerms) =>
+                            this.fetchIntegrationOptions(pageSize, pageNumber, searchTerms, currentIntegrationId)
                         }
                     />
                 </Form.Item>

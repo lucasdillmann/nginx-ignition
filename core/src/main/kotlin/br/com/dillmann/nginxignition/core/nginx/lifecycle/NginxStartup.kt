@@ -7,6 +7,7 @@ import br.com.dillmann.nginxignition.core.nginx.NginxService
 internal class NginxStartup(private val service: NginxService): StartupCommand {
     @Suppress("MagicNumber")
     override val priority = 500
+    override val async = true
     private val logger = logger<NginxStartup>()
 
     override suspend fun execute() {

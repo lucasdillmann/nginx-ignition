@@ -14,8 +14,12 @@ export default class CertificateGateway {
         this.client = new ApiClient("/api/certificates")
     }
 
-    async getPage(pageSize?: number, pageNumber?: number): Promise<ApiResponse<PageResponse<CertificateResponse>>> {
-        return this.client.get(undefined, undefined, { pageSize, pageNumber })
+    async getPage(
+        pageSize?: number,
+        pageNumber?: number,
+        searchTerms?: string,
+    ): Promise<ApiResponse<PageResponse<CertificateResponse>>> {
+        return this.client.get(undefined, undefined, { pageSize, pageNumber, searchTerms })
     }
 
     async delete(id: string): Promise<ApiResponse<void>> {

@@ -32,8 +32,9 @@ export default class IntegrationService {
         id: string,
         pageSize?: number,
         pageNumber?: number,
+        searchTerms?: string,
     ): Promise<PageResponse<IntegrationOptionResponse>> {
-        return this.gateway.getIntegrationOptions(id, pageSize, pageNumber).then(requireSuccessPayload)
+        return this.gateway.getIntegrationOptions(id, pageSize, pageNumber, searchTerms).then(requireSuccessPayload)
     }
 
     async getOptionById(integrationId: string, optionId: string): Promise<IntegrationOptionResponse | undefined> {

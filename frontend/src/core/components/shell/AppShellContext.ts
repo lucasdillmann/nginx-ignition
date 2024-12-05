@@ -5,6 +5,7 @@ export interface ShellAction {
     description: string
     onClick: string | (() => Promise<void>) | (() => void)
     disabled?: boolean
+    disabledReason?: string
     type?: ButtonVariantType
     color?: ButtonColorType
 }

@@ -25,8 +25,8 @@ internal class UserService(
     override suspend fun getById(id: UUID): User? =
         repository.findById(id)
 
-    override suspend fun list(pageSize: Int, pageNumber: Int): Page<User> =
-        repository.findPage(pageSize, pageNumber)
+    override suspend fun list(pageSize: Int, pageNumber: Int, searchTerms: String?): Page<User> =
+        repository.findPage(pageSize, pageNumber, searchTerms)
 
     override suspend fun save(request: SaveUserRequest, currentUserId: UUID?) {
         val databaseState = repository.findById(request.id)

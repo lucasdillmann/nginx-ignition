@@ -19,8 +19,12 @@ export default class CertificateService {
         this.gateway = new CertificateGateway()
     }
 
-    async list(pageSize?: number, pageNumber?: number): Promise<PageResponse<CertificateResponse>> {
-        return this.gateway.getPage(pageSize, pageNumber).then(requireSuccessPayload)
+    async list(
+        pageSize?: number,
+        pageNumber?: number,
+        searchTerms?: string,
+    ): Promise<PageResponse<CertificateResponse>> {
+        return this.gateway.getPage(pageSize, pageNumber, searchTerms).then(requireSuccessPayload)
     }
 
     async delete(id: string): Promise<void> {

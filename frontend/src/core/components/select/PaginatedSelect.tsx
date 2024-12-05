@@ -4,11 +4,12 @@ import { Select } from "antd"
 import { InputStatus } from "antd/es/_util/statusUtils"
 import Notification from "../notification/Notification"
 import { LoadingOutlined } from "@ant-design/icons"
+import debounce from "debounce"
 
 const PAGE_SIZE = 10
 
 interface SelectOption<T> {
-    item: T
+    item?: T
     value: string
     label: React.ReactNode
     disabled?: boolean
@@ -20,14 +21,16 @@ interface PaginatedSelectState<T> {
     loading: boolean
     hasMorePages: boolean
     nextPageNumber: number
+    searchTerms?: string
 }
 
 export interface PaginatedSelectProps<T> {
     placeholder?: string
     onChange?: (selected?: T) => void
-    pageProvider: (pageSize: number, pageNumber: number) => Promise<PageResponse<T>>
+    pageProvider: (pageSize: number, pageNumber: number, searchTerms?: string) => Promise<PageResponse<T>>
     itemKey: (item: T) => string
     itemDescription: (item: T) => React.ReactNode
+    disableSearch?: boolean
     disabled?: boolean
     allowEmpty?: boolean
     status?: InputStatus
@@ -55,9 +58,9 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
 
     private fetchNextPage() {
         const { pageProvider } = this.props
-        const { nextPageNumber } = this.state
+        const { nextPageNumber, searchTerms } = this.state
 
-        pageProvider(PAGE_SIZE, nextPageNumber)
+        pageProvider(PAGE_SIZE, nextPageNumber, searchTerms)
             .then(page => {
                 this.setState(current => ({
                     ...current,
@@ -93,7 +96,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
         }
     }
 
-    private buildOptions() {
+    private buildOptions(): SelectOption<T>[] {
         const { data, loading } = this.state
         const options = data.map(item => this.buildOption(item))
 
@@ -108,6 +111,19 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
         return [...options, { value: "", label: loadingLabel, disabled: true }]
     }
 
+    private handleSearch = debounce((searchTerms?: string) => {
+        this.setState(
+            {
+                nextPageNumber: 0,
+                loading: true,
+                hasMorePages: true,
+                data: [],
+                searchTerms,
+            },
+            () => this.fetchNextPage(),
+        )
+    }, 500)
+
     private handleScrollEvent(event: React.UIEvent<HTMLDivElement>) {
         const { loading, hasMorePages } = this.state
         if (loading || !hasMorePages) return
@@ -119,11 +135,10 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
     }
 
     render() {
-        const { allowEmpty, disabled, status, value, onChange, placeholder } = this.props
-        const { loading } = this.state
-
+        const { allowEmpty, disabled, status, value, onChange, placeholder, disableSearch } = this.props
         return (
-            <Select
+            <Select<SelectOption<T>>
+                showSearch={disableSearch !== true}
                 placeholder={placeholder}
                 disabled={disabled}
                 allowClear={allowEmpty}
@@ -134,7 +149,8 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
                 onDeselect={() => onChange?.(undefined)}
                 onPopupScroll={event => this.handleScrollEvent(event)}
                 onDropdownVisibleChange={open => this.handleDropdownVisibilityChange(open)}
-                loading={loading}
+                onSearch={searchTerms => this.handleSearch(searchTerms)}
+                filterOption={false}
             />
         )
     }

@@ -8,7 +8,7 @@ interface UserRepository {
     suspend fun deleteById(id: UUID)
     suspend fun findById(id: UUID): User?
     suspend fun findByUsername(username: String): User?
-    suspend fun findPage(pageSize: Int, pageNumber: Int): Page<User>
+    suspend fun findPage(pageSize: Int, pageNumber: Int, searchTerms: String?): Page<User>
     suspend fun findEnabledById(id: UUID): Boolean?
     suspend fun count(): Long
 }

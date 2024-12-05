@@ -24,8 +24,17 @@ class TrueNasIntegrationAdapter: IntegrationAdapter {
         parameters: Map<String, Any?>,
         pageNumber: Int,
         pageSize: Int,
+        searchTerms: String?,
     ): Page<IntegrationAdapter.Option> =
-        getAvailableApps(parameters).flatMap(::buildOptions).let { Page.of(it) }
+        getAvailableApps(parameters)
+            .flatMap(::buildOptions)
+            .let {
+                if (searchTerms != null)
+                    it.filter { it.name.contains(searchTerms, ignoreCase = true) }
+                else
+                    it
+            }
+            .let { Page.of(it) }
 
     override suspend fun getAvailableOptionById(parameters: Map<String, Any?>, id: String): IntegrationAdapter.Option? =
         runCatching {

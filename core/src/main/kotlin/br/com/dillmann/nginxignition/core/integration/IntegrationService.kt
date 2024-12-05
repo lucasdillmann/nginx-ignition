@@ -47,14 +47,15 @@ internal class IntegrationService(
     override suspend fun getIntegrationOptions(
         integrationId: String,
         pageNumber: Int,
-        pageSize: Int
+        pageSize: Int,
+        searchTerms: String?,
     ): Page<IntegrationOption> {
         val adapter = findAdapter(integrationId)
         val settings = findSettings(integrationId)
         if (!settings.enabled) throw IntegrationDisabledException()
 
         return adapter
-            .getAvailableOptions(settings.parameters, pageNumber, pageSize)
+            .getAvailableOptions(settings.parameters, pageNumber, pageSize, searchTerms)
             .map { IntegrationOption(it.id, it.name) }
             .sortedBy { it.name }
     }

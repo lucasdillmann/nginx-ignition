@@ -17,6 +17,8 @@ sonar {
 }
 
 tasks {
+    val ideMode = System.getProperty("idea.active") == "true"
+
     val eslint = create<NpxTask>("eslint") {
         dependsOn(npmSetup, npmInstall)
         command = "npx"
@@ -40,11 +42,13 @@ tasks {
     }
 
     check {
-        dependsOn(eslint, prettierCheck)
+        if (!ideMode)
+            dependsOn(eslint, prettierCheck)
     }
 
     jar {
-        dependsOn(npmBuild)
+        if (!ideMode)
+            dependsOn(npmBuild)
 
         from(layout.buildDirectory.dir("frontend")) {
             into("/nginx-ignition/frontend/")
@@ -52,6 +56,7 @@ tasks {
     }
 
     clean {
-        dependsOn(npmClean)
+        if (!ideMode)
+            dependsOn(npmClean)
     }
 }

@@ -32,8 +32,12 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
         this.service = new CertificateService()
     }
 
-    private async fetchCertificates(pageSize: number, pageNumber: number): Promise<PageResponse<CertificateResponse>> {
-        return this.service.list(pageSize, pageNumber)
+    private async fetchCertificates(
+        pageSize: number,
+        pageNumber: number,
+        searchTerms?: string,
+    ): Promise<PageResponse<CertificateResponse>> {
+        return this.service.list(pageSize, pageNumber, searchTerms)
     }
 
     private renderBinding(field: FormListFieldData, operations: FormListOperation, index: number, totalAmount: number) {
@@ -94,7 +98,9 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                 >
                     <PaginatedSelect<CertificateResponse>
                         disabled={bindings[index].type === HostBindingType.HTTP}
-                        pageProvider={(pageSize, pageNumber) => this.fetchCertificates(pageSize, pageNumber)}
+                        pageProvider={(pageSize, pageNumber, searchTerms) =>
+                            this.fetchCertificates(pageSize, pageNumber, searchTerms)
+                        }
                         itemKey={certificate => certificate.id}
                         itemDescription={certificate => <TagGroup values={certificate.domainNames} maximumSize={1} />}
                     />

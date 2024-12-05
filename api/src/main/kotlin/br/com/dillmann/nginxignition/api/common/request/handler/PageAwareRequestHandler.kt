@@ -14,6 +14,7 @@ internal interface PageAwareRequestHandler: RequestHandler {
     override suspend fun handle(call: ApiCall) {
         val pageSize = call.queryParam("pageSize") ?: DEFAULT_PAGE_SIZE
         val pageNumber = call.queryParam("pageNumber") ?: DEFAULT_PAGE_NUMBER
+        val searchTerms = call.queryParams()["searchTerms"]
 
         if (pageSize !in ALLOWED_SIZE_RANGE) {
             call.sendErrorMessage(
@@ -27,10 +28,10 @@ internal interface PageAwareRequestHandler: RequestHandler {
             return
         }
 
-        handle(call, pageNumber, pageSize)
+        handle(call, pageNumber, pageSize, searchTerms)
     }
 
-    suspend fun handle(call: ApiCall, pageNumber: Int, pageSize: Int)
+    suspend fun handle(call: ApiCall, pageNumber: Int, pageSize: Int, searchTerms: String?)
 
     private suspend fun ApiCall.sendErrorMessage(message: String) {
         respond(

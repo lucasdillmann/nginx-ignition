@@ -1,5 +1,5 @@
 import React from "react"
-import { Button, Flex, Layout, Menu } from "antd"
+import { Button, Flex, Layout, Menu, Tooltip } from "antd"
 import { MenuItemType } from "antd/es/menu/interface"
 import { Link } from "react-router-dom"
 import AppRoute from "../router/AppRoute"
@@ -49,26 +49,30 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
     }
 
     private renderActionButton(action: ShellAction): React.ReactNode {
-        const { description, type, color, onClick, disabled } = action
+        const { description, type, color, onClick, disabled, disabledReason } = action
         if (typeof onClick === "string") {
             return (
-                <Link to={onClick} key={action.description}>
-                    <Button variant={type ?? "solid"} color={color ?? "primary"} disabled={disabled}>
-                        {description}
-                    </Button>
-                </Link>
+                <Tooltip title={disabledReason}>
+                    <Link to={onClick} key={action.description}>
+                        <Button variant={type ?? "solid"} color={color ?? "primary"} disabled={disabled}>
+                            {description}
+                        </Button>
+                    </Link>
+                </Tooltip>
             )
         } else {
             return (
-                <Button
-                    key={action.description}
-                    variant={type ?? "solid"}
-                    color={color ?? "primary"}
-                    onClick={onClick}
-                    disabled={disabled}
-                >
-                    {description}
-                </Button>
+                <Tooltip title={disabledReason}>
+                    <Button
+                        key={action.description}
+                        variant={type ?? "solid"}
+                        color={color ?? "primary"}
+                        onClick={onClick}
+                        disabled={disabled}
+                    >
+                        {description}
+                    </Button>
+                </Tooltip>
             )
         }
     }

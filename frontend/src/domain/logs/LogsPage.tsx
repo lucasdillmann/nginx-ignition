@@ -51,16 +51,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
 
     componentDidMount() {
         this.fetchLogs()
-        AppShellContext.get().updateConfig({
-            title: "Logs",
-            subtitle: "nginx's logs for the main process or each virtual host",
-            actions: [
-                {
-                    description: "Refresh",
-                    onClick: () => this.refreshLogs(),
-                },
-            ],
-        })
+        this.configureShell()
     }
 
     componentDidUpdate() {
@@ -68,6 +59,25 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         if (textarea === undefined) return
 
         textarea.scrollTop = textarea.scrollHeight
+    }
+
+    private configureShell() {
+        const { autoRefreshSeconds } = this.state
+        const disabled = autoRefreshSeconds !== undefined
+        const disabledReason = disabled ? "Auto refresh is enabled" : undefined
+
+        AppShellContext.get().updateConfig({
+            title: "Logs",
+            subtitle: "nginx's logs for the main process or each virtual host",
+            actions: [
+                {
+                    description: "Refresh",
+                    onClick: () => this.refreshLogs(),
+                    disabled,
+                    disabledReason,
+                },
+            ],
+        })
     }
 
     private applyOptions() {
@@ -80,6 +90,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         }
 
         this.refreshLogs()
+        this.configureShell()
     }
 
     private refreshLogs() {
@@ -186,7 +197,9 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                         <PaginatedSelect
                             placeholder="Select one"
                             onChange={host => this.handleHostChange(host)}
-                            pageProvider={(pageSize, pageNumber) => this.hostService.list(pageSize, pageNumber)}
+                            pageProvider={(pageSize, pageNumber, searchTerms) =>
+                                this.hostService.list(pageSize, pageNumber, searchTerms)
+                            }
                             value={selectedHost}
                             itemDescription={item => <TagGroup values={item.domainNames} maximumSize={1} />}
                             itemKey={item => item.id}

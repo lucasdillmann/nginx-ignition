@@ -4,6 +4,7 @@ import br.com.dillmann.nginxignition.core.common.pagination.Page
 import br.com.dillmann.nginxignition.core.host.Host
 import br.com.dillmann.nginxignition.core.host.HostRepository
 import br.com.dillmann.nginxignition.database.common.transaction.coTransaction
+import br.com.dillmann.nginxignition.database.common.withSearchTerms
 import br.com.dillmann.nginxignition.database.host.mapping.HostBindingTable
 import br.com.dillmann.nginxignition.database.host.mapping.HostRouteTable
 import br.com.dillmann.nginxignition.database.host.mapping.HostTable
@@ -51,12 +52,13 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
         }
     }
 
-    override suspend fun findPage(pageSize: Int, pageNumber: Int): Page<Host> =
+    override suspend fun findPage(pageSize: Int, pageNumber: Int, searchTerms: String?): Page<Host> =
         coTransaction {
-            val totalCount =
-                HostTable.select(HostTable.id)
-                    .count()
-            val hosts = findHosts(pageSize, pageNumber)
+            val totalCount = HostTable
+                .select(HostTable.id)
+                .withSearchTerms(searchTerms, listOf(HostTable.domainNames))
+                .count()
+            val hosts = findHosts(pageSize, pageNumber, searchTerms)
 
             Page(
                 contents = hosts,
@@ -68,7 +70,7 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
 
     override suspend fun findAllEnabled(): List<Host> =
         coTransaction {
-            findHosts(null, null) { HostTable.enabled eq true }
+            findHosts(null, null, null) { HostTable.enabled eq true }
         }
 
     override suspend fun existsById(id: UUID): Boolean =
@@ -99,10 +101,12 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
     private fun findHosts(
         pageSize: Int?,
         pageNumber: Int?,
+        searchTerms: String?,
         predicate: (SqlExpressionBuilder.() -> Op<Boolean>)? = null,
     ): List<Host> =
         HostTable
             .select(HostTable.fields)
+            .withSearchTerms(searchTerms, listOf(HostTable.domainNames))
             .also {
                 if (pageSize != null && pageNumber != null) {
                     it.limit(pageSize, pageSize.toLong() * pageNumber)

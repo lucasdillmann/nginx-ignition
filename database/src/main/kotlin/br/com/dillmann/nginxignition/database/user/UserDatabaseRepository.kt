@@ -4,6 +4,7 @@ import br.com.dillmann.nginxignition.core.common.pagination.Page
 import br.com.dillmann.nginxignition.core.user.User
 import br.com.dillmann.nginxignition.core.user.UserRepository
 import br.com.dillmann.nginxignition.database.common.transaction.coTransaction
+import br.com.dillmann.nginxignition.database.common.withSearchTerms
 import br.com.dillmann.nginxignition.database.user.mapping.UserTable
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
@@ -40,11 +41,12 @@ internal class UserDatabaseRepository(private val converter: UserConverter): Use
         }
     }
 
-    override suspend fun findPage(pageSize: Int, pageNumber: Int): Page<User> =
+    override suspend fun findPage(pageSize: Int, pageNumber: Int, searchTerms: String?): Page<User> =
         coTransaction {
             val totalCount = UserTable.select(UserTable.id).count()
             val users = UserTable
                 .select(UserTable.fields)
+                .withSearchTerms(searchTerms, listOf(UserTable.name, UserTable.username))
                 .limit(pageSize, pageSize.toLong() * pageNumber)
                 .orderBy(UserTable.name)
                 .map { converter.toDomainModel(it) }

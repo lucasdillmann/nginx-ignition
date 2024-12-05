@@ -11,8 +11,8 @@ internal class ListHostsHandler(
     private val listCommand: ListHostCommand,
     private val converter: HostConverter,
 ): PageAwareRequestHandler {
-    override suspend fun handle(call: ApiCall, pageNumber: Int, pageSize: Int) {
-        val page = listCommand.list(pageSize, pageNumber)
+    override suspend fun handle(call: ApiCall, pageNumber: Int, pageSize: Int, searchTerms: String?) {
+        val page = listCommand.list(pageSize, pageNumber, searchTerms)
         val payload = converter.toResponse(page)
         call.respond(HttpStatus.OK, payload)
     }

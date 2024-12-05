@@ -1,6 +1,8 @@
 package br.com.dillmann.nginxignition.core.common.lifecycle
 
 import br.com.dillmann.nginxignition.core.common.log.logger
+import kotlinx.coroutines.runBlocking
+import kotlin.concurrent.thread
 
 class LifecycleManager(
     private val startupListeners: List<StartupCommand>,
@@ -11,7 +13,12 @@ class LifecycleManager(
     suspend fun fireStartupEvent() {
         startupListeners
             .sortedBy { it.priority }
-            .forEach { it.execute() }
+            .forEach {
+                if (it.async)
+                    thread { runBlocking { it.execute() } }
+                else
+                    it.execute()
+            }
     }
 
     suspend fun fireShutdownEvent() {

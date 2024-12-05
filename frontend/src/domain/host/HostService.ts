@@ -15,8 +15,8 @@ export default class HostService {
         return this.gateway.getById(id).then(requireNullablePayload)
     }
 
-    async list(pageSize?: number, pageNumber?: number): Promise<PageResponse<HostResponse>> {
-        return this.gateway.getPage(pageSize, pageNumber).then(requireSuccessPayload)
+    async list(pageSize?: number, pageNumber?: number, searchTerms?: string): Promise<PageResponse<HostResponse>> {
+        return this.gateway.getPage(pageSize, pageNumber, searchTerms).then(requireSuccessPayload)
     }
 
     async delete(id: string): Promise<void> {

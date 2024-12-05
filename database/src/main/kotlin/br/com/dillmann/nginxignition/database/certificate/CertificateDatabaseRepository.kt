@@ -7,6 +7,7 @@ import br.com.dillmann.nginxignition.database.certificate.mapping.CertificateTab
 import br.com.dillmann.nginxignition.database.common.database.DatabaseState
 import br.com.dillmann.nginxignition.database.common.database.DatabaseType
 import br.com.dillmann.nginxignition.database.common.transaction.coTransaction
+import br.com.dillmann.nginxignition.database.common.withSearchTerms
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -60,11 +61,15 @@ internal class CertificateDatabaseRepository(private val converter: CertificateC
         }
     }
 
-    override suspend fun findPage(pageSize: Int, pageNumber: Int): Page<Certificate> =
+    override suspend fun findPage(pageSize: Int, pageNumber: Int, searchTerms: String?): Page<Certificate> =
         coTransaction {
-            val totalCount = CertificateTable.select(CertificateTable.id).count()
+            val totalCount = CertificateTable
+                .select(CertificateTable.id)
+                .withSearchTerms(searchTerms, listOf(CertificateTable.domainNames))
+                .count()
             val certificates = CertificateTable
                 .select(CertificateTable.fields)
+                .withSearchTerms(searchTerms, listOf(CertificateTable.domainNames))
                 .limit(pageSize, pageSize.toLong() * pageNumber)
                 .orderBy(CertificateTable.domainNames)
                 .map { converter.toDomainModel(it) }

@@ -60,9 +60,9 @@ internal class CertificateService(
         )
     }
 
-    override suspend fun list(pageSize: Int, pageNumber: Int): Page<Certificate> =
+    override suspend fun list(pageSize: Int, pageNumber: Int, searchTerms: String?): Page<Certificate> =
         repository
-            .findPage(pageSize, pageNumber)
+            .findPage(pageSize, pageNumber, searchTerms)
             .let {
                 val updatedContents = it.contents.map(::removeSensitiveParameters)
                 it.copy(contents = updatedContents)
