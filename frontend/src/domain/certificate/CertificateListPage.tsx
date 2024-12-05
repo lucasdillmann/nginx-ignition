@@ -81,8 +81,12 @@ export default class CertificateListPage extends React.Component<any, Certificat
         return DeleteCertificateAction.execute(certificate.id).then(() => this.table.current?.refresh())
     }
 
-    private fetchData(pageSize: number, pageNumber: number): Promise<PageResponse<CertificateResponse>> {
-        return this.service.list(pageSize, pageNumber)
+    private fetchData(
+        pageSize: number,
+        pageNumber: number,
+        searchTerms?: string,
+    ): Promise<PageResponse<CertificateResponse>> {
+        return this.service.list(pageSize, pageNumber, searchTerms)
     }
 
     componentDidMount() {
@@ -126,7 +130,7 @@ export default class CertificateListPage extends React.Component<any, Certificat
             <DataTable
                 ref={this.table}
                 columns={this.buildColumns()}
-                dataProvider={(pageSize, pageNumber) => this.fetchData(pageSize, pageNumber)}
+                dataProvider={(pageSize, pageNumber, searchTerms) => this.fetchData(pageSize, pageNumber, searchTerms)}
                 rowKey={item => item.id}
             />
         )

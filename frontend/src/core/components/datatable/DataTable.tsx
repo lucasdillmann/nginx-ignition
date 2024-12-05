@@ -7,9 +7,16 @@ import { Empty, Pagination, Table } from "antd"
 import "./DataTable.css"
 import { ExclamationCircleOutlined } from "@ant-design/icons"
 import Notification from "../notification/Notification"
+import SearchBar from "./SearchBar"
 
 const DEFAULT_PAGE_SIZE = 10
 const PAGE_SIZES = [10, 25, 50, 100, 250, 500]
+const DEFAULT_DATA: PageResponse<any> = {
+    pageSize: DEFAULT_PAGE_SIZE,
+    pageNumber: 0,
+    totalItems: 0,
+    contents: [],
+}
 
 export interface DataTableColumn<T> {
     id: string
@@ -22,7 +29,7 @@ export interface DataTableColumn<T> {
 
 export interface DataTableProps<T> {
     columns: DataTableColumn<T>[]
-    dataProvider: (pageSize: number, pageNumber: number) => Promise<PageResponse<T>>
+    dataProvider: (pageSize: number, pageNumber: number, searchTerms?: string) => Promise<PageResponse<T>>
     rowKey: (row: T) => React.Key
     disableSearch?: boolean
 }
@@ -31,6 +38,7 @@ interface DataTableState<T> {
     loading: boolean
     data: PageResponse<T>
     error?: Error
+    searchTerms?: string
 }
 
 export default class DataTable<T> extends React.Component<DataTableProps<T>, DataTableState<T>> {
@@ -38,12 +46,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
         super(props)
         this.state = {
             loading: true,
-            data: {
-                pageSize: DEFAULT_PAGE_SIZE,
-                pageNumber: 0,
-                totalItems: 0,
-                contents: [],
-            },
+            data: DEFAULT_DATA,
         }
     }
 
@@ -65,7 +68,8 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
 
     private fetchData(pageSize: number, pageNumber: number): Promise<void> {
         const { dataProvider } = this.props
-        return dataProvider(pageSize, pageNumber)
+        const { searchTerms } = this.state
+        return dataProvider(pageSize, pageNumber, searchTerms)
             .then(data => this.setState({ loading: false, data }))
             .catch(error => {
                 Notification.error(
@@ -95,6 +99,17 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
         }
     }
 
+    private handleSearchTerms(searchTerms?: string) {
+        this.setState(
+            {
+                loading: true,
+                data: DEFAULT_DATA,
+                searchTerms,
+            },
+            () => this.refresh(),
+        )
+    }
+
     refresh(): Promise<void> {
         const { data } = this.state
         return this.fetchData(data.pageSize, data.pageNumber)
@@ -118,7 +133,9 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
 
         return (
             <Preloader loading={loading}>
+                <SearchBar onSearch={searchTerms => this.handleSearchTerms(searchTerms)} />
                 <Table
+                    className="data-table"
                     columns={this.buildColumnAdapters()}
                     dataSource={data.contents}
                     rowKey={row => rowKey(row)}

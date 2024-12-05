@@ -35,8 +35,12 @@ export default class UserGateway {
         return this.client.post("/logout")
     }
 
-    async getPage(pageSize?: number, pageNumber?: number): Promise<ApiResponse<PageResponse<UserResponse>>> {
-        return this.client.get(undefined, undefined, { pageSize, pageNumber })
+    async getPage(
+        pageSize?: number,
+        pageNumber?: number,
+        searchTerms?: string,
+    ): Promise<ApiResponse<PageResponse<UserResponse>>> {
+        return this.client.get(undefined, undefined, { pageSize, pageNumber, searchTerms })
     }
 
     async getById(id: string): Promise<ApiResponse<UserResponse>> {

@@ -43,8 +43,8 @@ export default class UserService {
         return this.gateway.getOnboardingStatus().then(requireSuccessPayload)
     }
 
-    async list(pageSize?: number, pageNumber?: number): Promise<PageResponse<UserResponse>> {
-        return this.gateway.getPage(pageSize, pageNumber).then(requireSuccessPayload)
+    async list(pageSize?: number, pageNumber?: number, searchTerms?: string): Promise<PageResponse<UserResponse>> {
+        return this.gateway.getPage(pageSize, pageNumber, searchTerms).then(requireSuccessPayload)
     }
 
     async delete(id: string): Promise<void> {

@@ -1,3 +1,17 @@
 .pagination-container {
     margin-top: 25px;
 }
+
+.data-table .ant-table-container,
+.data-table table,
+.data-table th.ant-table-cell {
+    border-radius: 0 !important;
+}
+
+.data-table-search-bar-container {
+    padding: 10px 10px;
+    background: #fafafa;
+    border: 1px solid #f0f0f0;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+}

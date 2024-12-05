@@ -93,8 +93,8 @@ export default class UserListPage extends React.PureComponent {
         return DeleteUserAction.execute(user.id).then(() => this.table.current?.refresh())
     }
 
-    private fetchData(pageSize: number, pageNumber: number): Promise<PageResponse<UserResponse>> {
-        return this.service.list(pageSize, pageNumber)
+    private fetchData(pageSize: number, pageNumber: number, searchTerms?: string): Promise<PageResponse<UserResponse>> {
+        return this.service.list(pageSize, pageNumber, searchTerms)
     }
 
     componentDidMount() {
@@ -115,7 +115,7 @@ export default class UserListPage extends React.PureComponent {
             <DataTable
                 ref={this.table}
                 columns={this.buildColumns()}
-                dataProvider={(pageSize, pageNumber) => this.fetchData(pageSize, pageNumber)}
+                dataProvider={(pageSize, pageNumber, searchTerms) => this.fetchData(pageSize, pageNumber, searchTerms)}
                 rowKey={item => item.id}
             />
         )

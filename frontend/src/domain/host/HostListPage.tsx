@@ -87,8 +87,8 @@ export default class HostListPage extends React.PureComponent {
         return DeleteHostAction.execute(host.id).then(() => this.table.current?.refresh())
     }
 
-    private fetchData(pageSize: number, pageNumber: number): Promise<PageResponse<HostResponse>> {
-        return this.service.list(pageSize, pageNumber)
+    private fetchData(pageSize: number, pageNumber: number, searchTerms?: string): Promise<PageResponse<HostResponse>> {
+        return this.service.list(pageSize, pageNumber, searchTerms)
     }
 
     componentDidMount() {
@@ -109,7 +109,7 @@ export default class HostListPage extends React.PureComponent {
             <DataTable
                 ref={this.table}
                 columns={this.buildColumns()}
-                dataProvider={(pageSize, pageNumber) => this.fetchData(pageSize, pageNumber)}
+                dataProvider={(pageSize, pageNumber, searchTerms) => this.fetchData(pageSize, pageNumber, searchTerms)}
                 rowKey={item => item.id}
             />
         )
