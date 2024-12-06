@@ -3,7 +3,7 @@ val slf4jVersion: String by project
 val coroutinesVersion: String by project
 
 plugins {
-    kotlin("jvm") version "2.0.21"
+    kotlin("jvm") version "2.1.0"
     id("org.sonarqube") version "6.0.1.5171"
     id("io.gitlab.arturbosch.detekt") version "1.23.6"
 }

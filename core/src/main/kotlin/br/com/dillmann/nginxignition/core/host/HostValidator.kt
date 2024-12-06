@@ -125,9 +125,9 @@ internal class HostValidator(
                 "Value is required when the type of the route is ${Host.RouteType.PROXY}",
             )
         } else {
-            val parseResult = runCatching { URI(route.targetUri) }
+            val parseResult = runCatching { require(URI(route.targetUri).host != null) }
             if (parseResult.isFailure)
-                addError(targetUriField, "Value is not a valid URI")
+                addError(targetUriField, "Value is not a valid URL")
         }
     }
 
@@ -138,7 +138,7 @@ internal class HostValidator(
                 "Value is required when the type of the route is ${Host.RouteType.REDIRECT}",
             )
         } else {
-            val parseResult = runCatching { URI(route.targetUri) }
+            val parseResult = runCatching { require(URI(route.targetUri).host != null) }
             if (parseResult.isFailure)
                 addError("routes[$index].targetUri", "Value is not a valid URI")
         }
