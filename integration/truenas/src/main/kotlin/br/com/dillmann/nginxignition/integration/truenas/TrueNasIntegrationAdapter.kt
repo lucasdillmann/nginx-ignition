@@ -16,6 +16,7 @@ class TrueNasIntegrationAdapter: IntegrationAdapter {
     override val configurationFields =
         listOf(
             TrueNasDynamicFields.URL,
+            TrueNasDynamicFields.PROXY_URL,
             TrueNasDynamicFields.USERNAME,
             TrueNasDynamicFields.PASSWORD,
         )
@@ -49,9 +50,14 @@ class TrueNasIntegrationAdapter: IntegrationAdapter {
 
     override suspend fun getOptionProxyUrl(id: String, parameters: Map<String, Any?>): String {
         val baseUrl = parameters[TrueNasDynamicFields.URL.id] as String
+        val proxyUrl = parameters[TrueNasDynamicFields.PROXY_URL.id] as? String?
         val (appId, containerPort) = id.split(":")
         val (hostPort, hostIp) = getWorkloadPort(parameters, appId, containerPort.toInt())!!.second.hostPorts.first()
-        val endpoint = if (hostIp == "0.0.0.0") URI(baseUrl).host else hostIp
+        val endpoint = when {
+            !proxyUrl.isNullOrBlank() -> URI(proxyUrl).host
+            hostIp == "0.0.0.0" -> URI(baseUrl).host
+            else -> hostIp
+        }
         return "http://$endpoint:$hostPort"
     }
 

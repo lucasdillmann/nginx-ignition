@@ -83,6 +83,7 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
                 break
             case DynamicFieldType.EMAIL:
             case DynamicFieldType.SINGLE_LINE_TEXT:
+            case DynamicFieldType.URL:
                 inputComponent = this.renderSingleLineText()
                 break
             case DynamicFieldType.MULTI_LINE_TEXT:

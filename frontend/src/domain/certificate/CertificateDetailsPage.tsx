@@ -113,6 +113,7 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
             case DynamicFieldType.ENUM:
             case DynamicFieldType.SINGLE_LINE_TEXT:
             case DynamicFieldType.BOOLEAN:
+            case DynamicFieldType.URL:
                 valueType = "text"
                 break
             case DynamicFieldType.MULTI_LINE_TEXT:

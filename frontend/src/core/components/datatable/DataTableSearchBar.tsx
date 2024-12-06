@@ -7,7 +7,7 @@ export interface SearchBarProps {
     onSearch: (searchTerms?: string) => void
 }
 
-export default class SearchBar extends React.Component<SearchBarProps> {
+export default class DataTableSearchBar extends React.Component<SearchBarProps> {
     render() {
         const handleChange = debounce((searchTerms?: string) => this.props.onSearch(searchTerms), 500)
 
@@ -16,6 +16,7 @@ export default class SearchBar extends React.Component<SearchBarProps> {
                 <Input
                     // @ts-ignore
                     onInput={event => handleChange(event.nativeEvent.target!!.value)}
+                    onClear={() => handleChange()}
                     placeholder="Search terms"
                     className="data-table-search-bar"
                     autoFocus

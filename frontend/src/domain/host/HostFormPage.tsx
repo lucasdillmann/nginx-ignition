@@ -21,6 +21,7 @@ import HostFormValues from "./model/HostFormValues"
 import HostConverter from "./HostConverter"
 import { IntegrationResponse } from "../integration/model/IntegrationResponse"
 import IntegrationService from "../integration/IntegrationService"
+import If from "../../core/components/flowcontrol/If"
 
 const DEFAULT_HOST: HostFormValues = {
     enabled: true,
@@ -237,7 +238,15 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                         </Form.Item>
                     </Flex>
                     <Flex className="hosts-form-inner-flex-container-column">
-                        <DomainNamesList validationResult={validationResult} />
+                        <If condition={formValues.defaultServer}>
+                            <Form.Item label="Domain names" required>
+                                <Flex>Not available for the default server</Flex>
+                            </Form.Item>
+                        </If>
+                        <DomainNamesList
+                            validationResult={validationResult}
+                            className={formValues.defaultServer ? "hosts-form-invisible-input" : undefined}
+                        />
                     </Flex>
                 </Flex>
 

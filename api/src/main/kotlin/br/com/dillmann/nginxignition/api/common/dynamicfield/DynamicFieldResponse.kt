@@ -29,6 +29,7 @@ data class DynamicFieldResponse(
     enum class Type {
         SINGLE_LINE_TEXT,
         MULTI_LINE_TEXT,
+        URL,
         EMAIL,
         BOOLEAN,
         ENUM,

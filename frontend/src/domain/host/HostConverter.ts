@@ -140,10 +140,10 @@ class HostConverter {
 
         return {
             enabled,
-            domainNames,
             bindings,
             featureSet,
             defaultServer,
+            domainNames: domainNames ?? [""],
             routes: await Promise.all(routes),
         }
     }
@@ -156,11 +156,11 @@ class HostConverter {
 
         return {
             enabled,
-            domainNames,
             featureSet,
             defaultServer,
             bindings,
             routes,
+            domainNames: defaultServer ? [] : domainNames,
         }
     }
 }

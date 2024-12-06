@@ -15,7 +15,7 @@ internal class HostConfigurationFileProvider(
             host.routes.sortedBy { it.priority }.map { buildRoute(it, host.featureSet) }.joinToString("\n")
         val serverNames =
             if (host.defaultServer) "server_name _;"
-            else host.domainNames.joinToString("\n") { "server_name $it;" }
+            else host.domainNames?.joinToString("\n") { "server_name $it;" } ?: ""
         val httpsRedirect =
             if (host.featureSet.redirectHttpToHttps)
                 """

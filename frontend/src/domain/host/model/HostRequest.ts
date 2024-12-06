@@ -47,7 +47,7 @@ export interface HostRouteIntegration {
 export default interface HostRequest {
     enabled: boolean
     defaultServer: boolean
-    domainNames: string[]
+    domainNames?: string[]
     routes: HostRoute[]
     bindings: HostBinding[]
     featureSet: HostFeatureSet

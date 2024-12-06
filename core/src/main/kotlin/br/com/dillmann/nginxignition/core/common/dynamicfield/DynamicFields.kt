@@ -4,6 +4,7 @@ import br.com.dillmann.nginxignition.core.common.GlobalConstants.EMAIL_PATTERN
 import br.com.dillmann.nginxignition.core.common.dynamicfield.DynamicField.Type.*
 import br.com.dillmann.nginxignition.core.common.extensions.decodeBase64
 import br.com.dillmann.nginxignition.core.common.validation.ConsistencyException
+import java.net.URI
 
 object DynamicFields {
     fun removeSensitiveParameters(
@@ -63,7 +64,10 @@ object DynamicFields {
                 "A boolean value is expected"
 
             field.type == EMAIL && !isAnEmail(value) ->
-                "A email is expected"
+                "An email is expected"
+
+            field.type == URL && !isAnUrl(value) ->
+                "An URL is expected"
 
             else -> null
         }
@@ -73,4 +77,7 @@ object DynamicFields {
 
     private fun isAnEmail(value: Any): Boolean =
         value is String && EMAIL_PATTERN.matcher(value).find()
+
+    private fun isAnUrl(value: Any): Boolean =
+        value is String && runCatching { URI(value) }.isSuccess
 }

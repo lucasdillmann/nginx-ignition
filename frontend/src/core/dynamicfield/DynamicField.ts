@@ -13,6 +13,7 @@ export default interface DynamicField {
 export enum DynamicFieldType {
     SINGLE_LINE_TEXT = "SINGLE_LINE_TEXT",
     MULTI_LINE_TEXT = "MULTI_LINE_TEXT",
+    URL = "URL",
     EMAIL = "EMAIL",
     BOOLEAN = "BOOLEAN",
     ENUM = "ENUM",

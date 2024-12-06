@@ -6,7 +6,7 @@ internal object HostTable: Table("host") {
     val id = uuid("id")
     val enabled = bool("enabled")
     val defaultServer = bool("default_server")
-    val domainNames = array<String>("domain_names")
+    val domainNames = array<String>("domain_names").nullable()
     val websocketSupport = bool("websocket_support")
     val http2Support = bool("http2_support")
     val redirectHttpToHttps = bool("redirect_http_to_https")

@@ -128,6 +128,7 @@ export default class IntegrationConfigurationModal extends React.Component<
                 onCancel={() => onClose(false)}
                 onOk={() => this.saveConfiguration()}
                 title={integration?.name}
+                width={800}
                 open
             >
                 {this.renderForm()}

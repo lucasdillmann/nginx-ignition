@@ -29,7 +29,7 @@ export default class HostListPage extends React.PureComponent {
             {
                 id: "domainNames",
                 description: "Domain names",
-                renderer: item => <TagGroup values={item.domainNames} />,
+                renderer: item => <TagGroup values={item.domainNames ?? ["(default server)"]} />,
             },
             {
                 id: "defaultServer",

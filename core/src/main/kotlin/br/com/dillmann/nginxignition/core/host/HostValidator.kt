@@ -35,18 +35,21 @@ internal class HostValidator(
     }
 
     private suspend fun validateDefaultFlag(host: Host, addError: ErrorCreator) {
-        if (host.defaultServer) {
-            val currentId = hostRepository.findDefault()?.id
-            if (currentId != null && host.id != currentId)
-                addError("defaultServer", "There's already another host marked as the default one")
-        }
+        if (!host.defaultServer) return
+
+        val currentId = hostRepository.findDefault()?.id
+        if (currentId != null && host.id != currentId)
+            addError("defaultServer", "There's already another host marked as the default one")
+
+        if (!host.domainNames.isNullOrEmpty())
+            addError("domainNames", "Must be empty when the host is the default one")
     }
 
     private fun validateDomainNames(host: Host, addError: ErrorCreator) {
-        if (host.domainNames.isEmpty())
+        if (host.domainNames.isNullOrEmpty() && !host.defaultServer)
             addError("domainNames", "At least one domain name must be informed")
 
-        host.domainNames.forEachIndexed { index, domainName ->
+        host.domainNames?.forEachIndexed { index, domainName ->
             if (!TLD_PATTERN.matcher(domainName).matches())
                 addError("domainNames[$index]", "Value is not a valid domain name")
         }

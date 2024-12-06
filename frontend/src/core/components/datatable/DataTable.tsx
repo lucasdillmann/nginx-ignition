@@ -7,7 +7,7 @@ import { Empty, Pagination, Table } from "antd"
 import "./DataTable.css"
 import { ExclamationCircleOutlined } from "@ant-design/icons"
 import Notification from "../notification/Notification"
-import SearchBar from "./SearchBar"
+import DataTableSearchBar from "./DataTableSearchBar"
 
 const DEFAULT_PAGE_SIZE = 10
 const PAGE_SIZES = [10, 25, 50, 100, 250, 500]
@@ -133,7 +133,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
 
         return (
             <Preloader loading={loading}>
-                <SearchBar onSearch={searchTerms => this.handleSearchTerms(searchTerms)} />
+                <DataTableSearchBar onSearch={searchTerms => this.handleSearchTerms(searchTerms)} />
                 <Table
                     className="data-table"
                     columns={this.buildColumnAdapters()}

@@ -201,7 +201,9 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                                 this.hostService.list(pageSize, pageNumber, searchTerms)
                             }
                             value={selectedHost}
-                            itemDescription={item => <TagGroup values={item.domainNames} maximumSize={1} />}
+                            itemDescription={item => (
+                                <TagGroup values={item.domainNames ?? ["(default server)"]} maximumSize={1} />
+                            )}
                             itemKey={item => item.id}
                             autoFocus
                         />
