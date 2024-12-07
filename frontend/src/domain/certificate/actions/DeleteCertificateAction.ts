@@ -1,7 +1,6 @@
 import CertificateService from "../CertificateService"
 import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
 import Notification from "../../../core/components/notification/Notification"
-import ReloadNginxAction from "../../nginx/actions/ReloadNginxAction"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
 
 class DeleteCertificateAction {
