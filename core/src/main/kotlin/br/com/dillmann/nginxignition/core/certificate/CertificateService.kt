@@ -7,6 +7,7 @@ import br.com.dillmann.nginxignition.core.certificate.provider.CertificateReques
 import br.com.dillmann.nginxignition.core.common.dynamicfield.DynamicFields
 import br.com.dillmann.nginxignition.core.common.log.logger
 import br.com.dillmann.nginxignition.core.common.pagination.Page
+import br.com.dillmann.nginxignition.core.common.validation.ConsistencyException
 import br.com.dillmann.nginxignition.core.host.HostRepository
 import br.com.dillmann.nginxignition.core.nginx.NginxService
 import java.util.*
@@ -43,11 +44,16 @@ internal class CertificateService(
         validator.validate(request)
         val provider = providers.first { it.id == request.providerId }
         val providerResult = runCatching { provider.issue(request) }
-        if (providerResult.isFailure)
+        if (providerResult.isFailure) {
+            val exception = providerResult.exceptionOrNull()!!
+            if (exception is ConsistencyException)
+                throw exception
+
             return IssueCertificateCommand.Output(
                 success = false,
-                errorReason = providerResult.exceptionOrNull()?.message,
+                errorReason = exception.message,
             )
+        }
 
         val providerOutput = providerResult.getOrThrow()
         if (providerOutput.success)

@@ -22,7 +22,9 @@ object DynamicFields {
         val violations = mutableListOf<ConsistencyException.Violation>()
         dynamicFields.forEach { field ->
             val value = parameters[field.id]
-            if (value == null && field.required) {
+            val conditionSatisfied = isConditionSatisfied(field, parameters)
+
+            if (value == null && field.required && conditionSatisfied) {
                 violations += ConsistencyException.Violation(
                     path = "parameters.${field.id}",
                     message = "A value is required",
@@ -43,6 +45,13 @@ object DynamicFields {
         }
 
         return violations
+    }
+
+    private fun isConditionSatisfied(field: DynamicField, parameters: Map<String, Any?>): Boolean {
+        val condition = field.condition ?: return true
+        val expectedValue = condition.value
+        val currentValue = parameters[condition.parentField]
+        return expectedValue == currentValue
     }
 
     private fun resolveErrorMessage(

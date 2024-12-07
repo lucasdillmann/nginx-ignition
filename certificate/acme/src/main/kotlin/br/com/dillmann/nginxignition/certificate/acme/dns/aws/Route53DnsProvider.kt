@@ -1,5 +1,6 @@
-package br.com.dillmann.nginxignition.certificate.acme.dns
+package br.com.dillmann.nginxignition.certificate.acme.dns.aws
 
+import br.com.dillmann.nginxignition.certificate.acme.dns.DnsProvider
 import br.com.dillmann.nginxignition.certificate.acme.letsencrypt.LetsEncryptDynamicFields
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.await

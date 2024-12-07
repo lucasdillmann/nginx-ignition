@@ -1,6 +1,7 @@
 package br.com.dillmann.nginxignition.certificate.acme.letsencrypt
 
-import br.com.dillmann.nginxignition.certificate.acme.dns.Route53DnsProvider
+import br.com.dillmann.nginxignition.certificate.acme.dns.aws.Route53DnsProvider
+import br.com.dillmann.nginxignition.certificate.acme.dns.cloudflare.CloudflareDnsProvider
 import br.com.dillmann.nginxignition.core.common.dynamicfield.DynamicField
 
 internal object LetsEncryptDynamicFields {
@@ -29,13 +30,14 @@ internal object LetsEncryptDynamicFields {
         type = DynamicField.Type.ENUM,
         enumOptions = listOf(
             DynamicField.EnumOption(Route53DnsProvider.ID, "AWS Route53"),
+            DynamicField.EnumOption(CloudflareDnsProvider.ID, "Cloudflare"),
         ),
     )
 
     val AWS_ACCESS_KEY = DynamicField(
         id = "awsAccessKey",
         priority = 2,
-        description = "AWS access key (for the Route 53 DNS challenge)",
+        description = "AWS access key (for the DNS challenge)",
         required = true,
         type = DynamicField.Type.SINGLE_LINE_TEXT,
         condition = DynamicField.Condition(
@@ -54,6 +56,19 @@ internal object LetsEncryptDynamicFields {
         condition = DynamicField.Condition(
             parentField = DNS_PROVIDER.id,
             value = Route53DnsProvider.ID,
+        ),
+    )
+
+    val CLOUDFLARE_API_TOKEN = DynamicField(
+        id = "cloudflareApiToken",
+        priority = 2,
+        description = "Cloudflare API token (for the DNS challenge)",
+        required = true,
+        sensitive = true,
+        type = DynamicField.Type.SINGLE_LINE_TEXT,
+        condition = DynamicField.Condition(
+            parentField = DNS_PROVIDER.id,
+            value = CloudflareDnsProvider.ID,
         ),
     )
 }
