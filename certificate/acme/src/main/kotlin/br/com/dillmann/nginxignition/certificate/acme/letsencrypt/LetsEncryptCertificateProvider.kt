@@ -19,6 +19,7 @@ internal class LetsEncryptCertificateProvider(
         LetsEncryptDynamicFields.AWS_ACCESS_KEY,
         LetsEncryptDynamicFields.AWS_SECRET_KEY,
         LetsEncryptDynamicFields.CLOUDFLARE_API_TOKEN,
+        LetsEncryptDynamicFields.GOOGLE_CLOUD_PRIVATE_KEY,
         LetsEncryptDynamicFields.TERMS_OF_SERVICE,
         LetsEncryptDynamicFields.DNS_PROVIDER,
     )

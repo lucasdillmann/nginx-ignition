@@ -22,12 +22,8 @@ internal class CloudflareDnsProvider: DnsProvider {
 
         records
             .groupBy { findDnsZone(zones, it) }
-            .map { (zoneId, records) ->
-                Triple(zoneId, client.listRecords(zoneId), records)
-            }
-            .forEach { (zoneId, currentRecords, newRecords) ->
-                updateRecords(client, zoneId, currentRecords, newRecords)
-            }
+            .map { (id, newRecords) -> Triple(id, client.listRecords(id), newRecords) }
+            .forEach { (id, currentRecords, newRecords) -> updateRecords(client, id, currentRecords, newRecords) }
 
         // Cloudflare doesn't provide a way to wait for or check if the DNS changes where propagated/applied (the API
         // call returns before that). This is ugly, but it is the only way to for now to "wait" for changes to happen.

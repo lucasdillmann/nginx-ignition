@@ -10,6 +10,7 @@ internal class LetsEncryptValidator: BaseCertificateValidator(
         LetsEncryptDynamicFields.AWS_ACCESS_KEY,
         LetsEncryptDynamicFields.AWS_SECRET_KEY,
         LetsEncryptDynamicFields.CLOUDFLARE_API_TOKEN,
+        LetsEncryptDynamicFields.GOOGLE_CLOUD_PRIVATE_KEY,
         LetsEncryptDynamicFields.DNS_PROVIDER,
     ),
 ) {

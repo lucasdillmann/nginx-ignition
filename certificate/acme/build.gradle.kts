@@ -1,6 +1,7 @@
 val acme4jVersion: String by project
 val kotlinxSerializationJsonVersion: String by project
 val awsSdkVersion: String by project
+val googleCloudSdkVersion: String by project
 val okHttpVersion: String by project
 
 plugins {
@@ -14,4 +15,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJsonVersion")
     implementation("software.amazon.awssdk:route53:$awsSdkVersion")
     implementation("com.squareup.okhttp3:okhttp:$okHttpVersion")
+    implementation("com.google.cloud:google-cloud-dns:$googleCloudSdkVersion")
 }

@@ -2,6 +2,7 @@ package br.com.dillmann.nginxignition.certificate.acme.letsencrypt
 
 import br.com.dillmann.nginxignition.certificate.acme.dns.aws.Route53DnsProvider
 import br.com.dillmann.nginxignition.certificate.acme.dns.cloudflare.CloudflareDnsProvider
+import br.com.dillmann.nginxignition.certificate.acme.dns.google.GoogleCloudDnsProvider
 import br.com.dillmann.nginxignition.core.common.dynamicfield.DynamicField
 
 internal object LetsEncryptDynamicFields {
@@ -30,7 +31,8 @@ internal object LetsEncryptDynamicFields {
         type = DynamicField.Type.ENUM,
         enumOptions = listOf(
             DynamicField.EnumOption(Route53DnsProvider.ID, "AWS Route53"),
-            DynamicField.EnumOption(CloudflareDnsProvider.ID, "Cloudflare"),
+            DynamicField.EnumOption(CloudflareDnsProvider.ID, "Cloudflare DNS"),
+            DynamicField.EnumOption(GoogleCloudDnsProvider.ID, "Google Cloud DNS"),
         ),
     )
 
@@ -69,6 +71,19 @@ internal object LetsEncryptDynamicFields {
         condition = DynamicField.Condition(
             parentField = DNS_PROVIDER.id,
             value = CloudflareDnsProvider.ID,
+        ),
+    )
+
+    val GOOGLE_CLOUD_PRIVATE_KEY = DynamicField(
+        id = "googleCloudPrivateKey",
+        priority = 2,
+        description = "Service account private key JSON",
+        required = true,
+        sensitive = true,
+        type = DynamicField.Type.MULTI_LINE_TEXT,
+        condition = DynamicField.Condition(
+            parentField = DNS_PROVIDER.id,
+            value = GoogleCloudDnsProvider.ID,
         ),
     )
 }
