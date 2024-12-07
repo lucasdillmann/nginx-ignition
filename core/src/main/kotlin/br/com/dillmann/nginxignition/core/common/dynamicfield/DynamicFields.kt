@@ -88,5 +88,5 @@ object DynamicFields {
         value is String && EMAIL_PATTERN.matcher(value).find()
 
     private fun isAnUrl(value: Any): Boolean =
-        value is String && runCatching { require(URI(value).host != null) }.isSuccess
+        value is String && runCatching { requireNotNull(URI(value).host) }.isSuccess
 }

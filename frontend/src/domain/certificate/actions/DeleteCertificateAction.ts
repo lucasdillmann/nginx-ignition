@@ -30,7 +30,6 @@ class DeleteCertificateAction {
         return UserConfirmation.ask("Do you really want to delete the certificate?")
             .then(() => this.service.delete(certificateId))
             .then(() => Notification.success(`Certificate deleted`, `The certificate was deleted successfully`))
-            .then(() => ReloadNginxAction.execute())
             .catch(error => this.handleError(error))
     }
 }
