@@ -13,8 +13,9 @@ internal class SettingsRoutes(
 ): RouteProvider {
     override fun apiRoutes(): RouteNode =
         routes("/api/settings") {
+            get(getHandler)
+
             requireRole(User.Role.ADMIN) {
-                get(getHandler)
                 put(putHandler)
             }
         }

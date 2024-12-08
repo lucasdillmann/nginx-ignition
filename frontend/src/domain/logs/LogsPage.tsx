@@ -18,8 +18,11 @@ import TextArea, { TextAreaRef } from "antd/es/input/TextArea"
 import Notification from "../../core/components/notification/Notification"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import TagGroup from "../../core/components/taggroup/TagGroup"
+import SettingsDto from "../settings/model/SettingsDto"
+import SettingsService from "../settings/SettingsService"
 
 interface LogsPageState {
+    settings?: SettingsDto
     hostMode: boolean
     autoRefreshSeconds?: number
     selectedHost?: HostResponse
@@ -32,6 +35,7 @@ interface LogsPageState {
 export default class LogsPage extends React.Component<any, LogsPageState> {
     private readonly hostService: HostService
     private readonly nginxService: NginxService
+    private readonly settingsService: SettingsService
     private readonly contentsRef: React.RefObject<TextAreaRef>
     private refreshIntervalId?: number
 
@@ -39,6 +43,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         super(props)
         this.hostService = new HostService()
         this.nginxService = new NginxService()
+        this.settingsService = new SettingsService()
         this.contentsRef = React.createRef()
         this.state = {
             hostMode: true,
@@ -50,7 +55,11 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     }
 
     componentDidMount() {
-        this.fetchLogs()
+        this.settingsService.get().then(settings => {
+            this.setState({ settings })
+            this.fetchLogs()
+        })
+
         this.configureShell()
     }
 
@@ -224,18 +233,44 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         )
     }
 
-    private renderLogContents() {
-        const { selectedHost, hostMode, logs } = this.state
+    private renderEmptyState(message: string, userActionOutcome: boolean = true) {
+        const icon = userActionOutcome ? (
+            <ExclamationCircleOutlined style={{ fontSize: 70, color: "#b8b8b8" }} />
+        ) : undefined
+
+        return <Empty image={icon} description={message} />
+    }
+
+    private renderEmptyStateIfNeeded() {
+        const { settings, selectedHost, hostMode, logType, logs, loading } = this.state
+        if (loading) return undefined
+
+        const {
+            nginx: { logs: logSettings },
+        } = settings!!
+
+        if (!logSettings.accessLogsEnabled && hostMode && logType === "access")
+            return this.renderEmptyState("Host access logs are disabled in the nginx configuration")
+
+        if (!logSettings.errorLogsEnabled && hostMode && logType === "error")
+            return this.renderEmptyState("Host error logs are disabled in the nginx configuration")
+
+        if (!logSettings.serverLogsEnabled && !hostMode)
+            return this.renderEmptyState("nginx server logs are disabled in the nginx configuration")
+
         if (hostMode && selectedHost === undefined)
-            return (
-                <Empty
-                    image={<ExclamationCircleOutlined style={{ fontSize: 70, color: "#b8b8b8" }} />}
-                    description="Please select a host in order to see its logs"
-                />
-            )
+            return this.renderEmptyState("Please select a host in order to see its logs")
 
-        if (logs.length === 0) return <Empty description="No logs found" />
+        if (logs.length === 0) return this.renderEmptyState("No logs found", false)
 
+        return undefined
+    }
+
+    private renderLogContents() {
+        const emptyState = this.renderEmptyStateIfNeeded()
+        if (emptyState !== undefined) return emptyState
+
+        const { logs } = this.state
         const contents = logs.join("\n")
         return <TextArea ref={this.contentsRef} className="log-contents-lines" value={contents} readOnly />
     }

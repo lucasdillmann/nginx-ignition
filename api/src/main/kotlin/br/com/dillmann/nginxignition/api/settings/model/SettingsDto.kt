@@ -1,6 +1,6 @@
 package br.com.dillmann.nginxignition.api.settings.model
 
-import br.com.dillmann.nginxignition.api.host.model.HostResponse
+import br.com.dillmann.nginxignition.api.host.model.HostRequest
 import br.com.dillmann.nginxignition.core.settings.Settings
 import kotlinx.serialization.Serializable
 
@@ -9,7 +9,7 @@ internal data class SettingsDto(
     val nginx: NginxSettings,
     val logRotation: LogRotation,
     val certificateAutoRenew: CertificateAutoRenew,
-    val globalBindings: List<HostResponse.Binding>,
+    val globalBindings: List<HostRequest.Binding>,
 ) {
     @Serializable
     data class LogRotation(
