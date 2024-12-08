@@ -3,6 +3,7 @@ package br.com.dillmann.nginxignition.certificate.acme.letsencrypt
 import br.com.dillmann.nginxignition.certificate.acme.dns.aws.Route53DnsProvider
 import br.com.dillmann.nginxignition.certificate.acme.dns.cloudflare.CloudflareDnsProvider
 import br.com.dillmann.nginxignition.certificate.acme.dns.google.GoogleCloudDnsProvider
+import br.com.dillmann.nginxignition.certificate.acme.dns.azure.AzureDnsProvider
 import br.com.dillmann.nginxignition.core.common.dynamicfield.DynamicField
 
 internal object LetsEncryptDynamicFields {
@@ -31,6 +32,7 @@ internal object LetsEncryptDynamicFields {
         type = DynamicField.Type.ENUM,
         enumOptions = listOf(
             DynamicField.EnumOption(Route53DnsProvider.ID, "AWS Route53"),
+            DynamicField.EnumOption(AzureDnsProvider.ID, "Azure DNS"),
             DynamicField.EnumOption(CloudflareDnsProvider.ID, "Cloudflare DNS"),
             DynamicField.EnumOption(GoogleCloudDnsProvider.ID, "Google Cloud DNS"),
         ),
@@ -85,5 +87,71 @@ internal object LetsEncryptDynamicFields {
             parentField = DNS_PROVIDER.id,
             value = GoogleCloudDnsProvider.ID,
         ),
+    )
+
+    val AZURE_TENANT_ID = DynamicField(
+        id = "azureTenantId",
+        priority = 2,
+        description = "Azure tenant ID (for the DNS challenge)",
+        required = true,
+        sensitive = false,
+        type = DynamicField.Type.SINGLE_LINE_TEXT,
+        condition = DynamicField.Condition(
+            parentField = DNS_PROVIDER.id,
+            value = AzureDnsProvider.ID,
+        ),
+    )
+
+    val AZURE_SUBSCRIPTION_ID = DynamicField(
+        id = "azureSubscriptionId",
+        priority = 3,
+        description = "Azure subscription ID",
+        required = true,
+        sensitive = false,
+        type = DynamicField.Type.SINGLE_LINE_TEXT,
+        condition = DynamicField.Condition(
+            parentField = DNS_PROVIDER.id,
+            value = AzureDnsProvider.ID,
+        ),
+    )
+
+    val AZURE_CLIENT_ID = DynamicField(
+        id = "azureClientId",
+        priority = 4,
+        description = "Azure client ID",
+        required = true,
+        sensitive = false,
+        type = DynamicField.Type.SINGLE_LINE_TEXT,
+        condition = DynamicField.Condition(
+            parentField = DNS_PROVIDER.id,
+            value = AzureDnsProvider.ID,
+        ),
+    )
+
+    val AZURE_CLIENT_SECRET = DynamicField(
+        id = "azureClientSecret",
+        priority = 5,
+        description = "Azure client secret",
+        required = true,
+        sensitive = true,
+        type = DynamicField.Type.SINGLE_LINE_TEXT,
+        condition = DynamicField.Condition(
+            parentField = DNS_PROVIDER.id,
+            value = AzureDnsProvider.ID,
+        ),
+    )
+
+    val AZURE_ENVIRONMENT = DynamicField(
+        id = "azureEnvironment",
+        priority = 6,
+        description = "Azure environment",
+        required = true,
+        sensitive = false,
+        type = DynamicField.Type.ENUM,
+        condition = DynamicField.Condition(
+            parentField = DNS_PROVIDER.id,
+            value = AzureDnsProvider.ID,
+        ),
+        enumOptions = AzureDnsProvider.Environments.entries.map { DynamicField.EnumOption(it.name, it.description) },
     )
 }

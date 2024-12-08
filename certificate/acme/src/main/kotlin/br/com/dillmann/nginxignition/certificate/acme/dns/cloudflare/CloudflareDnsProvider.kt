@@ -53,7 +53,7 @@ internal class CloudflareDnsProvider: DnsProvider {
         currentRecordsPool: MutableList<CloudflareApi.DnsRecord>,
         newRecord: DnsProvider.ChallengeRecord,
     ): CloudflareApi.DnsRecord {
-        val currentRecord = currentRecordsPool.firstOrNull { it.name == newRecord.domainName }
+        val currentRecord = currentRecordsPool.firstOrNull { it.name == newRecord.domainName && it.type == "TXT" }
         if (currentRecord != null)
             currentRecordsPool -= currentRecord
 

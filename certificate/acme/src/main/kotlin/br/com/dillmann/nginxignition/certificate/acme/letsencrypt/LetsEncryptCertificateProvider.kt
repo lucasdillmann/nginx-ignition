@@ -20,6 +20,11 @@ internal class LetsEncryptCertificateProvider(
         LetsEncryptDynamicFields.AWS_SECRET_KEY,
         LetsEncryptDynamicFields.CLOUDFLARE_API_TOKEN,
         LetsEncryptDynamicFields.GOOGLE_CLOUD_PRIVATE_KEY,
+        LetsEncryptDynamicFields.AZURE_TENANT_ID,
+        LetsEncryptDynamicFields.AZURE_SUBSCRIPTION_ID,
+        LetsEncryptDynamicFields.AZURE_CLIENT_ID,
+        LetsEncryptDynamicFields.AZURE_CLIENT_SECRET,
+        LetsEncryptDynamicFields.AZURE_ENVIRONMENT,
         LetsEncryptDynamicFields.TERMS_OF_SERVICE,
         LetsEncryptDynamicFields.DNS_PROVIDER,
     )

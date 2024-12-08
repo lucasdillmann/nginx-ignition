@@ -77,8 +77,9 @@ internal class Route53DnsProvider: DnsProvider {
 
         changeIds.forEach { changeId ->
             do {
-                delay(CHECK_CHANGE_STATUS_DELAY_MS)
                 val status = client.getChange { it.id(changeId) }.await().changeInfo().status()
+                if (status != ChangeStatus.INSYNC)
+                    delay(CHECK_CHANGE_STATUS_DELAY_MS)
             } while (status != ChangeStatus.INSYNC)
         }
     }

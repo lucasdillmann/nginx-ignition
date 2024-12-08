@@ -1,5 +1,6 @@
 package br.com.dillmann.nginxignition.certificate.acme
 
+import br.com.dillmann.nginxignition.certificate.acme.dns.azure.AzureDnsProvider
 import br.com.dillmann.nginxignition.core.certificate.provider.CertificateProvider
 import br.com.dillmann.nginxignition.certificate.acme.dns.DnsProvider
 import br.com.dillmann.nginxignition.certificate.acme.dns.DnsProviderAdapter
@@ -20,6 +21,7 @@ object AcmeCertificateModule {
             single { Route53DnsProvider() } bind DnsProvider::class
             single { CloudflareDnsProvider() } bind DnsProvider::class
             single { GoogleCloudDnsProvider() } bind DnsProvider::class
+            single { AzureDnsProvider() } bind DnsProvider::class
             single { LetsEncryptFacade(get(), get(), get()) }
             single { LetsEncryptValidator() }
             single { LetsEncryptCertificateProvider(get(), get()) } bind CertificateProvider::class

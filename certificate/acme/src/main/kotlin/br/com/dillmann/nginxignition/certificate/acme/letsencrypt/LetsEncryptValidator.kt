@@ -11,6 +11,11 @@ internal class LetsEncryptValidator: BaseCertificateValidator(
         LetsEncryptDynamicFields.AWS_SECRET_KEY,
         LetsEncryptDynamicFields.CLOUDFLARE_API_TOKEN,
         LetsEncryptDynamicFields.GOOGLE_CLOUD_PRIVATE_KEY,
+        LetsEncryptDynamicFields.AZURE_TENANT_ID,
+        LetsEncryptDynamicFields.AZURE_SUBSCRIPTION_ID,
+        LetsEncryptDynamicFields.AZURE_CLIENT_ID,
+        LetsEncryptDynamicFields.AZURE_CLIENT_SECRET,
+        LetsEncryptDynamicFields.AZURE_ENVIRONMENT,
         LetsEncryptDynamicFields.DNS_PROVIDER,
     ),
 ) {

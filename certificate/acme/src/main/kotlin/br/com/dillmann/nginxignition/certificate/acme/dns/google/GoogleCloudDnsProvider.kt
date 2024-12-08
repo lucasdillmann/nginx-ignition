@@ -35,7 +35,7 @@ internal class GoogleCloudDnsProvider : DnsProvider {
         val zones = fetchZones(client)
         records
             .groupBy { findDnsZone(zones, it) }
-            .map { (zoneId, newRecords) -> Triple(zoneId, fetchRecords(client, zoneId), newRecords) }
+            .map { (zoneId, newRecords) -> Triple(zoneId, fetchTxtRecords(client, zoneId), newRecords) }
             .map { (zoneId, currentRecords, newRecords) -> updateRecords(client, zoneId, currentRecords, newRecords) }
             .forEach { (zoneId, changeId) -> waitForCompletion(client, zoneId, changeId) }
     }
@@ -77,12 +77,14 @@ internal class GoogleCloudDnsProvider : DnsProvider {
         return zoneId to changeRequest.get().generatedId
     }
 
-    private fun fetchRecords(client: Dns, zoneId: String): List<RecordSet> {
+    private fun fetchTxtRecords(client: Dns, zoneId: String): List<RecordSet> {
         val pageSize = Dns.RecordSetListOption.pageSize(PAGE_SIZE)
         return fetchAll { nextPage ->
             val pageToken = nextPage?.let(Dns.RecordSetListOption::pageToken)
             val options = listOfNotNull(pageSize, pageToken).toTypedArray()
             client.listRecordSets(zoneId, *options)
+        }.filter {
+            it.type == RecordSet.Type.TXT
         }
     }
 
