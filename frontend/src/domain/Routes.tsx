@@ -2,7 +2,14 @@ import LoginPage from "./authentication/LoginPage"
 import HomePage from "./home/HomePage"
 import AppRoute from "../core/components/router/AppRoute"
 import OnboardingPage from "./onboarding/OnboardingPage"
-import { FileProtectOutlined, FileSearchOutlined, HddOutlined, TeamOutlined, BlockOutlined } from "@ant-design/icons"
+import {
+    FileProtectOutlined,
+    FileSearchOutlined,
+    HddOutlined,
+    TeamOutlined,
+    BlockOutlined,
+    SettingOutlined,
+} from "@ant-design/icons"
 import HostListPage from "./host/HostListPage"
 import HostFormPage from "./host/HostFormPage"
 import CertificateListPage from "./certificate/CertificateListPage"
@@ -13,6 +20,7 @@ import UserListPage from "./user/UserListPage"
 import UserFormPage from "./user/UserFormPage"
 import { UserRole } from "./user/model/UserRole"
 import IntegrationsPage from "./integration/IntegrationsPage"
+import SettingsPage from "./settings/SettingsPage"
 
 const Routes: AppRoute[] = [
     {
@@ -86,6 +94,17 @@ const Routes: AppRoute[] = [
         menuItem: {
             description: "Integrations",
             icon: <BlockOutlined />,
+        },
+    },
+    {
+        path: "/settings",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <SettingsPage />,
+        visibleRoles: [UserRole.ADMIN],
+        menuItem: {
+            description: "Settings",
+            icon: <SettingOutlined />,
         },
     },
     {

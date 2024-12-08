@@ -1,8 +1,8 @@
 package br.com.dillmann.nginxignition.core.certificate
 
 import br.com.dillmann.nginxignition.core.certificate.command.*
-import br.com.dillmann.nginxignition.core.certificate.lifecycle.CertificateAutoRenewStartup
-import br.com.dillmann.nginxignition.core.common.lifecycle.StartupCommand
+import br.com.dillmann.nginxignition.core.certificate.task.CertificateAutoRenewScheduledTask
+import br.com.dillmann.nginxignition.core.common.scheduler.ScheduledTask
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.binds
@@ -17,5 +17,5 @@ internal fun Module.certificateBeans() {
         GetAvailableProvidersCommand::class,
     )
     single { CertificateValidator(getAll()) }
-    single { CertificateAutoRenewStartup(get(), get()) } bind StartupCommand::class
+    single { CertificateAutoRenewScheduledTask(get(), get()) } bind ScheduledTask::class
 }

@@ -16,6 +16,7 @@ internal class HostConverter {
             scope[id] = host.id
             scope[defaultServer] = host.defaultServer
             scope[enabled] = host.enabled
+            scope[useGlobalBindings] = host.useGlobalBindings
             scope[domainNames] = host.domainNames
             scope[websocketSupport] = host.featureSet.websocketsSupport
             scope[http2Support] = host.featureSet.http2Support
@@ -57,6 +58,7 @@ internal class HostConverter {
             id = host[HostTable.id],
             defaultServer = host[HostTable.defaultServer],
             enabled = host[HostTable.enabled],
+            useGlobalBindings = host[HostTable.useGlobalBindings],
             domainNames = host[HostTable.domainNames],
             routes = routes.map(::toRoute),
             bindings = bindings.map(::toBinding),

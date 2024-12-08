@@ -5,6 +5,7 @@ import br.com.dillmann.nginxignition.core.common.commonBeans
 import br.com.dillmann.nginxignition.core.host.hostBeans
 import br.com.dillmann.nginxignition.core.integration.integrationBeans
 import br.com.dillmann.nginxignition.core.nginx.nginxBeans
+import br.com.dillmann.nginxignition.core.settings.settingsBeans
 import br.com.dillmann.nginxignition.core.user.userBeans
 import org.koin.dsl.module
 
@@ -16,6 +17,7 @@ object CoreModule {
             hostBeans()
             integrationBeans()
             nginxBeans()
+            settingsBeans()
             userBeans()
         }
 }

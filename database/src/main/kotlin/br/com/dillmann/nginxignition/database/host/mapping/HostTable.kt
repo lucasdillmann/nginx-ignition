@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.Table
 internal object HostTable: Table("host") {
     val id = uuid("id")
     val enabled = bool("enabled")
+    val useGlobalBindings = bool("use_global_bindings")
     val defaultServer = bool("default_server")
     val domainNames = array<String>("domain_names").nullable()
     val websocketSupport = bool("websocket_support")

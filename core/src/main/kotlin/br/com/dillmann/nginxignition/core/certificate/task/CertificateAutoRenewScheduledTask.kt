@@ -1,28 +1,35 @@
-package br.com.dillmann.nginxignition.core.certificate.lifecycle
+package br.com.dillmann.nginxignition.core.certificate.task
 
 import br.com.dillmann.nginxignition.core.certificate.CertificateService
-import br.com.dillmann.nginxignition.core.common.lifecycle.StartupCommand
 import br.com.dillmann.nginxignition.core.common.log.logger
 import br.com.dillmann.nginxignition.core.common.configuration.ConfigurationProvider
-import br.com.dillmann.nginxignition.core.common.scheduler.TaskScheduler
+import br.com.dillmann.nginxignition.core.common.scheduler.ScheduledTask
 import java.util.concurrent.TimeUnit
 
-internal class CertificateAutoRenewStartup(
+internal class CertificateAutoRenewScheduledTask(
     private val configurationProvider: ConfigurationProvider,
     private val service: CertificateService,
-): StartupCommand {
-    override suspend fun execute() {
+): ScheduledTask {
+    override fun schedule(): ScheduledTask.Schedule {
         val intervalMinutes =
             configurationProvider.get("nginx-ignition.certificate.auto-renew-interval-minutes").toLong()
 
-        TaskScheduler.schedule(
-            task = service::renewAllDue,
+        return ScheduledTask.Schedule(
             initialDelay = intervalMinutes,
             interval = intervalMinutes,
-            timeUnit = TimeUnit.MINUTES,
+            unit = TimeUnit.MINUTES,
         )
+    }
 
-        logger<CertificateAutoRenewStartup>()
+    override fun onScheduleStarted() {
+        val intervalMinutes =
+            configurationProvider.get("nginx-ignition.certificate.auto-renew-interval-minutes").toLong()
+
+        logger<CertificateAutoRenewScheduledTask>()
             .info("Certificate auto-renew checks scheduled to execute every $intervalMinutes minutes")
+    }
+
+    override suspend fun run() {
+        service.renewAllDue()
     }
 }

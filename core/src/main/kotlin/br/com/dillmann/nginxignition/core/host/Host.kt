@@ -6,6 +6,7 @@ data class Host(
     val id: UUID,
     val enabled: Boolean,
     val defaultServer: Boolean,
+    val useGlobalBindings: Boolean,
     val domainNames: List<String>?,
     val routes: List<Route>,
     val bindings: List<Binding>,

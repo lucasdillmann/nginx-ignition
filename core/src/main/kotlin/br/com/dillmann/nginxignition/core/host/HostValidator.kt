@@ -2,17 +2,17 @@ package br.com.dillmann.nginxignition.core.host
 
 import br.com.dillmann.nginxignition.core.certificate.CertificateRepository
 import br.com.dillmann.nginxignition.core.common.GlobalConstants.TLD_PATTERN
-import br.com.dillmann.nginxignition.core.common.validation.ConsistencyException
+import br.com.dillmann.nginxignition.core.common.validation.ConsistencyValidator
+import br.com.dillmann.nginxignition.core.common.validation.ErrorCreator
 import org.apache.commons.validator.routines.InetAddressValidator
 import java.net.URI
-
-private typealias ErrorCreator = (String, String) -> Unit
 
 internal class HostValidator(
     private val hostRepository: HostRepository,
     private val certificateRepository: CertificateRepository,
-) {
+): ConsistencyValidator() {
     private companion object {
+        private const val BINDINGS_PATH = "bindings"
         private const val MINIMUM_PORT = 1
         private const val MAXIMUM_PORT = 65535
         private const val MINIMUM_REDIRECT_STATUS_CODE = 300
@@ -22,16 +22,12 @@ internal class HostValidator(
     }
 
     suspend fun validate(host: Host) {
-        val violations = mutableListOf<ConsistencyException.Violation>()
-        val addError: ErrorCreator = { path, message -> violations += ConsistencyException.Violation(path, message) }
-
-        validateDefaultFlag(host, addError)
-        validateDomainNames(host, addError)
-        validateRoutes(host, addError)
-        validateBindings(host, addError)
-
-        if (violations.isNotEmpty())
-            throw ConsistencyException(violations)
+        withValidationScope { addError ->
+            validateDefaultFlag(host, addError)
+            validateDomainNames(host, addError)
+            validateRoutes(host, addError)
+            validateBindings(host, addError)
+        }
     }
 
     private suspend fun validateDefaultFlag(host: Host, addError: ErrorCreator) {
@@ -56,22 +52,27 @@ internal class HostValidator(
     }
 
     private suspend fun validateBindings(host: Host, addError: ErrorCreator) {
-        if (host.bindings.isEmpty())
-            addError("bindings", "At least one binding must be informed")
+        if (host.useGlobalBindings && host.bindings.isNotEmpty())
+            addError(BINDINGS_PATH, "Must be empty when using global bindings")
 
-        host.bindings.forEachIndexed { index, binding ->
-            validateBinding(binding, index, addError)
+        if (!host.useGlobalBindings) {
+            if (host.bindings.isEmpty())
+                addError(BINDINGS_PATH, "At least one binding must be informed")
+
+            host.bindings.forEachIndexed { index, binding ->
+                validateBinding(BINDINGS_PATH, binding, index, addError)
+            }
         }
     }
 
-    private suspend fun validateBinding(binding: Host.Binding, index: Int, addError: ErrorCreator) {
+    suspend fun validateBinding(pathPrefix: String, binding: Host.Binding, index: Int, addError: ErrorCreator) {
         if (!InetAddressValidator.getInstance().isValid(binding.ip))
-            addError("bindings[$index].ip", "Not a valid IPv4 or IPv6 address")
+            addError("$pathPrefix[$index].ip", "Not a valid IPv4 or IPv6 address")
 
         if (binding.port !in MINIMUM_PORT..MAXIMUM_PORT)
-            addError("bindings[$index].port", "Value must be between $MINIMUM_PORT and $MAXIMUM_PORT")
+            addError("$pathPrefix[$index].port", "Value must be between $MINIMUM_PORT and $MAXIMUM_PORT")
 
-        val certificateIdField = "bindings[$index].certificateId"
+        val certificateIdField = "$pathPrefix[$index].certificateId"
         when {
             binding.type == Host.BindingType.HTTP && binding.certificateId != null ->
                 addError(certificateIdField, "Value cannot be informed for a HTTP binding")
