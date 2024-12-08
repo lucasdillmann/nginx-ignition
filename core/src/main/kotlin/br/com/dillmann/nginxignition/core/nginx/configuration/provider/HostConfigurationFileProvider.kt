@@ -3,9 +3,11 @@ package br.com.dillmann.nginxignition.core.nginx.configuration.provider
 import br.com.dillmann.nginxignition.core.host.Host
 import br.com.dillmann.nginxignition.core.integration.IntegrationService
 import br.com.dillmann.nginxignition.core.nginx.configuration.NginxConfigurationFileProvider
+import br.com.dillmann.nginxignition.core.settings.SettingsRepository
 
 internal class HostConfigurationFileProvider(
     private val integrationService: IntegrationService,
+    private val settingsService: SettingsRepository,
 ): NginxConfigurationFileProvider {
     override suspend fun provide(basePath: String, hosts: List<Host>): List<NginxConfigurationFileProvider.Output> =
         hosts.filter { it.enabled }.map { buildHost(basePath, it) }
@@ -28,9 +30,10 @@ internal class HostConfigurationFileProvider(
             if (host.featureSet.http2Support) "http2 on;"
             else ""
 
-        val contents = host.bindings.joinToString("\n") {
-            buildBinding(basePath, host, it, routes, serverNames, httpsRedirect, http2)
-        }
+        val contents = host
+            .bindings
+            .map { buildBinding(basePath, host, it, routes, serverNames, httpsRedirect, http2) }
+            .joinToString("\n")
 
         return NginxConfigurationFileProvider.Output(
             name = "host-${host.id}.conf",
@@ -38,7 +41,7 @@ internal class HostConfigurationFileProvider(
         )
     }
 
-    private fun buildBinding(
+    private suspend fun buildBinding(
         basePath: String,
         host: Host,
         binding: Host.Binding,
@@ -65,13 +68,24 @@ internal class HostConfigurationFileProvider(
             if (binding.type == Host.BindingType.HTTP) httpsRedirect
             else ""
 
+        val settings = settingsService.get().nginx
+        val logs = settings.logs
+
         return """
             server {
                 root /dev/null;
-                access_log $basePath/logs/host-${host.id}.access.log;
-                error_log $basePath/logs/host-${host.id}.error.log;
-                gzip on;
-                client_max_body_size 1024G;
+                access_log ${
+                    if(logs.accessLogsEnabled) "$basePath/logs/host-${host.id}.access.log" 
+                    else "off"
+                };
+                error_log ${
+                    if(logs.errorLogsEnabled) 
+                        "$basePath/logs/host-${host.id}.error.log ${logs.errorLogsLevel.name.lowercase()}" 
+                    else 
+                        "off"
+                };
+                gzip ${enabledFlag(settings.gzipEnabled)};
+                client_max_body_size ${settings.maximumBodySizeMb}M;
                 
                 $conditionalHttpsRedirect
                 $http2
@@ -89,7 +103,6 @@ internal class HostConfigurationFileProvider(
 
         return additionalParams
     }
-
 
     private suspend fun buildRoute(route: Host.Route, features: Host.FeatureSet): String =
         when (route.type) {
@@ -158,4 +171,6 @@ internal class HostConfigurationFileProvider(
 
     private fun String.scape() =
         replace("\"", "\\\"")
+
+    private fun enabledFlag(value: Boolean) = if (value) "on" else "off"
 }

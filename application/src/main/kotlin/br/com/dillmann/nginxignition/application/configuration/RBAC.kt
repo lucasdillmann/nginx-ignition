@@ -16,10 +16,7 @@ fun Application.configureRbac() {
             realm = RbacJwtFacade.UNIQUE_IDENTIFIER
             verifier(rbacJwt.buildVerifier())
             validate { rbacJwt.checkCredentials(it) }
-            challenge { _, _ ->
-                val payload = mapOf("message" to "Invalid or expired JWT token")
-                call.respond(HttpStatusCode.Unauthorized, payload)
-            }
+            challenge { _, _ -> call.respond(HttpStatusCode.Unauthorized) }
         }
     }
 }

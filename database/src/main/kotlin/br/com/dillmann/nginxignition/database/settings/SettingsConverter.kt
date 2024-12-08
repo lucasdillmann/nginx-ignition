@@ -14,15 +14,21 @@ internal class SettingsConverter {
     fun apply(settings: Settings.NginxSettings, scope: UpdateStatement) {
         with(SettingsNginxTable) {
             scope[workerProcesses] = settings.workerProcesses
+            scope[workerConnections] = settings.workerConnections
             scope[serverTokensEnabled] = settings.serverTokensEnabled
+            scope[sendfileEnabled] = settings.sendfileEnabled
+            scope[gzipEnabled] = settings.gzipEnabled
+            scope[defaultContentType] = settings.defaultContentType
+            scope[maximumBodySizeMb] = settings.maximumBodySizeMb
             scope[readTimeout] = settings.timeouts.read
             scope[connectTimeout] = settings.timeouts.connect
             scope[sendTimeout] = settings.timeouts.send
+            scope[keepaliveTimeout] = settings.timeouts.keepalive
             scope[serverLogsEnabled] = settings.logs.serverLogsEnabled
+            scope[serverLogsLevel] = settings.logs.serverLogsLevel.name
             scope[accessLogsEnabled] = settings.logs.accessLogsEnabled
-            scope[accessLogsFormat] = settings.logs.accessLogsFormat
             scope[errorLogsEnabled] = settings.logs.errorLogsEnabled
-            scope[errorLogsFormat] = settings.logs.errorLogsFormat
+            scope[errorLogsLevel] = settings.logs.errorLogsLevel.name
         }
     }
 
@@ -57,18 +63,24 @@ internal class SettingsConverter {
         with(SettingsNginxTable) {
             Settings.NginxSettings(
                 workerProcesses = settings[workerProcesses],
+                workerConnections = settings[workerConnections],
                 serverTokensEnabled = settings[serverTokensEnabled],
+                maximumBodySizeMb = settings[maximumBodySizeMb],
+                defaultContentType = settings[defaultContentType],
+                sendfileEnabled = settings[sendfileEnabled],
+                gzipEnabled = settings[gzipEnabled],
                 timeouts = Settings.NginxTimeouts(
                     read = settings[readTimeout],
                     connect = settings[connectTimeout],
                     send = settings[sendTimeout],
+                    keepalive = settings[keepaliveTimeout],
                 ),
                 logs = Settings.NginxLogs(
                     serverLogsEnabled = settings[serverLogsEnabled],
+                    serverLogsLevel = settings[serverLogsLevel].let(Settings.LogLevel::valueOf),
                     accessLogsEnabled = settings[accessLogsEnabled],
-                    accessLogsFormat = settings[accessLogsFormat],
                     errorLogsEnabled = settings[errorLogsEnabled],
-                    errorLogsFormat = settings[errorLogsFormat],
+                    errorLogsLevel = settings[errorLogsLevel].let(Settings.LogLevel::valueOf),
                 ),
             )
         }

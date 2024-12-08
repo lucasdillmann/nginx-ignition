@@ -1,6 +1,6 @@
 create table settings_global_binding (
     id uuid not null,
-    type varchar(64) not null,
+    "type" varchar(64) not null,
     ip varchar(256) not null,
     port integer not null,
     certificate_id uuid,
@@ -12,36 +12,48 @@ insert into settings_global_binding values (
     'ccdb59e0-8641-4816-9c21-472a93c4095a',
     'HTTP',
     '0.0.0.0',
-    '80',
+    80,
     null
 );
 
 create table settings_nginx (
     id uuid not null,
     worker_processes integer not null,
+    worker_connections integer not null,
     server_tokens_enabled boolean not null,
+    sendfile_enabled boolean not null,
+    gzip_enabled boolean not null,
+    default_content_type varchar(128) not null,
+    maximum_body_size_mb integer not null,
     read_timeout integer not null,
     connect_timeout integer not null,
     send_timeout integer not null,
+    keepalive_timeout integer not null,
     server_logs_enabled boolean not null,
+    server_logs_level varchar(8) not null,
     access_logs_enabled boolean not null,
-    access_logs_format varchar(512),
     error_logs_enabled boolean not null,
-    error_logs_format varchar(512)
+    error_logs_level varchar(8) not null
 );
 
 insert into settings_nginx values (
     '5fb063d8-343c-42de-bf48-823e71cfb86b',
     2,
+    1024,
     false,
+    true,
+    true,
+    'application/octet-stream',
+    1024,
     300,
     5,
     300,
+    300,
+    true,
+    'ERROR',
     true,
     true,
-    null,
-    true,
-    null
+    'ERROR'
 );
 
 create table settings_log_rotation (

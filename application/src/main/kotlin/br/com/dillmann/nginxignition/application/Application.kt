@@ -11,14 +11,20 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    logger("Application").info("Welcome to nginx ignition")
+    val logger = logger("Application")
+    logger.info("Welcome to nginx ignition")
 
-    runBlocking {
-        configureKoin()
-        configureRbac()
-        configureHttp()
-        configureRoutes()
-        configureExceptionHandling()
-        configureLifecycle()
+    try {
+        runBlocking {
+            configureKoin()
+            configureRbac()
+            configureHttp()
+            configureRoutes()
+            configureExceptionHandling()
+            configureLifecycle()
+        }
+    } catch (ex: Exception) {
+        logger.error("Application startup failed", ex)
+        Runtime.getRuntime().halt(1)
     }
 }

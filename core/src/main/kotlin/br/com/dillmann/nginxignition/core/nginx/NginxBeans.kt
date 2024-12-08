@@ -29,8 +29,8 @@ internal fun Module.nginxBeans() {
     single { NginxSemaphore() }
     single { NginxLogReader(get()) }
     single { NginxConfigurationFacade(get(), getAll(), get()) }
-    single { MainConfigurationFileProvider() } bind NginxConfigurationFileProvider::class
+    single { MainConfigurationFileProvider(get()) } bind NginxConfigurationFileProvider::class
     single { MimeTypesConfigurationFileProvider() } bind NginxConfigurationFileProvider::class
-    single { HostConfigurationFileProvider(get()) } bind NginxConfigurationFileProvider::class
+    single { HostConfigurationFileProvider(get(), get()) } bind NginxConfigurationFileProvider::class
     single { HostCertificateFileProvider(get()) } bind NginxConfigurationFileProvider::class
 }

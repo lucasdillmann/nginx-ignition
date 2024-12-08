@@ -5,7 +5,7 @@ export default class SettingsPage extends React.PureComponent {
     componentDidMount() {
         AppShellContext.get().updateConfig({
             title: "Settings",
-            subtitle: "Globals settings for the nginx server",
+            subtitle: "Globals settings for the nginx server and nginx ignition",
         })
     }
 

@@ -25,22 +25,36 @@ data class Settings(
         val logs: NginxLogs,
         val timeouts: NginxTimeouts,
         val workerProcesses: Int,
+        val workerConnections: Int,
+        val defaultContentType: String,
         val serverTokensEnabled: Boolean,
+        val maximumBodySizeMb: Int,
+        val sendfileEnabled: Boolean,
+        val gzipEnabled: Boolean,
     )
 
     data class NginxTimeouts(
         val read: Int,
         val connect: Int,
         val send: Int,
+        val keepalive: Int,
     )
 
     data class NginxLogs(
         val serverLogsEnabled: Boolean,
+        val serverLogsLevel: LogLevel,
         val accessLogsEnabled: Boolean,
-        val accessLogsFormat: String?,
         val errorLogsEnabled: Boolean,
-        val errorLogsFormat: String?,
+        val errorLogsLevel: LogLevel,
     )
+
+    enum class LogLevel {
+        WARN,
+        ERROR,
+        CRIT,
+        ALERT,
+        EMERG,
+    }
 
     enum class TimeUnit {
         MINUTES,

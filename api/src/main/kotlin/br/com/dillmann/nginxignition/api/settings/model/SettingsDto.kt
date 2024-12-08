@@ -31,7 +31,12 @@ internal data class SettingsDto(
         val logs: NginxLogs,
         val timeouts: NginxTimeouts,
         val workerProcesses: Int,
+        val workerConnections: Int,
         val serverTokensEnabled: Boolean,
+        val sendfileEnabled: Boolean,
+        val gzipEnabled: Boolean,
+        val defaultContentType: String,
+        val maximumBodySizeMb: Int,
     )
 
     @Serializable
@@ -39,14 +44,15 @@ internal data class SettingsDto(
         val read: Int,
         val connect: Int,
         val send: Int,
+        val keepalive: Int,
     )
 
     @Serializable
     data class NginxLogs(
         val serverLogsEnabled: Boolean,
+        val serverLogsLevel: Settings.LogLevel,
         val accessLogsEnabled: Boolean,
-        val accessLogsFormat: String? = null,
         val errorLogsEnabled: Boolean,
-        val errorLogsFormat: String? = null,
+        val errorLogsLevel: Settings.LogLevel,
     )
 }

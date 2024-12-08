@@ -6,6 +6,14 @@ export enum TimeUnit {
     DAYS = "DAYS",
 }
 
+export enum LogLevel {
+    WARN = "WARN",
+    ERROR = "ERROR",
+    CRIT = "CRIT",
+    ALERT = "ALERT",
+    EMERG = "EMERG",
+}
+
 export interface CertificateAutoRenewSettingsDto {
     enabled: boolean
     intervalUnit: TimeUnit
@@ -23,21 +31,27 @@ export interface NginxTimeoutsSettingsDto {
     read: number
     connect: number
     send: number
+    keepalive: number
 }
 
 export interface NginxLogsSettingsDto {
     serverLogsEnabled: boolean
+    serverLogsLevel: LogLevel
     accessLogsEnabled: boolean
-    accessLogsFormat?: string
     errorLogsEnabled: boolean
-    errorLogsFormat?: string
+    errorLogsLevel: LogLevel
 }
 
 export interface NginxSettingsDto {
     logs: NginxLogsSettingsDto
     timeouts: NginxTimeoutsSettingsDto
     workerProcesses: number
+    workerConnections: number
     serverTokensEnabled: boolean
+    sendfileEnabled: boolean
+    gzipEnabled: boolean
+    maximumBodySizeMb: number
+    defaultContentType: string
 }
 
 export default interface SettingsDto {

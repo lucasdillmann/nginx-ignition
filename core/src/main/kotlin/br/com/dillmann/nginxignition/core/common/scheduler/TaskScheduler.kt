@@ -48,6 +48,8 @@ internal class TaskScheduler(private val tasks: List<ScheduledTask>) {
         } catch (ex: Exception) {
             logger.warn("Task scheduler graceful shutdown failed", ex)
         }
+
+        logger.info("Task scheduler stopped")
     }
 
     private fun buildTaskProxy(task: ScheduledTask): Runnable =
