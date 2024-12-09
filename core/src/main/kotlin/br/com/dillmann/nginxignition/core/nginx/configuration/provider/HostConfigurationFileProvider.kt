@@ -30,8 +30,10 @@ internal class HostConfigurationFileProvider(
             if (host.featureSet.http2Support) "http2 on;"
             else ""
 
-        val contents = host
-            .bindings
+        val bindings =
+            if (host.useGlobalBindings) settingsService.get().globalBindings
+            else host.bindings
+        val contents = bindings
             .map { buildBinding(basePath, host, it, routes, serverNames, httpsRedirect, http2) }
             .joinToString("\n")
 

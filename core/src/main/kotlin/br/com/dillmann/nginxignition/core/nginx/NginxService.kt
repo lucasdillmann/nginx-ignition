@@ -3,6 +3,7 @@ package br.com.dillmann.nginxignition.core.nginx
 import br.com.dillmann.nginxignition.core.nginx.command.*
 import br.com.dillmann.nginxignition.core.nginx.configuration.NginxConfigurationFacade
 import br.com.dillmann.nginxignition.core.nginx.log.NginxLogReader
+import br.com.dillmann.nginxignition.core.nginx.log.NginxLogRotator
 import java.util.*
 
 internal class NginxService(
@@ -10,6 +11,7 @@ internal class NginxService(
     private val processManager: NginxProcessManager,
     private val semaphore: NginxSemaphore,
     private val logReader: NginxLogReader,
+    private val logRotator: NginxLogRotator,
 ): ReloadNginxCommand, StartNginxCommand, StopNginxCommand, GetStatusNginxCommand,
    GetNginxHostLogsCommand, GetNginxMainLogsCommand {
 
@@ -47,4 +49,8 @@ internal class NginxService(
 
     override suspend fun getMainLogs(lines: Int): List<String> =
         logReader.read("main.log", lines)
+
+    fun rotateLogs() {
+        logRotator.rotate()
+    }
 }

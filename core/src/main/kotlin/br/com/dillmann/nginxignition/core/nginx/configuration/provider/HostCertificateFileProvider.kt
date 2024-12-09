@@ -4,10 +4,12 @@ import br.com.dillmann.nginxignition.core.certificate.CertificateRepository
 import br.com.dillmann.nginxignition.core.common.extensions.decodeBase64
 import br.com.dillmann.nginxignition.core.host.Host
 import br.com.dillmann.nginxignition.core.nginx.configuration.NginxConfigurationFileProvider
+import br.com.dillmann.nginxignition.core.settings.SettingsRepository
 import java.util.*
 
 internal class HostCertificateFileProvider(
     private val certificateRepository: CertificateRepository,
+    private val settingsRepository: SettingsRepository,
 ): NginxConfigurationFileProvider {
     private companion object {
         private const val LINE_LENGTH = 64
@@ -18,13 +20,14 @@ internal class HostCertificateFileProvider(
         private const val PUBLIC_KEY_FOOTER = "-----END CERTIFICATE-----"
     }
 
-    override suspend fun provide(basePath: String, hosts: List<Host>): List<NginxConfigurationFileProvider.Output> =
-        hosts
-            .flatMap { it.bindings }
+    override suspend fun provide(basePath: String, hosts: List<Host>): List<NginxConfigurationFileProvider.Output> {
+        val bindings = hosts.flatMap { it.bindings } + settingsRepository.get().globalBindings
+        return bindings
             .filter { it.type == Host.BindingType.HTTPS }
             .mapNotNull { it.certificateId }
             .distinct()
             .map { buildCertificateFile(it) }
+    }
 
     private suspend fun buildCertificateFile(certificateId: UUID, ): NginxConfigurationFileProvider.Output {
         val certificate = certificateRepository.findById(certificateId)
