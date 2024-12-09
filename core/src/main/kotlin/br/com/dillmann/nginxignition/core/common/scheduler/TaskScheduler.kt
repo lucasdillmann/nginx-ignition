@@ -19,17 +19,18 @@ internal class TaskScheduler(private val tasks: List<ScheduledTask>) {
         shutdownDelegateIfNeeded()
     }
 
-    fun startOrReload() {
+    suspend fun startOrReload() {
         shutdownDelegateIfNeeded()
         delegate = Executors.newScheduledThreadPool(4)
 
         tasks.forEach { task ->
-            val (unit, interval, initialDelay) = task.schedule()
+            val (enabled, unit, interval, initialDelay) = task.schedule()
+            if (!enabled) return@forEach
 
             delegate.scheduleAtFixedRate(
                 buildTaskProxy(task),
-                initialDelay,
-                interval,
+                initialDelay.toLong(),
+                interval.toLong(),
                 unit,
             )
 

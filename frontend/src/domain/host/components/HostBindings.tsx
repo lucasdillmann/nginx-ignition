@@ -20,8 +20,10 @@ const DEFAULT_VALUES: HostFormBinding = {
 }
 
 export interface HostBindingsProps {
+    pathPrefix: string
     bindings: HostFormBinding[]
     validationResult: ValidationResult
+    className?: string
 }
 
 export default class HostBindings extends React.Component<HostBindingsProps> {
@@ -41,7 +43,7 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
     }
 
     private renderBinding(field: FormListFieldData, operations: FormListOperation, index: number, totalAmount: number) {
-        const { validationResult, bindings } = this.props
+        const { validationResult, bindings, pathPrefix } = this.props
         const { name } = field
 
         return (
@@ -51,8 +53,8 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     className="host-form-binding-protocol"
                     layout="vertical"
                     name={[name, "type"]}
-                    validateStatus={validationResult.getStatus(`bindings[${index}].type`)}
-                    help={validationResult.getMessage(`bindings[${index}].type`)}
+                    validateStatus={validationResult.getStatus(`${pathPrefix}[${index}].type`)}
+                    help={validationResult.getMessage(`${pathPrefix}[${index}].type`)}
                     label={index === 0 ? "Protocol" : undefined}
                     required
                 >
@@ -66,8 +68,8 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     className="host-form-binding-ip"
                     layout="vertical"
                     name={[name, "ip"]}
-                    validateStatus={validationResult.getStatus(`bindings[${index}].ip`)}
-                    help={validationResult.getMessage(`bindings[${index}].ip`)}
+                    validateStatus={validationResult.getStatus(`${pathPrefix}[${index}].ip`)}
+                    help={validationResult.getMessage(`${pathPrefix}[${index}].ip`)}
                     label={index === 0 ? "IP address" : undefined}
                     required
                 >
@@ -78,8 +80,8 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     className="host-form-binding-port"
                     layout="vertical"
                     name={[name, "port"]}
-                    validateStatus={validationResult.getStatus(`bindings[${index}].port`)}
-                    help={validationResult.getMessage(`bindings[${index}].port`)}
+                    validateStatus={validationResult.getStatus(`${pathPrefix}[${index}].port`)}
+                    help={validationResult.getMessage(`${pathPrefix}[${index}].port`)}
                     label={index === 0 ? "Port" : undefined}
                     required
                 >
@@ -91,8 +93,8 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     className="host-form-binding-certificate"
                     layout="vertical"
                     name={[name, "certificate"]}
-                    validateStatus={validationResult.getStatus(`bindings[${index}].certificateId`)}
-                    help={validationResult.getMessage(`bindings[${index}].certificateId`)}
+                    validateStatus={validationResult.getStatus(`${pathPrefix}[${index}].certificateId`)}
+                    help={validationResult.getMessage(`${pathPrefix}[${index}].certificateId`)}
                     label={index === 0 ? "SSL certificate" : undefined}
                     required
                 >
@@ -134,6 +136,13 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
     }
 
     render() {
-        return <Form.List name="bindings">{(fields, operations) => this.renderBindings(fields, operations)}</Form.List>
+        const { pathPrefix, className } = this.props
+        return (
+            <div className={className}>
+                <Form.List name={pathPrefix}>
+                    {(fields, operations) => this.renderBindings(fields, operations)}
+                </Form.List>
+            </div>
+        )
     }
 }

@@ -33,6 +33,7 @@ export interface HostFormRouteIntegration {
 export default interface HostFormValues {
     enabled: boolean
     defaultServer: boolean
+    useGlobalBindings: boolean
     domainNames: string[]
     routes: HostFormRoute[]
     bindings: HostFormBinding[]

@@ -4,16 +4,13 @@ import java.util.concurrent.TimeUnit
 
 interface ScheduledTask {
     data class Schedule(
+        val enabled: Boolean,
         val unit: TimeUnit,
-        val interval: Long,
-        val initialDelay: Long,
+        val interval: Int,
+        val initialDelay: Int,
     )
 
-    fun schedule(): Schedule
-
-    fun onScheduleStarted() {
-        // no-op by default
-    }
-
     suspend fun run()
+    suspend fun schedule(): Schedule
+    suspend fun onScheduleStarted()
 }

@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 internal data class HostRequest(
     val enabled: Boolean,
     val defaultServer: Boolean,
+    val useGlobalBindings: Boolean,
     val domainNames: List<String> = emptyList(),
     val routes: List<Route> = emptyList(),
     val bindings: List<Binding> = emptyList(),

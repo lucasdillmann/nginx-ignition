@@ -26,6 +26,7 @@ import If from "../../core/components/flowcontrol/If"
 const DEFAULT_HOST: HostFormValues = {
     enabled: true,
     defaultServer: false,
+    useGlobalBindings: true,
     domainNames: [""],
     bindings: [
         {
@@ -143,12 +144,19 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     private handleChange(host: HostFormValues) {
-        const sortedRoutes = host.routes.sort((left, right) => (left.priority > right.priority ? 1 : -1))
+        const { bindings, routes, useGlobalBindings } = host
+
+        const injectBindingNeeded = !useGlobalBindings && bindings.length === 0
+        const sortedRoutes = routes.sort((left, right) => (left.priority > right.priority ? 1 : -1))
         const orderedData: HostFormValues = {
             ...host,
             routes: sortedRoutes,
+            bindings: injectBindingNeeded ? DEFAULT_HOST.bindings : bindings,
         }
-        this.setState({ formValues: orderedData })
+
+        this.setState({ formValues: orderedData }, () => {
+            if (injectBindingNeeded) this.formRef.current?.resetFields()
+        })
     }
 
     private removeRoute(index: number) {
@@ -266,7 +274,23 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                 <p className="hosts-form-section-help-text">
                     Relation of IPs and ports where the host will listen for requests
                 </p>
-                <HostBindings bindings={formValues.bindings} validationResult={validationResult} />
+                <Form.Item
+                    name="useGlobalBindings"
+                    validateStatus={validationResult.getStatus("useGlobalBindings")}
+                    help={validationResult.getMessage("useGlobalBindings")}
+                    label="Use global bindings"
+                    wrapperCol={{ style: { flexGrow: 0, minWidth: 65 } }}
+                    labelCol={{ style: { order: 2, flexGrow: 1 } }}
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                <HostBindings
+                    className={formValues.useGlobalBindings ? "hosts-form-invisible-input" : undefined}
+                    pathPrefix="bindings"
+                    bindings={formValues.bindings}
+                    validationResult={validationResult}
+                />
             </Form>
         )
     }

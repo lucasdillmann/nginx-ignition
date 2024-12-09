@@ -31,7 +31,6 @@ nginx-ignition:
       renew-window-seconds: 900
 
   certificate:
-    auto-renew-interval-minutes: 60
     lets-encrypt:
       production: true
 
