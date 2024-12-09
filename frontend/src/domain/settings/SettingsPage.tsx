@@ -71,6 +71,35 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
         this.setState({ formValues })
     }
 
+    private renderExecutionIntervalFieldset(pathPrefix: string) {
+        const { validationResult } = this.state
+        return (
+            <Form.Item label="Execution interval" required>
+                <Space.Compact>
+                    <Form.Item
+                        name={[pathPrefix, "intervalUnitCount"]}
+                        validateStatus={validationResult.getStatus(`${pathPrefix}.intervalUnitCount`)}
+                        help={validationResult.getMessage(`${pathPrefix}.intervalUnitCount`)}
+                    >
+                        <InputNumber min={1} max={INTEGER_MAX} />
+                    </Form.Item>
+                    <Form.Item
+                        name={[pathPrefix, "intervalUnit"]}
+                        validateStatus={validationResult.getStatus(`${pathPrefix}.intervalUnit`)}
+                        help={validationResult.getMessage(`${pathPrefix}.intervalUnit`)}
+                        style={{ minWidth: 100 }}
+                    >
+                        <Select>
+                            <Select.Option value={TimeUnit.DAYS}>days</Select.Option>
+                            <Select.Option value={TimeUnit.HOURS}>hours</Select.Option>
+                            <Select.Option value={TimeUnit.MINUTES}>minutes</Select.Option>
+                        </Select>
+                    </Form.Item>
+                </Space.Compact>
+            </Form.Item>
+        )
+    }
+
     private renderScheduledTasksFormPortion() {
         const { validationResult } = this.state
         return (
@@ -96,29 +125,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
                 >
                     <InputNumber min={0} max={10000} />
                 </Form.Item>
-                <Form.Item label="Execution interval" required>
-                    <Space.Compact>
-                        <Form.Item
-                            name={["logRotation", "intervalUnitCount"]}
-                            validateStatus={validationResult.getStatus("logRotation.intervalUnitCount")}
-                            help={validationResult.getMessage("logRotation.intervalUnitCount")}
-                        >
-                            <InputNumber min={1} max={INTEGER_MAX} />
-                        </Form.Item>
-                        <Form.Item
-                            name={["logRotation", "intervalUnit"]}
-                            validateStatus={validationResult.getStatus("logRotation.intervalUnit")}
-                            help={validationResult.getMessage("logRotation.intervalUnit")}
-                            style={{ minWidth: 100 }}
-                        >
-                            <Select>
-                                <Select.Option value={TimeUnit.DAYS}>days</Select.Option>
-                                <Select.Option value={TimeUnit.HOURS}>hours</Select.Option>
-                                <Select.Option value={TimeUnit.MINUTES}>minutes</Select.Option>
-                            </Select>
-                        </Form.Item>
-                    </Space.Compact>
-                </Form.Item>
+                {this.renderExecutionIntervalFieldset("logRotation")}
                 <h3 className="settings-form-subsection-name">SSL certificates auto renew</h3>
                 <Form.Item
                     name={["certificateAutoRenew", "enabled"]}
@@ -129,30 +136,40 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
                 >
                     <Switch />
                 </Form.Item>
-                <Form.Item label="Execution interval" required>
-                    <Space.Compact>
-                        <Form.Item
-                            name={["certificateAutoRenew", "intervalUnitCount"]}
-                            validateStatus={validationResult.getStatus("certificateAutoRenew.intervalUnitCount")}
-                            help={validationResult.getMessage("certificateAutoRenew.intervalUnitCount")}
-                        >
-                            <InputNumber min={1} max={INTEGER_MAX} />
-                        </Form.Item>
-                        <Form.Item
-                            name={["certificateAutoRenew", "intervalUnit"]}
-                            validateStatus={validationResult.getStatus("certificateAutoRenew.intervalUnit")}
-                            help={validationResult.getMessage("certificateAutoRenew.intervalUnit")}
-                            style={{ minWidth: 100 }}
-                        >
-                            <Select>
-                                <Select.Option value={TimeUnit.DAYS}>days</Select.Option>
-                                <Select.Option value={TimeUnit.HOURS}>hours</Select.Option>
-                                <Select.Option value={TimeUnit.MINUTES}>minutes</Select.Option>
-                            </Select>
-                        </Form.Item>
-                    </Space.Compact>
-                </Form.Item>
+                {this.renderExecutionIntervalFieldset("certificateAutoRenew")}
             </Flex>
+        )
+    }
+
+    private renderErrorLogFieldset(enabledField: string, levelField: string) {
+        const { validationResult } = this.state
+        return (
+            <>
+                <Form.Item
+                    name={["nginx", "logs", enabledField]}
+                    validateStatus={validationResult.getStatus(`nginx.logs.${enabledField}`)}
+                    help={validationResult.getMessage(`nginx.logs.${enabledField}`)}
+                    label="Error logs enabled"
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                <Form.Item
+                    name={["nginx", "logs", levelField]}
+                    validateStatus={validationResult.getStatus(`nginx.logs.${levelField}`)}
+                    help={validationResult.getMessage(`nginx.logs.${levelField}`)}
+                    label="Level"
+                    required
+                >
+                    <Select>
+                        <Select.Option value={LogLevel.WARN}>warn</Select.Option>
+                        <Select.Option value={LogLevel.ALERT}>alert</Select.Option>
+                        <Select.Option value={LogLevel.ERROR}>error</Select.Option>
+                        <Select.Option value={LogLevel.CRIT}>crit</Select.Option>
+                        <Select.Option value={LogLevel.EMERG}>emerg</Select.Option>
+                    </Select>
+                </Form.Item>
+            </>
         )
     }
 
@@ -165,30 +182,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
                     Logging settings for the nginx server and virtual hosts
                 </p>
                 <h3 className="settings-form-subsection-name">Server</h3>
-                <Form.Item
-                    name={["nginx", "logs", "serverLogsEnabled"]}
-                    validateStatus={validationResult.getStatus("nginx.logs.serverLogsEnabled")}
-                    help={validationResult.getMessage("nginx.logs.serverLogsEnabled")}
-                    label="Error logs enabled"
-                    required
-                >
-                    <Switch />
-                </Form.Item>
-                <Form.Item
-                    name={["nginx", "logs", "serverLogsLevel"]}
-                    validateStatus={validationResult.getStatus("nginx.logs.serverLogsLevel")}
-                    help={validationResult.getMessage("nginx.logs.serverLogsLevel")}
-                    label="Level"
-                    required
-                >
-                    <Select>
-                        <Select.Option value={LogLevel.WARN}>warn</Select.Option>
-                        <Select.Option value={LogLevel.ALERT}>alert</Select.Option>
-                        <Select.Option value={LogLevel.ERROR}>error</Select.Option>
-                        <Select.Option value={LogLevel.CRIT}>crit</Select.Option>
-                        <Select.Option value={LogLevel.EMERG}>emerg</Select.Option>
-                    </Select>
-                </Form.Item>
+                {this.renderErrorLogFieldset("serverLogsEnabled", "serverLogsLevel")}
 
                 <h3 className="settings-form-subsection-name">Virtual hosts</h3>
                 <Form.Item
@@ -200,30 +194,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
                 >
                     <Switch />
                 </Form.Item>
-                <Form.Item
-                    name={["nginx", "logs", "errorLogsEnabled"]}
-                    validateStatus={validationResult.getStatus("nginx.logs.errorLogsEnabled")}
-                    help={validationResult.getMessage("nginx.logs.errorLogsEnabled")}
-                    label="Error logs enabled"
-                    required
-                >
-                    <Switch />
-                </Form.Item>
-                <Form.Item
-                    name={["nginx", "logs", "errorLogsLevel"]}
-                    validateStatus={validationResult.getStatus("nginx.logs.errorLogsLevel")}
-                    help={validationResult.getMessage("nginx.logs.errorLogsLevel")}
-                    label="Level"
-                    required
-                >
-                    <Select>
-                        <Select.Option value={LogLevel.WARN}>warn</Select.Option>
-                        <Select.Option value={LogLevel.ALERT}>alert</Select.Option>
-                        <Select.Option value={LogLevel.ERROR}>error</Select.Option>
-                        <Select.Option value={LogLevel.CRIT}>crit</Select.Option>
-                        <Select.Option value={LogLevel.EMERG}>emerg</Select.Option>
-                    </Select>
-                </Form.Item>
+                {this.renderErrorLogFieldset("errorLogsEnabled", "errorLogsLevel")}
             </Flex>
         )
     }
