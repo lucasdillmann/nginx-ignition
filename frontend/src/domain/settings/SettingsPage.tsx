@@ -49,12 +49,11 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
             .save(settings)
             .then(() => this.handleSuccess())
             .catch(error => this.handleError(error))
-            .then(() => this.saveModal.close())
     }
 
     private async handleSuccess() {
         Notification.success("Settings saved", "Global settings were updated successfully")
-
+        this.saveModal.close()
         return ReloadNginxAction.execute()
     }
 
@@ -65,6 +64,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
         }
 
         Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        this.saveModal.close()
     }
 
     private handleChange(formValues: SettingsFormValues) {
