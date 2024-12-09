@@ -366,8 +366,8 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
             <>
                 <h2 className="settings-form-section-name">Global bindings</h2>
                 <p className="settings-form-section-help-text">
-                    Relation of IPs and ports where the host will listen for requests by default (can be overwritten on
-                    every host if needed)
+                    Relation of IPs and ports where the virtual hosts will listen for requests by default (can be
+                    overwritten on every host if needed)
                 </p>
                 <HostBindings
                     pathPrefix="globalBindings"
