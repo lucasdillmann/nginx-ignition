@@ -1,89 +1,82 @@
 .shell-container {
-    padding-left: 250px;
-    display: flex;
-    flex-grow: 1;
-    flex-shrink: 1;
     min-height: 100vh;
-    height: fit-content;
-}
-
-.shell-header {
-    padding: 0;
-    background: #fff;
 }
 
 .shell-sider-container {
-    position: fixed;
+    height: auto;
+    max-height: 100vh;
+    min-height: 575px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    position: sticky;
     top: 0;
     left: 0;
-    height: 100%;
 }
 
-.shell-title {
-    padding: 30px 20px 0;
-    margin: 0;
-}
-
-.shell-subtitle {
-    padding: 0 20px 0;
-    margin: 0;
-    font-weight: normal;
-    font-size: 16px;
-}
-
-.shell-content {
-    margin: 24px 0 0;
-    padding: 24px;
-    background: #fff;
-    border-radius: 4px;
+.shell-sider-container .ant-layout-sider-children {
     display: flex;
-    flex-grow: 1;
-    flex-shrink: 1;
     flex-direction: column;
 }
 
-.shell-toggle-button {
-    font-size: 16px;
-    width: 64px;
-    height: 64px;
-}
-
-.shell-logo {
+.shell-sider-logo {
     color: #fff;
     font-size: 18px;
-    padding: 62px 20px 20px;
+    padding: 58px 20px 20px;
 }
 
-.shell-logo-link {
+.shell-sider-logo-link {
     color: #fff;
     font-size: 26px;
 }
 
-.shell-menu-container {
-    margin-top: 20px;
+.shell-sider-menu-container {
+    flex-grow: 1;
 }
 
-.shell-menu-item {
+.shell-sider-menu-item {
     margin: 5px 10px !important;
     padding: 10px 10px 10px 15px !important;
     width: 225px !important;
-    border-radius: 4px;
+    border-radius: 4px !important;
 }
 
-.shell-actions-container {
-    align-items: center;
-    justify-content: end;
+.shell-content-header-container {
+    padding: 25px;
+    vertical-align: center;
+    position: sticky;
+    top: 0;
+    background: #f5f5f5;
+    z-index: 99;
+}
+
+.shell-content-header {
     flex-grow: 1;
-    flex-shrink: 1;
-    padding: 30px 20px 0;
 }
 
-.shell-actions-container button {
+.shell-content-header-title,
+.shell-content-header-subtitle {
+    padding: 0;
+    margin: 0;
+}
+
+.shell-content-header-subtitle {
+    font-weight: normal;
+    font-size: 16px;
+}
+
+.shell-content-header-actions-container {
+    padding-top: 20px;
+}
+
+.shell-content-actions-action-item {
     margin-left: 10px;
 }
 
-.shell-user-menu {
-    position: fixed;
-    bottom: 0;
-    width: 250px;
+.shell-content-main {
+    background: #fff;
+    padding: 25px;
+    flex-grow: 1;
+    z-index: 98;
+    display: flex;
+    flex-direction: column;
 }

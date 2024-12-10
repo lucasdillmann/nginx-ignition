@@ -44,7 +44,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
             key: item.path,
             icon: item.icon,
             label: <Link to={item.path}>{item.description}</Link>,
-            className: "shell-menu-item",
+            className: "shell-sider-menu-item",
         }))
     }
 
@@ -54,7 +54,12 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
             return (
                 <Tooltip title={disabledReason}>
                     <Link to={onClick} key={action.description}>
-                        <Button variant={type ?? "solid"} color={color ?? "primary"} disabled={disabled}>
+                        <Button
+                            className="shell-content-actions-action-item"
+                            variant={type ?? "solid"}
+                            color={color ?? "primary"}
+                            disabled={disabled}
+                        >
                             {description}
                         </Button>
                     </Link>
@@ -64,6 +69,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
             return (
                 <Tooltip title={disabledReason}>
                     <Button
+                        className="shell-content-actions-action-item"
                         key={action.description}
                         variant={type ?? "solid"}
                         color={color ?? "primary"}
@@ -110,32 +116,32 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         return (
             <Layout className="shell-container">
                 <Sider trigger={null} width={250} className="shell-sider-container">
-                    <div className="shell-logo">
-                        <Link to="/" className="shell-logo-link">
+                    <div className="shell-sider-logo">
+                        <Link to="/" className="shell-sider-logo-link">
                             nginx ignition
                         </Link>
                     </div>
-                    <div className="shell-server-control">{serverControl}</div>
+                    <div className="shell-sider-server-control">{serverControl}</div>
                     <Menu
-                        className="shell-menu-container"
+                        className="shell-sider-menu-container"
                         theme="dark"
                         mode="inline"
-                        defaultSelectedKeys={activeMenuItemPath ? [activeMenuItemPath] : undefined}
+                        selectedKeys={activeMenuItemPath ? [activeMenuItemPath] : undefined}
                         items={this.buildMenuItemsAdapters()}
                     />
-                    <div className="shell-user-menu">{userMenu}</div>
+                    <div className="shell-sider-user-menu">{userMenu}</div>
                 </Sider>
-                <Layout>
-                    <Flex>
-                        <Flex vertical>
-                            <h1 className="shell-title">{title}</h1>
+                <Layout className="shell-content-container">
+                    <Flex className="shell-content-header-container">
+                        <Flex className="shell-content-header" vertical>
+                            <h1 className="shell-content-header-title">{title}</h1>
                             <If condition={subtitle !== undefined}>
-                                <h2 className="shell-subtitle">{subtitle}</h2>
+                                <h2 className="shell-content-header-subtitle">{subtitle}</h2>
                             </If>
                         </Flex>
-                        <Flex className="shell-actions-container">{this.renderActions()}</Flex>
+                        <Flex className="shell-content-header-actions-container">{this.renderActions()}</Flex>
                     </Flex>
-                    <Content className="shell-content">{children}</Content>
+                    <Content className="shell-content-main">{children}</Content>
                 </Layout>
             </Layout>
         )
