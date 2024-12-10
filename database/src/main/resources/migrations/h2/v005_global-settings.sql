@@ -48,7 +48,7 @@ insert into settings_nginx values (
     300,
     5,
     300,
-    300,
+    30,
     true,
     'ERROR',
     true,
