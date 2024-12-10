@@ -10,7 +10,7 @@ plugins {
 
 allprojects {
     group = "br.com.dillmann.nginxignition"
-    version = "1.2.0"
+    version = "0.0.0"
 
     repositories {
         mavenCentral()
