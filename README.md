@@ -12,10 +12,11 @@ Although it isn't the goal to be feature-complete (if your use-case is quite adv
 use a UI anyway), the project does aim to provide an intuitive and powerful way to configure and run nginx.
 
 Some of the available features include:
-- Multiple nginx virtual hosts, each one with its customized set of domain, routes and bindings (port listeners)
+- Multiple nginx virtual hosts, each one with its customized set of domains, routes and bindings (port listeners)
 - Each host route can act as a proxy, redirection or reply with a static response
+- Easy configuration of the nginx server (maximum body/upload size, server tokens, timeouts, log level, etc)
 - SSL certificates (Let's Encrypt, self-signed or bring your custom one) with automatic renew (when applicable)
-- Server and virtual hosts access and error logs
+- Server and virtual hosts access and error logs with automatic log rotation
 - Multiple users with role-based access control (RBAC)
 - Native integration with TrueNAS Scale, allowing to easily configure to proxy to an app hosted in your NAS
 
