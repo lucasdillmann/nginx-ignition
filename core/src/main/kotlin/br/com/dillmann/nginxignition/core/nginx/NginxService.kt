@@ -50,7 +50,7 @@ internal class NginxService(
     override suspend fun getMainLogs(lines: Int): List<String> =
         logReader.read("main.log", lines)
 
-    fun rotateLogs() {
+    suspend fun rotateLogs() {
         logRotator.rotate()
     }
 }

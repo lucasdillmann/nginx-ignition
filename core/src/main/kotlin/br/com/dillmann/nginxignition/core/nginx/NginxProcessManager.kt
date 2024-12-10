@@ -15,6 +15,11 @@ internal class NginxProcessManager(configurationProvider: ConfigurationProvider)
         runCommand( "-s", "reload")
     }
 
+    suspend fun sendReopenSignal() {
+        logger.info("Signaling nginx for log file reopen")
+        runCommand( "-s", "reopen")
+    }
+
     suspend fun sendStopSignal() {
         logger.info("Stopping nginx")
         runCommand( "-s", "stop")
