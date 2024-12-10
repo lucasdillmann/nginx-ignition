@@ -177,8 +177,9 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
 
     componentDidMount() {
         this.service.availableProviders().then(providers => {
+            const sortedProviders = providers.sort((left, right) => (left.priority > right.priority ? 1 : -1))
             this.setState({
-                availableProviders: providers,
+                availableProviders: sortedProviders,
                 loading: false,
                 formValues: {
                     providerId: providers[0].id,

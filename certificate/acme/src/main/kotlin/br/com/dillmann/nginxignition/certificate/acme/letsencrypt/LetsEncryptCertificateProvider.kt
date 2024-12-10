@@ -14,6 +14,7 @@ internal class LetsEncryptCertificateProvider(
 
     override val name = "Let's Encrypt"
     override val id = UNIQUE_ID
+    override val priority = 1
     override val dynamicFields = listOf(
         LetsEncryptDynamicFields.EMAIL_ADDRESS,
         LetsEncryptDynamicFields.AWS_ACCESS_KEY,

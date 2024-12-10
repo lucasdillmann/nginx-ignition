@@ -7,5 +7,6 @@ import kotlinx.serialization.Serializable
 internal data class AvailableProviderResponse(
     val id: String,
     val name: String,
+    val priority: Int,
     val dynamicFields: List<DynamicFieldResponse>,
 )

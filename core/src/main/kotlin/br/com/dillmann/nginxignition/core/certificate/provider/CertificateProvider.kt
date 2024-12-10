@@ -13,6 +13,7 @@ interface CertificateProvider {
     val id: String
     val name: String
     val dynamicFields: List<DynamicField>
+    val priority: Int
 
     suspend fun issue(request: CertificateRequest): Output
 

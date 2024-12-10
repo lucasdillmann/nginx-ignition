@@ -101,8 +101,9 @@ internal class CertificateService(
     override suspend fun getAvailableProviders(): List<AvailableCertificateProvider> =
         providers.map {
             AvailableCertificateProvider(
-                name = it.name,
                 id = it.id,
+                name = it.name,
+                priority = it.priority,
                 dynamicFields = it.dynamicFields,
             )
         }

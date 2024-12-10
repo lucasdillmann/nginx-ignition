@@ -28,6 +28,7 @@ internal class CustomCertificateProvider(
 
     override val name = "Custom certificate"
     override val id = UNIQUE_ID
+    override val priority = 2
     override val dynamicFields = listOf(
         CustomCertificateDynamicFields.PUBLIC_KEY,
         CustomCertificateDynamicFields.PRIVATE_KEY,
