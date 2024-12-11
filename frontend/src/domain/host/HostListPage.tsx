@@ -25,7 +25,7 @@ export default class HostListPage extends React.PureComponent {
     }
 
     private handleDomainNames(domainNames?: string[]): string[] {
-        if (domainNames !== undefined && domainNames.length > 0) return domainNames
+        if (Array.isArray(domainNames) && domainNames.length > 0) return domainNames
 
         return ["(default server)"]
     }
