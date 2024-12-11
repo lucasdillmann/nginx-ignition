@@ -24,12 +24,18 @@ export default class HostListPage extends React.PureComponent {
         this.table = React.createRef()
     }
 
+    private handleDomainNames(domainNames?: string[]): string[] {
+        if (domainNames !== undefined && domainNames.length > 0) return domainNames
+
+        return ["(default server)"]
+    }
+
     private buildColumns(): DataTableColumn<HostResponse>[] {
         return [
             {
                 id: "domainNames",
                 description: "Domain names",
-                renderer: item => <TagGroup values={item.domainNames ?? ["(default server)"]} />,
+                renderer: item => <TagGroup values={this.handleDomainNames(item.domainNames)} />,
             },
             {
                 id: "defaultServer",

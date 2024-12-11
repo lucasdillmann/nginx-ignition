@@ -21,6 +21,7 @@ import UserFormPage from "./user/UserFormPage"
 import { UserRole } from "./user/model/UserRole"
 import IntegrationsPage from "./integration/IntegrationsPage"
 import SettingsPage from "./settings/SettingsPage"
+import NotFoundPage from "./notfound/NotFoundPage"
 
 const Routes: AppRoute[] = [
     {
@@ -132,6 +133,12 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <HomePage />,
         activeMenuItemPath: "/hosts",
+    },
+    {
+        path: "*",
+        requiresAuthentication: false,
+        fullPage: true,
+        component: <NotFoundPage />,
     },
 ]
 

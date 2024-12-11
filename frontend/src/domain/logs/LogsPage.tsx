@@ -166,6 +166,12 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         }))
     }
 
+    private handleDomainNames(domainNames?: string[]): string[] {
+        if (domainNames !== undefined && domainNames.length > 0) return domainNames
+
+        return ["(default server)"]
+    }
+
     private renderSettings() {
         const { selectedHost, hostMode, logType, lineCount, autoRefreshSeconds } = this.state
         return (
@@ -211,7 +217,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                             }
                             value={selectedHost}
                             itemDescription={item => (
-                                <TagGroup values={item.domainNames ?? ["(default server)"]} maximumSize={1} />
+                                <TagGroup values={this.handleDomainNames(item.domainNames)} maximumSize={1} />
                             )}
                             itemKey={item => item.id}
                             autoFocus

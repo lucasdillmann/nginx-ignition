@@ -7,6 +7,7 @@ export interface FullPageErrorProps {
     title?: string
     message?: string
     error?: Error
+    icon?: any
 }
 
 export default class FullPageError extends React.Component<FullPageErrorProps> {
@@ -36,6 +37,13 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
         )
     }
 
+    private renderIcon() {
+        const { icon } = this.props
+        if (icon !== undefined) return icon
+
+        return <ExclamationCircleFilled style={{ fontSize: 48, color: "red" }} />
+    }
+
     render() {
         const title = this.props.title ?? "Well, that didn't work"
         const message =
@@ -45,7 +53,7 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
         return (
             <Flex align="center" justify="center" className="error-page-container">
                 <Flex align="center">
-                    <ExclamationCircleFilled style={{ fontSize: 48, color: "red" }} />
+                    {this.renderIcon()}
                     <Flex className="error-page-text-container" vertical>
                         <h2 className="error-page-title">{title}</h2>
                         <p className="error-page-message">{message}</p>
