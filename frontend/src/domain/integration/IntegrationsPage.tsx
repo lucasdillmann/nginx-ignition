@@ -46,17 +46,19 @@ export default class IntegrationsPage extends React.Component<any, IntegrationsP
         const icon = IntegrationIcons[id]
         return (
             <Card style={{ minWidth: 300 }}>
-                <Flex>
-                    <Card.Meta
-                        avatar={<Image src={icon} preview={false} width={125} />}
-                        title={name}
-                        description={
-                            <>
-                                <b>Status:</b> {enabled ? "Enabled" : "Disabled"}
-                                <p>{description}</p>
-                            </>
-                        }
-                    />
+                <Flex style={{ flexGrow: 1 }}>
+                    <Flex style={{ flexGrow: 1 }}>
+                        <Card.Meta
+                            avatar={<Image src={icon} preview={false} width={125} />}
+                            title={name}
+                            description={
+                                <>
+                                    <b>Status:</b> {enabled ? "Enabled" : "Disabled"}
+                                    <p>{description}</p>
+                                </>
+                            }
+                        />
+                    </Flex>
                     <Flex justify="start" align="start">
                         <SettingOutlined
                             key="setting"

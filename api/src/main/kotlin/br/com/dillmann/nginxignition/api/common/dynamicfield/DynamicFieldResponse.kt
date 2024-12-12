@@ -13,6 +13,7 @@ data class DynamicFieldResponse(
     val enumOptions: List<EnumOption> = emptyList(),
     val helpText: String? = null,
     val condition: Condition? = null,
+    val defaultValue: String? = null,
 ) {
     @Serializable
     data class EnumOption(

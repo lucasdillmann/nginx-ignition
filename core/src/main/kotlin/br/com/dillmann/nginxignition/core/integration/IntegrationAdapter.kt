@@ -11,6 +11,7 @@ interface IntegrationAdapter {
 
     val id: String
     val name: String
+    val priority: Int
     val description: String
     val configurationFields: List<DynamicField>
 

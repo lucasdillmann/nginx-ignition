@@ -9,6 +9,7 @@ import java.net.URI
 class TrueNasIntegrationAdapter: IntegrationAdapter {
     override val id = "TRUENAS_SCALE"
     override val name = "TrueNAS Scale"
+    override val priority = 2
     override val description =
         "TrueNAS allows, alongside many other things, to run your favorite apps under Docker containers. With this " +
             "integration enabled, you will be able to easily pick any app exposing a service in your TrueNAS as a " +

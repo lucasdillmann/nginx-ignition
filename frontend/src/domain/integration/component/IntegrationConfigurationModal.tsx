@@ -104,12 +104,25 @@ export default class IntegrationConfigurationModal extends React.Component<
         )
     }
 
+    private buildParametersInitialValue(integration: IntegrationConfigurationResponse) {
+        const { parameters, configurationFields } = integration
+        const output = { ...parameters }
+
+        configurationFields.forEach(field => {
+            const currentValue = output[field.id]
+            if (currentValue === undefined)
+                output[field.id] = field.defaultValue
+        })
+
+        return output
+    }
+
     componentDidMount() {
         const { integrationId } = this.props
         this.service.getConfiguration(integrationId).then(integration => {
             const formValues = {
                 enabled: integration.enabled,
-                parameters: integration.parameters,
+                parameters: this.buildParametersInitialValue(integration),
             }
 
             this.setState({

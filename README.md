@@ -19,6 +19,7 @@ Some of the available features include:
 - Server and virtual hosts access and error logs with automatic log rotation
 - Multiple users with role-based access control (RBAC)
 - Native integration with TrueNAS Scale, allowing to easily configure to proxy to an app hosted in your NAS
+- Native integration with Docker for easy pick of a container as the proxy target
 
 ## Getting started
 

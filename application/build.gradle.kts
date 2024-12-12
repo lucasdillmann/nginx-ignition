@@ -22,6 +22,7 @@ dependencies {
     implementation(project(":self-signed-certificate"))
     implementation(project(":acme-certificate"))
     implementation(project(":truenas-integration"))
+    implementation(project(":docker-integration"))
     implementation(project(":frontend"))
     implementation(project(":api"))
     implementation("io.ktor:ktor-server-core-jvm")

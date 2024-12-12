@@ -10,6 +10,7 @@ data class DynamicField(
     val sensitive: Boolean = false,
     val condition: Condition? = null,
     val helpText: String? = null,
+    val defaultValue: String? = null,
 ) {
     data class EnumOption(
         val id: String,

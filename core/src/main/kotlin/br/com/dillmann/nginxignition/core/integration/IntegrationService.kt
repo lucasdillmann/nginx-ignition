@@ -19,16 +19,18 @@ internal class IntegrationService(
     }
 
     override suspend fun getIntegrations(): List<ListIntegrationsCommand.Output> =
-        adapters.map {
-            val settings = repository.findById(it.id) ?: DEFAULT_SETTINGS
+        adapters
+            .sortedBy { it.priority }
+            .map {
+                val settings = repository.findById(it.id) ?: DEFAULT_SETTINGS
 
-            ListIntegrationsCommand.Output(
-                id = it.id,
-                name = it.name,
-                description = it.description,
-                enabled = settings.enabled,
-            )
-        }
+                ListIntegrationsCommand.Output(
+                    id = it.id,
+                    name = it.name,
+                    description = it.description,
+                    enabled = settings.enabled,
+                )
+            }
 
     override suspend fun getIntegrationById(id: String): GetIntegrationByIdCommand.Output {
         val adapter = findAdapter(id)
