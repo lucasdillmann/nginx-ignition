@@ -110,8 +110,7 @@ export default class IntegrationConfigurationModal extends React.Component<
 
         configurationFields.forEach(field => {
             const currentValue = output[field.id]
-            if (currentValue === undefined)
-                output[field.id] = field.defaultValue
+            if (currentValue === undefined) output[field.id] = field.defaultValue
         })
 
         return output
