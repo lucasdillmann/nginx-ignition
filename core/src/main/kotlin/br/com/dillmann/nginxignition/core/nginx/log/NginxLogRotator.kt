@@ -44,7 +44,11 @@ internal class NginxLogRotator(
             val file = File(basePath, fileName)
             if (!file.exists() || !file.isFile) return
 
-            val trimmedContent = readTail(file, maximumLines)
+            val tail = readTail(file, maximumLines)
+            if (tail.size < maximumLines)
+                return
+
+            val trimmedContent = tail.reversed().joinToString("\n").plus("\n")
             replaceContents(file, trimmedContent)
         } catch (ex: Exception) {
             LOGGER.warn("Unable to rotate log file {}", fileName, ex)
@@ -59,7 +63,7 @@ internal class NginxLogRotator(
         }
     }
 
-    private suspend fun readTail(file: File, size: Int) =
+    private suspend fun readTail(file: File, size: Int): List<String> =
         withContext(Dispatchers.IO) {
             ReversedLinesFileReader
                 .builder()
@@ -67,8 +71,5 @@ internal class NginxLogRotator(
                 .setCharset(Charsets.UTF_8)
                 .get()
                 .use { it.readLines(size) }
-                .reversed()
-                .joinToString("\n")
-                .plus("\n")
         }
 }
