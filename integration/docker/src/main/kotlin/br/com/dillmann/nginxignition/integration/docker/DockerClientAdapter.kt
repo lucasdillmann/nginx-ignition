@@ -5,10 +5,15 @@ import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientBuilder
 import com.github.dockerjava.zerodep.ZerodepDockerHttpClient
 
-class DockerClientAdapter(socketPath: String) {
+internal class DockerClientAdapter(mode: DockerConnectionMode, host: String) {
     private val config = DefaultDockerClientConfig
         .createDefaultConfigBuilder()
-        .withDockerHost("unix://$socketPath")
+        .withDockerHost(
+            when (mode) {
+                DockerConnectionMode.SOCKET -> "unix://$host"
+                DockerConnectionMode.TCP -> host
+            }
+        )
         .build()
 
     private val httpClient = ZerodepDockerHttpClient

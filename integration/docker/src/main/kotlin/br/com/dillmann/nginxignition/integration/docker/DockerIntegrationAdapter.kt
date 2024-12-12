@@ -18,7 +18,12 @@ class DockerIntegrationAdapter: IntegrationAdapter {
         "Enables easy pick of a Docker container with ports exposing a service as a target for your nginx " +
             "ignition's host routes."
     override val configurationFields =
-        listOf(DockerDynamicFields.SOCKET_PATH, DockerDynamicFields.PROXY_URL)
+        listOf(
+            DockerDynamicFields.CONNECTION_MODE,
+            DockerDynamicFields.SOCKET_PATH,
+            DockerDynamicFields.HOST_URL,
+            DockerDynamicFields.PROXY_URL,
+        )
 
     override suspend fun getAvailableOptions(
         parameters: Map<String, Any?>,
@@ -72,7 +77,14 @@ class DockerIntegrationAdapter: IntegrationAdapter {
             .filter { (_, port) -> port.type == "tcp" }
 
     private fun startClientAdapter(parameters: Map<String, Any?>): DockerClientAdapter {
-        val socketPath = parameters[DockerDynamicFields.SOCKET_PATH.id] as String
-        return DockerClientAdapter(socketPath)
+        val connectionModeValue = parameters[DockerDynamicFields.CONNECTION_MODE.id] as String
+        val connectionMode = DockerConnectionMode.valueOf(connectionModeValue)
+        val host =
+            when(connectionMode) {
+                DockerConnectionMode.SOCKET -> parameters[DockerDynamicFields.SOCKET_PATH.id] as String
+                DockerConnectionMode.TCP -> parameters[DockerDynamicFields.HOST_URL.id] as String
+            }
+
+        return DockerClientAdapter(connectionMode, host)
     }
 }
