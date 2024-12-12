@@ -3,12 +3,12 @@ import HomePage from "./home/HomePage"
 import AppRoute from "../core/components/router/AppRoute"
 import OnboardingPage from "./onboarding/OnboardingPage"
 import {
+    BlockOutlined,
     FileProtectOutlined,
     FileSearchOutlined,
     HddOutlined,
-    TeamOutlined,
-    BlockOutlined,
     SettingOutlined,
+    TeamOutlined,
 } from "@ant-design/icons"
 import HostListPage from "./host/HostListPage"
 import HostFormPage from "./host/HostFormPage"
@@ -92,6 +92,7 @@ const Routes: AppRoute[] = [
         requiresAuthentication: true,
         fullPage: false,
         component: <IntegrationsPage />,
+        visibleRoles: [UserRole.ADMIN],
         menuItem: {
             description: "Integrations",
             icon: <BlockOutlined />,

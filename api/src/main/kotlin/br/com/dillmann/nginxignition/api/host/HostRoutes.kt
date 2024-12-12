@@ -14,7 +14,7 @@ internal class HostRoutes(
 ): RouteProvider {
     @Suppress("StringLiteralDuplication")
     override fun apiRoutes(): RouteNode =
-        routes("/api/hosts") {
+        basePath("/api/hosts") {
             requireAuthentication {
                 get(listHandler)
                 post(postHandler)

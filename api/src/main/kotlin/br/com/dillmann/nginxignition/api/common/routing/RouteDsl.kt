@@ -57,7 +57,7 @@ internal class RouteNodeBuilder(private val parent: CompositeRouteNode) {
     }
 }
 
-internal fun routes(path: String, customizer: RouteNodeBuilder.() -> Unit): RouteNode {
+internal fun basePath(path: String, customizer: RouteNodeBuilder.() -> Unit): RouteNode {
     val child = PathPrefixRouteNode(path)
     RouteNodeBuilder(child).customizer()
     return child

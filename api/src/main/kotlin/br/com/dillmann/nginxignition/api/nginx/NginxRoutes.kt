@@ -2,7 +2,7 @@ package br.com.dillmann.nginxignition.api.nginx
 
 import br.com.dillmann.nginxignition.api.common.routing.RouteNode
 import br.com.dillmann.nginxignition.api.common.routing.RouteProvider
-import br.com.dillmann.nginxignition.api.common.routing.routes
+import br.com.dillmann.nginxignition.api.common.routing.basePath
 import br.com.dillmann.nginxignition.api.nginx.handler.*
 import br.com.dillmann.nginxignition.api.nginx.handler.NginxReloadHandler
 import br.com.dillmann.nginxignition.api.nginx.handler.NginxStartHandler
@@ -18,7 +18,7 @@ internal class NginxRoutes(
 ): RouteProvider {
     override fun apiRoutes(): RouteNode =
 
-    routes("/api/nginx") {
+    basePath("/api/nginx") {
         requireAuthentication {
             post("/start", startHandler)
             post("/stop", stopHandler)

@@ -6,6 +6,7 @@ import br.com.dillmann.nginxignition.api.integration.handler.GetIntegrationOptio
 import br.com.dillmann.nginxignition.api.integration.handler.GetIntegrationOptionsHandler
 import br.com.dillmann.nginxignition.api.integration.handler.ListIntegrationsHandler
 import br.com.dillmann.nginxignition.api.integration.handler.PutIntegrationConfigurationHandler
+import br.com.dillmann.nginxignition.core.user.User
 
 internal class IntegrationRoutes(
     private val listHandler: ListIntegrationsHandler,
@@ -15,13 +16,16 @@ internal class IntegrationRoutes(
     private val getOptionByIdHandler: GetIntegrationOptionByIdHandler,
 ): RouteProvider {
     override fun apiRoutes(): RouteNode =
-        routes("/api/integrations") {
+        basePath("/api/integrations") {
             requireAuthentication {
                 get(listHandler)
-                get("/{id}/configuration", getConfigurationHandler)
-                put("/{id}/configuration", putConfigurationHandler)
                 get("/{id}/options", getOptionsHandler)
                 get("/{id}/options/{optionId}", getOptionByIdHandler)
+
+                requireRole(User.Role.ADMIN) {
+                    get("/{id}/configuration", getConfigurationHandler)
+                    put("/{id}/configuration", putConfigurationHandler)
+                }
             }
         }
 }

@@ -12,7 +12,7 @@ internal class CertificateRoutes(
     private val renewByIdHandler: RenewCertificateByIdHandler,
 ): RouteProvider {
     override fun apiRoutes(): RouteNode =
-        routes("/api/certificates") {
+        basePath("/api/certificates") {
             requireAuthentication {
                 get(listHandler)
                 get("/{id}", getByIdHandler)

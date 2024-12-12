@@ -4,7 +4,7 @@ import br.com.dillmann.nginxignition.api.user.handler.*
 import br.com.dillmann.nginxignition.core.user.User
 import br.com.dillmann.nginxignition.api.common.routing.RouteNode
 import br.com.dillmann.nginxignition.api.common.routing.RouteProvider
-import br.com.dillmann.nginxignition.api.common.routing.routes
+import br.com.dillmann.nginxignition.api.common.routing.basePath
 
 @Suppress("LongParameterList")
 internal class UserRoutes(
@@ -22,7 +22,7 @@ internal class UserRoutes(
 ): RouteProvider {
     @Suppress("StringLiteralDuplication")
     override fun apiRoutes(): RouteNode =
-        routes("/api/users") {
+        basePath("/api/users") {
             post("/login", loginHandler)
             get("/onboarding/status", onboardingStatusHandler)
             post("/onboarding/finish", onboardingFinishHandler)
