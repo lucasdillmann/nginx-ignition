@@ -10,6 +10,7 @@ import br.com.dillmann.nginxignition.core.common.pagination.Page
 import br.com.dillmann.nginxignition.core.common.validation.ConsistencyException
 import br.com.dillmann.nginxignition.core.host.HostRepository
 import br.com.dillmann.nginxignition.core.nginx.NginxService
+import br.com.dillmann.nginxignition.core.settings.SettingsRepository
 import java.util.*
 
 internal class CertificateService(
@@ -18,6 +19,7 @@ internal class CertificateService(
     private val providers: List<CertificateProvider>,
     private val nginxService: NginxService,
     private val hostRepository: HostRepository,
+    private val settingsRepository: SettingsRepository,
 ) : DeleteCertificateCommand, GetCertificateCommand, IssueCertificateCommand,
     ListCertificateCommand, RenewCertificateCommand, GetAvailableProvidersCommand {
     private val logger = logger<CertificateService>()
@@ -27,6 +29,14 @@ internal class CertificateService(
             return DeleteCertificateCommand.Output(
                 deleted = false,
                 reason = "Certificate is being used by at least one host. Please update them and try again.",
+            )
+        }
+
+        val inUseByGlobalBinding = settingsRepository.get().globalBindings.any { it.certificateId == id }
+        if (inUseByGlobalBinding) {
+            return DeleteCertificateCommand.Output(
+                deleted = false,
+                reason = "Certificate is being used by a global binding. Please update the settings and try again.",
             )
         }
 
