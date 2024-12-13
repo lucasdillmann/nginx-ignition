@@ -75,7 +75,7 @@ internal class HostConverter {
             else Host.StaticResponse(
                 statusCode = route[HostRouteTable.staticResponseCode]!!,
                 payload = route[HostRouteTable.staticResponsePayload],
-                headers = Json.decodeFromString(route[HostRouteTable.staticResponseHeaders]!!),
+                headers = route[HostRouteTable.staticResponseHeaders]?.let(Json::decodeFromString) ?: emptyMap(),
             )
 
         val integration =
