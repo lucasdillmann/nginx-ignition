@@ -16,7 +16,7 @@ import DeleteHostAction from "./actions/DeleteHostAction"
 
 export default class HostListPage extends React.PureComponent {
     private readonly service: HostService
-    private readonly table: React.RefObject<DataTable<HostResponse>>
+    private readonly table: React.RefObject<DataTable<HostResponse> | null>
 
     constructor(props: any) {
         super(props)
