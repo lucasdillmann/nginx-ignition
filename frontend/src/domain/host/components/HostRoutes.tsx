@@ -50,10 +50,12 @@ interface HostRoutesState {
 
 export default class HostRoutes extends React.Component<HostRoutesProps, HostRoutesState> {
     private readonly integrationService: IntegrationService
+    private readonly optionsRef: React.RefObject<PaginatedSelect<IntegrationOptionResponse> | null>
 
     constructor(props: HostRoutesProps) {
         super(props)
         this.integrationService = new IntegrationService()
+        this.optionsRef = React.createRef()
         this.state = {}
     }
 
@@ -122,6 +124,10 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         return this.integrationService.getOptions(integrationId!!, pageSize, pageNumber, searchTerms)
     }
 
+    private handleIntegrationChange() {
+        this.optionsRef.current?.reset()
+    }
+
     private renderIntegrationRoute(field: FormListFieldData, index: number): React.ReactNode {
         const { validationResult, integrations, routes } = this.props
         const { name } = field
@@ -143,7 +149,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     label="Integration"
                     required
                 >
-                    <Select options={integrationOptions} />
+                    <Select options={integrationOptions} onChange={() => this.handleIntegrationChange()} />
                 </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
@@ -156,6 +162,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     required
                 >
                     <PaginatedSelect<IntegrationOptionResponse>
+                        ref={this.optionsRef}
                         disabled={currentIntegrationId === undefined}
                         itemKey={item => item.id}
                         itemDescription={item => item.name}

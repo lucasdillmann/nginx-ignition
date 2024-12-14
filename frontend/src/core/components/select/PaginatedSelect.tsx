@@ -8,6 +8,14 @@ import debounce from "debounce"
 
 const PAGE_SIZE = 10
 
+const INITIAL_STATE: PaginatedSelectState<any> = {
+    data: [],
+    firstLoadComplete: false,
+    loading: false,
+    hasMorePages: true,
+    nextPageNumber: 0,
+}
+
 interface SelectOption<T> {
     item?: T
     value: string
@@ -42,12 +50,12 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
     constructor(props: PaginatedSelectProps<T>) {
         super(props)
         this.state = {
-            data: [],
-            firstLoadComplete: false,
-            loading: false,
-            hasMorePages: true,
-            nextPageNumber: 0,
+            ...INITIAL_STATE,
         }
+    }
+
+    reset() {
+        this.setState(INITIAL_STATE)
     }
 
     private loadNextPage() {
