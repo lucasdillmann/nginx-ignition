@@ -9,10 +9,6 @@ import AppShellContext, { ShellAction, ShellConfig } from "./AppShellContext"
 import { GithubFilled, LinkedinFilled } from "@ant-design/icons"
 const { Sider, Content } = Layout
 
-const EmptyConfig: ShellConfig = {
-    title: "",
-}
-
 export interface AppShellMenuItem {
     icon: React.ReactNode
     description: string
@@ -35,7 +31,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
     constructor(props: AppShellProps) {
         super(props)
         this.state = {
-            config: EmptyConfig,
+            config: {},
         }
     }
 
@@ -106,7 +102,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         const { children: current } = this.props
 
         if (previous !== current) {
-            this.setState({ config: EmptyConfig })
+            this.setState({ config: {} })
         }
 
         return true
@@ -148,15 +144,17 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                     </div>
                 </Sider>
                 <Layout className="shell-content-container">
-                    <Flex className="shell-content-header-container">
-                        <Flex className="shell-content-header" vertical>
-                            <h1 className="shell-content-header-title">{title}</h1>
-                            <If condition={subtitle !== undefined}>
-                                <h2 className="shell-content-header-subtitle">{subtitle}</h2>
-                            </If>
+                    <If condition={title !== undefined}>
+                        <Flex className="shell-content-header-container">
+                            <Flex className="shell-content-header" vertical>
+                                <h1 className="shell-content-header-title">{title}</h1>
+                                <If condition={subtitle !== undefined}>
+                                    <h2 className="shell-content-header-subtitle">{subtitle}</h2>
+                                </If>
+                            </Flex>
+                            <Flex className="shell-content-header-actions-container">{this.renderActions()}</Flex>
                         </Flex>
-                        <Flex className="shell-content-header-actions-container">{this.renderActions()}</Flex>
-                    </Flex>
+                    </If>
                     <Content className="shell-content-main">{children}</Content>
                 </Layout>
             </Layout>

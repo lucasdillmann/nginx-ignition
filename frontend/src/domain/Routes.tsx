@@ -133,7 +133,6 @@ const Routes: AppRoute[] = [
         requiresAuthentication: true,
         fullPage: false,
         component: <HomePage />,
-        activeMenuItemPath: "/hosts",
     },
     {
         path: "*",

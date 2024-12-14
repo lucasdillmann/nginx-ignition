@@ -11,7 +11,7 @@ export interface ShellAction {
 }
 
 export interface ShellConfig {
-    title: string
+    title?: string
     subtitle?: string
     actions?: ShellAction[]
 }
