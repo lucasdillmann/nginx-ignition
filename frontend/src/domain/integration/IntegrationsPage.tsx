@@ -45,7 +45,7 @@ export default class IntegrationsPage extends React.Component<any, IntegrationsP
         const { id, enabled, name, description } = integration
         const icon = IntegrationIcons[id]
         return (
-            <Card style={{ minWidth: 300 }}>
+            <Card style={{ minWidth: 300, marginBottom: 15 }}>
                 <Flex style={{ flexGrow: 1 }}>
                     <Flex style={{ flexGrow: 1 }}>
                         <Card.Meta
