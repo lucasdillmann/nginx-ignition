@@ -6,6 +6,7 @@ import FullPagePreloader from "../core/components/preloader/FullPagePreloader"
 import FullPageError from "../core/components/error/FullPageError"
 import ShellUserMenu from "./user/components/ShellUserMenu"
 import NginxControl from "./nginx/components/NginxControl"
+import CommonNotifications from "../core/components/notification/CommonNotifications"
 
 interface AppContainerState {
     loading: boolean
@@ -26,7 +27,10 @@ export default class AppContainer extends React.Component<unknown, AppContainerS
                 AppContext.replace(context)
                 this.setState({ loading: false })
             })
-            .catch(error => this.setState({ error, loading: false }))
+            .catch(error => {
+                CommonNotifications.failedToFetch()
+                this.setState({ error, loading: false })
+            })
     }
 
     render() {

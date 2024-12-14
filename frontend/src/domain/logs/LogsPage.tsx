@@ -20,6 +20,8 @@ import AppShellContext from "../../core/components/shell/AppShellContext"
 import TagGroup from "../../core/components/taggroup/TagGroup"
 import SettingsDto from "../settings/model/SettingsDto"
 import SettingsService from "../settings/SettingsService"
+import CommonNotifications from "../../core/components/notification/CommonNotifications"
+import EmptyStates from "../../core/components/emptystate/EmptyStates"
 
 interface LogsPageState {
     settings?: SettingsDto
@@ -30,6 +32,7 @@ interface LogsPageState {
     logType: string
     loading: boolean
     logs: string[]
+    error?: Error
 }
 
 export default class LogsPage extends React.Component<any, LogsPageState> {
@@ -55,10 +58,16 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     }
 
     componentDidMount() {
-        this.settingsService.get().then(settings => {
-            this.setState({ settings })
-            this.fetchLogs()
-        })
+        this.settingsService
+            .get()
+            .then(settings => {
+                this.setState({ settings })
+                return this.fetchLogs()
+            })
+            .catch(error => {
+                CommonNotifications.failedToFetch()
+                this.setState({ loading: false, error })
+            })
 
         this.configureShell()
     }
@@ -117,19 +126,17 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
             ? this.hostService.logs(selectedHost!!.id, logType, lineCount)
             : this.nginxService.logs(lineCount)
 
-        logs.then(lines => {
-            this.setState({
-                loading: false,
-                logs: lines.reverse(),
+        return logs
+            .then(lines => {
+                this.setState({
+                    loading: false,
+                    logs: lines.reverse(),
+                })
             })
-        }).catch(() => {
-            Notification.error(
-                "Failed to fetch the logs",
-                "We're unable to fetch the logs at this time. Please try again later.",
-            )
-
-            this.setState({ loading: false })
-        })
+            .catch(error => {
+                CommonNotifications.failedToFetch()
+                this.setState({ loading: false, error })
+            })
     }
 
     private handleHostChange(selectedHost?: HostResponse) {
@@ -282,7 +289,9 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     }
 
     render() {
-        const { loading } = this.state
+        const { loading, error } = this.state
+        if (error !== undefined) return EmptyStates.FailedToFetch
+
         return (
             <Flex className="log-container" vertical>
                 <Preloader loading={loading}>

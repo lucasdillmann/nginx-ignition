@@ -13,10 +13,13 @@ import TagGroup from "../../core/components/taggroup/TagGroup"
 import RenewCertificateAction from "./actions/RenewCertificateAction"
 import DeleteCertificateAction from "./actions/DeleteCertificateAction"
 import AppShellContext from "../../core/components/shell/AppShellContext"
+import CommonNotifications from "../../core/components/notification/CommonNotifications"
+import EmptyStates from "../../core/components/emptystate/EmptyStates"
 
 interface CertificateListPageState {
     loading: boolean
     providers: AvailableProviderResponse[]
+    error?: Error
 }
 
 export default class CertificateListPage extends React.Component<any, CertificateListPageState> {
@@ -98,12 +101,10 @@ export default class CertificateListPage extends React.Component<any, Certificat
                     providers,
                 }),
             )
-            .catch(() =>
-                Notification.error(
-                    "Unable to fetch the data",
-                    "We're unable to fetch the data at this moment. Please try again later.",
-                ),
-            )
+            .catch(error => {
+                CommonNotifications.failedToFetch()
+                this.setState({ loading: false, error })
+            })
 
         AppShellContext.get().updateConfig({
             title: "SSL certificates",
@@ -118,13 +119,15 @@ export default class CertificateListPage extends React.Component<any, Certificat
     }
 
     render() {
-        const { loading } = this.state
+        const { loading, error } = this.state
         if (loading)
             return (
                 <Flex justify="center" align="center">
                     <Preloader loading />
                 </Flex>
             )
+
+        if (error !== undefined) return EmptyStates.FailedToFetch
 
         return (
             <DataTable

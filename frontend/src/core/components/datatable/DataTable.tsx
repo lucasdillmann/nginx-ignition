@@ -3,11 +3,11 @@ import React from "react"
 import { ColumnType, TablePaginationConfig } from "antd/es/table"
 import { AlignType } from "rc-table/lib/interface"
 import Preloader from "../preloader/Preloader"
-import { Empty, Pagination, Table } from "antd"
+import { Pagination, Table } from "antd"
 import "./DataTable.css"
-import { ExclamationCircleOutlined } from "@ant-design/icons"
-import Notification from "../notification/Notification"
 import DataTableSearchBar from "./DataTableSearchBar"
+import CommonNotifications from "../notification/CommonNotifications"
+import EmptyStates from "../emptystate/EmptyStates"
 
 const DEFAULT_PAGE_SIZE = 10
 const PAGE_SIZES = [10, 25, 50, 100, 250, 500]
@@ -72,11 +72,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
         return dataProvider(pageSize, pageNumber, searchTerms)
             .then(data => this.setState({ loading: false, data }))
             .catch(error => {
-                Notification.error(
-                    "Unable to fetch the data",
-                    "We're unable to fetch the data at this time. Please try again later.",
-                )
-
+                CommonNotifications.failedToFetch()
                 this.setState({ loading: false, error })
             })
     }
@@ -123,13 +119,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
         const { loading, data, error } = this.state
         const { rowKey } = this.props
 
-        if (error !== undefined)
-            return (
-                <Empty
-                    image={<ExclamationCircleOutlined style={{ fontSize: 70, color: "#b8b8b8" }} />}
-                    description="Unable to fetch the data. Please try again later."
-                />
-            )
+        if (error !== undefined) return EmptyStates.FailedToFetch
 
         return (
             <Preloader loading={loading}>

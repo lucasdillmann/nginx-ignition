@@ -3,7 +3,7 @@ import { navigateTo, routeParams } from "../../core/components/router/AppRouter"
 import UserRequest from "./model/UserRequest"
 import { UserRole } from "./model/UserRole"
 import UserService from "./UserService"
-import { Empty, Form, Input, Select, Switch } from "antd"
+import { Form, Input, Select, Switch } from "antd"
 import Preloader from "../../core/components/preloader/Preloader"
 import FormLayout from "../../core/components/form/FormLayout"
 import ValidationResult from "../../core/validation/ValidationResult"
@@ -16,12 +16,15 @@ import UserResponse from "./model/UserResponse"
 import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
 import DeleteUserAction from "./actions/DeleteUserAction"
 import AppContext from "../../core/components/context/AppContext"
+import CommonNotifications from "../../core/components/notification/CommonNotifications"
+import EmptyStates from "../../core/components/emptystate/EmptyStates"
 
 interface UserFormState {
     formValues: UserRequest
     validationResult: ValidationResult
     loading: boolean
     notFound: boolean
+    error?: Error
 }
 
 export default class UserFormPage extends React.Component<unknown, UserFormState> {
@@ -184,21 +187,28 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
             return
         }
 
-        this.service.getById(this.userId!!).then(userDetails => {
-            if (userDetails === undefined) this.setState({ loading: false, notFound: true })
-            else {
-                this.setState({ loading: false, formValues: this.convertToUserRequest(userDetails) })
-                this.updateShellConfig(true)
-            }
-        })
+        this.service
+            .getById(this.userId!!)
+            .then(userDetails => {
+                if (userDetails === undefined) this.setState({ loading: false, notFound: true })
+                else {
+                    this.setState({ loading: false, formValues: this.convertToUserRequest(userDetails) })
+                    this.updateShellConfig(true)
+                }
+            })
+            .catch(error => {
+                CommonNotifications.failedToFetch()
+                this.setState({ loading: false, error })
+            })
 
         this.updateShellConfig(false)
     }
 
     render() {
-        const { loading, notFound } = this.state
+        const { loading, notFound, error } = this.state
 
-        if (notFound) return <Empty description="Not found" />
+        if (error !== undefined) return EmptyStates.FailedToFetch
+        if (notFound) return EmptyStates.NotFound
         if (loading) return <Preloader loading />
 
         return this.renderForm()

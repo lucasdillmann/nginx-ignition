@@ -16,6 +16,8 @@ import HostBindings from "../host/components/HostBindings"
 import "./SettingsPage.css"
 import SettingsFormValues from "./model/SettingsFormValues"
 import SettingsConverter from "./SettingsConverter"
+import CommonNotifications from "../../core/components/notification/CommonNotifications"
+import EmptyStates from "../../core/components/emptystate/EmptyStates"
 
 const INTEGER_MAX = 2147483647
 
@@ -402,11 +404,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
                 })
             })
             .catch(error => {
-                Notification.error(
-                    "Unable to fetch the data",
-                    "We're unable to fetch the data at this time. Please try again later.",
-                )
-
+                CommonNotifications.failedToFetch()
                 this.setState({ error, loading: false })
             })
     }
@@ -414,14 +412,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
     render() {
         const { loading, error } = this.state
         if (loading) return <Preloader loading />
-
-        if (error !== undefined)
-            return (
-                <Empty
-                    image={<ExclamationCircleOutlined style={{ fontSize: 70, color: "#b8b8b8" }} />}
-                    description="Unable to fetch the data. Please try again later."
-                />
-            )
+        if (error !== undefined) return EmptyStates.FailedToFetch
 
         return this.renderForm()
     }

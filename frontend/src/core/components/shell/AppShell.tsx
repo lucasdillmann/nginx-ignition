@@ -140,7 +140,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                     />
                     <div className="shell-sider-bottom">
                         <div className="shell-sider-bottom-credits">
-                            Made by Lucas Dillmann.
+                            Made by Lucas Dillmann
                             <LinkedinFilled onClick={() => this.handleLinkedInClick()} />
                             <GithubFilled onClick={() => this.handleGithubClick()} />
                         </div>

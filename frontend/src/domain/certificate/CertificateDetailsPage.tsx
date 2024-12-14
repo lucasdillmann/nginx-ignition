@@ -15,11 +15,14 @@ import If from "../../core/components/flowcontrol/If"
 import "./CertificateDetailsPage.css"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import DynamicField, { DynamicFieldType } from "../../core/dynamicfield/DynamicField"
+import CommonNotifications from "../../core/components/notification/CommonNotifications"
+import EmptyStates from "../../core/components/emptystate/EmptyStates"
 
 interface CertificateDetailsPageState {
     loading: boolean
     certificate?: CertificateResponse
     availableProviders: AvailableProviderResponse[]
+    error?: Error
 }
 
 export default class CertificateDetailsPage extends React.Component<unknown, CertificateDetailsPageState> {
@@ -75,12 +78,10 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
                 this.setState({ loading: false, certificate, availableProviders })
                 this.updateShellConfig(certificate !== undefined)
             })
-            .catch(() =>
-                Notification.error(
-                    "Unable to fetch the certificate details",
-                    "We're unable to fetch the certificate details at this time. Please try again later.",
-                ),
-            )
+            .catch(error => {
+                CommonNotifications.failedToFetch()
+                this.setState({ loading: false, error })
+            })
     }
 
     private dynamicFieldValue(field: DynamicField) {
@@ -203,10 +204,10 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
     }
 
     render() {
-        const { certificate, loading } = this.state
+        const { certificate, loading, error } = this.state
         if (loading) return <Preloader loading />
-
-        if (certificate === undefined) return <Empty description="Not found" />
+        if (error !== undefined) return EmptyStates.FailedToFetch
+        if (certificate === undefined) return EmptyStates.NotFound
 
         return this.renderContents()
     }

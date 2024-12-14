@@ -22,6 +22,8 @@ import HostConverter from "./HostConverter"
 import { IntegrationResponse } from "../integration/model/IntegrationResponse"
 import IntegrationService from "../integration/IntegrationService"
 import If from "../../core/components/flowcontrol/If"
+import CommonNotifications from "../../core/components/notification/CommonNotifications"
+import EmptyStates from "../../core/components/emptystate/EmptyStates"
 
 const DEFAULT_HOST: HostFormValues = {
     enabled: true,
@@ -56,6 +58,7 @@ interface HostFormPageState {
     integrations: IntegrationResponse[]
     loading: boolean
     notFound: boolean
+    error?: Error
 }
 
 export default class HostFormPage extends React.Component<any, HostFormPageState> {
@@ -300,10 +303,15 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         const integrations = this.integrationService.getAll(true)
 
         if (this.hostId === undefined && copyFrom === undefined) {
-            integrations.then(response => {
-                this.setState({ loading: false, integrations: response })
-                this.updateShellConfig(true)
-            })
+            integrations
+                .then(response => {
+                    this.setState({ loading: false, integrations: response })
+                    this.updateShellConfig(true)
+                })
+                .catch(() => {
+                    this.setState({ loading: false })
+                    CommonNotifications.failedToFetch()
+                })
             return
         }
 
@@ -311,28 +319,33 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
             .getById((this.hostId ?? copyFrom)!!)
             .then(response => (response === undefined ? undefined : HostConverter.responseToFormValues(response)))
 
-        Promise.all([formValues, integrations]).then(([formValues, integrations]) => {
-            if (formValues === undefined) this.setState({ loading: false, notFound: true })
-            else {
-                if (copyFrom !== undefined)
-                    Notification.success(
-                        "Host values copied",
-                        "The values from the selected host where successfully copied as a new host",
-                    )
+        Promise.all([formValues, integrations])
+            .then(([formValues, integrations]) => {
+                if (formValues === undefined) this.setState({ loading: false, notFound: true })
+                else {
+                    if (copyFrom !== undefined)
+                        Notification.success(
+                            "Host values copied",
+                            "The values from the selected host where successfully copied as a new host",
+                        )
 
-                this.setState({ loading: false, formValues, integrations })
-                this.updateShellConfig(true)
-            }
-        })
+                    this.setState({ loading: false, formValues, integrations })
+                    this.updateShellConfig(true)
+                }
+            })
+            .catch(error => {
+                CommonNotifications.failedToFetch()
+                this.setState({ loading: false, error })
+            })
 
         this.updateShellConfig(false)
     }
 
     render() {
-        const { loading, notFound } = this.state
+        const { loading, notFound, error } = this.state
 
-        if (notFound) return <Empty description="Not found" />
-
+        if (error !== undefined) return EmptyStates.FailedToFetch
+        if (notFound) return EmptyStates.NotFound
         if (loading) return <Preloader loading />
 
         return this.renderForm()

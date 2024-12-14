@@ -10,6 +10,7 @@ import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
 import ValidationResultConverter from "../../../core/validation/ValidationResultConverter"
 import FormLayout from "../../../core/components/form/FormLayout"
 import DynamicInput from "../../../core/components/dynamicfield/DynamicInput"
+import CommonNotifications from "../../../core/components/notification/CommonNotifications"
 
 export interface IntegrationConfigurationModalProps {
     integrationId: string
@@ -118,17 +119,20 @@ export default class IntegrationConfigurationModal extends React.Component<
 
     componentDidMount() {
         const { integrationId } = this.props
-        this.service.getConfiguration(integrationId).then(integration => {
-            const formValues = {
-                enabled: integration.enabled,
-                parameters: this.buildParametersInitialValue(integration),
-            }
+        this.service
+            .getConfiguration(integrationId)
+            .then(integration => {
+                const formValues = {
+                    enabled: integration.enabled,
+                    parameters: this.buildParametersInitialValue(integration),
+                }
 
-            this.setState({
-                integration,
-                formValues,
+                this.setState({
+                    integration,
+                    formValues,
+                })
             })
-        })
+            .catch(() => CommonNotifications.failedToFetch())
     }
 
     render() {

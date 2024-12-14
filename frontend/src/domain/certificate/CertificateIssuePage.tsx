@@ -17,12 +17,15 @@ import DomainNamesList from "./components/DomainNamesList"
 import { navigateTo } from "../../core/components/router/AppRouter"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import { DynamicFieldType } from "../../core/dynamicfield/DynamicField"
+import CommonNotifications from "../../core/components/notification/CommonNotifications"
+import EmptyStates from "../../core/components/emptystate/EmptyStates"
 
 interface CertificateIssuePageState {
     availableProviders: AvailableProviderResponse[]
     loading: boolean
     validationResult: ValidationResult
     formValues: IssueCertificateRequest
+    error?: Error
 }
 
 export default class CertificateIssuePage extends React.Component<unknown, CertificateIssuePageState> {
@@ -176,26 +179,34 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
     }
 
     componentDidMount() {
-        this.service.availableProviders().then(providers => {
-            const sortedProviders = providers.sort((left, right) => (left.priority > right.priority ? 1 : -1))
-            this.setState({
-                availableProviders: sortedProviders,
-                loading: false,
-                formValues: {
-                    providerId: providers[0].id,
-                    domainNames: [""],
-                    parameters: {},
-                },
-            })
+        this.service
+            .availableProviders()
+            .then(providers => {
+                const sortedProviders = providers.sort((left, right) => (left.priority > right.priority ? 1 : -1))
+                this.setState({
+                    availableProviders: sortedProviders,
+                    loading: false,
+                    formValues: {
+                        providerId: providers[0].id,
+                        domainNames: [""],
+                        parameters: {},
+                    },
+                })
 
-            this.updateShellConfig(true)
-        })
+                this.updateShellConfig(true)
+            })
+            .catch(error => {
+                CommonNotifications.failedToFetch()
+                this.setState({ loading: false, error })
+            })
 
         this.updateShellConfig(false)
     }
 
     render() {
-        const { loading, availableProviders } = this.state
+        const { loading, availableProviders, error } = this.state
+        if (error !== undefined) return EmptyStates.FailedToFetch
+
         return (
             <Preloader loading={loading}>
                 <If condition={availableProviders.length > 0}>{this.renderForm()}</If>

@@ -8,11 +8,14 @@ import { Card, Flex, Image } from "antd"
 import { SettingOutlined } from "@ant-design/icons"
 import If from "../../core/components/flowcontrol/If"
 import IntegrationConfigurationModal from "./component/IntegrationConfigurationModal"
+import CommonNotifications from "../../core/components/notification/CommonNotifications"
+import EmptyStates from "../../core/components/emptystate/EmptyStates"
 
 interface IntegrationsPageState {
     loading: boolean
     integrations: IntegrationResponse[]
     integrationBeingChanged?: IntegrationResponse
+    error?: Error
 }
 
 export default class IntegrationsPage extends React.Component<any, IntegrationsPageState> {
@@ -77,12 +80,18 @@ export default class IntegrationsPage extends React.Component<any, IntegrationsP
     }
 
     private fetchIntegrations() {
-        this.service.getAll().then(integrations =>
-            this.setState({
-                loading: false,
-                integrations,
-            }),
-        )
+        this.service
+            .getAll()
+            .then(integrations =>
+                this.setState({
+                    loading: false,
+                    integrations,
+                }),
+            )
+            .catch(error => {
+                CommonNotifications.failedToFetch()
+                this.setState({ loading: false, error })
+            })
     }
 
     componentDidMount() {
@@ -94,7 +103,8 @@ export default class IntegrationsPage extends React.Component<any, IntegrationsP
     }
 
     render() {
-        const { loading, integrationBeingChanged } = this.state
+        const { loading, integrationBeingChanged, error } = this.state
+        if (error !== undefined) return EmptyStates.FailedToFetch
         if (loading) return <Preloader loading />
 
         return (
