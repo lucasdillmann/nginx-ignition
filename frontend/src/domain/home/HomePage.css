@@ -1,9 +1,50 @@
-.home-title {
-    font-size: 32px;
-    margin: 40px 0 0;
+.home-guide-container h1 {
+    font-size: 38px;
+    margin: 120px 0 0;
+    text-align: center;
 }
 
-.home-subtitle {
-    margin: 10px 0 20px;
-    font-size: 22px;
+.home-guide-subtitle {
+    margin: 10px 0 120px !important;
+    font-size: 28px !important;
+    text-align: center;
+}
+
+.home-guide-container h2 {
+    font-size: 28px;
+    margin-top: 20px;
+}
+
+.home-guide-container p {
+    font-size: 16px;
+    margin: 10px 0;
+    padding: 0;
+}
+
+.home-guide-right-side-video,
+.home-guide-left-side-video {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 40%;
+}
+
+.home-guide-container video {
+    width: 100%;
+}
+
+.home-guide-right-side-video {
+    margin: 0 0 0 20px;
+}
+
+.home-guide-left-side-video {
+    margin: 0 20px 0 0;
+}
+
+.home-guide-section {
+    margin-bottom: 80px;
+}
+
+.home-guide-section-content {
+    flex-grow: 1;
+    width: 60%;
 }
