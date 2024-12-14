@@ -55,3 +55,16 @@
     flex-grow: 1;
     width: 60%;
 }
+
+.home-guide-footer-container {
+    background: #f5f5f5;
+    padding: 60px 40px;
+}
+
+.home-guide-footer-container h1 {
+    font-size: 30px;
+}
+
+.home-guide-footer-container p {
+    font-size: 24px !important;
+}
