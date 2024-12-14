@@ -94,11 +94,11 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
     }
 
     private handleLinkedInClick() {
-        window.open("https://linkedin.com/in/lucasdillmann", "_blank")
+        window.open("https://linkedin.com/in/lucasdillmann", "_blank", "noopener")
     }
 
     private handleGithubClick() {
-        window.open("https://github.com/lucasdillmann/nginx-ignition", "_blank")
+        window.open("https://github.com/lucasdillmann/nginx-ignition", "_blank", "noopener")
     }
 
     shouldComponentUpdate(nextProps: Readonly<AppShellProps>): boolean {
