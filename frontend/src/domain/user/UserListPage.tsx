@@ -14,7 +14,7 @@ import DeleteUserAction from "./actions/DeleteUserAction"
 
 export default class UserListPage extends React.PureComponent {
     private readonly service: UserService
-    private readonly table: React.RefObject<DataTable<UserResponse> | null>
+    private readonly table: React.RefObject<DataTable<UserResponse>>
 
     constructor(props: any) {
         super(props)

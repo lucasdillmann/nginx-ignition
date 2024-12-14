@@ -63,7 +63,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     private readonly integrationService: IntegrationService
     private readonly hostId?: string
     private readonly saveModal: ModalPreloader
-    private readonly formRef: React.RefObject<FormInstance | null>
+    private readonly formRef: React.RefObject<FormInstance>
 
     constructor(props: any) {
         super(props)

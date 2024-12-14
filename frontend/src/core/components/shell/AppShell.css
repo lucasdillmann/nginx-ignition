@@ -40,6 +40,19 @@
     border-radius: 4px !important;
 }
 
+.shell-sider-bottom-credits {
+    color: #aeaeae;
+    padding: 10px;
+    align-content: center;
+    text-align: center;
+    font-size: 13px;
+}
+
+.shell-sider-bottom-credits .anticon {
+    margin-left: 5px;
+    font-size: 16px;
+}
+
 .shell-content-header-container {
     padding: 25px;
     vertical-align: center;

@@ -6,6 +6,7 @@ import AppRoute from "../router/AppRoute"
 import "./AppShell.css"
 import If from "../flowcontrol/If"
 import AppShellContext, { ShellAction, ShellConfig } from "./AppShellContext"
+import { GithubFilled, LinkedinFilled } from "@ant-design/icons"
 const { Sider, Content } = Layout
 
 const EmptyConfig: ShellConfig = {
@@ -92,6 +93,14 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         return <>{actions.map(action => this.renderActionButton(action))}</>
     }
 
+    private handleLinkedInClick() {
+        window.open("https://linkedin.com/in/lucasdillmann", "_blank")
+    }
+
+    private handleGithubClick() {
+        window.open("https://github.com/lucasdillmann/nginx-ignition", "_blank")
+    }
+
     shouldComponentUpdate(nextProps: Readonly<AppShellProps>): boolean {
         const { children: previous } = nextProps
         const { children: current } = this.props
@@ -129,7 +138,14 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                         selectedKeys={activeMenuItemPath ? [activeMenuItemPath] : undefined}
                         items={this.buildMenuItemsAdapters()}
                     />
-                    <div className="shell-sider-user-menu">{userMenu}</div>
+                    <div className="shell-sider-bottom">
+                        <div className="shell-sider-bottom-credits">
+                            Made by Lucas Dillmann.
+                            <LinkedinFilled onClick={() => this.handleLinkedInClick()} />
+                            <GithubFilled onClick={() => this.handleGithubClick()} />
+                        </div>
+                        <div className="shell-sider-bottom-menu">{userMenu}</div>
+                    </div>
                 </Sider>
                 <Layout className="shell-content-container">
                     <Flex className="shell-content-header-container">

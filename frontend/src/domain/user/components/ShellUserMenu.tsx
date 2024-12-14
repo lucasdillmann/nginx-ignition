@@ -28,7 +28,7 @@ interface ShellUserMenuState {
 }
 
 export default class ShellUserMenu extends React.Component<any, ShellUserMenuState> {
-    private readonly formRef: React.RefObject<FormInstance | null>
+    private readonly formRef: React.RefObject<FormInstance>
     private readonly service: UserService
 
     constructor(props: any) {
