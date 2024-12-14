@@ -2,7 +2,7 @@ import ApiClientEventListener from "../apiclient/event/ApiClientEventListener"
 import ApiResponse from "../apiclient/ApiResponse"
 import AuthenticationService from "./AuthenticationService"
 
-export default class AuthenticationApiClientEventListener implements ApiClientEventListener {
+export default class AuthenticationTokenApiClientEventListener implements ApiClientEventListener {
     handleRequest(request: RequestInit): void {
         const token = AuthenticationService.getCurrentToken()
         if (token == null) return
