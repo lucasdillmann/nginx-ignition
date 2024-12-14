@@ -6,6 +6,7 @@ import AppShell, { AppShellMenuItem } from "../shell/AppShell"
 import ErrorBoundary from "../errorboundary/ErrorBoundary"
 import { Router } from "@remix-run/router/dist/router"
 import qs, { ParsedQs } from "qs"
+import { buildLoginUrl } from "../../authentication/buildLoginUrl"
 
 let currentInstance: AppRouter
 
@@ -72,7 +73,7 @@ export default class AppRouter extends React.Component<AppRouterProps, AppRouter
         const { user } = AppContext.get()
 
         if (requiresAuthentication && user?.id == null) {
-            return <Navigate to="/login" replace />
+            return <Navigate to={buildLoginUrl()} replace />
         }
 
         if (fullPage) {

@@ -14,6 +14,7 @@ import FormLayout from "../../../core/components/form/FormLayout"
 import Password from "antd/es/input/Password"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
 import ValidationResultConverter from "../../../core/validation/ValidationResultConverter"
+import { buildLoginUrl } from "../../../core/authentication/buildLoginUrl"
 
 const DEFAULT_FORM_VALUES: UserUpdatePasswordRequest = {
     currentPassword: "",
@@ -50,7 +51,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
             .then(() => {
                 AppContext.get().user = undefined
             })
-            .then(() => navigateTo("/login"))
+            .then(() => navigateTo(buildLoginUrl()))
     }
 
     private async executePasswordChange() {

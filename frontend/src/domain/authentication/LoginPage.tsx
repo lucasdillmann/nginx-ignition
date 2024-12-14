@@ -7,6 +7,7 @@ import Preloader from "../../core/components/preloader/Preloader"
 import Notification from "../../core/components/notification/Notification"
 import "./LoginPage.css"
 import UserService from "../user/UserService"
+import { queryParams } from "../../core/components/router/AppRouter"
 
 const { Text, Title } = Typography
 
@@ -39,8 +40,9 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
     }
 
     private handleSuccessfulLogin() {
+        const returnTo = queryParams().returnTo as string | undefined
         // eslint-disable-next-line no-restricted-globals
-        location.href = "/"
+        location.href = returnTo ?? "/"
     }
 
     private handleLoginError() {
