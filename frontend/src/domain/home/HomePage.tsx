@@ -29,19 +29,19 @@ export default class HomePage extends React.PureComponent {
                             <HddOutlined /> Hosts
                         </h2>
                         <p>
-                            A virtual host, host in short, is a website that the nginx server will make available to
-                            be opened in a browser. You can find all hosts managed at the left, on the main menu.
+                            A virtual host, host in short, is a website that the nginx server will make available to be
+                            opened in a browser. You can find all hosts managed at the left, on the main menu.
                         </p>
                         <p>
                             nginx ignition provides an intuitive way to configure such websites. For example, if you
                             have a NAS and have some services running on it (like Jellyfin, Vaultwarden and more),
-                            ignition enables an easy way to access it from a domain like jellyfin.myhome.com, way
-                            easier to remember and use than an IP and port.
+                            ignition enables an easy way to access it from a domain like jellyfin.myhome.com, way easier
+                            to remember and use than an IP and port.
                         </p>
                         <p>
                             Each host will have a set of routes, which are rules that define which requests patterns
-                            should be forwarded and to where, and bindings, which are the definitions at what ports
-                            the nginx should listen for such requests.
+                            should be forwarded and to where, and bindings, which are the definitions at what ports the
+                            nginx should listen for such requests.
                         </p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
@@ -58,14 +58,13 @@ export default class HomePage extends React.PureComponent {
                             <FileProtectOutlined /> SSL certificates
                         </h2>
                         <p>
-                            If you want to or need to protect your domains with HTTPS encryption, the app comes with
-                            an easy way to manage such SSL certificates too.
+                            If you want to or need to protect your domains with HTTPS encryption, the app comes with an
+                            easy way to manage such SSL certificates too.
                         </p>
                         <p>
-                            Either if you need a valid certificate backed by Let's Encrypt, a self-signed, or bring
-                            your custom one for a third-party provider, ignition will allow it with ease. Even when the
+                            Either if you need a valid certificate backed by Let's Encrypt, a self-signed, or bring your
+                            custom one for a third-party provider, ignition will allow it with ease. Even when the
                             certificate is about to expire, the app will automatically renew it for you.
-
                         </p>
                         <p>
                             Once an SSL certificate is created or imported, you can use it on the hosts by simply
@@ -81,14 +80,14 @@ export default class HomePage extends React.PureComponent {
                         </h2>
                         <p>
                             Need to know what has been requested or why something isn't working the way it was expected?
-                            ignition provides a simple way for you to check the nginx logs too. Just select the host
-                            (or the nginx server itself) that you want to check what's going on, and we will get the
-                            logs for you.
+                            ignition provides a simple way for you to check the nginx logs too. Just select the host (or
+                            the nginx server itself) that you want to check what's going on, and we will get the logs
+                            for you.
                         </p>
                         <p>
                             And you don't need to worry about your disk getting full of logs, ignition will rotate them
-                            automatically for you (and you can control how much to keep, or even disable the rotation
-                            if it suits you best).
+                            automatically for you (and you can control how much to keep, or even disable the rotation if
+                            it suits you best).
                         </p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
@@ -106,8 +105,8 @@ export default class HomePage extends React.PureComponent {
                         </h2>
                         <p>
                             Is your app running in a Docker container or in a TrueNAS? You can enable the native
-                            integration nginx ignition offers and easily pick a container or app as the destination
-                            app that the host should forward the requests to.
+                            integration nginx ignition offers and easily pick a container or app as the destination app
+                            that the host should forward the requests to.
                         </p>
                     </Flex>
                 </Flex>
@@ -141,8 +140,8 @@ export default class HomePage extends React.PureComponent {
                     <p className="home-guide-subtitle">
                         <Link to="https://github.com/lucasdillmann/nginx-ignition" target="_blank">
                             Reach us out at our GitHub page
-                        </Link>.
-                        We'd love some constructive feedback from you.
+                        </Link>
+                        . We'd love some constructive feedback from you.
                     </p>
                 </div>
             </div>

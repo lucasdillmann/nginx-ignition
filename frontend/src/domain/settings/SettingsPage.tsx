@@ -4,7 +4,7 @@ import { LogLevel, TimeUnit } from "./model/SettingsDto"
 import SettingsService from "./SettingsService"
 import Preloader from "../../core/components/preloader/Preloader"
 import Notification from "../../core/components/notification/Notification"
-import { Flex, Form, Input, InputNumber, Select, Space, Switch } from "antd"
+import { Flex, Form, FormInstance, Input, InputNumber, Select, Space, Switch } from "antd"
 import { UnexpectedResponseError } from "../../core/apiclient/ApiResponse"
 import ValidationResultConverter from "../../core/validation/ValidationResultConverter"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
@@ -17,6 +17,7 @@ import SettingsFormValues from "./model/SettingsFormValues"
 import SettingsConverter from "./SettingsConverter"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
+import SettingsDefaults from "./SettingsDefaults"
 
 const INTEGER_MAX = 2147483647
 
@@ -30,15 +31,28 @@ interface SettingsPageState {
 export default class SettingsPage extends React.Component<any, SettingsPageState> {
     private readonly service: SettingsService
     private readonly saveModal: ModalPreloader
+    private readonly formRef: React.RefObject<FormInstance>
 
     constructor(props: any) {
         super(props)
         this.service = new SettingsService()
         this.saveModal = new ModalPreloader()
+        this.formRef = React.createRef()
         this.state = {
             loading: true,
             validationResult: new ValidationResult(),
         }
+    }
+
+    private resetToDefaultValues() {
+        const { nginx, logRotation, certificateAutoRenew } = SettingsDefaults
+        const newValues = { nginx, logRotation, certificateAutoRenew }
+
+        this.formRef.current?.setFieldsValue(newValues)
+        Notification.success(
+            "Values reset",
+            "Settings were changed back to the default values (except the global bindings), but not yet saved",
+        )
     }
 
     private async submit() {
@@ -364,6 +378,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
 
         return (
             <Form<SettingsFormValues>
+                ref={this.formRef}
                 {...FormLayout.FormDefaults}
                 onValuesChange={(_, formValues) => this.handleChange(formValues)}
                 initialValues={formValues}
@@ -380,6 +395,13 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
             title: "Settings",
             subtitle: "Globals settings for the nginx server and nginx ignition",
             actions: [
+                {
+                    description: "Reset to defaults",
+                    disabled: !enableActions,
+                    onClick: () => this.resetToDefaultValues(),
+                    color: "default",
+                    type: "outlined",
+                },
                 {
                     description: "Save",
                     disabled: !enableActions,
