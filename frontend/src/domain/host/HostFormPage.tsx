@@ -1,6 +1,6 @@
 import React from "react"
 import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
-import { Empty, Flex, Form, FormInstance, Switch } from "antd"
+import { Flex, Form, FormInstance, Switch } from "antd"
 import FormLayout from "../../core/components/form/FormLayout"
 import DomainNamesList from "../certificate/components/DomainNamesList"
 import { navigateTo, queryParams, routeParams } from "../../core/components/router/AppRouter"

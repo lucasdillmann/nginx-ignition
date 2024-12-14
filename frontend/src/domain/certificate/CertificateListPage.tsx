@@ -3,7 +3,6 @@ import DataTable, { DataTableColumn } from "../../core/components/datatable/Data
 import { Flex } from "antd"
 import { Link } from "react-router-dom"
 import { DeleteOutlined, EyeOutlined, ReloadOutlined } from "@ant-design/icons"
-import Notification from "../../core/components/notification/Notification"
 import PageResponse from "../../core/pagination/PageResponse"
 import CertificateService from "./CertificateService"
 import { CertificateResponse } from "./model/CertificateResponse"
