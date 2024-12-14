@@ -53,6 +53,10 @@
     font-size: 16px;
 }
 
+.shell-sider-bottom-credits .anticon:first-of-type {
+    margin-left: 10px;
+}
+
 .shell-content-header-container {
     padding: 25px;
     vertical-align: center;
