@@ -6,6 +6,10 @@ import com.github.dockerjava.core.DockerClientBuilder
 import com.github.dockerjava.zerodep.ZerodepDockerHttpClient
 
 internal class DockerClientAdapter(mode: DockerConnectionMode, host: String) {
+    private companion object {
+        private const val LIMIT = 1000
+    }
+
     private val config = DefaultDockerClientConfig
         .createDefaultConfigBuilder()
         .withDockerHost(
@@ -29,6 +33,7 @@ internal class DockerClientAdapter(mode: DockerConnectionMode, host: String) {
     fun listContainers(): List<Container> =
         delegate
             .listContainersCmd()
+            .withLimit(LIMIT)
             .withShowAll(true)
             .exec()
 }
