@@ -7,16 +7,20 @@ import Videos from "./videos/Videos"
 
 export default class HomePage extends React.PureComponent {
     componentDidMount() {
-        AppShellContext.get().updateConfig({})
+        AppShellContext.get().updateConfig({
+            noContainerPadding: true,
+        })
     }
 
     render() {
         return (
             <div className="home-guide-container">
-                <h1>Hello, and welcome to nginx ignition 👋</h1>
-                <p className="home-guide-subtitle">
-                    Here are some quick start info to help you make the most of the app. We hope you enjoy it.
-                </p>
+                <div className="home-guide-header-container">
+                    <h1>Hello, and welcome to nginx ignition 👋</h1>
+                    <p className="home-guide-subtitle">
+                        Here are some quick start info to help you make the most of the app. We hope you enjoy it.
+                    </p>
+                </div>
 
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-section-content" vertical>

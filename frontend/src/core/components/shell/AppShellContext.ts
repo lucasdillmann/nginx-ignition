@@ -14,6 +14,7 @@ export interface ShellConfig {
     title?: string
     subtitle?: string
     actions?: ShellAction[]
+    noContainerPadding?: boolean
 }
 
 export interface ShellOperations {

@@ -116,7 +116,10 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         const { activeRoute, children, userMenu, serverControl } = this.props
         const { config } = this.state
         const activeMenuItemPath = activeRoute.activeMenuItemPath ?? activeRoute.path
-        const { title, subtitle } = config
+        const { title, subtitle, noContainerPadding } = config
+        const mainContentClassNames = !noContainerPadding
+            ? "shell-content-main"
+            : "shell-content-main shell-content-main-no-padding"
 
         return (
             <Layout className="shell-container">
@@ -155,7 +158,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                             <Flex className="shell-content-header-actions-container">{this.renderActions()}</Flex>
                         </Flex>
                     </If>
-                    <Content className="shell-content-main">{children}</Content>
+                    <Content className={mainContentClassNames}>{children}</Content>
                 </Layout>
             </Layout>
         )
