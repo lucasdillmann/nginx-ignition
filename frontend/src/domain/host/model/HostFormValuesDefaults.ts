@@ -20,7 +20,6 @@ const HostFormValuesDefaults: HostFormValues = {
             sourcePath: "/",
             targetUri: "",
             settings: {
-                forwardQueryParams: true,
                 keepOriginalDomainName: true,
                 proxySslServerName: true,
                 includeForwardHeaders: true,

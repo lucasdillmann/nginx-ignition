@@ -33,7 +33,6 @@ export interface HostRouteSettings {
     includeForwardHeaders: boolean
     proxySslServerName: boolean
     keepOriginalDomainName: boolean
-    forwardQueryParams: boolean
     custom?: string
 }
 
