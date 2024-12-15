@@ -6,7 +6,6 @@ import DomainNamesList from "../certificate/components/DomainNamesList"
 import { navigateTo, queryParams, routeParams } from "../../core/components/router/AppRouter"
 import HostService from "./HostService"
 import ValidationResult from "../../core/validation/ValidationResult"
-import { HostBindingType, HostRouteType } from "./model/HostRequest"
 import Preloader from "../../core/components/preloader/Preloader"
 import DeleteHostAction from "./actions/DeleteHostAction"
 import Notification from "../../core/components/notification/Notification"
@@ -24,33 +23,7 @@ import IntegrationService from "../integration/IntegrationService"
 import If from "../../core/components/flowcontrol/If"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
-
-const DEFAULT_HOST: HostFormValues = {
-    enabled: true,
-    defaultServer: false,
-    useGlobalBindings: true,
-    domainNames: [""],
-    bindings: [
-        {
-            ip: "0.0.0.0",
-            port: 8080,
-            type: HostBindingType.HTTP,
-        },
-    ],
-    routes: [
-        {
-            priority: 0,
-            type: HostRouteType.PROXY,
-            sourcePath: "/",
-            targetUri: "",
-        },
-    ],
-    featureSet: {
-        websocketsSupport: true,
-        http2Support: true,
-        redirectHttpToHttps: false,
-    },
-}
+import HostFormValuesDefaults from "./model/HostFormValuesDefaults"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -81,7 +54,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
             validationResult: new ValidationResult(),
             loading: true,
             notFound: false,
-            formValues: DEFAULT_HOST,
+            formValues: HostFormValuesDefaults,
             integrations: [],
         }
     }
@@ -154,7 +127,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         const orderedData: HostFormValues = {
             ...host,
             routes: sortedRoutes,
-            bindings: injectBindingNeeded ? DEFAULT_HOST.bindings : bindings,
+            bindings: injectBindingNeeded ? HostFormValuesDefaults.bindings : bindings,
         }
 
         this.setState({ formValues: orderedData }, () => {

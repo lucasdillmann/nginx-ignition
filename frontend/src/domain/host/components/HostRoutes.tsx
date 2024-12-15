@@ -1,6 +1,6 @@
 import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
-import { Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Modal, Select } from "antd"
+import { Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Select } from "antd"
 import If from "../../../core/components/flowcontrol/If"
 import { CloseOutlined, PlusOutlined, ArrowUpOutlined, ArrowDownOutlined, SettingOutlined } from "@ant-design/icons"
 import { HostFormRoute } from "../model/HostFormValues"
@@ -13,6 +13,8 @@ import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
 import { IntegrationOptionResponse } from "../../integration/model/IntegrationOptionResponse"
 import PageResponse, { emptyPageResponse } from "../../../core/pagination/PageResponse"
 import IntegrationService from "../../integration/IntegrationService"
+import HostFormValuesDefaults from "../model/HostFormValuesDefaults"
+import HostRouteSettingsModal from "./HostRouteSettingsModal"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -30,13 +32,6 @@ const ENABLED_ACTION_ICON_STYLE = {
     color: "#000000",
 }
 
-const DEFAULT_VALUES: HostFormRoute = {
-    priority: 0,
-    type: HostRouteType.PROXY,
-    sourcePath: "/",
-    targetUri: "",
-}
-
 export interface HostRoutesProps {
     routes: HostFormRoute[]
     validationResult: ValidationResult
@@ -45,7 +40,7 @@ export interface HostRoutesProps {
 }
 
 interface HostRoutesState {
-    customSettingsOpenModalIndex?: number
+    routeSettingsOpenModalIndex?: number
 }
 
 export default class HostRoutes extends React.Component<HostRoutesProps, HostRoutesState> {
@@ -243,12 +238,12 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         operations.add(newPosition)
     }
 
-    private openCustomSettingsModal(index: number) {
-        this.setState({ customSettingsOpenModalIndex: index })
+    private openRouteSettingsModal(index: number) {
+        this.setState({ routeSettingsOpenModalIndex: index })
     }
 
-    private closeCustomSettingsModal() {
-        this.setState({ customSettingsOpenModalIndex: undefined })
+    private closeRouteSettingsModal() {
+        this.setState({ routeSettingsOpenModalIndex: undefined })
     }
 
     private removeRoute(index: number) {
@@ -258,7 +253,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
 
     private renderRoute(field: FormListFieldData, operations: FormListOperation, index: number) {
         const { validationResult, routes } = this.props
-        const { customSettingsOpenModalIndex } = this.state
+        const { routeSettingsOpenModalIndex } = this.state
         const { name } = field
         const type = routes[index].type
 
@@ -301,42 +296,14 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     {this.renderStaticResponseRoute(field, index)}
                 </If>
 
-                <Modal
-                    title="Advanced settings"
-                    open={index === customSettingsOpenModalIndex}
-                    onClose={() => this.closeCustomSettingsModal()}
-                    onCancel={() => this.closeCustomSettingsModal()}
-                    footer={null}
-                >
-                    <p>
-                        Any instruction placed here will be placed in the nginx configuration files as-is. Use this
-                        field for any customized configuration parameters that you need in the host route.
-                    </p>
-                    <p>
-                        Please note that the text below must be in the syntax expected by the nginx. Please refer to the
-                        documentation at &nbsp;
-                        <a
-                            href="https://nginx.org/en/docs/http/ngx_http_core_module.html#location"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            this link
-                        </a>
-                        &nbsp; for more details. If you isn't sure about what to place here, it's probably the best to
-                        leave it empty.
-                    </p>
-
-                    <Form.Item
-                        {...FormLayout.ExpandedLabeledItem}
-                        className="host-form-route-custom-settings"
-                        name={[name, "customSettings"]}
-                        validateStatus={validationResult.getStatus(`routes[${index}].customSettings`)}
-                        help={validationResult.getMessage(`routes[${index}].customSettings`)}
-                        required
-                    >
-                        <TextArea rows={10} />
-                    </Form.Item>
-                </Modal>
+                <HostRouteSettingsModal
+                    open={index === routeSettingsOpenModalIndex}
+                    onClose={() => this.closeRouteSettingsModal()}
+                    onCancel={() => this.closeRouteSettingsModal()}
+                    index={index}
+                    fieldPath={name}
+                    validationResult={validationResult}
+                />
 
                 <ArrowUpOutlined
                     onClick={() => this.moveRoute(operations, index, -1)}
@@ -346,10 +313,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     onClick={() => this.moveRoute(operations, index, 1)}
                     style={index === routes.length - 1 ? DISABLED_ACTION_ICON_STYLE : ENABLED_ACTION_ICON_STYLE}
                 />
-                <SettingOutlined
-                    onClick={() => this.openCustomSettingsModal(index)}
-                    style={ENABLED_ACTION_ICON_STYLE}
-                />
+                <SettingOutlined onClick={() => this.openRouteSettingsModal(index)} style={ENABLED_ACTION_ICON_STYLE} />
 
                 <If condition={routes.length > 1}>
                     <CloseOutlined onClick={() => this.removeRoute(index)} style={ACTION_ICON_STYLE} />
@@ -367,7 +331,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     type="dashed"
                     onClick={() =>
                         operations.add({
-                            ...DEFAULT_VALUES,
+                            ...HostFormValuesDefaults.routes[0],
                             priority: fields.length,
                         })
                     }

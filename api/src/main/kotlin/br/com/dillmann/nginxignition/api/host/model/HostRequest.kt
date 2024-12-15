@@ -19,11 +19,20 @@ internal data class HostRequest(
         val priority: Int,
         val type: Host.RouteType,
         val sourcePath: String,
+        val settings: RouteSettings,
         val targetUri: String? = null,
-        val customSettings: String? = null,
         val redirectCode: Int? = null,
         val response: StaticResponse? = null,
         val integration: IntegrationConfig? = null,
+    )
+
+    @Serializable
+    data class RouteSettings (
+        val includeForwardHeaders: Boolean,
+        val proxySslServerName: Boolean,
+        val keepOriginalDomainName: Boolean,
+        val forwardQueryParams: Boolean,
+        val custom: String?,
     )
 
     @Serializable

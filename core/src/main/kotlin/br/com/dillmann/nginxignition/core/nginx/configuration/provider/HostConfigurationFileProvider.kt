@@ -126,7 +126,7 @@ internal class HostConfigurationFileProvider(
                 $headerInstructions
                 return $statusCode "$escapedPayload";
                 ${buildRouteFeatures(features)}
-                ${route.customSettings ?: ""}
+                ${route.settings.custom ?: ""}
             }
         """.trimIndent()
     }
@@ -136,7 +136,7 @@ internal class HostConfigurationFileProvider(
            location ${route.sourcePath} {
                 proxy_pass ${route.targetUri!!};
                 ${buildRouteFeatures(features)}
-                ${route.customSettings ?: ""}
+                ${route.settings.custom ?: ""}
            } 
         """.trimIndent()
 
@@ -147,18 +147,17 @@ internal class HostConfigurationFileProvider(
            location ${route.sourcePath} {
                 proxy_pass $proxyUrl;
                 ${buildRouteFeatures(features)}
-                ${route.customSettings ?: ""}
+                ${route.settings.custom ?: ""}
            }
         """.trimIndent()
     }
-
 
     private fun buildRedirectRoute(route: Host.Route, features: Host.FeatureSet) =
         """
            location ${route.sourcePath} {
                 return ${route.redirectCode!!} ${route.targetUri!!};
                 ${buildRouteFeatures(features)}
-                ${route.customSettings ?: ""}
+                ${route.settings.custom ?: ""}
            } 
         """.trimIndent()
 

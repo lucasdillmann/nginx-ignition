@@ -32,13 +32,17 @@ internal class HostConverter {
             scope[type] = route.type.name
             scope[sourcePath] = route.sourcePath
             scope[targetUri] = route.targetUri
-            scope[customSettings] = route.customSettings
             scope[redirectCode] = route.redirectCode
             scope[staticResponseCode] = route.response?.statusCode
             scope[staticResponsePayload] = route.response?.payload
             scope[staticResponseHeaders] = route.response?.headers?.let(Json::encodeToString)
             scope[integrationId] = route.integration?.integrationId
             scope[integrationOptionId] = route.integration?.optionId
+            scope[includeForwardHeaders] = route.settings.includeForwardHeaders
+            scope[forwardQueryParams] = route.settings.forwardQueryParams
+            scope[keepOriginalDomainName] = route.settings.keepOriginalDomainName
+            scope[proxySslServerName] = route.settings.proxySslServerName
+            scope[customSettings] = route.settings.custom
         }
     }
 
@@ -89,12 +93,18 @@ internal class HostConverter {
             id = route[HostRouteTable.id],
             priority = route[HostRouteTable.priority],
             type = Host.RouteType.valueOf(route[HostRouteTable.type]),
-            customSettings = route[HostRouteTable.customSettings],
             sourcePath = route[HostRouteTable.sourcePath],
             targetUri = route[HostRouteTable.targetUri],
             redirectCode = route[HostRouteTable.redirectCode],
             response = response,
             integration = integration,
+            settings = Host.RouteSettings(
+                includeForwardHeaders = route[HostRouteTable.includeForwardHeaders],
+                keepOriginalDomainName = route[HostRouteTable.keepOriginalDomainName],
+                proxySslServerName = route[HostRouteTable.proxySslServerName],
+                forwardQueryParams = route[HostRouteTable.forwardQueryParams],
+                custom = route[HostRouteTable.customSettings],
+            ),
         )
     }
 

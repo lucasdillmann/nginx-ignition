@@ -29,12 +29,20 @@ export interface HostRouteStaticResponse {
     headers?: Record<string, string>
 }
 
+export interface HostRouteSettings {
+    includeForwardHeaders: boolean
+    proxySslServerName: boolean
+    keepOriginalDomainName: boolean
+    forwardQueryParams: boolean
+    custom?: string
+}
+
 export interface HostRoute {
     priority: number
     type: HostRouteType
     sourcePath: string
+    settings: HostRouteSettings
     targetUri?: string
-    customSettings?: string
     response?: HostRouteStaticResponse
     integration?: HostRouteIntegration
 }

@@ -18,10 +18,18 @@ data class Host(
         val type: RouteType,
         val sourcePath: String,
         val targetUri: String?,
-        val customSettings: String?,
         val redirectCode: Int?,
+        val settings: RouteSettings,
         val response: StaticResponse?,
         val integration: IntegrationConfig?,
+    )
+
+    data class RouteSettings (
+        val includeForwardHeaders: Boolean,
+        val proxySslServerName: Boolean,
+        val keepOriginalDomainName: Boolean,
+        val forwardQueryParams: Boolean,
+        val custom: String?,
     )
 
     enum class RouteType {

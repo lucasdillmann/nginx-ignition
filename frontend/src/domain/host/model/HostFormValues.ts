@@ -1,5 +1,5 @@
 import { CertificateResponse } from "../../certificate/model/CertificateResponse"
-import { HostBindingType, HostFeatureSet, HostRouteType } from "./HostRequest"
+import { HostBindingType, HostFeatureSet, HostRouteSettings, HostRouteType } from "./HostRequest"
 import { IntegrationOptionResponse } from "../../integration/model/IntegrationOptionResponse"
 
 export interface HostFormBinding {
@@ -19,8 +19,8 @@ export interface HostFormRoute {
     priority: number
     type: HostRouteType
     sourcePath: string
+    settings: HostRouteSettings
     targetUri?: string
-    customSettings?: string
     response?: HostFormStaticResponse
     integration?: HostFormRouteIntegration
 }
