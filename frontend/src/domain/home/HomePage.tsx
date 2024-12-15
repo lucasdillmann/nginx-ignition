@@ -136,12 +136,12 @@ export default class HomePage extends React.PureComponent {
                 </Flex>
 
                 <div className="home-guide-footer-container">
-                    <h1>Still have questions or miss something?</h1>
+                    <h1>Still have questions or missed something?</h1>
                     <p className="home-guide-subtitle">
                         <Link to="https://github.com/lucasdillmann/nginx-ignition" target="_blank">
                             Reach us out at our GitHub page
                         </Link>
-                        . We'd love some constructive feedback from you.
+                        . We'd love some feedback from you.
                     </p>
                 </div>
             </div>
