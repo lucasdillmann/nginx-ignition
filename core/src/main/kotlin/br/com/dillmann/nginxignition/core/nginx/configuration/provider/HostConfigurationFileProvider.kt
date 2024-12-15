@@ -4,6 +4,7 @@ import br.com.dillmann.nginxignition.core.host.Host
 import br.com.dillmann.nginxignition.core.integration.IntegrationService
 import br.com.dillmann.nginxignition.core.nginx.configuration.NginxConfigurationFileProvider
 import br.com.dillmann.nginxignition.core.settings.SettingsRepository
+import java.net.URI
 
 internal class HostConfigurationFileProvider(
     private val integrationService: IntegrationService,
@@ -86,7 +87,7 @@ internal class HostConfigurationFileProvider(
                     else 
                         "off"
                 };
-                gzip ${enabledFlag(settings.gzipEnabled)};
+                gzip ${flag(settings.gzipEnabled)};
                 client_max_body_size ${settings.maximumBodySizeMb}M;
                 
                 $conditionalHttpsRedirect
@@ -126,7 +127,7 @@ internal class HostConfigurationFileProvider(
                 $headerInstructions
                 return $statusCode "$escapedPayload";
                 ${buildRouteFeatures(features)}
-                ${route.settings.custom ?: ""}
+                ${buildRouteSettings(route)}
             }
         """.trimIndent()
     }
@@ -134,9 +135,9 @@ internal class HostConfigurationFileProvider(
     private fun buildProxyRoute(route: Host.Route, features: Host.FeatureSet) =
         """
            location ${route.sourcePath} {
-                proxy_pass ${route.targetUri!!};
+                ${buildProxyPass(route)}
                 ${buildRouteFeatures(features)}
-                ${route.settings.custom ?: ""}
+                ${buildRouteSettings(route)}
            } 
         """.trimIndent()
 
@@ -145,9 +146,9 @@ internal class HostConfigurationFileProvider(
         val proxyUrl = integrationService.getIntegrationOptionUrl(integrationId, integrationOption)
         return """
            location ${route.sourcePath} {
-                proxy_pass $proxyUrl;
+                ${buildProxyPass(route, proxyUrl)}
                 ${buildRouteFeatures(features)}
-                ${route.settings.custom ?: ""}
+                ${buildRouteSettings(route)}
            }
         """.trimIndent()
     }
@@ -157,7 +158,7 @@ internal class HostConfigurationFileProvider(
            location ${route.sourcePath} {
                 return ${route.redirectCode!!} ${route.targetUri!!};
                 ${buildRouteFeatures(features)}
-                ${route.settings.custom ?: ""}
+                ${buildRouteSettings(route)}
            } 
         """.trimIndent()
 
@@ -173,5 +174,41 @@ internal class HostConfigurationFileProvider(
     private fun String.scape() =
         replace("\"", "\\\"")
 
-    private fun enabledFlag(value: Boolean) = if (value) "on" else "off"
+    private fun buildProxyPass(route: Host.Route, uri: String = route.targetUri!!): String {
+        val builder = StringBuilder().appendLine("proxy_pass $uri;")
+
+        if (route.settings.keepOriginalDomainName)
+            builder.appendLine("proxy_set_header Host ${URI(uri).host};")
+
+        return builder.toString()
+    }
+
+    private fun buildRouteSettings(route: Host.Route): String {
+        val builder = StringBuilder()
+        with (route.settings) {
+            if (proxySslServerName)
+                builder.appendLine("proxy_ssl_server_name on;")
+
+            if (includeForwardHeaders) {
+                builder.appendLine("proxy_set_header x-forwarded-for \$proxy_add_x_forwarded_for;")
+                builder.appendLine("proxy_set_header x-forwarded-host \$host;")
+                builder.appendLine("proxy_set_header x-forwarded-proto \$scheme;")
+                builder.appendLine("proxy_set_header x-forwarded-scheme \$scheme;")
+                builder.appendLine("proxy_set_header x-forwarded-port \$server_port;")
+                builder.appendLine("proxy_set_header x-real-ip \$remote_addr;")
+            }
+
+            if (!custom.isNullOrBlank())
+                builder.appendLine(custom)
+        }
+
+
+        return builder.toString()
+    }
+
+    private fun flag(
+        enabled: Boolean,
+        trueValue: String = "on",
+        falseValue: String = "off",
+    ) = if (enabled) trueValue else falseValue
 }

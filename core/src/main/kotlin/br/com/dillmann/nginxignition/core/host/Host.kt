@@ -28,7 +28,6 @@ data class Host(
         val includeForwardHeaders: Boolean,
         val proxySslServerName: Boolean,
         val keepOriginalDomainName: Boolean,
-        val forwardQueryParams: Boolean,
         val custom: String?,
     )
 

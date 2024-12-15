@@ -3,6 +3,7 @@ import FormLayout from "../../../core/components/form/FormLayout"
 import TextArea from "antd/es/input/TextArea"
 import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
+import { Link } from "react-router-dom"
 
 const ItemProps: FormItemProps = {
     labelCol: {
@@ -34,13 +35,13 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                 <p>
                     Please note that the text below must be in the syntax expected by the nginx. Please refer to the
                     documentation at &nbsp;
-                    <a
-                        href="https://nginx.org/en/docs/http/ngx_http_core_module.html#location"
+                    <Link
+                        to="https://nginx.org/en/docs/http/ngx_http_core_module.html#location"
                         target="_blank"
                         rel="noreferrer"
                     >
                         this link
-                    </a>
+                    </Link>
                     &nbsp; for more details. If you isn't sure about what to place here, it's probably the best to leave
                     it empty.
                 </p>
@@ -63,19 +64,6 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
         const { index, validationResult, fieldPath } = this.props
         return (
             <>
-                <Form.Item
-                    {...ItemProps}
-                    name={[fieldPath, "settings", "forwardQueryParams"]}
-                    label="Forward query params"
-                    validateStatus={validationResult.getStatus(`routes[${index}].settings.forwardQueryParams`)}
-                    help={
-                        validationResult.getMessage(`routes[${index}].settings.forwardQueryParams`) ??
-                        "Defines if the query params/string should be forwarded or omitted"
-                    }
-                    required
-                >
-                    <Switch />
-                </Form.Item>
                 <Form.Item
                     {...ItemProps}
                     name={[fieldPath, "settings", "keepOriginalDomainName"]}

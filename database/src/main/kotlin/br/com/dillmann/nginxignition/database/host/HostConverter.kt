@@ -39,7 +39,6 @@ internal class HostConverter {
             scope[integrationId] = route.integration?.integrationId
             scope[integrationOptionId] = route.integration?.optionId
             scope[includeForwardHeaders] = route.settings.includeForwardHeaders
-            scope[forwardQueryParams] = route.settings.forwardQueryParams
             scope[keepOriginalDomainName] = route.settings.keepOriginalDomainName
             scope[proxySslServerName] = route.settings.proxySslServerName
             scope[customSettings] = route.settings.custom
@@ -102,7 +101,6 @@ internal class HostConverter {
                 includeForwardHeaders = route[HostRouteTable.includeForwardHeaders],
                 keepOriginalDomainName = route[HostRouteTable.keepOriginalDomainName],
                 proxySslServerName = route[HostRouteTable.proxySslServerName],
-                forwardQueryParams = route[HostRouteTable.forwardQueryParams],
                 custom = route[HostRouteTable.customSettings],
             ),
         )
