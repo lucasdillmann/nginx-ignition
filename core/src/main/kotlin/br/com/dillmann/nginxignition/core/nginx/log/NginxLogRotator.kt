@@ -9,6 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.input.ReversedLinesFileReader
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.attribute.PosixFilePermissions
 
 internal class NginxLogRotator(
     private val configurationProvider: ConfigurationProvider,
@@ -18,6 +20,8 @@ internal class NginxLogRotator(
 ) {
     private companion object {
         private val LOGGER = logger<NginxLogRotator>()
+        private val FILE_PERMISSIONS = PosixFilePermissions.fromString("rwxrwxrwx")
+        private val FILE_PERMISSIONS_ATTRIBUTE = PosixFilePermissions.asFileAttribute(FILE_PERMISSIONS)
     }
 
     suspend fun rotate() {
@@ -58,7 +62,7 @@ internal class NginxLogRotator(
     private suspend fun replaceContents(file: File, contents: String) {
         withContext(Dispatchers.IO) {
             require(file.delete()) { "Unable to delete the file" }
-            file.createNewFile()
+            Files.createFile(file.toPath(), FILE_PERMISSIONS_ATTRIBUTE)
             file.writer().use { it.write(contents) }
         }
     }
