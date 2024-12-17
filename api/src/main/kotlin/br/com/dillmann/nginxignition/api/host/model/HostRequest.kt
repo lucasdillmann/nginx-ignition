@@ -31,7 +31,7 @@ internal data class HostRequest(
         val includeForwardHeaders: Boolean,
         val proxySslServerName: Boolean,
         val keepOriginalDomainName: Boolean,
-        val custom: String?,
+        val custom: String? = null,
     )
 
     @Serializable
