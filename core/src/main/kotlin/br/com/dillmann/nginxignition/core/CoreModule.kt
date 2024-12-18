@@ -1,5 +1,6 @@
 package br.com.dillmann.nginxignition.core
 
+import br.com.dillmann.nginxignition.core.accesslist.accessListBeans
 import br.com.dillmann.nginxignition.core.certificate.certificateBeans
 import br.com.dillmann.nginxignition.core.common.commonBeans
 import br.com.dillmann.nginxignition.core.host.hostBeans
@@ -12,6 +13,7 @@ import org.koin.dsl.module
 object CoreModule {
     fun initialize() =
         module {
+            accessListBeans()
             commonBeans()
             certificateBeans()
             hostBeans()

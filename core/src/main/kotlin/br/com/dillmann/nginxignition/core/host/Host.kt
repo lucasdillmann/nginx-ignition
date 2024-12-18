@@ -11,6 +11,7 @@ data class Host(
     val routes: List<Route>,
     val bindings: List<Binding>,
     val featureSet: FeatureSet,
+    val accessListId: UUID?,
 ) {
     data class Route (
         val id: UUID,
@@ -22,6 +23,7 @@ data class Host(
         val settings: RouteSettings,
         val response: StaticResponse?,
         val integration: IntegrationConfig?,
+        val accessListId: UUID?,
     )
 
     data class RouteSettings (

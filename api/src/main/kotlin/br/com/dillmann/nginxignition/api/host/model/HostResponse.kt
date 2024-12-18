@@ -14,6 +14,7 @@ internal data class HostResponse(
     val routes: List<Route>,
     val bindings: List<Binding>,
     val featureSet: FeatureSet,
+    val accessListId: UuidString?,
 ) {
     @Serializable
     data class Route (
@@ -24,6 +25,7 @@ internal data class HostResponse(
         val targetUri: String?,
         val response: StaticResponse?,
         val integration: IntegrationConfig?,
+        val accessListId: UuidString?,
     )
 
     @Serializable

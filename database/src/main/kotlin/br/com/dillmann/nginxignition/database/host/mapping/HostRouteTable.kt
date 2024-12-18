@@ -20,6 +20,7 @@ internal object HostRouteTable: Table("host_route") {
     val includeForwardHeaders = bool("include_forward_headers")
     val proxySslServerName = bool("proxy_ssl_server_name")
     val keepOriginalDomainName = bool("keep_original_domain_name")
+    val accessListId = uuid("access_list_id").nullable()
 
     override val primaryKey = PrimaryKey(id)
 }

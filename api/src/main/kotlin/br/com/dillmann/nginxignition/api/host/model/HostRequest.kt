@@ -13,6 +13,7 @@ internal data class HostRequest(
     val routes: List<Route> = emptyList(),
     val bindings: List<Binding> = emptyList(),
     val featureSet: FeatureSet,
+    val accessListId: UuidString? = null,
 ) {
     @Serializable
     data class Route (
@@ -24,6 +25,7 @@ internal data class HostRequest(
         val redirectCode: Int? = null,
         val response: StaticResponse? = null,
         val integration: IntegrationConfig? = null,
+        val accessListId: UuidString? = null,
     )
 
     @Serializable

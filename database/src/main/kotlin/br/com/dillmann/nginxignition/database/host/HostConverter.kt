@@ -21,6 +21,7 @@ internal class HostConverter {
             scope[websocketSupport] = host.featureSet.websocketsSupport
             scope[http2Support] = host.featureSet.http2Support
             scope[redirectHttpToHttps] = host.featureSet.redirectHttpToHttps
+            scope[accessListId] = host.accessListId
         }
     }
 
@@ -42,6 +43,7 @@ internal class HostConverter {
             scope[keepOriginalDomainName] = route.settings.keepOriginalDomainName
             scope[proxySslServerName] = route.settings.proxySslServerName
             scope[customSettings] = route.settings.custom
+            scope[accessListId] = route.accessListId
         }
     }
 
@@ -65,6 +67,7 @@ internal class HostConverter {
             domainNames = host[HostTable.domainNames],
             routes = routes.map(::toRoute),
             bindings = bindings.map(::toBinding),
+            accessListId = host[HostTable.accessListId],
             featureSet = Host.FeatureSet(
                 websocketsSupport = host[HostTable.websocketSupport],
                 http2Support = host[HostTable.http2Support],
@@ -97,6 +100,7 @@ internal class HostConverter {
             redirectCode = route[HostRouteTable.redirectCode],
             response = response,
             integration = integration,
+            accessListId = route[HostRouteTable.accessListId],
             settings = Host.RouteSettings(
                 includeForwardHeaders = route[HostRouteTable.includeForwardHeaders],
                 keepOriginalDomainName = route[HostRouteTable.keepOriginalDomainName],

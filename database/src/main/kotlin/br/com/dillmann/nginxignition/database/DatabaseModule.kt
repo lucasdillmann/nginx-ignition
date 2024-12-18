@@ -1,6 +1,7 @@
 package br.com.dillmann.nginxignition.database
 
 import br.com.dillmann.nginxignition.core.common.lifecycle.StartupCommand
+import br.com.dillmann.nginxignition.database.accesslist.accessListBeans
 import br.com.dillmann.nginxignition.database.certificate.certificateBeans
 import br.com.dillmann.nginxignition.database.common.commonBeans
 import br.com.dillmann.nginxignition.database.common.database.DatabaseStartup
@@ -16,6 +17,7 @@ object DatabaseModule {
         module {
             single { DatabaseStartup(get()) } bind StartupCommand::class
 
+            accessListBeans()
             commonBeans()
             certificateBeans()
             hostBeans()
