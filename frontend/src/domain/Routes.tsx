@@ -3,6 +3,7 @@ import HomePage from "./home/HomePage"
 import AppRoute from "../core/components/router/AppRoute"
 import OnboardingPage from "./onboarding/OnboardingPage"
 import {
+    AuditOutlined,
     BlockOutlined,
     FileProtectOutlined,
     FileSearchOutlined,
@@ -22,6 +23,8 @@ import { UserRole } from "./user/model/UserRole"
 import IntegrationsPage from "./integration/IntegrationsPage"
 import SettingsPage from "./settings/SettingsPage"
 import NotFoundPage from "./notfound/NotFoundPage"
+import AccessListFormPage from "./accesslist/AccessListFormPage"
+import AccessListListPage from "./accesslist/AccessListListPage"
 
 const Routes: AppRoute[] = [
     {
@@ -74,7 +77,7 @@ const Routes: AppRoute[] = [
         component: <CertificateListPage />,
         menuItem: {
             description: "SSL certificates",
-            icon: <FileProtectOutlined />,
+            icon: <AuditOutlined />,
         },
     },
     {
@@ -96,6 +99,23 @@ const Routes: AppRoute[] = [
         menuItem: {
             description: "Integrations",
             icon: <BlockOutlined />,
+        },
+    },
+    {
+        path: "/access-lists/:id",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <AccessListFormPage />,
+        activeMenuItemPath: "/access-lists",
+    },
+    {
+        path: "/access-lists",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <AccessListListPage />,
+        menuItem: {
+            description: "Access lists",
+            icon: <FileProtectOutlined />,
         },
     },
     {

@@ -1,7 +1,14 @@
 import React from "react"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import "./HomePage.css"
-import { BlockOutlined, FileProtectOutlined, FileSearchOutlined, HddOutlined, SettingOutlined } from "@ant-design/icons"
+import {
+    AuditOutlined,
+    BlockOutlined,
+    FileProtectOutlined,
+    FileSearchOutlined,
+    HddOutlined,
+    SettingOutlined,
+} from "@ant-design/icons"
 import { Flex } from "antd"
 import Videos from "./videos/Videos"
 import { Link } from "react-router-dom"
@@ -55,7 +62,7 @@ export default class HomePage extends React.PureComponent {
                     </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
-                            <FileProtectOutlined /> SSL certificates
+                            <AuditOutlined /> SSL certificates
                         </h2>
                         <p>
                             If you want to or need to protect your domains with HTTPS encryption, the app comes with an
@@ -114,6 +121,26 @@ export default class HomePage extends React.PureComponent {
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
+                            <FileProtectOutlined /> Access lists
+                        </h2>
+                        <p>
+                            Access lists provide a simple way to protect either a route or the entire host by checking
+                            if the user is from a range of authorized IPs or is identified by a valid username and
+                            password (or even both, IP and credentials)
+                        </p>
+                        <p>TODO: Create the demo video</p>
+                    </Flex>
+                    <Flex className="home-guide-right-side-video">
+                        <video src={Videos.Settings} autoPlay loop controls />
+                    </Flex>
+                </Flex>
+
+                <Flex className="home-guide-section">
+                    <Flex className="home-guide-left-side-video">
+                        <video src={Videos.Settings} autoPlay loop controls />
+                    </Flex>
+                    <Flex className="home-guide-section-content" vertical>
+                        <h2>
                             <SettingOutlined /> Settings
                         </h2>
                         <p>
@@ -129,9 +156,6 @@ export default class HomePage extends React.PureComponent {
                             Beyond that, you can also configure some of the nginx ignition's features there, like the
                             automatic renewal of SSL certificates and log rotation.
                         </p>
-                    </Flex>
-                    <Flex className="home-guide-right-side-video">
-                        <video src={Videos.Settings} autoPlay loop controls />
                     </Flex>
                 </Flex>
 
