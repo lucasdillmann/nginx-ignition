@@ -71,12 +71,12 @@ class DockerIntegrationAdapter: IntegrationAdapter {
     }
 
     private fun getAvailableOptions(parameters: Map<String, Any?>) =
-        startClientAdapter(parameters)
+        startClient(parameters)
             .listContainers()
             .flatMap { container -> container.ports.map { container to it } }
             .filter { (_, port) -> port.type == "tcp" && port.publicPort != null }
 
-    private fun startClientAdapter(parameters: Map<String, Any?>): DockerClientAdapter {
+    private fun startClient(parameters: Map<String, Any?>): DockerClientFacade {
         val connectionModeValue = parameters[DockerDynamicFields.CONNECTION_MODE.id] as String
         val connectionMode = DockerConnectionMode.valueOf(connectionModeValue)
         val host =
@@ -85,6 +85,6 @@ class DockerIntegrationAdapter: IntegrationAdapter {
                 DockerConnectionMode.TCP -> parameters[DockerDynamicFields.HOST_URL.id] as String
             }
 
-        return DockerClientAdapter(connectionMode, host)
+        return DockerClientFacade(connectionMode, host)
     }
 }

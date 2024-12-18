@@ -5,7 +5,7 @@ import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientBuilder
 import com.github.dockerjava.zerodep.ZerodepDockerHttpClient
 
-internal class DockerClientAdapter(mode: DockerConnectionMode, host: String) {
+internal class DockerClientFacade(mode: DockerConnectionMode, host: String) {
     private companion object {
         private const val LIMIT = 1000
     }
