@@ -1,12 +1,12 @@
 create table access_list (
     id uuid not null,
-    name varchar(256) not null,
+    "name" varchar(256) not null,
     realm varchar(256),
     satisfy_all boolean not null,
     default_outcome varchar(8) not null,
     forward_authentication_header boolean not null,
     constraint pk_access_list primary key (id),
-    constraint pk_access_list_name unique (name)
+    constraint pk_access_list_name unique ("name")
 );
 
 create table access_list_credentials (
@@ -41,10 +41,10 @@ alter table host_route add column access_list_id uuid;
 
 alter table host add constraint fk_host_access_list_id
     foreign key (access_list_id) references access_list (id)
-    deferrable initially deferred;
+    on delete no action on update no action;
 alter table host_route add constraint fk_host_route_access_list_id
     foreign key (access_list_id) references access_list (id)
-    deferrable initially deferred;
+    on delete no action on update no action;
 
 create index idx_host_access_list_id on host (access_list_id);
 create index idx_host_route_access_list_id on host_route (access_list_id);
