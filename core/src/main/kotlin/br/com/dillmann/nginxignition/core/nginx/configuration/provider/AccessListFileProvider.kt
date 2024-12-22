@@ -4,17 +4,11 @@ import br.com.dillmann.nginxignition.core.accesslist.AccessList
 import br.com.dillmann.nginxignition.core.accesslist.AccessListRepository
 import br.com.dillmann.nginxignition.core.host.Host
 import br.com.dillmann.nginxignition.core.nginx.configuration.NginxConfigurationFileProvider
-import java.math.BigInteger
-import java.security.MessageDigest
+import org.apache.commons.codec.digest.Md5Crypt
 
 internal class AccessListFileProvider(
     private val accessListRepository: AccessListRepository,
 ): NginxConfigurationFileProvider {
-    private companion object {
-        private const val MD5_LENGTH = 16
-        private val MD5_DIGEST = MessageDigest.getInstance("MD5")
-    }
-
     override suspend fun provide(basePath: String, hosts: List<Host>): List<NginxConfigurationFileProvider.Output> =
         accessListRepository.findAll().flatMap { build(it, basePath) }
 
@@ -46,11 +40,18 @@ internal class AccessListFileProvider(
             if (accessList.credentials.isEmpty() || accessList.entries.isEmpty()) "satisfy any;"
             else "satisfy ${if(accessList.satisfyAll) "all" else "any"};"
 
+        val forwardHeadersContents =
+            if (accessList.forwardAuthenticationHeader) ""
+            else """
+                proxy_set_header Authorization "";
+            """.trimIndent()
+
         val contents = """
             $satisfyContents
             $entriesContents
             ${accessList.defaultOutcome.toNginxOperation()} all;
             $usernamePasswordContents
+            $forwardHeadersContents
         """.trimIndent()
 
         return NginxConfigurationFileProvider.Output(
@@ -63,11 +64,12 @@ internal class AccessListFileProvider(
         if (accessList.credentials.isEmpty())
             return null
 
-        val contents = accessList.credentials.joinToString(separator = "\n") { (username, password) ->
-            val hash = MD5_DIGEST.digest(password.toByteArray())
-            val stringRepresentation = BigInteger(1, hash).toString(MD5_LENGTH).padStart(MD5_LENGTH, '0')
-            "$username:$stringRepresentation"
-        }
+        val contents = accessList
+            .credentials
+            .joinToString(separator = "\n") { (username, password) ->
+                val hash = Md5Crypt.apr1Crypt(password)
+                "$username:$hash"
+            }
 
         return NginxConfigurationFileProvider.Output(
             name = "access-list-${accessList.id}.htpasswd",
