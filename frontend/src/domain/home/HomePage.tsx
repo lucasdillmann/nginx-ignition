@@ -128,10 +128,9 @@ export default class HomePage extends React.PureComponent {
                             if the user is from a range of authorized IPs or is identified by a valid username and
                             password (or even both, IP and credentials)
                         </p>
-                        <p>TODO: Create the demo video</p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
-                        <video src={Videos.Settings} autoPlay loop controls />
+                        <video src={Videos.AccessLists} autoPlay loop controls />
                     </Flex>
                 </Flex>
 
