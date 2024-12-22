@@ -34,7 +34,8 @@ export interface HostRouteSettingsProps {
 }
 
 export default class HostRouteSettingsModal extends React.Component<HostRouteSettingsProps> {
-    private accessListService: AccessListService
+    private readonly accessListService: AccessListService
+
     constructor(props: HostRouteSettingsProps) {
         super(props)
         this.accessListService = new AccessListService()
