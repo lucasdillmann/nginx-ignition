@@ -14,7 +14,7 @@ internal class AccessListValidator : ConsistencyValidator() {
             if (accessList.name.isBlank())
                 addError("name", VALUE_MISSING_MESSAGE)
 
-            val previousUsernames = mutableListOf<String>()
+            val previousUsernames = mutableSetOf<String>()
             accessList.credentials.forEachIndexed { index, credentials ->
                 validateCredentials(index, credentials, previousUsernames, addError)
             }
@@ -60,7 +60,7 @@ internal class AccessListValidator : ConsistencyValidator() {
     private fun validateCredentials(
         index: Int,
         credentials: AccessList.Credentials,
-        previousUsernames: MutableList<String>,
+        previousUsernames: MutableSet<String>,
         addError: ErrorCreator,
     ) {
         if (credentials.username.isBlank())
