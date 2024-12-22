@@ -20,6 +20,7 @@ Some of the available features include:
 - Multiple users with role-based access control (RBAC)
 - Native integration with TrueNAS Scale, allowing to easily configure to proxy to an app hosted in your NAS
 - Native integration with Docker for easy pick of a container as the proxy target
+- Access lists for easy control of who can access what using basic authentication and/or source IP address checks 
 
 ## Getting started
 
