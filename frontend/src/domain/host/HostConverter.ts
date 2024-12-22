@@ -8,14 +8,17 @@ import HostFormValues, {
 import HostRequest, { HostBinding, HostRoute, HostRouteIntegration, HostRouteStaticResponse } from "./model/HostRequest"
 import CertificateService from "../certificate/CertificateService"
 import IntegrationService from "../integration/IntegrationService"
+import AccessListService from "../accesslist/AccessListService"
 
 class HostConverter {
     private readonly certificateService: CertificateService
     private readonly integrationService: IntegrationService
+    private readonly accessListService: AccessListService
 
     constructor() {
         this.certificateService = new CertificateService()
         this.integrationService = new IntegrationService()
+        this.accessListService = new AccessListService()
     }
 
     private notNull(value?: any) {
@@ -49,6 +52,9 @@ class HostConverter {
     }
 
     private async routeToFormValues(route: HostRoute): Promise<HostFormRoute> {
+        const accessList = this.notNull(route.accessListId)
+            ? await this.accessListService.getById(route.accessListId!!)
+            : undefined
         const response = this.notNull(route.response) ? this.staticResponseToFormValues(route.response!!) : undefined
         const integration = this.notNull(route.integration)
             ? await this.integrationToFormValues(route.integration!!)
@@ -58,6 +64,7 @@ class HostConverter {
             ...route,
             response,
             integration,
+            accessList,
         }
     }
 
@@ -105,7 +112,7 @@ class HostConverter {
     }
 
     private formValuesToRoute(route: HostFormRoute): HostRoute {
-        const { priority, type, settings, targetUri, sourcePath } = route
+        const { priority, type, settings, targetUri, sourcePath, accessList } = route
         const response = this.notNull(route.response) ? this.formValuesToStaticResponse(route.response!!) : undefined
         const integration = this.notNull(route.integration)
             ? this.formValuesToIntegration(route.integration!!)
@@ -119,6 +126,7 @@ class HostConverter {
             sourcePath,
             response,
             integration,
+            accessListId: accessList?.id,
         }
     }
 
@@ -133,10 +141,11 @@ class HostConverter {
     }
 
     async responseToFormValues(response: HostResponse): Promise<HostFormValues> {
-        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings } = response
+        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessListId } = response
 
         const routes = response.routes.map(route => this.routeToFormValues(route))
         const bindings = await Promise.all(response.bindings.map(binding => this.bindingToFormValues(binding)))
+        const accessList = this.notNull(accessListId) ? await this.accessListService.getById(accessListId!!) : undefined
 
         return {
             enabled,
@@ -144,13 +153,14 @@ class HostConverter {
             featureSet,
             defaultServer,
             useGlobalBindings,
+            accessList,
             domainNames: domainNames ?? [""],
             routes: await Promise.all(routes),
         }
     }
 
     formValuesToRequest(formValues: HostFormValues): HostRequest {
-        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings } = formValues
+        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessList } = formValues
 
         const routes = formValues.routes.map(route => this.formValuesToRoute(route))
         const bindings = useGlobalBindings ? [] : formValues.bindings.map(binding => this.formValuesToBinding(binding))
@@ -162,6 +172,7 @@ class HostConverter {
             useGlobalBindings,
             bindings,
             routes,
+            accessListId: accessList?.id,
             domainNames: defaultServer ? [] : domainNames,
         }
     }

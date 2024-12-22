@@ -24,6 +24,10 @@ import If from "../../core/components/flowcontrol/If"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import HostFormValuesDefaults from "./model/HostFormValuesDefaults"
+import PaginatedSelect from "../../core/components/select/PaginatedSelect"
+import AccessListResponse from "../accesslist/model/AccessListResponse"
+import PageResponse from "../../core/pagination/PageResponse"
+import AccessListService from "../accesslist/AccessListService"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -37,6 +41,7 @@ interface HostFormPageState {
 export default class HostFormPage extends React.Component<any, HostFormPageState> {
     private readonly hostService: HostService
     private readonly integrationService: IntegrationService
+    private readonly accessListService: AccessListService
     private readonly hostId?: string
     private readonly saveModal: ModalPreloader
     private readonly formRef: React.RefObject<FormInstance>
@@ -48,6 +53,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         this.hostId = hostId === "new" ? undefined : hostId
         this.hostService = new HostService()
         this.integrationService = new IntegrationService()
+        this.accessListService = new AccessListService()
         this.saveModal = new ModalPreloader()
         this.formRef = React.createRef()
         this.state = {
@@ -168,6 +174,14 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         })
     }
 
+    private fetchAccessLists(
+        pageSize: number,
+        pageNumber: number,
+        searchTerms?: string,
+    ): Promise<PageResponse<AccessListResponse>> {
+        return this.accessListService.list(pageSize, pageNumber, searchTerms)
+    }
+
     private renderForm() {
         const { validationResult, formValues, integrations } = this.state
 
@@ -234,6 +248,21 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                         </Form.Item>
                     </Flex>
                     <Flex className="hosts-form-inner-flex-container-column">
+                        <Form.Item
+                            name="accessList"
+                            validateStatus={validationResult.getStatus("accessListId")}
+                            help={validationResult.getMessage("accessListId")}
+                            label="Access list"
+                        >
+                            <PaginatedSelect<AccessListResponse>
+                                itemDescription={item => item?.name}
+                                itemKey={item => item?.id}
+                                pageProvider={(pageSize, pageNumber, searchTerms) =>
+                                    this.fetchAccessLists(pageSize, pageNumber, searchTerms)
+                                }
+                                allowEmpty
+                            />
+                        </Form.Item>
                         <If condition={formValues.defaultServer}>
                             <Form.Item label="Domain names" required>
                                 <Flex>Not available for the default server</Flex>

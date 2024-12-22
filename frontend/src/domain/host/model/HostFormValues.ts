@@ -1,6 +1,7 @@
 import { CertificateResponse } from "../../certificate/model/CertificateResponse"
 import { HostBindingType, HostFeatureSet, HostRouteSettings, HostRouteType } from "./HostRequest"
 import { IntegrationOptionResponse } from "../../integration/model/IntegrationOptionResponse"
+import AccessListResponse from "../../accesslist/model/AccessListResponse"
 
 export interface HostFormBinding {
     type: HostBindingType
@@ -23,6 +24,7 @@ export interface HostFormRoute {
     targetUri?: string
     response?: HostFormStaticResponse
     integration?: HostFormRouteIntegration
+    accessList?: AccessListResponse
 }
 
 export interface HostFormRouteIntegration {
@@ -38,4 +40,5 @@ export default interface HostFormValues {
     routes: HostFormRoute[]
     bindings: HostFormBinding[]
     featureSet: HostFeatureSet
+    accessList?: AccessListResponse
 }

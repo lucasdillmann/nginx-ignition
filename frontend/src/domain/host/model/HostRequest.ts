@@ -44,6 +44,7 @@ export interface HostRoute {
     targetUri?: string
     response?: HostRouteStaticResponse
     integration?: HostRouteIntegration
+    accessListId?: string
 }
 
 export interface HostRouteIntegration {
@@ -59,4 +60,5 @@ export default interface HostRequest {
     routes: HostRoute[]
     bindings: HostBinding[]
     featureSet: HostFeatureSet
+    accessListId?: string
 }

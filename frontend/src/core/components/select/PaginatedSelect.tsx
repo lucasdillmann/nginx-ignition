@@ -154,7 +154,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
                 options={this.buildOptions()}
                 status={status}
                 value={value !== undefined && value !== null ? this.buildOption(value) : undefined}
-                onChange={(_, option) => onChange?.((option as SelectOption<T>).item)}
+                onChange={(_, option) => onChange?.((option as SelectOption<T>)?.item)}
                 onDeselect={() => onChange?.(undefined)}
                 onPopupScroll={event => this.handleScrollEvent(event)}
                 onDropdownVisibleChange={open => this.handleDropdownVisibilityChange(open)}

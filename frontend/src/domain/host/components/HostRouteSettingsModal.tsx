@@ -4,13 +4,17 @@ import TextArea from "antd/es/input/TextArea"
 import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import { Link } from "react-router-dom"
+import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
+import AccessListResponse from "../../accesslist/model/AccessListResponse"
+import PageResponse from "../../../core/pagination/PageResponse"
+import AccessListService from "../../accesslist/AccessListService"
 
 const ItemProps: FormItemProps = {
     labelCol: {
         sm: { span: 8 },
     },
     wrapperCol: {
-        sm: { span: 14 },
+        sm: { span: 16 },
     },
 }
 
@@ -24,6 +28,12 @@ export interface HostRouteSettingsProps {
 }
 
 export default class HostRouteSettingsModal extends React.Component<HostRouteSettingsProps> {
+    private accessListService: AccessListService
+    constructor(props: HostRouteSettingsProps) {
+        super(props)
+        this.accessListService = new AccessListService()
+    }
+
     private renderAdvancedTab() {
         const { index, validationResult, fieldPath } = this.props
         return (
@@ -60,10 +70,34 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
         )
     }
 
+    private fetchAccessLists(
+        pageSize: number,
+        pageNumber: number,
+        searchTerms?: string,
+    ): Promise<PageResponse<AccessListResponse>> {
+        return this.accessListService.list(pageSize, pageNumber, searchTerms)
+    }
+
     private renderMainTab() {
         const { index, validationResult, fieldPath } = this.props
         return (
             <>
+                <Form.Item
+                    {...ItemProps}
+                    name={[fieldPath, "accessList"]}
+                    validateStatus={validationResult.getStatus(`routes[${index}].accessListId`)}
+                    help={validationResult.getMessage(`routes[${index}].accessListId`)}
+                    label="Access list"
+                >
+                    <PaginatedSelect<AccessListResponse>
+                        itemDescription={item => item?.name}
+                        itemKey={item => item?.id}
+                        pageProvider={(pageSize, pageNumber, searchTerms) =>
+                            this.fetchAccessLists(pageSize, pageNumber, searchTerms)
+                        }
+                        allowEmpty
+                    />
+                </Form.Item>
                 <Form.Item
                     {...ItemProps}
                     name={[fieldPath, "settings", "keepOriginalDomainName"]}
