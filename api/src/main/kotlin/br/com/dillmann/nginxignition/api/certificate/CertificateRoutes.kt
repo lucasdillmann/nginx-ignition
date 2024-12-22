@@ -15,11 +15,14 @@ internal class CertificateRoutes(
         basePath("/api/certificates") {
             requireAuthentication {
                 get(listHandler)
-                get("/{id}", getByIdHandler)
-                delete("/{id}", deleteByIdHandler)
-                post("/{id}/renew", renewByIdHandler)
                 post("/issue", issueHandler)
                 get("/available-providers", listProvidersHandler)
+
+                path("/{id}") {
+                    get(getByIdHandler)
+                    delete(deleteByIdHandler)
+                    post("/renew", renewByIdHandler)
+                }
             }
         }
 }

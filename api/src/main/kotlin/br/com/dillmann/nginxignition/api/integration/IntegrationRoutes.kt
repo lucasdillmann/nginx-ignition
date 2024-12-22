@@ -19,12 +19,19 @@ internal class IntegrationRoutes(
         basePath("/api/integrations") {
             requireAuthentication {
                 get(listHandler)
-                get("/{id}/options", getOptionsHandler)
-                get("/{id}/options/{optionId}", getOptionByIdHandler)
 
-                requireRole(User.Role.ADMIN) {
-                    get("/{id}/configuration", getConfigurationHandler)
-                    put("/{id}/configuration", putConfigurationHandler)
+                path("/{id}") {
+                    path("/options") {
+                        get(getOptionsHandler)
+                        get("/{optionId}", getOptionByIdHandler)
+                    }
+
+                    path("/configuration") {
+                        requireRole(User.Role.ADMIN) {
+                            get(getConfigurationHandler)
+                            put(putConfigurationHandler)
+                        }
+                    }
                 }
             }
         }

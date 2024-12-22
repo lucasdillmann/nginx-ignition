@@ -18,11 +18,14 @@ internal class HostRoutes(
             requireAuthentication {
                 get(listHandler)
                 post(postHandler)
-                get("/{id}", getByIdHandler)
-                put("/{id}", putByIdHandler)
-                delete("/{id}", deleteByIdHandler)
-                post("/{id}/toggle-enabled", toggleEnabledHandler)
-                get("/{id}/logs/{qualifier}", getLogsHandler)
+
+                path("/{id}") {
+                    get(getByIdHandler)
+                    put(putByIdHandler)
+                    delete(deleteByIdHandler)
+                    post("/toggle-enabled", toggleEnabledHandler)
+                    get("/logs/{qualifier}", getLogsHandler)
+                }
             }
         }
 }

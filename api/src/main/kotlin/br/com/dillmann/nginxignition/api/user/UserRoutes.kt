@@ -24,21 +24,30 @@ internal class UserRoutes(
     override fun apiRoutes(): RouteNode =
         basePath("/api/users") {
             post("/login", loginHandler)
-            get("/onboarding/status", onboardingStatusHandler)
-            post("/onboarding/finish", onboardingFinishHandler)
+
+            path("/onboarding") {
+                get("/status", onboardingStatusHandler)
+                post("/finish", onboardingFinishHandler)
+            }
 
             requireAuthentication {
                 post("/logout", logoutHandler)
-                get("/current", currentUserHandler)
-                post("/current/update-password", updatePasswordHandler)
+
+                path("/current") {
+                    get(currentUserHandler)
+                    post("/update-password", updatePasswordHandler)
+                }
             }
 
             requireRole(User.Role.ADMIN) {
                 get(listHandler)
-                get("/{id}", getByIdHandler)
-                put("/{id}", putByIdHandler)
-                delete("/{id}", deleteByIdHandler)
                 post(postHandler)
+
+                path("/{id}") {
+                    get(getByIdHandler)
+                    put(putByIdHandler)
+                    delete(deleteByIdHandler)
+                }
             }
         }
 }
