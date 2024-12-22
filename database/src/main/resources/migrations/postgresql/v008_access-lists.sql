@@ -45,3 +45,6 @@ alter table host add constraint fk_host_access_list_id
 alter table host_route add constraint fk_host_route_access_list_id
     foreign key (access_list_id) references access_list (id)
     deferrable initially deferred;
+
+create index idx_host_access_list_id on host (access_list_id);
+create index idx_host_route_access_list_id on host_route (access_list_id);
