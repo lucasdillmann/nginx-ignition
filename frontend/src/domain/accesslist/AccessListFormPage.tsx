@@ -1,7 +1,7 @@
 import React from "react"
 import { navigateTo, routeParams } from "../../core/components/router/AppRouter"
 import AccessListService from "./AccessListService"
-import { Form } from "antd"
+import { Form, FormInstance, Input, Select, Switch } from "antd"
 import Preloader from "../../core/components/preloader/Preloader"
 import FormLayout from "../../core/components/form/FormLayout"
 import ValidationResult from "../../core/validation/ValidationResult"
@@ -12,13 +12,18 @@ import ValidationResultConverter from "../../core/validation/ValidationResultCon
 import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
-import AccessListRequest, { AccessListOutcome } from "./model/AccessListRequest"
 import DeleteAccessListAction from "./actions/DeleteAccessListAction"
-import AccessListResponse from "./model/AccessListResponse"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
+import AccessListFormDefaults from "./AccessListFormDefaults"
+import AccessListFormValues from "./model/AccessListFormValues"
+import AccessListConverter from "./AccessListConverter"
+import AccessListEntrySets from "./components/AccessListEntrySets"
+import AccessListCredentials from "./components/AccessListCredentials"
+import { AccessListOutcome } from "./model/AccessListRequest"
+import "./AccessListFormPage.css"
 
 interface AccessListFormState {
-    formValues: AccessListRequest
+    formValues: AccessListFormValues
     validationResult: ValidationResult
     loading: boolean
     notFound: boolean
@@ -29,22 +34,17 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
     private readonly accessListId?: string
     private readonly service: AccessListService
     private readonly saveModal: ModalPreloader
+    private readonly formRef: React.RefObject<FormInstance>
 
     constructor(props: any) {
         super(props)
         const accessListId = routeParams().id
+        this.formRef = React.createRef()
         this.accessListId = accessListId === "new" ? undefined : accessListId
         this.service = new AccessListService()
         this.saveModal = new ModalPreloader()
         this.state = {
-            formValues: {
-                name: "",
-                realm: "",
-                defaultOutcome: AccessListOutcome.DENY,
-                forwardAuthenticationHeader: false,
-                credentials: [],
-                entries: [],
-            },
+            formValues: AccessListFormDefaults,
             validationResult: new ValidationResult(),
             loading: true,
             notFound: false,
@@ -55,10 +55,11 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
         const { formValues } = this.state
         this.saveModal.show("Hang on tight", "We're saving the access list")
 
+        const data = AccessListConverter.toRequest(formValues)
         const action =
             this.accessListId === undefined
-                ? this.service.create(formValues)
-                : this.service.updateById(this.accessListId, formValues)
+                ? this.service.create(data)
+                : this.service.updateById(this.accessListId, data)
 
         action.then(() => this.handleSuccess()).catch(error => this.handleError(error))
     }
@@ -80,23 +81,121 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
         Notification.error("That didn't work", "Please check the form to see if everything seems correct")
     }
 
-    private renderForm() {
+    private removeEntry(index: number) {
         const { formValues } = this.state
+        const { entries } = formValues
+
+        let priority = 0
+        const updatedValues = entries
+            .filter((_, itemIndex) => itemIndex !== index)
+            .map(route => ({
+                ...route,
+                priority: priority++,
+            }))
+
+        this.formRef.current?.setFieldValue("entries", updatedValues)
+        this.setState({
+            formValues: {
+                ...formValues,
+                entries: updatedValues,
+            },
+        })
+    }
+
+    private renderForm() {
+        const { formValues, validationResult } = this.state
 
         return (
-            <Form<AccessListRequest>
+            <Form<AccessListFormValues>
                 {...FormLayout.FormDefaults}
+                ref={this.formRef}
                 onValuesChange={(_, formValues) => this.setState({ formValues })}
                 initialValues={formValues}
             >
-                <p>TODO: Implement this</p>
+                <h2 className="access-lists-form-section-name">General</h2>
+                <p className="access-lists-form-section-help-text">
+                    Main definitions and properties of the access list.
+                </p>
+                <Form.Item
+                    className="access-lists-form-name"
+                    name="name"
+                    validateStatus={validationResult.getStatus("name")}
+                    help={validationResult.getMessage("name")}
+                    label="Name"
+                    required
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    className="access-lists-form-realm-name"
+                    name="realm"
+                    validateStatus={validationResult.getStatus("realm")}
+                    help={validationResult.getMessage("realm")}
+                    label="Realm name"
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    className="access-lists-form-satisfy-all"
+                    name="satisfyAll"
+                    validateStatus={validationResult.getStatus("satisfyAll")}
+                    help={validationResult.getMessage("satisfyAll")}
+                    label="Mode"
+                    required
+                >
+                    <Select>
+                        <Select.Option value={true}>
+                            Both credentials (if any) and entry sets (if any) must be satisfied
+                        </Select.Option>
+                        <Select.Option value={false}>
+                            Either credentials (if any) or entry sets (if any) must be satisfied
+                        </Select.Option>
+                    </Select>
+                </Form.Item>
+                <Form.Item
+                    className="access-lists-form-default-outcome"
+                    name="defaultOutcome"
+                    validateStatus={validationResult.getStatus("defaultOutcome")}
+                    help={validationResult.getMessage("defaultOutcome")}
+                    label="Default outcome"
+                    required
+                >
+                    <Select>
+                        <Select.Option value={AccessListOutcome.ALLOW}>Allow access</Select.Option>
+                        <Select.Option value={AccessListOutcome.DENY}>Deny access</Select.Option>
+                    </Select>
+                </Form.Item>
+                <Form.Item
+                    className="access-lists-form-forward-headers"
+                    name="forwardAuthenticationHeader"
+                    validateStatus={validationResult.getStatus("forwardAuthenticationHeader")}
+                    help={validationResult.getMessage("forwardAuthenticationHeader")}
+                    label="Forward authentication headers"
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+
+                <h2 className="access-lists-form-section-name">Credentials</h2>
+                <p className="access-lists-form-section-help-text">
+                    Relation of username and password pairs to be accepted as valid login credentials to access a host
+                    or host's route.
+                </p>
+                <AccessListCredentials validationResult={validationResult} />
+
+                <h2 className="access-lists-form-section-name">Entry sets</h2>
+                <p className="access-lists-form-section-help-text">
+                    Relation of IP addresses (such as 192.168.0.1) or IP ranges (like 192.168.0.0/24) to either allow or
+                    deny the access to the host or host's route. The nginx will evaluate them from top to bottom,
+                    executing the first one that matches the source IP address.
+                </p>
+                <AccessListEntrySets
+                    entrySets={formValues.entries}
+                    validationResult={validationResult}
+                    onRemove={index => this.removeEntry(index)}
+                />
             </Form>
         )
-    }
-
-    private convertToAccessListRequest(response: AccessListResponse): AccessListRequest {
-        const { name, realm, defaultOutcome, forwardAuthenticationHeader, entries, credentials } = response
-        return { name, realm, defaultOutcome, forwardAuthenticationHeader, entries, credentials }
     }
 
     private async delete() {
@@ -141,7 +240,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
             .then(accessListDetails => {
                 if (accessListDetails === undefined) this.setState({ loading: false, notFound: true })
                 else {
-                    this.setState({ loading: false, formValues: this.convertToAccessListRequest(accessListDetails) })
+                    this.setState({ loading: false, formValues: AccessListConverter.toFormValues(accessListDetails) })
                     this.updateShellConfig(true)
                 }
             })

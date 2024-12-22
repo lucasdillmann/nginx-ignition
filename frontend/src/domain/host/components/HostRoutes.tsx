@@ -223,7 +223,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         const { routes } = this.props
 
         if (index === 0 && offset < 0) return
-        if (index === routes.length && offset > 0) return
+        if (index === routes.length - 1 && offset > 0) return
 
         const currentPosition = routes[index]
         const newPosition = routes[index + offset]

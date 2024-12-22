@@ -1,0 +1,41 @@
+.access-lists-form-inner-flex-container {
+    width: 100%;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.access-lists-form-inner-flex-container-column {
+    width: auto;
+    flex-direction: column;
+    flex: 1;
+    padding-right: 50px;
+}
+
+.access-lists-form-inner-flex-container-column:last-of-type {
+    padding-right: 0;
+}
+
+.access-lists-form-expanded-label-size {
+    max-width: 30%;
+}
+
+.access-lists-form-expanded-label-size .ant-form-item-label {
+    min-width: 70%;
+}
+
+.access-lists-form-section-name {
+    font-size: 19px;
+    margin: 50px 0 0 0;
+    padding: 0;
+}
+
+.access-lists-form-section-name:first-of-type {
+    margin-top: 0;
+}
+
+.access-lists-form-section-help-text {
+    color: #606060;
+    margin: 0 0 25px 0;
+    padding: 0;
+    font-size: 14px;
+}

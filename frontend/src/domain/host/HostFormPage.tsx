@@ -120,18 +120,30 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     private handleChange(host: HostFormValues) {
-        const { bindings, routes, useGlobalBindings } = host
+        const { bindings, routes, useGlobalBindings, defaultServer, domainNames } = host
 
         const injectBindingNeeded = !useGlobalBindings && bindings.length === 0
         const sortedRoutes = routes.sort((left, right) => (left.priority > right.priority ? 1 : -1))
-        const orderedData: HostFormValues = {
+
+        let injectDomainNeeded = false
+        let newDomainNames = domainNames
+        if (defaultServer && domainNames.length > 0) {
+            injectDomainNeeded = true
+            newDomainNames = []
+        } else if (!defaultServer && domainNames.length === 0) {
+            injectDomainNeeded = true
+            newDomainNames = HostFormValuesDefaults.domainNames
+        }
+
+        const updatedData: HostFormValues = {
             ...host,
             routes: sortedRoutes,
             bindings: injectBindingNeeded ? HostFormValuesDefaults.bindings : bindings,
+            domainNames: newDomainNames,
         }
 
-        this.setState({ formValues: orderedData }, () => {
-            if (injectBindingNeeded) this.formRef.current?.resetFields()
+        this.setState({ formValues: updatedData }, () => {
+            if (injectBindingNeeded || injectDomainNeeded) this.formRef.current?.resetFields()
         })
     }
 

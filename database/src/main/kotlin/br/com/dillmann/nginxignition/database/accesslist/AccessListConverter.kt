@@ -12,6 +12,11 @@ internal class AccessListConverter {
     fun apply(accessList: AccessList, scope: InsertStatement<out Any>) {
         with(AccessListTable) {
             scope[id] = accessList.id
+            scope[name] = accessList.name
+            scope[realm] = accessList.realm
+            scope[satisfyAll] = accessList.satisfyAll
+            scope[defaultOutcome] = accessList.defaultOutcome.name
+            scope[forwardAuthenticationHeader] = accessList.forwardAuthenticationHeader
         }
     }
 
@@ -39,6 +44,7 @@ internal class AccessListConverter {
             id = accessList[AccessListTable.id],
             name = accessList[AccessListTable.name],
             realm = accessList[AccessListTable.realm],
+            satisfyAll = accessList[AccessListTable.satisfyAll],
             defaultOutcome = accessList[AccessListTable.defaultOutcome].let(AccessList.Outcome::valueOf),
             forwardAuthenticationHeader = accessList[AccessListTable.forwardAuthenticationHeader],
             entries = entries.map(::toEntrySet),

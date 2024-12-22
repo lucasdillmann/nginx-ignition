@@ -6,6 +6,7 @@ data class AccessList(
     val id: UUID,
     val name: String,
     val realm: String?,
+    val satisfyAll: Boolean,
     val defaultOutcome: Outcome,
     val entries: List<EntrySet>,
     val forwardAuthenticationHeader: Boolean,

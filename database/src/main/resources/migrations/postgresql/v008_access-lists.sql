@@ -2,6 +2,7 @@ create table access_list (
     id uuid not null,
     name varchar(256) not null,
     realm varchar(256),
+    satisfy_all boolean not null,
     default_outcome varchar(8) not null,
     forward_authentication_header boolean not null,
     constraint pk_access_list primary key (id),

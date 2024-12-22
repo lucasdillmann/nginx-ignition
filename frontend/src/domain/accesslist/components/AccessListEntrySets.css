@@ -1,0 +1,25 @@
+.access-list-entry-container {
+    width: 100%;
+    height: fit-content;
+    margin-bottom: 20px;
+    display: flex;
+}
+
+.access-list-entry-container .ant-form-item {
+    height: auto;
+    margin-bottom: 0;
+    margin-right: 20px;
+}
+
+.access-list-entry-container .ant-form-item:last-of-type {
+    margin-right: 0;
+}
+
+.access-list-entry-outcome {
+    min-width: 200px;
+}
+
+.access-list-entry-ip-list {
+    min-width: 300px;
+    flex-grow: 1;
+}

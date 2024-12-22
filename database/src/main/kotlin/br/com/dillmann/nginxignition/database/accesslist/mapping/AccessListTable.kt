@@ -7,6 +7,7 @@ internal object AccessListTable: Table("access_list") {
     val id = uuid("id")
     val name = varchar("name", 256)
     val realm = varchar("realm", 256).nullable()
+    val satisfyAll = bool("satisfy_all")
     val defaultOutcome = varchar("default_outcome", 8)
     val forwardAuthenticationHeader = bool("forward_authentication_header")
 

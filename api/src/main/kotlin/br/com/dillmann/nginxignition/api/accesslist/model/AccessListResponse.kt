@@ -9,6 +9,7 @@ data class AccessListResponse(
     val id: UuidString,
     val name: String,
     val realm: String?,
+    val satisfyAll: Boolean,
     val defaultOutcome: AccessList.Outcome,
     val entries: List<EntrySet>,
     val forwardAuthenticationHeader: Boolean,

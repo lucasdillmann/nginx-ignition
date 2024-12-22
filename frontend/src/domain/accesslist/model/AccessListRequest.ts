@@ -17,6 +17,7 @@ export interface AccessListCredentials {
 export default interface AccessListRequest {
     name: string
     realm?: string
+    satisfyAll: boolean
     defaultOutcome: AccessListOutcome
     entries: AccessListEntrySet[]
     credentials: AccessListCredentials[]

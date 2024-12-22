@@ -7,6 +7,7 @@ import AccessListService from "./AccessListService"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import AccessListResponse from "./model/AccessListResponse"
 import DeleteAccessListAction from "./actions/DeleteAccessListAction"
+import { AccessListOutcome } from "./model/AccessListRequest"
 
 export default class AccessListListPage extends React.PureComponent {
     private readonly service: AccessListService
@@ -30,6 +31,25 @@ export default class AccessListListPage extends React.PureComponent {
                 description: "Realm",
                 renderer: item => item.realm,
                 width: 250,
+            },
+            {
+                id: "defaultOutcome",
+                description: "Default outcome",
+                renderer: item => {
+                    switch (item.defaultOutcome) {
+                        case AccessListOutcome.ALLOW:
+                            return "Allow access"
+                        case AccessListOutcome.DENY:
+                            return "Deny access"
+                    }
+                },
+                width: 150,
+            },
+            {
+                id: "satisfyAll",
+                description: "Mode",
+                renderer: item => (item.satisfyAll ? "Satisfy all" : "Satisfy any"),
+                width: 150,
             },
             {
                 id: "actions",

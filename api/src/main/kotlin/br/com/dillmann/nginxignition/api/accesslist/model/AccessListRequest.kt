@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 data class AccessListRequest(
     val name: String,
     val realm: String? = null,
+    val satisfyAll: Boolean,
     val defaultOutcome: AccessList.Outcome,
     val entries: List<EntrySet>,
     val forwardAuthenticationHeader: Boolean,
