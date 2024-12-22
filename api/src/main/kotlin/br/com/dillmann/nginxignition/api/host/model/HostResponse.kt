@@ -23,6 +23,7 @@ internal data class HostResponse(
         val sourcePath: String,
         val settings: RouteSettings,
         val targetUri: String?,
+        val redirectCode: Int?,
         val response: StaticResponse?,
         val integration: IntegrationConfig?,
         val accessListId: UuidString?,

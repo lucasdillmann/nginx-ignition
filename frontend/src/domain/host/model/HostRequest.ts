@@ -45,6 +45,7 @@ export interface HostRoute {
     response?: HostRouteStaticResponse
     integration?: HostRouteIntegration
     accessListId?: string
+    redirectCode?: number
 }
 
 export interface HostRouteIntegration {

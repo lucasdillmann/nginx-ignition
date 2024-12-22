@@ -30,6 +30,7 @@ internal fun Module.nginxBeans() {
     single { MimeTypesConfigurationFileProvider() } bind NginxConfigurationFileProvider::class
     single { HostConfigurationFileProvider(get(), get()) } bind NginxConfigurationFileProvider::class
     single { HostCertificateFileProvider(get(), get()) } bind NginxConfigurationFileProvider::class
+    single { AccessListFileProvider(get()) } bind NginxConfigurationFileProvider::class
     single { NginxService(get(), get(), get(), get(), get()) } binds arrayOf(
         ReloadNginxCommand::class,
         StartNginxCommand::class,

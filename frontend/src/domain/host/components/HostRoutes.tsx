@@ -84,9 +84,9 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     {...FormLayout.ExpandedLabeledItem}
                     className="host-form-route-status-code"
                     layout="vertical"
-                    name={[name, "statusCode"]}
-                    validateStatus={validationResult.getStatus(`routes[${index}].statusCode`)}
-                    help={validationResult.getMessage(`routes[${index}].statusCode`)}
+                    name={[name, "redirectCode"]}
+                    validateStatus={validationResult.getStatus(`routes[${index}].redirectCode`)}
+                    help={validationResult.getMessage(`routes[${index}].redirectCode`)}
                     label="Status code"
                     required
                 >
@@ -298,6 +298,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
 
                 <HostRouteSettingsModal
                     open={index === routeSettingsOpenModalIndex}
+                    route={routes[index]}
                     onClose={() => this.closeRouteSettingsModal()}
                     onCancel={() => this.closeRouteSettingsModal()}
                     index={index}

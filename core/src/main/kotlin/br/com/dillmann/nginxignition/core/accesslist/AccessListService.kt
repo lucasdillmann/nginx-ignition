@@ -5,15 +5,23 @@ import br.com.dillmann.nginxignition.core.accesslist.command.GetAccessListByIdCo
 import br.com.dillmann.nginxignition.core.accesslist.command.ListAccessListCommand
 import br.com.dillmann.nginxignition.core.accesslist.command.SaveAccessListByCommand
 import br.com.dillmann.nginxignition.core.common.pagination.Page
+import br.com.dillmann.nginxignition.core.host.HostRepository
 import java.util.*
 
 internal class AccessListService(
     private val accessListRepository: AccessListRepository,
+    private val hostRepository: HostRepository,
     private val validator: AccessListValidator,
 ): DeleteAccessListByIdCommand, GetAccessListByIdCommand, ListAccessListCommand, SaveAccessListByCommand {
-    override suspend fun deleteById(id: UUID) {
-        // TODO: Check if isn't in use before deleting
+    override suspend fun deleteById(id: UUID): DeleteAccessListByIdCommand.Output {
+        if (hostRepository.existsByAccessListId(id))
+            return DeleteAccessListByIdCommand.Output(
+                false,
+                "Access list is being used by at least one host",
+            )
+
         accessListRepository.deleteById(id)
+        return DeleteAccessListByIdCommand.Output(true, "Access list deleted successfully")
     }
 
     override suspend fun getById(id: UUID): AccessList? =

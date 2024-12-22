@@ -179,7 +179,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
                 <h2 className="access-lists-form-section-name">Credentials</h2>
                 <p className="access-lists-form-section-help-text">
                     Relation of username and password pairs to be accepted as valid login credentials to access a host
-                    or host's route.
+                    or host's route. Leave empty to disable username and password authentication.
                 </p>
                 <AccessListCredentials validationResult={validationResult} />
 
@@ -187,7 +187,8 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
                 <p className="access-lists-form-section-help-text">
                     Relation of IP addresses (such as 192.168.0.1) or IP ranges (like 192.168.0.0/24) to either allow or
                     deny the access to the host or host's route. The nginx will evaluate them from top to bottom,
-                    executing the first one that matches the source IP address.
+                    executing the first one that matches the source IP address. Leave empty to disable source IP address
+                    or range checks.
                 </p>
                 <AccessListEntrySets
                     entrySets={formValues.entries}

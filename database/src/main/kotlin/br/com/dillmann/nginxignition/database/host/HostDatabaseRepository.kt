@@ -78,6 +78,20 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
             HostTable.select(HostTable.id).where { HostTable.id eq id }.count() > 0
         }
 
+    override suspend fun existsByAccessListId(accessListId: UUID): Boolean =
+        coTransaction {
+            val hostExists = HostTable
+                .select(HostTable.id)
+                .where { HostTable.accessListId eq accessListId }
+                .count() > 0
+            if (hostExists) return@coTransaction true
+
+            HostRouteTable
+                .select(HostRouteTable.id)
+                .where { HostRouteTable.accessListId eq accessListId }
+                .count() > 0
+        }
+
     override suspend fun existsByCertificateId(certificateId: UUID): Boolean =
         coTransaction {
             HostBindingTable

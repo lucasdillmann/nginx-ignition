@@ -14,13 +14,14 @@ internal class AccessListValidator : ConsistencyValidator() {
             if (accessList.name.isBlank())
                 addError("name", VALUE_MISSING_MESSAGE)
 
+            val previousUsernames = mutableListOf<String>()
             accessList.credentials.forEachIndexed { index, credentials ->
-                validateCredentials(index, credentials, addError)
+                validateCredentials(index, credentials, previousUsernames, addError)
             }
 
-            val knownPriorities = mutableSetOf<Int>()
+            val previousPriorities = mutableSetOf<Int>()
             accessList.entries.forEachIndexed { index, entrySet ->
-                validateEntrySet(index, entrySet, knownPriorities, addError)
+                validateEntrySet(index, entrySet, previousPriorities, addError)
             }
         }
     }
@@ -56,11 +57,15 @@ internal class AccessListValidator : ConsistencyValidator() {
             false
         }
 
-    private fun validateCredentials(index: Int, credentials: AccessList.Credentials, addError: ErrorCreator) {
+    private fun validateCredentials(
+        index: Int,
+        credentials: AccessList.Credentials,
+        previousUsernames: MutableList<String>,
+        addError: ErrorCreator,
+    ) {
         if (credentials.username.isBlank())
             addError("credentials[$index].username", VALUE_MISSING_MESSAGE)
-
-        if (credentials.password.isBlank())
-            addError("credentials[$index].password", VALUE_MISSING_MESSAGE)
+        else if (!previousUsernames.add(credentials.username))
+            addError("credentials[$index].username", "Value is duplicated")
     }
 }

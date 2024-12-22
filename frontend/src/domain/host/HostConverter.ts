@@ -112,7 +112,7 @@ class HostConverter {
     }
 
     private formValuesToRoute(route: HostFormRoute): HostRoute {
-        const { priority, type, settings, targetUri, sourcePath, accessList } = route
+        const { priority, type, settings, targetUri, sourcePath, accessList, redirectCode } = route
         const response = this.notNull(route.response) ? this.formValuesToStaticResponse(route.response!!) : undefined
         const integration = this.notNull(route.integration)
             ? this.formValuesToIntegration(route.integration!!)
@@ -126,6 +126,7 @@ class HostConverter {
             sourcePath,
             response,
             integration,
+            redirectCode,
             accessListId: accessList?.id,
         }
     }

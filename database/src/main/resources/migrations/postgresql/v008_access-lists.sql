@@ -40,6 +40,8 @@ alter table host add column access_list_id uuid;
 alter table host_route add column access_list_id uuid;
 
 alter table host add constraint fk_host_access_list_id
-    foreign key (access_list_id) references access_list (id);
+    foreign key (access_list_id) references access_list (id)
+    deferrable initially deferred;
 alter table host_route add constraint fk_host_route_access_list_id
-    foreign key (access_list_id) references access_list (id);
+    foreign key (access_list_id) references access_list (id)
+    deferrable initially deferred;

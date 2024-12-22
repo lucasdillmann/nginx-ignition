@@ -8,6 +8,11 @@ import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
 import AccessListResponse from "../../accesslist/model/AccessListResponse"
 import PageResponse from "../../../core/pagination/PageResponse"
 import AccessListService from "../../accesslist/AccessListService"
+import If from "../../../core/components/flowcontrol/If"
+import { HostRouteType } from "../model/HostRequest"
+import { HostFormRoute } from "../model/HostFormValues"
+
+const ACCESS_LIST_SUPPORTED_ROUTE_TYPES: HostRouteType[] = [HostRouteType.INTEGRATION, HostRouteType.PROXY]
 
 const ItemProps: FormItemProps = {
     labelCol: {
@@ -21,6 +26,7 @@ const ItemProps: FormItemProps = {
 export interface HostRouteSettingsProps {
     open: boolean
     index: number
+    route: HostFormRoute
     fieldPath: any
     onClose: () => void
     onCancel: () => void
@@ -79,15 +85,22 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
     }
 
     private renderMainTab() {
-        const { index, validationResult, fieldPath } = this.props
+        const { index, validationResult, fieldPath, route } = this.props
+        const accessListSupported = ACCESS_LIST_SUPPORTED_ROUTE_TYPES.includes(route.type)
         return (
             <>
+                <If condition={!accessListSupported}>
+                    <Form.Item {...ItemProps} label="Access list">
+                        Only available for proxy and integration routes
+                    </Form.Item>
+                </If>
                 <Form.Item
                     {...ItemProps}
                     name={[fieldPath, "accessList"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].accessListId`)}
                     help={validationResult.getMessage(`routes[${index}].accessListId`)}
                     label="Access list"
+                    className={!accessListSupported ? "hosts-form-invisible-input" : undefined}
                 >
                     <PaginatedSelect<AccessListResponse>
                         itemDescription={item => item?.name}

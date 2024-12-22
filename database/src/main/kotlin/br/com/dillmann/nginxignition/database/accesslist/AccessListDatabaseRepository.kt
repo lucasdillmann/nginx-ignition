@@ -69,7 +69,7 @@ internal class AccessListDatabaseRepository(private val converter: AccessListCon
         }
 
     override suspend fun findAll(): List<AccessList> =
-        findAccessLists(null, null, null, null)
+        coTransaction { findAccessLists(null, null, null, null) }
 
     private suspend fun findOneWhere(expression: SqlExpressionBuilder.() -> Op<Boolean>): AccessList? =
         coTransaction {

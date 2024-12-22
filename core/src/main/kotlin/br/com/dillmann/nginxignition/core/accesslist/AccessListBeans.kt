@@ -8,7 +8,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.binds
 
 internal fun Module.accessListBeans() {
-    single { AccessListService(get(), get()) } binds arrayOf(
+    single { AccessListService(get(), get(), get()) } binds arrayOf(
         DeleteAccessListByIdCommand::class,
         GetAccessListByIdCommand::class,
         ListAccessListCommand::class,

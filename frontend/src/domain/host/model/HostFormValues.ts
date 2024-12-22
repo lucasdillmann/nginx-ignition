@@ -25,6 +25,7 @@ export interface HostFormRoute {
     response?: HostFormStaticResponse
     integration?: HostFormRouteIntegration
     accessList?: AccessListResponse
+    redirectCode?: number
 }
 
 export interface HostFormRouteIntegration {

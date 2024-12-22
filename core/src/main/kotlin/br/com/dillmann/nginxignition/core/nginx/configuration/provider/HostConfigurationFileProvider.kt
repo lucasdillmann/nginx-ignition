@@ -15,7 +15,7 @@ internal class HostConfigurationFileProvider(
 
     private suspend fun buildHost(basePath: String, host: Host): NginxConfigurationFileProvider.Output {
         val routes =
-            host.routes.sortedBy { it.priority }.map { buildRoute(it, host.featureSet) }.joinToString("\n")
+            host.routes.sortedBy { it.priority }.map { buildRoute(it, host.featureSet, basePath) }.joinToString("\n")
         val serverNames =
             if (host.defaultServer) "server_name _;"
             else host.domainNames?.joinToString("\n") { "server_name $it;" } ?: ""
@@ -89,6 +89,11 @@ internal class HostConfigurationFileProvider(
                 };
                 gzip ${flag(settings.gzipEnabled)};
                 client_max_body_size ${settings.maximumBodySizeMb}M;
+                ${flag(
+                    host.accessListId != null, 
+                    "include $basePath/config/access-list-${host.accessListId}.conf;", 
+                    ""
+                )}
                 
                 $conditionalHttpsRedirect
                 $http2
@@ -107,15 +112,15 @@ internal class HostConfigurationFileProvider(
         return additionalParams
     }
 
-    private suspend fun buildRoute(route: Host.Route, features: Host.FeatureSet): String =
+    private suspend fun buildRoute(route: Host.Route, features: Host.FeatureSet, basePath: String): String =
         when (route.type) {
-            Host.RouteType.STATIC_RESPONSE -> buildStaticResponseRoute(route, features)
-            Host.RouteType.PROXY -> buildProxyRoute(route, features)
-            Host.RouteType.REDIRECT -> buildRedirectRoute(route, features)
-            Host.RouteType.INTEGRATION -> buildIntegrationRoute(route, features)
+            Host.RouteType.STATIC_RESPONSE -> buildStaticResponseRoute(route, features, basePath)
+            Host.RouteType.PROXY -> buildProxyRoute(route, features, basePath)
+            Host.RouteType.REDIRECT -> buildRedirectRoute(route, features, basePath)
+            Host.RouteType.INTEGRATION -> buildIntegrationRoute(route, features, basePath)
         }
 
-    private fun buildStaticResponseRoute(route: Host.Route, features: Host.FeatureSet): String {
+    private fun buildStaticResponseRoute(route: Host.Route, features: Host.FeatureSet, basePath: String): String {
         val (statusCode, payload, headers) = route.response!!
         val headerInstructions = headers
             .entries
@@ -127,38 +132,38 @@ internal class HostConfigurationFileProvider(
                 $headerInstructions
                 return $statusCode "$escapedPayload";
                 ${buildRouteFeatures(features)}
-                ${buildRouteSettings(route)}
+                ${buildRouteSettings(route, basePath)}
             }
         """.trimIndent()
     }
 
-    private fun buildProxyRoute(route: Host.Route, features: Host.FeatureSet) =
+    private fun buildProxyRoute(route: Host.Route, features: Host.FeatureSet, basePath: String) =
         """
            location ${route.sourcePath} {
                 ${buildProxyPass(route)}
                 ${buildRouteFeatures(features)}
-                ${buildRouteSettings(route)}
+                ${buildRouteSettings(route, basePath)}
            } 
         """.trimIndent()
 
-    private suspend fun buildIntegrationRoute(route: Host.Route, features: Host.FeatureSet): String {
+    private suspend fun buildIntegrationRoute(route: Host.Route, features: Host.FeatureSet, basePath: String): String {
         val (integrationId, integrationOption) = route.integration!!
         val proxyUrl = integrationService.getIntegrationOptionUrl(integrationId, integrationOption)
         return """
            location ${route.sourcePath} {
                 ${buildProxyPass(route, proxyUrl)}
                 ${buildRouteFeatures(features)}
-                ${buildRouteSettings(route)}
+                ${buildRouteSettings(route, basePath)}
            }
         """.trimIndent()
     }
 
-    private fun buildRedirectRoute(route: Host.Route, features: Host.FeatureSet) =
+    private fun buildRedirectRoute(route: Host.Route, features: Host.FeatureSet, basePath: String) =
         """
            location ${route.sourcePath} {
                 return ${route.redirectCode!!} ${route.targetUri!!};
                 ${buildRouteFeatures(features)}
-                ${buildRouteSettings(route)}
+                ${buildRouteSettings(route, basePath)}
            } 
         """.trimIndent()
 
@@ -183,7 +188,7 @@ internal class HostConfigurationFileProvider(
         return builder.toString()
     }
 
-    private fun buildRouteSettings(route: Host.Route): String {
+    private fun buildRouteSettings(route: Host.Route, basePath: String): String {
         val builder = StringBuilder()
         with (route.settings) {
             if (proxySslServerName)
@@ -202,6 +207,8 @@ internal class HostConfigurationFileProvider(
                 builder.appendLine(custom)
         }
 
+        if (route.accessListId != null)
+            builder.appendLine("include $basePath/config/access-list-${route.accessListId}.conf;")
 
         return builder.toString()
     }
