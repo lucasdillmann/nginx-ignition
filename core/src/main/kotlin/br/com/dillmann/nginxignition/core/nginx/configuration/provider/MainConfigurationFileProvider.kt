@@ -11,6 +11,8 @@ internal class MainConfigurationFileProvider(
         val settings = settingsService.get().nginx
         val logs = settings.logs
         val contents = """
+            load_module modules/ngx_http_js_module.so;
+            load_module modules/ngx_http_lua_module.so;
             worker_processes ${settings.workerProcesses};
             pid $basePath/nginx.pid;
             error_log ${
