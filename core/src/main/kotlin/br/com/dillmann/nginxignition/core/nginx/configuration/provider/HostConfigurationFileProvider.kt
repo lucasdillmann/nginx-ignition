@@ -137,7 +137,7 @@ internal class HostConfigurationFileProvider(
             Host.SourceCodeLanguage.LUA ->
                 Pair(
                     "",
-                    """"
+                    """
                         content_by_lua_block {
                             $code
                         }
