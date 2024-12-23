@@ -56,6 +56,8 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
 
     private async executePasswordChange() {
         const { formValues } = this.state
+        this.setState({ validationResult: new ValidationResult() })
+
         return this.service
             .changePassword(formValues)
             .then(() => Notification.success("Password changed", "Your password was updated successfully"))

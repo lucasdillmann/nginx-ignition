@@ -45,6 +45,7 @@ export default class IntegrationConfigurationModal extends React.Component<
         const { integrationId } = this.props
         const { formValues } = this.state
 
+        this.setState({ validationResult: new ValidationResult() })
         this.service
             .setConfiguration(integrationId, formValues)
             .then(() => this.handleSuccess())

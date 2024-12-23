@@ -21,6 +21,9 @@ internal object HostRouteTable: Table("host_route") {
     val proxySslServerName = bool("proxy_ssl_server_name")
     val keepOriginalDomainName = bool("keep_original_domain_name")
     val accessListId = uuid("access_list_id").nullable()
+    val codeLanguage = varchar("code_language", 16).nullable()
+    val codeContents = text("code_contents").nullable()
+    val codeMainFunction = varchar("code_main_function", 256).nullable()
 
     override val primaryKey = PrimaryKey(id)
 }

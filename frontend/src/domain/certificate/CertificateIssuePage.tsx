@@ -78,6 +78,7 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
             "Hang on tight",
             "We're issuing your certificate. This can take several seconds, feel free to grab a cup of coffee.",
         )
+        this.setState({ validationResult: new ValidationResult() })
 
         const certificateRequest: IssueCertificateRequest = {
             ...formValues,

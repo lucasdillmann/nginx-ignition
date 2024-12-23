@@ -2,9 +2,9 @@ import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import { Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Select } from "antd"
 import If from "../../../core/components/flowcontrol/If"
-import { CloseOutlined, PlusOutlined, ArrowUpOutlined, ArrowDownOutlined, SettingOutlined } from "@ant-design/icons"
+import { ArrowDownOutlined, ArrowUpOutlined, CloseOutlined, PlusOutlined, SettingOutlined } from "@ant-design/icons"
 import { HostFormRoute } from "../model/HostFormValues"
-import { HostRouteType } from "../model/HostRequest"
+import { HostRouteSourceCodeLanguage, HostRouteType } from "../model/HostRequest"
 import FormLayout from "../../../core/components/form/FormLayout"
 import "./HostRoutes.css"
 import TextArea from "antd/es/input/TextArea"
@@ -15,6 +15,7 @@ import PageResponse, { emptyPageResponse } from "../../../core/pagination/PageRe
 import IntegrationService from "../../integration/IntegrationService"
 import HostFormValuesDefaults from "../model/HostFormValuesDefaults"
 import HostRouteSettingsModal from "./HostRouteSettingsModal"
+import { Link } from "react-router-dom"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -219,6 +220,78 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         )
     }
 
+    private renderSourceCodeHelpText(index: number): React.ReactNode {
+        const { routes } = this.props
+        const { sourceCode } = routes[index]
+        const url =
+            sourceCode?.language === HostRouteSourceCodeLanguage.LUA
+                ? "https://github.com/openresty/lua-nginx-module/blob/master/README.markdown#synopsis"
+                : "https://nginx.org/en/docs/njs/"
+
+        return (
+            <>
+                Check{" "}
+                <Link to={url} target="_blank">
+                    this link
+                </Link>{" "}
+                for instructions
+            </>
+        )
+    }
+
+    private renderSourceCodeRoute(field: FormListFieldData, index: number): React.ReactNode {
+        const { validationResult, routes } = this.props
+        const { name } = field
+        const { sourceCode } = routes[index]
+        const helpText = this.renderSourceCodeHelpText(index)
+
+        return (
+            <>
+                <Form.Item
+                    {...FormLayout.ExpandedLabeledItem}
+                    className="host-form-route-source-code-language"
+                    layout="vertical"
+                    name={[name, "sourceCode", "language"]}
+                    validateStatus={validationResult.getStatus(`routes[${index}].sourceCode.language`)}
+                    help={validationResult.getMessage(`routes[${index}].sourceCode.language`)}
+                    label="Language"
+                    required
+                >
+                    <Select>
+                        <Select.Option value={HostRouteSourceCodeLanguage.JAVASCRIPT}>JavaScript</Select.Option>
+                        <Select.Option value={HostRouteSourceCodeLanguage.LUA}>Lua</Select.Option>
+                    </Select>
+                </Form.Item>
+                <Form.Item
+                    {...FormLayout.ExpandedLabeledItem}
+                    className="host-form-route-source-code-code"
+                    layout="vertical"
+                    name={[name, "sourceCode", "code"]}
+                    validateStatus={validationResult.getStatus(`routes[${index}].sourceCode.code`)}
+                    help={validationResult.getMessage(`routes[${index}].sourceCode.code`) ?? helpText}
+                    label="Source code"
+                    required
+                >
+                    <TextArea rows={3} />
+                </Form.Item>
+                <If condition={sourceCode?.language === HostRouteSourceCodeLanguage.JAVASCRIPT}>
+                    <Form.Item
+                        {...FormLayout.ExpandedLabeledItem}
+                        className="host-form-route-source-code-main-function"
+                        layout="vertical"
+                        name={[name, "sourceCode", "mainFunction"]}
+                        validateStatus={validationResult.getStatus(`routes[${index}].sourceCode.mainFunction`)}
+                        help={validationResult.getMessage(`routes[${index}].sourceCode.mainFunction`)}
+                        label="Main function name"
+                        required
+                    >
+                        <Input />
+                    </Form.Item>
+                </If>
+            </>
+        )
+    }
+
     private moveRoute(operations: FormListOperation, index: number, offset: number) {
         const { routes } = this.props
 
@@ -274,6 +347,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         <Select.Option value={HostRouteType.PROXY}>Proxy</Select.Option>
                         <Select.Option value={HostRouteType.REDIRECT}>Redirect</Select.Option>
                         <Select.Option value={HostRouteType.STATIC_RESPONSE}>Static response</Select.Option>
+                        <Select.Option value={HostRouteType.SOURCE_CODE}>Source code</Select.Option>
                     </Select>
                 </Form.Item>
                 <Form.Item
@@ -295,6 +369,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 <If condition={type === HostRouteType.STATIC_RESPONSE}>
                     {this.renderStaticResponseRoute(field, index)}
                 </If>
+                <If condition={type === HostRouteType.SOURCE_CODE}>{this.renderSourceCodeRoute(field, index)}</If>
 
                 <HostRouteSettingsModal
                     open={index === routeSettingsOpenModalIndex}

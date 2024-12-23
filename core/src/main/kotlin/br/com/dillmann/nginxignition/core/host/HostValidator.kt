@@ -114,6 +114,7 @@ internal class HostValidator(
             Host.RouteType.REDIRECT -> validateRedirectRoute(route, index, addError)
             Host.RouteType.STATIC_RESPONSE -> validateStaticResponseRoute(route, index, addError)
             Host.RouteType.INTEGRATION -> validateIntegrationRoute(route, index, addError)
+            Host.RouteType.SOURCE_CODE -> validateSourceCodeRoute(route, index, addError)
         }
     }
 
@@ -123,7 +124,7 @@ internal class HostValidator(
         if (route.targetUri.isNullOrBlank()) {
             addError(
                 targetUriField,
-                "Value is required when the type of the route is ${Host.RouteType.PROXY}",
+                "Value is required when the type of the route is proxy",
             )
         } else {
             val parseResult = runCatching { requireNotNull(URI(route.targetUri).host) }
@@ -136,7 +137,7 @@ internal class HostValidator(
         if (route.targetUri.isNullOrBlank()) {
             addError(
                 "routes[$index].targetUri",
-                "Value is required when the type of the route is ${Host.RouteType.REDIRECT}",
+                "Value is required when the type of the route is redirect",
             )
         } else {
             val parseResult = runCatching { requireNotNull(URI(route.targetUri).host) }
@@ -163,13 +164,34 @@ internal class HostValidator(
         if (route.integration?.integrationId.isNullOrBlank())
             addError(
                 "routes[$index].integration.integrationId",
-                "Value is required when the type of the route is ${Host.RouteType.INTEGRATION}",
+                "Value is required when the type of the route is integration",
             )
 
         if (route.integration?.optionId.isNullOrBlank())
             addError(
                 "routes[$index].integration.optionId",
-                "Value is required when the type of the route is ${Host.RouteType.INTEGRATION}",
+                "Value is required when the type of the route is integration",
+            )
+    }
+
+    private fun validateSourceCodeRoute(route: Host.Route, index: Int, addError: ErrorCreator) {
+        if (route.sourceCode?.code.isNullOrBlank())
+            addError(
+                "routes[$index].sourceCode.code",
+                "Value is required when the type of the route is source code",
+            )
+
+        if (route.sourceCode?.language == null)
+            addError(
+                "routes[$index].sourceCode.language",
+                "Value is required when the type of the route is source code",
+            )
+
+        if (route.sourceCode?.language == Host.SourceCodeLanguage.JAVASCRIPT &&
+            route.sourceCode.mainFunction.isNullOrBlank())
+            addError(
+                "routes[$index].sourceCode.mainFunction",
+                "Value is required when the language is JavaScript",
             )
     }
 }

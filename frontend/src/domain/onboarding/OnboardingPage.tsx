@@ -35,7 +35,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
     private handleSubmit(values: { name: string; username: string; password: string }) {
         const { name, username, password } = values
 
-        this.setState({ loading: true, values })
+        this.setState({ loading: true, validationResult: new ValidationResult(), values })
         this.service
             .finish(name, username, password)
             .then(() => this.handleSuccess())

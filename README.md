@@ -13,7 +13,8 @@ use a UI anyway), the project does aim to provide an intuitive and powerful way 
 
 Some of the available features include:
 - Multiple nginx virtual hosts, each one with its customized set of domains, routes and bindings (port listeners)
-- Each host route can act as a proxy, redirection or reply with a static response
+- Each host route can act as a proxy, redirection, execute custom code (JavaScript or Lua) or reply with a static 
+  response
 - Easy configuration of the nginx server (maximum body/upload size, server tokens, timeouts, log level, etc)
 - SSL certificates (Let's Encrypt, self-signed or bring your custom one) with automatic renew (when applicable)
 - Server and virtual hosts access and error logs with automatic log rotation

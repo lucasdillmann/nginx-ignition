@@ -8,6 +8,12 @@ export enum HostRouteType {
     REDIRECT = "REDIRECT",
     STATIC_RESPONSE = "STATIC_RESPONSE",
     INTEGRATION = "INTEGRATION",
+    SOURCE_CODE = "SOURCE_CODE",
+}
+
+export enum HostRouteSourceCodeLanguage {
+    JAVASCRIPT = "JAVASCRIPT",
+    LUA = "LUA",
 }
 
 export interface HostFeatureSet {
@@ -36,6 +42,12 @@ export interface HostRouteSettings {
     custom?: string
 }
 
+export interface HostRouteSourceCode {
+    language: HostRouteSourceCodeLanguage
+    code: string
+    mainFunction?: string
+}
+
 export interface HostRoute {
     priority: number
     type: HostRouteType
@@ -46,6 +58,7 @@ export interface HostRoute {
     integration?: HostRouteIntegration
     accessListId?: string
     redirectCode?: number
+    sourceCode?: HostRouteSourceCode
 }
 
 export interface HostRouteIntegration {

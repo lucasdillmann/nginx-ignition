@@ -26,6 +26,14 @@ internal data class HostRequest(
         val response: StaticResponse? = null,
         val integration: IntegrationConfig? = null,
         val accessListId: UuidString? = null,
+        val sourceCode: RouteSourceCode? = null,
+    )
+
+    @Serializable
+    data class RouteSourceCode(
+        val language: Host.SourceCodeLanguage,
+        val code: String,
+        val mainFunction: String? = null,
     )
 
     @Serializable

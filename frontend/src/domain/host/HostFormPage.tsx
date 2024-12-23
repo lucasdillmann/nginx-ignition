@@ -74,6 +74,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     private submit() {
         const payload = HostConverter.formValuesToRequest(this.state.formValues)
         this.saveModal.show("Hang on tight", "We're saving the host")
+        this.setState({ validationResult: new ValidationResult() })
 
         const action =
             this.hostId === undefined

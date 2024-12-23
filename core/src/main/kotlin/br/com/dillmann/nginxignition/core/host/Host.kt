@@ -24,7 +24,19 @@ data class Host(
         val response: StaticResponse?,
         val integration: IntegrationConfig?,
         val accessListId: UUID?,
+        val sourceCode: RouteSourceCode?,
     )
+
+    data class RouteSourceCode(
+        val language: SourceCodeLanguage,
+        val code: String,
+        val mainFunction: String?,
+    )
+
+    enum class SourceCodeLanguage {
+        JAVASCRIPT,
+        LUA,
+    }
 
     data class RouteSettings (
         val includeForwardHeaders: Boolean,
@@ -38,6 +50,7 @@ data class Host(
         REDIRECT,
         STATIC_RESPONSE,
         INTEGRATION,
+        SOURCE_CODE,
     }
 
     data class StaticResponse(

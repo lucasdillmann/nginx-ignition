@@ -58,6 +58,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
     private async submit() {
         const { formValues } = this.state
         this.saveModal.show("Hang on tight", "We're saving the settings")
+        this.setState({ validationResult: new ValidationResult() })
 
         const settings = SettingsConverter.formValuesToSettings(formValues!!)
         return this.service

@@ -1,5 +1,5 @@
 import { CertificateResponse } from "../../certificate/model/CertificateResponse"
-import { HostBindingType, HostFeatureSet, HostRouteSettings, HostRouteType } from "./HostRequest"
+import { HostBindingType, HostFeatureSet, HostRouteSettings, HostRouteSourceCode, HostRouteType } from "./HostRequest"
 import { IntegrationOptionResponse } from "../../integration/model/IntegrationOptionResponse"
 import AccessListResponse from "../../accesslist/model/AccessListResponse"
 
@@ -26,6 +26,7 @@ export interface HostFormRoute {
     integration?: HostFormRouteIntegration
     accessList?: AccessListResponse
     redirectCode?: number
+    sourceCode?: HostRouteSourceCode
 }
 
 export interface HostFormRouteIntegration {

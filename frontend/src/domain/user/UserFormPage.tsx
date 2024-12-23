@@ -54,6 +54,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
     private submit() {
         const { formValues } = this.state
         this.saveModal.show("Hang on tight", "We're saving the user")
+        this.setState({ validationResult: new ValidationResult() })
 
         const action =
             this.userId === undefined

@@ -54,6 +54,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
     private submit() {
         const { formValues } = this.state
         this.saveModal.show("Hang on tight", "We're saving the access list")
+        this.setState({ validationResult: new ValidationResult() })
 
         const data = AccessListConverter.toRequest(formValues)
         const action =

@@ -15,7 +15,7 @@ internal class HostConfigurationFileProvider(
 
     private suspend fun buildHost(basePath: String, host: Host): NginxConfigurationFileProvider.Output {
         val routes =
-            host.routes.sortedBy { it.priority }.map { buildRoute(it, host.featureSet, basePath) }.joinToString("\n")
+            host.routes.sortedBy { it.priority }.map { buildRoute(host, it, basePath) }.joinToString("\n")
         val serverNames =
             if (host.defaultServer) "server_name _;"
             else host.domainNames?.joinToString("\n") { "server_name $it;" } ?: ""
@@ -112,13 +112,40 @@ internal class HostConfigurationFileProvider(
         return additionalParams
     }
 
-    private suspend fun buildRoute(route: Host.Route, features: Host.FeatureSet, basePath: String): String =
+    private suspend fun buildRoute(
+        host: Host,
+        route: Host.Route,
+        basePath: String,
+    ): String =
         when (route.type) {
-            Host.RouteType.STATIC_RESPONSE -> buildStaticResponseRoute(route, features, basePath)
-            Host.RouteType.PROXY -> buildProxyRoute(route, features, basePath)
-            Host.RouteType.REDIRECT -> buildRedirectRoute(route, features, basePath)
-            Host.RouteType.INTEGRATION -> buildIntegrationRoute(route, features, basePath)
+            Host.RouteType.STATIC_RESPONSE -> buildStaticResponseRoute(route, host.featureSet, basePath)
+            Host.RouteType.PROXY -> buildProxyRoute(route, host.featureSet, basePath)
+            Host.RouteType.REDIRECT -> buildRedirectRoute(route, host.featureSet, basePath)
+            Host.RouteType.INTEGRATION -> buildIntegrationRoute(route, host.featureSet, basePath)
+            Host.RouteType.SOURCE_CODE -> buildSourceCodeRoute(host, route, basePath)
         }
+
+    private fun buildSourceCodeRoute(host: Host, route: Host.Route, basePath: String): String {
+        val (language, code, mainFunction) = route.sourceCode!!
+        val codeInstructions = when (language) {
+            Host.SourceCodeLanguage.JAVASCRIPT ->
+                "js_content $basePath/config/host-${host.id}-route-${route.priority}.$mainFunction;"
+            Host.SourceCodeLanguage.LUA ->
+                """
+                    content_by_lua_block {
+                        $code
+                    }
+                """.trimIndent()
+        }
+
+        return """
+            location ${route.sourcePath} {
+                $codeInstructions
+                ${buildRouteFeatures(host.featureSet)}
+                ${buildRouteSettings(route, basePath)}
+            }
+        """.trimIndent()
+    }
 
     private fun buildStaticResponseRoute(route: Host.Route, features: Host.FeatureSet, basePath: String): String {
         val (statusCode, payload, headers) = route.response!!

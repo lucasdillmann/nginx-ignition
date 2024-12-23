@@ -44,6 +44,9 @@ internal class HostConverter {
             scope[proxySslServerName] = route.settings.proxySslServerName
             scope[customSettings] = route.settings.custom
             scope[accessListId] = route.accessListId
+            scope[codeContents] = route.sourceCode?.code
+            scope[codeLanguage] = route.sourceCode?.language?.name
+            scope[codeMainFunction] = route.sourceCode?.mainFunction
         }
     }
 
@@ -91,6 +94,14 @@ internal class HostConverter {
                 optionId = route[HostRouteTable.integrationOptionId]!!,
             )
 
+        val sourceCode =
+            if (route[HostRouteTable.type] != Host.RouteType.SOURCE_CODE.name) null
+            else Host.RouteSourceCode(
+                language = route[HostRouteTable.codeLanguage]!!.let(Host.SourceCodeLanguage::valueOf),
+                code = route[HostRouteTable.codeContents]!!,
+                mainFunction = route[HostRouteTable.codeMainFunction],
+            )
+
         return Host.Route(
             id = route[HostRouteTable.id],
             priority = route[HostRouteTable.priority],
@@ -101,6 +112,7 @@ internal class HostConverter {
             response = response,
             integration = integration,
             accessListId = route[HostRouteTable.accessListId],
+            sourceCode = sourceCode,
             settings = Host.RouteSettings(
                 includeForwardHeaders = route[HostRouteTable.includeForwardHeaders],
                 keepOriginalDomainName = route[HostRouteTable.keepOriginalDomainName],
