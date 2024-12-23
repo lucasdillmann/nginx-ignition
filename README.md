@@ -29,7 +29,7 @@ To run nginx ignition, run the following in your terminal. If you don't have Doc
 it first (follow [this link](https://www.docker.com/get-started/) for instructions).
 
 ```shell
-docker run -p8090:8090 dillmann/nginx-ignition
+docker run -p8090:8090 -p80:80 dillmann/nginx-ignition
 ```
 
 After a few seconds, you can open your favorite browser at http://localhost:8090 and start using it. There's no 

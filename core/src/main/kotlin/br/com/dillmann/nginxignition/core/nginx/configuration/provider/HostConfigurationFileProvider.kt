@@ -126,21 +126,29 @@ internal class HostConfigurationFileProvider(
         }
 
     private fun buildSourceCodeRoute(host: Host, route: Host.Route, basePath: String): String {
+        val (_, priority, _, sourcePath) = route
         val (language, code, mainFunction) = route.sourceCode!!
-        val codeInstructions = when (language) {
+        val (headerBlock, routeBlock) = when (language) {
             Host.SourceCodeLanguage.JAVASCRIPT ->
-                "js_content $basePath/config/host-${host.id}-route-${route.priority}.$mainFunction;"
+                Pair(
+                    "js_import route_$priority from $basePath/config/host-${host.id}-route-$priority.js;",
+                    "js_content route_$priority.$mainFunction;",
+                )
             Host.SourceCodeLanguage.LUA ->
-                """
-                    content_by_lua_block {
-                        $code
-                    }
-                """.trimIndent()
+                Pair(
+                    "",
+                    """"
+                        content_by_lua_block {
+                            $code
+                        }
+                    """.trimIndent(),
+                )
         }
 
         return """
-            location ${route.sourcePath} {
-                $codeInstructions
+            $headerBlock
+            location $sourcePath {
+                $routeBlock
                 ${buildRouteFeatures(host.featureSet)}
                 ${buildRouteSettings(route, basePath)}
             }
