@@ -6,6 +6,6 @@ ENV NGINX_IGNITION_DATABASE_USERNAME="sa"
 ENTRYPOINT ["java", "-jar", "/opt/nginx-ignition/nginx-ignition.jar"]
 RUN mkdir -p /opt/nginx-ignition/data && \
     apk update && \
-    apk add nginx && \
+    apk add nginx nginx-mod-http-js nginx-mod-http-lua && \
     apk cache clean
 COPY application/build/libs/application-all.jar /opt/nginx-ignition/nginx-ignition.jar
