@@ -103,6 +103,17 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
         })
     }
 
+    private handleChange(newValues: AccessListFormValues) {
+        const entries = newValues.entries.sort((left, right) => (left.priority > right.priority ? 1 : -1))
+
+        this.setState({
+            formValues: {
+                ...newValues,
+                entries,
+            },
+        })
+    }
+
     private renderForm() {
         const { formValues, validationResult } = this.state
 
@@ -110,7 +121,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
             <Form<AccessListFormValues>
                 {...FormLayout.FormDefaults}
                 ref={this.formRef}
-                onValuesChange={(_, formValues) => this.setState({ formValues })}
+                onValuesChange={(_, formValues) => this.handleChange(formValues)}
                 initialValues={formValues}
             >
                 <h2 className="access-lists-form-section-name">General</h2>
