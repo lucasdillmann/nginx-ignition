@@ -94,7 +94,7 @@ internal class AccessListDatabaseRepository(private val converter: AccessListCon
             .withSearchTerms(searchTerms, listOf(AccessListTable.name, AccessListTable.realm))
             .also {
                 if (pageSize != null && pageNumber != null) {
-                    it.limit(pageSize, pageSize.toLong() * pageNumber)
+                    it.limit(pageSize).offset(pageSize.toLong() * pageNumber)
                 }
 
                 if (predicate != null) {

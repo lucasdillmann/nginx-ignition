@@ -123,7 +123,7 @@ internal class HostDatabaseRepository(private val converter: HostConverter): Hos
             .withSearchTerms(searchTerms, listOf(HostTable.domainNames))
             .also {
                 if (pageSize != null && pageNumber != null) {
-                    it.limit(pageSize, pageSize.toLong() * pageNumber)
+                    it.limit(pageSize).offset(pageSize.toLong() * pageNumber)
                 }
 
                 if (predicate != null) {

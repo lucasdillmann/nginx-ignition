@@ -70,7 +70,8 @@ internal class CertificateDatabaseRepository(private val converter: CertificateC
             val certificates = CertificateTable
                 .select(CertificateTable.fields)
                 .withSearchTerms(searchTerms, listOf(CertificateTable.domainNames))
-                .limit(pageSize, pageSize.toLong() * pageNumber)
+                .limit(pageSize)
+                .offset(pageSize.toLong() * pageNumber)
                 .orderBy(CertificateTable.domainNames)
                 .map { converter.toDomainModel(it) }
 
