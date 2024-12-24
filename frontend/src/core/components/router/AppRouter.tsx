@@ -4,7 +4,6 @@ import AppContext from "../context/AppContext"
 import { RouteObject, createBrowserRouter, RouterProvider, Navigate, Params } from "react-router-dom"
 import AppShell, { AppShellMenuItem } from "../shell/AppShell"
 import ErrorBoundary from "../errorboundary/ErrorBoundary"
-import { Router } from "@remix-run/router/dist/router"
 import qs, { ParsedQs } from "qs"
 import { buildLoginUrl } from "../../authentication/buildLoginUrl"
 
@@ -30,7 +29,7 @@ export function queryParams(): ParsedQs {
 }
 
 interface AppRouterState {
-    router?: Router
+    router?: any
 }
 
 export interface AppRouterProps {

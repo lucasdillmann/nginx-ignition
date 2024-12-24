@@ -46,7 +46,7 @@ interface HostRoutesState {
 
 export default class HostRoutes extends React.Component<HostRoutesProps, HostRoutesState> {
     private readonly integrationService: IntegrationService
-    private readonly optionsRef: React.RefObject<PaginatedSelect<IntegrationOptionResponse>>
+    private readonly optionsRef: React.RefObject<PaginatedSelect<IntegrationOptionResponse> | null>
 
     constructor(props: HostRoutesProps) {
         super(props)

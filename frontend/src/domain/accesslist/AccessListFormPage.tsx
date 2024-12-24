@@ -34,7 +34,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
     private readonly accessListId?: string
     private readonly service: AccessListService
     private readonly saveModal: ModalPreloader
-    private readonly formRef: React.RefObject<FormInstance>
+    private readonly formRef: React.RefObject<FormInstance | null>
 
     constructor(props: any) {
         super(props)

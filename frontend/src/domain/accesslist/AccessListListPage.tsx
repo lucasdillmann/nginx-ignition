@@ -11,7 +11,7 @@ import { AccessListOutcome } from "./model/AccessListRequest"
 
 export default class AccessListListPage extends React.PureComponent {
     private readonly service: AccessListService
-    private readonly table: React.RefObject<DataTable<AccessListResponse>>
+    private readonly table: React.RefObject<DataTable<AccessListResponse> | null>
 
     constructor(props: any) {
         super(props)

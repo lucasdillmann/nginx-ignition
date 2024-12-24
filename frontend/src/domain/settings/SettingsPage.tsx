@@ -31,7 +31,7 @@ interface SettingsPageState {
 export default class SettingsPage extends React.Component<any, SettingsPageState> {
     private readonly service: SettingsService
     private readonly saveModal: ModalPreloader
-    private readonly formRef: React.RefObject<FormInstance>
+    private readonly formRef: React.RefObject<FormInstance | null>
 
     constructor(props: any) {
         super(props)

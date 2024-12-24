@@ -38,7 +38,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     private readonly hostService: HostService
     private readonly nginxService: NginxService
     private readonly settingsService: SettingsService
-    private readonly contentsRef: React.RefObject<TextAreaRef>
+    private readonly contentsRef: React.RefObject<TextAreaRef | null>
     private refreshIntervalId?: number
 
     constructor(props: any) {

@@ -23,7 +23,7 @@ interface CertificateListPageState {
 
 export default class CertificateListPage extends React.Component<any, CertificateListPageState> {
     private readonly service: CertificateService
-    private readonly table: React.RefObject<DataTable<CertificateResponse>>
+    private readonly table: React.RefObject<DataTable<CertificateResponse> | null>
 
     constructor(props: any) {
         super(props)
