@@ -8,4 +8,4 @@ RUN mkdir -p /opt/nginx-ignition/data && \
     apk update && \
     apk add nginx nginx-mod-http-js nginx-mod-http-lua && \
     apk cache clean
-COPY application/build/libs/application-all.jar /opt/nginx-ignition/nginx-ignition.jar
+COPY application/build/libs/application-0.0.0-all.jar /opt/nginx-ignition/nginx-ignition.jar

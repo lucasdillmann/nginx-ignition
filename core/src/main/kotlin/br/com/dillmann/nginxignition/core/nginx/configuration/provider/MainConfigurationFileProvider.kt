@@ -10,6 +10,7 @@ internal class MainConfigurationFileProvider(
     override suspend fun provide(basePath: String, hosts: List<Host>): List<NginxConfigurationFileProvider.Output> {
         val settings = settingsService.get().nginx
         val logs = settings.logs
+
         val contents = """
             load_module modules/ndk_http_module.so;
             load_module modules/ngx_http_js_module.so;

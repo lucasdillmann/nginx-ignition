@@ -1,14 +1,15 @@
 package br.com.dillmann.nginxignition.application.rbac
 
+import br.com.dillmann.nginxignition.api.common.authorization.Subject
+import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.core.common.log.logger
 import br.com.dillmann.nginxignition.core.common.configuration.ConfigurationProvider
 import br.com.dillmann.nginxignition.core.user.User
 import br.com.dillmann.nginxignition.core.user.command.GetUserCommand
 import br.com.dillmann.nginxignition.core.user.command.GetUserStatusCommand
 import com.auth0.jwt.JWT
-import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.server.auth.jwt.*
+import com.auth0.jwt.interfaces.DecodedJWT
 import java.security.SecureRandom
 import java.time.Instant
 import java.util.UUID
@@ -28,30 +29,37 @@ class RbacJwtFacade(
     private val logger = logger<RbacJwtFacade>()
     private val configurationProvider = configurationProvider.withPrefix("nginx-ignition.security.jwt")
     private val jwtSecret = initializeSecret()
+    private val verifier = JWT
+        .require(Algorithm.HMAC512(jwtSecret))
+        .withAudience(UNIQUE_IDENTIFIER)
+        .withIssuer(UNIQUE_IDENTIFIER)
+        .build()
 
-    fun buildVerifier(): JWTVerifier =
-        JWT
-            .require(Algorithm.HMAC512(jwtSecret))
-            .withAudience(UNIQUE_IDENTIFIER)
-            .withIssuer(UNIQUE_IDENTIFIER)
-            .build()
+    suspend fun checkCredentials(call: ApiCall): Subject? {
+        val token = call.jwtToken() ?: return null
+        val jwt = checkCredentials(token) ?: return null
+        return Subject(
+            tokenId = jwt.id,
+            userId = UUID.fromString(jwt.subject),
+        )
+    }
 
-    suspend fun checkCredentials(credential: JWTCredential): JWTPrincipal? =
-        with(credential.payload) {
-            val userId = runCatching { credential.subject.let(UUID::fromString) }.getOrNull()
+    suspend fun checkCredentials(token: String): DecodedJWT? {
+        val jwt = runCatching { verifier.verify(token) }.getOrNull() ?: return null
+        val userId = runCatching { jwt.subject.let(UUID::fromString) }.getOrNull()
 
-            when {
-                UNIQUE_IDENTIFIER !in audience -> null
-                UNIQUE_IDENTIFIER != issuer -> null
-                credential.jwtId in REVOKED_IDS -> null
-                userId == null -> null
-                !getUserStatusCommand.isEnabled(userId) -> {
-                    credential.jwtId?.let(::revokeCredentials)
-                    null
-                }
-                else -> JWTPrincipal(credential.payload)
+        return when {
+            UNIQUE_IDENTIFIER !in jwt.audience -> null
+            UNIQUE_IDENTIFIER != jwt.issuer -> null
+            jwt.id in REVOKED_IDS -> null
+            userId == null -> null
+            !getUserStatusCommand.isEnabled(userId) -> {
+                revokeCredentials(jwt.id)
+                null
             }
+            else -> jwt
         }
+    }
 
     fun revokeCredentials(tokenId: String) {
         REVOKED_IDS += tokenId
@@ -75,7 +83,7 @@ class RbacJwtFacade(
             .sign(Algorithm.HMAC512(jwtSecret))
     }
 
-    suspend fun refreshToken(credentials: JWTPrincipal): String? {
+    suspend fun refreshToken(credentials: DecodedJWT): String? {
         val windowSize = configurationProvider.get("renew-window-seconds").toLong()
         val expiration = credentials.expiresAt?.toInstant() ?: return null
         val renewWindow = expiration.minusSeconds(windowSize)..expiration
