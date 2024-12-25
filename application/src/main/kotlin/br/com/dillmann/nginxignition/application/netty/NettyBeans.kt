@@ -7,7 +7,7 @@ import br.com.dillmann.nginxignition.core.common.lifecycle.StartupCommand
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 
-fun Module.nettyBeans() {
+internal fun Module.nettyBeans() {
     single { NettyContainer(get(), get()) }
     single { NettyChannelInitializer(get()) }
     single { NettyStartup(get()) } bind StartupCommand::class

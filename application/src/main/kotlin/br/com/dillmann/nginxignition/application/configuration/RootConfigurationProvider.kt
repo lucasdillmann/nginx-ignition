@@ -3,7 +3,7 @@ package br.com.dillmann.nginxignition.application.configuration
 import br.com.dillmann.nginxignition.core.common.configuration.ConfigurationProvider
 import org.yaml.snakeyaml.Yaml
 
-class RootConfigurationProvider: ConfigurationProvider {
+internal class RootConfigurationProvider: ConfigurationProvider {
     private val values: Map<String, Any?>
 
     init {

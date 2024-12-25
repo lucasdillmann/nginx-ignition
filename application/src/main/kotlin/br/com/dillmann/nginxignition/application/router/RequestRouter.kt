@@ -1,6 +1,7 @@
 package br.com.dillmann.nginxignition.application.router
 
 import br.com.dillmann.nginxignition.application.router.adapter.NettyApiCallAdapter
+import br.com.dillmann.nginxignition.application.router.exception.ExceptionHandler
 import br.com.dillmann.nginxignition.core.common.log.logger
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
@@ -12,6 +13,7 @@ import io.netty.handler.codec.http.HttpVersion
 internal class RequestRouter(
     compiler: RequestRouteCompiler,
     private val interceptors: List<ResponseInterceptor>,
+    private val exceptionHandler: ExceptionHandler,
 ) {
     private companion object {
         private val LOGGER = logger<RequestRouter>()
@@ -39,7 +41,8 @@ internal class RequestRouter(
 
             sendResponse(context, HttpResponseStatus.NOT_FOUND)
         } catch (ex: Throwable) {
-            route(context, ex)
+            val call = NettyApiCallAdapter(context, request, interceptors)
+            exceptionHandler.handle(call, ex)
         }
     }
 

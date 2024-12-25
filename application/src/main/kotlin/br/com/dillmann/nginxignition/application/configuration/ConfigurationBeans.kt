@@ -4,6 +4,6 @@ import br.com.dillmann.nginxignition.core.common.configuration.ConfigurationProv
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 
-fun Module.configurationBeans() {
+internal fun Module.configurationBeans() {
     single { RootConfigurationProvider() } bind ConfigurationProvider::class
 }

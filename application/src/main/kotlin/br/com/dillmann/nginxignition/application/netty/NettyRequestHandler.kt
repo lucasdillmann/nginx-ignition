@@ -8,7 +8,7 @@ import kotlinx.coroutines.*
 
 internal class NettyRequestHandler(
     private val router: RequestRouter,
-): SimpleChannelInboundHandler<HttpObject>(false) {
+): SimpleChannelInboundHandler<HttpObject>() {
     override fun channelRead0(context: ChannelHandlerContext, message: HttpObject) {
         if (message !is FullHttpRequest) return
         safeExecute(context) {

@@ -10,4 +10,5 @@ enum class HttpStatus(val code: Int) {
     NOT_FOUND(404),
     PRECONDITION_FAILED(412),
     FAILED_DEPENDENCY(424),
+    INTERNAL_SERVER_ERROR(500),
 }

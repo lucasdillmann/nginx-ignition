@@ -14,7 +14,7 @@ import java.security.SecureRandom
 import java.time.Instant
 import java.util.UUID
 
-class RbacJwtFacade(
+internal class RbacJwtFacade(
     configurationProvider: ConfigurationProvider,
     private val getUserStatusCommand: GetUserStatusCommand,
     private val getUserCommand: GetUserCommand,
