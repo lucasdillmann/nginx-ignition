@@ -1,12 +1,8 @@
-ktor:
-  application:
-    id: nginx-ignition
-    modules:
-      - br.com.dillmann.nginxignition.application.ApplicationKt.module
-  deployment:
-    port: 8090
-
 nginx-ignition:
+  server:
+    port: 8090
+    shutdown-delay-seconds: 5
+
   nginx:
     binary-path: nginx
     config-directory: /tmp/nginx-ignition/nginx

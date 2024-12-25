@@ -1,4 +1,4 @@
-package br.com.dillmann.nginxignition.application.provider
+package br.com.dillmann.nginxignition.application.configuration
 
 import br.com.dillmann.nginxignition.core.common.configuration.ConfigurationProvider
 

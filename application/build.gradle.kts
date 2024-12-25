@@ -1,18 +1,20 @@
 val koinVersion: String by project
 val mapStructVersion: String by project
 val logbackVersion: String by project
+val kotlinSerializationVersion: String by project
+val snakeYamlVersion: String by project
+val jwtVersion: String by project
+val apacheTikaVersion: String by project
 
 plugins {
+    application
     kotlin("kapt")
-    id("io.ktor.plugin") version "3.0.1"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 application {
-    mainClass.set("io.ktor.server.netty.EngineMain")
-
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+    mainClass = "br.com.dillmann.nginxignition.application.MainKt"
 }
 
 dependencies {
@@ -25,22 +27,13 @@ dependencies {
     implementation(project(":docker-integration"))
     implementation(project(":frontend"))
     implementation(project(":api"))
-    implementation("io.ktor:ktor-server-core-jvm")
-    implementation("io.ktor:ktor-server-auth-jvm")
-    implementation("io.ktor:ktor-server-auth-jwt-jvm")
-    implementation("io.ktor:ktor-server-host-common-jvm")
-    implementation("io.ktor:ktor-server-caching-headers-jvm")
-    implementation("io.ktor:ktor-server-compression-jvm")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm")
-    implementation("io.ktor:ktor-server-netty-jvm")
-    implementation("io.ktor:ktor-server-config-yaml")
-    implementation("io.ktor:ktor-server-status-pages-jvm")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
-    implementation("io.insert-koin:koin-ktor:$koinVersion")
+    implementation("io.insert-koin:koin-core-jvm:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation("org.mapstruct:mapstruct:$mapStructVersion")
-    kapt("org.mapstruct:mapstruct-processor:$mapStructVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinSerializationVersion")
+    implementation("org.yaml:snakeyaml:$snakeYamlVersion")
+    implementation("com.auth0:java-jwt:$jwtVersion")
+    implementation("org.apache.tika:tika-core:$apacheTikaVersion")
 }
 
 tasks {

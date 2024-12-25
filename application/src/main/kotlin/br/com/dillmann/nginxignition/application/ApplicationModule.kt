@@ -1,20 +1,19 @@
 package br.com.dillmann.nginxignition.application
 
-import br.com.dillmann.nginxignition.application.exception.ConsistencyExceptionHandler
-import br.com.dillmann.nginxignition.application.provider.CompositeConfigurationProvider
-import br.com.dillmann.nginxignition.application.rbac.RbacJwtFacade
-import br.com.dillmann.nginxignition.application.rbac.RbacJwtAuthorizer
-import br.com.dillmann.nginxignition.core.common.configuration.ConfigurationProvider
-import br.com.dillmann.nginxignition.api.common.authorization.Authorizer
-import org.koin.dsl.bind
+import br.com.dillmann.nginxignition.application.configuration.configurationBeans
+import br.com.dillmann.nginxignition.application.frontend.frontendBeans
+import br.com.dillmann.nginxignition.application.http.httpBeans
+import br.com.dillmann.nginxignition.application.rbac.rbacBeans
+import br.com.dillmann.nginxignition.application.router.routerBeans
 import org.koin.dsl.module
 
 object ApplicationModule {
     fun initialize() =
         module {
-            single { CompositeConfigurationProvider() } bind ConfigurationProvider::class
-            single { RbacJwtAuthorizer(get(), get()) } bind Authorizer::class
-            single { RbacJwtFacade(get(), get(), get()) }
-            single { ConsistencyExceptionHandler() }
+            configurationBeans()
+            frontendBeans()
+            httpBeans()
+            rbacBeans()
+            routerBeans()
         }
 }

@@ -1,17 +1,12 @@
 package br.com.dillmann.nginxignition.application.frontend
 
-import io.ktor.server.application.*
-import io.ktor.server.http.content.*
-import io.ktor.server.routing.*
+import br.com.dillmann.nginxignition.api.common.routing.RouteNode
+import br.com.dillmann.nginxignition.api.common.routing.RouteProvider
+import br.com.dillmann.nginxignition.api.common.routing.basePath
 
-fun Application.frontendRoutes() {
-    routing {
-        staticResources(
-            remotePath = "/",
-            basePackage = "nginx-ignition/frontend",
-            index = "index.html",
-        ) {
-            default("index.html")
+internal class FrontendRoutes(private val handler: FrontendRequestHandler): RouteProvider {
+    override fun apiRoutes(): RouteNode =
+        basePath("/**") {
+            get(handler)
         }
-    }
 }

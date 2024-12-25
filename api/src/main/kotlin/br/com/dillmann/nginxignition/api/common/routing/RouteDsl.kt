@@ -4,9 +4,9 @@ import br.com.dillmann.nginxignition.core.user.User
 import br.com.dillmann.nginxignition.api.common.request.HttpMethod
 import br.com.dillmann.nginxignition.api.common.request.handler.RequestHandler
 
-internal typealias RouteConfigurer = RouteNodeBuilder.() -> Unit
+typealias RouteConfigurer = RouteNodeBuilder.() -> Unit
 
-internal class RouteNodeBuilder(private val parent: CompositeRouteNode) {
+class RouteNodeBuilder(private val parent: CompositeRouteNode) {
     fun get(path: String, handler: RequestHandler) =
         configureHandlerNode(HttpMethod.GET, path, handler)
 
@@ -57,7 +57,7 @@ internal class RouteNodeBuilder(private val parent: CompositeRouteNode) {
     }
 }
 
-internal fun basePath(path: String, customizer: RouteNodeBuilder.() -> Unit): RouteNode {
+fun basePath(path: String, customizer: RouteNodeBuilder.() -> Unit): RouteNode {
     val child = PathPrefixRouteNode(path)
     RouteNodeBuilder(child).customizer()
     return child

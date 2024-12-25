@@ -17,7 +17,7 @@ sonar {
 }
 
 tasks {
-    val ideMode = System.getProperty("idea.active") == "true"
+    val ideMode = System.getProperty("nginx-ignition.dev-mode") == "true"
 
     val eslint = create<NpxTask>("eslint") {
         dependsOn(npmSetup, npmInstall)

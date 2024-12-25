@@ -1,5 +1,5 @@
 val acme4jVersion: String by project
-val kotlinxSerializationJsonVersion: String by project
+val kotlinSerializationVersion: String by project
 val awsSdkVersion: String by project
 val azureSdkDnsVersion: String by project
 val azureSdkIdentityVersion: String by project
@@ -15,7 +15,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":certificate-commons"))
     implementation("org.shredzone.acme4j:acme4j-client:$acme4jVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJsonVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
     implementation("software.amazon.awssdk:route53:$awsSdkVersion")
     implementation("com.squareup.okhttp3:okhttp:$okHttpVersion")
     implementation("com.google.cloud:google-cloud-dns:$googleCloudSdkVersion")
