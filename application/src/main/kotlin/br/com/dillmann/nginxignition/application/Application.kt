@@ -11,18 +11,16 @@ import br.com.dillmann.nginxignition.database.DatabaseModule
 import br.com.dillmann.nginxignition.integration.docker.DockerIntegrationModule
 import br.com.dillmann.nginxignition.integration.truenas.TrueNasIntegrationModule
 import kotlinx.coroutines.runBlocking
-import org.koin.core.Koin
-import org.koin.core.KoinApplication
+import org.koin.core.context.stopKoin
 import org.koin.core.logger.Level
+import org.koin.mp.KoinPlatform.getKoin
+import org.koin.mp.KoinPlatform.startKoin
 
 internal class Application {
     companion object {
         private val LOGGER = logger<Application>()
-        lateinit var koin: Koin
-            private set
     }
 
-    private lateinit var koinContainer: KoinApplication
 
     suspend fun boot() {
         val startTime = System.currentTimeMillis()
@@ -32,22 +30,8 @@ internal class Application {
            runBlocking { stop() }
         })
 
-        startKoin()
-        koin.get<LifecycleManager>().fireStartupEvent()
-
-        val timeTook = System.currentTimeMillis() - startTime
-        LOGGER.info("Application initialized (took ${timeTook}ms)")
-    }
-
-    private suspend fun stop() {
-        koin.get<LifecycleManager>().fireShutdownEvent()
-        koinContainer.close()
-    }
-
-    private fun startKoin() {
-        koinContainer = KoinApplication
-            .init()
-            .modules(
+        startKoin(
+            listOf(
                 CoreModule.initialize(),
                 DatabaseModule.initialize(),
                 AcmeCertificateModule.initialize(),
@@ -57,9 +41,17 @@ internal class Application {
                 DockerIntegrationModule.initialize(),
                 ApiModule.initialize(),
                 ApplicationModule.initialize(),
-            )
-            .printLogger(level = Level.ERROR)
+            ),
+            Level.ERROR,
+        )
+        getKoin().get<LifecycleManager>().fireStartupEvent()
 
-        koin = koinContainer.koin
+        val timeTook = System.currentTimeMillis() - startTime
+        LOGGER.info("Application initialized (took ${timeTook}ms)")
+    }
+
+    private suspend fun stop() {
+        getKoin().get<LifecycleManager>().fireShutdownEvent()
+        stopKoin()
     }
 }
