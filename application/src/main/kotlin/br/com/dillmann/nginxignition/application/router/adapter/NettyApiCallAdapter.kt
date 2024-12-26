@@ -95,10 +95,6 @@ internal data class NettyApiCallAdapter(
         if (!keepAlive) {
             future.addListener(ChannelFutureListener.CLOSE)
         }
-
-        future.addListener {
-            buffer?.release()
-        }
     }
 
     private suspend fun invokeInterceptors(response: FullHttpResponse): FullHttpResponse {
