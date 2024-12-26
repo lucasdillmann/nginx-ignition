@@ -3,7 +3,7 @@ package br.com.dillmann.nginxignition.application.router.interceptor
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
 import br.com.dillmann.nginxignition.api.common.request.handler.RequestHandler
-import br.com.dillmann.nginxignition.application.lifecycle.ApplicationLifecycle
+import br.com.dillmann.nginxignition.application.Application
 import br.com.dillmann.nginxignition.application.rbac.RbacJwtFacade
 import br.com.dillmann.nginxignition.application.router.adapter.NettyApiCallAdapter
 import br.com.dillmann.nginxignition.core.user.User
@@ -13,8 +13,8 @@ internal class RoleRequiredInterceptor(
     private val role: User.Role,
     private val delegate: RequestHandler,
 ): RequestHandler {
-    private val authorizer = ApplicationLifecycle.koin.get<RbacJwtFacade>()
-    private val getUserCommand = ApplicationLifecycle.koin.get<GetUserCommand>()
+    private val authorizer = Application.koin.get<RbacJwtFacade>()
+    private val getUserCommand = Application.koin.get<GetUserCommand>()
 
     override suspend fun handle(call: ApiCall) {
         val subject = call.principal() ?: authorizer.checkCredentials(call)

@@ -1,6 +1,5 @@
 package br.com.dillmann.nginxignition.application
 
-import br.com.dillmann.nginxignition.application.lifecycle.ApplicationLifecycle
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import kotlin.system.exitProcess
@@ -14,6 +13,6 @@ fun main() {
     }
 
     runBlocking {
-        ApplicationLifecycle().start()
+        Application().boot()
     }
 }
