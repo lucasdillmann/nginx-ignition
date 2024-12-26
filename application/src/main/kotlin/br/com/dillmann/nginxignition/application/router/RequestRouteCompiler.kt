@@ -51,7 +51,7 @@ internal class RequestRouteCompiler(private val routeProviders: List<RouteProvid
     private fun String.toRoutePattern(): Pattern {
         val suffix = if (endsWith("/**")) "" else "\$"
         val pattern = replace("{", "(?<")
-            .replace("}", ">[a-zA-Z0-9-_]+)")
+            .replace("}", ">[^/]+)")
             .removeSuffix("**")
         return Pattern.compile("^$pattern$suffix")
     }

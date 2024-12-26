@@ -21,7 +21,6 @@ internal class Application {
         private val LOGGER = logger<Application>()
     }
 
-
     suspend fun boot() {
         val startTime = System.currentTimeMillis()
         LOGGER.info("Welcome to nginx ignition")

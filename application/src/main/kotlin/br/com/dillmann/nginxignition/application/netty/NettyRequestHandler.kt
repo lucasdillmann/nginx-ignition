@@ -6,9 +6,7 @@ import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.codec.http.*
 import kotlinx.coroutines.*
 
-internal class NettyRequestHandler(
-    private val router: RequestRouter,
-): SimpleChannelInboundHandler<HttpObject>() {
+internal class NettyRequestHandler(private val router: RequestRouter): SimpleChannelInboundHandler<HttpObject>() {
     override fun channelRead0(context: ChannelHandlerContext, message: HttpObject) {
         if (message !is FullHttpRequest) return
         safeExecute(context) {
@@ -36,6 +34,5 @@ internal class NettyRequestHandler(
                 router.route(context, ex)
             }
         }
-
     }
 }
