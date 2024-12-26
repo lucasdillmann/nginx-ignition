@@ -5,6 +5,7 @@ val kotlinSerializationVersion: String by project
 val nettyVersion: String by project
 val snakeYamlVersion: String by project
 val jwtVersion: String by project
+val apacheTikaVersion: String by project
 
 plugins {
     application
@@ -34,6 +35,7 @@ dependencies {
     implementation("io.netty:netty-all:$nettyVersion")
     implementation("org.yaml:snakeyaml:$snakeYamlVersion")
     implementation("com.auth0:java-jwt:$jwtVersion")
+    implementation("org.apache.tika:tika-core:$apacheTikaVersion")
 }
 
 tasks {

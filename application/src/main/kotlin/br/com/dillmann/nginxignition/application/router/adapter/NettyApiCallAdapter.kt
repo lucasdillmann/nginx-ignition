@@ -33,8 +33,8 @@ internal data class NettyApiCallAdapter(
         ) as T
 
     override suspend fun <T : Any> respond(status: HttpStatus, payload: T, clazz: KClass<out T>, type: KType) {
-        val json = Json.encodeToString(serializer(type), payload)
-        sendResponse(status, json)
+        val json = Json.encodeToString(serializer(type), payload).encodeToByteArray()
+        sendResponse(status, emptyMap(), json)
     }
 
     override suspend fun respond(status: HttpStatus) {
@@ -42,7 +42,7 @@ internal data class NettyApiCallAdapter(
     }
 
     override suspend fun headers(): Map<String, List<String>> =
-        request.headers().groupBy { it.key }.mapValues { pair -> pair.value.map { it.value } }
+        request.headers().groupBy { it.key.lowercase() }.mapValues { pair -> pair.value.map { it.value } }
 
     override suspend fun queryParams(): Map<String, String> =
         QueryStringDecoder(request.uri()).parameters().mapValues { it.value.first() }
@@ -53,27 +53,40 @@ internal data class NettyApiCallAdapter(
     override suspend fun principal(): Subject? =
         principal
 
+    override suspend fun uri(): String =
+        request.uri().split("?").first()
+
+    override suspend fun respondRaw(status: HttpStatus, headers: Map<String, String>, payload: ByteArray?) {
+        sendResponse(status, headers, payload)
+    }
+
     private suspend fun sendResponse(
         status: HttpStatus,
-        payload: String? = null,
+        headers: Map<String, String> = emptyMap(),
+        payload: ByteArray? = null,
     ) {
         val keepAlive = HttpUtil.isKeepAlive(request)
         val response = DefaultFullHttpResponse(
             request.protocolVersion(),
             HttpResponseStatus(status.code, status.name),
-            payload?.encodeToByteArray()?.let(Unpooled::wrappedBuffer) ?: Unpooled.EMPTY_BUFFER,
+            payload?.let(Unpooled::wrappedBuffer) ?: Unpooled.EMPTY_BUFFER,
         )
-        val headers = response
-            .headers()
-            .add(CONTENT_TYPE, APPLICATION_JSON)
-            .addInt(CONTENT_LENGTH, response.content().readableBytes())
+
+        val responseHeaders = response.headers()
+        if (headers.isNotEmpty()) {
+            headers.forEach { responseHeaders.add(it.key, it.value) }
+        } else {
+            responseHeaders
+                .add(CONTENT_TYPE, APPLICATION_JSON)
+                .addInt(CONTENT_LENGTH, response.content().readableBytes())
+        }
 
         if (keepAlive) {
             if (!request.protocolVersion().isKeepAliveDefault) {
-                headers.add(CONNECTION, KEEP_ALIVE)
+                responseHeaders.add(CONNECTION, KEEP_ALIVE)
             }
         } else {
-            headers.add(CONNECTION, CLOSE)
+            responseHeaders.add(CONNECTION, CLOSE)
         }
 
         val interceptedResponse = invokeInterceptors(response)

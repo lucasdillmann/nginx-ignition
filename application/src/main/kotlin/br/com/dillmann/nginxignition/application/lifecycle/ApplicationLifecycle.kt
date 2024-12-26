@@ -71,11 +71,20 @@ internal class ApplicationLifecycle {
         koin.getAll<StartupCommand>()
             .sortedBy { it.priority }
             .forEach {
-                if (it.async)
-                    coroutineScope { async { it.execute() } }
-                else
-                    it.execute()
+                if (it.async) it.executeAsync()
+                else it.execute()
             }
+    }
+
+    private suspend fun StartupCommand.executeAsync() {
+        val result = coroutineScope {
+            async { execute() }
+        }
+        
+        result.invokeOnCompletion { exception ->
+            if (exception != null)
+                LOGGER.warn("Startup command failed", exception)
+        }
     }
 
     private suspend fun fireShutdownEvents() {

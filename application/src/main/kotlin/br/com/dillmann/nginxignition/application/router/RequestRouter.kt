@@ -23,10 +23,11 @@ internal class RequestRouter(
 
     suspend fun route(context: ChannelHandlerContext, request: FullHttpRequest) {
         try {
+            val basePath = request.uri().split("?").first()
             for ((method, pattern, handler) in routes) {
                 if (method != request.method()) continue
 
-                val matcher = pattern.matcher(request.uri())
+                val matcher = pattern.matcher(basePath)
                 if (!matcher.find()) continue
 
                 val pathVariables = matcher
@@ -39,7 +40,7 @@ internal class RequestRouter(
                 return
             }
 
-            sendResponse(context, HttpResponseStatus.NOT_FOUND)
+            sendResponse(context, HttpResponseStatus.NOT_FOUND, request.protocolVersion())
         } catch (ex: Throwable) {
             val call = NettyApiCallAdapter(context, request, interceptors)
             exceptionHandler.handle(call, ex)
@@ -51,8 +52,12 @@ internal class RequestRouter(
         sendResponse(context, HttpResponseStatus.INTERNAL_SERVER_ERROR)
     }
 
-    private fun sendResponse(context: ChannelHandlerContext, status: HttpResponseStatus) {
-        val response = DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status)
+    private fun sendResponse(
+        context: ChannelHandlerContext,
+        status: HttpResponseStatus,
+        version: HttpVersion = HttpVersion.HTTP_1_1,
+    ) {
+        val response = DefaultFullHttpResponse(version, status)
         context.write(response).addListener(ChannelFutureListener.CLOSE)
     }
 }
