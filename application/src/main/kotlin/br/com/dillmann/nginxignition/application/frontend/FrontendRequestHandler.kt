@@ -12,6 +12,7 @@ internal class FrontendRequestHandler: RequestHandler {
         private const val INDEX_FILE_PATH = "/index.html"
         private val INDEX_FILE = FrontendFileLoader.load(INDEX_FILE_PATH)!!
         private val BASE_PATH = INDEX_FILE.path.removeSuffix(INDEX_FILE_PATH)
+        private val CONTENT_TYPE_CACHE = mutableMapOf<String, String>()
     }
 
     override suspend fun handle(call: ApiCall) {
@@ -22,7 +23,7 @@ internal class FrontendRequestHandler: RequestHandler {
         }
 
         val contents = file.readBytes()
-        val contentType = Tika().detect(file)
+        val contentType = CONTENT_TYPE_CACHE.getOrPut(file.path) { Tika().detect(file) }
         val headers = mapOf(
             "content-type" to contentType,
             "content-length" to contents.size.toString(),

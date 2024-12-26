@@ -66,10 +66,11 @@ internal data class NettyApiCallAdapter(
         payload: ByteArray? = null,
     ) {
         val keepAlive = HttpUtil.isKeepAlive(request)
+        val buffer = payload?.let(Unpooled::wrappedBuffer)
         val response = DefaultFullHttpResponse(
             request.protocolVersion(),
             HttpResponseStatus(status.code, status.name),
-            payload?.let(Unpooled::wrappedBuffer) ?: Unpooled.EMPTY_BUFFER,
+            buffer ?: Unpooled.EMPTY_BUFFER,
         )
 
         val responseHeaders = response.headers()
@@ -93,6 +94,10 @@ internal data class NettyApiCallAdapter(
         val future = context.write(interceptedResponse)
         if (!keepAlive) {
             future.addListener(ChannelFutureListener.CLOSE)
+        }
+
+        future.addListener {
+            buffer?.release()
         }
     }
 
