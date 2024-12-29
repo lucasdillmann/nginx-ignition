@@ -6,8 +6,8 @@ on the UI isn't clear enough, the first step is to check the application logs an
 Such logs are available in the Docker's container logs (stdout of the container). Please check the 
 [Docker's documentation](https://docs.docker.com/engine/logging/) for more details on how to view them.
 
-Beyond that, this document also has some common troubleshooting scenarios below. If both logs and they don't fix your 
-problem, please raise an issue on the project's GitHub repository.
+Beyond that, this document also has some common troubleshooting scenarios below. If both logs and steps below don't 
+fix your problem, please raise an issue on the project's GitHub repository.
 
 ## Password reset
 
@@ -28,6 +28,6 @@ password in the logs like the example below.
 [2024-12-29 14:16:43.128] INFO: Password reset completed successfully for the user admin. New password: 7da75d54
 ```
 
-Please note that application will not finish the startup/boot process with the environment variable above set, it will 
-only reset the password and then shut down. If you run the application multiple times with the environment variable set,
-the password will be changed every time the application executes.
+Please note that nginx ignition will not finish the startup/boot process with the environment variable above set, it 
+will only reset the password and then shut down. If you run the application multiple times with the environment 
+variable set, the password will be changed every time the application executes.
