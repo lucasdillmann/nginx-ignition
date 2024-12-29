@@ -3,6 +3,8 @@ package br.com.dillmann.nginxignition.application.frontend
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
 import br.com.dillmann.nginxignition.api.common.request.handler.RequestHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.apache.tika.Tika
 import java.net.URL
 import java.net.URLDecoder
@@ -22,14 +24,16 @@ internal class FrontendRequestHandler: RequestHandler {
             return
         }
 
-        val contents = file.readBytes()
-        val contentType = CONTENT_TYPE_CACHE.getOrPut(file.path) { Tika().detect(file) }
-        val headers = mapOf(
-            "content-type" to contentType,
-            "content-length" to contents.size.toString(),
-        )
+        withContext(Dispatchers.IO) {
+            val contents = file.openStream()
+            val contentType = CONTENT_TYPE_CACHE.getOrPut(file.path) { Tika().detect(file) }
+            val headers = mapOf(
+                "content-type" to contentType,
+                "content-length" to contents.available().toString(),
+            )
 
-        call.respondRaw(HttpStatus.OK, headers, contents)
+            call.respondRaw(HttpStatus.OK, headers, contents, contents.available().toLong())
+        }
     }
 
     private fun resolveFile(uri: String): URL? {

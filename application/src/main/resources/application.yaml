@@ -1,6 +1,7 @@
 nginx-ignition:
   server:
     port: 8090
+    shutdown-delay-seconds: 5
 
   nginx:
     binary-path: nginx

@@ -5,12 +5,11 @@ import br.com.dillmann.nginxignition.api.common.request.handler.RequestHandler
 import br.com.dillmann.nginxignition.api.common.routing.*
 import br.com.dillmann.nginxignition.application.router.interceptor.AuthenticationRequiredInterceptor
 import br.com.dillmann.nginxignition.application.router.interceptor.RoleRequiredInterceptor
-import io.netty.handler.codec.http.HttpMethod
 import java.util.regex.Pattern
 
 internal class RequestRouteCompiler(private val routeProviders: List<RouteProvider>) {
     data class CompiledRoute(
-        val method: HttpMethod,
+        val method: String,
         val pattern: Pattern,
         val handler: RequestHandler,
     )
@@ -29,7 +28,7 @@ internal class RequestRouteCompiler(private val routeProviders: List<RouteProvid
                 CompiledRoute(
                     pattern = it.path.toRoutePattern(),
                     handler = it.handler,
-                    method = HttpMethod.valueOf(it.method.name),
+                    method = it.method.name,
                 )
             }
 

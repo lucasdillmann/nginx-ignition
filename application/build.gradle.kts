@@ -2,7 +2,6 @@ val koinVersion: String by project
 val mapStructVersion: String by project
 val logbackVersion: String by project
 val kotlinSerializationVersion: String by project
-val nettyVersion: String by project
 val snakeYamlVersion: String by project
 val jwtVersion: String by project
 val apacheTikaVersion: String by project
@@ -32,7 +31,6 @@ dependencies {
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinSerializationVersion")
-    implementation("io.netty:netty-all:$nettyVersion")
     implementation("org.yaml:snakeyaml:$snakeYamlVersion")
     implementation("com.auth0:java-jwt:$jwtVersion")
     implementation("org.apache.tika:tika-core:$apacheTikaVersion")

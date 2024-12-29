@@ -4,7 +4,7 @@ import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
 import br.com.dillmann.nginxignition.api.common.request.handler.RequestHandler
 import br.com.dillmann.nginxignition.application.rbac.RbacJwtFacade
-import br.com.dillmann.nginxignition.application.router.adapter.NettyApiCallAdapter
+import br.com.dillmann.nginxignition.application.router.adapter.HttpApiCallAdapter
 import br.com.dillmann.nginxignition.core.user.User
 import br.com.dillmann.nginxignition.core.user.command.GetUserCommand
 import org.koin.mp.KoinPlatform.getKoin
@@ -30,7 +30,7 @@ internal class RoleRequiredInterceptor(
             return
         }
 
-        val updatedCall = (call as NettyApiCallAdapter).copy(principal = subject)
+        val updatedCall = (call as HttpApiCallAdapter).copy(principal = subject)
         delegate.handle(updatedCall)
     }
 }
