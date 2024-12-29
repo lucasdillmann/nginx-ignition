@@ -5,6 +5,7 @@ import br.com.dillmann.nginxignition.core.common.configuration.ConfigurationProv
 import br.com.dillmann.nginxignition.core.nginx.exception.NginxCommandException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 
 internal class NginxProcessManager(configurationProvider: ConfigurationProvider) {
     private val configurationProvider = configurationProvider.withPrefix("nginx-ignition.nginx")
@@ -29,6 +30,26 @@ internal class NginxProcessManager(configurationProvider: ConfigurationProvider)
         runCommand()
         logger.info("nginx started")
     }
+
+    suspend fun currentPid(): Long? {
+        val folder = configurationProvider.get("config-directory")
+
+        return withContext(Dispatchers.IO) {
+            val pidFile = File(folder, "nginx.pid")
+            if (!pidFile.exists() || !pidFile.isFile)
+                return@withContext null
+
+            pidFile.readLines().first().toLong().takeIf { isPidAlive(it) }
+        }
+    }
+
+    private suspend fun isPidAlive(pid: Long): Boolean =
+        withContext(Dispatchers.IO) {
+            ProcessBuilder()
+                .command("kill", "-0", pid.toString())
+                .start()
+                .waitFor() == 0
+        }
 
     private suspend fun runCommand(vararg extraArguments: String) {
         val binaryPath = configurationProvider.get("binary-path")

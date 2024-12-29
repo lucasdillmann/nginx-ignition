@@ -1,5 +1,6 @@
 package br.com.dillmann.nginxignition.core.nginx
 
+import br.com.dillmann.nginxignition.core.common.log.logger
 import br.com.dillmann.nginxignition.core.nginx.command.*
 import br.com.dillmann.nginxignition.core.nginx.configuration.NginxConfigurationFacade
 import br.com.dillmann.nginxignition.core.nginx.log.NginxLogReader
@@ -15,6 +16,10 @@ internal class NginxService(
 ): ReloadNginxCommand, StartNginxCommand, StopNginxCommand, GetStatusNginxCommand,
    GetNginxHostLogsCommand, GetNginxMainLogsCommand {
 
+   private companion object {
+       private val LOGGER = logger<NginxService>()
+   }
+
     override suspend fun reload() {
         semaphore.changeState(NginxSemaphore.State.RUNNING) {
             nginxConfiguration.replaceConfigurationFiles()
@@ -25,6 +30,13 @@ internal class NginxService(
     override suspend fun start() {
         if (semaphore.currentState == NginxSemaphore.State.RUNNING)
             return
+
+        val pid = processManager.currentPid()
+        if (pid != null) {
+            LOGGER.warn("nginx seems to be already running with PID $pid, trying to reload it instead")
+            reload()
+            return
+        }
 
         semaphore.changeState(NginxSemaphore.State.RUNNING) {
             nginxConfiguration.replaceConfigurationFiles()

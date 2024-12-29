@@ -27,6 +27,7 @@ dependencies {
     implementation(project(":docker-integration"))
     implementation(project(":frontend"))
     implementation(project(":api"))
+
     implementation("io.insert-koin:koin-core-jvm:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
@@ -39,5 +40,9 @@ dependencies {
 tasks {
     shadowJar {
         mergeServiceFiles()
+    }
+
+    listOf(shadowDistTar, shadowDistZip, distTar, distZip, startScripts).forEach {
+        it.get().enabled = false
     }
 }

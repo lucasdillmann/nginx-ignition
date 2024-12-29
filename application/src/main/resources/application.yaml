@@ -12,7 +12,7 @@ nginx-ignition:
     username: root
     password: root
     connection-pool:
-      maximum-size: 10
+      maximum-size: 5
       minimum-size: 1
 
   security:
