@@ -4,7 +4,6 @@ import br.com.dillmann.nginxignition.api.common.request.handler.RequestHandler
 import br.com.dillmann.nginxignition.api.common.request.ApiCall
 import br.com.dillmann.nginxignition.api.common.request.HttpStatus
 import br.com.dillmann.nginxignition.api.common.request.payload
-import br.com.dillmann.nginxignition.api.common.request.respond
 import br.com.dillmann.nginxignition.api.user.model.UserPasswordUpdateRequest
 import br.com.dillmann.nginxignition.core.user.command.UpdateUserPasswordCommand
 
