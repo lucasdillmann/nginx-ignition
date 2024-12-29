@@ -18,6 +18,7 @@ export interface HostFormStaticResponse {
 
 export interface HostFormRoute {
     priority: number
+    enabled: boolean
     type: HostRouteType
     sourcePath: string
     settings: HostRouteSettings

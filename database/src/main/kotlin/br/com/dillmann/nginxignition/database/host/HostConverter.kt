@@ -29,6 +29,7 @@ internal class HostConverter {
         with(HostRouteTable) {
             scope[id] = route.id
             scope[priority] = route.priority
+            scope[enabled] = route.enabled
             scope[hostId] = parentId
             scope[type] = route.type.name
             scope[sourcePath] = route.sourcePath
@@ -105,6 +106,7 @@ internal class HostConverter {
         return Host.Route(
             id = route[HostRouteTable.id],
             priority = route[HostRouteTable.priority],
+            enabled = route[HostRouteTable.enabled],
             type = Host.RouteType.valueOf(route[HostRouteTable.type]),
             sourcePath = route[HostRouteTable.sourcePath],
             targetUri = route[HostRouteTable.targetUri],

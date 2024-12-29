@@ -16,6 +16,7 @@ const HostFormValuesDefaults: HostFormValues = {
     routes: [
         {
             priority: 0,
+            enabled: true,
             type: HostRouteType.PROXY,
             sourcePath: "/",
             targetUri: "",

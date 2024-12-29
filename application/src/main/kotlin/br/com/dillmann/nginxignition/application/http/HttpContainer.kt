@@ -20,14 +20,14 @@ internal class HttpContainer(
         server = HttpServer.create(InetSocketAddress(port), 0, "/", requestHandler)
         server.start()
 
-        LOGGER.info("Server started (listening on $port)")
+        LOGGER.info("HTTP container started (listening for requests on port $port)")
     }
 
     fun stop() {
-        if (::server.isInitialized) error("Server is not running")
+        if (!::server.isInitialized) error("Server is not running")
 
         val delaySeconds = configuration.get("nginx-ignition.server.shutdown-delay-seconds").toInt()
-        LOGGER.info("Stopping HTTP container (waiting for up to $delaySeconds seconds for the requests to finish)")
+        LOGGER.info("Stopping HTTP container (waiting up to $delaySeconds seconds for the inflight requests to finish)")
         server.stop(delaySeconds)
     }
 }

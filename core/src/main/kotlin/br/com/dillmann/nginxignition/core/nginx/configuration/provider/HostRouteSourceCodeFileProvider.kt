@@ -10,7 +10,8 @@ internal class HostRouteSourceCodeFileProvider: NginxConfigurationFileProvider {
     private fun buildSourceCodeFiles(host: Host): List<NginxConfigurationFileProvider.Output> =
         host.routes
             .filter {
-                it.type == Host.RouteType.SOURCE_CODE &&
+                it.enabled &&
+                    it.type == Host.RouteType.SOURCE_CODE &&
                     it.sourceCode?.language == Host.SourceCodeLanguage.JAVASCRIPT
             }
             .map {

@@ -16,6 +16,7 @@ data class Host(
     data class Route (
         val id: UUID,
         val priority: Int,
+        val enabled: Boolean,
         val type: RouteType,
         val sourcePath: String,
         val targetUri: String?,

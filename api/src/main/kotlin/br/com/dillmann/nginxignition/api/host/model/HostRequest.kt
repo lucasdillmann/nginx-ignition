@@ -18,6 +18,7 @@ internal data class HostRequest(
     @Serializable
     data class Route (
         val priority: Int,
+        val enabled: Boolean,
         val type: Host.RouteType,
         val sourcePath: String,
         val settings: RouteSettings,

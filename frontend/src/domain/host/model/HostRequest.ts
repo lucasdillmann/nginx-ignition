@@ -50,6 +50,7 @@ export interface HostRouteSourceCode {
 
 export interface HostRoute {
     priority: number
+    enabled: boolean
     type: HostRouteType
     sourcePath: string
     settings: HostRouteSettings

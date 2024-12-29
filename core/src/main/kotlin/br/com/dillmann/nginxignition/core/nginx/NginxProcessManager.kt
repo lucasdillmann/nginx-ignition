@@ -11,8 +11,8 @@ internal class NginxProcessManager(configurationProvider: ConfigurationProvider)
     private val logger = logger<NginxProcessManager>()
 
     suspend fun sendReloadSignal() {
-        logger.info("Reloading nginx configuration")
         runCommand( "-s", "reload")
+        logger.info("nginx reloaded")
     }
 
     suspend fun sendReopenSignal() {
@@ -21,13 +21,13 @@ internal class NginxProcessManager(configurationProvider: ConfigurationProvider)
     }
 
     suspend fun sendStopSignal() {
-        logger.info("Stopping nginx")
         runCommand( "-s", "stop")
+        logger.info("nginx stopped")
     }
 
     suspend fun start() {
-        logger.info("Starting nginx")
         runCommand()
+        logger.info("nginx started")
     }
 
     private suspend fun runCommand(vararg extraArguments: String) {

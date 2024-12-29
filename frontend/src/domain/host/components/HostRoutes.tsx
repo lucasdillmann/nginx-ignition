@@ -1,6 +1,6 @@
 import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
-import { Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Select } from "antd"
+import { Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Select, Switch } from "antd"
 import If from "../../../core/components/flowcontrol/If"
 import { ArrowDownOutlined, ArrowUpOutlined, CloseOutlined, PlusOutlined, SettingOutlined } from "@ant-design/icons"
 import { HostFormRoute } from "../model/HostFormValues"
@@ -390,6 +390,10 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     style={index === routes.length - 1 ? DISABLED_ACTION_ICON_STYLE : ENABLED_ACTION_ICON_STYLE}
                 />
                 <SettingOutlined onClick={() => this.openRouteSettingsModal(index)} style={ENABLED_ACTION_ICON_STYLE} />
+
+                <Form.Item style={{ ...ENABLED_ACTION_ICON_STYLE, marginTop: 28 }} name={[name, "enabled"]} required>
+                    <Switch size="small" />
+                </Form.Item>
 
                 <If condition={routes.length > 1}>
                     <CloseOutlined onClick={() => this.removeRoute(index)} style={ACTION_ICON_STYLE} />

@@ -14,8 +14,12 @@ internal class HostConfigurationFileProvider(
         hosts.filter { it.enabled }.map { buildHost(basePath, it) }
 
     private suspend fun buildHost(basePath: String, host: Host): NginxConfigurationFileProvider.Output {
-        val routes =
-            host.routes.sortedBy { it.priority }.map { buildRoute(host, it, basePath) }.joinToString("\n")
+        val routes = host
+            .routes
+            .filter { it.enabled }
+            .sortedBy { it.priority }
+            .map { buildRoute(host, it, basePath) }
+            .joinToString("\n")
         val serverNames =
             if (host.defaultServer) "server_name _;"
             else host.domainNames?.joinToString("\n") { "server_name $it;" } ?: ""

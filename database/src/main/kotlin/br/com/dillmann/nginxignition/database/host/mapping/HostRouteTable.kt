@@ -7,6 +7,7 @@ internal object HostRouteTable: Table("host_route") {
     val id = uuid("id")
     val hostId = uuid("host_id") references HostTable.id
     val priority = integer("priority")
+    val enabled = bool("enabled")
     val type = varchar("type", 64)
     val sourcePath = varchar("source_path", 512)
     val targetUri = varchar("target_uri", 512).nullable()
