@@ -41,8 +41,13 @@ configuration section below to use PostgreSQL instead.
 
 ## Configuration
 
-Check [this documentation file](docs/configuration-properties.md) for more details about the available 
-configuration properties and some common use-case examples.
+Check [this documentation file](docs/configuration-properties.md) for more details about the available configuration 
+properties and some common use-case examples.
+
+## Troubleshooting
+
+Check [this documentation file](docs/troubleshooting.md) for more details about how to troubleshoot the application
+and some common recovery operations, like resetting your password.
 
 ## Contributing and feedback
 

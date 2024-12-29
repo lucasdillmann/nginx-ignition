@@ -16,7 +16,7 @@ internal class PutIntegrationConfigurationHandler(
         withIntegrationExceptionHandler(call) {
             val payload = call.payload<IntegrationConfigurationRequest>()
             configureCommand.configureIntegration(id, payload.enabled, payload.parameters.toUnwrappedMap())
-            call.respond(HttpStatus.NO_CONTENT, payload)
+            call.respond(HttpStatus.NO_CONTENT)
         }
     }
 }

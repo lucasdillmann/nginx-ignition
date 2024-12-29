@@ -24,7 +24,7 @@ internal class HttpContainer(
     }
 
     fun stop() {
-        if (!::server.isInitialized) error("Server is not running")
+        if (!::server.isInitialized) return
 
         val delaySeconds = configuration.get("nginx-ignition.server.shutdown-delay-seconds").toInt()
         LOGGER.info("Stopping HTTP container (waiting up to $delaySeconds seconds for the inflight requests to finish)")

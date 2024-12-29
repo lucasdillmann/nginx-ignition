@@ -15,6 +15,6 @@ internal class UpdateCurrentUserPasswordHandler(
         val payload = call.payload<UserPasswordUpdateRequest>()
         val principal = call.principal()!!
         updatePasswordCommand.updatePassword(principal.userId, payload.currentPassword, payload.newPassword)
-        call.respond(HttpStatus.NO_CONTENT, payload)
+        call.respond(HttpStatus.NO_CONTENT)
     }
 }

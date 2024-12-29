@@ -57,9 +57,17 @@ internal class UserService(
     override suspend fun updatePassword(userId: UUID, currentPassword: String, newPassword: String) {
         val userDetails = repository.findById(userId)!!
         validator.validatePasswordUpdate(userDetails, currentPassword, newPassword)
+        changePassword(userDetails, newPassword)
+    }
 
+    suspend fun resetPassword(username: String, newPassword: String) {
+        val user = repository.findByUsername(username) ?: error("No user exists with username $username")
+        changePassword(user, newPassword)
+    }
+
+    private suspend fun changePassword(user: User, newPassword: String) {
         val (passwordHash, passwordSalt) = security.hash(newPassword)
-        val updatedUser = userDetails.copy(passwordHash = passwordHash, passwordSalt = passwordSalt)
+        val updatedUser = user.copy(passwordHash = passwordHash, passwordSalt = passwordSalt)
         repository.save(updatedUser)
     }
 }

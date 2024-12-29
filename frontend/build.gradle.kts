@@ -19,24 +19,24 @@ sonar {
 tasks {
     val ideMode = System.getProperty("nginx-ignition.dev-mode") == "true"
 
-    val eslint = create<NpxTask>("eslint") {
+    val eslint = register<NpxTask>("eslint") {
         dependsOn(npmSetup, npmInstall)
         command = "npx"
         args = listOf("eslint", "--max-warnings", "0", "src")
     }
 
-    val prettierCheck = create<NpxTask>("prettierCheck") {
+    val prettierCheck = register<NpxTask>("prettierCheck") {
         dependsOn(npmSetup, npmInstall)
         command = "npx"
         args = listOf("prettier", "--check", "src")
     }
 
-    val npmBuild = create<NpmTask>("npmBuild") {
+    val npmBuild = register<NpmTask>("npmBuild") {
         dependsOn(npmSetup, npmInstall)
         args = listOf("run", "build")
     }
 
-    val npmClean = create<NpmTask>("npmClean") {
+    val npmClean = register<NpmTask>("npmClean") {
         dependsOn(npmSetup)
         args = listOf("run", "clean")
     }
