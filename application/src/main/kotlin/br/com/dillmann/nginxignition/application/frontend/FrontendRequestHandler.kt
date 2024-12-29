@@ -12,9 +12,9 @@ import java.net.URLDecoder
 internal class FrontendRequestHandler: RequestHandler {
     private companion object {
         private const val INDEX_FILE_PATH = "/index.html"
-        private val INDEX_FILE = FrontendFileLoader.load(INDEX_FILE_PATH)!!
-        private val BASE_PATH = INDEX_FILE.path.removeSuffix(INDEX_FILE_PATH)
         private val CONTENT_TYPE_CACHE = mutableMapOf<String, String>()
+        private val INDEX_FILE by lazy { FrontendFileLoader.load(INDEX_FILE_PATH)!! }
+        private val BASE_PATH by lazy { INDEX_FILE.path.removeSuffix(INDEX_FILE_PATH) }
     }
 
     override suspend fun handle(call: ApiCall) {
@@ -32,7 +32,7 @@ internal class FrontendRequestHandler: RequestHandler {
                 "content-length" to contents.available().toString(),
             )
 
-            call.respondRaw(HttpStatus.OK, headers, contents, contents.available().toLong())
+            call.respond(HttpStatus.OK, headers, contents)
         }
     }
 

@@ -32,7 +32,7 @@ internal data class HttpApiCallAdapter(
             exchange.requestBody,
         ) as T
 
-    override suspend fun <T : Any> respond(status: HttpStatus, payload: T, clazz: KClass<out T>, type: KType) {
+    override suspend fun <T : Any> respond(status: HttpStatus, payload: T, type: KType) {
         invokeInterceptors()
 
         val json = Json.encodeToString(serializer(type), payload).byteInputStream()
@@ -49,17 +49,12 @@ internal data class HttpApiCallAdapter(
         exchange.sendResponseHeaders(status.code, -1)
     }
 
-    override suspend fun respondRaw(
-        status: HttpStatus,
-        headers: Map<String, String>,
-        payload: InputStream,
-        payloadSize: Long,
-    ) {
+    override suspend fun respond(status: HttpStatus, headers: Map<String, String>, payload: InputStream) {
         invokeInterceptors()
         headers.forEach { (key, value) -> exchange.responseHeaders[key] = value }
-        exchange.sendResponseHeaders(status.code, payloadSize)
 
         withContext(Dispatchers.IO) {
+            exchange.sendResponseHeaders(status.code, payload.available().toLong())
             IOUtils.copy(payload, exchange.responseBody)
         }
     }

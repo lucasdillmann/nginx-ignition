@@ -7,9 +7,9 @@ import kotlin.reflect.KType
 
 interface ApiCall {
     suspend fun <T: Any> payload(contract: KClass<T>): T
-    suspend fun <T: Any> respond(status: HttpStatus, payload: T, clazz: KClass<out T>, type: KType)
+    suspend fun <T: Any> respond(status: HttpStatus, payload: T, type: KType)
     suspend fun respond(status: HttpStatus)
-    suspend fun respondRaw(status: HttpStatus, headers: Map<String, String>, payload: InputStream, payloadSize: Long)
+    suspend fun respond(status: HttpStatus, headers: Map<String, String>, payload: InputStream)
     suspend fun headers(): Map<String, List<String>>
     suspend fun queryParams(): Map<String, String>
     suspend fun pathVariables(): Map<String, String>
