@@ -63,7 +63,8 @@ internal data class HttpApiCallAdapter(
         exchange.requestHeaders
 
     override suspend fun queryParams(): Map<String, String> {
-        val tokenizer = StringTokenizer(exchange.requestURI.query, "&")
+        val queryString = exchange.requestURI.query ?: return emptyMap()
+        val tokenizer = StringTokenizer(queryString, "&")
         val output = mutableMapOf<String, String>()
 
         withContext(Dispatchers.IO) {

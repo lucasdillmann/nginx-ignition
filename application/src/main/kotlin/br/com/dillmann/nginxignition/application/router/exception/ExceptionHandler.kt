@@ -5,8 +5,13 @@ import br.com.dillmann.nginxignition.api.common.request.HttpStatus
 import br.com.dillmann.nginxignition.api.common.request.respond
 import br.com.dillmann.nginxignition.core.common.validation.ConsistencyException
 import kotlinx.serialization.Serializable
+import org.slf4j.LoggerFactory
 
 internal class ExceptionHandler {
+    private companion object {
+        private val LOGGER = LoggerFactory.getLogger(ExceptionHandler::class.java)
+    }
+
     @Serializable
     private data class Response(
         val message: String,
@@ -22,7 +27,10 @@ internal class ExceptionHandler {
     suspend fun handle(call: ApiCall, ex: Throwable) {
         when (ex) {
             is ConsistencyException -> handle(call, ex)
-            else -> call.respond(HttpStatus.INTERNAL_SERVER_ERROR)
+            else -> {
+                LOGGER.warn("Request failed with an unhandled exception", ex)
+                call.respond(HttpStatus.INTERNAL_SERVER_ERROR)
+            }
         }
     }
 

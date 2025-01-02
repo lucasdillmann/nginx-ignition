@@ -32,7 +32,6 @@ dependencies {
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinSerializationVersion")
-    implementation("org.yaml:snakeyaml:$snakeYamlVersion")
     implementation("com.auth0:java-jwt:$jwtVersion")
     implementation("org.apache.tika:tika-core:$apacheTikaVersion")
 }
