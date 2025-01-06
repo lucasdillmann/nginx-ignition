@@ -1,22 +1,19 @@
-# Binaries for programs and plugins
+# Binaries for programs and plugins and other outputs
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
-
-# Test binary, built with `go test -c`
 *.test
-
-# Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# Dependency directories (remove the comment below to include it)
+# Dependency directories and files
 vendor/
-
-# env file
-.env
+**/go.sum
+**/go.work.sum
 
 # others
+.env
+.env.*
 *.iml
 .idea/
