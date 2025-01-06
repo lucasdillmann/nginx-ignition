@@ -1,12 +1,14 @@
 package access_list
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
-type AccessListOutcome string
+type Outcome string
 
 const (
-	AllowAccessOutcome = AccessListOutcome("ALLOW")
-	DenyAccessOutcome  = AccessListOutcome("DENY")
+	AllowOutcome = Outcome("ALLOW")
+	DenyOutcome  = Outcome("DENY")
 )
 
 type AccessList struct {
@@ -14,7 +16,7 @@ type AccessList struct {
 	Name                        string
 	Realm                       string
 	SatisfyAll                  bool
-	DefaultOutcome              AccessListOutcome
+	DefaultOutcome              Outcome
 	Entries                     []AccessListEntry
 	Credentials                 []AccessListCredentials
 	ForwardAuthenticationHeader bool
@@ -22,7 +24,7 @@ type AccessList struct {
 
 type AccessListEntry struct {
 	Priority      int64
-	Outcome       AccessListOutcome
+	Outcome       Outcome
 	SourceAddress []string
 }
 

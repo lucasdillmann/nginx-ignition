@@ -5,16 +5,16 @@ import (
 	"go.uber.org/dig"
 )
 
-func RegisterAccessListBeans(container *dig.Container) error {
-	return container.Invoke(func(accessListRepository *AccessListRepository, hostRepository *host.HostRepository) {
-		service := &accessListService{
+func InstallBeans(container *dig.Container) error {
+	return container.Invoke(func(accessListRepository *Repository, hostRepository *host.Repository) {
+		serviceInstance := &service{
 			accessListRepository,
 			hostRepository,
 		}
 
-		_ = container.Provide(func() GetAccessListByIdCommand { return service.findById })
-		_ = container.Provide(func() DeleteAccessListByIdCommand { return service.deleteById })
-		_ = container.Provide(func() ListAccessListCommand { return service.list })
-		_ = container.Provide(func() SaveAccessListCommand { return service.save })
+		_ = container.Provide(func() GetByIdCommand { return serviceInstance.findById })
+		_ = container.Provide(func() DeleteById { return serviceInstance.deleteById })
+		_ = container.Provide(func() ListCommand { return serviceInstance.list })
+		_ = container.Provide(func() SaveCommand { return serviceInstance.save })
 	})
 }

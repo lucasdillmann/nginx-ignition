@@ -2,11 +2,16 @@ package core
 
 import (
 	"dillmann.com.br/nginx-ignition/core/access_list"
+	"dillmann.com.br/nginx-ignition/core/user"
 	"go.uber.org/dig"
 )
 
-func RegisterCoreBeans(container *dig.Container) error {
-	if err := access_list.RegisterAccessListBeans(container); err != nil {
+func InstallBeans(container *dig.Container) error {
+	if err := user.InstallBeans(container); err != nil {
+		return err
+	}
+
+	if err := access_list.InstallBeans(container); err != nil {
 		return err
 	}
 

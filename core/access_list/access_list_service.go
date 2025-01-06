@@ -7,22 +7,21 @@ import (
 	"github.com/google/uuid"
 )
 
-type accessListService struct {
-	accessListRepository *AccessListRepository
-	hostRepository       *host.HostRepository
+type service struct {
+	repository     *Repository
+	hostRepository *host.Repository
 }
 
-func (service *accessListService) save(accessList *AccessList) error {
-	err := newValidator().validate(accessList)
-	if err != nil {
+func (s *service) save(accessList *AccessList) error {
+	if err := newValidator().validate(accessList); err != nil {
 		return err
 	}
 
-	return (*service.accessListRepository).Save(accessList)
+	return (*s.repository).Save(accessList)
 }
 
-func (service *accessListService) deleteById(id uuid.UUID) error {
-	inUse, err := (*service.hostRepository).ExistsByAccessListId(id)
+func (s *service) deleteById(id uuid.UUID) error {
+	inUse, err := (*s.hostRepository).ExistsByAccessListId(id)
 	if err != nil {
 		return err
 	}
@@ -31,21 +30,21 @@ func (service *accessListService) deleteById(id uuid.UUID) error {
 		return errors.New("access List is in use by one or more hosts")
 	}
 
-	return (*service.accessListRepository).DeleteById(id)
+	return (*s.repository).DeleteById(id)
 }
 
-func (service *accessListService) findById(id uuid.UUID) (*AccessList, error) {
-	return (*service.accessListRepository).FindById(id)
+func (s *service) findById(id uuid.UUID) (*AccessList, error) {
+	return (*s.repository).FindById(id)
 }
 
-func (service *accessListService) findAll() (*[]AccessList, error) {
-	return (*service.accessListRepository).FindAll()
+func (s *service) findAll() (*[]AccessList, error) {
+	return (*s.repository).FindAll()
 }
 
-func (service *accessListService) list(
+func (s *service) list(
 	pageNumber int64,
 	pageSize int64,
 	searchTerms string,
 ) (*pagination.Page[AccessList], error) {
-	return (*service.accessListRepository).FindPage(pageNumber, pageSize, searchTerms)
+	return (*s.repository).FindPage(pageNumber, pageSize, searchTerms)
 }

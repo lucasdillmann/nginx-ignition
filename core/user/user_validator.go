@@ -1,4 +1,4 @@
-package access_list
+package user
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/core_errors"
@@ -9,7 +9,7 @@ type validator struct {
 	errors []validation.ConsistencyViolation
 }
 
-func (v *validator) validate(_ *AccessList) error {
+func (v *validator) validate(_ *User) error {
 	return core_errors.NotImplemented()
 }
 

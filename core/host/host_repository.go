@@ -2,6 +2,6 @@ package host
 
 import "github.com/google/uuid"
 
-type HostRepository interface {
+type Repository interface {
 	ExistsByAccessListId(id uuid.UUID) (bool, error)
 }

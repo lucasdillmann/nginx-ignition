@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type AccessListRepository interface {
+type Repository interface {
 	FindById(id uuid.UUID) (*AccessList, error)
 	DeleteById(id uuid.UUID) error
 	FindByName(name string) (*AccessList, error)

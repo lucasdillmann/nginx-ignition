@@ -7,16 +7,20 @@ import (
 )
 
 func main() {
-	digContainer := dig.New()
-	installApplicationModules(digContainer)
+	container := dig.New()
+	installAllModulesBeans(container)
 }
 
-func installApplicationModules(container *dig.Container) {
-	if err := database.RegisterDatabaseBeans(container); err != nil {
+func installAllModulesBeans(container *dig.Container) {
+	if err := installBeans(container); err != nil {
 		panic(err)
 	}
 
-	if err := core.RegisterCoreBeans(container); err != nil {
+	if err := database.InstallBeans(container); err != nil {
+		panic(err)
+	}
+
+	if err := core.InstallBeans(container); err != nil {
 		panic(err)
 	}
 }
