@@ -1,0 +1,13 @@
+go 1.23
+
+use (
+	api
+	application
+	certificate/custom
+	certificate/letsencrypt
+	certificate/self-signed
+	core
+	database
+	integration/docker
+	integration/truenas
+)
