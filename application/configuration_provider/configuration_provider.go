@@ -2,7 +2,9 @@ package configuration_provider
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/core_errors"
+	"errors"
+	"os"
+	"strings"
 )
 
 type provider struct {
@@ -13,8 +15,34 @@ func New() configuration.Configuration {
 	return &provider{}
 }
 
-func (p *provider) Get(_ string) (string, error) {
-	return "", core_errors.NotImplemented()
+func (p *provider) Get(key string) (string, error) {
+	var fullKey string
+	if p.prefix != "" {
+		fullKey = p.prefix + "." + key
+	} else {
+		fullKey = key
+	}
+
+	value, exists := os.LookupEnv(fullKey)
+	if exists {
+		return value, nil
+	}
+
+	formattedKey := strings.ReplaceAll(key, ".", "_")
+	formattedKey = strings.ReplaceAll(key, "-", "_")
+	formattedKey = strings.ToUpper(formattedKey)
+
+	value, exists = os.LookupEnv(fullKey)
+	if exists {
+		return value, nil
+	}
+
+	value = defaultValues()[fullKey]
+	if value != "" {
+		return value, nil
+	}
+
+	return "", errors.New("no value found for key " + fullKey)
 }
 
 func (p *provider) WithPrefix(prefix string) configuration.Configuration {

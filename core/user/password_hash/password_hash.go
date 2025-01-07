@@ -3,20 +3,33 @@ package password_hash
 import (
 	"crypto/rand"
 	"crypto/sha512"
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"encoding/base64"
 	"reflect"
 	"slices"
+	"strconv"
 )
 
-const passwordHashIterations = 1024
+type PasswordHash struct {
+	configuration *configuration.Configuration
+}
 
-func Hash(password string) (string, string, error) {
-	salt := make([]byte, 64)
+func New(configuration *configuration.Configuration) *PasswordHash {
+	return &PasswordHash{configuration}
+}
+
+func (h *PasswordHash) Hash(password string) (string, string, error) {
+	saltSize, hashIterations, err := readConfigValues(h.configuration)
+	if err != nil {
+		return "", "", err
+	}
+
+	salt := make([]byte, saltSize)
 	if _, err := rand.Read(salt); err != nil {
 		return "", "", err
 	}
 
-	hashResult, err := hashValue([]byte(password), salt)
+	hashResult, err := h.hashValue([]byte(password), salt, hashIterations)
 	if err != nil {
 		return "", "", err
 	}
@@ -24,13 +37,18 @@ func Hash(password string) (string, string, error) {
 	return base64.StdEncoding.EncodeToString(hashResult), base64.StdEncoding.EncodeToString(salt), nil
 }
 
-func Verify(password, hash, salt string) (bool, error) {
+func (h *PasswordHash) Verify(password, hash, salt string) (bool, error) {
 	saltBytes, err := base64.StdEncoding.DecodeString(salt)
 	if err != nil {
 		return false, err
 	}
 
-	generatedHash, err := hashValue([]byte(password), saltBytes)
+	_, hashIterations, err := readConfigValues(h.configuration)
+	if err != nil {
+		return false, err
+	}
+
+	generatedHash, err := h.hashValue([]byte(password), saltBytes, hashIterations)
 	if err != nil {
 		return false, err
 	}
@@ -43,15 +61,40 @@ func Verify(password, hash, salt string) (bool, error) {
 	return reflect.DeepEqual(generatedHash, hashBytes), nil
 }
 
-func hashValue(password []byte, salt []byte) ([]byte, error) {
+func (h *PasswordHash) hashValue(password []byte, salt []byte, hashIterations int) ([]byte, error) {
 	output := slices.Concat(password, salt)
 	hash := sha512.New()
 
-	for range passwordHashIterations {
+	for range hashIterations {
 		if _, err := hash.Write(output); err != nil {
 			return nil, err
 		}
 	}
 
 	return output, nil
+}
+
+func readConfigValues(configuration *configuration.Configuration) (int, int, error) {
+	prefixedConfiguration := (*configuration).WithPrefix("nginx-ignition.security.user-password-hashing")
+	saltSizeRaw, err := prefixedConfiguration.Get("salt-size")
+	if err != nil {
+		return 0, 0, err
+	}
+
+	iterationsRaw, err := prefixedConfiguration.Get("iterations")
+	if err != nil {
+		return 0, 0, err
+	}
+
+	saltSize, err := strconv.Atoi(saltSizeRaw)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	iterations, err := strconv.Atoi(iterationsRaw)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return saltSize, iterations, nil
 }

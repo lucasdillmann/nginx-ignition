@@ -16,8 +16,8 @@ type validator struct {
 
 func (v *validator) validate(
 	repository *Repository,
-	currentState *User,
 	updatedState *User,
+	currentState *User,
 	request *SaveRequest,
 	currentUserId uuid.UUID,
 ) error {

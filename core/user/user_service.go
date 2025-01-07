@@ -19,6 +19,7 @@ func (s *service) authenticate(_ string, _ string) (*User, error) {
 }
 
 func (s *service) changePassword(id uuid.UUID, currentPassword string, newPassword string) error {
+	hash := password_hash.New(s.configuration)
 	databaseState, err := (*s.repository).FindById(id)
 	if err != nil {
 		return err
@@ -28,7 +29,7 @@ func (s *service) changePassword(id uuid.UUID, currentPassword string, newPasswo
 		return errors.New("no user exists with the provided ID")
 	}
 
-	passwordMatches, err := password_hash.Verify(
+	passwordMatches, err := hash.Verify(
 		currentPassword,
 		databaseState.PasswordHash,
 		databaseState.PasswordSalt,
@@ -41,7 +42,7 @@ func (s *service) changePassword(id uuid.UUID, currentPassword string, newPasswo
 		return errors.New("current password does not match")
 	}
 
-	updatedHash, updatedSalt, err := password_hash.Hash(newPassword)
+	updatedHash, updatedSalt, err := hash.Hash(newPassword)
 	if err != nil {
 		return err
 	}
@@ -79,13 +80,13 @@ func (s *service) save(request *SaveRequest, currentUserId uuid.UUID) error {
 			passwordSalt = databaseState.PasswordSalt
 		}
 	} else if request.Password != "" {
-		passwordHash, passwordSalt, err = password_hash.Hash(request.Password)
+		passwordHash, passwordSalt, err = password_hash.New(s.configuration).Hash(request.Password)
 		if err != nil {
 			return err
 		}
 	}
 
-	user := &User{
+	updatedState := &User{
 		Id:           request.Id,
 		Enabled:      request.Enabled,
 		Name:         request.Name,
@@ -95,11 +96,11 @@ func (s *service) save(request *SaveRequest, currentUserId uuid.UUID) error {
 		Role:         request.Role,
 	}
 
-	if err := newValidator().validate(s.repository, user, databaseState, request, currentUserId); err != nil {
+	if err := newValidator().validate(s.repository, updatedState, databaseState, request, currentUserId); err != nil {
 		return err
 	}
 
-	return (*s.repository).Save(user)
+	return (*s.repository).Save(updatedState)
 }
 
 func (s *service) isEnabled(id uuid.UUID) (bool, error) {
