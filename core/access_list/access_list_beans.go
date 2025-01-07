@@ -13,7 +13,7 @@ func InstallBeans(container *dig.Container) error {
 		}
 
 		_ = container.Provide(func() GetByIdCommand { return serviceInstance.findById })
-		_ = container.Provide(func() DeleteById { return serviceInstance.deleteById })
+		_ = container.Provide(func() DeleteByIdCommand { return serviceInstance.deleteById })
 		_ = container.Provide(func() ListCommand { return serviceInstance.list })
 		_ = container.Provide(func() SaveCommand { return serviceInstance.save })
 	})

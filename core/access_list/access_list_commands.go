@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type DeleteById func(id uuid.UUID) error
+type DeleteByIdCommand func(id uuid.UUID) error
 
 type GetByIdCommand func(id uuid.UUID) (*AccessList, error)
 
