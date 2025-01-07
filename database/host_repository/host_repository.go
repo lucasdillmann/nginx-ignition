@@ -1,17 +1,17 @@
 package host_repository
 
 import (
-	"database/sql"
 	"dillmann.com.br/nginx-ignition/core/common/core_errors"
 	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/database/database"
 	"github.com/google/uuid"
 )
 
 type repository struct {
-	database *sql.DB
+	database *database.Database
 }
 
-func New(database *sql.DB) host.Repository {
+func New(database *database.Database) host.Repository {
 	return &repository{database}
 }
 

@@ -5,9 +5,9 @@ import (
 	"go.uber.org/dig"
 )
 
-func InstallBeans(container *dig.Container) error {
-	return container.Invoke(func(repository *Repository, configuration *configuration.Configuration) {
-		serviceInstance := &service{repository, configuration}
+func Install(container *dig.Container) error {
+	return container.Invoke(func(repository Repository, configuration configuration.Configuration) {
+		serviceInstance := &service{&repository, &configuration}
 
 		_ = container.Provide(func() AuthenticateCommand { return serviceInstance.authenticate })
 		_ = container.Provide(func() DeleteByIdCommand { return serviceInstance.deleteById })

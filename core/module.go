@@ -6,12 +6,12 @@ import (
 	"go.uber.org/dig"
 )
 
-func InstallBeans(container *dig.Container) error {
-	if err := user.InstallBeans(container); err != nil {
+func Install(container *dig.Container) error {
+	if err := user.Install(container); err != nil {
 		return err
 	}
 
-	if err := access_list.InstallBeans(container); err != nil {
+	if err := access_list.Install(container); err != nil {
 		return err
 	}
 
