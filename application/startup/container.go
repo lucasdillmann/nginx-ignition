@@ -1,6 +1,7 @@
-package main
+package startup
 
 import (
+	"dillmann.com.br/nginx-ignition/application/configuration_provider"
 	"dillmann.com.br/nginx-ignition/core"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 	"dillmann.com.br/nginx-ignition/database"
@@ -22,7 +23,7 @@ func installModules(container *dig.Container) error {
 		return err
 	}
 
-	if err := install(container); err != nil {
+	if err := installMainModule(container); err != nil {
 		return err
 	}
 
@@ -35,4 +36,8 @@ func installModules(container *dig.Container) error {
 	}
 
 	return nil
+}
+
+func installMainModule(container *dig.Container) error {
+	return container.Provide(configuration_provider.New)
 }

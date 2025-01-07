@@ -1,18 +1,14 @@
 package main
 
 import (
+	"dillmann.com.br/nginx-ignition/application/startup"
 	"log"
 )
 
 func main() {
 	log.Println("Welcome to nginx ignition")
 
-	container, err := startContainer()
-	if err != nil {
-		log.Fatal("Application startup failed: ", err)
-	}
-
-	if err = container.Invoke(runApplication); err != nil {
-		log.Fatal("Application startup failed: ", err)
+	if err := startup.StartApplication(); err != nil {
+		log.Fatal("Application failed to start: ", err)
 	}
 }

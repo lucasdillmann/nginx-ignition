@@ -1,4 +1,4 @@
-package main
+package startup
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
@@ -8,7 +8,20 @@ import (
 	"syscall"
 )
 
-func runApplication(lifecycle *lifecycle.Lifecycle) error {
+func StartApplication() error {
+	container, err := startContainer()
+	if err != nil {
+		return err
+	}
+
+	if err = container.Invoke(startLifecycle); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func startLifecycle(lifecycle *lifecycle.Lifecycle) error {
 	if err := lifecycle.FireStartup(); err != nil {
 		return err
 	}
