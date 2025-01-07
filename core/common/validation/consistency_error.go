@@ -9,7 +9,7 @@ type ConsistencyViolation struct {
 	Message string
 }
 
-func (err *ConsistencyError) Error() string {
+func (err ConsistencyError) Error() string {
 	return "One or more problems where found in the provided value"
 }
 

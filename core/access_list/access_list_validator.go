@@ -1,20 +1,89 @@
 package access_list
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/core_errors"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
+	"net"
+	"strconv"
 )
 
 type validator struct {
-	errors []validation.ConsistencyViolation
+	delegate *validation.ConsistencyValidator
 }
 
-func (v *validator) validate(_ *AccessList) error {
-	return core_errors.NotImplemented()
+func (v *validator) validate(accessList *AccessList) error {
+	if accessList.Name == "" {
+		v.delegate.Add("name", validation.ValueMissingMessage)
+	}
+
+	var knownUsernames map[string]bool
+	for index, value := range accessList.Credentials {
+		v.validateCredentials(index, &value, &knownUsernames)
+	}
+
+	var knownPriorities map[int64]bool
+	for index, value := range accessList.Entries {
+		v.validateEntry(index, &value, &knownPriorities)
+	}
+
+	return v.delegate.Result()
+}
+
+func (v *validator) validateEntry(
+	index int,
+	entry *AccessListEntry,
+	knownUsernames *map[int64]bool,
+) {
+	path := "entries[" + strconv.Itoa(index) + "]"
+	if (*knownUsernames)[entry.Priority] {
+		v.delegate.Add(path+".priority", "Value is duplicated")
+	} else {
+		(*knownUsernames)[entry.Priority] = true
+	}
+
+	if entry.Priority < 0 {
+		v.delegate.Add(path+".priority", "Value must be 0 or greater")
+	}
+
+	if len(entry.SourceAddress) == 0 {
+		v.delegate.Add(path+".sourceAddress", validation.ValueMissingMessage)
+	}
+
+	for addressIndex, address := range entry.SourceAddress {
+		if singleIp := net.ParseIP(address); singleIp != nil {
+			continue
+		}
+
+		if _, _, err := net.ParseCIDR(address); err == nil {
+			continue
+		}
+
+		v.delegate.Add(
+			path+".sourceAddress["+strconv.Itoa(addressIndex)+"]",
+			"Address \""+address+"\" is not a valid IPv4 or IPv6 address or range",
+		)
+	}
+}
+
+func (v *validator) validateCredentials(
+	index int,
+	credentials *AccessListCredentials,
+	knownUsernames *map[string]bool,
+) {
+	path := "credentials[" + strconv.Itoa(index) + "].username"
+
+	if credentials.Username == "" {
+		v.delegate.Add(path, validation.ValueMissingMessage)
+	}
+
+	if (*knownUsernames)[credentials.Username] {
+		v.delegate.Add(path, credentials.Username)
+	} else {
+		(*knownUsernames)[credentials.Username] = true
+	}
 }
 
 func newValidator() *validator {
 	return &validator{
-		errors: []validation.ConsistencyViolation{},
+		&validation.ConsistencyValidator{},
 	}
 }
