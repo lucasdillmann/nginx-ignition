@@ -27,7 +27,7 @@ jobs:
       - name: npm cache
         uses: actions/cache@v4
         with:
-          path: ~/frontend/node_modules
+          path: frontend/node_modules
           key: npm-cache
           restore-keys: npm-cache
       - name: Resolve version number from tag
