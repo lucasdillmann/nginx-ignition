@@ -96,7 +96,7 @@ func (s *service) save(request *SaveRequest, currentUserId uuid.UUID) error {
 		Role:         request.Role,
 	}
 
-	if err := newValidator().validate(s.repository, updatedState, databaseState, request, currentUserId); err != nil {
+	if err := newValidator(s.repository).validate(updatedState, databaseState, request, currentUserId); err != nil {
 		return err
 	}
 
