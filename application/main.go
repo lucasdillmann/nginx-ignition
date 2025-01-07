@@ -12,7 +12,7 @@ func main() {
 		log.Fatal("Application startup failed: ", err)
 	}
 
-	if err := container.Invoke(runApplication); err != nil {
+	if err = container.Invoke(runApplication); err != nil {
 		log.Fatal("Application startup failed: ", err)
 	}
 }
