@@ -90,7 +90,6 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     private handleSuccess() {
         Notification.success("Host saved", "The host was saved successfully")
         ReloadNginxAction.execute()
-        navigateTo("/hosts")
     }
 
     private handleError(error: Error) {

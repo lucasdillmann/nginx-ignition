@@ -130,7 +130,7 @@ internal class HostConfigurationFileProvider(
         }
 
     private fun buildSourceCodeRoute(host: Host, route: Host.Route, basePath: String): String {
-        val (_, priority, _, sourcePath) = route
+        val (_, priority, _, _, sourcePath) = route
         val (language, code, mainFunction) = route.sourceCode!!
         val (headerBlock, routeBlock) = when (language) {
             Host.SourceCodeLanguage.JAVASCRIPT ->

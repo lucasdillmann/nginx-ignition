@@ -67,7 +67,6 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
 
     private handleSuccess() {
         this.saveModal.close()
-        navigateTo("/access-lists")
         Notification.success("Access list saved", "The access list was saved successfully")
         ReloadNginxAction.execute()
     }

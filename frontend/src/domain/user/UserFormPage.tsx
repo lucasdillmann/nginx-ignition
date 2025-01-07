@@ -69,7 +69,6 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
 
     private handleSuccess() {
         Notification.success("User saved", "The user was saved successfully")
-        navigateTo("/users")
     }
 
     private handleError(error: Error) {
