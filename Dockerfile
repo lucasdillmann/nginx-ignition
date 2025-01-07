@@ -1,11 +1,19 @@
-FROM eclipse-temurin:21-jre-alpine
+FROM golang:1.23 AS builder
+WORKDIR /src
+COPY . /src
+ENV CGO_ENABLED=0
+RUN go work sync && cd application && go build
+
+FROM alpine:3
 EXPOSE 8090:8090
+EXPOSE 80:80
 ENV NGINX_IGNITION_NGINX_BINARY_PATH="/usr/sbin/nginx"
-ENV NGINX_IGNITION_DATABASE_URL="jdbc:h2:/opt/nginx-ignition/data/nginx-ignition;DB_CLOSE_DELAY=-1"
-ENV NGINX_IGNITION_DATABASE_USERNAME="sa"
-ENTRYPOINT ["java", "-Xms32m", "-Xmx128m", "-jar", "/opt/nginx-ignition/nginx-ignition.jar"]
-RUN mkdir -p /opt/nginx-ignition/data && \
+ENV NGINX_IGNITION_FRONTEND_PATH="/opt/nginx-ignition/frontend"
+ENTRYPOINT ["/opt/nginx-ignition/nginx-ignition"]
+WORKDIR /opt/nginx-ignition
+RUN mkdir data frontend && \
     apk update && \
     apk add nginx nginx-mod-http-js nginx-mod-http-lua && \
     apk cache clean
-COPY application/build/libs/application-0.0.0-all.jar /opt/nginx-ignition/nginx-ignition.jar
+COPY ./frontend/build /opt/nginx-ignition/frontend
+COPY --from=builder /src/application/application /opt/nginx-ignition/nginx-ignition

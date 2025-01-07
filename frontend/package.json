@@ -26,7 +26,7 @@
   "scripts": {
     "start": "react-scripts start",
     "clean": "react-scripts clean",
-    "build": "BUILD_PATH='./build/frontend/' react-scripts build",
+    "build": "BUILD_PATH='./build/' react-scripts build",
     "lint": "eslint"
   },
   "eslintConfig": {
