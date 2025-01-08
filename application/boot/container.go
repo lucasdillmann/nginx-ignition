@@ -1,8 +1,8 @@
-package startup
+package boot
 
 import (
-	"dillmann.com.br/nginx-ignition/application/configuration_provider"
 	"dillmann.com.br/nginx-ignition/core"
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 	"dillmann.com.br/nginx-ignition/database"
 	"go.uber.org/dig"
@@ -19,11 +19,11 @@ func startContainer() (*dig.Container, error) {
 }
 
 func installModules(container *dig.Container) error {
-	if err := container.Provide(lifecycle.New); err != nil {
+	if err := container.Provide(configuration.New); err != nil {
 		return err
 	}
 
-	if err := installMainModule(container); err != nil {
+	if err := container.Provide(lifecycle.New); err != nil {
 		return err
 	}
 
@@ -36,8 +36,4 @@ func installModules(container *dig.Container) error {
 	}
 
 	return nil
-}
-
-func installMainModule(container *dig.Container) error {
-	return container.Provide(configuration_provider.New)
 }

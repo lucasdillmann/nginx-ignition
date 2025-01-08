@@ -1,4 +1,4 @@
-package configuration_provider
+package configuration
 
 func defaultValues() map[string]string {
 	return map[string]string{

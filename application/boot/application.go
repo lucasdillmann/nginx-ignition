@@ -1,4 +1,4 @@
-package startup
+package boot
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"

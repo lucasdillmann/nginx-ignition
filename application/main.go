@@ -1,14 +1,14 @@
 package main
 
 import (
-	"dillmann.com.br/nginx-ignition/application/startup"
+	"dillmann.com.br/nginx-ignition/application/boot"
 	"log"
 )
 
 func main() {
 	log.Println("Welcome to nginx ignition")
 
-	if err := startup.StartApplication(); err != nil {
+	if err := boot.StartApplication(); err != nil {
 		log.Fatal("Application failed to start: ", err)
 	}
 }

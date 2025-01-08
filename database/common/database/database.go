@@ -13,8 +13,8 @@ type Database struct {
 	db            *sql.DB
 }
 
-func New(configuration configuration.Configuration) *Database {
-	return &Database{&configuration, nil}
+func New(configuration *configuration.Configuration) *Database {
+	return &Database{configuration, nil}
 }
 
 func (d *Database) BeginTransaction() (*sql.Tx, error) {

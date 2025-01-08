@@ -1,6 +1,56 @@
 package configuration
 
-type Configuration interface {
-	Get(key string) (string, error)
-	WithPrefix(prefix string) Configuration
+import (
+	"errors"
+	"os"
+	"strings"
+)
+
+type Configuration struct {
+	prefix string
+}
+
+func New() *Configuration {
+	return &Configuration{}
+}
+
+func (c *Configuration) Get(key string) (string, error) {
+	var fullKey string
+	if c.prefix != "" {
+		fullKey = c.prefix + "." + key
+	} else {
+		fullKey = key
+	}
+
+	value, exists := os.LookupEnv(fullKey)
+	if exists {
+		return value, nil
+	}
+
+	formattedKey := strings.ReplaceAll(key, ".", "_")
+	formattedKey = strings.ReplaceAll(key, "-", "_")
+	formattedKey = strings.ToUpper(formattedKey)
+
+	value, exists = os.LookupEnv(fullKey)
+	if exists {
+		return value, nil
+	}
+
+	value = defaultValues()[fullKey]
+	if value != "" {
+		return value, nil
+	}
+
+	return "", errors.New("no configuration or environment value found for " + fullKey)
+}
+
+func (c *Configuration) WithPrefix(prefix string) *Configuration {
+	var newPrefix string
+	if c.prefix == "" {
+		newPrefix = prefix
+	} else {
+		newPrefix = c.prefix + "." + prefix
+	}
+
+	return &Configuration{newPrefix}
 }

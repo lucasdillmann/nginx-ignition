@@ -11,7 +11,7 @@ func Install(container *dig.Container) error {
 
 func buildCommands(
 	repository Repository,
-	configuration configuration.Configuration,
+	configuration *configuration.Configuration,
 ) (
 	AuthenticateCommand,
 	DeleteByIdCommand,
@@ -22,7 +22,7 @@ func buildCommands(
 	SaveCommand,
 	ChangePasswordCommand,
 ) {
-	serviceInstance := &service{&repository, &configuration}
+	serviceInstance := &service{&repository, configuration}
 	return serviceInstance.authenticate,
 		serviceInstance.deleteById,
 		serviceInstance.getById,
