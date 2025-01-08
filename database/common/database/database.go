@@ -17,6 +17,10 @@ func New(configuration configuration.Configuration) *Database {
 	return &Database{&configuration, nil}
 }
 
+func (d *Database) BeginTransaction() (*sql.Tx, error) {
+	return (*d.db).Begin()
+}
+
 func (d *Database) close() {
 	log.Println("Closing the database connection")
 
@@ -32,7 +36,7 @@ func (d *Database) close() {
 func (d *Database) init() error {
 	cfg := (*d.configuration).WithPrefix("nginx-ignition.database")
 
-	var host, port, username, password, driver, sslmode string
+	var host, port, username, password, driver, sslMode, name string
 	var err error
 
 	if host, err = cfg.Get("host"); err != nil {
@@ -51,20 +55,26 @@ func (d *Database) init() error {
 		return err
 	}
 
-	if sslmode, err = cfg.Get("ssl-mode"); err != nil || sslmode != "disable" {
-		sslmode = "require"
+	if name, err = cfg.Get("name"); err != nil {
+		return err
 	}
 
-	port, _ = cfg.Get("port")
+	if sslMode, err = cfg.Get("ssl-mode"); err != nil || sslMode != "disable" {
+		sslMode = "require"
+	}
+
+	if port, err = cfg.Get("port"); err != nil {
+		return err
+	}
 
 	log.Printf(
-		"Starting database connection to %s using username %s, driver %s and SSL mode %s",
-		host, username, driver, sslmode,
+		"Starting database connection to %s on %s:%s using username %s, driver %s and SSL mode %s",
+		name, host, port, username, driver, sslMode,
 	)
 
 	connectionParams := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s sslmode=%s",
-		host, port, username, password, sslmode,
+		"host=%s port=%s user=%s password=%s sslmode=%s dbname=%s",
+		host, port, username, password, sslMode, name,
 	)
 
 	if d.db, err = sql.Open(driver, connectionParams); err != nil {
