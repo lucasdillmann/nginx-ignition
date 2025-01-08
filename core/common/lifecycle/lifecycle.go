@@ -21,8 +21,8 @@ func (l *Lifecycle) RegisterStartup(command StartupCommand) {
 	l.startupCommands = &updatedValues
 }
 
-func (l *Lifecycle) RegisterShutdown(command *ShutdownCommand) {
-	updatedValues := append(*l.shutdownCommands, *command)
+func (l *Lifecycle) RegisterShutdown(command ShutdownCommand) {
+	updatedValues := append(*l.shutdownCommands, command)
 	l.shutdownCommands = &updatedValues
 }
 

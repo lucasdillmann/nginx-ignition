@@ -8,7 +8,7 @@ type startup struct {
 	database *Database
 }
 
-func Register(lifecycle *lifecycle.Lifecycle, database *Database) {
+func RegisterStartup(lifecycle *lifecycle.Lifecycle, database *Database) {
 	command := &startup{database}
 	lifecycle.RegisterStartup(command)
 }

@@ -2,7 +2,7 @@ package database
 
 import (
 	"dillmann.com.br/nginx-ignition/database/access_list_repository"
-	"dillmann.com.br/nginx-ignition/database/database"
+	"dillmann.com.br/nginx-ignition/database/common/database"
 	"dillmann.com.br/nginx-ignition/database/host_repository"
 	"dillmann.com.br/nginx-ignition/database/user_repository"
 	"go.uber.org/dig"

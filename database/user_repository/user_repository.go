@@ -4,7 +4,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/core_errors"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/user"
-	"dillmann.com.br/nginx-ignition/database/database"
+	"dillmann.com.br/nginx-ignition/database/common/database"
 	"github.com/google/uuid"
 )
 

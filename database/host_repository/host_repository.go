@@ -3,7 +3,7 @@ package host_repository
 import (
 	"dillmann.com.br/nginx-ignition/core/common/core_errors"
 	"dillmann.com.br/nginx-ignition/core/host"
-	"dillmann.com.br/nginx-ignition/database/database"
+	"dillmann.com.br/nginx-ignition/database/common/database"
 	"github.com/google/uuid"
 )
 

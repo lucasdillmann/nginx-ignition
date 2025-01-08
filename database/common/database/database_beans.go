@@ -7,7 +7,11 @@ func Install(container *dig.Container) error {
 		return err
 	}
 
-	if err := container.Invoke(Register); err != nil {
+	if err := container.Invoke(RegisterStartup); err != nil {
+		return err
+	}
+
+	if err := container.Invoke(RegisterShutdown); err != nil {
 		return err
 	}
 

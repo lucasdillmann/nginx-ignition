@@ -42,7 +42,7 @@ func (p *provider) Get(key string) (string, error) {
 		return value, nil
 	}
 
-	return "", errors.New("no value found for key " + fullKey)
+	return "", errors.New("no configuration or environment value found for " + fullKey)
 }
 
 func (p *provider) WithPrefix(prefix string) configuration.Configuration {
