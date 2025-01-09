@@ -6,25 +6,34 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func StartApplication() error {
+	startTime := time.Now().UnixNano() / int64(time.Millisecond)
+
 	container, err := startContainer()
 	if err != nil {
 		return err
 	}
 
-	if err = container.Invoke(startLifecycle); err != nil {
+	err = container.Invoke(func(lifecycle *lifecycle.Lifecycle) error {
+		return startLifecycle(lifecycle, startTime)
+	})
+	if err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func startLifecycle(lifecycle *lifecycle.Lifecycle) error {
+func startLifecycle(lifecycle *lifecycle.Lifecycle, startTime int64) error {
 	if err := lifecycle.FireStartup(); err != nil {
 		return err
 	}
+
+	endTime := time.Now().UnixNano() / int64(time.Millisecond)
+	log.Printf("Application started in %d ms", endTime-startTime)
 
 	waitForShutdownSignal(lifecycle)
 	log.Println("Shutdown complete")

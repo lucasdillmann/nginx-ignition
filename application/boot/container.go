@@ -1,6 +1,7 @@
 package boot
 
 import (
+	"dillmann.com.br/nginx-ignition/api"
 	"dillmann.com.br/nginx-ignition/core"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
@@ -32,6 +33,10 @@ func installModules(container *dig.Container) error {
 	}
 
 	if err := core.Install(container); err != nil {
+		return err
+	}
+
+	if err := api.Install(container); err != nil {
 		return err
 	}
 

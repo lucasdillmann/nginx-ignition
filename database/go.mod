@@ -7,3 +7,5 @@ require (
 	github.com/lib/pq v1.10.9
 	go.uber.org/dig v1.18.0
 )
+
+require github.com/stretchr/testify v1.10.0 // indirect
