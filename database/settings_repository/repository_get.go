@@ -59,12 +59,12 @@ func fetchNginxSettings(transaction *sql.Tx) (*settings.NginxSettings, error) {
 		return nil, errors.New("no results found for nginx settings")
 	}
 
-	var nginx *settings.NginxSettings
-	if err := result.Scan(nginx); err != nil {
+	var nginx = settings.NginxSettings{}
+	if err := result.Scan(&nginx); err != nil {
 		return nil, err
 	}
 
-	return nginx, nil
+	return &nginx, nil
 }
 
 func fetchCertificateSettings(transaction *sql.Tx) (*settings.CertificateAutoRenewSettings, error) {
@@ -81,12 +81,12 @@ func fetchCertificateSettings(transaction *sql.Tx) (*settings.CertificateAutoRen
 		return nil, errors.New("no results found for certificate auto renew settings")
 	}
 
-	var certificateAutoRenew *settings.CertificateAutoRenewSettings
-	if err = result.Scan(certificateAutoRenew); err != nil {
+	var certificateAutoRenew = settings.CertificateAutoRenewSettings{}
+	if err = result.Scan(&certificateAutoRenew); err != nil {
 		return nil, err
 	}
 
-	return certificateAutoRenew, nil
+	return &certificateAutoRenew, nil
 }
 
 func fetchBindingSettings(transaction *sql.Tx) (*[]host.Binding, error) {
@@ -99,15 +99,17 @@ func fetchBindingSettings(transaction *sql.Tx) (*[]host.Binding, error) {
 
 	defer result.Close()
 
-	var globalBindings *[]host.Binding
+	var globalBindings []host.Binding
 	for result.Next() {
-		var binding *host.Binding
-		if err = result.Scan(binding); err != nil {
+		var binding = host.Binding{}
+		if err = result.Scan(&binding); err != nil {
 			return nil, err
 		}
+
+		globalBindings = append(globalBindings, binding)
 	}
 
-	return globalBindings, nil
+	return &globalBindings, nil
 }
 
 func fetchLogSettings(transaction *sql.Tx) (*settings.LogRotationSettings, error) {
@@ -124,10 +126,10 @@ func fetchLogSettings(transaction *sql.Tx) (*settings.LogRotationSettings, error
 		return nil, errors.New("no results found for log rotation settings")
 	}
 
-	var logRotation *settings.LogRotationSettings
-	if err = result.Scan(logRotation); err != nil {
+	var logRotation = settings.LogRotationSettings{}
+	if err = result.Scan(&logRotation); err != nil {
 		return nil, err
 	}
 
-	return logRotation, nil
+	return &logRotation, nil
 }
