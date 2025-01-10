@@ -16,5 +16,6 @@ func (h getHandler) handle(context *gin.Context) {
 		panic(err)
 	}
 
-	context.JSON(http.StatusOK, data)
+	payload := toDto(data)
+	context.JSON(http.StatusOK, payload)
 }

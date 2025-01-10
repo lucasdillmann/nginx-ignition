@@ -45,7 +45,6 @@ type NginxLogsSettings struct {
 	ServerLogsEnabled bool
 	ServerLogsLevel   LogLevel
 	AccessLogsEnabled bool
-	AccessLogsLevel   LogLevel
 	ErrorLogsEnabled  bool
 	ErrorLogsLevel    LogLevel
 }

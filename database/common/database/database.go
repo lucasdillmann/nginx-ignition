@@ -5,20 +5,28 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"fmt"
 	_ "github.com/lib/pq"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/dialect/sqlitedialect"
 	"log"
 )
 
 type Database struct {
 	configuration *configuration.Configuration
 	db            *sql.DB
+	bun           *bun.DB
 }
 
 func New(configuration *configuration.Configuration) *Database {
-	return &Database{configuration, nil}
+	return &Database{configuration, nil, nil}
 }
 
-func (d *Database) BeginTransaction() (*sql.Tx, error) {
-	return (*d.db).Begin()
+func (d *Database) Begin() (bun.Tx, error) {
+	return d.bun.Begin()
+}
+
+func (d *Database) Select() *bun.SelectQuery {
+	return (*d.bun).NewSelect()
 }
 
 func (d *Database) close() {
@@ -83,6 +91,17 @@ func (d *Database) init() error {
 
 	if err = d.db.Ping(); err != nil {
 		return err
+	}
+
+	switch driver {
+	case "postgres":
+		d.bun = bun.NewDB(d.db, pgdialect.New())
+		break
+	case "sqlite":
+		d.bun = bun.NewDB(d.db, sqlitedialect.New())
+		break
+	default:
+		return fmt.Errorf("unsupported database driver: %s", driver)
 	}
 
 	return nil
