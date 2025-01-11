@@ -12,7 +12,7 @@ const (
 )
 
 type AccessList struct {
-	Id                          uuid.UUID
+	ID                          uuid.UUID
 	Name                        string
 	Realm                       string
 	SatisfyAll                  bool
@@ -23,7 +23,7 @@ type AccessList struct {
 }
 
 type AccessListEntry struct {
-	Priority      int64
+	Priority      int
 	Outcome       Outcome
 	SourceAddress []string
 }

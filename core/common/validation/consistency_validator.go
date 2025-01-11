@@ -6,6 +6,10 @@ type ConsistencyValidator struct {
 	violations []ConsistencyViolation
 }
 
+func NewValidator() *ConsistencyValidator {
+	return &ConsistencyValidator{}
+}
+
 func (v *ConsistencyValidator) Add(path string, message string) {
 	violation := ConsistencyViolation{path, message}
 	v.violations = append(v.violations, violation)

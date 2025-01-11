@@ -6,10 +6,10 @@ import (
 )
 
 type Repository interface {
-	FindById(id uuid.UUID) (*AccessList, error)
-	DeleteById(id uuid.UUID) error
+	FindByID(id uuid.UUID) (*AccessList, error)
+	DeleteByID(id uuid.UUID) error
 	FindByName(name string) (*AccessList, error)
-	FindPage(pageNumber int64, pageSize int64, searchTerms string) (*pagination.Page[AccessList], error)
+	FindPage(pageNumber, pageSize int, searchTerms *string) (*pagination.Page[AccessList], error)
 	FindAll() (*[]AccessList, error)
 	Save(accessList *AccessList) error
 }

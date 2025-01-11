@@ -7,15 +7,15 @@ import (
 
 type AuthenticateCommand func(username string, password string) (*User, error)
 
-type DeleteByIdCommand func(id uuid.UUID) error
+type DeleteCommand func(id uuid.UUID) error
 
-type GetByIdCommand func(id uuid.UUID) (*User, error)
+type GetCommand func(id uuid.UUID) (*User, error)
 
-type GetCountCommand func() (int64, error)
+type GetCountCommand func() (int, error)
 
 type GetStatusCommand func(id uuid.UUID) (bool, error)
 
-type ListCommand func(pageSize int64, pageNumber int64, searchTerms string) (*pagination.Page[User], error)
+type ListCommand func(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[User], error)
 
 type SaveCommand func(user *SaveRequest, currentUserId uuid.UUID) error
 

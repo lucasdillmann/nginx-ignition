@@ -14,8 +14,8 @@ func buildCommands(
 	configuration *configuration.Configuration,
 ) (
 	AuthenticateCommand,
-	DeleteByIdCommand,
-	GetByIdCommand,
+	DeleteCommand,
+	GetCommand,
 	GetCountCommand,
 	GetStatusCommand,
 	ListCommand,

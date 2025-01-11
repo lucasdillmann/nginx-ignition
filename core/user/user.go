@@ -12,7 +12,7 @@ const (
 )
 
 type User struct {
-	Id           uuid.UUID
+	ID           uuid.UUID
 	Enabled      bool
 	Name         string
 	Username     string

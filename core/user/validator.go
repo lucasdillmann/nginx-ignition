@@ -21,7 +21,7 @@ func (v *validator) validate(
 	request *SaveRequest,
 	currentUserId uuid.UUID,
 ) error {
-	if !updatedState.Enabled && currentState != nil && currentState.Id == currentUserId {
+	if !updatedState.Enabled && currentState != nil && currentState.ID == currentUserId {
 		v.delegate.Add("enabled", "You cannot disable your own user")
 	}
 
@@ -30,7 +30,7 @@ func (v *validator) validate(
 	}
 
 	databaseUser, _ := (*v.repository).FindByUsername(updatedState.Username)
-	if databaseUser != nil && databaseUser.Id != updatedState.Id {
+	if databaseUser != nil && databaseUser.ID != updatedState.ID {
 		v.delegate.Add("username", "There's already a user with the same username")
 	}
 
@@ -55,7 +55,7 @@ func minimumLengthMessage(length int) string {
 
 func newValidator(repository *Repository) *validator {
 	return &validator{
-		&validation.ConsistencyValidator{},
-		repository,
+		delegate:   validation.NewValidator(),
+		repository: repository,
 	}
 }

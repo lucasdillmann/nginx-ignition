@@ -10,6 +10,6 @@ func Install(
 	getCommand settings.GetCommand,
 	saveCommand settings.SaveCommand,
 ) {
-	engine.GET("/api/settings", getHandler{getCommand}.handle)
-	engine.PUT("/api/settings", putHandler{saveCommand}.handle)
+	engine.GET("/api/settings", getHandler{&getCommand}.handle)
+	engine.PUT("/api/settings", putHandler{&saveCommand}.handle)
 }

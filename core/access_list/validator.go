@@ -4,14 +4,21 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"net"
 	"strconv"
+	"strings"
 )
 
 type validator struct {
 	delegate *validation.ConsistencyValidator
 }
 
+func newValidator() *validator {
+	return &validator{
+		delegate: validation.NewValidator(),
+	}
+}
+
 func (v *validator) validate(accessList *AccessList) error {
-	if accessList.Name == "" {
+	if strings.TrimSpace(accessList.Name) == "" {
 		v.delegate.Add("name", validation.ValueMissingMessage)
 	}
 
@@ -20,7 +27,7 @@ func (v *validator) validate(accessList *AccessList) error {
 		v.validateCredentials(index, &value, &knownUsernames)
 	}
 
-	var knownPriorities map[int64]bool
+	var knownPriorities map[int]bool
 	for index, value := range accessList.Entries {
 		v.validateEntry(index, &value, &knownPriorities)
 	}
@@ -31,7 +38,7 @@ func (v *validator) validate(accessList *AccessList) error {
 func (v *validator) validateEntry(
 	index int,
 	entry *AccessListEntry,
-	knownUsernames *map[int64]bool,
+	knownUsernames *map[int]bool,
 ) {
 	path := "entries[" + strconv.Itoa(index) + "]"
 	if (*knownUsernames)[entry.Priority] {
@@ -71,7 +78,7 @@ func (v *validator) validateCredentials(
 ) {
 	path := "credentials[" + strconv.Itoa(index) + "].username"
 
-	if credentials.Username == "" {
+	if strings.TrimSpace(credentials.Username) == "" {
 		v.delegate.Add(path, validation.ValueMissingMessage)
 	}
 
@@ -79,11 +86,5 @@ func (v *validator) validateCredentials(
 		v.delegate.Add(path, credentials.Username)
 	} else {
 		(*knownUsernames)[credentials.Username] = true
-	}
-}
-
-func newValidator() *validator {
-	return &validator{
-		&validation.ConsistencyValidator{},
 	}
 }

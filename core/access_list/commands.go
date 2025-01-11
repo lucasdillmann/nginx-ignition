@@ -5,10 +5,10 @@ import (
 	"github.com/google/uuid"
 )
 
-type DeleteByIdCommand func(id uuid.UUID) error
+type DeleteCommand func(id uuid.UUID) error
 
-type GetByIdCommand func(id uuid.UUID) (*AccessList, error)
+type GetCommand func(id uuid.UUID) (*AccessList, error)
 
-type ListCommand func(pageSize int64, pageNumber int64, searchTerms string) (*pagination.Page[AccessList], error)
+type ListCommand func(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[AccessList], error)
 
 type SaveCommand func(accessList *AccessList) error

@@ -13,11 +13,11 @@ func buildCommands(
 	accessListRepository Repository,
 	hostRepository host.Repository,
 ) (
-	GetByIdCommand,
-	DeleteByIdCommand,
+	GetCommand,
+	DeleteCommand,
 	ListCommand,
 	SaveCommand,
 ) {
-	serviceInstance := &service{&accessListRepository, &hostRepository}
+	serviceInstance := newService(&accessListRepository, &hostRepository)
 	return serviceInstance.findById, serviceInstance.deleteById, serviceInstance.list, serviceInstance.save
 }

@@ -20,7 +20,7 @@ func (s *service) authenticate(_ string, _ string) (*User, error) {
 
 func (s *service) changePassword(id uuid.UUID, currentPassword string, newPassword string) error {
 	hash := password_hash.New(s.configuration)
-	databaseState, err := (*s.repository).FindById(id)
+	databaseState, err := (*s.repository).FindByID(id)
 	if err != nil {
 		return err
 	}
@@ -53,14 +53,14 @@ func (s *service) changePassword(id uuid.UUID, currentPassword string, newPasswo
 }
 
 func (s *service) getById(id uuid.UUID) (*User, error) {
-	return (*s.repository).FindById(id)
+	return (*s.repository).FindByID(id)
 }
 
 func (s *service) deleteById(id uuid.UUID) error {
-	return (*s.repository).DeleteById(id)
+	return (*s.repository).DeleteByID(id)
 }
 
-func (s *service) count() (int64, error) {
+func (s *service) count() (int, error) {
 	return (*s.repository).Count()
 }
 
@@ -69,8 +69,8 @@ func (s *service) save(request *SaveRequest, currentUserId uuid.UUID) error {
 	var databaseState *User
 	var err error
 
-	if request.Id != uuid.Nil && request.Password == "" {
-		databaseState, err = (*s.repository).FindById(request.Id)
+	if request.ID != uuid.Nil && request.Password == "" {
+		databaseState, err = (*s.repository).FindByID(request.ID)
 		if err != nil {
 			return err
 		}
@@ -87,7 +87,7 @@ func (s *service) save(request *SaveRequest, currentUserId uuid.UUID) error {
 	}
 
 	updatedState := &User{
-		Id:           request.Id,
+		ID:           request.ID,
 		Enabled:      request.Enabled,
 		Name:         request.Name,
 		Username:     request.Username,
@@ -104,9 +104,9 @@ func (s *service) save(request *SaveRequest, currentUserId uuid.UUID) error {
 }
 
 func (s *service) isEnabled(id uuid.UUID) (bool, error) {
-	return (*s.repository).IsEnabledById(id)
+	return (*s.repository).IsEnabledByID(id)
 }
 
-func (s *service) list(pageSize int64, pageNumber int64, searchTerms string) (*pagination.Page[User], error) {
+func (s *service) list(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[User], error) {
 	return (*s.repository).FindPage(pageSize, pageNumber, searchTerms)
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type putHandler struct {
-	command settings.SaveCommand
+	command *settings.SaveCommand
 }
 
 func (h putHandler) handle(context *gin.Context) {
@@ -25,7 +25,7 @@ func (h putHandler) handle(context *gin.Context) {
 	}
 
 	domain := toDomain(&payload)
-	if err := h.command(domain); err != nil {
+	if err := (*h.command)(domain); err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
