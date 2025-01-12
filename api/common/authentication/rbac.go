@@ -5,20 +5,20 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-type Middleware struct {
+type RBAC struct {
 	configuration     *configuration.Configuration
 	anonymousPaths    []string
 	roleRequiredPaths map[string]user.Role
 	jwt               *Jwt
 }
 
-func New(configuration *configuration.Configuration, repository *user.Repository) (*Middleware, error) {
+func New(configuration *configuration.Configuration, repository *user.Repository) (*RBAC, error) {
 	jwt, err := newJwt(configuration, repository)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Middleware{
+	return &RBAC{
 		configuration:     configuration,
 		anonymousPaths:    []string{},
 		roleRequiredPaths: map[string]user.Role{},
@@ -26,19 +26,19 @@ func New(configuration *configuration.Configuration, repository *user.Repository
 	}, nil
 }
 
-func (m *Middleware) Jwt() *Jwt {
+func (m *RBAC) Jwt() *Jwt {
 	return m.jwt
 }
 
-func (m *Middleware) AllowAnonymous(path string) {
+func (m *RBAC) AllowAnonymous(path string) {
 	m.anonymousPaths = append(m.anonymousPaths, path)
 }
 
-func (m *Middleware) RequireRole(path string, role user.Role) {
-	m.roleRequiredPaths[path] = role
+func (m *RBAC) RequireRole(method, path string, role user.Role) {
+	m.roleRequiredPaths[method+":"+path] = role
 }
 
-func (m *Middleware) isAnonymous(path string) bool {
+func (m *RBAC) isAnonymous(path string) bool {
 	for _, p := range m.anonymousPaths {
 		if p == path {
 			return true
@@ -48,8 +48,8 @@ func (m *Middleware) isAnonymous(path string) bool {
 	return false
 }
 
-func (m *Middleware) findRequiredRole(path string) *user.Role {
-	role, exists := m.roleRequiredPaths[path]
+func (m *RBAC) findRequiredRole(method, path string) *user.Role {
+	role, exists := m.roleRequiredPaths[method+":"+path]
 	if !exists {
 		return nil
 	}

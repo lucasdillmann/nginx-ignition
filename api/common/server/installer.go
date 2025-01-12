@@ -28,18 +28,23 @@ func Install(container *dig.Container) error {
 func build(
 	configuration *configuration.Configuration,
 	repository user.Repository,
-) (*gin.Engine, *state, *authentication.Middleware, error) {
+) (
+	*gin.Engine,
+	*state,
+	*authentication.RBAC,
+	error,
+) {
 	gin.SetMode(gin.ReleaseMode)
 
 	engine := gin.New()
 	engine.Use(gin.CustomRecoveryWithWriter(nil, api_error.Handler))
 
-	authenticationMiddleware, err := authentication.New(configuration, &repository)
+	authorizer, err := authentication.New(configuration, &repository)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
-	engine.Use(authenticationMiddleware.HandleRequest)
+	engine.Use(authorizer.HandleRequest)
 
-	return engine, &state{engine: engine}, authenticationMiddleware, nil
+	return engine, newState(engine), authorizer, nil
 }

@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (m *Middleware) HandleRequest(context *gin.Context) {
+func (m *RBAC) HandleRequest(context *gin.Context) {
 	path := context.FullPath()
 	if m.isAnonymous(path) {
 		context.Next()
@@ -26,7 +26,7 @@ func (m *Middleware) HandleRequest(context *gin.Context) {
 		panic(err)
 	}
 
-	requiredRole := m.findRequiredRole(path)
+	requiredRole := m.findRequiredRole(context.Request.Method, path)
 	if requiredRole != nil && subject.User.Role != *requiredRole {
 		context.Abort()
 		panic(api_error.New(

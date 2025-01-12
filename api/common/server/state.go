@@ -11,3 +11,7 @@ type state struct {
 	server   *http.Server
 	listener *net.Listener
 }
+
+func newState(engine *gin.Engine) *state {
+	return &state{engine: engine}
+}
