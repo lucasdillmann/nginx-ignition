@@ -12,13 +12,13 @@ const (
 )
 
 func Install(
-	engine *gin.Engine,
+	router *gin.Engine,
 	authorizer *authentication.RBAC,
 	getCommand settings.GetCommand,
 	saveCommand settings.SaveCommand,
 ) {
-	engine.GET(basePath, getHandler{&getCommand}.handle)
-	engine.PUT(basePath, putHandler{&saveCommand}.handle)
+	router.GET(basePath, getHandler{&getCommand}.handle)
+	router.PUT(basePath, putHandler{&saveCommand}.handle)
 
 	authorizer.RequireRole("PUT", basePath, user.AdminRole)
 }

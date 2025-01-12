@@ -11,15 +11,16 @@ const (
 )
 
 func Install(
-	engine *gin.Engine,
+	router *gin.Engine,
 	getCommand access_list.GetCommand,
 	saveCommand access_list.SaveCommand,
 	deleteCommand access_list.DeleteCommand,
 	listCommand access_list.ListCommand,
 ) {
-	engine.GET(basePath, listHandler{&listCommand}.handle)
-	engine.POST(basePath, createHandler{&saveCommand}.handle)
-	engine.GET(byIdPath, getHandler{&getCommand}.handle)
-	engine.PUT(byIdPath, updateHandler{&saveCommand}.handle)
-	engine.DELETE(byIdPath, deleteHandler{&deleteCommand}.handle)
+	router.GET(basePath, listHandler{&listCommand}.handle)
+	router.POST(basePath, createHandler{&saveCommand}.handle)
+
+	router.GET(byIdPath, getHandler{&getCommand}.handle)
+	router.PUT(byIdPath, updateHandler{&saveCommand}.handle)
+	router.DELETE(byIdPath, deleteHandler{&deleteCommand}.handle)
 }
