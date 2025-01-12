@@ -23,5 +23,5 @@ func (s *shutdown) Run() {
 }
 
 func (s *shutdown) Priority() int {
-	return 500
+	return shutdownPriority
 }

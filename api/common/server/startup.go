@@ -45,7 +45,7 @@ func (s *startup) Run() error {
 }
 
 func (s *startup) Priority() int {
-	return 500
+	return startupPriority
 }
 
 func (s *startup) Async() bool {

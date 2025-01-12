@@ -1,15 +1,15 @@
-package database
+package migrations
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 )
 
 type startup struct {
-	database *Database
+	migrations *migrations
 }
 
-func registerStartup(lifecycle *lifecycle.Lifecycle, database *Database) {
-	command := &startup{database}
+func registerStartup(lifecycle *lifecycle.Lifecycle, migrations *migrations) {
+	command := &startup{migrations}
 	lifecycle.RegisterStartup(command)
 }
 
@@ -22,5 +22,5 @@ func (d startup) Async() bool {
 }
 
 func (d startup) Run() error {
-	return d.database.init()
+	return d.migrations.migrate()
 }

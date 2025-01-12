@@ -17,7 +17,7 @@ type Database struct {
 	bun           *bun.DB
 }
 
-func New(configuration *configuration.Configuration) *Database {
+func newDatabase(configuration *configuration.Configuration) *Database {
 	return &Database{configuration, nil, nil}
 }
 

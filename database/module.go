@@ -4,6 +4,7 @@ import (
 	"dillmann.com.br/nginx-ignition/database/access_list"
 	"dillmann.com.br/nginx-ignition/database/certificate"
 	"dillmann.com.br/nginx-ignition/database/common/database"
+	"dillmann.com.br/nginx-ignition/database/common/migrations"
 	"dillmann.com.br/nginx-ignition/database/host"
 	"dillmann.com.br/nginx-ignition/database/settings"
 	"dillmann.com.br/nginx-ignition/database/user"
@@ -12,6 +13,10 @@ import (
 
 func Install(container *dig.Container) error {
 	if err := database.Install(container); err != nil {
+		return err
+	}
+
+	if err := migrations.Install(container); err != nil {
 		return err
 	}
 
