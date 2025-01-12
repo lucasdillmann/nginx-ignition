@@ -1,12 +1,12 @@
 package database
 
 import (
-	"dillmann.com.br/nginx-ignition/database/access_list_repository"
-	"dillmann.com.br/nginx-ignition/database/certificate_repository"
+	"dillmann.com.br/nginx-ignition/database/access_list"
+	"dillmann.com.br/nginx-ignition/database/certificate"
 	"dillmann.com.br/nginx-ignition/database/common/database"
-	"dillmann.com.br/nginx-ignition/database/host_repository"
-	"dillmann.com.br/nginx-ignition/database/settings_repository"
-	"dillmann.com.br/nginx-ignition/database/user_repository"
+	"dillmann.com.br/nginx-ignition/database/host"
+	"dillmann.com.br/nginx-ignition/database/settings"
+	"dillmann.com.br/nginx-ignition/database/user"
 	"go.uber.org/dig"
 )
 
@@ -15,23 +15,23 @@ func Install(container *dig.Container) error {
 		return err
 	}
 
-	if err := container.Provide(access_list_repository.New); err != nil {
+	if err := container.Provide(access_list.New); err != nil {
 		return err
 	}
 
-	if err := container.Provide(host_repository.New); err != nil {
+	if err := container.Provide(host.New); err != nil {
 		return err
 	}
 
-	if err := container.Provide(user_repository.New); err != nil {
+	if err := container.Provide(user.New); err != nil {
 		return err
 	}
 
-	if err := container.Provide(settings_repository.New); err != nil {
+	if err := container.Provide(settings.New); err != nil {
 		return err
 	}
 
-	if err := container.Provide(certificate_repository.New); err != nil {
+	if err := container.Provide(certificate.New); err != nil {
 		return err
 	}
 
