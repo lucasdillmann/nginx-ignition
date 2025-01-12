@@ -3,7 +3,7 @@ package server
 import (
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
-	"log"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 	"net"
 	"net/http"
 )
@@ -28,7 +28,7 @@ func (s *startup) Run() error {
 		return err
 	}
 
-	log.Printf("Starting HTTP server on port %s", port)
+	log.Info("Starting HTTP server on port %s", port)
 	s.state.server = &http.Server{Handler: s.state.engine.Handler()}
 
 	listener, err := net.Listen("tcp", "0.0.0.0:"+port)

@@ -3,12 +3,12 @@ package database
 import (
 	"database/sql"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 	"fmt"
 	_ "github.com/lib/pq"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
-	"log"
 )
 
 type Database struct {
@@ -30,14 +30,14 @@ func (d *Database) Select() *bun.SelectQuery {
 }
 
 func (d *Database) close() {
-	log.Println("Closing the database connection")
+	log.Info("Closing the database connection")
 
 	if d.db == nil {
 		return
 	}
 
 	if err := d.db.Close(); err != nil {
-		log.Printf("Unable to close the connection to database: %s", err)
+		log.Warn("Unable to close the connection to database: %s", err)
 	}
 }
 
@@ -75,7 +75,7 @@ func (d *Database) init() error {
 		return err
 	}
 
-	log.Printf(
+	log.Info(
 		"Starting database connection to %s on %s:%s using username %s, driver %s and SSL mode %s",
 		name, host, port, username, driver, sslMode,
 	)

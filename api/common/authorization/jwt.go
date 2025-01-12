@@ -4,12 +4,12 @@ import (
 	"crypto/rand"
 	"dillmann.com.br/nginx-ignition/api/common/api_error"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/user"
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"log"
 	"net/http"
 	"time"
 )
@@ -186,7 +186,7 @@ func initializeSecret(configurationProvider *configuration.Configuration) ([]byt
 		return []byte(secret), nil
 	}
 
-	log.Println(
+	log.Warn(
 		"Application was initialized without a JWT secret and a random one will be generated. This will lead " +
 			"to users being logged-out every time the app restarts or they hit a different instance. Please " +
 			"refer to the documentation in order to provide a custom secret.",

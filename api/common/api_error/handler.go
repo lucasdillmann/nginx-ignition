@@ -2,12 +2,12 @@ package api_error
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"log"
 	"net/http"
 )
 
@@ -43,7 +43,7 @@ func Handler(context *gin.Context, outcome any) {
 
 func handleGenericError(context *gin.Context, err error) {
 	stack := stacktrace()
-	log.Printf("Error detected while processing request: %s\n%s", err, stack)
+	log.Error("Error detected while processing request: %s\n%s", err, stack)
 	context.Status(http.StatusInternalServerError)
 }
 

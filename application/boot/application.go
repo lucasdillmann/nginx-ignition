@@ -2,7 +2,7 @@ package boot
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
-	"log"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -33,10 +33,10 @@ func startLifecycle(lifecycle *lifecycle.Lifecycle, startTime int64) error {
 	}
 
 	endTime := time.Now().UnixNano() / int64(time.Millisecond)
-	log.Printf("Application started in %d ms", endTime-startTime)
+	log.Info("Application started in %d ms", endTime-startTime)
 
 	waitForShutdownSignal(lifecycle)
-	log.Println("Shutdown complete")
+	log.Info("Shutdown complete")
 
 	return nil
 }
@@ -47,6 +47,6 @@ func waitForShutdownSignal(lifecycle *lifecycle.Lifecycle) {
 
 	<-channel
 
-	log.Println("Application shutdown signal received. Starting graceful shutdown.")
+	log.Info("Application shutdown signal received. Starting graceful shutdown.")
 	lifecycle.FireShutdown()
 }

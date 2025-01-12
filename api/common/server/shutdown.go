@@ -2,7 +2,7 @@ package server
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
-	"log"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
 type shutdown struct {
@@ -15,10 +15,10 @@ func registerShutdown(lifecycle *lifecycle.Lifecycle, state *state) {
 }
 
 func (s *shutdown) Run() {
-	log.Println("Stopping the HTTP server")
+	log.Info("Stopping the HTTP server")
 
 	if err := s.state.server.Close(); err != nil {
-		log.Printf("Failed to stop HTTP server: %v", err)
+		log.Warn("Failed to stop HTTP server: %v", err)
 	}
 }
 
