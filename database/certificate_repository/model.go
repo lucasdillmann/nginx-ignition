@@ -2,10 +2,13 @@ package certificate_repository
 
 import (
 	"github.com/google/uuid"
+	"github.com/uptrace/bun"
 	"time"
 )
 
 type certificateModel struct {
+	bun.BaseModel `bun:"certificate"`
+
 	ID                 uuid.UUID  `bun:"id,pk"`
 	DomainNames        []string   `bun:"domain_names,array"`
 	ProviderID         string     `bun:"provider_id"`

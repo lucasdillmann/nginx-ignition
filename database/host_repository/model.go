@@ -2,9 +2,12 @@ package host_repository
 
 import (
 	"github.com/google/uuid"
+	"github.com/uptrace/bun"
 )
 
 type hostModel struct {
+	bun.BaseModel `bun:"host"`
+
 	ID                  uuid.UUID          `bun:"id,pk"`
 	Enabled             bool               `bun:"enabled,notnull"`
 	DefaultServer       bool               `bun:"default_server,notnull"`
@@ -19,6 +22,8 @@ type hostModel struct {
 }
 
 type hostBindingModel struct {
+	bun.BaseModel `bun:"host_binding"`
+
 	ID            uuid.UUID  `bun:"id,pk"`
 	HostID        uuid.UUID  `bun:"host_id,notnull"`
 	Type          string     `bun:"type,notnull"`
@@ -28,6 +33,8 @@ type hostBindingModel struct {
 }
 
 type hostRouteModel struct {
+	bun.BaseModel `bun:"host_route"`
+
 	ID                     uuid.UUID  `bun:"id,pk"`
 	HostID                 uuid.UUID  `bun:"host_id,notnull"`
 	Priority               int        `bun:"priority,notnull"`

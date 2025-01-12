@@ -1,6 +1,7 @@
 package server
 
 import (
+	"dillmann.com.br/nginx-ignition/api/common/api_error"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/dig"
 )
@@ -25,7 +26,9 @@ func build() (*gin.Engine, *state) {
 	gin.SetMode(gin.ReleaseMode)
 
 	engine := gin.New()
-	engine.Use(gin.Recovery())
+	engine.Use(
+		gin.CustomRecoveryWithWriter(nil, api_error.Handler),
+	)
 
 	return engine, &state{engine: engine}
 }

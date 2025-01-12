@@ -6,60 +6,60 @@ import (
 	"github.com/google/uuid"
 )
 
-func toDto(settings *settings.Settings) *SettingsDto {
+func toDto(settings *settings.Settings) *settingsDto {
 	if settings == nil {
 		return nil
 	}
 
-	nginxModel := &NginxSettingsDto{
-		Logs: &NginxLogsSettingsDto{
+	nginxModel := &nginxSettingsDto{
+		Logs: &nginxLogsSettingsDto{
 			ServerLogsEnabled: &settings.Nginx.Logs.ServerLogsEnabled,
-			ServerLogsLevel:   settings.Nginx.Logs.ServerLogsLevel,
+			ServerLogsLevel:   &settings.Nginx.Logs.ServerLogsLevel,
 			AccessLogsEnabled: &settings.Nginx.Logs.AccessLogsEnabled,
 			ErrorLogsEnabled:  &settings.Nginx.Logs.ErrorLogsEnabled,
-			ErrorLogsLevel:    settings.Nginx.Logs.ErrorLogsLevel,
+			ErrorLogsLevel:    &settings.Nginx.Logs.ErrorLogsLevel,
 		},
-		Timeouts: &NginxTimeoutsSettingsDto{
-			Read:      settings.Nginx.Timeouts.Read,
-			Connect:   settings.Nginx.Timeouts.Connect,
-			Send:      settings.Nginx.Timeouts.Send,
-			Keepalive: settings.Nginx.Timeouts.Keepalive,
+		Timeouts: &nginxTimeoutsSettingsDto{
+			Read:      &settings.Nginx.Timeouts.Read,
+			Connect:   &settings.Nginx.Timeouts.Connect,
+			Send:      &settings.Nginx.Timeouts.Send,
+			Keepalive: &settings.Nginx.Timeouts.Keepalive,
 		},
-		WorkerProcesses:     settings.Nginx.WorkerProcesses,
-		WorkerConnections:   settings.Nginx.WorkerConnections,
-		DefaultContentType:  settings.Nginx.DefaultContentType,
+		WorkerProcesses:     &settings.Nginx.WorkerProcesses,
+		WorkerConnections:   &settings.Nginx.WorkerConnections,
+		DefaultContentType:  &settings.Nginx.DefaultContentType,
 		ServerTokensEnabled: &settings.Nginx.ServerTokensEnabled,
-		MaximumBodySizeMb:   settings.Nginx.MaximumBodySizeMb,
+		MaximumBodySizeMb:   &settings.Nginx.MaximumBodySizeMb,
 		SendfileEnabled:     &settings.Nginx.SendfileEnabled,
 		GzipEnabled:         &settings.Nginx.GzipEnabled,
 	}
 
-	logRotationModel := &LogRotationSettingsDto{
+	logRotationModel := &logRotationSettingsDto{
 		Enabled:           &settings.LogRotation.Enabled,
-		MaximumLines:      settings.LogRotation.MaximumLines,
-		IntervalUnit:      settings.LogRotation.IntervalUnit,
-		IntervalUnitCount: settings.LogRotation.IntervalUnitCount,
+		MaximumLines:      &settings.LogRotation.MaximumLines,
+		IntervalUnit:      &settings.LogRotation.IntervalUnit,
+		IntervalUnitCount: &settings.LogRotation.IntervalUnitCount,
 	}
 
-	certificateModel := &CertificateAutoRenewSettingsDto{
+	certificateModel := &certificateAutoRenewSettingsDto{
 		Enabled:           &settings.CertificateAutoRenew.Enabled,
-		IntervalUnit:      settings.CertificateAutoRenew.IntervalUnit,
-		IntervalUnitCount: settings.CertificateAutoRenew.IntervalUnitCount,
+		IntervalUnit:      &settings.CertificateAutoRenew.IntervalUnit,
+		IntervalUnitCount: &settings.CertificateAutoRenew.IntervalUnitCount,
 	}
 
-	var bindingsModel []BindingDto
+	var bindingsModel []bindingDto
 	if settings.GlobalBindings != nil {
 		for _, binding := range *settings.GlobalBindings {
-			bindingsModel = append(bindingsModel, BindingDto{
-				Type:          binding.Type,
-				IP:            binding.IP,
-				Port:          binding.Port,
+			bindingsModel = append(bindingsModel, bindingDto{
+				Type:          &binding.Type,
+				IP:            &binding.IP,
+				Port:          &binding.Port,
 				CertificateID: binding.CertificateID,
 			})
 		}
 	}
 
-	return &SettingsDto{
+	return &settingsDto{
 		Nginx:                nginxModel,
 		LogRotation:          logRotationModel,
 		CertificateAutoRenew: certificateModel,
@@ -67,7 +67,7 @@ func toDto(settings *settings.Settings) *SettingsDto {
 	}
 }
 
-func toDomain(input *SettingsDto) *settings.Settings {
+func toDomain(input *settingsDto) *settings.Settings {
 	nginx := input.Nginx
 	logRotation := input.LogRotation
 	certificate := input.CertificateAutoRenew
@@ -80,37 +80,37 @@ func toDomain(input *SettingsDto) *settings.Settings {
 	nginxSettings := &settings.NginxSettings{
 		Logs: &settings.NginxLogsSettings{
 			ServerLogsEnabled: *nginx.Logs.ServerLogsEnabled,
-			ServerLogsLevel:   nginx.Logs.ServerLogsLevel,
+			ServerLogsLevel:   *nginx.Logs.ServerLogsLevel,
 			AccessLogsEnabled: *nginx.Logs.AccessLogsEnabled,
 			ErrorLogsEnabled:  *nginx.Logs.ErrorLogsEnabled,
-			ErrorLogsLevel:    nginx.Logs.ErrorLogsLevel,
+			ErrorLogsLevel:    *nginx.Logs.ErrorLogsLevel,
 		},
 		Timeouts: &settings.NginxTimeoutsSettings{
-			Read:      nginx.Timeouts.Read,
-			Connect:   nginx.Timeouts.Connect,
-			Send:      nginx.Timeouts.Send,
-			Keepalive: nginx.Timeouts.Keepalive,
+			Read:      *nginx.Timeouts.Read,
+			Connect:   *nginx.Timeouts.Connect,
+			Send:      *nginx.Timeouts.Send,
+			Keepalive: *nginx.Timeouts.Keepalive,
 		},
-		WorkerProcesses:     nginx.WorkerProcesses,
-		WorkerConnections:   nginx.WorkerConnections,
-		DefaultContentType:  nginx.DefaultContentType,
+		WorkerProcesses:     *nginx.WorkerProcesses,
+		WorkerConnections:   *nginx.WorkerConnections,
+		DefaultContentType:  *nginx.DefaultContentType,
 		ServerTokensEnabled: *nginx.ServerTokensEnabled,
-		MaximumBodySizeMb:   nginx.MaximumBodySizeMb,
+		MaximumBodySizeMb:   *nginx.MaximumBodySizeMb,
 		SendfileEnabled:     *nginx.SendfileEnabled,
 		GzipEnabled:         *nginx.GzipEnabled,
 	}
 
 	logRotationSettings := &settings.LogRotationSettings{
 		Enabled:           *logRotation.Enabled,
-		MaximumLines:      logRotation.MaximumLines,
-		IntervalUnit:      logRotation.IntervalUnit,
-		IntervalUnitCount: logRotation.IntervalUnitCount,
+		MaximumLines:      *logRotation.MaximumLines,
+		IntervalUnit:      *logRotation.IntervalUnit,
+		IntervalUnitCount: *logRotation.IntervalUnitCount,
 	}
 
 	certificateSettings := &settings.CertificateAutoRenewSettings{
 		Enabled:           *certificate.Enabled,
-		IntervalUnit:      certificate.IntervalUnit,
-		IntervalUnitCount: certificate.IntervalUnitCount,
+		IntervalUnit:      *certificate.IntervalUnit,
+		IntervalUnitCount: *certificate.IntervalUnitCount,
 	}
 
 	var globalBindings []host.Binding
@@ -118,9 +118,9 @@ func toDomain(input *SettingsDto) *settings.Settings {
 		for _, binding := range *bindings {
 			globalBindings = append(globalBindings, host.Binding{
 				ID:            uuid.New(),
-				Type:          binding.Type,
-				IP:            binding.IP,
-				Port:          binding.Port,
+				Type:          *binding.Type,
+				IP:            *binding.IP,
+				Port:          *binding.Port,
 				CertificateID: binding.CertificateID,
 			})
 		}

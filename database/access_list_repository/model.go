@@ -2,9 +2,12 @@ package access_list_repository
 
 import (
 	"github.com/google/uuid"
+	"github.com/uptrace/bun"
 )
 
 type accessListModel struct {
+	bun.BaseModel `bun:"access_list"`
+
 	ID                          uuid.UUID          `bun:"id,pk"`
 	Name                        string             `bun:"name,unique,notnull"`
 	Realm                       string             `bun:"realm"`
@@ -16,6 +19,8 @@ type accessListModel struct {
 }
 
 type credentialsModel struct {
+	bun.BaseModel `bun:"access_list_credentials"`
+
 	ID           uuid.UUID `bun:"id,pk"`
 	AccessListID uuid.UUID `bun:"access_list_id,notnull"`
 	Username     string    `bun:"username,notnull"`
@@ -23,6 +28,8 @@ type credentialsModel struct {
 }
 
 type entrySetModel struct {
+	bun.BaseModel `bun:"access_list_entry_set"`
+
 	ID              uuid.UUID `bun:"id,pk"`
 	AccessListID    uuid.UUID `bun:"access_list_id,notnull"`
 	Priority        int       `bun:"priority,notnull"`
