@@ -2,10 +2,10 @@ package user
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/core_errors"
+	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
+	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/user/password_hash"
-	"errors"
 	"github.com/google/uuid"
 )
 
@@ -14,8 +14,22 @@ type service struct {
 	configuration *configuration.Configuration
 }
 
-func (s *service) authenticate(_ string, _ string) (*User, error) {
-	return nil, core_errors.NotImplemented()
+func (s *service) authenticate(username string, password string) (*User, error) {
+	usr, err := (*s.repository).FindByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+
+	passwordMatches, err := password_hash.New(s.configuration).Verify(password, usr.PasswordHash, usr.PasswordSalt)
+	if err != nil {
+		return nil, err
+	}
+
+	if !passwordMatches {
+		return nil, core_error.New("Invalid username or password", true)
+	}
+
+	return usr, nil
 }
 
 func (s *service) changePassword(id uuid.UUID, currentPassword string, newPassword string) error {
@@ -26,7 +40,7 @@ func (s *service) changePassword(id uuid.UUID, currentPassword string, newPasswo
 	}
 
 	if databaseState == nil {
-		return errors.New("no user exists with the provided ID")
+		return core_error.New("No user found with provided ID", true)
 	}
 
 	passwordMatches, err := hash.Verify(
@@ -39,7 +53,11 @@ func (s *service) changePassword(id uuid.UUID, currentPassword string, newPasswo
 	}
 
 	if !passwordMatches {
-		return errors.New("current password does not match")
+		return validation.SingleFieldError("currentPassword", "Not your current password")
+	}
+
+	if len(newPassword) < minimumPasswordLength {
+		return validation.SingleFieldError("newPassword", "Must have at least 8 characters")
 	}
 
 	updatedHash, updatedSalt, err := hash.Hash(newPassword)
@@ -64,23 +82,31 @@ func (s *service) count() (int, error) {
 	return (*s.repository).Count()
 }
 
-func (s *service) save(request *SaveRequest, currentUserId uuid.UUID) error {
+func (s *service) isOnboardingCompleted() (bool, error) {
+	count, err := (*s.repository).Count()
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
+func (s *service) save(request *SaveRequest, currentUserId *uuid.UUID) error {
 	var passwordHash, passwordSalt string
 	var databaseState *User
 	var err error
 
-	if request.ID != uuid.Nil && request.Password == "" {
-		databaseState, err = (*s.repository).FindByID(request.ID)
-		if err != nil {
-			return err
-		}
+	databaseState, err = (*s.repository).FindByID(request.ID)
+	if err != nil {
+		return err
+	}
 
-		if databaseState != nil {
-			passwordHash = databaseState.PasswordHash
-			passwordSalt = databaseState.PasswordSalt
-		}
-	} else if request.Password != "" {
-		passwordHash, passwordSalt, err = password_hash.New(s.configuration).Hash(request.Password)
+	if request.Password == nil && databaseState != nil {
+		passwordHash = databaseState.PasswordHash
+		passwordSalt = databaseState.PasswordSalt
+	} else if request.Password != nil {
+		passwordHash, passwordSalt, err = password_hash.New(s.configuration).Hash(*request.Password)
+
 		if err != nil {
 			return err
 		}

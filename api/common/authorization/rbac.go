@@ -1,4 +1,4 @@
-package authentication
+package authorization
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
@@ -30,17 +30,17 @@ func (m *RBAC) Jwt() *Jwt {
 	return m.jwt
 }
 
-func (m *RBAC) AllowAnonymous(path string) {
-	m.anonymousPaths = append(m.anonymousPaths, path)
+func (m *RBAC) AllowAnonymous(method, path string) {
+	m.anonymousPaths = append(m.anonymousPaths, method+":"+path)
 }
 
 func (m *RBAC) RequireRole(method, path string, role user.Role) {
 	m.roleRequiredPaths[method+":"+path] = role
 }
 
-func (m *RBAC) isAnonymous(path string) bool {
+func (m *RBAC) isAnonymous(method, path string) bool {
 	for _, p := range m.anonymousPaths {
-		if p == path {
+		if p == method+":"+path {
 			return true
 		}
 	}

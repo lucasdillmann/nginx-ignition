@@ -1,7 +1,7 @@
 package settings_api
 
 import (
-	"dillmann.com.br/nginx-ignition/api/common/authentication"
+	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/user"
 	"github.com/gin-gonic/gin"
@@ -13,7 +13,7 @@ const (
 
 func Install(
 	router *gin.Engine,
-	authorizer *authentication.RBAC,
+	authorizer *authorization.RBAC,
 	getCommand settings.GetCommand,
 	saveCommand settings.SaveCommand,
 ) {

@@ -1,4 +1,4 @@
-package authentication
+package authorization
 
 import (
 	"crypto/rand"
@@ -52,7 +52,7 @@ func (j *Jwt) RevokeToken(tokenId string) {
 }
 
 func (j *Jwt) GenerateToken(usr *user.User) (*string, error) {
-	ttlSeconds, err := j.configuration.GetInt("ttl-ceconds")
+	ttlSeconds, err := j.configuration.GetInt("ttl-seconds")
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (j *Jwt) GenerateToken(usr *user.User) (*string, error) {
 		return nil, err
 	}
 
-	notBefore := time.Now().Add(time.Second * time.Duration(clockSkewSeconds)).Unix()
+	notBefore := time.Now().Add(time.Second * time.Duration(clockSkewSeconds) * -1).Unix()
 	expiresAt := time.Now().
 		Add(time.Second * time.Duration(ttlSeconds)).
 		Add(time.Second * time.Duration(clockSkewSeconds)).
@@ -130,6 +130,11 @@ func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
 		return nil, err
 	}
 
+	clockSkewSeconds, err := j.configuration.GetInt("clock-skew-seconds")
+	if err != nil {
+		return nil, err
+	}
+
 	expiration, err := subject.claims.GetExpirationTime()
 	if err != nil {
 		return nil, err
@@ -137,7 +142,10 @@ func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
 
 	if time.Now().Add(time.Second * time.Duration(windowSize)).After(expiration.Time) {
 		newClaims := *subject.claims
-		newClaims["exp"] = time.Now().Add(time.Second * time.Duration(windowSize)).Unix()
+		newClaims["exp"] = time.Now().
+			Add(time.Second * time.Duration(windowSize)).
+			Add(time.Second * time.Duration(clockSkewSeconds)).
+			Unix()
 		return j.sign(&newClaims)
 	}
 

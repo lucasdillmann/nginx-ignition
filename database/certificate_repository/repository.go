@@ -2,9 +2,12 @@ package certificate_repository
 
 import (
 	"context"
+	"database/sql"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
+	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
+	"errors"
 	"github.com/google/uuid"
 	"time"
 )
@@ -26,8 +29,12 @@ func (r repository) FindByID(id uuid.UUID) (*certificate.Certificate, error) {
 
 	err := r.database.Select().
 		Model(&model).
-		Where("id = ?", id).
+		Where(constants.ByIdFilter, id).
 		Scan(r.ctx)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
 
 	if err != nil {
 		return nil, err
@@ -43,7 +50,7 @@ func (r repository) FindByID(id uuid.UUID) (*certificate.Certificate, error) {
 func (r repository) ExistsByID(id uuid.UUID) (bool, error) {
 	count, err := r.database.Select().
 		Model((*certificateModel)(nil)).
-		Where("id = ?", id).
+		Where(constants.ByIdFilter, id).
 		Count(r.ctx)
 
 	if err != nil {
@@ -54,40 +61,50 @@ func (r repository) ExistsByID(id uuid.UUID) (bool, error) {
 }
 
 func (r repository) DeleteByID(id uuid.UUID) error {
-	tx, err := r.database.Begin()
+	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
 	}
 
-	defer tx.Rollback()
+	defer transaction.Rollback()
 
-	_, err = tx.NewDelete().
+	_, err = transaction.NewDelete().
 		Model((*certificateModel)(nil)).
-		Where("id = ?", id).
+		Where(constants.ByIdFilter, id).
 		Exec(r.ctx)
 
 	return err
 }
 
 func (r repository) Save(certificate *certificate.Certificate) error {
-	tx, err := r.database.Begin()
+	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
 	}
 
-	defer tx.Rollback()
+	defer transaction.Rollback()
 
 	model, err := toModel(certificate)
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.NewMerge().Model(model).Exec(r.ctx)
+	exists, err := transaction.NewSelect().Model((*certificateModel)(nil)).Where(constants.ByIdFilter, certificate.ID).Exists(r.ctx)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	if exists {
+		_, err = transaction.NewUpdate().Model(model).Exec(r.ctx)
+	} else {
+		_, err = transaction.NewInsert().Model(model).Exec(r.ctx)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return transaction.Commit()
 }
 
 func (r repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[certificate.Certificate], error) {

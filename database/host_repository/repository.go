@@ -2,9 +2,12 @@ package host_repository
 
 import (
 	"context"
+	"database/sql"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
+	"errors"
 	"github.com/google/uuid"
 )
 
@@ -25,8 +28,12 @@ func (r *repository) FindByID(id uuid.UUID) (*host.Host, error) {
 
 	err := r.database.Select().
 		Model(&model).
-		Where("id = ?", id).
+		Where(constants.ByIdFilter, id).
 		Scan(r.ctx)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
 
 	if err != nil {
 		return nil, err
@@ -36,47 +43,54 @@ func (r *repository) FindByID(id uuid.UUID) (*host.Host, error) {
 }
 
 func (r *repository) DeleteByID(id uuid.UUID) error {
-	tx, err := r.database.Begin()
+	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
 	}
 
-	defer tx.Rollback()
+	defer transaction.Rollback()
 
-	_, err = tx.NewDelete().
+	_, err = transaction.NewDelete().
 		Model((*hostModel)(nil)).
-		Where("id = ?", id).
+		Where(constants.ByIdFilter, id).
 		Exec(r.ctx)
 
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	return transaction.Commit()
 }
 
 func (r *repository) Save(host *host.Host) error {
-	tx, err := r.database.Begin()
+	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
 	}
 
-	defer tx.Rollback()
+	defer transaction.Rollback()
 
 	model, err := toModel(host)
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.NewMerge().
-		Model(model).
-		Exec(r.ctx)
+	exists, err := transaction.NewSelect().Model((*hostModel)(nil)).Where(constants.ByIdFilter, host.ID).Exists(r.ctx)
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		_, err = transaction.NewUpdate().Model(model).Exec(r.ctx)
+	} else {
+		_, err = transaction.NewInsert().Model(model).Exec(r.ctx)
+	}
 
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	return transaction.Commit()
 }
 
 func (r *repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[host.Host], error) {
@@ -147,6 +161,10 @@ func (r *repository) FindDefault() (*host.Host, error) {
 		Where("default_server = ?", true).
 		Scan(r.ctx)
 
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +175,7 @@ func (r *repository) FindDefault() (*host.Host, error) {
 func (r *repository) ExistsByID(id uuid.UUID) (bool, error) {
 	count, err := r.database.Select().
 		Model((*hostModel)(nil)).
-		Where("id = ?", id).
+		Where(constants.ByIdFilter, id).
 		Count(r.ctx)
 
 	if err != nil {

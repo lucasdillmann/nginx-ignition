@@ -2,7 +2,7 @@ package server
 
 import (
 	"dillmann.com.br/nginx-ignition/api/common/api_error"
-	"dillmann.com.br/nginx-ignition/api/common/authentication"
+	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/user"
 	"github.com/gin-gonic/gin"
@@ -31,7 +31,7 @@ func build(
 ) (
 	*gin.Engine,
 	*state,
-	*authentication.RBAC,
+	*authorization.RBAC,
 	error,
 ) {
 	gin.SetMode(gin.ReleaseMode)
@@ -39,7 +39,7 @@ func build(
 	engine := gin.New()
 	engine.Use(gin.CustomRecoveryWithWriter(nil, api_error.Handler))
 
-	authorizer, err := authentication.New(configuration, &repository)
+	authorizer, err := authorization.New(configuration, &repository)
 	if err != nil {
 		return nil, nil, nil, err
 	}

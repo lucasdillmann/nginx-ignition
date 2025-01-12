@@ -2,9 +2,12 @@ package user_repository
 
 import (
 	"context"
+	"database/sql"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/user"
+	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
+	"errors"
 	"github.com/google/uuid"
 )
 
@@ -23,7 +26,12 @@ func New(database *database.Database) user.Repository {
 func (r *repository) FindByID(id uuid.UUID) (*user.User, error) {
 	var model userModel
 
-	err := r.database.Select().Model(&model).Where("id = ?", id).Scan(r.ctx)
+	err := r.database.Select().Model(&model).Where(constants.ByIdFilter, id).Scan(r.ctx)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -32,23 +40,23 @@ func (r *repository) FindByID(id uuid.UUID) (*user.User, error) {
 }
 
 func (r *repository) DeleteByID(id uuid.UUID) error {
-	tx, err := r.database.Begin()
+	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
 	}
 
-	defer tx.Rollback()
+	defer transaction.Rollback()
 
-	_, err = tx.NewDelete().
+	_, err = transaction.NewDelete().
 		Model((*userModel)(nil)).
-		Where("id = ?", id).
+		Where(constants.ByIdFilter, id).
 		Exec(r.ctx)
 
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	return transaction.Commit()
 }
 
 func (r *repository) FindByUsername(username string) (*user.User, error) {
@@ -58,6 +66,10 @@ func (r *repository) FindByUsername(username string) (*user.User, error) {
 		Model(&model).
 		Where("username = ?", username).
 		Scan(r.ctx)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
 
 	if err != nil {
 		return nil, err
@@ -107,8 +119,12 @@ func (r *repository) IsEnabledByID(id uuid.UUID) (bool, error) {
 
 	err := r.database.Select().
 		Model(&model).
-		Where("id = ?", id).
+		Where(constants.ByIdFilter, id).
 		Scan(r.ctx)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
 
 	if err != nil {
 		return false, err
@@ -127,17 +143,27 @@ func (r *repository) Count() (int, error) {
 }
 
 func (r *repository) Save(user *user.User) error {
-	tx, err := r.database.Begin()
+	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
 	}
 
-	defer tx.Rollback()
+	defer transaction.Rollback()
 
-	_, err = tx.NewMerge().Model(toModel(user)).Exec(r.ctx)
+	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Where(constants.ByIdFilter, user.ID).Exists(r.ctx)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	if exists {
+		_, err = transaction.NewUpdate().Model(toModel(user)).Where(constants.ByIdFilter, user.ID).Exec(r.ctx)
+	} else {
+		_, err = transaction.NewInsert().Model(toModel(user)).Exec(r.ctx)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return transaction.Commit()
 }

@@ -20,7 +20,8 @@ func buildCommands(
 	GetStatusCommand,
 	ListCommand,
 	SaveCommand,
-	ChangePasswordCommand,
+	UpdatePasswordCommand,
+	OnboardingCompletedCommand,
 ) {
 	serviceInstance := &service{&repository, configuration}
 	return serviceInstance.authenticate,
@@ -30,5 +31,6 @@ func buildCommands(
 		serviceInstance.isEnabled,
 		serviceInstance.list,
 		serviceInstance.save,
-		serviceInstance.changePassword
+		serviceInstance.changePassword,
+		serviceInstance.isOnboardingCompleted
 }

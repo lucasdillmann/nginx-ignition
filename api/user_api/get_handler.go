@@ -1,14 +1,14 @@
-package access_list_api
+package user_api
 
 import (
-	"dillmann.com.br/nginx-ignition/core/access_list"
+	"dillmann.com.br/nginx-ignition/core/user"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
 )
 
 type getHandler struct {
-	command *access_list.GetCommand
+	command *user.GetCommand
 }
 
 func (h getHandler) handle(context *gin.Context) {
@@ -18,15 +18,15 @@ func (h getHandler) handle(context *gin.Context) {
 		return
 	}
 
-	accessList, err := (*h.command)(id)
+	usr, err := (*h.command)(id)
 	if err != nil {
 		panic(err)
 	}
 
-	if accessList == nil {
+	if usr == nil {
 		context.Status(http.StatusNotFound)
 		return
 	}
 
-	context.JSON(http.StatusOK, toDto(accessList))
+	context.JSON(http.StatusOK, toDto(usr))
 }

@@ -1,7 +1,8 @@
-package access_list_api
+package user_api
 
 import (
-	"dillmann.com.br/nginx-ignition/core/access_list"
+	"dillmann.com.br/nginx-ignition/api/common/authorization"
+	"dillmann.com.br/nginx-ignition/core/user"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
@@ -9,11 +10,11 @@ import (
 )
 
 type updateHandler struct {
-	command *access_list.SaveCommand
+	command *user.SaveCommand
 }
 
 func (h updateHandler) handle(context *gin.Context) {
-	payload := &accessListRequestDto{}
+	payload := &userRequestDto{}
 	if err := context.BindJSON(payload); err != nil {
 		panic(err)
 	}
@@ -30,8 +31,9 @@ func (h updateHandler) handle(context *gin.Context) {
 
 	domainModel := toDomain(payload)
 	domainModel.ID = id
+	currentUserId := authorization.CurrentSubject(context).User.ID
 
-	if err = (*h.command)(domainModel); err != nil {
+	if err := (*h.command)(domainModel, &currentUserId); err != nil {
 		panic(err)
 	}
 

@@ -17,6 +17,8 @@ type GetStatusCommand func(id uuid.UUID) (bool, error)
 
 type ListCommand func(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[User], error)
 
-type SaveCommand func(user *SaveRequest, currentUserId uuid.UUID) error
+type SaveCommand func(user *SaveRequest, currentUserId *uuid.UUID) error
 
-type ChangePasswordCommand func(id uuid.UUID, oldPassword string, newPassword string) error
+type UpdatePasswordCommand func(id uuid.UUID, oldPassword string, newPassword string) error
+
+type OnboardingCompletedCommand func() (bool, error)

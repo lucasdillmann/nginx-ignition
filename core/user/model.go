@@ -7,6 +7,6 @@ type SaveRequest struct {
 	Enabled  bool
 	Name     string
 	Username string
-	Password string
+	Password *string
 	Role     Role
 }

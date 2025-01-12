@@ -19,13 +19,13 @@ func (v *validator) validate(
 	updatedState *User,
 	currentState *User,
 	request *SaveRequest,
-	currentUserId uuid.UUID,
+	currentUserId *uuid.UUID,
 ) error {
-	if !updatedState.Enabled && currentState != nil && currentState.ID == currentUserId {
+	if !updatedState.Enabled && currentState != nil && currentUserId != nil && currentState.ID == *currentUserId {
 		v.delegate.Add("enabled", "You cannot disable your own user")
 	}
 
-	if request.Password == "" && currentState == nil {
+	if request.Password == nil && currentState == nil {
 		v.delegate.Add("password", validation.ValueMissingMessage)
 	}
 
@@ -42,8 +42,16 @@ func (v *validator) validate(
 		v.delegate.Add("name", minimumLengthMessage(minimumNameLength))
 	}
 
-	if request.Password != "" && len(request.Password) < minimumPasswordLength {
+	if request.Password != nil && len(*request.Password) < minimumPasswordLength {
 		v.delegate.Add("password", minimumLengthMessage(minimumPasswordLength))
+	}
+
+	switch request.Role {
+	case RegularRole:
+	case AdminRole:
+		break
+	default:
+		v.delegate.Add("role", "Invalid role")
 	}
 
 	return v.delegate.Result()

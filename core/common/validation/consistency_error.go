@@ -16,3 +16,15 @@ func (err ConsistencyError) Error() string {
 func NewError(violations []ConsistencyViolation) *ConsistencyError {
 	return &ConsistencyError{Violations: violations}
 }
+
+func SingleFieldError(
+	path string,
+	message string,
+) *ConsistencyError {
+	violation := ConsistencyViolation{
+		Path:    path,
+		Message: message,
+	}
+
+	return NewError([]ConsistencyViolation{violation})
+}

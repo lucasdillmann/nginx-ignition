@@ -1,4 +1,4 @@
-package authentication
+package authorization
 
 import (
 	"dillmann.com.br/nginx-ignition/api/common/api_error"
@@ -7,9 +7,13 @@ import (
 	"strings"
 )
 
+const (
+	RequestSubject = "RBAC:Subject"
+)
+
 func (m *RBAC) HandleRequest(context *gin.Context) {
 	path := context.FullPath()
-	if m.isAnonymous(path) {
+	if m.isAnonymous(context.Request.Method, path) {
 		context.Next()
 		return
 	}
@@ -40,6 +44,6 @@ func (m *RBAC) HandleRequest(context *gin.Context) {
 		context.Header("Authorization", "Bearer "+*refreshedToken)
 	}
 
-	context.Set("subject", subject)
+	context.Set(RequestSubject, subject)
 	context.Next()
 }

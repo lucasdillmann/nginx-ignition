@@ -2,9 +2,12 @@ package access_list_repository
 
 import (
 	"context"
+	"database/sql"
 	"dillmann.com.br/nginx-ignition/core/access_list"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
+	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
+	"errors"
 	"github.com/google/uuid"
 )
 
@@ -25,8 +28,12 @@ func (r *repository) FindByID(id uuid.UUID) (*access_list.AccessList, error) {
 
 	err := r.database.Select().
 		Model(&model).
-		Where("id = ?", id).
+		Where(constants.ByIdFilter, id).
 		Scan(r.ctx)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
 
 	if err != nil {
 		return nil, err
@@ -36,23 +43,23 @@ func (r *repository) FindByID(id uuid.UUID) (*access_list.AccessList, error) {
 }
 
 func (r *repository) DeleteByID(id uuid.UUID) error {
-	tx, err := r.database.Begin()
+	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
 	}
 
-	defer tx.Rollback()
+	defer transaction.Rollback()
 
-	_, err = tx.NewDelete().
+	_, err = transaction.NewDelete().
 		Model((*accessListModel)(nil)).
-		Where("id = ?", id).
+		Where(constants.ByIdFilter, id).
 		Exec(r.ctx)
 
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	return transaction.Commit()
 }
 
 func (r *repository) FindByName(name string) (*access_list.AccessList, error) {
@@ -62,6 +69,10 @@ func (r *repository) FindByName(name string) (*access_list.AccessList, error) {
 		Model(&model).
 		Where("name = ?", name).
 		Scan(r.ctx)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
 
 	if err != nil {
 		return nil, err
@@ -121,17 +132,27 @@ func (r *repository) FindAll() (*[]access_list.AccessList, error) {
 }
 
 func (r *repository) Save(accessList *access_list.AccessList) error {
-	tx, err := r.database.Begin()
+	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
 	}
 
-	defer tx.Rollback()
+	defer transaction.Rollback()
 
-	_, err = tx.NewMerge().Model(toModel(accessList)).Exec(r.ctx)
+	exists, err := transaction.NewSelect().Model((*accessListModel)(nil)).Where(constants.ByIdFilter, accessList.ID).Exists(r.ctx)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	if exists {
+		_, err = transaction.NewUpdate().Model(toModel(accessList)).Exec(r.ctx)
+	} else {
+		_, err = transaction.NewInsert().Model(toModel(accessList)).Exec(r.ctx)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return transaction.Commit()
 }
