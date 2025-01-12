@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -28,11 +29,11 @@ func (c *Configuration) Get(key string) (string, error) {
 		return value, nil
 	}
 
-	formattedKey := strings.ReplaceAll(key, ".", "_")
-	formattedKey = strings.ReplaceAll(key, "-", "_")
+	formattedKey := strings.ReplaceAll(fullKey, ".", "_")
+	formattedKey = strings.ReplaceAll(formattedKey, "-", "_")
 	formattedKey = strings.ToUpper(formattedKey)
 
-	value, exists = os.LookupEnv(fullKey)
+	value, exists = os.LookupEnv(formattedKey)
 	if exists {
 		return value, nil
 	}
@@ -42,7 +43,11 @@ func (c *Configuration) Get(key string) (string, error) {
 		return value, nil
 	}
 
-	return "", errors.New("no configuration or environment value found for " + fullKey)
+	return "", errors.New(fmt.Sprintf(
+		"no configuration or environment value found for %s or %s",
+		fullKey,
+		formattedKey,
+	))
 }
 
 func (c *Configuration) GetInt(key string) (int, error) {
