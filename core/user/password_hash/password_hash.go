@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"reflect"
 	"slices"
-	"strconv"
 )
 
 type PasswordHash struct {
@@ -76,22 +75,12 @@ func (h *PasswordHash) hashValue(password []byte, salt []byte, hashIterations in
 
 func readConfigValues(configuration *configuration.Configuration) (int, int, error) {
 	prefixedConfiguration := (*configuration).WithPrefix("nginx-ignition.security.user-password-hashing")
-	saltSizeRaw, err := prefixedConfiguration.Get("salt-size")
+	saltSize, err := prefixedConfiguration.GetInt("salt-size")
 	if err != nil {
 		return 0, 0, err
 	}
 
-	iterationsRaw, err := prefixedConfiguration.Get("iterations")
-	if err != nil {
-		return 0, 0, err
-	}
-
-	saltSize, err := strconv.Atoi(saltSizeRaw)
-	if err != nil {
-		return 0, 0, err
-	}
-
-	iterations, err := strconv.Atoi(iterationsRaw)
+	iterations, err := prefixedConfiguration.GetInt("iterations")
 	if err != nil {
 		return 0, 0, err
 	}

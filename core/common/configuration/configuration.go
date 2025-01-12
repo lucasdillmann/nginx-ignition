@@ -3,6 +3,7 @@ package configuration
 import (
 	"errors"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -42,6 +43,15 @@ func (c *Configuration) Get(key string) (string, error) {
 	}
 
 	return "", errors.New("no configuration or environment value found for " + fullKey)
+}
+
+func (c *Configuration) GetInt(key string) (int, error) {
+	value, err := c.Get(key)
+	if err != nil {
+		return 0, err
+	}
+
+	return strconv.Atoi(value)
 }
 
 func (c *Configuration) WithPrefix(prefix string) *Configuration {
