@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 )
 
@@ -36,6 +37,8 @@ func Handler(context *gin.Context, outcome any) {
 		handleValidationError(context, validationError)
 	case errors.As(err, &coreError):
 		handleCoreError(context, coreError)
+	case errors.Is(err, jwt.ErrSignatureInvalid):
+		handleInvalidTokenError(context)
 	default:
 		handleGenericError(context, err)
 	}
@@ -45,6 +48,10 @@ func handleGenericError(context *gin.Context, err error) {
 	stack := stacktrace()
 	log.Error("Error detected while processing request: %s\n%s", err, stack)
 	context.Status(http.StatusInternalServerError)
+}
+
+func handleInvalidTokenError(context *gin.Context) {
+	context.Status(http.StatusUnauthorized)
 }
 
 func handleHttpError(context *gin.Context, err *ApiError) {
