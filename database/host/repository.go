@@ -28,6 +28,8 @@ func (r *repository) FindByID(id uuid.UUID) (*host.Host, error) {
 
 	err := r.database.Select().
 		Model(&model).
+		Relation("Bindings").
+		Relation("Routes").
 		Where(constants.ByIdFilter, id).
 		Scan(r.ctx)
 
@@ -107,6 +109,8 @@ func (r *repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*p
 	}
 
 	err = query.
+		Relation("Bindings").
+		Relation("Routes").
 		Limit(pageSize).
 		Offset(pageSize * pageNumber).
 		Order("domain_names").
@@ -134,6 +138,8 @@ func (r *repository) FindAllEnabled() ([]*host.Host, error) {
 
 	err := r.database.Select().
 		Model(&models).
+		Relation("Bindings").
+		Relation("Routes").
 		Where("enabled = ?", true).
 		Scan(r.ctx)
 
@@ -158,6 +164,8 @@ func (r *repository) FindDefault() (*host.Host, error) {
 
 	err := r.database.Select().
 		Model(&model).
+		Relation("Bindings").
+		Relation("Routes").
 		Where("default_server = ?", true).
 		Scan(r.ctx)
 

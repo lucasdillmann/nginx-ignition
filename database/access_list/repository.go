@@ -28,6 +28,8 @@ func (r *repository) FindByID(id uuid.UUID) (*access_list.AccessList, error) {
 
 	err := r.database.Select().
 		Model(&model).
+		Relation("Credentials").
+		Relation("EntrySets").
 		Where(constants.ByIdFilter, id).
 		Scan(r.ctx)
 
@@ -67,6 +69,8 @@ func (r *repository) FindByName(name string) (*access_list.AccessList, error) {
 
 	err := r.database.Select().
 		Model(&model).
+		Relation("Credentials").
+		Relation("EntrySets").
 		Where("name = ?", name).
 		Scan(r.ctx)
 
@@ -95,6 +99,8 @@ func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*p
 	}
 
 	err = query.
+		Relation("Credentials").
+		Relation("EntrySets").
 		Limit(pageSize).
 		Offset(pageSize * pageNumber).
 		Order("name").
@@ -117,6 +123,8 @@ func (r *repository) FindAll() (*[]access_list.AccessList, error) {
 
 	err := r.database.Select().
 		Model(&models).
+		Relation("Credentials").
+		Relation("EntrySets").
 		Scan(r.ctx)
 
 	if err != nil {
