@@ -2,6 +2,7 @@ package host
 
 import (
 	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/nginx"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,6 +12,7 @@ func Install(
 	saveCommand host.SaveCommand,
 	deleteCommand host.DeleteCommand,
 	listCommand host.ListCommand,
+	logsCommand nginx.GetHostLogsCommand,
 ) {
 	basePath := router.Group("/api/hosts")
 	basePath.GET("", listHandler{&listCommand}.handle)
@@ -20,4 +22,5 @@ func Install(
 	byIdPath.GET("", getHandler{&getCommand}.handle)
 	byIdPath.PUT("", updateHandler{&saveCommand}.handle)
 	byIdPath.DELETE("", deleteHandler{&deleteCommand}.handle)
+	byIdPath.GET("/logs/:qualifier", logsHandler{&logsCommand}.handle)
 }

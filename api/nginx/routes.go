@@ -11,12 +11,12 @@ func Install(
 	startCommand nginx.StartCommand,
 	stopCommand nginx.StopCommand,
 	statusCommand nginx.GetStatusCommand,
-	getMainLogsCommand nginx.GetMainLogsCommand,
+	logsCommand nginx.GetMainLogsCommand,
 ) {
 	basePath := router.Group("/api/nginx")
 	basePath.POST("/start", startHandler{&startCommand}.handle)
 	basePath.POST("/stop", stopHandler{&stopCommand}.handle)
 	basePath.POST("/reload", reloadHandler{&reloadCommand}.handle)
 	basePath.GET("/status", statusHandler{&statusCommand}.handle)
-	basePath.GET("/logs", logsHandler{&getMainLogsCommand}.handle)
+	basePath.GET("/logs", logsHandler{&logsCommand}.handle)
 }
