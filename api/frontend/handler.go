@@ -1,7 +1,9 @@
 package frontend
 
 import (
+	"crypto/sha256"
 	"dillmann.com.br/nginx-ignition/core/common/log"
+	"encoding/hex"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"io"
@@ -43,6 +45,20 @@ func (h handler) handle(context *gin.Context) {
 		return
 	}
 
+	etag, err := generateETag(fileContents)
+	if err != nil {
+		log.Warnf("Unable to generate ETag for file %s: %s", *sanitizedPath, err)
+	} else {
+		ifNoneMatchHeader := context.GetHeader("if-none-match")
+		if ifNoneMatchHeader == etag {
+			context.Status(http.StatusNotModified)
+			return
+		}
+
+		context.Header("Cache-Control", "max-age=604800, must-revalidate")
+		context.Header("ETag", etag)
+	}
+
 	context.Data(http.StatusOK, *fileType, fileContents)
 }
 
@@ -81,6 +97,8 @@ func (h handler) loadFile(path string) ([]byte, *string, error) {
 		return nil, nil, err
 	}
 
+	defer file.Close()
+
 	ext := filepath.Ext(path)
 	mimeType := mime.TypeByExtension(ext)
 	if mimeType == "" {
@@ -93,4 +111,15 @@ func (h handler) loadFile(path string) ([]byte, *string, error) {
 	}
 
 	return fileContents, &mimeType, nil
+}
+
+func generateETag(contents []byte) (string, error) {
+	hasher := sha256.New()
+	if _, err := hasher.Write(contents); err != nil {
+		return "", err
+	}
+
+	hash := hasher.Sum(nil)
+	etag := hex.EncodeToString(hash)
+	return `"` + etag + `"`, nil
 }
