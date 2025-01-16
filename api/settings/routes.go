@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	basePath = "/api/settings"
+	apiPath = "/api/settings"
 )
 
 func Install(
@@ -17,8 +17,9 @@ func Install(
 	getCommand settings.GetCommand,
 	saveCommand settings.SaveCommand,
 ) {
-	router.GET(basePath, getHandler{&getCommand}.handle)
-	router.PUT(basePath, putHandler{&saveCommand}.handle)
+	basePath := router.Group(apiPath)
+	basePath.GET("", getHandler{&getCommand}.handle)
+	basePath.PUT("", putHandler{&saveCommand}.handle)
 
-	authorizer.RequireRole("PUT", basePath, user.AdminRole)
+	authorizer.RequireRole("PUT", apiPath, user.AdminRole)
 }

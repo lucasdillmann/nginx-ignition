@@ -5,11 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	basePath = "/api/access-lists"
-	byIdPath = basePath + "/:id"
-)
-
 func Install(
 	router *gin.Engine,
 	getCommand access_list.GetCommand,
@@ -17,10 +12,12 @@ func Install(
 	deleteCommand access_list.DeleteCommand,
 	listCommand access_list.ListCommand,
 ) {
-	router.GET(basePath, listHandler{&listCommand}.handle)
-	router.POST(basePath, createHandler{&saveCommand}.handle)
+	basePath := router.Group("/api/access-lists")
+	basePath.GET("", listHandler{&listCommand}.handle)
+	basePath.POST("", createHandler{&saveCommand}.handle)
 
-	router.GET(byIdPath, getHandler{&getCommand}.handle)
-	router.PUT(byIdPath, updateHandler{&saveCommand}.handle)
-	router.DELETE(byIdPath, deleteHandler{&deleteCommand}.handle)
+	byIdPath := basePath.Group("/:id")
+	byIdPath.GET("", getHandler{&getCommand}.handle)
+	byIdPath.PUT("", updateHandler{&saveCommand}.handle)
+	byIdPath.DELETE("", deleteHandler{&deleteCommand}.handle)
 }

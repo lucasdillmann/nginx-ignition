@@ -34,7 +34,7 @@ func (r *logReader) read(fileName string, tailSize int) ([]string, error) {
 
 	defer file.Close()
 
-	var lines []string
+	lines := make([]string, 0)
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())

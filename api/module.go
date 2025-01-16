@@ -5,6 +5,7 @@ import (
 	"dillmann.com.br/nginx-ignition/api/common/server"
 	"dillmann.com.br/nginx-ignition/api/frontend"
 	"dillmann.com.br/nginx-ignition/api/host"
+	"dillmann.com.br/nginx-ignition/api/nginx"
 	"dillmann.com.br/nginx-ignition/api/settings"
 	"dillmann.com.br/nginx-ignition/api/user"
 	"go.uber.org/dig"
@@ -28,6 +29,10 @@ func Install(container *dig.Container) error {
 	}
 
 	if err := container.Invoke(host.Install); err != nil {
+		return err
+	}
+
+	if err := container.Invoke(nginx.Install); err != nil {
 		return err
 	}
 
