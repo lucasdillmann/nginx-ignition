@@ -19,7 +19,7 @@ func newLogReader(configProvider *configuration.Configuration) *logReader {
 }
 
 func (r *logReader) read(fileName string, tailSize int) ([]string, error) {
-	basePath, err := r.configProvider.Get("nginx-ignition.nginx.config-directory")
+	basePath, err := r.configProvider.Get("nginx-ignition.nginx.config-path")
 	if err != nil {
 		return nil, err
 	}

@@ -13,6 +13,11 @@ const (
 
 func (m *RBAC) HandleRequest(context *gin.Context) {
 	path := context.FullPath()
+	if !strings.HasPrefix(path, "/api/") {
+		context.Next()
+		return
+	}
+
 	if m.isAnonymous(context.Request.Method, path) {
 		context.Next()
 		return

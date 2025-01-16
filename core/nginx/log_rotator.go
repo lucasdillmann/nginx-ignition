@@ -35,7 +35,7 @@ func newLogRotator(
 func (r *logRotator) rotate() error {
 	log.Infof("Starting log rotation")
 
-	basePath, err := r.configProvider.Get("nginx-ignition.nginx.config-directory")
+	basePath, err := r.configProvider.Get("nginx-ignition.nginx.config-path")
 	if err != nil {
 		return err
 	}

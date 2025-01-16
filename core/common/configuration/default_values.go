@@ -5,7 +5,7 @@ func defaultValues() map[string]string {
 		"nginx-ignition.server.port":                                   "8090",
 		"nginx-ignition.server.shutdown-delay-seconds":                 "2",
 		"nginx-ignition.nginx.binary-path":                             "nginx",
-		"nginx-ignition.nginx.config-directory":                        "/tmp/nginx-ignition/nginx",
+		"nginx-ignition.nginx.config-path":                             "/tmp/nginx-ignition/nginx",
 		"nginx-ignition.database.driver":                               "sqlite",
 		"nginx-ignition.database.data-path":                            "/tmp/nginx-ignition/data",
 		"nginx-ignition.security.user-password-hashing.algorithm":      "SHA-512",

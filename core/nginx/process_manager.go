@@ -22,7 +22,7 @@ func newProcessManager(configuration *configuration.Configuration) (*processMana
 		return nil, err
 	}
 
-	configPath, err := prefixedConfiguration.Get("config-directory")
+	configPath, err := prefixedConfiguration.Get("config-path")
 	if err != nil {
 		return nil, err
 	}

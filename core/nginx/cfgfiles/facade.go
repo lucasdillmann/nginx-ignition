@@ -50,7 +50,7 @@ func (f *Facade) ReplaceConfigurationFiles() error {
 
 	log.Infof("Rebuilding nginx configuration files for %d hosts", len(hosts))
 
-	configDir, err := f.configuration.Get("nginx-ignition.nginx.config-directory")
+	configDir, err := f.configuration.Get("nginx-ignition.nginx.config-path")
 	if err != nil {
 		return err
 	}
