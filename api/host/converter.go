@@ -14,7 +14,7 @@ func toDto(input *host.Host) *hostResponseDto {
 		Enabled:           &input.Enabled,
 		DefaultServer:     &input.DefaultServer,
 		UseGlobalBindings: &input.UseGlobalBindings,
-		DomainNames:       &input.DomainNames,
+		DomainNames:       input.DomainNames,
 		Routes:            toRouteDtoSlice(input.Routes),
 		Bindings:          toBindingDtoSlice(input.Bindings),
 		FeatureSet:        toFeatureSetDto(&input.FeatureSet),
@@ -31,7 +31,7 @@ func toDomain(input *hostRequestDto) *host.Host {
 		Enabled:           getBoolValue(input.Enabled),
 		DefaultServer:     getBoolValue(input.DefaultServer),
 		UseGlobalBindings: getBoolValue(input.UseGlobalBindings),
-		DomainNames:       getStringSliceValue(input.DomainNames),
+		DomainNames:       input.DomainNames,
 		Routes:            toRouteSlice(input.Routes),
 		Bindings:          toBindingSlice(input.Bindings),
 		FeatureSet:        *toFeatureSet(input.FeatureSet),
@@ -39,17 +39,17 @@ func toDomain(input *hostRequestDto) *host.Host {
 	}
 }
 
-func toRouteDtoSlice(routes []host.Route) *[]routeDto {
+func toRouteDtoSlice(routes []*host.Route) []*routeDto {
 	if routes == nil {
 		return nil
 	}
 
-	result := make([]routeDto, len(routes))
+	result := make([]*routeDto, len(routes))
 	for i, route := range routes {
-		result[i] = *toRouteDto(&route)
+		result[i] = toRouteDto(route)
 	}
 
-	return &result
+	return result
 }
 
 func toRouteDto(route *host.Route) *routeDto {
@@ -72,17 +72,17 @@ func toRouteDto(route *host.Route) *routeDto {
 	}
 }
 
-func toBindingDtoSlice(bindings []host.Binding) *[]bindingDto {
+func toBindingDtoSlice(bindings []*host.Binding) []*bindingDto {
 	if bindings == nil {
 		return nil
 	}
 
-	result := make([]bindingDto, len(bindings))
+	result := make([]*bindingDto, len(bindings))
 	for i, binding := range bindings {
-		result[i] = *toBindingDto(&binding)
+		result[i] = toBindingDto(binding)
 	}
 
-	return &result
+	return result
 }
 
 func toBindingDto(binding *host.Binding) *bindingDto {
@@ -165,34 +165,27 @@ func getBoolValue(value *bool) bool {
 	return *value
 }
 
-func getStringSliceValue(value *[]string) []string {
-	if value == nil {
-		return nil
-	}
-	return *value
-}
-
-func toRouteSlice(routes *[]routeDto) []host.Route {
+func toRouteSlice(routes []*routeDto) []*host.Route {
 	if routes == nil {
 		return nil
 	}
 
-	result := make([]host.Route, len(*routes))
-	for i, route := range *routes {
-		result[i] = *toDomainModelRoute(&route)
+	result := make([]*host.Route, len(routes))
+	for i, route := range routes {
+		result[i] = toDomainModelRoute(route)
 	}
 
 	return result
 }
 
-func toBindingSlice(bindings *[]bindingDto) []host.Binding {
+func toBindingSlice(bindings []*bindingDto) []*host.Binding {
 	if bindings == nil {
 		return nil
 	}
 
-	result := make([]host.Binding, len(*bindings))
-	for i, binding := range *bindings {
-		result[i] = *toDomainModelBinding(&binding)
+	result := make([]*host.Binding, len(bindings))
+	for i, binding := range bindings {
+		result[i] = toDomainModelBinding(binding)
 	}
 
 	return result

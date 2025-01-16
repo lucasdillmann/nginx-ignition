@@ -186,7 +186,7 @@ func initializeSecret(configurationProvider *configuration.Configuration) ([]byt
 		return []byte(secret), nil
 	}
 
-	log.Warn(
+	log.Warnf(
 		"Application was initialized without a JWT secret and a random one will be generated. This will lead " +
 			"to users being logged-out every time the app restarts or they hit a different instance. Please " +
 			"refer to the documentation in order to provide a custom secret.",

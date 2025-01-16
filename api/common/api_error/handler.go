@@ -46,7 +46,7 @@ func Handler(context *gin.Context, outcome any) {
 
 func handleGenericError(context *gin.Context, err error) {
 	stack := stacktrace()
-	log.Error("Error detected while processing request: %s\n%s", err, stack)
+	log.Errorf("Error detected while processing request: %s\n%s", err, stack)
 	context.Status(http.StatusInternalServerError)
 }
 
@@ -67,22 +67,22 @@ func handleCoreError(context *gin.Context, err *core_error.CoreError) {
 }
 
 func handleConsistencyError(context *gin.Context, err *validation.ConsistencyError) {
-	var details = make([]problemDetail, len(err.Violations))
+	var details = make([]*problemDetail, len(err.Violations))
 	for index, detail := range err.Violations {
-		details[index] = problemDetail{
+		details[index] = &problemDetail{
 			FieldPath: detail.Path,
 			Message:   detail.Message,
 		}
 	}
 
-	sendError(context, &details)
+	sendError(context, details)
 }
 
 func handleValidationError(context *gin.Context, _ *validator.ValidationErrors) {
 	context.Status(http.StatusBadRequest)
 }
 
-func sendError(context *gin.Context, details *[]problemDetail) {
+func sendError(context *gin.Context, details []*problemDetail) {
 	context.JSON(http.StatusBadRequest, gin.H{
 		"message":             "One or more consistency problems were found",
 		"consistencyProblems": details,

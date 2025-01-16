@@ -9,9 +9,9 @@ type hostRequestDto struct {
 	Enabled           *bool          `json:"enabled" validate:"required"`
 	DefaultServer     *bool          `json:"defaultServer" validate:"required"`
 	UseGlobalBindings *bool          `json:"useGlobalBindings" validate:"required"`
-	DomainNames       *[]string      `json:"domainNames"`
-	Routes            *[]routeDto    `json:"routes"`
-	Bindings          *[]bindingDto  `json:"bindings"`
+	DomainNames       []*string      `json:"domainNames"`
+	Routes            []*routeDto    `json:"routes"`
+	Bindings          []*bindingDto  `json:"bindings"`
 	FeatureSet        *featureSetDto `json:"featureSet" validate:"required"`
 	AccessListId      *uuid.UUID     `json:"accessListId"`
 }
@@ -72,9 +72,9 @@ type hostResponseDto struct {
 	Enabled           *bool          `json:"enabled" validate:"required"`
 	DefaultServer     *bool          `json:"defaultServer" validate:"required"`
 	UseGlobalBindings *bool          `json:"useGlobalBindings" validate:"required"`
-	DomainNames       *[]string      `json:"domainNames"`
-	Routes            *[]routeDto    `json:"routes" validate:"required"`
-	Bindings          *[]bindingDto  `json:"bindings" validate:"required"`
+	DomainNames       []*string      `json:"domainNames"`
+	Routes            []*routeDto    `json:"routes" validate:"required"`
+	Bindings          []*bindingDto  `json:"bindings" validate:"required"`
 	FeatureSet        *featureSetDto `json:"featureSet" validate:"required"`
 	AccessListId      *uuid.UUID     `json:"accessListId"`
 }

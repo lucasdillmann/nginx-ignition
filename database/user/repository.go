@@ -106,12 +106,12 @@ func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*p
 		return nil, err
 	}
 
-	var result []user.User
+	var result []*user.User
 	for _, model := range models {
-		result = append(result, *toDomain(&model))
+		result = append(result, toDomain(&model))
 	}
 
-	return pagination.New(pageNumber, pageSize, count, &result), nil
+	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
 func (r *repository) IsEnabledByID(id uuid.UUID) (bool, error) {

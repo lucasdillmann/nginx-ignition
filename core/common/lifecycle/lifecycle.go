@@ -1,42 +1,46 @@
 package lifecycle
 
 import (
+	"dillmann.com.br/nginx-ignition/core/common/log"
 	"sort"
 )
 
 type Lifecycle struct {
-	startupCommands  *[]StartupCommand
-	shutdownCommands *[]ShutdownCommand
+	startupCommands  []*StartupCommand
+	shutdownCommands []*ShutdownCommand
 }
 
 func New() *Lifecycle {
 	return &Lifecycle{
-		startupCommands:  &[]StartupCommand{},
-		shutdownCommands: &[]ShutdownCommand{},
+		startupCommands:  []*StartupCommand{},
+		shutdownCommands: []*ShutdownCommand{},
 	}
 }
 
 func (l *Lifecycle) RegisterStartup(command StartupCommand) {
-	updatedValues := append(*l.startupCommands, command)
-	l.startupCommands = &updatedValues
+	l.startupCommands = append(l.startupCommands, &command)
 }
 
 func (l *Lifecycle) RegisterShutdown(command ShutdownCommand) {
-	updatedValues := append(*l.shutdownCommands, command)
-	l.shutdownCommands = &updatedValues
+	l.shutdownCommands = append(l.shutdownCommands, &command)
 }
 
 func (l *Lifecycle) FireStartup() error {
-	commands := *l.startupCommands
-	sort.Slice(commands, func(left, right int) bool {
-		return commands[left].Priority() < commands[right].Priority()
+	sort.Slice(l.startupCommands, func(left, right int) bool {
+		leftCommand := *l.startupCommands[left]
+		rightCommand := *l.startupCommands[right]
+		return leftCommand.Priority() < rightCommand.Priority()
 	})
 
-	for _, command := range commands {
-		if command.Async() {
-			go func() { _ = command.Run() }()
+	for _, command := range l.startupCommands {
+		if (*command).Async() {
+			go func() {
+				if err := (*command).Run(); err != nil {
+					log.Warnf("Startup task failed: %s", err)
+				}
+			}()
 		} else {
-			if err := command.Run(); err != nil {
+			if err := (*command).Run(); err != nil {
 				return err
 			}
 		}
@@ -46,12 +50,13 @@ func (l *Lifecycle) FireStartup() error {
 }
 
 func (l *Lifecycle) FireShutdown() {
-	commands := *l.shutdownCommands
-	sort.Slice(commands, func(left, right int) bool {
-		return commands[left].Priority() < commands[right].Priority()
+	sort.Slice(l.shutdownCommands, func(left, right int) bool {
+		leftCommand := *l.shutdownCommands[left]
+		rightCommand := *l.shutdownCommands[right]
+		return leftCommand.Priority() < rightCommand.Priority()
 	})
 
-	for _, command := range commands {
-		command.Run()
+	for _, command := range l.shutdownCommands {
+		(*command).Run()
 	}
 }

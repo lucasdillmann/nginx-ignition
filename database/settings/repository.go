@@ -20,22 +20,22 @@ func New(database *database.Database) settings.Repository {
 }
 
 func (r repository) Get() (*settings.Settings, error) {
-	nginx := NginxModel{}
+	nginx := nginxModel{}
 	if err := r.database.Select().Model(&nginx).Scan(r.ctx); err != nil {
 		return nil, err
 	}
 
-	certificate := CertificateModel{}
+	certificate := certificateModel{}
 	if err := r.database.Select().Model(&certificate).Scan(r.ctx); err != nil {
 		return nil, err
 	}
 
-	logRotation := LogRotationModel{}
+	logRotation := logRotationModel{}
 	if err := r.database.Select().Model(&logRotation).Scan(r.ctx); err != nil {
 		return nil, err
 	}
 
-	var bindings []BindingModel
+	var bindings []*bindingModel
 	if err := r.database.Select().Model(&bindings).Scan(r.ctx); err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (r repository) Get() (*settings.Settings, error) {
 		}
 	}
 
-	return toDomain(&nginx, &logRotation, &certificate, &bindings), nil
+	return toDomain(&nginx, &logRotation, &certificate, bindings), nil
 }
 
 func (r repository) Save(settings *settings.Settings) error {

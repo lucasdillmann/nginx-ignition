@@ -9,8 +9,7 @@ type startup struct {
 }
 
 func registerStartup(lifecycle *lifecycle.Lifecycle, database *Database) {
-	command := &startup{database}
-	lifecycle.RegisterStartup(command)
+	lifecycle.RegisterStartup(startup{database})
 }
 
 func (d startup) Priority() int {

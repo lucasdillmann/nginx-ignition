@@ -6,9 +6,9 @@ import (
 )
 
 func toDomain(model *hostModel) (*host.Host, error) {
-	bindings := make([]host.Binding, len(model.Bindings))
+	bindings := make([]*host.Binding, len(model.Bindings))
 	for index, binding := range model.Bindings {
-		bindings[index] = host.Binding{
+		bindings[index] = &host.Binding{
 			ID:            binding.ID,
 			Type:          host.BindingType(binding.Type),
 			IP:            binding.IP,
@@ -17,7 +17,7 @@ func toDomain(model *hostModel) (*host.Host, error) {
 		}
 	}
 
-	routes := make([]host.Route, len(model.Routes))
+	routes := make([]*host.Route, len(model.Routes))
 	for index, route := range model.Routes {
 		headers, err := parseHeaders(route.StaticResponseHeaders)
 		if err != nil {
@@ -50,7 +50,7 @@ func toDomain(model *hostModel) (*host.Host, error) {
 			}
 		}
 
-		routes[index] = host.Route{
+		routes[index] = &host.Route{
 			ID:           route.ID,
 			Priority:     route.Priority,
 			Enabled:      route.Enabled,
@@ -89,9 +89,9 @@ func toDomain(model *hostModel) (*host.Host, error) {
 }
 
 func toModel(domain *host.Host) (*hostModel, error) {
-	bindings := make([]hostBindingModel, len(domain.Bindings))
+	bindings := make([]*hostBindingModel, len(domain.Bindings))
 	for index, binding := range domain.Bindings {
-		bindings[index] = hostBindingModel{
+		bindings[index] = &hostBindingModel{
 			ID:            binding.ID,
 			HostID:        domain.ID,
 			Type:          string(binding.Type),
@@ -101,7 +101,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 		}
 	}
 
-	routes := make([]hostRouteModel, len(domain.Routes))
+	routes := make([]*hostRouteModel, len(domain.Routes))
 	for index, route := range domain.Routes {
 		headers, err := formatHeaders(route.Response.Headers)
 		if err != nil {
@@ -120,7 +120,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 			codeContents = &route.SourceCode.Contents
 		}
 
-		routes[index] = hostRouteModel{
+		routes[index] = &hostRouteModel{
 			ID:                     route.ID,
 			HostID:                 domain.ID,
 			Priority:               route.Priority,

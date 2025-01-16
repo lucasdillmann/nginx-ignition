@@ -10,9 +10,9 @@ func main() {
 		panic(err)
 	}
 
-	log.Info("Welcome to nginx ignition")
+	log.Infof("Welcome to nginx ignition")
 
 	if err := boot.StartApplication(); err != nil {
-		log.Fatal("Application failed to start: %s", err)
+		log.Fatalf("Application failed to start: %s", err)
 	}
 }

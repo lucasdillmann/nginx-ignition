@@ -9,8 +9,7 @@ type shutdown struct {
 }
 
 func registerShutdown(lifecycle *lifecycle.Lifecycle, database *Database) {
-	command := &shutdown{database}
-	lifecycle.RegisterShutdown(command)
+	lifecycle.RegisterShutdown(shutdown{database})
 }
 
 func (d shutdown) Priority() int {

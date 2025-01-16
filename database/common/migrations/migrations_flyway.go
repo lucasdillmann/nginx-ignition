@@ -49,6 +49,6 @@ func (m *migrations) convertFlywayTable(db *sql.DB) error {
 		return err
 	}
 
-	log.Info("Database migration history successfully converted from Flyway to Go Migrate")
+	log.Infof("Database migration history successfully converted from Flyway to Go Migrate")
 	return nil
 }

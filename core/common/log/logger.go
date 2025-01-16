@@ -26,18 +26,18 @@ func Init() error {
 	return err
 }
 
-func Info(message string, values ...any) {
+func Infof(message string, values ...any) {
 	logger.Info(fmt.Sprintf(message, values...))
 }
 
-func Warn(message string, values ...any) {
+func Warnf(message string, values ...any) {
 	logger.Warn(fmt.Sprintf(message, values...))
 }
 
-func Error(message string, values ...any) {
+func Errorf(message string, values ...any) {
 	logger.Error(fmt.Sprintf(message, values...))
 }
 
-func Fatal(message string, values ...any) {
+func Fatalf(message string, values ...any) {
 	logger.Fatal(fmt.Sprintf(message, values...))
 }

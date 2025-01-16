@@ -10,18 +10,17 @@ type shutdown struct {
 }
 
 func registerShutdown(lifecycle *lifecycle.Lifecycle, state *state) {
-	command := &shutdown{state}
-	lifecycle.RegisterShutdown(command)
+	lifecycle.RegisterShutdown(shutdown{state})
 }
 
-func (s *shutdown) Run() {
-	log.Info("Stopping the HTTP server")
+func (s shutdown) Run() {
+	log.Infof("Stopping the HTTP server")
 
 	if err := s.state.server.Close(); err != nil {
-		log.Warn("Failed to stop HTTP server: %v", err)
+		log.Warnf("Failed to stop HTTP server: %v", err)
 	}
 }
 
-func (s *shutdown) Priority() int {
+func (s shutdown) Priority() int {
 	return shutdownPriority
 }

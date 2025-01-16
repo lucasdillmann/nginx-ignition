@@ -120,17 +120,17 @@ func (r *repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*p
 		return nil, err
 	}
 
-	var result []host.Host
+	var result []*host.Host
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {
 			return nil, err
 		}
 
-		result = append(result, *domain)
+		result = append(result, domain)
 	}
 
-	return pagination.New(pageNumber, pageSize, count, &result), nil
+	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
 func (r *repository) FindAllEnabled() ([]*host.Host, error) {

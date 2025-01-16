@@ -25,7 +25,7 @@ type AccessList struct {
 type AccessListEntry struct {
 	Priority      int
 	Outcome       Outcome
-	SourceAddress []string
+	SourceAddress []*string
 }
 
 type AccessListCredentials struct {

@@ -63,7 +63,7 @@ func (d *Database) initPostgres() error {
 		return err
 	}
 
-	log.Info(
+	log.Infof(
 		"Starting database connection to %s on %s:%s using username %s and SSL mode %s",
 		name, host, port, username, sslMode,
 	)
@@ -77,7 +77,7 @@ func (d *Database) initPostgres() error {
 }
 
 func (d *Database) initSqlite() error {
-	log.Warn(
+	log.Warnf(
 		"Application is configured to use the embedded SQLite database. This isn't recommended for " +
 			"production environments, please refer to the documentation in order to migrate to PostgreSQL.",
 	)
@@ -88,7 +88,7 @@ func (d *Database) initSqlite() error {
 	}
 
 	filePath := fmt.Sprintf("%s/nginx-ignition.db", folder)
-	log.Info("Starting database connection to SQLite on %s", filePath)
+	log.Infof("Starting database connection to SQLite on %s", filePath)
 
 	if err = os.MkdirAll(folder, os.ModePerm); err != nil {
 		return err

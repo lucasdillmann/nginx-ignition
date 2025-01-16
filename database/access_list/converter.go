@@ -36,9 +36,9 @@ func toDomain(model *accessListModel) *access_list.AccessList {
 }
 
 func toModel(domain *access_list.AccessList) *accessListModel {
-	entrySets := make([]entrySetModel, len(domain.Entries))
+	entrySets := make([]*entrySetModel, len(domain.Entries))
 	for index, entry := range domain.Entries {
-		entrySets[index] = entrySetModel{
+		entrySets[index] = &entrySetModel{
 			ID:              uuid.New(),
 			AccessListID:    domain.ID,
 			Priority:        entry.Priority,
@@ -47,9 +47,9 @@ func toModel(domain *access_list.AccessList) *accessListModel {
 		}
 	}
 
-	credentials := make([]credentialsModel, len(domain.Credentials))
+	credentials := make([]*credentialsModel, len(domain.Credentials))
 	for index, cred := range domain.Credentials {
-		credentials[index] = credentialsModel{
+		credentials[index] = &credentialsModel{
 			ID:           uuid.New(),
 			AccessListID: domain.ID,
 			Username:     cred.Username,

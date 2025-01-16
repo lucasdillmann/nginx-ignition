@@ -1,6 +1,6 @@
 package server
 
 const (
-	startupPriority  = 900
+	startupPriority  = 800
 	shutdownPriority = 100
 )

@@ -16,9 +16,9 @@ func Convert[I any, O any](
 
 	var contents []*O
 	if page.Contents != nil {
-		contents = make([]*O, len(*page.Contents))
-		for index, item := range *page.Contents {
-			contents[index] = converter(&item)
+		contents = make([]*O, len(page.Contents))
+		for index, item := range page.Contents {
+			contents[index] = converter(item)
 		}
 	} else {
 		contents = make([]*O, 0)

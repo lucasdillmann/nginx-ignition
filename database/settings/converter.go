@@ -6,10 +6,10 @@ import (
 )
 
 func toDomain(
-	nginx *NginxModel,
-	logRotation *LogRotationModel,
-	certificate *CertificateModel,
-	bindings *[]BindingModel,
+	nginx *nginxModel,
+	logRotation *logRotationModel,
+	certificate *certificateModel,
+	bindings []*bindingModel,
 ) *settings.Settings {
 	return &settings.Settings{
 		Nginx: &settings.NginxSettings{
@@ -49,11 +49,11 @@ func toDomain(
 	}
 }
 
-func toBindingDomain(bindings *[]BindingModel) *[]host.Binding {
-	var result []host.Binding
+func toBindingDomain(bindings []*bindingModel) []*host.Binding {
+	var result []*host.Binding
 
-	for _, binding := range *bindings {
-		result = append(result, host.Binding{
+	for _, binding := range bindings {
+		result = append(result, &host.Binding{
 			ID:            binding.ID,
 			Type:          host.BindingType(binding.Type),
 			IP:            binding.IP,
@@ -62,11 +62,11 @@ func toBindingDomain(bindings *[]BindingModel) *[]host.Binding {
 		})
 	}
 
-	return &result
+	return result
 }
 
-func toModel(settings *settings.Settings) (*NginxModel, *LogRotationModel, *CertificateModel, *[]BindingModel) {
-	nginx := &NginxModel{
+func toModel(settings *settings.Settings) (*nginxModel, *logRotationModel, *certificateModel, []*bindingModel) {
+	nginx := &nginxModel{
 		ServerLogsEnabled:   settings.Nginx.Logs.ServerLogsEnabled,
 		ServerLogsLevel:     string(settings.Nginx.Logs.ServerLogsLevel),
 		AccessLogsEnabled:   settings.Nginx.Logs.AccessLogsEnabled,
@@ -85,14 +85,14 @@ func toModel(settings *settings.Settings) (*NginxModel, *LogRotationModel, *Cert
 		GzipEnabled:         settings.Nginx.GzipEnabled,
 	}
 
-	logRotation := &LogRotationModel{
+	logRotation := &logRotationModel{
 		Enabled:           settings.LogRotation.Enabled,
 		MaximumLines:      settings.LogRotation.MaximumLines,
 		IntervalUnit:      string(settings.LogRotation.IntervalUnit),
 		IntervalUnitCount: settings.LogRotation.IntervalUnitCount,
 	}
 
-	certificate := &CertificateModel{
+	certificate := &certificateModel{
 		Enabled:           settings.CertificateAutoRenew.Enabled,
 		IntervalUnit:      string(settings.CertificateAutoRenew.IntervalUnit),
 		IntervalUnitCount: settings.CertificateAutoRenew.IntervalUnitCount,
@@ -103,11 +103,11 @@ func toModel(settings *settings.Settings) (*NginxModel, *LogRotationModel, *Cert
 	return nginx, logRotation, certificate, bindings
 }
 
-func toBindingModel(bindings *[]host.Binding) *[]BindingModel {
-	var result []BindingModel
+func toBindingModel(bindings []*host.Binding) []*bindingModel {
+	var result []*bindingModel
 
-	for _, binding := range *bindings {
-		result = append(result, BindingModel{
+	for _, binding := range bindings {
+		result = append(result, &bindingModel{
 			ID:            binding.ID,
 			Type:          string(binding.Type), // Assuming host.BindingType has a String method
 			IP:            binding.IP,
@@ -116,5 +116,5 @@ func toBindingModel(bindings *[]host.Binding) *[]BindingModel {
 		})
 	}
 
-	return &result
+	return result
 }

@@ -36,7 +36,7 @@ func (m *migrations) runScripts(db *sql.DB, driverName string) error {
 	}
 
 	fullPath := fmt.Sprintf("%s/%s", scriptsPath, driverName)
-	log.Info("Running database migrations from %s", fullPath)
+	log.Infof("Running database migrations from %s", fullPath)
 
 	migrator, err := migrate.NewWithDatabaseInstance(
 		fmt.Sprintf("file://%s", fullPath),
@@ -50,13 +50,13 @@ func (m *migrations) runScripts(db *sql.DB, driverName string) error {
 
 	err = migrator.Up()
 	if errors.Is(err, migrate.ErrNoChange) {
-		log.Info("Database is up-to-date. No changes needed.")
+		log.Infof("Database is up-to-date. No changes needed.")
 		return nil
 	}
 
 	if err == nil {
 		installedVersion, _, _ := migrator.Version()
-		log.Info("Database updated to version %d", installedVersion)
+		log.Infof("Database updated to version %d", installedVersion)
 	}
 
 	return err

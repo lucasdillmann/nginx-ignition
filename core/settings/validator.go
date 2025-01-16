@@ -71,9 +71,9 @@ func (v *validator) validateCertificateAutoRenew(settings *CertificateAutoRenewS
 	v.checkRange(settings.IntervalUnitCount, intervalRange, "certificateAutoRenew.intervalUnitCount")
 }
 
-func (v *validator) validateGlobalBindings(settings *[]host.Binding) error {
-	for index, binding := range *settings {
-		if err := (*v.validateBindingCommand)("globalBindings", index, &binding, v.delegate); err != nil {
+func (v *validator) validateGlobalBindings(settings []*host.Binding) error {
+	for index, binding := range settings {
+		if err := (*v.validateBindingCommand)("globalBindings", index, binding, v.delegate); err != nil {
 			return err
 		}
 	}

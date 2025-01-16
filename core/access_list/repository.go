@@ -10,6 +10,6 @@ type Repository interface {
 	DeleteByID(id uuid.UUID) error
 	FindByName(name string) (*AccessList, error)
 	FindPage(pageNumber, pageSize int, searchTerms *string) (*pagination.Page[AccessList], error)
-	FindAll() (*[]AccessList, error)
+	FindAll() ([]*AccessList, error)
 	Save(accessList *AccessList) error
 }

@@ -56,17 +56,17 @@ func (v *validator) validateEntry(
 	}
 
 	for addressIndex, address := range entry.SourceAddress {
-		if singleIp := net.ParseIP(address); singleIp != nil {
+		if singleIp := net.ParseIP(*address); singleIp != nil {
 			continue
 		}
 
-		if _, _, err := net.ParseCIDR(address); err == nil {
+		if _, _, err := net.ParseCIDR(*address); err == nil {
 			continue
 		}
 
 		v.delegate.Add(
 			path+".sourceAddress["+strconv.Itoa(addressIndex)+"]",
-			"Address \""+address+"\" is not a valid IPv4 or IPv6 address or range",
+			"Address \""+*address+"\" is not a valid IPv4 or IPv6 address or range",
 		)
 	}
 }

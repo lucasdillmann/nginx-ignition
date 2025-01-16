@@ -31,9 +31,9 @@ type Host struct {
 	Enabled           bool
 	DefaultServer     bool
 	UseGlobalBindings bool
-	DomainNames       []string
-	Routes            []Route
-	Bindings          []Binding
+	DomainNames       []*string
+	Routes            []*Route
+	Bindings          []*Binding
 	FeatureSet        FeatureSet
 	AccessListID      *uuid.UUID
 }

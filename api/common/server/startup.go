@@ -18,17 +18,16 @@ func registerStartup(
 	configuration *configuration.Configuration,
 	state *state,
 ) {
-	command := &startup{configuration, state}
-	lifecycle.RegisterStartup(command)
+	lifecycle.RegisterStartup(startup{configuration, state})
 }
 
-func (s *startup) Run() error {
+func (s startup) Run() error {
 	port, err := s.configuration.Get("nginx-ignition.server.port")
 	if err != nil {
 		return err
 	}
 
-	log.Info("Starting HTTP server on port %s", port)
+	log.Infof("Starting HTTP server on port %s", port)
 	s.state.server = &http.Server{Handler: s.state.engine.Handler()}
 
 	listener, err := net.Listen("tcp", "0.0.0.0:"+port)
@@ -44,10 +43,10 @@ func (s *startup) Run() error {
 	return nil
 }
 
-func (s *startup) Priority() int {
+func (s startup) Priority() int {
 	return startupPriority
 }
 
-func (s *startup) Async() bool {
+func (s startup) Async() bool {
 	return false
 }

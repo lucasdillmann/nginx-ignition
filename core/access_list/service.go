@@ -44,7 +44,7 @@ func (s *service) findById(id uuid.UUID) (*AccessList, error) {
 	return (*s.accessListRepository).FindByID(id)
 }
 
-func (s *service) findAll() (*[]AccessList, error) {
+func (s *service) findAll() ([]*AccessList, error) {
 	return (*s.accessListRepository).FindAll()
 }
 

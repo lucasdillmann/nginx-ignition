@@ -8,17 +8,17 @@ import (
 type hostModel struct {
 	bun.BaseModel `bun:"host"`
 
-	ID                  uuid.UUID          `bun:"id,pk"`
-	Enabled             bool               `bun:"enabled,notnull"`
-	DefaultServer       bool               `bun:"default_server,notnull"`
-	DomainNames         []string           `bun:"domain_names,array"`
-	WebsocketSupport    bool               `bun:"websocket_support,notnull"`
-	HTTP2Support        bool               `bun:"http2_support,notnull"`
-	RedirectHTTPToHTTPS bool               `bun:"redirect_http_to_https,notnull"`
-	UseGlobalBindings   bool               `bun:"use_global_bindings,notnull"`
-	AccessListID        *uuid.UUID         `bun:"access_list_id"`
-	Bindings            []hostBindingModel `bun:"rel:has-many,join:id=host_id"`
-	Routes              []hostRouteModel   `bun:"rel:has-many,join:id=host_id"`
+	ID                  uuid.UUID           `bun:"id,pk"`
+	Enabled             bool                `bun:"enabled,notnull"`
+	DefaultServer       bool                `bun:"default_server,notnull"`
+	DomainNames         []*string           `bun:"domain_names,array"`
+	WebsocketSupport    bool                `bun:"websocket_support,notnull"`
+	HTTP2Support        bool                `bun:"http2_support,notnull"`
+	RedirectHTTPToHTTPS bool                `bun:"redirect_http_to_https,notnull"`
+	UseGlobalBindings   bool                `bun:"use_global_bindings,notnull"`
+	AccessListID        *uuid.UUID          `bun:"access_list_id"`
+	Bindings            []*hostBindingModel `bun:"rel:has-many,join:id=host_id"`
+	Routes              []*hostRouteModel   `bun:"rel:has-many,join:id=host_id"`
 }
 
 type hostBindingModel struct {

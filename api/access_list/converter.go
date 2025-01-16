@@ -15,7 +15,7 @@ func toDto(accessList *access_list.AccessList) *accessListResponseDto {
 		entries = append(entries, entrySetDto{
 			Priority:        &entry.Priority,
 			Outcome:         &entry.Outcome,
-			SourceAddresses: &entry.SourceAddress,
+			SourceAddresses: entry.SourceAddress,
 		})
 	}
 
@@ -46,18 +46,18 @@ func toDomain(request *accessListRequestDto) *access_list.AccessList {
 
 	var entries []access_list.AccessListEntry
 	if request.Entries != nil {
-		for _, entry := range *request.Entries {
+		for _, entry := range request.Entries {
 			entries = append(entries, access_list.AccessListEntry{
 				Priority:      *entry.Priority,
 				Outcome:       *entry.Outcome,
-				SourceAddress: *entry.SourceAddresses,
+				SourceAddress: entry.SourceAddresses,
 			})
 		}
 	}
 
 	var credentials []access_list.AccessListCredentials
 	if request.Credentials != nil {
-		for _, credential := range *request.Credentials {
+		for _, credential := range request.Credentials {
 			credentials = append(credentials, access_list.AccessListCredentials{
 				Username: *credential.Username,
 				Password: *credential.Password,

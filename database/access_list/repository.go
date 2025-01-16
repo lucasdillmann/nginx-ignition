@@ -110,15 +110,15 @@ func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*p
 		return nil, err
 	}
 
-	var result []access_list.AccessList
+	var result []*access_list.AccessList
 	for _, model := range models {
-		result = append(result, *toDomain(&model))
+		result = append(result, toDomain(&model))
 	}
 
-	return pagination.New(pageNumber, pageSize, count, &result), nil
+	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAll() (*[]access_list.AccessList, error) {
+func (r *repository) FindAll() ([]*access_list.AccessList, error) {
 	var models []accessListModel
 
 	err := r.database.Select().
@@ -131,12 +131,12 @@ func (r *repository) FindAll() (*[]access_list.AccessList, error) {
 		return nil, err
 	}
 
-	var result []access_list.AccessList
+	var result []*access_list.AccessList
 	for _, model := range models {
-		result = append(result, *toDomain(&model))
+		result = append(result, toDomain(&model))
 	}
 
-	return &result, nil
+	return result, nil
 }
 
 func (r *repository) Save(accessList *access_list.AccessList) error {

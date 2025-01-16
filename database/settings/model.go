@@ -5,7 +5,7 @@ import (
 	"github.com/uptrace/bun"
 )
 
-type NginxModel struct {
+type nginxModel struct {
 	bun.BaseModel `bun:"settings_nginx"`
 
 	ID                  uuid.UUID `bun:"id,pk"`
@@ -27,7 +27,7 @@ type NginxModel struct {
 	ErrorLogsLevel      string    `bun:"error_logs_level"`
 }
 
-type LogRotationModel struct {
+type logRotationModel struct {
 	bun.BaseModel `bun:"settings_log_rotation"`
 
 	ID                uuid.UUID `bun:"id,pk"`
@@ -37,7 +37,7 @@ type LogRotationModel struct {
 	IntervalUnitCount int       `bun:"interval_unit_count"`
 }
 
-type CertificateModel struct {
+type certificateModel struct {
 	bun.BaseModel `bun:"settings_certificate_auto_renew"`
 
 	ID                uuid.UUID `bun:"id,pk"`
@@ -46,7 +46,7 @@ type CertificateModel struct {
 	IntervalUnitCount int       `bun:"interval_unit_count"`
 }
 
-type BindingModel struct {
+type bindingModel struct {
 	bun.BaseModel `bun:"settings_global_binding"`
 
 	ID            uuid.UUID  `bun:"id,pk"`

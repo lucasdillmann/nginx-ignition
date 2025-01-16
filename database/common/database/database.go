@@ -34,13 +34,13 @@ func (d *Database) Select() *bun.SelectQuery {
 }
 
 func (d *Database) close() {
-	log.Info("Closing the database connection")
+	log.Infof("Closing the database connection")
 
 	if d.db == nil {
 		return
 	}
 
 	if err := d.db.Close(); err != nil {
-		log.Warn("Unable to close the connection to database: %s", err)
+		log.Warnf("Unable to close the connection to database: %s", err)
 	}
 }

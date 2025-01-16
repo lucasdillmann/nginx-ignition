@@ -10,7 +10,7 @@ type settingsDto struct {
 	Nginx                *nginxSettingsDto                `json:"nginx" validate:"required"`
 	LogRotation          *logRotationSettingsDto          `json:"logRotation" validate:"required"`
 	CertificateAutoRenew *certificateAutoRenewSettingsDto `json:"certificateAutoRenew" validate:"required"`
-	GlobalBindings       *[]bindingDto                    `json:"globalBindings" validate:"required"`
+	GlobalBindings       []*bindingDto                    `json:"globalBindings" validate:"required"`
 }
 
 type nginxSettingsDto struct {

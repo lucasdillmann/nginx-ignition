@@ -3,6 +3,7 @@ package core
 import (
 	"dillmann.com.br/nginx-ignition/core/access_list"
 	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/nginx"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/user"
 	"go.uber.org/dig"
@@ -22,6 +23,10 @@ func Install(container *dig.Container) error {
 	}
 
 	if err := host.Install(container); err != nil {
+		return err
+	}
+
+	if err := nginx.Install(container); err != nil {
 		return err
 	}
 
