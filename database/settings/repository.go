@@ -71,7 +71,7 @@ func (r repository) Save(settings *settings.Settings) error {
 		return err
 	}
 
-	if _, err = transaction.NewTruncateTable().Model(bindings).Exec(r.ctx); err != nil {
+	if _, err = transaction.NewTruncateTable().Model(&bindings).Exec(r.ctx); err != nil {
 		return err
 	}
 
@@ -87,7 +87,7 @@ func (r repository) Save(settings *settings.Settings) error {
 		return err
 	}
 
-	if _, err = transaction.NewInsert().Model(bindings).Exec(r.ctx); err != nil {
+	if _, err = transaction.NewInsert().Model(&bindings).Exec(r.ctx); err != nil {
 		return err
 	}
 
