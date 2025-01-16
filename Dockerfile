@@ -1,13 +1,6 @@
-FROM golang:1.23 AS builder
-
-WORKDIR /nginx-ignition
-COPY . /nginx-ignition
-
-ENV CGO_ENABLED=0
-
-RUN go work sync && cd application && go build
-
 FROM alpine:3
+
+ARG TARGETPLATFORM
 
 EXPOSE 8090:8090
 EXPOSE 80:80
@@ -28,4 +21,4 @@ RUN mkdir data frontend migrations && \
 
 COPY ./database/common/migrations/scripts /opt/nginx-ignition/migrations
 COPY ./frontend/build /opt/nginx-ignition/frontend
-COPY --from=builder /nginx-ignition/application/application /opt/nginx-ignition/nginx-ignition
+COPY build/${TARGETPLATFORM} /opt/nginx-ignition/nginx-ignition

@@ -6,6 +6,7 @@
 *.dylib
 *.test
 *.out
+build/*
 
 # Dependency directories and files
 vendor/
