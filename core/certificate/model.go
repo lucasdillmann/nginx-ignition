@@ -1,6 +1,7 @@
 package certificate
 
 import (
+	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"github.com/google/uuid"
 	"time"
 )
@@ -18,4 +19,17 @@ type Certificate struct {
 	CertificationChain []string
 	Parameters         map[string]interface{}
 	Metadata           *string
+}
+
+type AvailableProvider struct {
+	ID            string
+	Name          string
+	Priority      int
+	DynamicFields *[]*dynamic_fields.DynamicField
+}
+
+type IssueRequest struct {
+	ProviderID  string
+	DomainNames []*string
+	Parameters  map[string]*any
 }

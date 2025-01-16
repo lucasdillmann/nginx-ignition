@@ -52,6 +52,6 @@ func (s *service) list(
 	pageNumber,
 	pageSize int,
 	searchTerms *string,
-) (*pagination.Page[AccessList], error) {
+) (*pagination.Page[*AccessList], error) {
 	return (*s.accessListRepository).FindPage(pageNumber, pageSize, searchTerms)
 }

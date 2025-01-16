@@ -78,7 +78,7 @@ func (r *repository) FindByUsername(username string) (*user.User, error) {
 	return toDomain(&model), nil
 }
 
-func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*pagination.Page[user.User], error) {
+func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*pagination.Page[*user.User], error) {
 	var models []userModel
 
 	query := r.database.Select().Model(&models)

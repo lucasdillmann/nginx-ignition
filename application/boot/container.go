@@ -11,6 +11,9 @@ import (
 
 func startContainer() (*dig.Container, error) {
 	container := dig.New()
+	_ = container.Provide(func() *dig.Container {
+		return container
+	})
 
 	if err := installModules(container); err != nil {
 		return nil, err

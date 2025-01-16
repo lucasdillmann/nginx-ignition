@@ -107,7 +107,7 @@ func (r repository) Save(certificate *certificate.Certificate) error {
 	return transaction.Commit()
 }
 
-func (r repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[certificate.Certificate], error) {
+func (r repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*certificate.Certificate], error) {
 	var certificates []certificateModel
 
 	query := r.database.Select().Model(&certificates)

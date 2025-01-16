@@ -133,6 +133,6 @@ func (s *service) isEnabled(id uuid.UUID) (bool, error) {
 	return (*s.repository).IsEnabledByID(id)
 }
 
-func (s *service) list(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[User], error) {
+func (s *service) list(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*User], error) {
 	return (*s.repository).FindPage(pageSize, pageNumber, searchTerms)
 }

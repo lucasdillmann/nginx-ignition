@@ -1,29 +1,25 @@
 package host
 
 import (
-	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"github.com/google/uuid"
 )
 
 type service struct {
-	hostRepository        *Repository
-	certificateRepository *certificate.Repository
+	hostRepository *Repository
 }
 
 func newService(
 	hostRepository *Repository,
-	certificateRepository *certificate.Repository,
 ) *service {
 	return &service{
 		hostRepository,
-		certificateRepository,
 	}
 }
 
 func (s *service) save(input *Host) error {
-	if err := newValidator(s.hostRepository, s.certificateRepository).validate(input); err != nil {
+	if err := newValidator(s.hostRepository).validate(input); err != nil {
 		return err
 	}
 
@@ -34,7 +30,7 @@ func (s *service) deleteByID(id uuid.UUID) error {
 	return (*s.hostRepository).DeleteByID(id)
 }
 
-func (s *service) list(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[Host], error) {
+func (s *service) list(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*Host], error) {
 	return (*s.hostRepository).FindPage(pageSize, pageNumber, searchTerms)
 }
 
@@ -56,6 +52,6 @@ func (s *service) validateBinding(
 	binding *Binding,
 	context *validation.ConsistencyValidator,
 ) error {
-	validatorInstance := &validator{s.hostRepository, s.certificateRepository, context}
+	validatorInstance := &validator{s.hostRepository, context}
 	return validatorInstance.validateBinding(path, binding, index)
 }

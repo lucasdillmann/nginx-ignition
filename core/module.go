@@ -2,6 +2,7 @@ package core
 
 import (
 	"dillmann.com.br/nginx-ignition/core/access_list"
+	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/nginx"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -15,6 +16,10 @@ func Install(container *dig.Container) error {
 	}
 
 	if err := access_list.Install(container); err != nil {
+		return err
+	}
+
+	if err := certificate.Install(container); err != nil {
 		return err
 	}
 

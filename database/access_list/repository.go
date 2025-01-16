@@ -85,7 +85,7 @@ func (r *repository) FindByName(name string) (*access_list.AccessList, error) {
 	return toDomain(&model), nil
 }
 
-func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*pagination.Page[access_list.AccessList], error) {
+func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*pagination.Page[*access_list.AccessList], error) {
 	var models []accessListModel
 
 	query := r.database.Select().Model(&models)

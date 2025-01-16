@@ -10,6 +10,6 @@ type Repository interface {
 	ExistsByID(id uuid.UUID) (bool, error)
 	DeleteByID(id uuid.UUID) error
 	Save(certificate *Certificate) error
-	FindPage(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[Certificate], error)
+	FindPage(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*Certificate], error)
 	FindAllDueToRenew() ([]*Certificate, error)
 }

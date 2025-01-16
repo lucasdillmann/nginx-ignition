@@ -15,7 +15,7 @@ type GetCountCommand func() (int, error)
 
 type GetStatusCommand func(id uuid.UUID) (bool, error)
 
-type ListCommand func(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[User], error)
+type ListCommand func(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*User], error)
 
 type SaveCommand func(user *SaveRequest, currentUserId *uuid.UUID) error
 

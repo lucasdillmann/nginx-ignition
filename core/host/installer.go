@@ -1,7 +1,6 @@
 package host
 
 import (
-	"dillmann.com.br/nginx-ignition/core/certificate"
 	"go.uber.org/dig"
 )
 
@@ -11,7 +10,6 @@ func Install(container *dig.Container) error {
 
 func buildCommands(
 	hostRepository Repository,
-	certificateRepository certificate.Repository,
 ) (
 	SaveCommand,
 	DeleteCommand,
@@ -21,7 +19,7 @@ func buildCommands(
 	ExistsCommand,
 	ValidateBindingCommand,
 ) {
-	serviceInstance := newService(&hostRepository, &certificateRepository)
+	serviceInstance := newService(&hostRepository)
 	return serviceInstance.save,
 		serviceInstance.deleteByID,
 		serviceInstance.list,

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/database/certificate"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 	"errors"
@@ -95,7 +96,7 @@ func (r *repository) Save(host *host.Host) error {
 	return transaction.Commit()
 }
 
-func (r *repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[host.Host], error) {
+func (r *repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*host.Host], error) {
 	var models []hostModel
 
 	query := r.database.Select().Model(&models)
@@ -191,6 +192,10 @@ func (r *repository) ExistsByID(id uuid.UUID) (bool, error) {
 	}
 
 	return count > 0, nil
+}
+
+func (r *repository) ExistsCertificateByID(certificateId uuid.UUID) (bool, error) {
+	return certificate.New(r.database).ExistsByID(certificateId)
 }
 
 func (r *repository) ExistsByCertificateID(certificateId uuid.UUID) (bool, error) {

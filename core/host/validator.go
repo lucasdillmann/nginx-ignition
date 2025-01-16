@@ -1,7 +1,6 @@
 package host
 
 import (
-	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"net"
 	"net/url"
@@ -11,16 +10,14 @@ import (
 )
 
 type validator struct {
-	hostRepository        *Repository
-	certificateRepository *certificate.Repository
-	delegate              *validation.ConsistencyValidator
+	hostRepository *Repository
+	delegate       *validation.ConsistencyValidator
 }
 
-func newValidator(hostRepository *Repository, certificateRepository *certificate.Repository) *validator {
+func newValidator(hostRepository *Repository) *validator {
 	return &validator{
-		hostRepository:        hostRepository,
-		certificateRepository: certificateRepository,
-		delegate:              validation.NewValidator(),
+		hostRepository: hostRepository,
+		delegate:       validation.NewValidator(),
 	}
 }
 
@@ -124,7 +121,7 @@ func (v *validator) validateBinding(pathPrefix string, binding *Binding, index i
 	case binding.Type == HttpsBindingType && binding.CertificateID == nil:
 		v.delegate.Add(certificateIdField, "Value must be informed for a HTTPS binding")
 	case binding.Type == HttpsBindingType:
-		exists, err := (*v.certificateRepository).ExistsByID(*binding.CertificateID)
+		exists, err := (*v.hostRepository).ExistsCertificateByID(*binding.CertificateID)
 		if err != nil {
 			return err
 		}
