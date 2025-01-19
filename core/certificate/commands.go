@@ -13,6 +13,6 @@ type GetCommand func(id uuid.UUID) (*Certificate, error)
 
 type ListCommand func(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*Certificate], error)
 
-type IssueCommand func(request *IssueRequest) error
+type IssueCommand func(request *IssueRequest) (*Certificate, error)
 
 type RenewCommand func(id uuid.UUID) error

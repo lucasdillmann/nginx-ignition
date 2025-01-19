@@ -7,6 +7,6 @@ type Provider interface {
 	Name() string
 	DynamicFields() []*dynamic_fields.DynamicField
 	Priority() int
-	Issue(request *IssueRequest) (*bool, *Certificate, error)
-	Renew(certificate *Certificate) (*bool, error)
+	Issue(request *IssueRequest) (*Certificate, error)
+	Renew(certificate *Certificate) (*Certificate, error)
 }

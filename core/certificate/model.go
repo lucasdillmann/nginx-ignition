@@ -21,15 +21,28 @@ type Certificate struct {
 	Metadata           *string
 }
 
-type AvailableProvider struct {
-	ID            string
-	Name          string
-	Priority      int
-	DynamicFields *[]*dynamic_fields.DynamicField
-}
-
 type IssueRequest struct {
 	ProviderID  string
 	DomainNames []*string
 	Parameters  map[string]*any
+}
+
+type AvailableProvider struct {
+	provider *Provider
+}
+
+func (a *AvailableProvider) ID() string {
+	return (*a.provider).ID()
+}
+
+func (a *AvailableProvider) Name() string {
+	return (*a.provider).Name()
+}
+
+func (a *AvailableProvider) DynamicFields() []*dynamic_fields.DynamicField {
+	return (*a.provider).DynamicFields()
+}
+
+func (a *AvailableProvider) Priority() int {
+	return (*a.provider).Priority()
 }

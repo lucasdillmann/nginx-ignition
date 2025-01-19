@@ -76,13 +76,83 @@ func (s *service) list(pageSize, pageNumber int, searchTerms *string) (*paginati
 }
 
 func (s *service) availableProviders() ([]*AvailableProvider, error) {
-	return []*AvailableProvider{}, nil
+	var providers *[]Provider
+
+	if err := s.container.Invoke(func(p *[]Provider) {
+		providers = p
+	}); err != nil {
+		return nil, err
+	}
+
+	if providers == nil {
+		return nil, core_error.New("No providers found", false)
+	}
+
+	var availableProviders []*AvailableProvider
+	for _, provider := range *providers {
+		availableProviders = append(availableProviders, &AvailableProvider{
+			provider: &provider,
+		})
+	}
+
+	return availableProviders, nil
 }
 
-func (s *service) renew(_ uuid.UUID) error {
-	return core_error.New("Not implemented yet", false)
+func (s *service) renew(certificateId uuid.UUID) error {
+	certificate, err := (*s.certificateRepository).FindByID(certificateId)
+	if err != nil {
+		return err
+	}
+
+	providers, err := s.availableProviders()
+	if err != nil {
+		return err
+	}
+
+	provider := providerById(providers, certificate.ProviderID)
+	if provider == nil {
+		return core_error.New("Provider not found", true)
+	}
+
+	certificate, err = (*provider).Renew(certificate)
+	if err != nil {
+		return err
+	}
+
+	certificate.ID = certificateId
+	return (*s.certificateRepository).Save(certificate)
 }
 
-func (s *service) issue(_ *IssueRequest) error {
-	return core_error.New("Not implemented yet", false)
+func (s *service) issue(request *IssueRequest) (*Certificate, error) {
+	providers, err := s.availableProviders()
+	if err != nil {
+		return nil, err
+	}
+
+	provider := providerById(providers, request.ProviderID)
+	if provider == nil {
+		return nil, core_error.New("Provider not found", true)
+	}
+
+	certificate, err := (*provider).Issue(request)
+	if err != nil {
+		return nil, err
+	}
+
+	err = (*s.certificateRepository).Save(certificate)
+	if err != nil {
+		return nil, err
+	}
+
+	return certificate, nil
+}
+
+func providerById(availableProviders []*AvailableProvider, id string) *Provider {
+	for _, p := range availableProviders {
+		if (*p.provider).ID() == id {
+			return p.provider
+		}
+	}
+
+	return nil
 }
