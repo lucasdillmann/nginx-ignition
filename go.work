@@ -5,7 +5,7 @@ use (
 	application
 	certificate/custom
 	certificate/letsencrypt
-	certificate/self-signed
+	certificate/selfsigned
 	core
 	database
 	integration/docker

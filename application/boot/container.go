@@ -2,7 +2,11 @@ package boot
 
 import (
 	"dillmann.com.br/nginx-ignition/api"
+	"dillmann.com.br/nginx-ignition/certificate/custom"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt"
+	"dillmann.com.br/nginx-ignition/certificate/selfsigned"
 	"dillmann.com.br/nginx-ignition/core"
+	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 	"dillmann.com.br/nginx-ignition/database"
@@ -43,5 +47,32 @@ func installModules(container *dig.Container) error {
 		return err
 	}
 
-	return nil
+	if err := letsencrypt.Install(container); err != nil {
+		return err
+	}
+
+	if err := selfsigned.Install(container); err != nil {
+		return err
+	}
+
+	if err := custom.Install(container); err != nil {
+		return err
+	}
+
+	return container.Invoke(installCertificateProviderAggregation)
+}
+
+func installCertificateProviderAggregation(
+	container *dig.Container,
+	acmeCertificateProvider *letsencrypt.Provider,
+	customCertificateProvider *custom.Provider,
+	selfSignedCertificateProvider *selfsigned.Provider,
+) error {
+	return container.Provide(func() *[]certificate.Provider {
+		return &[]certificate.Provider{
+			acmeCertificateProvider,
+			customCertificateProvider,
+			selfSignedCertificateProvider,
+		}
+	})
 }
