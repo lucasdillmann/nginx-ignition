@@ -21,7 +21,11 @@ func (p *Provider) Name() string {
 }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return []*dynamic_fields.DynamicField{}
+	return []*dynamic_fields.DynamicField{
+		&publicKey,
+		&privateKey,
+		&certificationChain,
+	}
 }
 
 func (p *Provider) Priority() int {

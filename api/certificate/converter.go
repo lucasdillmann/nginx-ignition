@@ -1,8 +1,8 @@
 package certificate
 
 import (
+	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"github.com/google/uuid"
 )
 
@@ -13,7 +13,7 @@ func toAvailableProviderResponse(input []*certificate.AvailableProvider) []*avai
 			ID:            provider.ID(),
 			Name:          provider.Name(),
 			Priority:      provider.Priority(),
-			DynamicFields: toDynamicFieldResponses(provider.DynamicFields()),
+			DynamicFields: dynamic_field.ToResponse(provider.DynamicFields()),
 		})
 	}
 	return responses
@@ -70,17 +70,4 @@ func toIssueCertificateRequest(input *issueCertificateRequest) *certificate.Issu
 		DomainNames: input.DomainNames,
 		Parameters:  input.Parameters,
 	}
-}
-
-func toDynamicFieldResponses(input []*dynamic_fields.DynamicField) []*dynamicFieldResponse {
-	var responses []*dynamicFieldResponse
-	for _, field := range input {
-		responses = append(responses, &dynamicFieldResponse{
-			Name:        field.ID,
-			Type:        field.Type,
-			Description: field.Description,
-		})
-	}
-
-	return responses
 }

@@ -1,22 +1,16 @@
 package certificate
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
 	"github.com/google/uuid"
 	"time"
 )
 
 type availableProviderResponse struct {
-	ID            string                  `json:"id"`
-	Name          string                  `json:"name"`
-	Priority      int                     `json:"priority"`
-	DynamicFields []*dynamicFieldResponse `json:"dynamicFields"`
-}
-
-type dynamicFieldResponse struct {
-	Name        string              `json:"name"`
-	Type        dynamic_fields.Type `json:"type"`
-	Description string              `json:"description"`
+	ID            string                                `json:"id"`
+	Name          string                                `json:"name"`
+	Priority      int                                   `json:"priority"`
+	DynamicFields []*dynamic_field.DynamicFieldResponse `json:"dynamicFields"`
 }
 
 type certificateResponse struct {
