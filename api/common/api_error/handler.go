@@ -44,6 +44,23 @@ func Handler(context *gin.Context, outcome any) {
 	}
 }
 
+func CanHandle(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	switch {
+	case errors.As(err, &ApiError{}),
+		errors.As(err, &validation.ConsistencyError{}),
+		errors.As(err, &validator.ValidationErrors{}),
+		errors.As(err, &core_error.CoreError{}),
+		errors.Is(err, jwt.ErrSignatureInvalid):
+		return true
+	default:
+		return false
+	}
+}
+
 func handleGenericError(context *gin.Context, err error) {
 	stack := stacktrace()
 	log.Errorf("Error detected while processing request: %s\n%s", err, stack)

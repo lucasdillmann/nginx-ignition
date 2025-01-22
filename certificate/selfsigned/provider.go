@@ -17,7 +17,7 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name() string {
-	return "elf-signed certificate"
+	return "Self-signed certificate"
 }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {

@@ -12,6 +12,6 @@ func New(statusCode int, message string) *ApiError {
 	}
 }
 
-func (e *ApiError) Error() string {
+func (e ApiError) Error() string {
 	return e.Message
 }

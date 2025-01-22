@@ -2,6 +2,7 @@ package certificate
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -68,11 +69,41 @@ func (s *service) deleteById(id uuid.UUID) error {
 }
 
 func (s *service) getById(id uuid.UUID) (*Certificate, error) {
-	return (*s.certificateRepository).FindByID(id)
+	cert, err := (*s.certificateRepository).FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if cert != nil {
+		availableProviders, err := s.availableProviders()
+		if err != nil {
+			return nil, err
+		}
+
+		provider := providerById(availableProviders, cert.ProviderID)
+		removeSensitiveFields(cert, (*provider).DynamicFields())
+	}
+
+	return cert, nil
 }
 
 func (s *service) list(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*Certificate], error) {
-	return (*s.certificateRepository).FindPage(pageSize, pageNumber, searchTerms)
+	certs, err := (*s.certificateRepository).FindPage(pageSize, pageNumber, searchTerms)
+	if err != nil {
+		return nil, err
+	}
+
+	availableProviders, err := s.availableProviders()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, cert := range certs.Contents {
+		provider := providerById(availableProviders, cert.ProviderID)
+		removeSensitiveFields(cert, (*provider).DynamicFields())
+	}
+
+	return certs, nil
 }
 
 func (s *service) availableProviders() ([]*AvailableProvider, error) {
@@ -155,4 +186,12 @@ func providerById(availableProviders []*AvailableProvider, id string) *Provider 
 	}
 
 	return nil
+}
+
+func removeSensitiveFields(certificate *Certificate, dynamicFields []*dynamic_fields.DynamicField) {
+	for _, field := range dynamicFields {
+		if field.Sensitive {
+			delete(certificate.Parameters, field.ID)
+		}
+	}
 }

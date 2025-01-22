@@ -24,7 +24,7 @@ type Certificate struct {
 type IssueRequest struct {
 	ProviderID  string
 	DomainNames []*string
-	Parameters  map[string]*any
+	Parameters  map[string]*interface{}
 }
 
 type AvailableProvider struct {
