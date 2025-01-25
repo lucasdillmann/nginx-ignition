@@ -9,29 +9,26 @@ import (
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"github.com/google/uuid"
-	"go.uber.org/dig"
 )
 
 type service struct {
-	container             *dig.Container
 	certificateRepository *Repository
 	hostRepository        *host.Repository
 	settingsRepository    *settings.Repository
-	providers             *[]*Provider
+	providerResolver      func() ([]Provider, error)
 }
 
 func newService(
-	container *dig.Container,
 	certificateRepository *Repository,
 	hostRepository *host.Repository,
 	settingsRepository *settings.Repository,
+	providerResolver func() ([]Provider, error),
 ) *service {
 	return &service{
-		container:             container,
 		certificateRepository: certificateRepository,
 		hostRepository:        hostRepository,
 		settingsRepository:    settingsRepository,
-		providers:             nil,
+		providerResolver:      providerResolver,
 	}
 }
 
@@ -83,7 +80,7 @@ func (s *service) getById(id uuid.UUID) (*Certificate, error) {
 		}
 
 		provider := providerById(availableProviders, cert.ProviderID)
-		removeSensitiveFields(cert, (*provider).DynamicFields())
+		dynamic_fields.RemoveSensitiveFields(&cert.Parameters, (*provider).DynamicFields())
 	}
 
 	return cert, nil
@@ -102,18 +99,15 @@ func (s *service) list(pageSize, pageNumber int, searchTerms *string) (*paginati
 
 	for _, cert := range certs.Contents {
 		provider := providerById(availableProviders, cert.ProviderID)
-		removeSensitiveFields(cert, (*provider).DynamicFields())
+		dynamic_fields.RemoveSensitiveFields(&cert.Parameters, (*provider).DynamicFields())
 	}
 
 	return certs, nil
 }
 
 func (s *service) availableProviders() ([]*AvailableProvider, error) {
-	var providers *[]Provider
-
-	if err := s.container.Invoke(func(p *[]Provider) {
-		providers = p
-	}); err != nil {
+	providers, err := s.providerResolver()
+	if err != nil {
 		return nil, err
 	}
 
@@ -122,7 +116,7 @@ func (s *service) availableProviders() ([]*AvailableProvider, error) {
 	}
 
 	var availableProviders []*AvailableProvider
-	for _, provider := range *providers {
+	for _, provider := range providers {
 		availableProviders = append(availableProviders, &AvailableProvider{
 			provider: &provider,
 		})
@@ -215,12 +209,4 @@ func providerById(availableProviders []*AvailableProvider, id string) *Provider 
 	}
 
 	return nil
-}
-
-func removeSensitiveFields(certificate *Certificate, dynamicFields []*dynamic_fields.DynamicField) {
-	for _, field := range dynamicFields {
-		if field.Sensitive {
-			delete(certificate.Parameters, field.ID)
-		}
-	}
 }

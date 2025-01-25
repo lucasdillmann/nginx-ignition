@@ -9,7 +9,10 @@ import (
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
+	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/database"
+	"dillmann.com.br/nginx-ignition/integration/docker"
+	"dillmann.com.br/nginx-ignition/integration/truenas"
 	"go.uber.org/dig"
 )
 
@@ -59,7 +62,19 @@ func installModules(container *dig.Container) error {
 		return err
 	}
 
-	return container.Invoke(installCertificateProviderAggregation)
+	if err := docker.Install(container); err != nil {
+		return err
+	}
+
+	if err := truenas.Install(container); err != nil {
+		return err
+	}
+
+	if err := container.Invoke(installCertificateProviderAggregation); err != nil {
+		return err
+	}
+
+	return container.Invoke(installIntegrationAdapterAggregation)
 }
 
 func installCertificateProviderAggregation(
@@ -73,6 +88,19 @@ func installCertificateProviderAggregation(
 			acmeCertificateProvider,
 			customCertificateProvider,
 			selfSignedCertificateProvider,
+		}
+	})
+}
+
+func installIntegrationAdapterAggregation(
+	container *dig.Container,
+	dockerAdapter *docker.Adapter,
+	trueNasAdapter *truenas.Adapter,
+) error {
+	return container.Provide(func() *[]integration.Adapter {
+		return &[]integration.Adapter{
+			dockerAdapter,
+			trueNasAdapter,
 		}
 	})
 }

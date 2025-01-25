@@ -38,7 +38,19 @@ func buildCommands(
 	ListCommand,
 	AvailableProvidersCommand,
 ) {
-	serviceInstance := newService(container, &certificateRepository, &hostRepository, &settingsRepository)
+	providerResolver := func() ([]Provider, error) {
+		var output []Provider
+		if err := container.Invoke(func(providers []Provider) {
+			output = providers
+		}); err != nil {
+			return nil, err
+		}
+
+		return output, nil
+	}
+
+	serviceInstance := newService(&certificateRepository, &hostRepository, &settingsRepository, providerResolver)
+
 	return serviceInstance,
 		serviceInstance.issue,
 		serviceInstance.renew,

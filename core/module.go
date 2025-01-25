@@ -6,6 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/broadcast"
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
 	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/nginx"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/user"
@@ -38,6 +39,10 @@ func Install(container *dig.Container) error {
 	}
 
 	if err := host.Install(container); err != nil {
+		return err
+	}
+
+	if err := integration.Install(container); err != nil {
 		return err
 	}
 
