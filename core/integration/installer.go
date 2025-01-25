@@ -15,6 +15,7 @@ func buildCommands(
 	ConfigureByIdCommand,
 	GetByIdCommand,
 	GetOptionByIdCommand,
+	GetOptionUrlByIdCommand,
 	ListOptionsCommand,
 	ListCommand,
 ) {
@@ -34,6 +35,7 @@ func buildCommands(
 	return serviceInstance.configureById,
 		serviceInstance.getById,
 		serviceInstance.getOptionById,
+		serviceInstance.getOptionUrl,
 		serviceInstance.listOptions,
 		serviceInstance.list
 }

@@ -31,6 +31,8 @@ type GetByIdCommand func(id string) (*GetByIdOutput, error)
 
 type GetOptionByIdCommand func(integrationId, optionId string) (*AdapterOption, error)
 
+type GetOptionUrlByIdCommand func(integrationId, optionId string) (*string, error)
+
 type ListOptionsCommand func(
 	integrationId string,
 	pageNumber, pageSize int,

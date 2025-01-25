@@ -3,6 +3,7 @@ package cfgfiles
 import (
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"fmt"
 	"net/url"
@@ -10,16 +11,17 @@ import (
 )
 
 type hostConfigurationFileProvider struct {
-	// TODO: Re-enable this
-	//integrationService integration.Service
-	settingsRepository settings.Repository
+	integrationOptionCommand integration.GetOptionUrlByIdCommand
+	settingsRepository       settings.Repository
 }
 
-func newHostConfigurationFileProvider(settingsRepository settings.Repository) *hostConfigurationFileProvider {
+func newHostConfigurationFileProvider(
+	settingsRepository settings.Repository,
+	integrationOptionCommand integration.GetOptionUrlByIdCommand,
+) *hostConfigurationFileProvider {
 	return &hostConfigurationFileProvider{
-		// TODO: Re-enable this
-		//integrationService: integrationService,
-		settingsRepository: settingsRepository,
+		integrationOptionCommand: integrationOptionCommand,
+		settingsRepository:       settingsRepository,
 	}
 }
 
@@ -246,24 +248,22 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	features host.FeatureSet,
 	basePath string,
 ) (string, error) {
-	// TODO: Implement this
-	return "", core_error.New("integration routes are not supported yet", false)
-	//proxyUrl, err := p.integrationService.GetIntegrationOptionUrl(r.Integration.IntegrationID, r.Integration.OptionID)
-	//if err != nil {
-	//	return "", err
-	//}
-	//
-	//return fmt.Sprintf(
-	//	`location %s {
-	//		%s
-	//		%s
-	//		%s
-	//	}`,
-	//	r.SourcePath,
-	//	p.buildProxyPass(r, proxyUrl),
-	//	p.buildRouteFeatures(features),
-	//	p.buildRouteSettings(r, basePath),
-	//), nil
+	proxyUrl, err := p.integrationOptionCommand(r.Integration.IntegrationID, r.Integration.OptionID)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf(
+		`location %s {
+			%s
+			%s
+			%s
+		}`,
+		r.SourcePath,
+		p.buildProxyPass(r, *proxyUrl),
+		p.buildRouteFeatures(features),
+		p.buildRouteSettings(r, basePath),
+	), nil
 }
 
 func (p *hostConfigurationFileProvider) buildRedirectRoute(
