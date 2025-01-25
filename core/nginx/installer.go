@@ -30,6 +30,7 @@ func buildCommands(
 	settingsRepository settings.Repository,
 	configFilesManager *cfgfiles.Facade,
 ) (
+	*service,
 	GetHostLogsCommand,
 	GetMainLogsCommand,
 	GetStatusCommand,
@@ -40,10 +41,11 @@ func buildCommands(
 ) {
 	serviceInstance, err := newService(configuration, &settingsRepository, &hostRepository, configFilesManager)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 
-	return serviceInstance.getHostLogs,
+	return serviceInstance,
+		serviceInstance.getHostLogs,
 		serviceInstance.getMainLogs,
 		serviceInstance.isRunning,
 		serviceInstance.reload,

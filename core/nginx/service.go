@@ -1,6 +1,7 @@
 package nginx
 
 import (
+	"dillmann.com.br/nginx-ignition/core/common/broadcast"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/log"
@@ -102,4 +103,11 @@ func (s *service) getMainLogs(lines int) ([]string, error) {
 
 func (s *service) rotateLogs() error {
 	return s.logRotator.rotate()
+}
+
+func (s *service) attachListeners() {
+	channel := broadcast.Channel("core:nginx:reload")
+	for range channel {
+		_ = s.reload(false)
+	}
 }

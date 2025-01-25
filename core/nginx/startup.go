@@ -3,15 +3,19 @@ package nginx
 import "dillmann.com.br/nginx-ignition/core/common/lifecycle"
 
 type startup struct {
-	command StartCommand
+	service *service
 }
 
-func registerStartup(lifecycle *lifecycle.Lifecycle, command StartCommand) {
-	lifecycle.RegisterStartup(startup{command})
+func registerStartup(lifecycle *lifecycle.Lifecycle, service *service) {
+	lifecycle.RegisterStartup(startup{service})
 }
 
 func (s startup) Run() error {
-	return s.command()
+	go func() {
+		s.service.attachListeners()
+	}()
+
+	return s.service.start()
 }
 
 func (s startup) Priority() int {

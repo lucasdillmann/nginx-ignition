@@ -1,8 +1,10 @@
 package certificate
 
 import (
+	"dillmann.com.br/nginx-ignition/core/common/broadcast"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -127,6 +129,33 @@ func (s *service) availableProviders() ([]*AvailableProvider, error) {
 	}
 
 	return availableProviders, nil
+}
+
+func (s *service) renewAllDue() error {
+	certificates, err := (*s.certificateRepository).FindAllDueToRenew()
+	if err != nil {
+		return err
+	}
+
+	if len(certificates) == 0 {
+		log.Infof("Certificates auto-renew triggered, but no certificates are due to be renewed yet")
+		return nil
+	}
+
+	for _, certificate := range certificates {
+		err = s.renew(certificate.ID)
+		if err != nil {
+			log.Warnf("Error renewing certificate %s: %s", certificate.ID, err)
+			continue
+		}
+
+		log.Infof("Certificate %s renewed successfully", certificate.ID)
+	}
+
+	broadcast.SendSignal("core:nginx:reload")
+
+	log.Infof("Certificates auto-renew complemeted, %d were renewed", len(certificates))
+	return nil
 }
 
 func (s *service) renew(certificateId uuid.UUID) error {

@@ -1,13 +1,27 @@
 package certificate
 
 import (
+	"dillmann.com.br/nginx-ignition/core/common/scheduler"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"go.uber.org/dig"
 )
 
 func Install(container *dig.Container) error {
-	return container.Provide(buildCommands)
+	if err := container.Provide(buildCommands); err != nil {
+		return err
+	}
+
+	return container.Invoke(registerScheduledTask)
+}
+
+func registerScheduledTask(
+	service *service,
+	settingsRepository settings.Repository,
+	scheduler *scheduler.Scheduler,
+) error {
+	task := autoRenewTask{service, &settingsRepository}
+	return scheduler.Register(&task)
 }
 
 func buildCommands(
@@ -16,6 +30,7 @@ func buildCommands(
 	certificateRepository Repository,
 	settingsRepository settings.Repository,
 ) (
+	*service,
 	IssueCommand,
 	RenewCommand,
 	DeleteCommand,
@@ -24,7 +39,8 @@ func buildCommands(
 	AvailableProvidersCommand,
 ) {
 	serviceInstance := newService(container, &certificateRepository, &hostRepository, &settingsRepository)
-	return serviceInstance.issue,
+	return serviceInstance,
+		serviceInstance.issue,
 		serviceInstance.renew,
 		serviceInstance.deleteById,
 		serviceInstance.getById,
