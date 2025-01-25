@@ -106,7 +106,7 @@ func (s *service) rotateLogs() error {
 }
 
 func (s *service) attachListeners() {
-	channel := broadcast.Channel("core:nginx:reload")
+	channel := broadcast.Listen("core:nginx:reload")
 	for range channel {
 		_ = s.reload(false)
 	}
