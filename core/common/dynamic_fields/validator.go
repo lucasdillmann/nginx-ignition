@@ -24,13 +24,8 @@ func Validate(
 			})
 		}
 
-		if exists {
-			enumOptions := make([]string, len(*field.EnumOptions))
-			for i, option := range *field.EnumOptions {
-				enumOptions[i] = option.ID
-			}
-
-			incompatibleMessage := resolveErrorMessage(field, value, enumOptions)
+		if exists && conditionSatisfied {
+			incompatibleMessage := resolveErrorMessage(field, value)
 			if incompatibleMessage != nil {
 				violations = append(violations, validation.ConsistencyViolation{
 					Path:    "parameters." + field.ID,
@@ -51,20 +46,32 @@ func isConditionSatisfied(field *DynamicField, parameters map[string]interface{}
 	if field.Condition == nil {
 		return true
 	}
+
 	expectedValue := field.Condition.Value
 	currentValue, exists := parameters[field.Condition.ParentField]
 	return exists && expectedValue == currentValue
 }
 
-func resolveErrorMessage(field *DynamicField, value interface{}, enumOptions []string) *string {
+func resolveErrorMessage(field *DynamicField, value interface{}) *string {
 	switch field.Type {
 	case EnumType, SingleLineTextType, MultiLineTextType:
-		if _, ok := value.(string); !ok {
+		castedValue, casted := value.(string)
+		if !casted {
 			msg := "A text value is expected"
 			return &msg
 		}
 
+		if field.Required && strings.TrimSpace(castedValue) == "" {
+			msg := "A not empty text value is required"
+			return &msg
+		}
+
 		if field.Type == EnumType {
+			enumOptions := make([]string, len(*field.EnumOptions))
+			for i, option := range *field.EnumOptions {
+				enumOptions[i] = option.ID
+			}
+
 			valid := false
 			for _, option := range enumOptions {
 				if option == value {
@@ -112,16 +119,28 @@ func resolveErrorMessage(field *DynamicField, value interface{}, enumOptions []s
 }
 
 func canDecodeFile(value interface{}) bool {
+	if value == nil {
+		return false
+	}
+
 	_, err := base64.StdEncoding.DecodeString(value.(string))
 	return err == nil
 }
 
 func isAnEmail(value interface{}) bool {
+	if value == nil {
+		return false
+	}
+
 	_, err := mail.ParseAddress(value.(string))
 	return err == nil
 }
 
 func isAnUrl(value interface{}) bool {
+	if value == nil {
+		return false
+	}
+
 	_, err := url.ParseRequestURI(value.(string))
 	return err == nil
 }

@@ -153,7 +153,11 @@ func (r *repository) Save(accessList *access_list.AccessList) error {
 	}
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(toModel(accessList)).Exec(r.ctx)
+		_, err = transaction.
+			NewUpdate().
+			Model(toModel(accessList)).
+			Where(constants.ByIdFilter, accessList.ID).
+			Exec(r.ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(toModel(accessList)).Exec(r.ctx)
 	}

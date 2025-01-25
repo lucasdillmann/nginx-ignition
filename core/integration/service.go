@@ -31,13 +31,13 @@ func (s *service) list() ([]*ListOutput, error) {
 		return nil, err
 	}
 
-	sort.Slice(adapters, func(i, j int) bool {
+	sort.Slice(*adapters, func(i, j int) bool {
 		return (*adapters)[i].Priority() < (*adapters)[j].Priority()
 	})
 
 	var outputs []*ListOutput
 	for _, adapter := range *adapters {
-		settings, err := s.repository.FindById(adapter.ID())
+		settings, err := s.repository.FindByID(adapter.ID())
 		if err != nil {
 			return nil, err
 		}
@@ -63,7 +63,7 @@ func (s *service) getById(id string) (*GetByIdOutput, error) {
 		return nil, nil
 	}
 
-	settings, err := s.repository.FindById(id)
+	settings, err := s.repository.FindByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -194,7 +194,7 @@ func (s *service) findAdapter(id string) *Adapter {
 }
 
 func (s *service) findSettings(id string) (*Integration, error) {
-	settings, err := s.repository.FindById(id)
+	settings, err := s.repository.FindByID(id)
 	if err != nil {
 		return nil, err
 	}

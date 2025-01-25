@@ -84,7 +84,7 @@ func (r *repository) Save(host *host.Host) error {
 	}
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(model).Exec(r.ctx)
+		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(r.ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(model).Exec(r.ctx)
 	}
