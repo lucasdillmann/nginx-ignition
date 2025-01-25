@@ -45,6 +45,7 @@ func (a *Adapter) GetAvailableOptions(
 	pageNumber, pageSize int,
 	searchTerms *string,
 ) (*pagination.Page[*integration.AdapterOption], error) {
+	// TODO: Implement this
 	return nil, core_error.New("not implemented", false)
 }
 
@@ -52,6 +53,7 @@ func (a *Adapter) GetAvailableOptionById(
 	parameters map[string]interface{},
 	id string,
 ) (*integration.AdapterOption, error) {
+	// TODO: Implement this
 	return nil, core_error.New("not implemented", false)
 }
 
@@ -59,5 +61,6 @@ func (a *Adapter) GetOptionProxyUrl(
 	parameters map[string]interface{},
 	id string,
 ) (*string, error) {
+	// TODO: Implement this
 	return nil, core_error.New("not implemented", false)
 }
