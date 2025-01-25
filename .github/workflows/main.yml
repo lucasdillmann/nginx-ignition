@@ -40,7 +40,7 @@ jobs:
       - name: go cache
         uses: actions/cache@v4
         with:
-          path: $GOPATH/pkg/mod
+          path: /home/runner/go/pkg/mod
           key: go-cache
           restore-keys: go-cache
       - name: Frontend build
