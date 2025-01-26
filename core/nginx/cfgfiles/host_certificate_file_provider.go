@@ -5,6 +5,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"encoding/base64"
+	"encoding/pem"
 	"fmt"
 	"github.com/google/uuid"
 	"strings"
@@ -74,19 +75,16 @@ func (p *hostCertificateFileProvider) buildCertificateFile(certificateId uuid.UU
 }
 
 func (p *hostCertificateFileProvider) convertToPemEncodedString(publicKey string, privateKey *string) string {
-	encoder := base64.StdEncoding.WithPadding(base64.NoPadding)
 	publicKeyBytes, _ := base64.StdEncoding.DecodeString(publicKey)
 	var buffer strings.Builder
 
-	buffer.WriteString("-----BEGIN CERTIFICATE-----\n")
-	buffer.WriteString(encoder.EncodeToString(publicKeyBytes))
-	buffer.WriteString("\n-----END CERTIFICATE-----\n")
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: publicKeyBytes})
+	buffer.WriteString(string(certPEM))
 
 	if privateKey != nil {
 		privateKeyBytes, _ := base64.StdEncoding.DecodeString(*privateKey)
-		buffer.WriteString("-----BEGIN PRIVATE KEY-----\n")
-		buffer.WriteString(encoder.EncodeToString(privateKeyBytes))
-		buffer.WriteString("\n-----END PRIVATE KEY-----\n")
+		keyPEM := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: privateKeyBytes})
+		buffer.WriteString(string(keyPEM))
 	}
 
 	return buffer.String()

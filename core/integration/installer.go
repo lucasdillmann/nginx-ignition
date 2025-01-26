@@ -19,9 +19,9 @@ func buildCommands(
 	ListOptionsCommand,
 	ListCommand,
 ) {
-	adapterResolver := func() (*[]Adapter, error) {
-		var output *[]Adapter
-		if err := container.Invoke(func(adapters *[]Adapter) {
+	adapterResolver := func() ([]Adapter, error) {
+		var output []Adapter
+		if err := container.Invoke(func(adapters []Adapter) {
 			output = adapters
 		}); err != nil {
 			return nil, err

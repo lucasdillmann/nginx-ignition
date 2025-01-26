@@ -9,6 +9,7 @@ import (
 	"dillmann.com.br/nginx-ignition/database/common/database"
 	"errors"
 	"github.com/google/uuid"
+	"github.com/uptrace/bun"
 )
 
 type repository struct {
@@ -153,11 +154,7 @@ func (r *repository) Save(accessList *access_list.AccessList) error {
 	}
 
 	if exists {
-		_, err = transaction.
-			NewUpdate().
-			Model(toModel(accessList)).
-			Where(constants.ByIdFilter, accessList.ID).
-			Exec(r.ctx)
+		err = r.performUpdate(toModel(accessList), transaction)
 	} else {
 		_, err = transaction.NewInsert().Model(toModel(accessList)).Exec(r.ctx)
 	}
@@ -167,4 +164,51 @@ func (r *repository) Save(accessList *access_list.AccessList) error {
 	}
 
 	return transaction.Commit()
+}
+
+func (r *repository) performUpdate(model *accessListModel, transaction bun.Tx) error {
+	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(r.ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = transaction.
+		NewDelete().
+		Table("access_list_credentials").
+		Where("access_list_id = ?", model.ID).
+		Exec(r.ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = transaction.
+		NewDelete().
+		Table("access_list_entry_set").
+		Where("access_list_id = ?", model.ID).
+		Exec(r.ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, credentials := range model.Credentials {
+		credentials.ID = uuid.New()
+		credentials.AccessListID = model.ID
+
+		_, err = transaction.NewInsert().Model(credentials).Exec(r.ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, entrySet := range model.EntrySets {
+		entrySet.ID = uuid.New()
+		entrySet.AccessListID = model.ID
+
+		_, err = transaction.NewInsert().Model(entrySet).Exec(r.ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

@@ -9,7 +9,7 @@ import (
 
 type service struct {
 	repository       Repository
-	adaptersResolver func() (*[]Adapter, error)
+	adaptersResolver func() ([]Adapter, error)
 }
 
 var defaultSettings = &Integration{
@@ -18,7 +18,7 @@ var defaultSettings = &Integration{
 	Parameters: make(map[string]interface{}),
 }
 
-func newService(repository Repository, adaptersResolver func() (*[]Adapter, error)) *service {
+func newService(repository Repository, adaptersResolver func() ([]Adapter, error)) *service {
 	return &service{
 		repository:       repository,
 		adaptersResolver: adaptersResolver,
@@ -31,12 +31,12 @@ func (s *service) list() ([]*ListOutput, error) {
 		return nil, err
 	}
 
-	sort.Slice(*adapters, func(i, j int) bool {
-		return (*adapters)[i].Priority() < (*adapters)[j].Priority()
+	sort.Slice(adapters, func(i, j int) bool {
+		return (adapters)[i].Priority() < (adapters)[j].Priority()
 	})
 
 	var outputs []*ListOutput
-	for _, adapter := range *adapters {
+	for _, adapter := range adapters {
 		settings, err := s.repository.FindByID(adapter.ID())
 		if err != nil {
 			return nil, err
@@ -72,13 +72,13 @@ func (s *service) getById(id string) (*GetByIdOutput, error) {
 		settings = defaultSettings
 	}
 
-	dynamicFields := (*adapter).ConfigurationFields()
+	dynamicFields := adapter.ConfigurationFields()
 	dynamic_fields.RemoveSensitiveFields(&settings.Parameters, dynamicFields)
 
 	return &GetByIdOutput{
 		ID:                  id,
-		Name:                (*adapter).Name(),
-		Description:         (*adapter).Description(),
+		Name:                adapter.Name(),
+		Description:         adapter.Description(),
 		Enabled:             settings.Enabled,
 		Parameters:          settings.Parameters,
 		ConfigurationFields: dynamicFields,
@@ -104,7 +104,7 @@ func (s *service) listOptions(
 		return nil, integrationDisabledError()
 	}
 
-	options, err := (*adapter).GetAvailableOptions(settings.Parameters, pageNumber, pageSize, searchTerms)
+	options, err := adapter.GetAvailableOptions(settings.Parameters, pageNumber, pageSize, searchTerms)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func (s *service) getOptionById(integrationId, optionId string) (*AdapterOption,
 		return nil, integrationDisabledError()
 	}
 
-	return (*adapter).GetAvailableOptionById(settings.Parameters, optionId)
+	return adapter.GetAvailableOptionById(settings.Parameters, optionId)
 }
 
 func (s *service) configureById(id string, enabled bool, parameters map[string]interface{}) error {
@@ -141,7 +141,7 @@ func (s *service) configureById(id string, enabled bool, parameters map[string]i
 	}
 
 	if enabled {
-		if err := dynamic_fields.Validate((*adapter).ConfigurationFields(), parameters); err != nil {
+		if err := dynamic_fields.Validate(adapter.ConfigurationFields(), parameters); err != nil {
 			return err
 		}
 	}
@@ -170,7 +170,7 @@ func (s *service) getOptionUrl(integrationId, optionId string) (*string, error) 
 		return nil, integrationDisabledError()
 	}
 
-	url, err := (*adapter).GetOptionProxyUrl(settings.Parameters, optionId)
+	url, err := adapter.GetOptionProxyUrl(settings.Parameters, optionId)
 	if err != nil {
 		return nil, err
 	}
@@ -178,15 +178,15 @@ func (s *service) getOptionUrl(integrationId, optionId string) (*string, error) 
 	return url, nil
 }
 
-func (s *service) findAdapter(id string) *Adapter {
+func (s *service) findAdapter(id string) Adapter {
 	adapters, err := s.adaptersResolver()
 	if err != nil {
 		return nil
 	}
 
-	for _, adapter := range *adapters {
+	for _, adapter := range adapters {
 		if adapter.ID() == id {
-			return &adapter
+			return adapter
 		}
 	}
 

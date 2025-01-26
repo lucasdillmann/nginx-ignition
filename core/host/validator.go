@@ -118,6 +118,8 @@ func (v *validator) validateBinding(pathPrefix string, binding *Binding, index i
 	switch {
 	case binding.Type == HttpBindingType && binding.CertificateID != nil:
 		v.delegate.Add(certificateIdField, "Value cannot be informed for a HTTP binding")
+	case binding.Type == HttpBindingType && binding.CertificateID == nil:
+		return nil
 	case binding.Type == HttpsBindingType && binding.CertificateID == nil:
 		v.delegate.Add(certificateIdField, "Value must be informed for a HTTPS binding")
 	case binding.Type == HttpsBindingType:

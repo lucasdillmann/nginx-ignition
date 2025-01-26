@@ -103,9 +103,18 @@ func toModel(domain *host.Host) (*hostModel, error) {
 
 	routes := make([]*hostRouteModel, len(domain.Routes))
 	for index, route := range domain.Routes {
-		headers, err := formatHeaders(route.Response.Headers)
-		if err != nil {
-			return nil, err
+		var responseHeaders, responsePayload *string
+		var responseStatusCode *int
+
+		if route.Response != nil {
+			var err error
+			responseHeaders, err = formatHeaders(route.Response.Headers)
+			if err != nil {
+				return nil, err
+			}
+
+			responsePayload = route.Response.Payload
+			responseStatusCode = &route.Response.StatusCode
 		}
 
 		var integrationID, integrationOptionID *string
@@ -114,10 +123,11 @@ func toModel(domain *host.Host) (*hostModel, error) {
 			integrationOptionID = &route.Integration.OptionID
 		}
 
-		var codeLanguage, codeContents *string
+		var codeLanguage, codeContents, codeMainFunction *string
 		if route.SourceCode != nil {
 			codeLanguage = (*string)(&route.SourceCode.Language)
 			codeContents = &route.SourceCode.Contents
+			codeMainFunction = route.SourceCode.MainFunction
 		}
 
 		routes[index] = &hostRouteModel{
@@ -128,9 +138,9 @@ func toModel(domain *host.Host) (*hostModel, error) {
 			SourcePath:             route.SourcePath,
 			TargetURI:              route.TargetURI,
 			CustomSettings:         route.Settings.Custom,
-			StaticResponseCode:     &route.Response.StatusCode,
-			StaticResponsePayload:  route.Response.Payload,
-			StaticResponseHeaders:  headers,
+			StaticResponseCode:     responseStatusCode,
+			StaticResponsePayload:  responsePayload,
+			StaticResponseHeaders:  responseHeaders,
 			RedirectCode:           route.RedirectCode,
 			IntegrationID:          integrationID,
 			IntegrationOptionID:    integrationOptionID,
@@ -140,7 +150,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 			AccessListID:           route.AccessListID,
 			CodeLanguage:           codeLanguage,
 			CodeContents:           codeContents,
-			CodeMainFunction:       route.SourceCode.MainFunction,
+			CodeMainFunction:       codeMainFunction,
 			Enabled:                route.Enabled,
 		}
 	}

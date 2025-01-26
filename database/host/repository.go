@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/database/common/database"
 	"errors"
 	"github.com/google/uuid"
+	"github.com/uptrace/bun"
 )
 
 type repository struct {
@@ -84,7 +85,7 @@ func (r *repository) Save(host *host.Host) error {
 	}
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(r.ctx)
+		err = r.performUpdate(model, transaction)
 	} else {
 		_, err = transaction.NewInsert().Model(model).Exec(r.ctx)
 	}
@@ -94,6 +95,45 @@ func (r *repository) Save(host *host.Host) error {
 	}
 
 	return transaction.Commit()
+}
+
+func (r *repository) performUpdate(model *hostModel, transaction bun.Tx) error {
+	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(r.ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = transaction.NewDelete().Table("host_binding").Where("host_id = ?", model.ID).Exec(r.ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = transaction.NewDelete().Table("host_route").Where("host_id = ?", model.ID).Exec(r.ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, binding := range model.Bindings {
+		binding.ID = uuid.New()
+		binding.HostID = model.ID
+
+		_, err = transaction.NewInsert().Model(binding).Exec(r.ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, route := range model.Routes {
+		route.ID = uuid.New()
+		route.HostID = model.ID
+
+		_, err = transaction.NewInsert().Model(route).Exec(r.ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (r *repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*host.Host], error) {
@@ -199,8 +239,9 @@ func (r *repository) ExistsCertificateByID(certificateId uuid.UUID) (bool, error
 }
 
 func (r *repository) ExistsByCertificateID(certificateId uuid.UUID) (bool, error) {
-	count, err := r.database.Select().
-		Model((*hostModel)(nil)).
+	count, err := r.database.
+		Select().
+		Model((*hostBindingModel)(nil)).
 		Where("certificate_id = ?", certificateId).
 		Count(r.ctx)
 

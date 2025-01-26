@@ -83,8 +83,8 @@ func installCertificateProviderAggregation(
 	customCertificateProvider *custom.Provider,
 	selfSignedCertificateProvider *selfsigned.Provider,
 ) error {
-	return container.Provide(func() *[]certificate.Provider {
-		return &[]certificate.Provider{
+	return container.Provide(func() []certificate.Provider {
+		return []certificate.Provider{
 			acmeCertificateProvider,
 			customCertificateProvider,
 			selfSignedCertificateProvider,
@@ -97,8 +97,8 @@ func installIntegrationAdapterAggregation(
 	dockerAdapter *docker.Adapter,
 	trueNasAdapter *truenas.Adapter,
 ) error {
-	return container.Provide(func() *[]integration.Adapter {
-		return &[]integration.Adapter{
+	return container.Provide(func() []integration.Adapter {
+		return []integration.Adapter{
 			dockerAdapter,
 			trueNasAdapter,
 		}
