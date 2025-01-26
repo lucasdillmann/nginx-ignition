@@ -101,8 +101,9 @@ func buildPEMs(domainNames []string) (*string, *string, error) {
 
 func dereference(domainNames []*string) []string {
 	dereferencedNames := make([]string, len(domainNames))
-	for i, name := range domainNames {
-		dereferencedNames[i] = *name
+	for index, name := range domainNames {
+		dereferencedNames[index] = *name
 	}
+
 	return dereferencedNames
 }

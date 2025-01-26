@@ -1,0 +1,2 @@
+-- no-op for sqlite
+-- https://www.sqlite.org/faq.html#q9

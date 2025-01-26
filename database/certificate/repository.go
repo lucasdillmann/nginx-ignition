@@ -73,7 +73,11 @@ func (r repository) DeleteByID(id uuid.UUID) error {
 		Where(constants.ByIdFilter, id).
 		Exec(r.ctx)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	return transaction.Commit()
 }
 
 func (r repository) Save(certificate *certificate.Certificate) error {
