@@ -3,7 +3,7 @@ package truenas
 import "dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 
 var (
-	url = dynamic_fields.DynamicField{
+	urlField = dynamic_fields.DynamicField{
 		ID:          "url",
 		Description: "URL",
 		Priority:    1,
@@ -13,7 +13,7 @@ var (
 		Type: dynamic_fields.URLType,
 	}
 
-	proxyUrl = dynamic_fields.DynamicField{
+	proxyUrlField = dynamic_fields.DynamicField{
 		ID:          "proxyUrl",
 		Description: "Apps URL",
 		Priority:    2,
@@ -23,7 +23,7 @@ var (
 		Type: dynamic_fields.URLType,
 	}
 
-	username = dynamic_fields.DynamicField{
+	usernameField = dynamic_fields.DynamicField{
 		ID:          "username",
 		Description: "Username",
 		Priority:    3,
@@ -32,7 +32,7 @@ var (
 		Type:        dynamic_fields.SingleLineTextType,
 	}
 
-	password = dynamic_fields.DynamicField{
+	passwordField = dynamic_fields.DynamicField{
 		ID:          "password",
 		Description: "Password",
 		Priority:    4,
