@@ -1,0 +1,33 @@
+package integration
+
+import (
+	"dillmann.com.br/nginx-ignition/core/integration"
+	"encoding/json"
+)
+
+func toDomain(model *integrationModel) (*integration.Integration, error) {
+	parameters := make(map[string]interface{})
+	err := json.Unmarshal([]byte(model.Parameters), &parameters)
+	if err != nil {
+		return nil, err
+	}
+
+	return &integration.Integration{
+		ID:         model.ID,
+		Enabled:    model.Enabled,
+		Parameters: parameters,
+	}, nil
+}
+
+func toModel(domain *integration.Integration) (*integrationModel, error) {
+	parameters, err := json.Marshal(domain.Parameters)
+	if err != nil {
+		return nil, err
+	}
+
+	return &integrationModel{
+		ID:         domain.ID,
+		Enabled:    domain.Enabled,
+		Parameters: string(parameters),
+	}, nil
+}
