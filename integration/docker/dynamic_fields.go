@@ -3,7 +3,7 @@ package docker
 import "dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 
 var (
-	connectionMode = dynamic_fields.DynamicField{
+	connectionModeField = dynamic_fields.DynamicField{
 		ID:          "connectionMode",
 		Description: "Connection mode",
 		Priority:    1,
@@ -16,7 +16,7 @@ var (
 		DefaultValue: stringPtr("SOCKET"),
 	}
 
-	socketPath = dynamic_fields.DynamicField{
+	socketPathField = dynamic_fields.DynamicField{
 		ID:           "socketPath",
 		Description:  "Socket path",
 		Priority:     2,
@@ -24,12 +24,12 @@ var (
 		Type:         dynamic_fields.SingleLineTextType,
 		DefaultValue: stringPtr("/var/run/docker.sock"),
 		Condition: &dynamic_fields.Condition{
-			ParentField: connectionMode.ID,
+			ParentField: connectionModeField.ID,
 			Value:       "SOCKET",
 		},
 	}
 
-	hostUrl = dynamic_fields.DynamicField{
+	hostUrlField = dynamic_fields.DynamicField{
 		ID:          "hostUrl",
 		Description: "Host URL",
 		Priority:    2,
@@ -37,12 +37,12 @@ var (
 		Type:        dynamic_fields.URLType,
 		HelpText:    stringPtr("The URL to be used to connect to the Docker daemon, such as tcp://example.com:2375"),
 		Condition: &dynamic_fields.Condition{
-			ParentField: connectionMode.ID,
+			ParentField: connectionModeField.ID,
 			Value:       "TCP",
 		},
 	}
 
-	proxyUrl = dynamic_fields.DynamicField{
+	proxyUrlField = dynamic_fields.DynamicField{
 		ID:          "proxyUrl",
 		Description: "Apps URL",
 		Priority:    3,

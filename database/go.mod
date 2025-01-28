@@ -14,6 +14,7 @@ require (
 )
 
 require (
+	github.com/docker/docker v27.5.1+incompatible // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect

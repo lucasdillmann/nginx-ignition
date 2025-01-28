@@ -32,7 +32,10 @@ func (m *RBAC) HandleRequest(context *gin.Context) {
 	subject, err := m.jwt.ValidateToken(accessToken)
 	if err != nil {
 		context.Abort()
-		panic(err)
+		panic(api_error.New(
+			http.StatusUnauthorized,
+			"Invalid or expired access token",
+		))
 	}
 
 	requiredRole := m.findRequiredRole(context.Request.Method, path)
