@@ -66,6 +66,10 @@ func (p *hostCertificateFileProvider) buildCertificateFile(certificateId uuid.UU
 
 	certificateChain := strings.Join(cert.CertificationChain, "\n")
 	mainContents := p.convertToPemEncodedString(cert.PublicKey, &cert.PrivateKey)
+
+	certificateChain = removeEmptyLines(certificateChain)
+	mainContents = removeEmptyLines(mainContents)
+
 	contents := fmt.Sprintf("%s\n%s", certificateChain, mainContents)
 
 	return &output{
@@ -88,4 +92,9 @@ func (p *hostCertificateFileProvider) convertToPemEncodedString(publicKey string
 	}
 
 	return buffer.String()
+}
+
+func removeEmptyLines(s string) string {
+	s = strings.TrimPrefix(s, "\n")
+	return strings.TrimSuffix(s, "\n")
 }
