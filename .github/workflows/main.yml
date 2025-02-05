@@ -8,7 +8,39 @@ on:
       - main
 
 jobs:
-  # TODO: Re-enable quality checks (eslint, prettier, sonar, etc)
+  quality-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.23
+      - name: npm cache
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: npm-cache
+          restore-keys: npm-cache
+      - name: go cache
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/go/pkg/mod
+          key: go-cache
+          restore-keys: go-cache
+      - name: Prettier
+        working-directory: frontend
+        run: |
+          npm install && |
+          npx prettier --check src
+      - name: Eslint
+        working-directory: frontend
+        run: |
+          npm install && \
+          npx eslint src
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -44,8 +76,8 @@ jobs:
           key: go-cache
           restore-keys: go-cache
       - name: Frontend build
+        working-directory: frontend
         run: |
-          cd frontend && \
           npm install && \
           npm run build
       - name: Backend build
