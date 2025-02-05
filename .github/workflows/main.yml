@@ -42,7 +42,7 @@ jobs:
         run: |
           npm install && \
           npx eslint src
-      - name: SonarQube Scan
+      - name: Sonarqube
         uses: SonarSource/sonarqube-scan-action@v4.2.1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
