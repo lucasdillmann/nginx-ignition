@@ -191,7 +191,7 @@ func (v *validator) validateRoute(route *Route, index int, distinctPaths *map[st
 }
 
 func (v *validator) validateProxyRoute(route *Route, index int) {
-	targetUriField := "routes[" + strconv.Itoa(index) + "].targetUri"
+	targetUriField := buildIndexedRoutePath(index, "targetUri")
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
 		v.delegate.Add(targetUriField, "Value is required when the type of the route is proxy")
 	} else {
@@ -202,7 +202,7 @@ func (v *validator) validateProxyRoute(route *Route, index int) {
 }
 
 func (v *validator) validateRedirectRoute(route *Route, index int) {
-	targetUriField := "routes[" + strconv.Itoa(index) + "].targetUri"
+	targetUriField := buildIndexedRoutePath(index, "targetUri")
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
 		v.delegate.Add(targetUriField, "Value is required when the type of the route is redirect")
 	} else {
