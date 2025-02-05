@@ -64,6 +64,19 @@ var (
 		},
 	}
 
+	awsHostedZoneID = dynamic_fields.DynamicField{
+		ID:          "awsHostedZoneId",
+		Priority:    3,
+		Description: "AWS hosted zone ID",
+		Required:    true,
+		Sensitive:   true,
+		Type:        dynamic_fields.SingleLineTextType,
+		Condition: &dynamic_fields.Condition{
+			ParentField: dnsProvider.ID,
+			Value:       awsRoute53Id,
+		},
+	}
+
 	cloudflareApiToken = dynamic_fields.DynamicField{
 		ID:          "cloudflareApiToken",
 		Priority:    2,

@@ -59,6 +59,15 @@ func (c *Configuration) GetInt(key string) (int, error) {
 	return strconv.Atoi(value)
 }
 
+func (c *Configuration) GetBoolean(key string) (bool, error) {
+	value, err := c.Get(key)
+	if err != nil {
+		return false, err
+	}
+
+	return strconv.ParseBool(value)
+}
+
 func (c *Configuration) WithPrefix(prefix string) *Configuration {
 	var newPrefix string
 	if c.prefix == "" {

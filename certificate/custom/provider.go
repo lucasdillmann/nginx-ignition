@@ -39,8 +39,8 @@ func (p *Provider) Priority() int {
 }
 
 func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certificate, error) {
-	privateKeyStr := *request.Parameters[privateKeyField.ID]
-	publicKeyStr := *request.Parameters[publicKeyField.ID]
+	privateKeyStr := request.Parameters[privateKeyField.ID].(string)
+	publicKeyStr := request.Parameters[publicKeyField.ID].(string)
 	chainStr, chainPresent := request.Parameters[certificationChainField.ID]
 
 	privateKey, err := parsePrivateKey(privateKeyStr.(string))
@@ -72,7 +72,7 @@ func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certif
 		PrivateKey:         base64.StdEncoding.EncodeToString(privateKey),
 		PublicKey:          base64.StdEncoding.EncodeToString(publicKey.Raw),
 		CertificationChain: encodeChain(chain),
-		Parameters:         dereferenceMap(request.Parameters),
+		Parameters:         request.Parameters,
 		Metadata:           nil,
 	}, nil
 }
@@ -146,17 +146,6 @@ func dereferenceSlice(input []*string) []string {
 	output := make([]string, len(input))
 	for index, value := range input {
 		output[index] = *value
-	}
-
-	return output
-}
-
-func dereferenceMap(input map[string]*interface{}) map[string]interface{} {
-	output := make(map[string]interface{})
-	for key, value := range input {
-		if value != nil {
-			output[key] = *value
-		}
 	}
 
 	return output
