@@ -63,6 +63,7 @@ func buildAwsRoute53Provider(parameters map[string]any) (challenge.Provider, err
 		TTL:                      ttl,
 		PropagationTimeout:       propagationTimeout,
 		PollingInterval:          poolingInterval,
+		Region:                   "us-east-1",
 	}
 
 	return route53.NewDNSProviderConfig(cfg)
