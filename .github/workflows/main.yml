@@ -33,7 +33,7 @@ jobs:
       - name: Prettier
         working-directory: frontend
         run: |
-          npm install && |
+          npm install && \
           npx prettier --check src
       - name: Eslint
         working-directory: frontend
