@@ -68,6 +68,8 @@ func (h *PasswordHash) hashValue(password []byte, salt []byte, hashIterations in
 		if _, err := hash.Write(output); err != nil {
 			return nil, err
 		}
+		output = hash.Sum(nil)
+		hash.Reset()
 	}
 
 	return output, nil
