@@ -87,10 +87,13 @@ jobs:
           npm install && \
           npm run build
       - name: Backend build
+        env:
+          GOOS: linux
+          CGO_ENABLED: "0"
         run: |
           go work sync && \
-          GOARCH=amd64 GOOS=linux go build -o build/linux/amd64 application/main.go && \
-          GOARCH=arm64 GOOS=linux go build -o build/linux/arm64 application/main.go
+          GOARCH=amd64 go build -o build/linux/amd64 application/main.go && \
+          GOARCH=arm64 go build -o build/linux/arm64 application/main.go
       - name: Build and push Docker images
         run: |
           docker buildx build \
