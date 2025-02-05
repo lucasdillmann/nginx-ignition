@@ -55,36 +55,7 @@ func isConditionSatisfied(field *DynamicField, parameters map[string]any) bool {
 func resolveErrorMessage(field *DynamicField, value interface{}) *string {
 	switch field.Type {
 	case EnumType, SingleLineTextType, MultiLineTextType:
-		castedValue, casted := value.(string)
-		if !casted {
-			msg := "A text value is expected"
-			return &msg
-		}
-
-		if field.Required && strings.TrimSpace(castedValue) == "" {
-			msg := "A not empty text value is required"
-			return &msg
-		}
-
-		if field.Type == EnumType {
-			enumOptions := make([]string, len(*field.EnumOptions))
-			for i, option := range *field.EnumOptions {
-				enumOptions[i] = option.ID
-			}
-
-			valid := false
-			for _, option := range enumOptions {
-				if option == value {
-					valid = true
-					break
-				}
-			}
-
-			if !valid {
-				msg := "Not a recognized option. Valid values: " + strings.Join(enumOptions, ", ")
-				return &msg
-			}
-		}
+		return resolveTextBasedFieldErrorMessage(field, value)
 
 	case FileType:
 		if !canDecodeFile(value) {
@@ -143,4 +114,45 @@ func isAnUrl(value interface{}) bool {
 
 	_, err := url.ParseRequestURI(value.(string))
 	return err == nil
+}
+
+func resolveTextBasedFieldErrorMessage(field *DynamicField, value interface{}) *string {
+	castedValue, casted := value.(string)
+	if !casted {
+		msg := "A text value is expected"
+		return &msg
+	}
+
+	if field.Required && strings.TrimSpace(castedValue) == "" {
+		msg := "A not empty text value is required"
+		return &msg
+	}
+
+	if field.Type == EnumType {
+		return resolveEnumFieldErrorMessage(field, castedValue)
+	}
+
+	return nil
+}
+
+func resolveEnumFieldErrorMessage(field *DynamicField, value interface{}) *string {
+	enumOptions := make([]string, len(*field.EnumOptions))
+	for i, option := range *field.EnumOptions {
+		enumOptions[i] = option.ID
+	}
+
+	valid := false
+	for _, option := range enumOptions {
+		if option == value {
+			valid = true
+			break
+		}
+	}
+
+	if !valid {
+		msg := "Not a recognized option. Valid values: " + strings.Join(enumOptions, ", ")
+		return &msg
+	}
+
+	return nil
 }

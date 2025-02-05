@@ -22,6 +22,7 @@ func newValidator(hostRepository *Repository) *validator {
 }
 
 const (
+	invalidValue              = "Invalid value"
 	bindingsPath              = "bindings"
 	minimumPort               = 1
 	maximumPort               = 65535
@@ -109,7 +110,7 @@ func (v *validator) validateBinding(pathPrefix string, binding *Binding, index i
 	if binding.Port < minimumPort || binding.Port > maximumPort {
 		v.delegate.Add(
 			pathPrefix+"["+strconv.Itoa(index)+"].port",
-			"Value must be between "+strconv.Itoa(minimumPort)+" and "+strconv.Itoa(maximumPort),
+			buildOutOfRangeMessage(minimumPort, maximumPort),
 		)
 	}
 
@@ -132,7 +133,7 @@ func (v *validator) validateBinding(pathPrefix string, binding *Binding, index i
 			v.delegate.Add(certificateIdField, "No SSL certificate found with provided ID")
 		}
 	default:
-		v.delegate.Add(pathPrefix+"["+strconv.Itoa(index)+"].type", "Invalid value")
+		v.delegate.Add(pathPrefix+"["+strconv.Itoa(index)+"].type", invalidValue)
 	}
 
 	return nil
@@ -166,7 +167,7 @@ func (v *validator) validateRoutes(host *Host) {
 func (v *validator) validateRoute(route *Route, index int, distinctPaths *map[string]bool) {
 	if (*distinctPaths)[route.SourcePath] {
 		v.delegate.Add(
-			"routes["+strconv.Itoa(index)+"].sourcePath",
+			buildIndexedRoutePath(index, "sourcePath"),
 			"Source path was already used in another route",
 		)
 	} else {
@@ -185,7 +186,7 @@ func (v *validator) validateRoute(route *Route, index int, distinctPaths *map[st
 	case SourceCodeRouteType:
 		v.validateSourceCodeRoute(route, index)
 	default:
-		v.delegate.Add("routes["+strconv.Itoa(index)+"].type", "Invalid value")
+		v.delegate.Add(buildIndexedRoutePath(index, "type"), invalidValue)
 	}
 }
 
@@ -214,8 +215,8 @@ func (v *validator) validateRedirectRoute(route *Route, index int) {
 		*route.RedirectCode < minimumRedirectStatusCode ||
 		*route.RedirectCode > maximumRedirectStatusCode {
 		v.delegate.Add(
-			"routes["+strconv.Itoa(index)+"].redirectCode",
-			"Value must be between "+strconv.Itoa(minimumRedirectStatusCode)+" and "+strconv.Itoa(maximumRedirectStatusCode),
+			buildIndexedRoutePath(index, "redirectCode"),
+			buildOutOfRangeMessage(minimumRedirectStatusCode, maximumRedirectStatusCode),
 		)
 	}
 }
@@ -223,7 +224,7 @@ func (v *validator) validateRedirectRoute(route *Route, index int) {
 func (v *validator) validateStaticResponseRoute(route *Route, index int) {
 	if route.Response == nil {
 		v.delegate.Add(
-			"routes["+strconv.Itoa(index)+"].response",
+			buildIndexedRoutePath(index, "response"),
 			"A value is required when the type of the route is static response",
 		)
 		return
@@ -231,8 +232,8 @@ func (v *validator) validateStaticResponseRoute(route *Route, index int) {
 
 	if route.Response.StatusCode < minimumStatusCode || route.Response.StatusCode > maximumStatusCode {
 		v.delegate.Add(
-			"routes["+strconv.Itoa(index)+"].response.statusCode",
-			"Value must be between "+strconv.Itoa(minimumStatusCode)+" and "+strconv.Itoa(maximumStatusCode),
+			buildIndexedRoutePath(index, "response.statusCode"),
+			buildOutOfRangeMessage(minimumStatusCode, maximumStatusCode),
 		)
 	}
 }
@@ -241,16 +242,16 @@ func (v *validator) validateIntegrationRoute(route *Route, index int) {
 	requiredMessage := "Value is required when the type of the route is integration"
 
 	if route.Integration == nil {
-		v.delegate.Add("routes["+strconv.Itoa(index)+"].integration", requiredMessage)
+		v.delegate.Add(buildIndexedRoutePath(index, "integration"), requiredMessage)
 		return
 	}
 
 	if strings.TrimSpace(route.Integration.IntegrationID) == "" {
-		v.delegate.Add("routes["+strconv.Itoa(index)+"].integration.integrationId", requiredMessage)
+		v.delegate.Add(buildIndexedRoutePath(index, "integration.integrationId"), requiredMessage)
 	}
 
 	if strings.TrimSpace(route.Integration.OptionID) == "" {
-		v.delegate.Add("routes["+strconv.Itoa(index)+"].integration.optionId", requiredMessage)
+		v.delegate.Add(buildIndexedRoutePath(index, "integration.optionId"), requiredMessage)
 	}
 }
 
@@ -258,26 +259,34 @@ func (v *validator) validateSourceCodeRoute(route *Route, index int) {
 	requiredMessage := "Value is required when the type of the route is source code"
 
 	if route.SourceCode == nil {
-		v.delegate.Add("routes["+strconv.Itoa(index)+"].sourceCode", requiredMessage)
+		v.delegate.Add(buildIndexedRoutePath(index, "sourceCode"), requiredMessage)
 		return
 	}
 
 	if strings.TrimSpace(route.SourceCode.Contents) == "" {
-		v.delegate.Add("routes["+strconv.Itoa(index)+"].sourceCode.code", requiredMessage)
+		v.delegate.Add(buildIndexedRoutePath(index, "sourceCode.code"), requiredMessage)
 	}
 
 	if route.SourceCode.Language != JavascriptCodeLanguage && route.SourceCode.Language != LuaCodeLanguage {
 		v.delegate.Add(
-			"routes["+strconv.Itoa(index)+"].sourceCode.language",
-			"Invalid value",
+			buildIndexedRoutePath(index, "sourceCode.language"),
+			invalidValue,
 		)
 	}
 
 	if route.SourceCode.Language == JavascriptCodeLanguage &&
 		(route.SourceCode.MainFunction == nil || strings.TrimSpace(*route.SourceCode.MainFunction) == "") {
 		v.delegate.Add(
-			"routes["+strconv.Itoa(index)+"].sourceCode.mainFunction",
+			buildIndexedRoutePath(index, "sourceCode.mainFunction"),
 			"Value is required when the language is JavaScript",
 		)
 	}
+}
+
+func buildOutOfRangeMessage(minimum, maximum int) string {
+	return "Value must be between " + strconv.Itoa(minimum) + " and " + strconv.Itoa(maximum)
+}
+
+func buildIndexedRoutePath(index int, childPath string) string {
+	return "routes[" + strconv.Itoa(index) + "]." + childPath
 }
