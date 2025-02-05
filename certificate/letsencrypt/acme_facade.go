@@ -86,7 +86,7 @@ func parseResult(
 	productionEnvironment bool,
 	client *lego.Client,
 ) (*certificate.Certificate, error) {
-	mainCert, _ := strings.CutSuffix(string(result.Certificate), string(result.IssuerCertificate))
+	mainCert := strings.Replace(string(result.Certificate), string(result.IssuerCertificate), "", 1)
 	mainCertBytes := []byte(mainCert)
 
 	pemBlock, _ := pem.Decode(mainCertBytes)
