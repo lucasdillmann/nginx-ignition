@@ -54,20 +54,9 @@ func (p *hostConfigurationFileProvider) buildHost(basePath string, h *host.Host)
 		}
 	}
 
-	serverNames := ""
-	if h.DefaultServer {
-		serverNames = "server_name _;"
-	} else if len(h.DomainNames) > 0 {
-		domainNames := make([]string, len(h.DomainNames))
-		for index, domainName := range h.DomainNames {
-			if domainName == nil {
-				return nil, core_error.New("Unexpected null domain name", false)
-			}
-
-			domainNames[index] = *domainName
-		}
-
-		serverNames = "server_name " + strings.Join(domainNames, " ") + ";"
+	serverNames, err := p.buildServerNames(h)
+	if err != nil {
+		return nil, err
 	}
 
 	httpsRedirect := ""
@@ -92,7 +81,7 @@ func (p *hostConfigurationFileProvider) buildHost(basePath string, h *host.Host)
 
 	var contents []string
 	for _, b := range bindings {
-		binding, err := p.buildBinding(basePath, h, b, routes, serverNames, httpsRedirect, http2)
+		binding, err := p.buildBinding(basePath, h, b, routes, *serverNames, httpsRedirect, http2)
 		if err != nil {
 			return nil, err
 		}
@@ -103,6 +92,27 @@ func (p *hostConfigurationFileProvider) buildHost(basePath string, h *host.Host)
 		name:     fmt.Sprintf("host-%s.conf", h.ID),
 		contents: strings.Join(contents, "\n"),
 	}, nil
+}
+
+func (p *hostConfigurationFileProvider) buildServerNames(h *host.Host) (*string, error) {
+	serverNames := ""
+
+	if h.DefaultServer {
+		serverNames = "server_name _;"
+	} else if len(h.DomainNames) > 0 {
+		domainNames := make([]string, len(h.DomainNames))
+		for index, domainName := range h.DomainNames {
+			if domainName == nil {
+				return nil, core_error.New("Unexpected null domain name", false)
+			}
+
+			domainNames[index] = *domainName
+		}
+
+		serverNames = "server_name " + strings.Join(domainNames, " ") + ";"
+	}
+
+	return &serverNames, nil
 }
 
 func (p *hostConfigurationFileProvider) buildBinding(
