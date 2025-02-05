@@ -6,7 +6,7 @@ import (
 )
 
 func toDomain(model *integrationModel) (*integration.Integration, error) {
-	parameters := make(map[string]interface{})
+	parameters := make(map[string]any)
 	err := json.Unmarshal([]byte(model.Parameters), &parameters)
 	if err != nil {
 		return nil, err

@@ -15,7 +15,7 @@ type service struct {
 var defaultSettings = &Integration{
 	ID:         "",
 	Enabled:    false,
-	Parameters: make(map[string]interface{}),
+	Parameters: make(map[string]any),
 }
 
 func newService(repository Repository, adaptersResolver func() ([]Adapter, error)) *service {
@@ -134,7 +134,7 @@ func (s *service) getOptionById(integrationId, optionId string) (*AdapterOption,
 	return adapter.GetAvailableOptionById(settings.Parameters, optionId)
 }
 
-func (s *service) configureById(id string, enabled bool, parameters map[string]interface{}) error {
+func (s *service) configureById(id string, enabled bool, parameters map[string]any) error {
 	adapter := s.findAdapter(id)
 	if adapter == nil {
 		return integrationNotFoundError()

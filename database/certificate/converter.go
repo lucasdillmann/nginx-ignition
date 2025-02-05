@@ -49,8 +49,8 @@ func toModel(domain *certificate.Certificate) (*certificateModel, error) {
 	}, nil
 }
 
-func parseParameters(params string) (map[string]interface{}, error) {
-	var result map[string]interface{}
+func parseParameters(params string) (map[string]any, error) {
+	var result map[string]any
 	if err := json.Unmarshal([]byte(params), &result); err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func parseParameters(params string) (map[string]interface{}, error) {
 	return result, nil
 }
 
-func formatParameters(params map[string]interface{}) (string, error) {
+func formatParameters(params map[string]any) (string, error) {
 	result, err := json.Marshal(params)
 	if err != nil {
 		return "", err

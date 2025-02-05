@@ -11,7 +11,7 @@ type GetByIdOutput struct {
 	Description         string
 	Enabled             bool
 	ConfigurationFields []*dynamic_fields.DynamicField
-	Parameters          map[string]interface{}
+	Parameters          map[string]any
 }
 
 type ListOutput struct {
@@ -24,7 +24,7 @@ type ListOutput struct {
 type ConfigureByIdCommand func(
 	id string,
 	enabled bool,
-	parameters map[string]interface{},
+	parameters map[string]any,
 ) error
 
 type GetByIdCommand func(id string) (*GetByIdOutput, error)

@@ -53,7 +53,7 @@ func (a *Adapter) ConfigurationFields() []*dynamic_fields.DynamicField {
 }
 
 func (a *Adapter) GetAvailableOptions(
-	parameters map[string]interface{},
+	parameters map[string]any,
 	_, _ int,
 	searchTerms *string,
 ) (*pagination.Page[*integration.AdapterOption], error) {
@@ -80,7 +80,7 @@ func (a *Adapter) GetAvailableOptions(
 }
 
 func (a *Adapter) GetAvailableOptionById(
-	parameters map[string]interface{},
+	parameters map[string]any,
 	id string,
 ) (*integration.AdapterOption, error) {
 	parts := strings.Split(id, ":")
@@ -103,7 +103,7 @@ func (a *Adapter) GetAvailableOptionById(
 }
 
 func (a *Adapter) GetOptionProxyUrl(
-	parameters map[string]interface{},
+	parameters map[string]any,
 	id string,
 ) (*string, error) {
 	baseUrl := parameters[urlField.ID].(string)
@@ -144,7 +144,7 @@ func (a *Adapter) GetOptionProxyUrl(
 }
 
 func (a *Adapter) getWorkloadPort(
-	parameters map[string]interface{},
+	parameters map[string]any,
 	appId, containerPort string,
 ) (*client.AvailableAppDTO, *client.WorkloadPortDTO, error) {
 	apps, err := a.getAvailableApps(parameters)
@@ -188,7 +188,7 @@ func (a *Adapter) buildOptions(apps []client.AvailableAppDTO) []*integration.Ada
 	return options
 }
 
-func (a *Adapter) getAvailableApps(parameters map[string]interface{}) ([]client.AvailableAppDTO, error) {
+func (a *Adapter) getAvailableApps(parameters map[string]any) ([]client.AvailableAppDTO, error) {
 	baseUrl := parameters[urlField.ID].(string)
 	username := parameters[usernameField.ID].(string)
 	password := parameters[passwordField.ID].(string)

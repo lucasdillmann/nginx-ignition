@@ -9,23 +9,29 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"encoding/base64"
-	"github.com/google/uuid"
-	jsoniter "github.com/json-iterator/go"
-	"time"
+	"encoding/json"
+	acmelog "github.com/go-acme/lego/v4/log"
+)
+
+const (
+	certificateProviderId = "LETS_ENCRYPT"
+	privateKeySize        = 2048
 )
 
 type Provider struct {
-	configuration configuration.Configuration
+	configuration *configuration.Configuration
 }
 
-func New(configuration configuration.Configuration) *Provider {
+func New(configuration *configuration.Configuration) *Provider {
+	acmelog.Logger = logAdapterInstance
+
 	return &Provider{
 		configuration: configuration,
 	}
 }
 
 func (p *Provider) ID() string {
-	return "LETS_ENCRYPT"
+	return certificateProviderId
 }
 
 func (p *Provider) Name() string {
@@ -55,7 +61,7 @@ func (p *Provider) Priority() int {
 }
 
 func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certificate, error) {
-	productionEnvironment, err := p.configuration.GetBoolean("nginx-ignition.certificate.lets-encrypt.production")
+	productionEnvironment, err := p.isProductionEnvironment()
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +71,7 @@ func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certif
 		return nil, core_error.New("E-mail address is missing", true)
 	}
 
-	usrKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	usrKey, err := rsa.GenerateKey(rand.Reader, privateKeySize)
 	if err != nil {
 		return nil, core_error.New("Failed to generate private key", false)
 	}
@@ -73,55 +79,42 @@ func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certif
 	user := userDetails{
 		email:      email,
 		privateKey: usrKey,
+		newAccount: true,
 	}
 
-	cert, err := issueCertificate(
+	return issueCertificate(
 		user,
 		request.DomainNames,
 		request.Parameters,
-		p.configuration,
+		productionEnvironment,
 	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	certDetails, err := x509.ParseCertificate(cert.Certificate)
-	if err != nil {
-		return nil, core_error.New("Failed to parse CSR", false)
-	}
-
-	metadata := certificateMetadata{
-		UserMail:              email,
-		UserPrivateKey:        base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PrivateKey(usrKey)),
-		UserPublicKey:         base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PublicKey(&usrKey.PublicKey)),
-		ProductionEnvironment: productionEnvironment,
-	}
-	metadataJson, err := jsoniter.MarshalToString(metadata)
-	if err != nil {
-		return nil, core_error.New("Failed to serialize metadata", false)
-	}
-
-	renewAfter := time.Now().Add(5 * time.Hour * 24)
-	output := certificate.Certificate{
-		ID:                 uuid.New(),
-		ProviderID:         p.ID(),
-		DomainNames:        request.DomainNames,
-		IssuedAt:           time.Now(),
-		ValidUntil:         certDetails.NotAfter,
-		ValidFrom:          certDetails.NotBefore,
-		RenewAfter:         &renewAfter,
-		PrivateKey:         base64.StdEncoding.EncodeToString(cert.PrivateKey),
-		PublicKey:          base64.StdEncoding.EncodeToString(certDetails.RawSubjectPublicKeyInfo),
-		CertificationChain: []string{base64.StdEncoding.EncodeToString(cert.IssuerCertificate)},
-		Parameters:         request.Parameters,
-		Metadata:           &metadataJson,
-	}
-
-	return &output, nil
 }
 
-func (p *Provider) Renew(_ *certificate.Certificate) (*certificate.Certificate, error) {
-	// TODO: Implement this
-	return nil, core_error.New("not implemented yet", false)
+func (p *Provider) Renew(cert *certificate.Certificate) (*certificate.Certificate, error) {
+	var metadata *certificateMetadata
+	if err := json.Unmarshal([]byte(*cert.Metadata), &metadata); err != nil {
+		return nil, core_error.New("Failed to parse metadata", false)
+	}
+
+	encodedPrivKey, err := base64.StdEncoding.DecodeString(metadata.UserPrivateKey)
+	if err != nil {
+		return nil, core_error.New("Failed to decode private key", false)
+	}
+
+	privKey, err := x509.ParsePKCS1PrivateKey(encodedPrivKey)
+	if err != nil {
+		return nil, core_error.New("Failed to parse private key", false)
+	}
+
+	user := userDetails{
+		email:      metadata.UserMail,
+		privateKey: privKey,
+		newAccount: false,
+	}
+
+	return issueCertificate(user, cert.DomainNames, cert.Parameters, metadata.ProductionEnvironment)
+}
+
+func (p *Provider) isProductionEnvironment() (bool, error) {
+	return p.configuration.GetBoolean("nginx-ignition.certificate.lets-encrypt.production")
 }

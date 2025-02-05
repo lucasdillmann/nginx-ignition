@@ -14,20 +14,20 @@ type availableProviderResponse struct {
 }
 
 type certificateResponse struct {
-	ID          uuid.UUID              `json:"id"`
-	DomainNames []string               `json:"domainNames"`
-	ProviderID  string                 `json:"providerId"`
-	IssuedAt    time.Time              `json:"issuedAt"`
-	ValidUntil  time.Time              `json:"validUntil"`
-	ValidFrom   time.Time              `json:"validFrom"`
-	RenewAfter  *time.Time             `json:"renewAfter"`
-	Parameters  map[string]interface{} `json:"parameters"`
+	ID          uuid.UUID      `json:"id"`
+	DomainNames []string       `json:"domainNames"`
+	ProviderID  string         `json:"providerId"`
+	IssuedAt    time.Time      `json:"issuedAt"`
+	ValidUntil  time.Time      `json:"validUntil"`
+	ValidFrom   time.Time      `json:"validFrom"`
+	RenewAfter  *time.Time     `json:"renewAfter"`
+	Parameters  map[string]any `json:"parameters"`
 }
 
 type issueCertificateRequest struct {
-	ProviderID  string                 `json:"providerId" validation:"required"`
-	DomainNames []*string              `json:"domainNames" validation:"required,nonempty"`
-	Parameters  map[string]interface{} `json:"parameters"`
+	ProviderID  string         `json:"providerId" validation:"required"`
+	DomainNames []*string      `json:"domainNames" validation:"required,nonempty"`
+	Parameters  map[string]any `json:"parameters"`
 }
 
 type issueCertificateResponse struct {

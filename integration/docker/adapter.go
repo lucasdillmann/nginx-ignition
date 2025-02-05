@@ -55,7 +55,7 @@ func (a *Adapter) ConfigurationFields() []*dynamic_fields.DynamicField {
 }
 
 func (a *Adapter) GetAvailableOptions(
-	parameters map[string]interface{},
+	parameters map[string]any,
 	_, _ int,
 	searchTerms *string,
 ) (*pagination.Page[*integration.AdapterOption], error) {
@@ -74,7 +74,7 @@ func (a *Adapter) GetAvailableOptions(
 }
 
 func (a *Adapter) GetAvailableOptionById(
-	parameters map[string]interface{},
+	parameters map[string]any,
 	id string,
 ) (*integration.AdapterOption, error) {
 	option, err := a.resolveAvailableOptionById(parameters, id)
@@ -86,7 +86,7 @@ func (a *Adapter) GetAvailableOptionById(
 }
 
 func (a *Adapter) GetOptionProxyUrl(
-	parameters map[string]interface{},
+	parameters map[string]any,
 	id string,
 ) (*string, error) {
 	option, err := a.resolveAvailableOptionById(parameters, id)
@@ -126,7 +126,7 @@ func (a *Adapter) GetOptionProxyUrl(
 }
 
 func (a *Adapter) resolveAvailableOptionById(
-	parameters map[string]interface{},
+	parameters map[string]any,
 	id string,
 ) (*containerMetadata, error) {
 	options, err := a.resolveAvailableOptions(parameters, nil)
@@ -152,7 +152,7 @@ func (a *Adapter) resolveAvailableOptionById(
 }
 
 func (a *Adapter) resolveAvailableOptions(
-	parameters map[string]interface{},
+	parameters map[string]any,
 	searchTerms *string,
 ) ([]*containerMetadata, error) {
 	dockerClient, err := startClient(parameters)
@@ -206,7 +206,7 @@ func toAdapterOption(option *containerMetadata) *integration.AdapterOption {
 	}
 }
 
-func startClient(parameters map[string]interface{}) (*client.Client, error) {
+func startClient(parameters map[string]any) (*client.Client, error) {
 	connectionMode := parameters[connectionModeField.ID].(string)
 
 	var connectionString string

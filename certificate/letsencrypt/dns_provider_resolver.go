@@ -15,10 +15,10 @@ const (
 	ttl                = 60
 	maxRetries         = 3
 	propagationTimeout = 180 * time.Second
-	poolingInterval    = 2 * time.Second
+	poolingInterval    = 1 * time.Second
 )
 
-func resolveDnsProvider(parameters map[string]interface{}) (challenge.Provider, error) {
+func resolveDnsProvider(parameters map[string]any) (challenge.Provider, error) {
 	providerId, casted := parameters[dnsProvider.ID].(string)
 	if !casted {
 		return nil, core_error.New("DNS provider ID is missing", true)
@@ -38,7 +38,7 @@ func resolveDnsProvider(parameters map[string]interface{}) (challenge.Provider, 
 	}
 }
 
-func buildAwsRoute53Provider(parameters map[string]interface{}) (challenge.Provider, error) {
+func buildAwsRoute53Provider(parameters map[string]any) (challenge.Provider, error) {
 	accessKey, casted := parameters[awsAccessKey.ID].(string)
 	if !casted {
 		return nil, core_error.New("AWS access key is missing", true)
@@ -68,7 +68,7 @@ func buildAwsRoute53Provider(parameters map[string]interface{}) (challenge.Provi
 	return route53.NewDNSProviderConfig(cfg)
 }
 
-func buildCloudflareProvider(parameters map[string]interface{}) (challenge.Provider, error) {
+func buildCloudflareProvider(parameters map[string]any) (challenge.Provider, error) {
 	apiToken, casted := parameters[cloudflareApiToken.ID].(string)
 	if !casted {
 		return nil, core_error.New("Cloudflare API token is missing", true)
@@ -81,7 +81,7 @@ func buildCloudflareProvider(parameters map[string]interface{}) (challenge.Provi
 	return cloudflare.NewDNSProviderConfig(cfg)
 }
 
-func buildGoogleCloudProvider(parameters map[string]interface{}) (challenge.Provider, error) {
+func buildGoogleCloudProvider(parameters map[string]any) (challenge.Provider, error) {
 	privateKey, casted := parameters[googleCloudPrivateKey.ID].(string)
 	if !casted {
 		return nil, core_error.New("Google Cloud private key is missing", true)
@@ -91,7 +91,7 @@ func buildGoogleCloudProvider(parameters map[string]interface{}) (challenge.Prov
 	return gcloud.NewDNSProviderServiceAccountKey(privateKeyBytes)
 }
 
-func buildAzureProvider(parameters map[string]interface{}) (challenge.Provider, error) {
+func buildAzureProvider(parameters map[string]any) (challenge.Provider, error) {
 	tenantId, casted := parameters[azureTenantId.ID].(string)
 	if !casted {
 		return nil, core_error.New("Azure tenant ID is missing", true)

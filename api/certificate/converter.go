@@ -67,7 +67,18 @@ func toCertificateResponse(input *certificate.Certificate) *certificateResponse 
 func toIssueCertificateRequest(input *issueCertificateRequest) *certificate.IssueRequest {
 	return &certificate.IssueRequest{
 		ProviderID:  input.ProviderID,
-		DomainNames: input.DomainNames,
+		DomainNames: dereference(input.DomainNames),
 		Parameters:  input.Parameters,
 	}
+}
+
+func dereference(input []*string) []string {
+	var output []string
+	for _, str := range input {
+		if str != nil {
+			output = append(output, *str)
+		}
+	}
+
+	return output
 }

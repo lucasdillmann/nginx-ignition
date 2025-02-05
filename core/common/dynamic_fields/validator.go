@@ -10,7 +10,7 @@ import (
 
 func Validate(
 	dynamicFields []*DynamicField,
-	parameters map[string]interface{},
+	parameters map[string]any,
 ) error {
 	var violations []validation.ConsistencyViolation
 	for _, field := range dynamicFields {
@@ -42,7 +42,7 @@ func Validate(
 	return nil
 }
 
-func isConditionSatisfied(field *DynamicField, parameters map[string]interface{}) bool {
+func isConditionSatisfied(field *DynamicField, parameters map[string]any) bool {
 	if field.Condition == nil {
 		return true
 	}

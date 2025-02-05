@@ -66,10 +66,10 @@ var (
 
 	awsHostedZoneID = dynamic_fields.DynamicField{
 		ID:          "awsHostedZoneId",
-		Priority:    3,
+		Priority:    4,
 		Description: "AWS hosted zone ID",
 		Required:    true,
-		Sensitive:   true,
+		Sensitive:   false,
 		Type:        dynamic_fields.SingleLineTextType,
 		Condition: &dynamic_fields.Condition{
 			ParentField: dnsProvider.ID,

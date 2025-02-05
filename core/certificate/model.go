@@ -17,7 +17,7 @@ type Certificate struct {
 	PrivateKey         string
 	PublicKey          string
 	CertificationChain []string
-	Parameters         map[string]interface{}
+	Parameters         map[string]any
 	Metadata           *string
 }
 

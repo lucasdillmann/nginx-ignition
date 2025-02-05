@@ -253,6 +253,10 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 		return "", err
 	}
 
+	if proxyUrl == nil {
+		return "", core_error.New("Integration option not found", false)
+	}
+
 	return fmt.Sprintf(
 		`location %s {
 			%s

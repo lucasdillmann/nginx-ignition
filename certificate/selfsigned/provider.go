@@ -32,8 +32,7 @@ func (p *Provider) Priority() int {
 }
 
 func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certificate, error) {
-	dereferencedNames := dereference(request.DomainNames)
-	certPEM, keyPEM, err := buildPEMs(dereferencedNames)
+	certPEM, keyPEM, err := buildPEMs(request.DomainNames)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +40,7 @@ func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certif
 	renewAfter := time.Now().Add(335 * 24 * time.Hour)
 	cert := &certificate.Certificate{
 		ID:                 uuid.New(),
-		DomainNames:        dereferencedNames,
+		DomainNames:        request.DomainNames,
 		ProviderID:         p.ID(),
 		IssuedAt:           time.Now(),
 		ValidFrom:          time.Now().Add(-1 * time.Hour),
@@ -50,7 +49,7 @@ func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certif
 		PrivateKey:         *keyPEM,
 		PublicKey:          *certPEM,
 		CertificationChain: []string{},
-		Parameters:         map[string]interface{}{},
+		Parameters:         map[string]any{},
 		Metadata:           nil,
 	}
 

@@ -39,23 +39,32 @@ func (p *Provider) Priority() int {
 }
 
 func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certificate, error) {
-	privateKeyStr := request.Parameters[privateKeyField.ID].(string)
-	publicKeyStr := request.Parameters[publicKeyField.ID].(string)
-	chainStr, chainPresent := request.Parameters[certificationChainField.ID]
+	params := request.Parameters
+	privateKeyStr, casted := params[privateKeyField.ID].(string)
+	if !casted {
+		return nil, core_error.New("Invalid private key", true)
+	}
 
-	privateKey, err := parsePrivateKey(privateKeyStr.(string))
+	publicKeyStr, casted := request.Parameters[publicKeyField.ID].(string)
+	if !casted {
+		return nil, core_error.New("Invalid public key", true)
+	}
+
+	chainStr, chainPresent := request.Parameters[certificationChainField.ID].(string)
+
+	privateKey, err := parsePrivateKey(privateKeyStr)
 	if err != nil {
 		return nil, core_error.New("Invalid private key", true)
 	}
 
-	publicKey, err := parseCertificate(publicKeyStr.(string))
+	publicKey, err := parseCertificate(publicKeyStr)
 	if err != nil {
 		return nil, core_error.New("Invalid public key", true)
 	}
 
 	var chain []*x509.Certificate
-	if chainPresent && chainStr != nil {
-		chain, err = parseCertificateChain((*chainStr).(string))
+	if chainPresent && chainStr != "" {
+		chain, err = parseCertificateChain(chainStr)
 		if err != nil {
 			return nil, core_error.New("Invalid certification chain", true)
 		}
@@ -63,7 +72,7 @@ func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certif
 
 	return &certificate.Certificate{
 		ID:                 uuid.New(),
-		DomainNames:        dereferenceSlice(request.DomainNames),
+		DomainNames:        request.DomainNames,
 		ProviderID:         p.ID(),
 		IssuedAt:           time.Now(),
 		ValidUntil:         publicKey.NotAfter,
@@ -140,13 +149,4 @@ func encodeChain(chain []*x509.Certificate) []string {
 	}
 
 	return encodedChain
-}
-
-func dereferenceSlice(input []*string) []string {
-	output := make([]string, len(input))
-	for index, value := range input {
-		output[index] = *value
-	}
-
-	return output
 }

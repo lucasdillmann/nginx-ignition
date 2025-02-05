@@ -3,8 +3,8 @@ package integration
 import "dillmann.com.br/nginx-ignition/api/common/dynamic_field"
 
 type integrationConfigurationRequest struct {
-	Enabled    *bool                   `json:"enabled" validation:"required"`
-	Parameters *map[string]interface{} `json:"parameters" validation:"required"`
+	Enabled    *bool           `json:"enabled" validation:"required"`
+	Parameters *map[string]any `json:"parameters" validation:"required"`
 }
 
 type integrationConfigurationResponse struct {
@@ -13,7 +13,7 @@ type integrationConfigurationResponse struct {
 	Description         string                                `json:"description"`
 	Enabled             bool                                  `json:"enabled"`
 	ConfigurationFields []*dynamic_field.DynamicFieldResponse `json:"configurationFields"`
-	Parameters          map[string]interface{}                `json:"parameters"`
+	Parameters          map[string]any                        `json:"parameters"`
 }
 
 type integrationOptionResponse struct {

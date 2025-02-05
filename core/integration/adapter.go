@@ -12,16 +12,16 @@ type Adapter interface {
 	Description() string
 	ConfigurationFields() []*dynamic_fields.DynamicField
 	GetAvailableOptions(
-		parameters map[string]interface{},
+		parameters map[string]any,
 		pageNumber, pageSize int,
 		searchTerms *string,
 	) (*pagination.Page[*AdapterOption], error)
 	GetAvailableOptionById(
-		parameters map[string]interface{},
+		parameters map[string]any,
 		id string,
 	) (*AdapterOption, error)
 	GetOptionProxyUrl(
-		parameters map[string]interface{},
+		parameters map[string]any,
 		id string,
 	) (*string, error)
 }
