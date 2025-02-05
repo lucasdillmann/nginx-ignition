@@ -74,7 +74,7 @@ func issueCertificate(
 		return nil, err
 	}
 
-	return parseResult(uuid.New(), domainNames, parameters, cert, user, productionEnvironment)
+	return parseResult(uuid.New(), domainNames, parameters, cert, user, productionEnvironment, client)
 }
 
 func parseResult(
@@ -84,6 +84,7 @@ func parseResult(
 	result *acmecertificate.Resource,
 	usr userDetails,
 	productionEnvironment bool,
+	client *lego.Client,
 ) (*certificate.Certificate, error) {
 	mainCert, _ := strings.CutSuffix(string(result.Certificate), string(result.IssuerCertificate))
 	mainCertBytes := []byte(mainCert)
@@ -109,7 +110,11 @@ func parseResult(
 		return nil, core_error.New("Failed to serialize metadata", false)
 	}
 
-	renewAfter := time.Now().Add(5 * time.Hour * 24)
+	renewalInfo, err := client.Certificate.GetRenewalInfo(acmecertificate.RenewalInfoRequest{certDetails})
+	if err != nil {
+		return nil, core_error.New("Failed to get renewal info", false)
+	}
+
 	output := certificate.Certificate{
 		ID:                 id,
 		ProviderID:         certificateProviderId,
@@ -117,7 +122,7 @@ func parseResult(
 		IssuedAt:           time.Now(),
 		ValidUntil:         certDetails.NotAfter,
 		ValidFrom:          certDetails.NotBefore,
-		RenewAfter:         &renewAfter,
+		RenewAfter:         &renewalInfo.SuggestedWindow.Start,
 		PrivateKey:         base64.StdEncoding.EncodeToString(result.PrivateKey),
 		PublicKey:          base64.StdEncoding.EncodeToString(mainCertBytes),
 		CertificationChain: []string{base64.StdEncoding.EncodeToString(result.IssuerCertificate)},
