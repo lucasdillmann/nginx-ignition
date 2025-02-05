@@ -125,7 +125,7 @@ func parseResult(
 		RenewAfter:         &renewalInfo.SuggestedWindow.Start,
 		PrivateKey:         base64.StdEncoding.EncodeToString(result.PrivateKey),
 		PublicKey:          base64.StdEncoding.EncodeToString(mainCertBytes),
-		CertificationChain: []string{base64.StdEncoding.EncodeToString(result.IssuerCertificate)},
+		CertificationChain: []string{string(result.IssuerCertificate)},
 		Parameters:         parameters,
 		Metadata:           &metadataJson,
 	}
