@@ -82,13 +82,22 @@ func (p *hostCertificateFileProvider) convertToPemEncodedString(publicKey string
 	publicKeyBytes, _ := base64.StdEncoding.DecodeString(publicKey)
 	var buffer strings.Builder
 
-	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: publicKeyBytes})
-	buffer.WriteString(string(certPEM))
+	if strings.Contains(string(publicKeyBytes), "BEGIN CERTIFICATE") {
+		buffer.WriteString(string(publicKeyBytes))
+	} else {
+		certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: publicKeyBytes})
+		buffer.WriteString(string(certPEM))
+	}
 
 	if privateKey != nil {
 		privateKeyBytes, _ := base64.StdEncoding.DecodeString(*privateKey)
-		keyPEM := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: privateKeyBytes})
-		buffer.WriteString(string(keyPEM))
+
+		if strings.Contains(string(privateKeyBytes), "BEGIN RSA") {
+			buffer.WriteString(string(privateKeyBytes))
+		} else {
+			keyPEM := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: privateKeyBytes})
+			buffer.WriteString(string(keyPEM))
+		}
 	}
 
 	return buffer.String()
