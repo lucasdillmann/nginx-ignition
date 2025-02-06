@@ -21,6 +21,10 @@ func Install(container *dig.Container) error {
 		return err
 	}
 
+	if err := container.Invoke(registerScheduledTask); err != nil {
+		return err
+	}
+
 	return container.Invoke(registerShutdown)
 }
 

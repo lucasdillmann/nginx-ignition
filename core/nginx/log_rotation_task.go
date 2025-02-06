@@ -1,4 +1,4 @@
-package certificate
+package nginx
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type autoRenewTask struct {
+type logRotationTask struct {
 	service            *service
 	settingsRepository *settings.Repository
 }
@@ -18,15 +18,15 @@ func registerScheduledTask(
 	settingsRepository settings.Repository,
 	scheduler *scheduler.Scheduler,
 ) error {
-	task := autoRenewTask{service, &settingsRepository}
+	task := logRotationTask{service, &settingsRepository}
 	return scheduler.Register(&task)
 }
 
-func (t autoRenewTask) Run() error {
-	return t.service.renewAllDue()
+func (t logRotationTask) Run() error {
+	return t.service.rotateLogs()
 }
 
-func (t autoRenewTask) Schedule() (*scheduler.Schedule, error) {
+func (t logRotationTask) Schedule() (*scheduler.Schedule, error) {
 	cfg, err := (*t.settingsRepository).Get()
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func (t autoRenewTask) Schedule() (*scheduler.Schedule, error) {
 
 	var interval time.Duration
 
-	certCfg := cfg.CertificateAutoRenew
+	certCfg := cfg.LogRotation
 	switch certCfg.IntervalUnit {
 	case settings.MinutesTimeUnit:
 		interval = time.Minute * time.Duration(certCfg.IntervalUnitCount)
@@ -47,19 +47,19 @@ func (t autoRenewTask) Schedule() (*scheduler.Schedule, error) {
 	}
 
 	return &scheduler.Schedule{
-		Enabled:  cfg.CertificateAutoRenew.Enabled,
+		Enabled:  cfg.LogRotation.Enabled,
 		Interval: interval,
 	}, nil
 }
 
-func (t autoRenewTask) OnScheduleStarted() {
+func (t logRotationTask) OnScheduleStarted() {
 	schedule, err := t.Schedule()
 	if err != nil {
 		return
 	}
 
 	log.Infof(
-		"Certificate auto-renew task scheduled to run every %v minutes",
+		"Log rotation task scheduled to run every %v minutes",
 		schedule.Interval.Minutes(),
 	)
 }

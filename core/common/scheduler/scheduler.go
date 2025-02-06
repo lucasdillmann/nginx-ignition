@@ -100,6 +100,10 @@ func (s *Scheduler) Reload() error {
 		}
 
 		ticker.Reset(newSchedule.Interval)
+
+		if newSchedule.Enabled {
+			task.OnScheduleStarted()
+		}
 	}
 
 	return nil

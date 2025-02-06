@@ -1,7 +1,6 @@
 package certificate
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/scheduler"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"go.uber.org/dig"
@@ -13,15 +12,6 @@ func Install(container *dig.Container) error {
 	}
 
 	return container.Invoke(registerScheduledTask)
-}
-
-func registerScheduledTask(
-	service *service,
-	settingsRepository settings.Repository,
-	scheduler *scheduler.Scheduler,
-) error {
-	task := autoRenewTask{service, &settingsRepository}
-	return scheduler.Register(&task)
 }
 
 func buildCommands(
