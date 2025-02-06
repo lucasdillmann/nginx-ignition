@@ -1,6 +1,7 @@
 package host
 
 import (
+	"dillmann.com.br/nginx-ignition/core/common/pointers"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"encoding/json"
 )
@@ -76,7 +77,7 @@ func toDomain(model *hostModel) (*host.Host, error) {
 		Enabled:           model.Enabled,
 		DefaultServer:     model.DefaultServer,
 		UseGlobalBindings: model.UseGlobalBindings,
-		DomainNames:       model.DomainNames,
+		DomainNames:       pointers.Reference(model.DomainNames),
 		Routes:            routes,
 		Bindings:          bindings,
 		FeatureSet: host.FeatureSet{
@@ -159,7 +160,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 		ID:                  domain.ID,
 		Enabled:             domain.Enabled,
 		DefaultServer:       domain.DefaultServer,
-		DomainNames:         domain.DomainNames,
+		DomainNames:         pointers.Dereference(domain.DomainNames),
 		WebsocketSupport:    domain.FeatureSet.WebsocketSupport,
 		HTTP2Support:        domain.FeatureSet.HTTP2Support,
 		RedirectHTTPToHTTPS: domain.FeatureSet.RedirectHTTPToHTTPS,

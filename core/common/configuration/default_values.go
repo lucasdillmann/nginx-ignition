@@ -3,7 +3,6 @@ package configuration
 func defaultValues() map[string]string {
 	return map[string]string{
 		"nginx-ignition.server.port":                                   "8090",
-		"nginx-ignition.server.shutdown-delay-seconds":                 "2",
 		"nginx-ignition.nginx.binary-path":                             "nginx",
 		"nginx-ignition.nginx.config-path":                             "/tmp/nginx-ignition/nginx",
 		"nginx-ignition.database.driver":                               "sqlite",

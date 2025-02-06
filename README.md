@@ -35,9 +35,14 @@ docker run -p8090:8090 -p80:80 dillmann/nginx-ignition
 After a few seconds, you can open your favorite browser at http://localhost:8090 and start using it. There's no 
 default username or password, the nginx ignition will guide you to create your user.
 
-Please note that in its default configuration the app will start using an embedded H2 database. While this is fine for
-testing and some experiments, is not recommended for a long-term scenario. For that, please refer to the 
+Please note that in its default configuration the app will start using an embedded SQLite database. While this is fine
+for testing and some experiments, is not recommended for a long-term scenario. For that, please refer to the 
 configuration section below to use PostgreSQL instead.
+
+## Migrating from 1.x to 2.0.0
+
+If you're using any 1.x version of the nginx ignition and plans to upgrade to 2.0.0, please check 
+[this migration guide](docs/migration-guide.md) for instructions and important notes on where to do it.
 
 ## Configuration
 

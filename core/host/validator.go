@@ -32,7 +32,9 @@ const (
 	maximumStatusCode         = 599
 )
 
-var tldPattern = regexp.MustCompile(`(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]`)
+var (
+	tldPattern = regexp.MustCompile(`^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$`)
+)
 
 func (v *validator) validate(host *Host) error {
 	if err := v.validateDefaultFlag(host); err != nil {
@@ -195,7 +197,7 @@ func (v *validator) validateProxyRoute(route *Route, index int) {
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
 		v.delegate.Add(targetUriField, "Value is required when the type of the route is proxy")
 	} else {
-		if _, err := url.ParseRequestURI(*route.TargetURI); err != nil {
+		if _, err := url.Parse(*route.TargetURI); err != nil {
 			v.delegate.Add(targetUriField, "Value is not a valid URL")
 		}
 	}

@@ -11,7 +11,7 @@ type hostModel struct {
 	ID                  uuid.UUID           `bun:"id,pk"`
 	Enabled             bool                `bun:"enabled,notnull"`
 	DefaultServer       bool                `bun:"default_server,notnull"`
-	DomainNames         []*string           `bun:"domain_names,array"`
+	DomainNames         []string            `bun:"domain_names,array"`
 	WebsocketSupport    bool                `bun:"websocket_support,notnull"`
 	HTTP2Support        bool                `bun:"http2_support,notnull"`
 	RedirectHTTPToHTTPS bool                `bun:"redirect_http_to_https,notnull"`

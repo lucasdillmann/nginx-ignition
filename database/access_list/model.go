@@ -34,5 +34,5 @@ type entrySetModel struct {
 	AccessListID    uuid.UUID `bun:"access_list_id,notnull"`
 	Priority        int       `bun:"priority,notnull"`
 	Outcome         string    `bun:"outcome,notnull"`
-	SourceAddresses []*string `bun:"source_addresses,array,notnull"`
+	SourceAddresses []string  `bun:"source_addresses,array,notnull"`
 }

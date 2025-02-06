@@ -2,6 +2,7 @@ package access_list
 
 import (
 	"dillmann.com.br/nginx-ignition/core/access_list"
+	"dillmann.com.br/nginx-ignition/core/common/pointers"
 	"github.com/google/uuid"
 )
 
@@ -11,7 +12,7 @@ func toDomain(model *accessListModel) *access_list.AccessList {
 		entries[index] = access_list.AccessListEntry{
 			Priority:      entry.Priority,
 			Outcome:       access_list.Outcome(entry.Outcome),
-			SourceAddress: entry.SourceAddresses,
+			SourceAddress: pointers.Reference(entry.SourceAddresses),
 		}
 	}
 
@@ -43,7 +44,7 @@ func toModel(domain *access_list.AccessList) *accessListModel {
 			AccessListID:    domain.ID,
 			Priority:        entry.Priority,
 			Outcome:         string(entry.Outcome),
-			SourceAddresses: entry.SourceAddress,
+			SourceAddresses: pointers.Dereference(entry.SourceAddress),
 		}
 	}
 
