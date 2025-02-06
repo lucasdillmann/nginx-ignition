@@ -55,15 +55,14 @@ func buildAwsRoute53Provider(parameters map[string]any) (challenge.Provider, err
 	}
 
 	cfg := &route53.Config{
-		AccessKeyID:              accessKey,
-		SecretAccessKey:          secretKey,
-		HostedZoneID:             hostedZoneID,
-		MaxRetries:               maxRetries,
-		WaitForRecordSetsChanged: true,
-		TTL:                      ttl,
-		PropagationTimeout:       propagationTimeout,
-		PollingInterval:          poolingInterval,
-		Region:                   "us-east-1",
+		AccessKeyID:        accessKey,
+		SecretAccessKey:    secretKey,
+		HostedZoneID:       hostedZoneID,
+		MaxRetries:         maxRetries,
+		TTL:                ttl,
+		PropagationTimeout: propagationTimeout,
+		PollingInterval:    poolingInterval,
+		Region:             "us-east-1",
 	}
 
 	return route53.NewDNSProviderConfig(cfg)

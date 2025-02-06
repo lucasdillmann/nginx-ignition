@@ -74,7 +74,15 @@ func issueCertificate(
 		return nil, err
 	}
 
-	return parseResult(uuid.New(), domainNames, parameters, cert, user, productionEnvironment, client)
+	return parseResult(
+		uuid.New(),
+		domainNames,
+		parameters,
+		cert,
+		user,
+		productionEnvironment,
+		client,
+	)
 }
 
 func parseResult(
@@ -87,16 +95,9 @@ func parseResult(
 	client *lego.Client,
 ) (*certificate.Certificate, error) {
 	mainCert := strings.Replace(string(result.Certificate), string(result.IssuerCertificate), "", 1)
-	mainCertBytes := []byte(mainCert)
-
-	pemBlock, _ := pem.Decode(mainCertBytes)
+	pemBlock, _ := pem.Decode([]byte(mainCert))
 	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
 		return nil, core_error.New("failed to decode PEM block containing certificate", false)
-	}
-
-	certDetails, err := x509.ParseCertificate(pemBlock.Bytes)
-	if err != nil {
-		return nil, core_error.New("Failed to parse CSR", false)
 	}
 
 	metadata := certificateMetadata{
@@ -105,14 +106,35 @@ func parseResult(
 		UserPublicKey:         base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PublicKey(&usr.privateKey.PublicKey)),
 		ProductionEnvironment: productionEnvironment,
 	}
+
 	metadataJson, err := jsoniter.MarshalToString(metadata)
 	if err != nil {
-		return nil, core_error.New("Failed to serialize metadata", false)
+		return nil, err
 	}
 
-	renewalInfo, err := client.Certificate.GetRenewalInfo(acmecertificate.RenewalInfoRequest{certDetails})
+	privateKeyBlock, _ := pem.Decode(result.PrivateKey)
+	if privateKeyBlock == nil || privateKeyBlock.Type != "RSA PRIVATE KEY" {
+		return nil, core_error.New("failed to decode PEM block with the private key", false)
+	}
+
+	privateKey, err := x509.ParsePKCS1PrivateKey(privateKeyBlock.Bytes)
 	if err != nil {
-		return nil, core_error.New("Failed to get renewal info", false)
+		return nil, err
+	}
+
+	encodedPrivateKey, err := x509.MarshalPKCS8PrivateKey(privateKey)
+	if err != nil {
+		return nil, err
+	}
+
+	notAfter, notBefore, renewAt, err := fetchCertDates(*pemBlock, client)
+	if err != nil {
+		return nil, err
+	}
+
+	encodedCertificationChain, err := encodeIssuerCertificate(result.IssuerCertificate)
+	if err != nil {
+		return nil, err
 	}
 
 	output := certificate.Certificate{
@@ -120,15 +142,47 @@ func parseResult(
 		ProviderID:         certificateProviderId,
 		DomainNames:        domainNames,
 		IssuedAt:           time.Now(),
-		ValidUntil:         certDetails.NotAfter,
-		ValidFrom:          certDetails.NotBefore,
-		RenewAfter:         &renewalInfo.SuggestedWindow.Start,
-		PrivateKey:         base64.StdEncoding.EncodeToString(result.PrivateKey),
-		PublicKey:          base64.StdEncoding.EncodeToString(mainCertBytes),
-		CertificationChain: []string{string(result.IssuerCertificate)},
+		ValidUntil:         *notAfter,
+		ValidFrom:          *notBefore,
+		RenewAfter:         renewAt,
+		PrivateKey:         base64.StdEncoding.EncodeToString(encodedPrivateKey),
+		PublicKey:          base64.StdEncoding.EncodeToString(pemBlock.Bytes),
+		CertificationChain: []string{*encodedCertificationChain},
 		Parameters:         parameters,
 		Metadata:           &metadataJson,
 	}
 
 	return &output, nil
+}
+
+func encodeIssuerCertificate(issuer []byte) (*string, error) {
+	pemBlock, _ := pem.Decode(issuer)
+	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
+		return nil, core_error.New("Failed to decode issuer PEM block", false)
+	}
+
+	encodedValue := base64.StdEncoding.EncodeToString(pemBlock.Bytes)
+	return &encodedValue, nil
+}
+
+func fetchCertDates(pemBlock pem.Block, client *lego.Client) (
+	notAfter *time.Time,
+	notBefore *time.Time,
+	renewAt *time.Time,
+	err error,
+) {
+	certDetails, err := x509.ParseCertificate(pemBlock.Bytes)
+	if err != nil {
+		return
+	}
+
+	renewalInfo, err := client.Certificate.GetRenewalInfo(acmecertificate.RenewalInfoRequest{certDetails})
+	if err != nil {
+		return
+	}
+
+	notAfter = &certDetails.NotAfter
+	notBefore = &certDetails.NotBefore
+	renewAt = &renewalInfo.SuggestedWindow.Start
+	return
 }

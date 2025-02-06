@@ -64,13 +64,24 @@ func (p *hostCertificateFileProvider) buildCertificateFile(certificateId uuid.UU
 		return nil, err
 	}
 
-	certificateChain := strings.Join(cert.CertificationChain, "\n")
-	mainContents := p.convertToPemEncodedString(cert.PublicKey, &cert.PrivateKey)
+	certBytes, _ := base64.StdEncoding.DecodeString(cert.PublicKey)
+	encodedCert := convertToPemEncodedCertificateString(certBytes)
 
-	certificateChain = removeEmptyLines(certificateChain)
-	mainContents = removeEmptyLines(mainContents)
+	privateKeyBytes, _ := base64.StdEncoding.DecodeString(cert.PrivateKey)
+	encodedPrivateKey := convertToPemEncodedPrivateKeyString(privateKeyBytes)
 
-	contents := fmt.Sprintf("%s\n%s", certificateChain, mainContents)
+	var certificateChain string
+	for _, chainElement := range cert.CertificationChain {
+		decodedBytes, _ := base64.StdEncoding.DecodeString(chainElement)
+		certificateChain += convertToPemEncodedCertificateString(decodedBytes) + "\n"
+	}
+
+	var contents string
+	if len(certificateChain) > 0 {
+		contents = fmt.Sprintf("%s\n%s\n%s", encodedCert, certificateChain, encodedPrivateKey)
+	} else {
+		contents = fmt.Sprintf("%s\n%s", encodedCert, encodedPrivateKey)
+	}
 
 	return &output{
 		name:     fmt.Sprintf("certificate-%s.pem", certificateId),
@@ -78,32 +89,20 @@ func (p *hostCertificateFileProvider) buildCertificateFile(certificateId uuid.UU
 	}, nil
 }
 
-func (p *hostCertificateFileProvider) convertToPemEncodedString(publicKey string, privateKey *string) string {
-	publicKeyBytes, _ := base64.StdEncoding.DecodeString(publicKey)
-	var buffer strings.Builder
-
-	if strings.Contains(string(publicKeyBytes), "BEGIN CERTIFICATE") {
-		buffer.WriteString(string(publicKeyBytes))
+func convertToPemEncodedCertificateString(bytes []byte) string {
+	if strings.Contains(string(bytes), "CERTIFICATE") {
+		return string(bytes)
 	} else {
-		certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: publicKeyBytes})
-		buffer.WriteString(string(certPEM))
+		certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: bytes})
+		return string(certPEM)
 	}
-
-	if privateKey != nil {
-		privateKeyBytes, _ := base64.StdEncoding.DecodeString(*privateKey)
-
-		if strings.Contains(string(privateKeyBytes), "BEGIN RSA") {
-			buffer.WriteString(string(privateKeyBytes))
-		} else {
-			keyPEM := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: privateKeyBytes})
-			buffer.WriteString(string(keyPEM))
-		}
-	}
-
-	return buffer.String()
 }
 
-func removeEmptyLines(s string) string {
-	s = strings.TrimPrefix(s, "\n")
-	return strings.TrimSuffix(s, "\n")
+func convertToPemEncodedPrivateKeyString(bytes []byte) string {
+	if strings.Contains(string(bytes), "PRIVATE KEY") {
+		return string(bytes)
+	} else {
+		keyPEM := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: bytes})
+		return string(keyPEM)
+	}
 }
