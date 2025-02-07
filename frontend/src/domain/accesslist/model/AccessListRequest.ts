@@ -19,7 +19,7 @@ export default interface AccessListRequest {
     realm?: string
     satisfyAll: boolean
     defaultOutcome: AccessListOutcome
-    entries: AccessListEntrySet[]
-    credentials: AccessListCredentials[]
+    entries?: AccessListEntrySet[]
+    credentials?: AccessListCredentials[]
     forwardAuthenticationHeader: boolean
 }

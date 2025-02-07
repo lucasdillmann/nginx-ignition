@@ -22,12 +22,12 @@ func (v *validator) validate(accessList *AccessList) error {
 		v.delegate.Add("name", validation.ValueMissingMessage)
 	}
 
-	var knownUsernames map[string]bool
+	knownUsernames := map[string]bool{}
 	for index, value := range accessList.Credentials {
 		v.validateCredentials(index, &value, &knownUsernames)
 	}
 
-	var knownPriorities map[int]bool
+	knownPriorities := map[int]bool{}
 	for index, value := range accessList.Entries {
 		v.validateEntry(index, &value, &knownPriorities)
 	}

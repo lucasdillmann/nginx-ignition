@@ -156,7 +156,13 @@ func (r *repository) Save(accessList *access_list.AccessList) error {
 	if exists {
 		err = r.performUpdate(toModel(accessList), transaction)
 	} else {
-		_, err = transaction.NewInsert().Model(toModel(accessList)).Exec(r.ctx)
+		model := toModel(accessList)
+		_, err = transaction.NewInsert().Model(model).Exec(r.ctx)
+		if err != nil {
+			return err
+		}
+
+		err = r.saveLinkedModels(transaction, model)
 	}
 
 	if err != nil {
@@ -190,11 +196,15 @@ func (r *repository) performUpdate(model *accessListModel, transaction bun.Tx) e
 		return err
 	}
 
+	return r.saveLinkedModels(transaction, model)
+}
+
+func (r *repository) saveLinkedModels(transaction bun.Tx, model *accessListModel) error {
 	for _, credentials := range model.Credentials {
 		credentials.ID = uuid.New()
 		credentials.AccessListID = model.ID
 
-		_, err = transaction.NewInsert().Model(credentials).Exec(r.ctx)
+		_, err := transaction.NewInsert().Model(credentials).Exec(r.ctx)
 		if err != nil {
 			return err
 		}
@@ -204,7 +214,7 @@ func (r *repository) performUpdate(model *accessListModel, transaction bun.Tx) e
 		entrySet.ID = uuid.New()
 		entrySet.AccessListID = model.ID
 
-		_, err = transaction.NewInsert().Model(entrySet).Exec(r.ctx)
+		_, err := transaction.NewInsert().Model(entrySet).Exec(r.ctx)
 		if err != nil {
 			return err
 		}

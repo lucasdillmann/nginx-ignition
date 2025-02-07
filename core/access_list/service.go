@@ -49,8 +49,8 @@ func (s *service) findAll() ([]*AccessList, error) {
 }
 
 func (s *service) list(
-	pageNumber,
-	pageSize int,
+	pageSize,
+	pageNumber int,
 	searchTerms *string,
 ) (*pagination.Page[*AccessList], error) {
 	return (*s.accessListRepository).FindPage(pageNumber, pageSize, searchTerms)
