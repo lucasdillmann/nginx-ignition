@@ -14,60 +14,49 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-node@v4
         with:
-          java-version: 21
-          distribution: temurin
-      - name: Sonar cache
-        uses: actions/cache@v4
+          node-version: 22
+      - uses: actions/setup-go@v4
         with:
-          path: ~/.sonar/cache
-          key: sonar-cache
-          restore-keys: sonar-cache
-      - name: Gradle cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle
-          key: gradle-cache
-          restore-keys: gradle-cache
+          go-version: 1.23
       - name: npm cache
         uses: actions/cache@v4
         with:
-          path: ~/frontend/node_modules
+          path: frontend/node_modules
           key: npm-cache
           restore-keys: npm-cache
-      - name: Sonar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar
-      - name: Detekt
-        run: ./gradlew detekt
+      - name: go cache
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/go/pkg/mod
+          key: go-cache
+          restore-keys: go-cache
       - name: Prettier
-        run: ./gradlew :frontend:prettierCheck
+        working-directory: frontend
+        run: |
+          npm install && \
+          npx prettier --check src
       - name: Eslint
-        run: ./gradlew :frontend:eslint
+        working-directory: frontend
+        run: |
+          npm install && \
+          npx eslint src
+      - name: Sonarqube
+        uses: SonarSource/sonarqube-scan-action@v4.2.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-node@v4
         with:
-          java-version: 21
-          distribution: temurin
-      - name: Gradle cache
-        uses: actions/cache@v4
+          node-version: 22
+      - uses: actions/setup-go@v4
         with:
-          path: ~/.gradle
-          key: gradle-cache
-          restore-keys: gradle-cache
-      - name: npm cache
-        uses: actions/cache@v4
-        with:
-          path: ~/frontend/node_modules
-          key: npm-cache
-          restore-keys: npm-cache
+          go-version: 1.23
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
         with:
@@ -80,8 +69,31 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Gradle assemble
-        run: ./gradlew assemble
+      - name: npm cache
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: npm-cache
+          restore-keys: npm-cache
+      - name: go cache
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/go/pkg/mod
+          key: go-cache
+          restore-keys: go-cache
+      - name: Frontend build
+        working-directory: frontend
+        run: |
+          npm install && \
+          npm run build
+      - name: Backend build
+        env:
+          GOOS: linux
+          CGO_ENABLED: "0"
+        run: |
+          go work sync && \
+          GOARCH=amd64 go build -o build/linux/amd64 application/main.go && \
+          GOARCH=arm64 go build -o build/linux/arm64 application/main.go
       - name: Build and push Docker images
         run: |
           docker buildx build \

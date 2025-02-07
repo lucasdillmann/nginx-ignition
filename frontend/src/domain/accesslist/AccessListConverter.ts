@@ -45,7 +45,7 @@ class AccessListConverter {
 
     toFormValues(input: AccessListResponse): AccessListFormValues {
         const { name, forwardAuthenticationHeader, defaultOutcome, satisfyAll, realm, credentials } = input
-        const entries = input.entries.map(entry => this.toEntryFormValues(entry))
+        const entries = input.entries?.map(entry => this.toEntryFormValues(entry)) ?? []
 
         return {
             name,
@@ -53,7 +53,7 @@ class AccessListConverter {
             defaultOutcome,
             realm,
             satisfyAll,
-            credentials,
+            credentials: credentials ?? [],
             entries,
         }
     }

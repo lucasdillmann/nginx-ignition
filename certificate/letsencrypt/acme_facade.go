@@ -1,0 +1,188 @@
+package letsencrypt
+
+import (
+	"crypto/x509"
+	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"encoding/base64"
+	"encoding/pem"
+	"github.com/go-acme/lego/v4/certcrypto"
+	acmecertificate "github.com/go-acme/lego/v4/certificate"
+	"github.com/go-acme/lego/v4/challenge"
+	"github.com/go-acme/lego/v4/lego"
+	"github.com/go-acme/lego/v4/registration"
+	"github.com/google/uuid"
+	jsoniter "github.com/json-iterator/go"
+	"strings"
+	"time"
+)
+
+func issueCertificate(
+	user userDetails,
+	domainNames []string,
+	parameters map[string]any,
+	productionEnvironment bool,
+) (*certificate.Certificate, error) {
+	caURL := lego.LEDirectoryProduction
+	if !productionEnvironment {
+		caURL = lego.LEDirectoryStaging
+	}
+
+	config := lego.NewConfig(&user)
+	config.CADirURL = caURL
+	config.Certificate.KeyType = certcrypto.RSA2048
+
+	client, err := lego.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+
+	dnsChallengeProvider, err := resolveDnsProvider(domainNames, parameters)
+	if err != nil {
+		return nil, err
+	}
+
+	client.Challenge.Remove(challenge.TLSALPN01)
+	client.Challenge.Remove(challenge.HTTP01)
+	err = client.Challenge.SetDNS01Provider(dnsChallengeProvider)
+	if err != nil {
+		return nil, err
+	}
+
+	registerOptions := registration.RegisterOptions{TermsOfServiceAgreed: true}
+	if user.newAccount {
+		user.registration, err = client.Registration.Register(registerOptions)
+	} else {
+		user.registration, err = client.Registration.ResolveAccountByKey()
+
+		if err != nil {
+			user.registration, err = client.Registration.Register(registerOptions)
+		}
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	request := acmecertificate.ObtainRequest{
+		Domains: domainNames,
+		Bundle:  true,
+	}
+
+	cert, err := client.Certificate.Obtain(request)
+	if err != nil {
+		return nil, err
+	}
+
+	return parseResult(
+		uuid.New(),
+		domainNames,
+		parameters,
+		cert,
+		user,
+		productionEnvironment,
+		client,
+	)
+}
+
+func parseResult(
+	id uuid.UUID,
+	domainNames []string,
+	parameters map[string]any,
+	result *acmecertificate.Resource,
+	usr userDetails,
+	productionEnvironment bool,
+	client *lego.Client,
+) (*certificate.Certificate, error) {
+	mainCert := strings.Replace(string(result.Certificate), string(result.IssuerCertificate), "", 1)
+	pemBlock, _ := pem.Decode([]byte(mainCert))
+	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
+		return nil, core_error.New("failed to decode PEM block containing certificate", false)
+	}
+
+	metadata := certificateMetadata{
+		UserMail:              usr.email,
+		UserPrivateKey:        base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PrivateKey(usr.privateKey)),
+		UserPublicKey:         base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PublicKey(&usr.privateKey.PublicKey)),
+		ProductionEnvironment: productionEnvironment,
+	}
+
+	metadataJson, err := jsoniter.MarshalToString(metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	privateKeyBlock, _ := pem.Decode(result.PrivateKey)
+	if privateKeyBlock == nil || privateKeyBlock.Type != "RSA PRIVATE KEY" {
+		return nil, core_error.New("failed to decode PEM block with the private key", false)
+	}
+
+	privateKey, err := x509.ParsePKCS1PrivateKey(privateKeyBlock.Bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	encodedPrivateKey, err := x509.MarshalPKCS8PrivateKey(privateKey)
+	if err != nil {
+		return nil, err
+	}
+
+	notAfter, notBefore, renewAt, err := fetchCertDates(*pemBlock, client)
+	if err != nil {
+		return nil, err
+	}
+
+	encodedCertificationChain, err := encodeIssuerCertificate(result.IssuerCertificate)
+	if err != nil {
+		return nil, err
+	}
+
+	output := certificate.Certificate{
+		ID:                 id,
+		ProviderID:         certificateProviderId,
+		DomainNames:        domainNames,
+		IssuedAt:           time.Now(),
+		ValidUntil:         *notAfter,
+		ValidFrom:          *notBefore,
+		RenewAfter:         renewAt,
+		PrivateKey:         base64.StdEncoding.EncodeToString(encodedPrivateKey),
+		PublicKey:          base64.StdEncoding.EncodeToString(pemBlock.Bytes),
+		CertificationChain: []string{*encodedCertificationChain},
+		Parameters:         parameters,
+		Metadata:           &metadataJson,
+	}
+
+	return &output, nil
+}
+
+func encodeIssuerCertificate(issuer []byte) (*string, error) {
+	pemBlock, _ := pem.Decode(issuer)
+	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
+		return nil, core_error.New("Failed to decode issuer PEM block", false)
+	}
+
+	encodedValue := base64.StdEncoding.EncodeToString(pemBlock.Bytes)
+	return &encodedValue, nil
+}
+
+func fetchCertDates(pemBlock pem.Block, client *lego.Client) (
+	notAfter *time.Time,
+	notBefore *time.Time,
+	renewAt *time.Time,
+	err error,
+) {
+	certDetails, err := x509.ParseCertificate(pemBlock.Bytes)
+	if err != nil {
+		return
+	}
+
+	renewalInfo, err := client.Certificate.GetRenewalInfo(acmecertificate.RenewalInfoRequest{certDetails})
+	if err != nil {
+		return
+	}
+
+	notAfter = &certDetails.NotAfter
+	notBefore = &certDetails.NotBefore
+	renewAt = &renewalInfo.SuggestedWindow.Start
+	return
+}
