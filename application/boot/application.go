@@ -17,14 +17,9 @@ func StartApplication() error {
 		return err
 	}
 
-	err = container.Invoke(func(lifecycle *lifecycle.Lifecycle) error {
+	return container.Invoke(func(lifecycle *lifecycle.Lifecycle) error {
 		return runLifecycle(lifecycle, startTime)
 	})
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func runLifecycle(lifecycle *lifecycle.Lifecycle, startTime int64) error {
