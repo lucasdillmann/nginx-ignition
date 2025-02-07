@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
+	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
@@ -45,7 +46,6 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 		&dnsProvider,
 		&awsAccessKey,
 		&awsSecretKey,
-		&awsHostedZoneID,
 		&cloudflareApiToken,
 		&googleCloudPrivateKey,
 		&azureTenantId,
@@ -61,15 +61,16 @@ func (p *Provider) Priority() int {
 }
 
 func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certificate, error) {
+	if err := commons.Validate(request, validationRules{p.DynamicFields()}); err != nil {
+		return nil, err
+	}
+
 	productionEnvironment, err := p.isProductionEnvironment()
 	if err != nil {
 		return nil, err
 	}
 
-	email, casted := request.Parameters[emailAddress.ID].(string)
-	if !casted {
-		return nil, core_error.New("E-mail address is missing", true)
-	}
+	email, _ := request.Parameters[emailAddress.ID].(string)
 
 	usrKey, err := rsa.GenerateKey(rand.Reader, privateKeySize)
 	if err != nil {

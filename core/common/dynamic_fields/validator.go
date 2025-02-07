@@ -11,7 +11,7 @@ import (
 func Validate(
 	dynamicFields []*DynamicField,
 	parameters map[string]any,
-) error {
+) *validation.ConsistencyError {
 	var violations []validation.ConsistencyViolation
 	for _, field := range dynamicFields {
 		value, exists := parameters[field.ID]

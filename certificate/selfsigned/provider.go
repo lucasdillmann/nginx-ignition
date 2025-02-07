@@ -2,6 +2,7 @@ package selfsigned
 
 import (
 	"crypto/x509"
+	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"encoding/base64"
@@ -32,6 +33,10 @@ func (p *Provider) Priority() int {
 }
 
 func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certificate, error) {
+	if err := commons.Validate(request, validationRules{}); err != nil {
+		return nil, err
+	}
+
 	certPEM, keyPEM, err := buildPEMs(request.DomainNames)
 	if err != nil {
 		return nil, err

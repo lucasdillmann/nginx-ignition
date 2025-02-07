@@ -49,11 +49,16 @@ func CanHandle(err error) bool {
 		return false
 	}
 
+	httpError := &ApiError{}
+	consistencyError := &validation.ConsistencyError{}
+	validationError := &validator.ValidationErrors{}
+	coreError := &core_error.CoreError{}
+
 	switch {
-	case errors.As(err, &ApiError{}),
-		errors.As(err, &validation.ConsistencyError{}),
-		errors.As(err, &validator.ValidationErrors{}),
-		errors.As(err, &core_error.CoreError{}),
+	case errors.As(err, &httpError),
+		errors.As(err, &consistencyError),
+		errors.As(err, &validationError),
+		errors.As(err, &coreError),
 		errors.Is(err, jwt.ErrSignatureInvalid):
 		return true
 	default:

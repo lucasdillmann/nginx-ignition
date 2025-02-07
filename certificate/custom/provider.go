@@ -2,6 +2,7 @@ package custom
 
 import (
 	"crypto/x509"
+	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
@@ -39,16 +40,13 @@ func (p *Provider) Priority() int {
 }
 
 func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certificate, error) {
-	params := request.Parameters
-	privateKeyStr, casted := params[privateKeyField.ID].(string)
-	if !casted {
-		return nil, core_error.New("Invalid private key", true)
+	if err := commons.Validate(request, validationRules{p.DynamicFields()}); err != nil {
+		return nil, err
 	}
 
-	publicKeyStr, casted := request.Parameters[publicKeyField.ID].(string)
-	if !casted {
-		return nil, core_error.New("Invalid public key", true)
-	}
+	params := request.Parameters
+	privateKeyStr, _ := params[privateKeyField.ID].(string)
+	publicKeyStr, _ := request.Parameters[publicKeyField.ID].(string)
 
 	chainStr, chainPresent := request.Parameters[certificationChainField.ID].(string)
 

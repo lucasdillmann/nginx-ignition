@@ -37,7 +37,7 @@ func issueCertificate(
 		return nil, err
 	}
 
-	dnsChallengeProvider, err := resolveDnsProvider(parameters)
+	dnsChallengeProvider, err := resolveDnsProvider(domainNames, parameters)
 	if err != nil {
 		return nil, err
 	}

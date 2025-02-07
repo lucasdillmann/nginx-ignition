@@ -1,10 +1,10 @@
 package host
 
 import (
+	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"net"
 	"net/url"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -30,10 +30,6 @@ const (
 	maximumRedirectStatusCode = 399
 	minimumStatusCode         = 100
 	maximumStatusCode         = 599
-)
-
-var (
-	tldPattern = regexp.MustCompile(`^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$`)
 )
 
 func (v *validator) validate(host *Host) error {
@@ -78,7 +74,7 @@ func (v *validator) validateDomainNames(host *Host) {
 	}
 
 	for index, domainName := range host.DomainNames {
-		if !tldPattern.MatchString(*domainName) {
+		if !constants.TLDPattern.MatchString(*domainName) {
 			v.delegate.Add("domainNames["+strconv.Itoa(index)+"]", "Value is not a valid domain name")
 		}
 	}

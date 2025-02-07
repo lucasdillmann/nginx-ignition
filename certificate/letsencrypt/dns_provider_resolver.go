@@ -1,13 +1,18 @@
 package letsencrypt
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	route53client "github.com/aws/aws-sdk-go-v2/service/route53"
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/azuredns"
 	"github.com/go-acme/lego/v4/providers/dns/cloudflare"
 	"github.com/go-acme/lego/v4/providers/dns/gcloud"
 	"github.com/go-acme/lego/v4/providers/dns/route53"
+	"strings"
 	"time"
 )
 
@@ -18,15 +23,12 @@ const (
 	poolingInterval    = 1 * time.Second
 )
 
-func resolveDnsProvider(parameters map[string]any) (challenge.Provider, error) {
-	providerId, casted := parameters[dnsProvider.ID].(string)
-	if !casted {
-		return nil, core_error.New("DNS provider ID is missing", true)
-	}
+func resolveDnsProvider(domainNames []string, parameters map[string]any) (challenge.Provider, error) {
+	providerId, _ := parameters[dnsProvider.ID].(string)
 
 	switch providerId {
 	case awsRoute53Id:
-		return buildAwsRoute53Provider(parameters)
+		return buildAwsRoute53Provider(domainNames, parameters)
 	case cloudflareId:
 		return buildCloudflareProvider(parameters)
 	case googleCloudId:
@@ -38,26 +40,19 @@ func resolveDnsProvider(parameters map[string]any) (challenge.Provider, error) {
 	}
 }
 
-func buildAwsRoute53Provider(parameters map[string]any) (challenge.Provider, error) {
-	accessKey, casted := parameters[awsAccessKey.ID].(string)
-	if !casted {
-		return nil, core_error.New("AWS access key is missing", true)
-	}
+func buildAwsRoute53Provider(domainNames []string, parameters map[string]any) (challenge.Provider, error) {
+	accessKey, _ := parameters[awsAccessKey.ID].(string)
+	secretKey, _ := parameters[awsSecretKey.ID].(string)
 
-	secretKey, casted := parameters[awsSecretKey.ID].(string)
-	if !casted {
-		return nil, core_error.New("AWS secret key is missing", true)
-	}
-
-	hostedZoneID, casted := parameters[awsHostedZoneID.ID].(string)
-	if !casted {
-		return nil, core_error.New("AWS hosted zone ID is missing", true)
+	hostedZoneId, err := resolveAwsRoute53HostedZoneID(accessKey, secretKey, domainNames)
+	if err != nil {
+		return nil, err
 	}
 
 	cfg := &route53.Config{
 		AccessKeyID:        accessKey,
 		SecretAccessKey:    secretKey,
-		HostedZoneID:       hostedZoneID,
+		HostedZoneID:       *hostedZoneId,
 		MaxRetries:         maxRetries,
 		TTL:                ttl,
 		PropagationTimeout: propagationTimeout,
@@ -68,11 +63,32 @@ func buildAwsRoute53Provider(parameters map[string]any) (challenge.Provider, err
 	return route53.NewDNSProviderConfig(cfg)
 }
 
-func buildCloudflareProvider(parameters map[string]any) (challenge.Provider, error) {
-	apiToken, casted := parameters[cloudflareApiToken.ID].(string)
-	if !casted {
-		return nil, core_error.New("Cloudflare API token is missing", true)
+func resolveAwsRoute53HostedZoneID(accessKey, secretKey string, domainNames []string) (*string, error) {
+	cfg := aws.Config{
+		Credentials: credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
+		Region:      "us-east-1",
 	}
+
+	client := route53client.NewFromConfig(cfg)
+	hostedZones, err := client.ListHostedZones(context.Background(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, domainName := range domainNames {
+		for _, hostedZone := range hostedZones.HostedZones {
+			hostedZoneName := strings.TrimSuffix(*hostedZone.Name, ".")
+			if strings.HasSuffix(domainName, hostedZoneName) {
+				return hostedZone.Id, nil
+			}
+		}
+	}
+
+	return nil, core_error.New("AWS Hosted Zone ID not found from given domain names", true)
+}
+
+func buildCloudflareProvider(parameters map[string]any) (challenge.Provider, error) {
+	apiToken, _ := parameters[cloudflareApiToken.ID].(string)
 
 	cfg := &cloudflare.Config{
 		AuthToken: apiToken,
@@ -82,40 +98,17 @@ func buildCloudflareProvider(parameters map[string]any) (challenge.Provider, err
 }
 
 func buildGoogleCloudProvider(parameters map[string]any) (challenge.Provider, error) {
-	privateKey, casted := parameters[googleCloudPrivateKey.ID].(string)
-	if !casted {
-		return nil, core_error.New("Google Cloud private key is missing", true)
-	}
-
+	privateKey, _ := parameters[googleCloudPrivateKey.ID].(string)
 	privateKeyBytes := []byte(privateKey)
 	return gcloud.NewDNSProviderServiceAccountKey(privateKeyBytes)
 }
 
 func buildAzureProvider(parameters map[string]any) (challenge.Provider, error) {
-	tenantId, casted := parameters[azureTenantId.ID].(string)
-	if !casted {
-		return nil, core_error.New("Azure tenant ID is missing", true)
-	}
-
-	subscriptionId, casted := parameters[azureSubscriptionId.ID].(string)
-	if !casted {
-		return nil, core_error.New("Azure subscription ID is missing", true)
-	}
-
-	clientId, casted := parameters[azureClientId.ID].(string)
-	if !casted {
-		return nil, core_error.New("Azure client ID is missing", true)
-	}
-
-	clientSecret, casted := parameters[azureClientSecret.ID].(string)
-	if !casted {
-		return nil, core_error.New("Azure client secret is missing", true)
-	}
-
-	environmentID, casted := parameters[azureEnvironment.ID].(string)
-	if !casted {
-		return nil, core_error.New("Azure environment is missing", true)
-	}
+	tenantId, _ := parameters[azureTenantId.ID].(string)
+	subscriptionId, _ := parameters[azureSubscriptionId.ID].(string)
+	clientId, _ := parameters[azureClientId.ID].(string)
+	clientSecret, _ := parameters[azureClientSecret.ID].(string)
+	environmentID, _ := parameters[azureEnvironment.ID].(string)
 
 	var environment cloud.Configuration
 	switch environmentID {
