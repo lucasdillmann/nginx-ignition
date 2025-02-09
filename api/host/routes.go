@@ -22,5 +22,6 @@ func Install(
 	byIdPath.GET("", getHandler{&getCommand}.handle)
 	byIdPath.PUT("", updateHandler{&saveCommand}.handle)
 	byIdPath.DELETE("", deleteHandler{&deleteCommand}.handle)
+	byIdPath.POST("/toggle-enabled", toggleEnabledHandler{&getCommand, &saveCommand}.handle)
 	byIdPath.GET("/logs/:qualifier", logsHandler{&logsCommand}.handle)
 }
