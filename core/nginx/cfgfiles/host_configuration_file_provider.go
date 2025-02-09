@@ -220,14 +220,14 @@ func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 	}
 
 	payload := ""
-	if r.Response.Payload != nil {
-		payload = *r.Response.Payload
+	if r.Response.Payload != nil && strings.TrimSpace(*r.Response.Payload) != "" {
+		payload = fmt.Sprintf("\"%s\"", *r.Response.Payload)
 	}
 
 	return fmt.Sprintf(
 		`location %s {
 			%s
-			return %d "%s";
+			return %d %s;
 			%s
 			%s
 		}`,
