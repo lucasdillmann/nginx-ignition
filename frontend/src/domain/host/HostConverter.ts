@@ -29,8 +29,10 @@ class HostConverter {
         const { statusCode, payload } = response
         const { headers } = response
         const joinedHeaders = this.notNull(headers)
-                ? Object.entries(headers!).map(([key, value]) => `${key}: ${value}`).join("\n")
-                : ""
+            ? Object.entries(headers!)
+                  .map(([key, value]) => `${key}: ${value}`)
+                  .join("\n")
+            : ""
 
         return {
             headers: joinedHeaders,
