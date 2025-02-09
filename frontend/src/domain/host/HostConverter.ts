@@ -27,15 +27,13 @@ class HostConverter {
 
     private staticResponseToFormValues(response: HostRouteStaticResponse): HostFormStaticResponse {
         const { statusCode, payload } = response
-        const headers =
-            response.headers !== undefined
-                ? Object.entries(response.headers)
-                      .map(([key, value]) => `${key}: ${value}`)
-                      .join("\n")
+        const { headers } = response
+        const joinedHeaders = this.notNull(headers)
+                ? Object.entries(headers!).map(([key, value]) => `${key}: ${value}`).join("\n")
                 : ""
 
         return {
-            headers,
+            headers: joinedHeaders,
             statusCode,
             payload,
         }
