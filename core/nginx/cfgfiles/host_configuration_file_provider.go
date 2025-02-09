@@ -219,6 +219,11 @@ func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 		headers = append(headers, fmt.Sprintf(`add_header "%s" "%s";`, key, value))
 	}
 
+	payload := ""
+	if r.Response.Payload != nil {
+		payload = *r.Response.Payload
+	}
+
 	return fmt.Sprintf(
 		`location %s {
 			%s
@@ -229,7 +234,7 @@ func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 		r.SourcePath,
 		strings.Join(headers, "\n"),
 		r.Response.StatusCode,
-		r.Response.Payload,
+		payload,
 		p.buildRouteFeatures(features),
 		p.buildRouteSettings(r, basePath),
 	)
