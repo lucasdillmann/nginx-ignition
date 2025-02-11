@@ -116,7 +116,7 @@ func (r repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pa
 
 	query := r.database.Select().Model(&certificates)
 	if searchTerms != nil {
-		query = query.Where("domain_names ILIKE ?", "%"+*searchTerms+"%")
+		query = query.Where("domain_names::varchar ILIKE ?", "%"+*searchTerms+"%")
 	}
 
 	count, err := query.Count(r.ctx)
@@ -127,7 +127,7 @@ func (r repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pa
 
 	query = r.database.Select().Model(&certificates)
 	if searchTerms != nil {
-		query = query.Where("domain_names ILIKE ?", "%"+*searchTerms+"%")
+		query = query.Where("domain_names::varchar ILIKE ?", "%"+*searchTerms+"%")
 	}
 
 	err = query.

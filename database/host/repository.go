@@ -141,7 +141,7 @@ func (r *repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*p
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil && *searchTerms != "" {
-		query = query.Where("domain_names ILIKE ?", "%"+*searchTerms+"%")
+		query = query.Where("domain_names::varchar ILIKE ?", "%"+*searchTerms+"%")
 	}
 
 	count, err := query.Count(r.ctx)
