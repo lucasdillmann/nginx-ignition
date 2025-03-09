@@ -6,6 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/integration/truenas/client"
+	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -115,6 +116,10 @@ func (a *Adapter) GetOptionProxyUrl(
 	_, port, err := a.getWorkloadPort(parameters, appId, containerPort)
 	if err != nil {
 		return nil, err
+	}
+
+	if port == nil || port.HostPorts == nil || len(port.HostPorts) == 0 {
+		return nil, fmt.Errorf("unable to resolve proxy URL for %s: service is probably offline/stopped", id)
 	}
 
 	hostPort := port.HostPorts[0].HostPort

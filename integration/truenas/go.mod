@@ -1,10 +1,10 @@
 module dillmann.com.br/nginx-ignition/integration/truenas
 
-go 1.23
+go 1.24
 
 require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	go.uber.org/dig v1.18.0
+	go.uber.org/dig v1.18.1
 )
 
 require (

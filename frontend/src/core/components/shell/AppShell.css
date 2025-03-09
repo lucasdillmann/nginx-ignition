@@ -6,7 +6,7 @@
     height: auto;
     max-height: 100vh;
     min-height: 575px;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     position: sticky;
     top: 0;

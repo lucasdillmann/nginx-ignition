@@ -1,13 +1,13 @@
 module dillmann.com.br/nginx-ignition/api
 
-go 1.23
+go 1.24
 
 require (
 	github.com/gin-gonic/gin v1.10.0
-	github.com/go-playground/validator/v10 v10.23.0
+	github.com/go-playground/validator/v10 v10.25.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
-	go.uber.org/dig v1.18.0
+	go.uber.org/dig v1.18.1
 )
 
 require (
@@ -36,7 +36,7 @@ require (
 	golang.org/x/arch v0.13.0 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/protobuf v1.36.2 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
