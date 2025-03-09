@@ -24,9 +24,8 @@
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@babel/plugin-transform-nullish-coalescing-operator": "^7.26.6",
     "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^10.0.2",
-    "eslint-config-react-app": "^7.0.1",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.3",
     "prettier": "^3.5.2"
   },
