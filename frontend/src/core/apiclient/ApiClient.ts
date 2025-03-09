@@ -64,7 +64,7 @@ export default class ApiClient {
 
     private buildFullPath(path?: string, queryParams?: { [key: string]: any }): string {
         const queryStringValues = Array.from(Object.entries(queryParams ?? {}))
-            .filter(([key, value]) => value !== undefined)
+            .filter(([_, value]) => value !== undefined)
             .map(([key, value]) => `${key}=${value}`)
             .join("&")
         const queryString = queryStringValues.length > 0 ? `?${queryStringValues}` : ""
@@ -81,7 +81,9 @@ export default class ApiClient {
         let body
         try {
             body = await response.json()
-        } catch (e) {}
+        } catch (_) {
+            // NO-OP
+        }
 
         const apiResponse: ApiResponse<T> = {
             statusCode: response.status,

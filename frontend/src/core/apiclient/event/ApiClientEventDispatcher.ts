@@ -16,7 +16,9 @@ class ApiClientEventDispatcher {
         for (const listener of this.listeners) {
             try {
                 listener.handleRequest(request)
-            } catch (ex) {}
+            } catch (_) {
+                // NO-OP
+            }
         }
     }
 
@@ -24,10 +26,11 @@ class ApiClientEventDispatcher {
         for (const listener of this.listeners) {
             try {
                 listener.handleResponse(request, response)
-            } catch (ex) {}
+            } catch (_) {
+                // NO-OP
+            }
         }
     }
 }
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default new ApiClientEventDispatcher()

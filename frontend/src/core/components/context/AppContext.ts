@@ -19,7 +19,6 @@ export async function loadAppContextData(): Promise<AppContextData> {
     }))
 }
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default new ContextHolder<AppContextData>({
     user: undefined,
     onboardingStatus: {

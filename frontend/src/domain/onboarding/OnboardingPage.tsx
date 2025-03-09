@@ -44,7 +44,6 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
     }
 
     private handleSuccess() {
-        // eslint-disable-next-line no-restricted-globals
         location.href = "/"
     }
 

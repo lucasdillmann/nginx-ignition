@@ -41,7 +41,6 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
 
     private handleSuccessfulLogin() {
         const returnTo = queryParams().returnTo as string | undefined
-        // eslint-disable-next-line no-restricted-globals
         location.href = returnTo ?? "/"
     }
 

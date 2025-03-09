@@ -14,7 +14,7 @@ export default class DataTableSearchBar extends React.Component<SearchBarProps> 
         return (
             <Flex className="data-table-search-bar-container">
                 <Input
-                    // @ts-ignore
+                    // @ts-expect-error target is generic, but in this scenario is safe to use the value attribute
                     onInput={event => handleChange(event.nativeEvent.target!!.value)}
                     onClear={() => handleChange()}
                     placeholder="Search terms"

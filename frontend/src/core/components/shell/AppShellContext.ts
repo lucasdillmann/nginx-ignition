@@ -21,7 +21,6 @@ export interface ShellOperations {
     updateConfig(config: ShellConfig): void
 }
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default new ContextHolder<ShellOperations>({
     updateConfig: (_: ShellConfig) => {},
 })

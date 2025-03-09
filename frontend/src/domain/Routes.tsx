@@ -1,3 +1,4 @@
+import React from "react"
 import LoginPage from "./authentication/LoginPage"
 import HomePage from "./home/HomePage"
 import AppRoute from "../core/components/router/AppRoute"
