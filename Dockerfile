@@ -10,6 +10,8 @@ ENV NGINX_IGNITION_SERVER_FRONTEND_PATH="/opt/nginx-ignition/frontend"
 ENV NGINX_IGNITION_DATABASE_DRIVER="sqlite"
 ENV NGINX_IGNITION_DATABASE_MIGRATIONS_PATH="/opt/nginx-ignition/migrations"
 ENV NGINX_IGNITION_DATABASE_DATA_PATH="/opt/nginx-ignition/data"
+ENV GOMEMLIMIT="96MiB"
+ENV GOGC="off"
 
 ENTRYPOINT ["/opt/nginx-ignition/nginx-ignition"]
 WORKDIR /opt/nginx-ignition
