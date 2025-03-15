@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/pro-components": "^2.8.6",
+    "@babel/runtime": "^7.26.10",
     "@types/qs": "^6.9.18",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
