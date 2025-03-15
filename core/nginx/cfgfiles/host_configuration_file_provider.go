@@ -221,7 +221,8 @@ func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 
 	payload := ""
 	if r.Response.Payload != nil && strings.TrimSpace(*r.Response.Payload) != "" {
-		payload = fmt.Sprintf("\"%s\"", *r.Response.Payload)
+		payload = strings.ReplaceAll(*r.Response.Payload, "\"", "\\\"")
+		payload = fmt.Sprintf("\"%s\"", payload)
 	}
 
 	return fmt.Sprintf(

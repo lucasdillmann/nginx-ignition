@@ -13,6 +13,8 @@ import (
 	"github.com/uptrace/bun"
 )
 
+const buHostIdFilter = "host_id = ?"
+
 type repository struct {
 	database *database.Database
 	ctx      context.Context
@@ -53,6 +55,24 @@ func (r *repository) DeleteByID(id uuid.UUID) error {
 	}
 
 	defer transaction.Rollback()
+
+	_, err = transaction.NewDelete().
+		Model((*hostBindingModel)(nil)).
+		Where(buHostIdFilter, id).
+		Exec(r.ctx)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = transaction.NewDelete().
+		Model((*hostRouteModel)(nil)).
+		Where(buHostIdFilter, id).
+		Exec(r.ctx)
+
+	if err != nil {
+		return err
+	}
 
 	_, err = transaction.NewDelete().
 		Model((*hostModel)(nil)).
@@ -103,12 +123,12 @@ func (r *repository) performUpdate(model *hostModel, transaction bun.Tx) error {
 		return err
 	}
 
-	_, err = transaction.NewDelete().Table("host_binding").Where("host_id = ?", model.ID).Exec(r.ctx)
+	_, err = transaction.NewDelete().Table("host_binding").Where(buHostIdFilter, model.ID).Exec(r.ctx)
 	if err != nil {
 		return err
 	}
 
-	_, err = transaction.NewDelete().Table("host_route").Where("host_id = ?", model.ID).Exec(r.ctx)
+	_, err = transaction.NewDelete().Table("host_route").Where(buHostIdFilter, model.ID).Exec(r.ctx)
 	if err != nil {
 		return err
 	}
