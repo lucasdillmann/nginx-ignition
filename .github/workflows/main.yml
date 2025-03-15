@@ -29,7 +29,9 @@ jobs:
       - name: go cache
         uses: actions/cache@v4
         with:
-          path: /home/runner/go/pkg/mod
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
           key: go-cache
           restore-keys: go-cache
       - name: Prettier
