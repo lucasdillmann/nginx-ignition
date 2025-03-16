@@ -105,7 +105,7 @@ func (r *repository) Save(ctx context.Context, host *host.Host) error {
 	if exists {
 		err = r.performUpdate(ctx, model, transaction)
 	} else {
-		_, err = transaction.NewInsert().Model(model).Exec(ctx)
+		err = r.performInsert(ctx, model, transaction)
 	}
 
 	if err != nil {
@@ -113,6 +113,15 @@ func (r *repository) Save(ctx context.Context, host *host.Host) error {
 	}
 
 	return transaction.Commit()
+}
+
+func (r *repository) performInsert(ctx context.Context, model *hostModel, transaction bun.Tx) error {
+	_, err := transaction.NewInsert().Model(model).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	return r.saveLinkedModels(ctx, model, transaction)
 }
 
 func (r *repository) performUpdate(ctx context.Context, model *hostModel, transaction bun.Tx) error {
@@ -131,11 +140,15 @@ func (r *repository) performUpdate(ctx context.Context, model *hostModel, transa
 		return err
 	}
 
+	return r.saveLinkedModels(ctx, model, transaction)
+}
+
+func (r *repository) saveLinkedModels(ctx context.Context, model *hostModel, transaction bun.Tx) error {
 	for _, binding := range model.Bindings {
 		binding.ID = uuid.New()
 		binding.HostID = model.ID
 
-		_, err = transaction.NewInsert().Model(binding).Exec(ctx)
+		_, err := transaction.NewInsert().Model(binding).Exec(ctx)
 		if err != nil {
 			return err
 		}
@@ -145,7 +158,7 @@ func (r *repository) performUpdate(ctx context.Context, model *hostModel, transa
 		route.ID = uuid.New()
 		route.HostID = model.ID
 
-		_, err = transaction.NewInsert().Model(route).Exec(ctx)
+		_, err := transaction.NewInsert().Model(route).Exec(ctx)
 		if err != nil {
 			return err
 		}
