@@ -38,6 +38,16 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
                 return "HTML"
             case CodeEditorLanguage.LUA:
                 return "Lua"
+            case CodeEditorLanguage.CSS:
+                return "CSS"
+            case CodeEditorLanguage.YAML:
+                return "YAML"
+            case CodeEditorLanguage.XML:
+                return "XML"
+            case CodeEditorLanguage.PLAIN_TEXT:
+                return "Plain text"
+            case CodeEditorLanguage.GENERIC:
+                return "Generic"
         }
     }
 

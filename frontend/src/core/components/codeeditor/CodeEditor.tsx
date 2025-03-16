@@ -3,10 +3,15 @@ import { CodeiumEditor } from "@codeium/react-code-editor"
 import AppContext from "../context/AppContext"
 
 export enum CodeEditorLanguage {
-    JAVASCRIPT = "javascript",
-    JSON = "json",
-    HTML = "html",
-    LUA = "lua",
+    JAVASCRIPT = "JAVASCRIPT",
+    JSON = "JSON",
+    HTML = "HTML",
+    LUA = "LUA",
+    CSS = "CSS",
+    YAML = "YAML",
+    XML = "XML",
+    PLAIN_TEXT = "PLAINTEXT",
+    GENERIC = "UNSPECIFIED",
 }
 
 export interface CodeEditorProps {

@@ -249,7 +249,16 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     onClose={() => this.closeRouteCodeEditorModal()}
                     value={routes[index]?.response?.payload ?? ""}
                     onChange={value => this.handleRoutePayloadChange(index, value)}
-                    language={[CodeEditorLanguage.JSON, CodeEditorLanguage.HTML]}
+                    language={[
+                        CodeEditorLanguage.JSON,
+                        CodeEditorLanguage.HTML,
+                        CodeEditorLanguage.CSS,
+                        CodeEditorLanguage.XML,
+                        CodeEditorLanguage.YAML,
+                        CodeEditorLanguage.JAVASCRIPT,
+                        CodeEditorLanguage.PLAIN_TEXT,
+                        CodeEditorLanguage.GENERIC,
+                    ]}
                 />
             </>
         )
