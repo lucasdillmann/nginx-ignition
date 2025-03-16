@@ -17,17 +17,15 @@ const buHostIdFilter = "host_id = ?"
 
 type repository struct {
 	database *database.Database
-	ctx      context.Context
 }
 
 func New(database *database.Database) host.Repository {
 	return &repository{
 		database: database,
-		ctx:      context.Background(),
 	}
 }
 
-func (r *repository) FindByID(id uuid.UUID) (*host.Host, error) {
+func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*host.Host, error) {
 	var model hostModel
 
 	err := r.database.Select().
@@ -35,7 +33,7 @@ func (r *repository) FindByID(id uuid.UUID) (*host.Host, error) {
 		Relation("Bindings").
 		Relation("Routes").
 		Where(constants.ByIdFilter, id).
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -48,7 +46,7 @@ func (r *repository) FindByID(id uuid.UUID) (*host.Host, error) {
 	return toDomain(&model)
 }
 
-func (r *repository) DeleteByID(id uuid.UUID) error {
+func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -59,7 +57,7 @@ func (r *repository) DeleteByID(id uuid.UUID) error {
 	_, err = transaction.NewDelete().
 		Model((*hostBindingModel)(nil)).
 		Where(buHostIdFilter, id).
-		Exec(r.ctx)
+		Exec(ctx)
 
 	if err != nil {
 		return err
@@ -68,7 +66,7 @@ func (r *repository) DeleteByID(id uuid.UUID) error {
 	_, err = transaction.NewDelete().
 		Model((*hostRouteModel)(nil)).
 		Where(buHostIdFilter, id).
-		Exec(r.ctx)
+		Exec(ctx)
 
 	if err != nil {
 		return err
@@ -77,7 +75,7 @@ func (r *repository) DeleteByID(id uuid.UUID) error {
 	_, err = transaction.NewDelete().
 		Model((*hostModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Exec(r.ctx)
+		Exec(ctx)
 
 	if err != nil {
 		return err
@@ -86,7 +84,7 @@ func (r *repository) DeleteByID(id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r *repository) Save(host *host.Host) error {
+func (r *repository) Save(ctx context.Context, host *host.Host) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -99,15 +97,15 @@ func (r *repository) Save(host *host.Host) error {
 		return err
 	}
 
-	exists, err := transaction.NewSelect().Model((*hostModel)(nil)).Where(constants.ByIdFilter, host.ID).Exists(r.ctx)
+	exists, err := transaction.NewSelect().Model((*hostModel)(nil)).Where(constants.ByIdFilter, host.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		err = r.performUpdate(model, transaction)
+		err = r.performUpdate(ctx, model, transaction)
 	} else {
-		_, err = transaction.NewInsert().Model(model).Exec(r.ctx)
+		_, err = transaction.NewInsert().Model(model).Exec(ctx)
 	}
 
 	if err != nil {
@@ -117,18 +115,18 @@ func (r *repository) Save(host *host.Host) error {
 	return transaction.Commit()
 }
 
-func (r *repository) performUpdate(model *hostModel, transaction bun.Tx) error {
-	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(r.ctx)
+func (r *repository) performUpdate(ctx context.Context, model *hostModel, transaction bun.Tx) error {
+	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
 	}
 
-	_, err = transaction.NewDelete().Table("host_binding").Where(buHostIdFilter, model.ID).Exec(r.ctx)
+	_, err = transaction.NewDelete().Table("host_binding").Where(buHostIdFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
 	}
 
-	_, err = transaction.NewDelete().Table("host_route").Where(buHostIdFilter, model.ID).Exec(r.ctx)
+	_, err = transaction.NewDelete().Table("host_route").Where(buHostIdFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -137,7 +135,7 @@ func (r *repository) performUpdate(model *hostModel, transaction bun.Tx) error {
 		binding.ID = uuid.New()
 		binding.HostID = model.ID
 
-		_, err = transaction.NewInsert().Model(binding).Exec(r.ctx)
+		_, err = transaction.NewInsert().Model(binding).Exec(ctx)
 		if err != nil {
 			return err
 		}
@@ -147,7 +145,7 @@ func (r *repository) performUpdate(model *hostModel, transaction bun.Tx) error {
 		route.ID = uuid.New()
 		route.HostID = model.ID
 
-		_, err = transaction.NewInsert().Model(route).Exec(r.ctx)
+		_, err = transaction.NewInsert().Model(route).Exec(ctx)
 		if err != nil {
 			return err
 		}
@@ -156,7 +154,11 @@ func (r *repository) performUpdate(model *hostModel, transaction bun.Tx) error {
 	return nil
 }
 
-func (r *repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*host.Host], error) {
+func (r *repository) FindPage(
+	ctx context.Context,
+	pageSize, pageNumber int,
+	searchTerms *string,
+) (*pagination.Page[*host.Host], error) {
 	var models []hostModel
 
 	query := r.database.Select().Model(&models)
@@ -164,7 +166,7 @@ func (r *repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*p
 		query = query.Where("domain_names::varchar ILIKE ?", "%"+*searchTerms+"%")
 	}
 
-	count, err := query.Count(r.ctx)
+	count, err := query.Count(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +177,7 @@ func (r *repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*p
 		Limit(pageSize).
 		Offset(pageSize * pageNumber).
 		Order("domain_names").
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if err != nil {
 		return nil, err
@@ -194,7 +196,7 @@ func (r *repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*p
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAllEnabled() ([]*host.Host, error) {
+func (r *repository) FindAllEnabled(ctx context.Context) ([]*host.Host, error) {
 	var models []hostModel
 
 	err := r.database.Select().
@@ -202,7 +204,7 @@ func (r *repository) FindAllEnabled() ([]*host.Host, error) {
 		Relation("Bindings").
 		Relation("Routes").
 		Where("enabled = ?", true).
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if err != nil {
 		return nil, err
@@ -220,7 +222,7 @@ func (r *repository) FindAllEnabled() ([]*host.Host, error) {
 	return result, nil
 }
 
-func (r *repository) FindDefault() (*host.Host, error) {
+func (r *repository) FindDefault(ctx context.Context) (*host.Host, error) {
 	var model hostModel
 
 	err := r.database.Select().
@@ -228,7 +230,7 @@ func (r *repository) FindDefault() (*host.Host, error) {
 		Relation("Bindings").
 		Relation("Routes").
 		Where("default_server = ?", true).
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -241,11 +243,11 @@ func (r *repository) FindDefault() (*host.Host, error) {
 	return toDomain(&model)
 }
 
-func (r *repository) ExistsByID(id uuid.UUID) (bool, error) {
+func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	count, err := r.database.Select().
 		Model((*hostModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Count(r.ctx)
+		Count(ctx)
 
 	if err != nil {
 		return false, err
@@ -254,16 +256,16 @@ func (r *repository) ExistsByID(id uuid.UUID) (bool, error) {
 	return count > 0, nil
 }
 
-func (r *repository) ExistsCertificateByID(certificateId uuid.UUID) (bool, error) {
-	return certificate.New(r.database).ExistsByID(certificateId)
+func (r *repository) ExistsCertificateByID(ctx context.Context, certificateId uuid.UUID) (bool, error) {
+	return certificate.New(r.database).ExistsByID(ctx, certificateId)
 }
 
-func (r *repository) ExistsByCertificateID(certificateId uuid.UUID) (bool, error) {
+func (r *repository) ExistsByCertificateID(ctx context.Context, certificateId uuid.UUID) (bool, error) {
 	count, err := r.database.
 		Select().
 		Model((*hostBindingModel)(nil)).
 		Where("certificate_id = ?", certificateId).
-		Count(r.ctx)
+		Count(ctx)
 
 	if err != nil {
 		return false, err
@@ -272,11 +274,11 @@ func (r *repository) ExistsByCertificateID(certificateId uuid.UUID) (bool, error
 	return count > 0, nil
 }
 
-func (r *repository) ExistsByAccessListID(accessListId uuid.UUID) (bool, error) {
+func (r *repository) ExistsByAccessListID(ctx context.Context, accessListId uuid.UUID) (bool, error) {
 	count, err := r.database.Select().
 		Model((*hostModel)(nil)).
 		Where("access_list_id = ?", accessListId).
-		Count(r.ctx)
+		Count(ctx)
 
 	if err != nil {
 		return false, err

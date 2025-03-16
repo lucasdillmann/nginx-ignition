@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/common/value_range"
 	"dillmann.com.br/nginx-ignition/core/host"
@@ -32,12 +33,12 @@ func newValidator(validateBindingCommand *host.ValidateBindingCommand) *validato
 	}
 }
 
-func (v *validator) validate(settings *Settings) error {
+func (v *validator) validate(ctx context.Context, settings *Settings) error {
 	v.validateNginx(settings.Nginx)
 	v.validateLogRotation(settings.LogRotation)
 	v.validateCertificateAutoRenew(settings.CertificateAutoRenew)
 
-	if err := v.validateGlobalBindings(settings.GlobalBindings); err != nil {
+	if err := v.validateGlobalBindings(ctx, settings.GlobalBindings); err != nil {
 		return err
 	}
 
@@ -71,9 +72,9 @@ func (v *validator) validateCertificateAutoRenew(settings *CertificateAutoRenewS
 	v.checkRange(settings.IntervalUnitCount, intervalRange, "certificateAutoRenew.intervalUnitCount")
 }
 
-func (v *validator) validateGlobalBindings(settings []*host.Binding) error {
+func (v *validator) validateGlobalBindings(ctx context.Context, settings []*host.Binding) error {
 	for index, binding := range settings {
-		if err := (*v.validateBindingCommand)("globalBindings", index, binding, v.delegate); err != nil {
+		if err := (*v.validateBindingCommand)(ctx, "globalBindings", index, binding, v.delegate); err != nil {
 			return err
 		}
 	}

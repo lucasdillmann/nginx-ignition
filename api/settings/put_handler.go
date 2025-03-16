@@ -11,9 +11,9 @@ type putHandler struct {
 	command *settings.SaveCommand
 }
 
-func (h putHandler) handle(context *gin.Context) {
+func (h putHandler) handle(ctx *gin.Context) {
 	payload := &settingsDto{}
-	if err := context.BindJSON(payload); err != nil {
+	if err := ctx.BindJSON(payload); err != nil {
 		panic(err)
 	}
 
@@ -22,9 +22,9 @@ func (h putHandler) handle(context *gin.Context) {
 	}
 
 	domain := toDomain(payload)
-	if err := (*h.command)(domain); err != nil {
+	if err := (*h.command)(ctx.Request.Context(), domain); err != nil {
 		panic(err)
 	}
 
-	context.Status(http.StatusNoContent)
+	ctx.Status(http.StatusNoContent)
 }

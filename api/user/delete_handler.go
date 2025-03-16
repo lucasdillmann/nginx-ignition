@@ -12,16 +12,16 @@ type deleteHandler struct {
 	command *user.DeleteCommand
 }
 
-func (h deleteHandler) handle(context *gin.Context) {
-	id, err := uuid.Parse(context.Param("id"))
+func (h deleteHandler) handle(ctx *gin.Context) {
+	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	currentUserId := authorization.CurrentSubject(context).User.ID
+	currentUserId := authorization.CurrentSubject(ctx).User.ID
 	if id == currentUserId {
-		context.JSON(
+		ctx.JSON(
 			http.StatusBadRequest,
 			gin.H{
 				"message": "You cannot delete your own user",
@@ -30,10 +30,10 @@ func (h deleteHandler) handle(context *gin.Context) {
 		return
 	}
 
-	err = (*h.command)(id)
+	err = (*h.command)(ctx.Request.Context(), id)
 	if err != nil {
 		panic(err)
 	}
 
-	context.Status(http.StatusNoContent)
+	ctx.Status(http.StatusNoContent)
 }

@@ -11,12 +11,12 @@ type startHandler struct {
 	command *nginx.StartCommand
 }
 
-func (h startHandler) handle(context *gin.Context) {
-	if err := (*h.command)(); err != nil {
+func (h startHandler) handle(ctx *gin.Context) {
+	if err := (*h.command)(ctx.Request.Context()); err != nil {
 		log.Warnf("Failed to start Nginx: %s", err.Error())
-		context.JSON(http.StatusFailedDependency, gin.H{"message": err.Error()})
+		ctx.JSON(http.StatusFailedDependency, gin.H{"message": err.Error()})
 		return
 	}
 
-	context.Status(http.StatusNoContent)
+	ctx.Status(http.StatusNoContent)
 }

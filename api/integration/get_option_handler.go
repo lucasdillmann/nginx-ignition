@@ -10,28 +10,28 @@ type getOptionHandler struct {
 	command *integration.GetOptionByIdCommand
 }
 
-func (h getOptionHandler) handle(context *gin.Context) {
-	integrationId := context.Param("id")
+func (h getOptionHandler) handle(ctx *gin.Context) {
+	integrationId := ctx.Param("id")
 	if integrationId == "" {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	optionId := context.Param("optionId")
+	optionId := ctx.Param("optionId")
 	if optionId == "" {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	data, err := (*h.command)(integrationId, optionId)
+	data, err := (*h.command)(ctx.Request.Context(), integrationId, optionId)
 	if err != nil {
 		panic(err)
 	}
 
 	if data == nil {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	context.JSON(http.StatusOK, toOptionDto(data))
+	ctx.JSON(http.StatusOK, toOptionDto(data))
 }

@@ -23,12 +23,12 @@ const (
 	poolingInterval    = 1 * time.Second
 )
 
-func resolveDnsProvider(domainNames []string, parameters map[string]any) (challenge.Provider, error) {
+func resolveDnsProvider(ctx context.Context, domainNames []string, parameters map[string]any) (challenge.Provider, error) {
 	providerId, _ := parameters[dnsProvider.ID].(string)
 
 	switch providerId {
 	case awsRoute53Id:
-		return buildAwsRoute53Provider(domainNames, parameters)
+		return buildAwsRoute53Provider(ctx, domainNames, parameters)
 	case cloudflareId:
 		return buildCloudflareProvider(parameters)
 	case googleCloudId:
@@ -40,11 +40,11 @@ func resolveDnsProvider(domainNames []string, parameters map[string]any) (challe
 	}
 }
 
-func buildAwsRoute53Provider(domainNames []string, parameters map[string]any) (challenge.Provider, error) {
+func buildAwsRoute53Provider(ctx context.Context, domainNames []string, parameters map[string]any) (challenge.Provider, error) {
 	accessKey, _ := parameters[awsAccessKey.ID].(string)
 	secretKey, _ := parameters[awsSecretKey.ID].(string)
 
-	hostedZoneId, err := resolveAwsRoute53HostedZoneID(accessKey, secretKey, domainNames)
+	hostedZoneId, err := resolveAwsRoute53HostedZoneID(ctx, accessKey, secretKey, domainNames)
 	if err != nil {
 		return nil, err
 	}
@@ -63,14 +63,14 @@ func buildAwsRoute53Provider(domainNames []string, parameters map[string]any) (c
 	return route53.NewDNSProviderConfig(cfg)
 }
 
-func resolveAwsRoute53HostedZoneID(accessKey, secretKey string, domainNames []string) (*string, error) {
+func resolveAwsRoute53HostedZoneID(ctx context.Context, accessKey, secretKey string, domainNames []string) (*string, error) {
 	cfg := aws.Config{
 		Credentials: credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
 		Region:      "us-east-1",
 	}
 
 	client := route53client.NewFromConfig(cfg)
-	hostedZones, err := client.ListHostedZones(context.Background(), nil)
+	hostedZones, err := client.ListHostedZones(ctx, nil)
 	if err != nil {
 		return nil, err
 	}

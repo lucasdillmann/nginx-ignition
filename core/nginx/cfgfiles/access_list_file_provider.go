@@ -1,6 +1,7 @@
 package cfgfiles
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/access_list"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"fmt"
@@ -16,8 +17,8 @@ func newAccessListFileProvider(accessListRepository access_list.Repository) *acc
 	return &accessListFileProvider{accessListRepository: accessListRepository}
 }
 
-func (p *accessListFileProvider) provide(basePath string, _ []*host.Host) ([]output, error) {
-	accessLists, err := p.accessListRepository.FindAll()
+func (p *accessListFileProvider) provide(ctx context.Context, basePath string, _ []*host.Host) ([]output, error) {
+	accessLists, err := p.accessListRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}

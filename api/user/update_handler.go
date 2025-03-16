@@ -13,9 +13,9 @@ type updateHandler struct {
 	command *user.SaveCommand
 }
 
-func (h updateHandler) handle(context *gin.Context) {
+func (h updateHandler) handle(ctx *gin.Context) {
 	payload := &userRequestDto{}
-	if err := context.BindJSON(payload); err != nil {
+	if err := ctx.BindJSON(payload); err != nil {
 		panic(err)
 	}
 
@@ -23,19 +23,19 @@ func (h updateHandler) handle(context *gin.Context) {
 		panic(err)
 	}
 
-	id, err := uuid.Parse(context.Param("id"))
+	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil || id == uuid.Nil {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
 	domainModel := toDomain(payload)
 	domainModel.ID = id
-	currentUserId := authorization.CurrentSubject(context).User.ID
+	currentUserId := authorization.CurrentSubject(ctx).User.ID
 
-	if err := (*h.command)(domainModel, &currentUserId); err != nil {
+	if err := (*h.command)(ctx.Request.Context(), domainModel, &currentUserId); err != nil {
 		panic(err)
 	}
 
-	context.Status(http.StatusNoContent)
+	ctx.Status(http.StatusNoContent)
 }

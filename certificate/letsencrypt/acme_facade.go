@@ -1,6 +1,7 @@
 package letsencrypt
 
 import (
+	"context"
 	"crypto/x509"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
@@ -18,6 +19,7 @@ import (
 )
 
 func issueCertificate(
+	ctx context.Context,
 	user userDetails,
 	domainNames []string,
 	parameters map[string]any,
@@ -37,7 +39,7 @@ func issueCertificate(
 		return nil, err
 	}
 
-	dnsChallengeProvider, err := resolveDnsProvider(domainNames, parameters)
+	dnsChallengeProvider, err := resolveDnsProvider(ctx, domainNames, parameters)
 	if err != nil {
 		return nil, err
 	}

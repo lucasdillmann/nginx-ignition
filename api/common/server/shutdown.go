@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
@@ -13,7 +14,7 @@ func registerShutdown(lifecycle *lifecycle.Lifecycle, state *state) {
 	lifecycle.RegisterShutdown(shutdown{state})
 }
 
-func (s shutdown) Run() {
+func (s shutdown) Run(_ context.Context) {
 	log.Infof("Stopping the HTTP server")
 
 	if err := s.state.server.Close(); err != nil {

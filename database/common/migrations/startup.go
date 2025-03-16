@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 )
 
@@ -21,6 +22,6 @@ func (d startup) Async() bool {
 	return false
 }
 
-func (d startup) Run() error {
+func (d startup) Run(_ context.Context) error {
 	return d.migrations.migrate()
 }

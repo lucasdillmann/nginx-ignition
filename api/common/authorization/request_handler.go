@@ -11,36 +11,36 @@ const (
 	RequestSubject = "RBAC:Subject"
 )
 
-func (m *RBAC) HandleRequest(context *gin.Context) {
-	path := context.FullPath()
+func (m *RBAC) HandleRequest(ctx *gin.Context) {
+	path := ctx.FullPath()
 	if !strings.HasPrefix(path, "/api/") {
-		context.Next()
+		ctx.Next()
 		return
 	}
 
-	if m.isAnonymous(context.Request.Method, path) {
-		context.Next()
+	if m.isAnonymous(ctx.Request.Method, path) {
+		ctx.Next()
 		return
 	}
 
-	accessToken, _ := strings.CutPrefix(context.GetHeader("Authorization"), "Bearer ")
+	accessToken, _ := strings.CutPrefix(ctx.GetHeader("Authorization"), "Bearer ")
 	if strings.TrimSpace(accessToken) == "" {
-		context.Abort()
+		ctx.Abort()
 		panic(errInvalidToken)
 	}
 
-	subject, err := m.jwt.ValidateToken(accessToken)
+	subject, err := m.jwt.ValidateToken(ctx.Request.Context(), accessToken)
 	if err != nil {
-		context.Abort()
+		ctx.Abort()
 		panic(api_error.New(
 			http.StatusUnauthorized,
 			"Invalid or expired access token",
 		))
 	}
 
-	requiredRole := m.findRequiredRole(context.Request.Method, path)
+	requiredRole := m.findRequiredRole(ctx.Request.Method, path)
 	if requiredRole != nil && subject.User.Role != *requiredRole {
-		context.Abort()
+		ctx.Abort()
 		panic(api_error.New(
 			http.StatusForbidden,
 			"User does not have the required role to access this resource",
@@ -49,9 +49,9 @@ func (m *RBAC) HandleRequest(context *gin.Context) {
 
 	refreshedToken, _ := m.jwt.RefreshToken(subject)
 	if refreshedToken != nil {
-		context.Header("Authorization", "Bearer "+*refreshedToken)
+		ctx.Header("Authorization", "Bearer "+*refreshedToken)
 	}
 
-	context.Set(RequestSubject, subject)
-	context.Next()
+	ctx.Set(RequestSubject, subject)
+	ctx.Next()
 }

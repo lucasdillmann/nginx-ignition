@@ -1,12 +1,14 @@
 package lifecycle
 
+import "context"
+
 type StartupCommand interface {
 	Priority() int
 	Async() bool
-	Run() error
+	Run(ctx context.Context) error
 }
 
 type ShutdownCommand interface {
 	Priority() int
-	Run()
+	Run(ctx context.Context)
 }

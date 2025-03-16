@@ -1,6 +1,7 @@
 package authorization
 
 import (
+	"context"
 	"crypto/rand"
 	"dillmann.com.br/nginx-ignition/api/common/api_error"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
@@ -83,7 +84,7 @@ func (j *Jwt) GenerateToken(usr *user.User) (*string, error) {
 	return j.sign(&claims)
 }
 
-func (j *Jwt) ValidateToken(tokenString string) (*Subject, error) {
+func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errInvalidToken
@@ -103,7 +104,7 @@ func (j *Jwt) ValidateToken(tokenString string) (*Subject, error) {
 			return nil, err
 		}
 
-		usr, err := (*j.repository).FindByID(userId)
+		usr, err := (*j.repository).FindByID(ctx, userId)
 		if err != nil {
 			return nil, err
 		}

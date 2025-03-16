@@ -11,15 +11,15 @@ type putConfigurationHandler struct {
 	command *integration.ConfigureByIdCommand
 }
 
-func (h putConfigurationHandler) handle(context *gin.Context) {
-	id := context.Param("id")
+func (h putConfigurationHandler) handle(ctx *gin.Context) {
+	id := ctx.Param("id")
 	if id == "" {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
 	payload := &integrationConfigurationRequest{}
-	if err := context.BindJSON(payload); err != nil {
+	if err := ctx.BindJSON(payload); err != nil {
 		panic(err)
 	}
 
@@ -27,9 +27,9 @@ func (h putConfigurationHandler) handle(context *gin.Context) {
 		panic(err)
 	}
 
-	if err := (*h.command)(id, *payload.Enabled, *payload.Parameters); err != nil {
+	if err := (*h.command)(ctx.Request.Context(), id, *payload.Enabled, *payload.Parameters); err != nil {
 		panic(err)
 	}
 
-	context.Status(http.StatusNoContent)
+	ctx.Status(http.StatusNoContent)
 }

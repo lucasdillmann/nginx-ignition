@@ -9,34 +9,32 @@ import (
 
 type repository struct {
 	database *database.Database
-	ctx      context.Context
 }
 
 func New(database *database.Database) settings.Repository {
 	return &repository{
 		database: database,
-		ctx:      context.Background(),
 	}
 }
 
-func (r repository) Get() (*settings.Settings, error) {
+func (r repository) Get(ctx context.Context) (*settings.Settings, error) {
 	nginx := nginxModel{}
-	if err := r.database.Select().Model(&nginx).Scan(r.ctx); err != nil {
+	if err := r.database.Select().Model(&nginx).Scan(ctx); err != nil {
 		return nil, err
 	}
 
 	certificate := certificateModel{}
-	if err := r.database.Select().Model(&certificate).Scan(r.ctx); err != nil {
+	if err := r.database.Select().Model(&certificate).Scan(ctx); err != nil {
 		return nil, err
 	}
 
 	logRotation := logRotationModel{}
-	if err := r.database.Select().Model(&logRotation).Scan(r.ctx); err != nil {
+	if err := r.database.Select().Model(&logRotation).Scan(ctx); err != nil {
 		return nil, err
 	}
 
 	var bindings []*bindingModel
-	if err := r.database.Select().Model(&bindings).Scan(r.ctx); err != nil {
+	if err := r.database.Select().Model(&bindings).Scan(ctx); err != nil {
 		return nil, err
 	}
 
@@ -49,7 +47,7 @@ func (r repository) Get() (*settings.Settings, error) {
 	return toDomain(&nginx, &logRotation, &certificate, bindings), nil
 }
 
-func (r repository) Save(settings *settings.Settings) error {
+func (r repository) Save(ctx context.Context, settings *settings.Settings) error {
 	nginx, certificate, logRotation, bindings := toModel(settings)
 
 	transaction, err := r.database.Begin()
@@ -59,35 +57,35 @@ func (r repository) Save(settings *settings.Settings) error {
 
 	defer transaction.Rollback()
 
-	if _, err = transaction.NewTruncateTable().Model(nginx).Exec(r.ctx); err != nil {
+	if _, err = transaction.NewTruncateTable().Model(nginx).Exec(ctx); err != nil {
 		return err
 	}
 
-	if _, err = transaction.NewTruncateTable().Model(certificate).Exec(r.ctx); err != nil {
+	if _, err = transaction.NewTruncateTable().Model(certificate).Exec(ctx); err != nil {
 		return err
 	}
 
-	if _, err = transaction.NewTruncateTable().Model(logRotation).Exec(r.ctx); err != nil {
+	if _, err = transaction.NewTruncateTable().Model(logRotation).Exec(ctx); err != nil {
 		return err
 	}
 
-	if _, err = transaction.NewTruncateTable().Model(&bindings).Exec(r.ctx); err != nil {
+	if _, err = transaction.NewTruncateTable().Model(&bindings).Exec(ctx); err != nil {
 		return err
 	}
 
-	if _, err = transaction.NewInsert().Model(nginx).Exec(r.ctx); err != nil {
+	if _, err = transaction.NewInsert().Model(nginx).Exec(ctx); err != nil {
 		return err
 	}
 
-	if _, err = transaction.NewInsert().Model(certificate).Exec(r.ctx); err != nil {
+	if _, err = transaction.NewInsert().Model(certificate).Exec(ctx); err != nil {
 		return err
 	}
 
-	if _, err = transaction.NewInsert().Model(logRotation).Exec(r.ctx); err != nil {
+	if _, err = transaction.NewInsert().Model(logRotation).Exec(ctx); err != nil {
 		return err
 	}
 
-	if _, err = transaction.NewInsert().Model(&bindings).Exec(r.ctx); err != nil {
+	if _, err = transaction.NewInsert().Model(&bindings).Exec(ctx); err != nil {
 		return err
 	}
 

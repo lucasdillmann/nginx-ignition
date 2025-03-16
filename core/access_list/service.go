@@ -1,6 +1,7 @@
 package access_list
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"errors"
@@ -19,16 +20,16 @@ func newService(accessListRepository *Repository, hostRepository *host.Repositor
 	}
 }
 
-func (s *service) save(accessList *AccessList) error {
+func (s *service) save(ctx context.Context, accessList *AccessList) error {
 	if err := newValidator().validate(accessList); err != nil {
 		return err
 	}
 
-	return (*s.accessListRepository).Save(accessList)
+	return (*s.accessListRepository).Save(ctx, accessList)
 }
 
-func (s *service) deleteById(id uuid.UUID) error {
-	inUse, err := (*s.hostRepository).ExistsByAccessListID(id)
+func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
+	inUse, err := (*s.hostRepository).ExistsByAccessListID(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -37,21 +38,22 @@ func (s *service) deleteById(id uuid.UUID) error {
 		return errors.New("access List is in use by one or more hosts")
 	}
 
-	return (*s.accessListRepository).DeleteByID(id)
+	return (*s.accessListRepository).DeleteByID(ctx, id)
 }
 
-func (s *service) findById(id uuid.UUID) (*AccessList, error) {
-	return (*s.accessListRepository).FindByID(id)
+func (s *service) findById(ctx context.Context, id uuid.UUID) (*AccessList, error) {
+	return (*s.accessListRepository).FindByID(ctx, id)
 }
 
-func (s *service) findAll() ([]*AccessList, error) {
-	return (*s.accessListRepository).FindAll()
+func (s *service) findAll(ctx context.Context) ([]*AccessList, error) {
+	return (*s.accessListRepository).FindAll(ctx)
 }
 
 func (s *service) list(
+	ctx context.Context,
 	pageSize,
 	pageNumber int,
 	searchTerms *string,
 ) (*pagination.Page[*AccessList], error) {
-	return (*s.accessListRepository).FindPage(pageNumber, pageSize, searchTerms)
+	return (*s.accessListRepository).FindPage(ctx, pageNumber, pageSize, searchTerms)
 }

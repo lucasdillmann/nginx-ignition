@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
@@ -22,21 +23,23 @@ type ListOutput struct {
 }
 
 type ConfigureByIdCommand func(
+	ctx context.Context,
 	id string,
 	enabled bool,
 	parameters map[string]any,
 ) error
 
-type GetByIdCommand func(id string) (*GetByIdOutput, error)
+type GetByIdCommand func(ctx context.Context, id string) (*GetByIdOutput, error)
 
-type GetOptionByIdCommand func(integrationId, optionId string) (*AdapterOption, error)
+type GetOptionByIdCommand func(ctx context.Context, integrationId, optionId string) (*AdapterOption, error)
 
-type GetOptionUrlByIdCommand func(integrationId, optionId string) (*string, error)
+type GetOptionUrlByIdCommand func(ctx context.Context, integrationId, optionId string) (*string, error)
 
 type ListOptionsCommand func(
+	ctx context.Context,
 	integrationId string,
 	pageNumber, pageSize int,
 	searchTerms *string,
 ) (*pagination.Page[*AdapterOption], error)
 
-type ListCommand func() ([]*ListOutput, error)
+type ListCommand func(ctx context.Context) ([]*ListOutput, error)

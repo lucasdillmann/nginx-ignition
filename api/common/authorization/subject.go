@@ -12,7 +12,7 @@ type Subject struct {
 	claims  *jwt.MapClaims
 }
 
-func CurrentSubject(context *gin.Context) *Subject {
-	subject, _ := context.Get(RequestSubject)
+func CurrentSubject(ctx *gin.Context) *Subject {
+	subject, _ := ctx.Get(RequestSubject)
 	return subject.(*Subject)
 }

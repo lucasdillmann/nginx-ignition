@@ -12,9 +12,9 @@ type issueHandler struct {
 	command *certificate.IssueCommand
 }
 
-func (h issueHandler) handle(context *gin.Context) {
+func (h issueHandler) handle(ctx *gin.Context) {
 	payload := &issueCertificateRequest{}
-	if err := context.BindJSON(payload); err != nil {
+	if err := ctx.BindJSON(payload); err != nil {
 		panic(err)
 	}
 
@@ -24,10 +24,10 @@ func (h issueHandler) handle(context *gin.Context) {
 
 	domainModel := toIssueCertificateRequest(payload)
 
-	cert, err := (*h.command)(domainModel)
+	cert, err := (*h.command)(ctx.Request.Context(), domainModel)
 	if api_error.CanHandle(err) {
 		panic(err)
 	}
 
-	context.JSON(http.StatusOK, toIssueCertificateResponse(cert, err))
+	ctx.JSON(http.StatusOK, toIssueCertificateResponse(cert, err))
 }

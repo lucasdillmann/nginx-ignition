@@ -11,16 +11,16 @@ type listHandler struct {
 	command *certificate.ListCommand
 }
 
-func (h listHandler) handle(context *gin.Context) {
-	pageSize, pageNumber, searchTerms, err := pagination.ExtractPaginationParameters(context)
+func (h listHandler) handle(ctx *gin.Context) {
+	pageSize, pageNumber, searchTerms, err := pagination.ExtractPaginationParameters(ctx)
 	if err != nil {
 		panic(err)
 	}
 
-	page, err := (*h.command)(pageSize, pageNumber, searchTerms)
+	page, err := (*h.command)(ctx.Request.Context(), pageSize, pageNumber, searchTerms)
 	if err != nil {
 		panic(err)
 	}
 
-	context.JSON(http.StatusOK, pagination.Convert(page, toCertificateResponse))
+	ctx.JSON(http.StatusOK, pagination.Convert(page, toCertificateResponse))
 }

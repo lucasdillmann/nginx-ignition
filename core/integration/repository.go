@@ -1,6 +1,8 @@
 package integration
 
+import "context"
+
 type Repository interface {
-	FindByID(id string) (*Integration, error)
-	Save(integration *Integration) error
+	FindByID(ctx context.Context, id string) (*Integration, error)
+	Save(ctx context.Context, integration *Integration) error
 }

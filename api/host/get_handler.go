@@ -11,22 +11,22 @@ type getHandler struct {
 	command *host.GetCommand
 }
 
-func (h getHandler) handle(context *gin.Context) {
-	id, err := uuid.Parse(context.Param("id"))
+func (h getHandler) handle(ctx *gin.Context) {
+	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	data, err := (*h.command)(id)
+	data, err := (*h.command)(ctx.Request.Context(), id)
 	if err != nil {
 		panic(err)
 	}
 
 	if data == nil {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	context.JSON(http.StatusOK, toDto(data))
+	ctx.JSON(http.StatusOK, toDto(data))
 }

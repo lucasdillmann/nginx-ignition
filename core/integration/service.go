@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
@@ -25,7 +26,7 @@ func newService(repository Repository, adaptersResolver func() ([]Adapter, error
 	}
 }
 
-func (s *service) list() ([]*ListOutput, error) {
+func (s *service) list(ctx context.Context) ([]*ListOutput, error) {
 	adapters, err := s.adaptersResolver()
 	if err != nil {
 		return nil, err
@@ -37,7 +38,7 @@ func (s *service) list() ([]*ListOutput, error) {
 
 	var outputs []*ListOutput
 	for _, adapter := range adapters {
-		settings, err := s.repository.FindByID(adapter.ID())
+		settings, err := s.repository.FindByID(ctx, adapter.ID())
 		if err != nil {
 			return nil, err
 		}
@@ -57,13 +58,13 @@ func (s *service) list() ([]*ListOutput, error) {
 	return outputs, nil
 }
 
-func (s *service) getById(id string) (*GetByIdOutput, error) {
+func (s *service) getById(ctx context.Context, id string) (*GetByIdOutput, error) {
 	adapter := s.findAdapter(id)
 	if adapter == nil {
 		return nil, nil
 	}
 
-	settings, err := s.repository.FindByID(id)
+	settings, err := s.repository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -86,6 +87,7 @@ func (s *service) getById(id string) (*GetByIdOutput, error) {
 }
 
 func (s *service) listOptions(
+	ctx context.Context,
 	integrationId string,
 	pageNumber, pageSize int,
 	searchTerms *string,
@@ -95,7 +97,7 @@ func (s *service) listOptions(
 		return nil, nil
 	}
 
-	settings, err := s.findSettings(integrationId)
+	settings, err := s.findSettings(ctx, integrationId)
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +106,7 @@ func (s *service) listOptions(
 		return nil, integrationDisabledError()
 	}
 
-	options, err := adapter.GetAvailableOptions(settings.Parameters, pageNumber, pageSize, searchTerms)
+	options, err := adapter.GetAvailableOptions(ctx, settings.Parameters, pageNumber, pageSize, searchTerms)
 	if err != nil {
 		return nil, err
 	}
@@ -116,13 +118,13 @@ func (s *service) listOptions(
 	return options, nil
 }
 
-func (s *service) getOptionById(integrationId, optionId string) (*AdapterOption, error) {
+func (s *service) getOptionById(ctx context.Context, integrationId, optionId string) (*AdapterOption, error) {
 	adapter := s.findAdapter(integrationId)
 	if adapter == nil {
 		return nil, nil
 	}
 
-	settings, err := s.findSettings(integrationId)
+	settings, err := s.findSettings(ctx, integrationId)
 	if err != nil {
 		return nil, err
 	}
@@ -131,10 +133,10 @@ func (s *service) getOptionById(integrationId, optionId string) (*AdapterOption,
 		return nil, integrationDisabledError()
 	}
 
-	return adapter.GetAvailableOptionById(settings.Parameters, optionId)
+	return adapter.GetAvailableOptionById(ctx, settings.Parameters, optionId)
 }
 
-func (s *service) configureById(id string, enabled bool, parameters map[string]any) error {
+func (s *service) configureById(ctx context.Context, id string, enabled bool, parameters map[string]any) error {
 	adapter := s.findAdapter(id)
 	if adapter == nil {
 		return integrationNotFoundError()
@@ -152,16 +154,16 @@ func (s *service) configureById(id string, enabled bool, parameters map[string]a
 		Parameters: parameters,
 	}
 
-	return s.repository.Save(configuration)
+	return s.repository.Save(ctx, configuration)
 }
 
-func (s *service) getOptionUrl(integrationId, optionId string) (*string, error) {
+func (s *service) getOptionUrl(ctx context.Context, integrationId, optionId string) (*string, error) {
 	adapter := s.findAdapter(integrationId)
 	if adapter == nil {
 		return nil, integrationNotFoundError()
 	}
 
-	settings, err := s.findSettings(integrationId)
+	settings, err := s.findSettings(ctx, integrationId)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +172,7 @@ func (s *service) getOptionUrl(integrationId, optionId string) (*string, error) 
 		return nil, integrationDisabledError()
 	}
 
-	url, err := adapter.GetOptionProxyUrl(settings.Parameters, optionId)
+	url, err := adapter.GetOptionProxyUrl(ctx, settings.Parameters, optionId)
 	if err != nil {
 		return nil, err
 	}
@@ -193,8 +195,8 @@ func (s *service) findAdapter(id string) Adapter {
 	return nil
 }
 
-func (s *service) findSettings(id string) (*Integration, error) {
-	settings, err := s.repository.FindByID(id)
+func (s *service) findSettings(ctx context.Context, id string) (*Integration, error) {
+	settings, err := s.repository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}

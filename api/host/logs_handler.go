@@ -26,16 +26,16 @@ var (
 	}
 )
 
-func (h logsHandler) handle(context *gin.Context) {
+func (h logsHandler) handle(ctx *gin.Context) {
 	lineCount := defaultLineCount
-	queryValue := context.Query("lines")
+	queryValue := ctx.Query("lines")
 
 	if queryValue != "" {
 		var err error
 		lineCount, err = strconv.Atoi(queryValue)
 
 		if err != nil || !lineCountRange.Contains(lineCount) {
-			context.JSON(http.StatusBadRequest, gin.H{
+			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": fmt.Sprintf(
 					"Lines amount should be between %d and %d",
 					lineCountRange.Min,
@@ -46,22 +46,22 @@ func (h logsHandler) handle(context *gin.Context) {
 		}
 	}
 
-	qualifier := context.Param("qualifier")
+	qualifier := ctx.Param("qualifier")
 	if !allowedQualifiers[qualifier] {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	id, err := uuid.Parse(context.Param("id"))
+	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	logs, err := (*h.command)(id, qualifier, lineCount)
+	logs, err := (*h.command)(ctx.Request.Context(), id, qualifier, lineCount)
 	if err != nil {
 		panic(err)
 	}
 
-	context.JSON(http.StatusOK, logs)
+	ctx.JSON(http.StatusOK, logs)
 }

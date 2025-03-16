@@ -10,11 +10,11 @@ type getHandler struct {
 	command *settings.GetCommand
 }
 
-func (h getHandler) handle(context *gin.Context) {
-	data, err := (*h.command)()
+func (h getHandler) handle(ctx *gin.Context) {
+	data, err := (*h.command)(ctx.Request.Context())
 	if err != nil {
 		panic(err)
 	}
 
-	context.JSON(http.StatusOK, toDto(data))
+	ctx.JSON(http.StatusOK, toDto(data))
 }

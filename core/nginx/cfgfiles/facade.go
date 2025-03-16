@@ -1,6 +1,7 @@
 package cfgfiles
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/access_list"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
@@ -44,8 +45,8 @@ func newFacade(
 	}
 }
 
-func (f *Facade) ReplaceConfigurationFiles() error {
-	hosts, err := f.getHostsCommand()
+func (f *Facade) ReplaceConfigurationFiles(ctx context.Context) error {
+	hosts, err := f.getHostsCommand(ctx)
 	if err != nil {
 		return err
 	}
@@ -68,7 +69,7 @@ func (f *Facade) ReplaceConfigurationFiles() error {
 
 	var configFiles []output
 	for _, provider := range f.providers {
-		files, err := provider.provide(normalizedPath, hosts)
+		files, err := provider.provide(ctx, normalizedPath, hosts)
 		if err != nil {
 			return err
 		}

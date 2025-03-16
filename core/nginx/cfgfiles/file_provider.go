@@ -1,11 +1,12 @@
 package cfgfiles
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
 type fileProvider interface {
-	provide(basePath string, hosts []*host.Host) ([]output, error)
+	provide(ctx context.Context, basePath string, hosts []*host.Host) ([]output, error)
 }
 
 type output struct {

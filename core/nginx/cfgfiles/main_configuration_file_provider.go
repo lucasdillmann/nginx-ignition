@@ -1,6 +1,7 @@
 package cfgfiles
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"fmt"
@@ -15,8 +16,8 @@ func newMainConfigurationFileProvider(settingsRepository settings.Repository) *m
 	return &mainConfigurationFileProvider{settingsRepository: settingsRepository}
 }
 
-func (p *mainConfigurationFileProvider) provide(basePath string, hosts []*host.Host) ([]output, error) {
-	cfg, err := p.settingsRepository.Get()
+func (p *mainConfigurationFileProvider) provide(ctx context.Context, basePath string, hosts []*host.Host) ([]output, error) {
+	cfg, err := p.settingsRepository.Get(ctx)
 	if err != nil {
 		return nil, err
 	}

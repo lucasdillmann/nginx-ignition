@@ -1,6 +1,7 @@
 package cfgfiles
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
@@ -25,11 +26,11 @@ func newHostConfigurationFileProvider(
 	}
 }
 
-func (p *hostConfigurationFileProvider) provide(basePath string, hosts []*host.Host) ([]output, error) {
+func (p *hostConfigurationFileProvider) provide(ctx context.Context, basePath string, hosts []*host.Host) ([]output, error) {
 	var outputs []output
 	for _, h := range hosts {
 		if h.Enabled {
-			output, err := p.buildHost(basePath, h)
+			output, err := p.buildHost(ctx, basePath, h)
 			if err != nil {
 				return nil, err
 			}
@@ -41,11 +42,11 @@ func (p *hostConfigurationFileProvider) provide(basePath string, hosts []*host.H
 	return outputs, nil
 }
 
-func (p *hostConfigurationFileProvider) buildHost(basePath string, h *host.Host) (*output, error) {
+func (p *hostConfigurationFileProvider) buildHost(ctx context.Context, basePath string, h *host.Host) (*output, error) {
 	var routes []string
 	for _, r := range h.Routes {
 		if r.Enabled {
-			route, err := p.buildRoute(h, r, basePath)
+			route, err := p.buildRoute(ctx, h, r, basePath)
 			if err != nil {
 				return nil, err
 			}
@@ -71,7 +72,7 @@ func (p *hostConfigurationFileProvider) buildHost(basePath string, h *host.Host)
 
 	bindings := h.Bindings
 	if h.UseGlobalBindings {
-		cfg, err := p.settingsRepository.Get()
+		cfg, err := p.settingsRepository.Get(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -81,7 +82,7 @@ func (p *hostConfigurationFileProvider) buildHost(basePath string, h *host.Host)
 
 	var contents []string
 	for _, b := range bindings {
-		binding, err := p.buildBinding(basePath, h, b, routes, *serverNames, httpsRedirect, http2)
+		binding, err := p.buildBinding(ctx, basePath, h, b, routes, *serverNames, httpsRedirect, http2)
 		if err != nil {
 			return nil, err
 		}
@@ -116,6 +117,7 @@ func (p *hostConfigurationFileProvider) buildServerNames(h *host.Host) (*string,
 }
 
 func (p *hostConfigurationFileProvider) buildBinding(
+	ctx context.Context,
 	basePath string,
 	h *host.Host,
 	b *host.Binding,
@@ -150,7 +152,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		conditionalHttpsRedirect = httpsRedirect
 	}
 
-	cfg, err := p.settingsRepository.Get()
+	cfg, err := p.settingsRepository.Get(ctx)
 	if err != nil {
 		return "", err
 	}
@@ -192,7 +194,12 @@ func (p *hostConfigurationFileProvider) buildBindingAdditionalParams(h *host.Hos
 	return ""
 }
 
-func (p *hostConfigurationFileProvider) buildRoute(h *host.Host, r *host.Route, basePath string) (string, error) {
+func (p *hostConfigurationFileProvider) buildRoute(
+	ctx context.Context,
+	h *host.Host,
+	r *host.Route,
+	basePath string,
+) (string, error) {
 	switch r.Type {
 	case host.StaticResponseRouteType:
 		return p.buildStaticResponseRoute(r, h.FeatureSet, basePath), nil
@@ -201,7 +208,7 @@ func (p *hostConfigurationFileProvider) buildRoute(h *host.Host, r *host.Route, 
 	case host.RedirectRouteType:
 		return p.buildRedirectRoute(r, h.FeatureSet, basePath), nil
 	case host.IntegrationRouteType:
-		return p.buildIntegrationRoute(r, h.FeatureSet, basePath)
+		return p.buildIntegrationRoute(ctx, r, h.FeatureSet, basePath)
 	case host.SourceCodeRouteType:
 		return p.buildSourceCodeRoute(h, r, basePath), nil
 	default:
@@ -260,11 +267,12 @@ func (p *hostConfigurationFileProvider) buildProxyRoute(
 }
 
 func (p *hostConfigurationFileProvider) buildIntegrationRoute(
+	ctx context.Context,
 	r *host.Route,
 	features host.FeatureSet,
 	basePath string,
 ) (string, error) {
-	proxyUrl, err := p.integrationOptionCommand(r.Integration.IntegrationID, r.Integration.OptionID)
+	proxyUrl, err := p.integrationOptionCommand(ctx, r.Integration.IntegrationID, r.Integration.OptionID)
 	if err != nil {
 		return "", err
 	}

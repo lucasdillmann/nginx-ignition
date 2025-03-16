@@ -24,24 +24,24 @@ type handler struct {
 	basePath *string
 }
 
-func (h handler) handle(context *gin.Context) {
-	path := context.Request.URL.Path
+func (h handler) handle(ctx *gin.Context) {
+	path := ctx.Request.URL.Path
 	if h.basePath == nil || strings.HasPrefix(path, "/api/") {
-		context.JSON(http.StatusNotFound, gin.H{"message": "Not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"message": "Not found"})
 		return
 	}
 
 	sanitizedPath, err := sanitizePath(path)
 	if err != nil {
 		log.Warnf("Request rejected. Possible path traversal attempt: %s", path)
-		context.Status(http.StatusBadRequest)
+		ctx.Status(http.StatusBadRequest)
 		return
 	}
 
 	fileContents, fileType, err := h.loadFile(*sanitizedPath)
 	if err != nil {
 		log.Warnf("Error loading file %s: %s", *sanitizedPath, err)
-		context.Status(http.StatusInternalServerError)
+		ctx.Status(http.StatusInternalServerError)
 		return
 	}
 
@@ -49,17 +49,17 @@ func (h handler) handle(context *gin.Context) {
 	if err != nil {
 		log.Warnf("Unable to generate ETag for file %s: %s", *sanitizedPath, err)
 	} else {
-		ifNoneMatchHeader := context.GetHeader("if-none-match")
+		ifNoneMatchHeader := ctx.GetHeader("if-none-match")
 		if ifNoneMatchHeader == etag {
-			context.Status(http.StatusNotModified)
+			ctx.Status(http.StatusNotModified)
 			return
 		}
 
-		context.Header("Cache-Control", "max-age=604800, must-revalidate")
-		context.Header("ETag", etag)
+		ctx.Header("Cache-Control", "max-age=604800, must-revalidate")
+		ctx.Header("ETag", etag)
 	}
 
-	context.Data(http.StatusOK, *fileType, fileContents)
+	ctx.Data(http.StatusOK, *fileType, fileContents)
 }
 
 func sanitizePath(path string) (*string, error) {

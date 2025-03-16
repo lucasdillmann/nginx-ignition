@@ -1,6 +1,7 @@
 package nginx
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/broadcast"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
@@ -41,13 +42,13 @@ func newService(
 	}, nil
 }
 
-func (s *service) reload(failIfNotRunning bool) error {
+func (s *service) reload(ctx context.Context, failIfNotRunning bool) error {
 	if failIfNotRunning && s.semaphore.currentState() != runningState {
 		return core_error.New("nginx is not running", false)
 	}
 
 	return s.semaphore.changeState(runningState, func() error {
-		if err := s.configFilesManager.ReplaceConfigurationFiles(); err != nil {
+		if err := s.configFilesManager.ReplaceConfigurationFiles(ctx); err != nil {
 			return err
 		}
 
@@ -55,7 +56,7 @@ func (s *service) reload(failIfNotRunning bool) error {
 	})
 }
 
-func (s *service) start() error {
+func (s *service) start(ctx context.Context) error {
 	if s.semaphore.currentState() == runningState {
 		return nil
 	}
@@ -67,11 +68,11 @@ func (s *service) start() error {
 
 	if pid != 0 {
 		log.Warnf("nginx seems to be already running with PID %d, trying to reload it instead", pid)
-		return s.reload(false)
+		return s.reload(ctx, false)
 	}
 
 	return s.semaphore.changeState(runningState, func() error {
-		if err := s.configFilesManager.ReplaceConfigurationFiles(); err != nil {
+		if err := s.configFilesManager.ReplaceConfigurationFiles(ctx); err != nil {
 			return err
 		}
 
@@ -79,7 +80,7 @@ func (s *service) start() error {
 	})
 }
 
-func (s *service) stop(_ *int) error {
+func (s *service) stop(_ context.Context, _ *int) error {
 	if s.semaphore.currentState() == stoppedState {
 		return nil
 	}
@@ -89,25 +90,28 @@ func (s *service) stop(_ *int) error {
 	})
 }
 
-func (s *service) isRunning() bool {
+func (s *service) isRunning(_ context.Context) bool {
 	return s.semaphore.currentState() == runningState
 }
 
-func (s *service) getHostLogs(hostId uuid.UUID, qualifier string, lines int) ([]string, error) {
-	return s.logReader.read("host-"+hostId.String()+"."+qualifier+".log", lines)
+func (s *service) getHostLogs(ctx context.Context, hostId uuid.UUID, qualifier string, lines int) ([]string, error) {
+	return s.logReader.read(ctx, "host-"+hostId.String()+"."+qualifier+".log", lines)
 }
 
-func (s *service) getMainLogs(lines int) ([]string, error) {
-	return s.logReader.read("main.log", lines)
+func (s *service) getMainLogs(ctx context.Context, lines int) ([]string, error) {
+	return s.logReader.read(ctx, "main.log", lines)
 }
 
-func (s *service) rotateLogs() error {
-	return s.logRotator.rotate()
+func (s *service) rotateLogs(ctx context.Context) error {
+	return s.logRotator.rotate(ctx)
 }
 
 func (s *service) attachListeners() {
 	channel := broadcast.Listen("core:nginx:reload")
 	for range channel {
-		_ = s.reload(false)
+		err := s.reload(<-channel, false)
+		if err != nil {
+			log.Warnf("Failed to reload nginx: %v", err)
+		}
 	}
 }

@@ -10,22 +10,22 @@ type getConfigurationHandler struct {
 	command *integration.GetByIdCommand
 }
 
-func (h getConfigurationHandler) handle(context *gin.Context) {
-	id := context.Param("id")
+func (h getConfigurationHandler) handle(ctx *gin.Context) {
+	id := ctx.Param("id")
 	if id == "" {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	data, err := (*h.command)(id)
+	data, err := (*h.command)(ctx.Request.Context(), id)
 	if err != nil {
 		panic(err)
 	}
 
 	if data == nil {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	context.JSON(http.StatusOK, toConfigurationDto(data))
+	ctx.JSON(http.StatusOK, toConfigurationDto(data))
 }

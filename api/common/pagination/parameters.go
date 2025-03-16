@@ -13,10 +13,10 @@ var (
 	pageSizeRange = value_range.New(1, 1000)
 )
 
-func ExtractPaginationParameters(context *gin.Context) (int, int, *string, error) {
-	pageSize := context.DefaultQuery("pageSize", "25")
-	pageNumber := context.DefaultQuery("pageNumber", "0")
-	searchTerms := context.Query("searchTerms")
+func ExtractPaginationParameters(ctx *gin.Context) (int, int, *string, error) {
+	pageSize := ctx.DefaultQuery("pageSize", "25")
+	pageNumber := ctx.DefaultQuery("pageNumber", "0")
+	searchTerms := ctx.Query("searchTerms")
 
 	pageSizeInt, err := strconv.Atoi(pageSize)
 	if err != nil {

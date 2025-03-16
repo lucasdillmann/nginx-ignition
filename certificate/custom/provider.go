@@ -1,6 +1,7 @@
 package custom
 
 import (
+	"context"
 	"crypto/x509"
 	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
@@ -39,7 +40,7 @@ func (p *Provider) Priority() int {
 	return 2
 }
 
-func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certificate, error) {
+func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (*certificate.Certificate, error) {
 	if err := commons.Validate(request, validationRules{p.DynamicFields()}); err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certif
 	}, nil
 }
 
-func (p *Provider) Renew(cert *certificate.Certificate) (*certificate.Certificate, error) {
+func (p *Provider) Renew(_ context.Context, cert *certificate.Certificate) (*certificate.Certificate, error) {
 	return cert, nil
 }
 

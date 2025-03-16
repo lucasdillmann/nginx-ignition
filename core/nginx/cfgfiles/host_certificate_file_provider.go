@@ -1,6 +1,7 @@
 package cfgfiles
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -23,13 +24,13 @@ func newHostCertificateFileProvider(certificateRepository certificate.Repository
 	}
 }
 
-func (p *hostCertificateFileProvider) provide(_ string, hosts []*host.Host) ([]output, error) {
+func (p *hostCertificateFileProvider) provide(ctx context.Context, _ string, hosts []*host.Host) ([]output, error) {
 	var bindings []*host.Binding
 	for _, h := range hosts {
 		bindings = append(bindings, h.Bindings...)
 	}
 
-	cgf, err := p.settingsRepository.Get()
+	cgf, err := p.settingsRepository.Get(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +46,7 @@ func (p *hostCertificateFileProvider) provide(_ string, hosts []*host.Host) ([]o
 			if !uniqueCertIds[certId] {
 				uniqueCertIds[certId] = true
 
-				output, err := p.buildCertificateFile(*binding.CertificateID)
+				output, err := p.buildCertificateFile(ctx, *binding.CertificateID)
 				if err != nil {
 					return nil, err
 				}
@@ -58,8 +59,8 @@ func (p *hostCertificateFileProvider) provide(_ string, hosts []*host.Host) ([]o
 	return outputs, nil
 }
 
-func (p *hostCertificateFileProvider) buildCertificateFile(certificateId uuid.UUID) (*output, error) {
-	cert, err := p.certificateRepository.FindByID(certificateId)
+func (p *hostCertificateFileProvider) buildCertificateFile(ctx context.Context, certificateId uuid.UUID) (*output, error) {
+	cert, err := p.certificateRepository.FindByID(ctx, certificateId)
 	if err != nil {
 		return nil, err
 	}

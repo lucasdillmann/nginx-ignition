@@ -1,6 +1,7 @@
 package certificate
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
@@ -14,20 +15,21 @@ type autoRenewTask struct {
 }
 
 func registerScheduledTask(
+	ctx context.Context,
 	service *service,
 	settingsRepository settings.Repository,
 	scheduler *scheduler.Scheduler,
 ) error {
 	task := autoRenewTask{service, &settingsRepository}
-	return scheduler.Register(&task)
+	return scheduler.Register(ctx, &task)
 }
 
-func (t autoRenewTask) Run() error {
-	return t.service.renewAllDue()
+func (t autoRenewTask) Run(ctx context.Context) error {
+	return t.service.renewAllDue(ctx)
 }
 
-func (t autoRenewTask) Schedule() (*scheduler.Schedule, error) {
-	cfg, err := (*t.settingsRepository).Get()
+func (t autoRenewTask) Schedule(ctx context.Context) (*scheduler.Schedule, error) {
+	cfg, err := (*t.settingsRepository).Get(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +54,8 @@ func (t autoRenewTask) Schedule() (*scheduler.Schedule, error) {
 	}, nil
 }
 
-func (t autoRenewTask) OnScheduleStarted() {
-	schedule, err := t.Schedule()
+func (t autoRenewTask) OnScheduleStarted(ctx context.Context) {
+	schedule, err := t.Schedule(ctx)
 	if err != nil {
 		return
 	}

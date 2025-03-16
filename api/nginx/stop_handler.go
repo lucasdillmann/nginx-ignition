@@ -11,12 +11,12 @@ type stopHandler struct {
 	command *nginx.StopCommand
 }
 
-func (h stopHandler) handle(context *gin.Context) {
-	if err := (*h.command)(nil); err != nil {
+func (h stopHandler) handle(ctx *gin.Context) {
+	if err := (*h.command)(ctx.Request.Context(), nil); err != nil {
 		log.Warnf("Failed to stop Nginx: %s", err.Error())
-		context.JSON(http.StatusFailedDependency, gin.H{"message": err.Error()})
+		ctx.JSON(http.StatusFailedDependency, gin.H{"message": err.Error()})
 		return
 	}
 
-	context.Status(http.StatusNoContent)
+	ctx.Status(http.StatusNoContent)
 }

@@ -10,12 +10,12 @@ type onboardingStatusHandler struct {
 	command *user.OnboardingCompletedCommand
 }
 
-func (h onboardingStatusHandler) handle(context *gin.Context) {
-	finished, err := (*h.command)()
+func (h onboardingStatusHandler) handle(ctx *gin.Context) {
+	finished, err := (*h.command)(ctx.Request.Context())
 	if err != nil {
 		panic(err)
 	}
 
 	payload := &userOnboardingStatusResponseDto{finished}
-	context.JSON(http.StatusOK, payload)
+	ctx.JSON(http.StatusOK, payload)
 }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 	"dillmann.com.br/nginx-ignition/core/common/log"
@@ -21,7 +22,7 @@ func registerStartup(
 	lifecycle.RegisterStartup(startup{configuration, state})
 }
 
-func (s startup) Run() error {
+func (s startup) Run(_ context.Context) error {
 	port, err := s.configuration.Get("nginx-ignition.server.port")
 	if err != nil {
 		return err

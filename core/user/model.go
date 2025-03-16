@@ -10,3 +10,20 @@ type SaveRequest struct {
 	Password *string
 	Role     Role
 }
+
+type Role string
+
+const (
+	RegularRole = Role("REGULAR")
+	AdminRole   = Role("ADMIN")
+)
+
+type User struct {
+	ID           uuid.UUID
+	Enabled      bool
+	Name         string
+	Username     string
+	PasswordHash string
+	PasswordSalt string
+	Role         Role
+}

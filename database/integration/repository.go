@@ -11,23 +11,21 @@ import (
 
 type repository struct {
 	database *database.Database
-	ctx      context.Context
 }
 
 func New(database *database.Database) integration.Repository {
 	return &repository{
 		database: database,
-		ctx:      context.Background(),
 	}
 }
 
-func (r *repository) FindByID(id string) (*integration.Integration, error) {
+func (r *repository) FindByID(ctx context.Context, id string) (*integration.Integration, error) {
 	var model integrationModel
 
 	err := r.database.Select().
 		Model(&model).
 		Where(constants.ByIdFilter, id).
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -40,7 +38,7 @@ func (r *repository) FindByID(id string) (*integration.Integration, error) {
 	return toDomain(&model)
 }
 
-func (r *repository) Save(values *integration.Integration) error {
+func (r *repository) Save(ctx context.Context, values *integration.Integration) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -53,15 +51,15 @@ func (r *repository) Save(values *integration.Integration) error {
 		return err
 	}
 
-	exists, err := transaction.NewSelect().Model((*integrationModel)(nil)).Where(constants.ByIdFilter, values.ID).Exists(r.ctx)
+	exists, err := transaction.NewSelect().Model((*integrationModel)(nil)).Where(constants.ByIdFilter, values.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, values.ID).Exec(r.ctx)
+		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, values.ID).Exec(ctx)
 	} else {
-		_, err = transaction.NewInsert().Model(model).Exec(r.ctx)
+		_, err = transaction.NewInsert().Model(model).Exec(ctx)
 	}
 
 	if err != nil {

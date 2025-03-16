@@ -55,11 +55,12 @@ func (a *Adapter) ConfigurationFields() []*dynamic_fields.DynamicField {
 }
 
 func (a *Adapter) GetAvailableOptions(
+	ctx context.Context,
 	parameters map[string]any,
 	_, _ int,
 	searchTerms *string,
 ) (*pagination.Page[*integration.AdapterOption], error) {
-	options, err := a.resolveAvailableOptions(parameters, searchTerms)
+	options, err := a.resolveAvailableOptions(ctx, parameters, searchTerms)
 	if err != nil {
 		return nil, err
 	}
@@ -74,10 +75,11 @@ func (a *Adapter) GetAvailableOptions(
 }
 
 func (a *Adapter) GetAvailableOptionById(
+	ctx context.Context,
 	parameters map[string]any,
 	id string,
 ) (*integration.AdapterOption, error) {
-	option, err := a.resolveAvailableOptionById(parameters, id)
+	option, err := a.resolveAvailableOptionById(ctx, parameters, id)
 	if err != nil || option == nil {
 		return nil, err
 	}
@@ -86,10 +88,11 @@ func (a *Adapter) GetAvailableOptionById(
 }
 
 func (a *Adapter) GetOptionProxyUrl(
+	ctx context.Context,
 	parameters map[string]any,
 	id string,
 ) (*string, error) {
-	option, err := a.resolveAvailableOptionById(parameters, id)
+	option, err := a.resolveAvailableOptionById(ctx, parameters, id)
 	if err != nil || option == nil {
 		return nil, err
 	}
@@ -126,10 +129,11 @@ func (a *Adapter) GetOptionProxyUrl(
 }
 
 func (a *Adapter) resolveAvailableOptionById(
+	ctx context.Context,
 	parameters map[string]any,
 	id string,
 ) (*containerMetadata, error) {
-	options, err := a.resolveAvailableOptions(parameters, nil)
+	options, err := a.resolveAvailableOptions(ctx, parameters, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -152,6 +156,7 @@ func (a *Adapter) resolveAvailableOptionById(
 }
 
 func (a *Adapter) resolveAvailableOptions(
+	ctx context.Context,
 	parameters map[string]any,
 	searchTerms *string,
 ) ([]*containerMetadata, error) {
@@ -161,7 +166,7 @@ func (a *Adapter) resolveAvailableOptions(
 	}
 
 	containers, err := dockerClient.ContainerList(
-		context.Background(),
+		ctx,
 		container.ListOptions{
 			All:     true,
 			Filters: filters.Args{},

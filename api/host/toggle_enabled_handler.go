@@ -12,29 +12,29 @@ type toggleEnabledHandler struct {
 	saveCommand *host.SaveCommand
 }
 
-func (h toggleEnabledHandler) handle(context *gin.Context) {
-	id, err := uuid.Parse(context.Param("id"))
+func (h toggleEnabledHandler) handle(ctx *gin.Context) {
+	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	data, err := (*h.getCommand)(id)
+	data, err := (*h.getCommand)(ctx.Request.Context(), id)
 	if err != nil {
 		panic(err)
 	}
 
 	if data == nil {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
 	data.Enabled = !data.Enabled
-	err = (*h.saveCommand)(data)
+	err = (*h.saveCommand)(ctx.Request.Context(), data)
 
 	if err != nil {
 		panic(err)
 	}
 
-	context.Status(http.StatusNoContent)
+	ctx.Status(http.StatusNoContent)
 }

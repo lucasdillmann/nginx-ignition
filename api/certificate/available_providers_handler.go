@@ -10,11 +10,11 @@ type availableProvidersHandler struct {
 	command *certificate.AvailableProvidersCommand
 }
 
-func (h availableProvidersHandler) handle(context *gin.Context) {
-	availableProviders, err := (*h.command)()
+func (h availableProvidersHandler) handle(ctx *gin.Context) {
+	availableProviders, err := (*h.command)(ctx.Request.Context())
 	if err != nil {
 		panic(err)
 	}
 
-	context.JSON(http.StatusOK, toAvailableProviderResponse(availableProviders))
+	ctx.JSON(http.StatusOK, toAvailableProviderResponse(availableProviders))
 }

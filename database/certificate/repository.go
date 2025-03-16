@@ -14,23 +14,21 @@ import (
 
 type repository struct {
 	database *database.Database
-	ctx      context.Context
 }
 
 func New(database *database.Database) certificate.Repository {
 	return repository{
 		database: database,
-		ctx:      context.Background(),
 	}
 }
 
-func (r repository) FindByID(id uuid.UUID) (*certificate.Certificate, error) {
+func (r repository) FindByID(ctx context.Context, id uuid.UUID) (*certificate.Certificate, error) {
 	var model certificateModel
 
 	err := r.database.Select().
 		Model(&model).
 		Where(constants.ByIdFilter, id).
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -47,11 +45,11 @@ func (r repository) FindByID(id uuid.UUID) (*certificate.Certificate, error) {
 	}
 }
 
-func (r repository) ExistsByID(id uuid.UUID) (bool, error) {
+func (r repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	count, err := r.database.Select().
 		Model((*certificateModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Count(r.ctx)
+		Count(ctx)
 
 	if err != nil {
 		return false, err
@@ -60,7 +58,7 @@ func (r repository) ExistsByID(id uuid.UUID) (bool, error) {
 	return count > 0, nil
 }
 
-func (r repository) DeleteByID(id uuid.UUID) error {
+func (r repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -71,7 +69,7 @@ func (r repository) DeleteByID(id uuid.UUID) error {
 	_, err = transaction.NewDelete().
 		Model((*certificateModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Exec(r.ctx)
+		Exec(ctx)
 
 	if err != nil {
 		return err
@@ -80,7 +78,7 @@ func (r repository) DeleteByID(id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r repository) Save(certificate *certificate.Certificate) error {
+func (r repository) Save(ctx context.Context, certificate *certificate.Certificate) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -93,15 +91,15 @@ func (r repository) Save(certificate *certificate.Certificate) error {
 		return err
 	}
 
-	exists, err := transaction.NewSelect().Model((*certificateModel)(nil)).Where(constants.ByIdFilter, certificate.ID).Exists(r.ctx)
+	exists, err := transaction.NewSelect().Model((*certificateModel)(nil)).Where(constants.ByIdFilter, certificate.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(r.ctx)
+		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
 	} else {
-		_, err = transaction.NewInsert().Model(model).Exec(r.ctx)
+		_, err = transaction.NewInsert().Model(model).Exec(ctx)
 	}
 
 	if err != nil {
@@ -111,7 +109,11 @@ func (r repository) Save(certificate *certificate.Certificate) error {
 	return transaction.Commit()
 }
 
-func (r repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*certificate.Certificate], error) {
+func (r repository) FindPage(
+	ctx context.Context,
+	pageSize, pageNumber int,
+	searchTerms *string,
+) (*pagination.Page[*certificate.Certificate], error) {
 	var certificates []certificateModel
 
 	query := r.database.Select().Model(&certificates)
@@ -119,7 +121,7 @@ func (r repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pa
 		query = query.Where("domain_names::varchar ILIKE ?", "%"+*searchTerms+"%")
 	}
 
-	count, err := query.Count(r.ctx)
+	count, err := query.Count(ctx)
 
 	if err != nil {
 		return nil, err
@@ -134,7 +136,7 @@ func (r repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pa
 		Limit(pageSize).
 		Offset(pageSize * pageNumber).
 		Order("domain_names").
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if err != nil {
 		return nil, err
@@ -152,13 +154,13 @@ func (r repository) FindPage(pageSize, pageNumber int, searchTerms *string) (*pa
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r repository) FindAllDueToRenew() ([]*certificate.Certificate, error) {
+func (r repository) FindAllDueToRenew(ctx context.Context) ([]*certificate.Certificate, error) {
 	var certificates []certificateModel
 
 	err := r.database.Select().
 		Model(&certificates).
 		Where("renew_after IS NOT NULL AND renew_after <= ?", time.Now()).
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if err != nil {
 		return nil, err

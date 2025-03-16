@@ -13,9 +13,9 @@ type loginHandler struct {
 	authorizer *authorization.RBAC
 }
 
-func (h loginHandler) handle(context *gin.Context) {
+func (h loginHandler) handle(ctx *gin.Context) {
 	requestPayload := &userLoginRequestDto{}
-	if err := context.BindJSON(&requestPayload); err != nil {
+	if err := ctx.BindJSON(&requestPayload); err != nil {
 		panic(err)
 	}
 
@@ -23,7 +23,7 @@ func (h loginHandler) handle(context *gin.Context) {
 		panic(err)
 	}
 
-	usr, err := (*h.command)(*requestPayload.Username, *requestPayload.Password)
+	usr, err := (*h.command)(ctx.Request.Context(), *requestPayload.Username, *requestPayload.Password)
 	if err != nil {
 		panic(err)
 	}
@@ -34,5 +34,5 @@ func (h loginHandler) handle(context *gin.Context) {
 	}
 
 	responsePayload := &userLoginResponseDto{*token}
-	context.JSON(http.StatusOK, responsePayload)
+	ctx.JSON(http.StatusOK, responsePayload)
 }

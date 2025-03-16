@@ -1,12 +1,15 @@
 package certificate
 
-import "dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+import (
+	"context"
+	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+)
 
 type Provider interface {
 	ID() string
 	Name() string
 	DynamicFields() []*dynamic_fields.DynamicField
 	Priority() int
-	Issue(request *IssueRequest) (*Certificate, error)
-	Renew(certificate *Certificate) (*Certificate, error)
+	Issue(ctx context.Context, request *IssueRequest) (*Certificate, error)
+	Renew(ctx context.Context, certificate *Certificate) (*Certificate, error)
 }

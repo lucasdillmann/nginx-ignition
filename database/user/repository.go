@@ -13,20 +13,18 @@ import (
 
 type repository struct {
 	database *database.Database
-	ctx      context.Context
 }
 
 func New(database *database.Database) user.Repository {
 	return &repository{
 		database: database,
-		ctx:      context.Background(),
 	}
 }
 
-func (r *repository) FindByID(id uuid.UUID) (*user.User, error) {
+func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*user.User, error) {
 	var model userModel
 
-	err := r.database.Select().Model(&model).Where(constants.ByIdFilter, id).Scan(r.ctx)
+	err := r.database.Select().Model(&model).Where(constants.ByIdFilter, id).Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -39,7 +37,7 @@ func (r *repository) FindByID(id uuid.UUID) (*user.User, error) {
 	return toDomain(&model), nil
 }
 
-func (r *repository) DeleteByID(id uuid.UUID) error {
+func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -50,7 +48,7 @@ func (r *repository) DeleteByID(id uuid.UUID) error {
 	_, err = transaction.NewDelete().
 		Model((*userModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Exec(r.ctx)
+		Exec(ctx)
 
 	if err != nil {
 		return err
@@ -59,13 +57,13 @@ func (r *repository) DeleteByID(id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r *repository) FindByUsername(username string) (*user.User, error) {
+func (r *repository) FindByUsername(ctx context.Context, username string) (*user.User, error) {
 	var model userModel
 
 	err := r.database.Select().
 		Model(&model).
 		Where("username = ?", username).
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -78,7 +76,11 @@ func (r *repository) FindByUsername(username string) (*user.User, error) {
 	return toDomain(&model), nil
 }
 
-func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*pagination.Page[*user.User], error) {
+func (r *repository) FindPage(
+	ctx context.Context,
+	pageNumber, pageSize int,
+	searchTerms *string,
+) (*pagination.Page[*user.User], error) {
 	var models []userModel
 
 	query := r.database.Select().Model(&models)
@@ -86,7 +88,7 @@ func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*p
 		query = query.Where("name ILIKE ? OR username ILIKE ?", "%"+*searchTerms+"%", "%"+*searchTerms+"%")
 	}
 
-	count, err := query.Count(r.ctx)
+	count, err := query.Count(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +102,7 @@ func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*p
 		Limit(pageSize).
 		Offset(pageSize * pageNumber).
 		Order("name").
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if err != nil {
 		return nil, err
@@ -114,13 +116,13 @@ func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*p
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) IsEnabledByID(id uuid.UUID) (bool, error) {
+func (r *repository) IsEnabledByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	var model userModel
 
 	err := r.database.Select().
 		Model(&model).
 		Where(constants.ByIdFilter, id).
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return false, nil
@@ -133,8 +135,8 @@ func (r *repository) IsEnabledByID(id uuid.UUID) (bool, error) {
 	return model.Enabled, nil
 }
 
-func (r *repository) Count() (int, error) {
-	count, err := r.database.Select().Model((*userModel)(nil)).Count(r.ctx)
+func (r *repository) Count(ctx context.Context) (int, error) {
+	count, err := r.database.Select().Model((*userModel)(nil)).Count(ctx)
 	if err != nil {
 		return 0, err
 	}
@@ -142,7 +144,7 @@ func (r *repository) Count() (int, error) {
 	return count, nil
 }
 
-func (r *repository) Save(user *user.User) error {
+func (r *repository) Save(ctx context.Context, user *user.User) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -150,15 +152,15 @@ func (r *repository) Save(user *user.User) error {
 
 	defer transaction.Rollback()
 
-	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Where(constants.ByIdFilter, user.ID).Exists(r.ctx)
+	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Where(constants.ByIdFilter, user.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(toModel(user)).Where(constants.ByIdFilter, user.ID).Exec(r.ctx)
+		_, err = transaction.NewUpdate().Model(toModel(user)).Where(constants.ByIdFilter, user.ID).Exec(ctx)
 	} else {
-		_, err = transaction.NewInsert().Model(toModel(user)).Exec(r.ctx)
+		_, err = transaction.NewInsert().Model(toModel(user)).Exec(ctx)
 	}
 
 	if err != nil {

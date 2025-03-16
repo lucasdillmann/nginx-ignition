@@ -10,8 +10,8 @@ type logoutHandler struct {
 	authorizer *authorization.RBAC
 }
 
-func (h logoutHandler) handle(context *gin.Context) {
-	subject := authorization.CurrentSubject(context)
+func (h logoutHandler) handle(ctx *gin.Context) {
+	subject := authorization.CurrentSubject(ctx)
 	h.authorizer.Jwt().RevokeToken(subject.TokenID)
-	context.Status(http.StatusNoContent)
+	ctx.Status(http.StatusNoContent)
 }

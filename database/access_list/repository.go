@@ -14,17 +14,15 @@ import (
 
 type repository struct {
 	database *database.Database
-	ctx      context.Context
 }
 
 func New(database *database.Database) access_list.Repository {
 	return &repository{
 		database: database,
-		ctx:      context.Background(),
 	}
 }
 
-func (r *repository) FindByID(id uuid.UUID) (*access_list.AccessList, error) {
+func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*access_list.AccessList, error) {
 	var model accessListModel
 
 	err := r.database.Select().
@@ -32,7 +30,7 @@ func (r *repository) FindByID(id uuid.UUID) (*access_list.AccessList, error) {
 		Relation("Credentials").
 		Relation("EntrySets").
 		Where(constants.ByIdFilter, id).
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -45,7 +43,7 @@ func (r *repository) FindByID(id uuid.UUID) (*access_list.AccessList, error) {
 	return toDomain(&model), nil
 }
 
-func (r *repository) DeleteByID(id uuid.UUID) error {
+func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -56,7 +54,7 @@ func (r *repository) DeleteByID(id uuid.UUID) error {
 	_, err = transaction.NewDelete().
 		Model((*accessListModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Exec(r.ctx)
+		Exec(ctx)
 
 	if err != nil {
 		return err
@@ -65,7 +63,7 @@ func (r *repository) DeleteByID(id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r *repository) FindByName(name string) (*access_list.AccessList, error) {
+func (r *repository) FindByName(ctx context.Context, name string) (*access_list.AccessList, error) {
 	var model accessListModel
 
 	err := r.database.Select().
@@ -73,7 +71,7 @@ func (r *repository) FindByName(name string) (*access_list.AccessList, error) {
 		Relation("Credentials").
 		Relation("EntrySets").
 		Where("name = ?", name).
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -86,7 +84,11 @@ func (r *repository) FindByName(name string) (*access_list.AccessList, error) {
 	return toDomain(&model), nil
 }
 
-func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*pagination.Page[*access_list.AccessList], error) {
+func (r *repository) FindPage(
+	ctx context.Context,
+	pageNumber, pageSize int,
+	searchTerms *string,
+) (*pagination.Page[*access_list.AccessList], error) {
 	var models []accessListModel
 
 	query := r.database.Select().Model(&models)
@@ -94,7 +96,7 @@ func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*p
 		query = query.Where("name ILIKE ?", "%"+*searchTerms+"%")
 	}
 
-	count, err := query.Count(r.ctx)
+	count, err := query.Count(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +107,7 @@ func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*p
 		Limit(pageSize).
 		Offset(pageSize * pageNumber).
 		Order("name").
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if err != nil {
 		return nil, err
@@ -119,14 +121,14 @@ func (r *repository) FindPage(pageNumber, pageSize int, searchTerms *string) (*p
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAll() ([]*access_list.AccessList, error) {
+func (r *repository) FindAll(ctx context.Context) ([]*access_list.AccessList, error) {
 	var models []accessListModel
 
 	err := r.database.Select().
 		Model(&models).
 		Relation("Credentials").
 		Relation("EntrySets").
-		Scan(r.ctx)
+		Scan(ctx)
 
 	if err != nil {
 		return nil, err
@@ -140,7 +142,7 @@ func (r *repository) FindAll() ([]*access_list.AccessList, error) {
 	return result, nil
 }
 
-func (r *repository) Save(accessList *access_list.AccessList) error {
+func (r *repository) Save(ctx context.Context, accessList *access_list.AccessList) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -148,21 +150,21 @@ func (r *repository) Save(accessList *access_list.AccessList) error {
 
 	defer transaction.Rollback()
 
-	exists, err := transaction.NewSelect().Model((*accessListModel)(nil)).Where(constants.ByIdFilter, accessList.ID).Exists(r.ctx)
+	exists, err := transaction.NewSelect().Model((*accessListModel)(nil)).Where(constants.ByIdFilter, accessList.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		err = r.performUpdate(toModel(accessList), transaction)
+		err = r.performUpdate(ctx, toModel(accessList), transaction)
 	} else {
 		model := toModel(accessList)
-		_, err = transaction.NewInsert().Model(model).Exec(r.ctx)
+		_, err = transaction.NewInsert().Model(model).Exec(ctx)
 		if err != nil {
 			return err
 		}
 
-		err = r.saveLinkedModels(transaction, model)
+		err = r.saveLinkedModels(ctx, transaction, model)
 	}
 
 	if err != nil {
@@ -172,8 +174,8 @@ func (r *repository) Save(accessList *access_list.AccessList) error {
 	return transaction.Commit()
 }
 
-func (r *repository) performUpdate(model *accessListModel, transaction bun.Tx) error {
-	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(r.ctx)
+func (r *repository) performUpdate(ctx context.Context, model *accessListModel, transaction bun.Tx) error {
+	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -182,7 +184,7 @@ func (r *repository) performUpdate(model *accessListModel, transaction bun.Tx) e
 		NewDelete().
 		Table("access_list_credentials").
 		Where("access_list_id = ?", model.ID).
-		Exec(r.ctx)
+		Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -191,20 +193,20 @@ func (r *repository) performUpdate(model *accessListModel, transaction bun.Tx) e
 		NewDelete().
 		Table("access_list_entry_set").
 		Where("access_list_id = ?", model.ID).
-		Exec(r.ctx)
+		Exec(ctx)
 	if err != nil {
 		return err
 	}
 
-	return r.saveLinkedModels(transaction, model)
+	return r.saveLinkedModels(ctx, transaction, model)
 }
 
-func (r *repository) saveLinkedModels(transaction bun.Tx, model *accessListModel) error {
+func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, model *accessListModel) error {
 	for _, credentials := range model.Credentials {
 		credentials.ID = uuid.New()
 		credentials.AccessListID = model.ID
 
-		_, err := transaction.NewInsert().Model(credentials).Exec(r.ctx)
+		_, err := transaction.NewInsert().Model(credentials).Exec(ctx)
 		if err != nil {
 			return err
 		}
@@ -214,7 +216,7 @@ func (r *repository) saveLinkedModels(transaction bun.Tx, model *accessListModel
 		entrySet.ID = uuid.New()
 		entrySet.AccessListID = model.ID
 
-		_, err := transaction.NewInsert().Model(entrySet).Exec(r.ctx)
+		_, err := transaction.NewInsert().Model(entrySet).Exec(ctx)
 		if err != nil {
 			return err
 		}

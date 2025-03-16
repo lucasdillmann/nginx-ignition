@@ -12,17 +12,17 @@ type renewHandler struct {
 	command *certificate.RenewCommand
 }
 
-func (h renewHandler) handle(context *gin.Context) {
-	id, err := uuid.Parse(context.Param("id"))
+func (h renewHandler) handle(ctx *gin.Context) {
+	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	err = (*h.command)(id)
+	err = (*h.command)(ctx.Request.Context(), id)
 	if api_error.CanHandle(err) {
 		panic(err)
 	}
 
-	context.JSON(http.StatusOK, toRenewCertificateResponse(err))
+	ctx.JSON(http.StatusOK, toRenewCertificateResponse(err))
 }

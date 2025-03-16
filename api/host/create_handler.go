@@ -12,9 +12,9 @@ type createHandler struct {
 	command *host.SaveCommand
 }
 
-func (h createHandler) handle(context *gin.Context) {
+func (h createHandler) handle(ctx *gin.Context) {
 	payload := &hostRequestDto{}
-	if err := context.BindJSON(payload); err != nil {
+	if err := ctx.BindJSON(payload); err != nil {
 		panic(err)
 	}
 
@@ -25,9 +25,9 @@ func (h createHandler) handle(context *gin.Context) {
 	domainModel := toDomain(payload)
 	domainModel.ID = uuid.New()
 
-	if err := (*h.command)(domainModel); err != nil {
+	if err := (*h.command)(ctx.Request.Context(), domainModel); err != nil {
 		panic(err)
 	}
 
-	context.Status(http.StatusNoContent)
+	ctx.Status(http.StatusNoContent)
 }

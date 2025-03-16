@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 )
 
@@ -16,6 +17,6 @@ func (d shutdown) Priority() int {
 	return shutdownPriority
 }
 
-func (d shutdown) Run() {
+func (d shutdown) Run(_ context.Context) {
 	d.database.close()
 }

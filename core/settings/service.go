@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
@@ -23,18 +24,18 @@ func newService(
 	}
 }
 
-func (s *service) get() (*Settings, error) {
-	return (*s.repository).Get()
+func (s *service) get(ctx context.Context) (*Settings, error) {
+	return (*s.repository).Get(ctx)
 }
 
-func (s *service) save(settings *Settings) error {
-	if err := newValidator(s.validateBindingCommand).validate(settings); err != nil {
+func (s *service) save(ctx context.Context, settings *Settings) error {
+	if err := newValidator(s.validateBindingCommand).validate(ctx, settings); err != nil {
 		return err
 	}
 
-	if err := (*s.repository).Save(settings); err != nil {
+	if err := (*s.repository).Save(ctx, settings); err != nil {
 		return err
 	}
 
-	return (*s.scheduler).Reload()
+	return (*s.scheduler).Reload(ctx)
 }

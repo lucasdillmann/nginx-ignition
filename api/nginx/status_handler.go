@@ -10,7 +10,7 @@ type statusHandler struct {
 	command *nginx.GetStatusCommand
 }
 
-func (h statusHandler) handle(context *gin.Context) {
-	running := (*h.command)()
-	context.JSON(http.StatusOK, gin.H{"running": running})
+func (h statusHandler) handle(ctx *gin.Context) {
+	running := (*h.command)(ctx.Request.Context())
+	ctx.JSON(http.StatusOK, gin.H{"running": running})
 }

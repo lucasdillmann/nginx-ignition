@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"time"
@@ -16,7 +17,7 @@ type Scheduler struct {
 	started bool
 }
 
-func (s *Scheduler) Register(task Task) error {
+func (s *Scheduler) Register(ctx context.Context, task Task) error {
 	if s.stopped {
 		return schedulerStoppedError()
 	}
@@ -24,13 +25,13 @@ func (s *Scheduler) Register(task Task) error {
 	s.tickers[task] = time.NewTicker(placeholderDuration)
 
 	if s.started {
-		return s.startTask(task)
+		return s.startTask(ctx, task)
 	}
 
 	return nil
 }
 
-func (s *Scheduler) start() error {
+func (s *Scheduler) start(ctx context.Context) error {
 	if s.started {
 		return core_error.New("Scheduler already started", false)
 	}
@@ -42,7 +43,7 @@ func (s *Scheduler) start() error {
 	s.started = true
 
 	for task := range s.tickers {
-		if err := s.startTask(task); err != nil {
+		if err := s.startTask(ctx, task); err != nil {
 			return err
 		}
 	}
@@ -50,8 +51,8 @@ func (s *Scheduler) start() error {
 	return nil
 }
 
-func (s *Scheduler) startTask(task Task) error {
-	schedule, err := task.Schedule()
+func (s *Scheduler) startTask(ctx context.Context, task Task) error {
+	schedule, err := task.Schedule(ctx)
 	if err != nil {
 		return err
 	}
@@ -64,7 +65,7 @@ func (s *Scheduler) startTask(task Task) error {
 				return
 			}
 
-			if err := task.Run(); err != nil {
+			if err := task.Run(ctx); err != nil {
 				log.Errorf("Scheduled task failed with an error: %v", err)
 			}
 		}
@@ -73,7 +74,7 @@ func (s *Scheduler) startTask(task Task) error {
 	ticker.Reset(schedule.Interval)
 
 	if schedule.Enabled {
-		task.OnScheduleStarted()
+		task.OnScheduleStarted(ctx)
 	}
 
 	return nil
@@ -88,13 +89,13 @@ func (s *Scheduler) stop() {
 	}
 }
 
-func (s *Scheduler) Reload() error {
+func (s *Scheduler) Reload(ctx context.Context) error {
 	if s.stopped {
 		return schedulerStoppedError()
 	}
 
 	for task, ticker := range s.tickers {
-		newSchedule, err := task.Schedule()
+		newSchedule, err := task.Schedule(ctx)
 		if err != nil {
 			return err
 		}
@@ -102,7 +103,7 @@ func (s *Scheduler) Reload() error {
 		ticker.Reset(newSchedule.Interval)
 
 		if newSchedule.Enabled {
-			task.OnScheduleStarted()
+			task.OnScheduleStarted(ctx)
 		}
 	}
 

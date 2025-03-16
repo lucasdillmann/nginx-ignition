@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
@@ -13,9 +14,9 @@ func registerStartup(lifecycle *lifecycle.Lifecycle, scheduler *Scheduler) {
 	lifecycle.RegisterStartup(startup{scheduler})
 }
 
-func (s startup) Run() error {
+func (s startup) Run(ctx context.Context) error {
 	log.Infof("Starting scheduled tasks")
-	return s.scheduler.start()
+	return s.scheduler.start(ctx)
 }
 
 func (s startup) Priority() int {

@@ -17,7 +17,7 @@ type problemDetail struct {
 	Message   string `json:"message"`
 }
 
-func Handler(context *gin.Context, outcome any) {
+func Handler(ctx *gin.Context, outcome any) {
 	err, isErr := outcome.(error)
 	if !isErr {
 		err = errors.New(fmt.Sprintf("%s", outcome))
@@ -30,17 +30,17 @@ func Handler(context *gin.Context, outcome any) {
 
 	switch {
 	case errors.As(err, &httpError):
-		handleHttpError(context, httpError)
+		handleHttpError(ctx, httpError)
 	case errors.As(err, &consistencyError):
-		handleConsistencyError(context, consistencyError)
+		handleConsistencyError(ctx, consistencyError)
 	case errors.As(err, &validationError):
-		handleValidationError(context, validationError)
+		handleValidationError(ctx, validationError)
 	case errors.As(err, &coreError):
-		handleCoreError(context, coreError)
+		handleCoreError(ctx, coreError)
 	case errors.Is(err, jwt.ErrSignatureInvalid):
-		handleInvalidTokenError(context)
+		handleInvalidTokenError(ctx)
 	default:
-		handleGenericError(context, err)
+		handleGenericError(ctx, err)
 	}
 }
 
@@ -66,29 +66,29 @@ func CanHandle(err error) bool {
 	}
 }
 
-func handleGenericError(context *gin.Context, err error) {
+func handleGenericError(ctx *gin.Context, err error) {
 	stack := stacktrace()
 	log.Errorf("Error detected while processing request: %s\n%s", err, stack)
-	context.Status(http.StatusInternalServerError)
+	ctx.Status(http.StatusInternalServerError)
 }
 
-func handleInvalidTokenError(context *gin.Context) {
-	context.Status(http.StatusUnauthorized)
+func handleInvalidTokenError(ctx *gin.Context) {
+	ctx.Status(http.StatusUnauthorized)
 }
 
-func handleHttpError(context *gin.Context, err *ApiError) {
-	context.JSON(err.StatusCode, gin.H{"message": err.Message})
+func handleHttpError(ctx *gin.Context, err *ApiError) {
+	ctx.JSON(err.StatusCode, gin.H{"message": err.Message})
 }
 
-func handleCoreError(context *gin.Context, err *core_error.CoreError) {
+func handleCoreError(ctx *gin.Context, err *core_error.CoreError) {
 	if err.UserRelated {
-		context.JSON(http.StatusBadRequest, gin.H{"message": err.Message})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Message})
 	} else {
-		handleGenericError(context, err)
+		handleGenericError(ctx, err)
 	}
 }
 
-func handleConsistencyError(context *gin.Context, err *validation.ConsistencyError) {
+func handleConsistencyError(ctx *gin.Context, err *validation.ConsistencyError) {
 	var details = make([]*problemDetail, len(err.Violations))
 	for index, detail := range err.Violations {
 		details[index] = &problemDetail{
@@ -97,15 +97,15 @@ func handleConsistencyError(context *gin.Context, err *validation.ConsistencyErr
 		}
 	}
 
-	sendError(context, details)
+	sendError(ctx, details)
 }
 
-func handleValidationError(context *gin.Context, _ *validator.ValidationErrors) {
-	context.Status(http.StatusBadRequest)
+func handleValidationError(ctx *gin.Context, _ *validator.ValidationErrors) {
+	ctx.Status(http.StatusBadRequest)
 }
 
-func sendError(context *gin.Context, details []*problemDetail) {
-	context.JSON(http.StatusBadRequest, gin.H{
+func sendError(ctx *gin.Context, details []*problemDetail) {
+	ctx.JSON(http.StatusBadRequest, gin.H{
 		"message":             "One or more consistency problems were found",
 		"consistencyProblems": details,
 	})

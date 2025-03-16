@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 )
 
@@ -20,6 +21,6 @@ func (d startup) Async() bool {
 	return false
 }
 
-func (d startup) Run() error {
+func (d startup) Run(ctx context.Context) error {
 	return d.database.init()
 }

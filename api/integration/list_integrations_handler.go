@@ -10,8 +10,8 @@ type listIntegrationsHandler struct {
 	command *integration.ListCommand
 }
 
-func (h listIntegrationsHandler) handle(context *gin.Context) {
-	integrations, err := (*h.command)()
+func (h listIntegrationsHandler) handle(ctx *gin.Context) {
+	integrations, err := (*h.command)(ctx.Request.Context())
 	if err != nil {
 		panic(err)
 	}
@@ -21,5 +21,5 @@ func (h listIntegrationsHandler) handle(context *gin.Context) {
 		output[i] = toDto(value)
 	}
 
-	context.JSON(http.StatusOK, output)
+	ctx.JSON(http.StatusOK, output)
 }

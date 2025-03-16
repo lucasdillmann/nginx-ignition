@@ -1,5 +1,7 @@
 package settings
 
-type GetCommand func() (*Settings, error)
+import "context"
 
-type SaveCommand func(settings *Settings) error
+type GetCommand func(ctx context.Context) (*Settings, error)
+
+type SaveCommand func(ctx context.Context, settings *Settings) error

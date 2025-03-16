@@ -15,19 +15,19 @@ type onboardingFinishHandler struct {
 	authorizer          *authorization.RBAC
 }
 
-func (h onboardingFinishHandler) handle(context *gin.Context) {
-	alreadyFinished, err := (*h.statusCommand)()
+func (h onboardingFinishHandler) handle(ctx *gin.Context) {
+	alreadyFinished, err := (*h.statusCommand)(ctx.Request.Context())
 	if err != nil {
 		panic(err)
 	}
 
 	if alreadyFinished {
-		context.Status(http.StatusForbidden)
+		ctx.Status(http.StatusForbidden)
 		return
 	}
 
 	requestPayload := &userRequestDto{}
-	if err = context.BindJSON(requestPayload); err != nil {
+	if err = ctx.BindJSON(requestPayload); err != nil {
 		panic(err)
 	}
 
@@ -36,11 +36,11 @@ func (h onboardingFinishHandler) handle(context *gin.Context) {
 	domainModel.Enabled = true
 	domainModel.Role = user.AdminRole
 
-	if err = (*h.saveCommand)(domainModel, nil); err != nil {
+	if err = (*h.saveCommand)(ctx.Request.Context(), domainModel, nil); err != nil {
 		panic(err)
 	}
 
-	usr, err := (*h.authenticateCommand)(domainModel.Username, *domainModel.Password)
+	usr, err := (*h.authenticateCommand)(ctx.Request.Context(), domainModel.Username, *domainModel.Password)
 	if err != nil {
 		panic(err)
 	}
@@ -51,5 +51,5 @@ func (h onboardingFinishHandler) handle(context *gin.Context) {
 	}
 
 	responsePayload := &userLoginResponseDto{*token}
-	context.JSON(http.StatusOK, responsePayload)
+	ctx.JSON(http.StatusOK, responsePayload)
 }

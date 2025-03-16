@@ -1,6 +1,7 @@
 package selfsigned
 
 import (
+	"context"
 	"crypto/x509"
 	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
@@ -32,7 +33,7 @@ func (p *Provider) Priority() int {
 	return 3
 }
 
-func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certificate, error) {
+func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (*certificate.Certificate, error) {
 	if err := commons.Validate(request, validationRules{}); err != nil {
 		return nil, err
 	}
@@ -61,7 +62,7 @@ func (p *Provider) Issue(request *certificate.IssueRequest) (*certificate.Certif
 	return cert, nil
 }
 
-func (p *Provider) Renew(current *certificate.Certificate) (*certificate.Certificate, error) {
+func (p *Provider) Renew(_ context.Context, current *certificate.Certificate) (*certificate.Certificate, error) {
 	certPEM, keyPEM, err := buildPEMs(current.DomainNames)
 	if err != nil {
 		return nil, err
@@ -101,13 +102,4 @@ func buildPEMs(domainNames []string) (*string, *string, error) {
 	keyBase64 := base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PrivateKey(key))
 
 	return &certBase64, &keyBase64, nil
-}
-
-func dereference(domainNames []*string) []string {
-	dereferencedNames := make([]string, len(domainNames))
-	for index, name := range domainNames {
-		dereferencedNames[index] = *name
-	}
-
-	return dereferencedNames
 }

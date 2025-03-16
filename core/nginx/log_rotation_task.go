@@ -1,6 +1,7 @@
 package nginx
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
@@ -14,20 +15,21 @@ type logRotationTask struct {
 }
 
 func registerScheduledTask(
+	ctx context.Context,
 	service *service,
 	settingsRepository settings.Repository,
 	scheduler *scheduler.Scheduler,
 ) error {
 	task := logRotationTask{service, &settingsRepository}
-	return scheduler.Register(&task)
+	return scheduler.Register(ctx, &task)
 }
 
-func (t logRotationTask) Run() error {
-	return t.service.rotateLogs()
+func (t logRotationTask) Run(ctx context.Context) error {
+	return t.service.rotateLogs(ctx)
 }
 
-func (t logRotationTask) Schedule() (*scheduler.Schedule, error) {
-	cfg, err := (*t.settingsRepository).Get()
+func (t logRotationTask) Schedule(ctx context.Context) (*scheduler.Schedule, error) {
+	cfg, err := (*t.settingsRepository).Get(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +54,8 @@ func (t logRotationTask) Schedule() (*scheduler.Schedule, error) {
 	}, nil
 }
 
-func (t logRotationTask) OnScheduleStarted() {
-	schedule, err := t.Schedule()
+func (t logRotationTask) OnScheduleStarted(ctx context.Context) {
+	schedule, err := t.Schedule(ctx)
 	if err != nil {
 		return
 	}

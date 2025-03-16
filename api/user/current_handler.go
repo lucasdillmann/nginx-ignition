@@ -9,7 +9,7 @@ import (
 type currentHandler struct {
 }
 
-func (h currentHandler) handle(context *gin.Context) {
-	currentUser := authorization.CurrentSubject(context).User
-	context.JSON(http.StatusOK, toDto(currentUser))
+func (h currentHandler) handle(ctx *gin.Context) {
+	currentUser := authorization.CurrentSubject(ctx).User
+	ctx.JSON(http.StatusOK, toDto(currentUser))
 }

@@ -2,6 +2,7 @@ package nginx
 
 import (
 	"bufio"
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"os"
 	"path/filepath"
@@ -18,7 +19,7 @@ func newLogReader(configProvider *configuration.Configuration) *logReader {
 	}
 }
 
-func (r *logReader) read(fileName string, tailSize int) ([]string, error) {
+func (r *logReader) read(_ context.Context, fileName string, tailSize int) ([]string, error) {
 	basePath, err := r.configProvider.Get("nginx-ignition.nginx.config-path")
 	if err != nil {
 		return nil, err

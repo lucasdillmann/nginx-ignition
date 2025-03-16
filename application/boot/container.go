@@ -1,6 +1,7 @@
 package boot
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/api"
 	"dillmann.com.br/nginx-ignition/certificate/custom"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt"
@@ -16,10 +17,14 @@ import (
 	"go.uber.org/dig"
 )
 
-func startContainer() (*dig.Container, error) {
+func startContainer(ctx context.Context) (*dig.Container, error) {
 	container := dig.New()
 	_ = container.Provide(func() *dig.Container {
 		return container
+	})
+
+	_ = container.Provide(func() context.Context {
+		return ctx
 	})
 
 	if err := installModules(container); err != nil {

@@ -2,6 +2,7 @@ package nginx
 
 import (
 	"bufio"
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/host"
@@ -32,7 +33,7 @@ func newLogRotator(
 	}
 }
 
-func (r *logRotator) rotate() error {
+func (r *logRotator) rotate(ctx context.Context) error {
 	log.Infof("Starting log rotation")
 
 	basePath, err := r.configProvider.Get("nginx-ignition.nginx.config-path")
@@ -42,20 +43,20 @@ func (r *logRotator) rotate() error {
 
 	normalizedPath := strings.TrimRight(basePath, "/") + "/logs"
 
-	cfg, err := (*r.settingsRepository).Get()
+	cfg, err := (*r.settingsRepository).Get(ctx)
 	if err != nil {
 		return err
 	}
 
 	maximumLines := cfg.LogRotation.MaximumLines
 
-	logFiles, err := r.getLogFiles()
+	logFiles, err := r.getLogFiles(ctx)
 	if err != nil {
 		return err
 	}
 
 	for _, logFile := range logFiles {
-		if err = r.rotateFile(normalizedPath, logFile, maximumLines); err != nil {
+		if err = r.rotateFile(ctx, normalizedPath, logFile, maximumLines); err != nil {
 			log.Warnf("Unable to rotate log file %s: %v", logFile, err)
 		}
 	}
@@ -68,7 +69,7 @@ func (r *logRotator) rotate() error {
 	return nil
 }
 
-func (r *logRotator) rotateFile(basePath, fileName string, maximumLines int) error {
+func (r *logRotator) rotateFile(_ context.Context, basePath, fileName string, maximumLines int) error {
 	filePath := filepath.Join(basePath, fileName)
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -108,8 +109,8 @@ func (r *logRotator) readTail(file *os.File, size int) ([]string, error) {
 	return lines, nil
 }
 
-func (r *logRotator) getLogFiles() ([]string, error) {
-	hosts, err := (*r.hostRepository).FindAllEnabled()
+func (r *logRotator) getLogFiles(ctx context.Context) ([]string, error) {
+	hosts, err := (*r.hostRepository).FindAllEnabled(ctx)
 	if err != nil {
 		return nil, err
 	}

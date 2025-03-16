@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"github.com/google/uuid"
 	"strconv"
@@ -16,6 +17,7 @@ type validator struct {
 }
 
 func (v *validator) validate(
+	ctx context.Context,
 	updatedState *User,
 	currentState *User,
 	request *SaveRequest,
@@ -29,7 +31,7 @@ func (v *validator) validate(
 		v.delegate.Add("password", validation.ValueMissingMessage)
 	}
 
-	databaseUser, _ := (*v.repository).FindByUsername(updatedState.Username)
+	databaseUser, _ := (*v.repository).FindByUsername(ctx, updatedState.Username)
 	if databaseUser != nil && databaseUser.ID != updatedState.ID {
 		v.delegate.Add("username", "There's already a user with the same username")
 	}

@@ -12,9 +12,9 @@ type updatePasswordHandler struct {
 	command *user.UpdatePasswordCommand
 }
 
-func (h updatePasswordHandler) handle(context *gin.Context) {
+func (h updatePasswordHandler) handle(ctx *gin.Context) {
 	payload := &userPasswordUpdateRequestDto{}
-	if err := context.BindJSON(payload); err != nil {
+	if err := ctx.BindJSON(payload); err != nil {
 		panic(err)
 	}
 
@@ -22,11 +22,11 @@ func (h updatePasswordHandler) handle(context *gin.Context) {
 		panic(err)
 	}
 
-	currentUserId := authorization.CurrentSubject(context).User.ID
+	currentUserId := authorization.CurrentSubject(ctx).User.ID
 
-	if err := (*h.command)(currentUserId, *payload.CurrentPassword, *payload.NewPassword); err != nil {
+	if err := (*h.command)(ctx.Request.Context(), currentUserId, *payload.CurrentPassword, *payload.NewPassword); err != nil {
 		panic(err)
 	}
 
-	context.Status(http.StatusNoContent)
+	ctx.Status(http.StatusNoContent)
 }

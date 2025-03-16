@@ -1,6 +1,7 @@
 package boot
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"os"
@@ -11,19 +12,20 @@ import (
 
 func StartApplication() error {
 	startTime := time.Now().UnixNano() / int64(time.Millisecond)
+	ctx := context.Background()
 
-	container, err := startContainer()
+	container, err := startContainer(ctx)
 	if err != nil {
 		return err
 	}
 
 	return container.Invoke(func(lifecycle *lifecycle.Lifecycle) error {
-		return runLifecycle(lifecycle, startTime)
+		return runLifecycle(ctx, lifecycle, startTime)
 	})
 }
 
-func runLifecycle(lifecycle *lifecycle.Lifecycle, startTime int64) error {
-	if err := lifecycle.FireStartup(); err != nil {
+func runLifecycle(ctx context.Context, lifecycle *lifecycle.Lifecycle, startTime int64) error {
+	if err := lifecycle.FireStartup(ctx); err != nil {
 		return err
 	}
 
@@ -33,7 +35,7 @@ func runLifecycle(lifecycle *lifecycle.Lifecycle, startTime int64) error {
 	receivedSignal := waitForShutdownSignal()
 
 	log.Infof("Application shutdown signal received (%s). Starting graceful shutdown.", receivedSignal)
-	lifecycle.FireShutdown()
+	lifecycle.FireShutdown(ctx)
 
 	log.Infof("Shutdown complete")
 	return nil

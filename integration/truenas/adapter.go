@@ -1,6 +1,7 @@
 package truenas
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
@@ -54,6 +55,7 @@ func (a *Adapter) ConfigurationFields() []*dynamic_fields.DynamicField {
 }
 
 func (a *Adapter) GetAvailableOptions(
+	_ context.Context,
 	parameters map[string]any,
 	_, _ int,
 	searchTerms *string,
@@ -81,6 +83,7 @@ func (a *Adapter) GetAvailableOptions(
 }
 
 func (a *Adapter) GetAvailableOptionById(
+	_ context.Context,
 	parameters map[string]any,
 	id string,
 ) (*integration.AdapterOption, error) {
@@ -104,6 +107,7 @@ func (a *Adapter) GetAvailableOptionById(
 }
 
 func (a *Adapter) GetOptionProxyUrl(
+	_ context.Context,
 	parameters map[string]any,
 	id string,
 ) (*string, error) {

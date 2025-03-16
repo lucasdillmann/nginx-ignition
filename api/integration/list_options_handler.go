@@ -11,27 +11,27 @@ type listOptionsHandler struct {
 	command *integration.ListOptionsCommand
 }
 
-func (h listOptionsHandler) handle(context *gin.Context) {
-	pageSize, pageNumber, searchTerms, err := pagination.ExtractPaginationParameters(context)
+func (h listOptionsHandler) handle(ctx *gin.Context) {
+	pageSize, pageNumber, searchTerms, err := pagination.ExtractPaginationParameters(ctx)
 	if err != nil {
 		panic(err)
 	}
 
-	id := context.Param("id")
+	id := ctx.Param("id")
 	if id == "" {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	page, err := (*h.command)(id, pageSize, pageNumber, searchTerms)
+	page, err := (*h.command)(ctx.Request.Context(), id, pageSize, pageNumber, searchTerms)
 	if err != nil {
 		panic(err)
 	}
 
 	if page == nil {
-		context.Status(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	context.JSON(http.StatusOK, pagination.Convert(page, toOptionDto))
+	ctx.JSON(http.StatusOK, pagination.Convert(page, toOptionDto))
 }

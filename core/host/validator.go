@@ -1,6 +1,7 @@
 package host
 
 import (
+	"context"
 	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"net"
@@ -32,12 +33,12 @@ const (
 	maximumStatusCode         = 599
 )
 
-func (v *validator) validate(host *Host) error {
-	if err := v.validateDefaultFlag(host); err != nil {
+func (v *validator) validate(ctx context.Context, host *Host) error {
+	if err := v.validateDefaultFlag(ctx, host); err != nil {
 		return err
 	}
 
-	if err := v.validateBindings(host); err != nil {
+	if err := v.validateBindings(ctx, host); err != nil {
 		return err
 	}
 
@@ -47,12 +48,12 @@ func (v *validator) validate(host *Host) error {
 	return v.delegate.Result()
 }
 
-func (v *validator) validateDefaultFlag(host *Host) error {
+func (v *validator) validateDefaultFlag(ctx context.Context, host *Host) error {
 	if !host.DefaultServer {
 		return nil
 	}
 
-	defaultServer, err := (*v.hostRepository).FindDefault()
+	defaultServer, err := (*v.hostRepository).FindDefault(ctx)
 	if err != nil {
 		return err
 	}
@@ -80,7 +81,7 @@ func (v *validator) validateDomainNames(host *Host) {
 	}
 }
 
-func (v *validator) validateBindings(host *Host) error {
+func (v *validator) validateBindings(ctx context.Context, host *Host) error {
 	if host.UseGlobalBindings && len(host.Bindings) > 0 {
 		v.delegate.Add(bindingsPath, "Must be empty when using global bindings")
 	}
@@ -91,7 +92,7 @@ func (v *validator) validateBindings(host *Host) error {
 		}
 
 		for index, binding := range host.Bindings {
-			if err := v.validateBinding(bindingsPath, binding, index); err != nil {
+			if err := v.validateBinding(ctx, bindingsPath, binding, index); err != nil {
 				return err
 			}
 		}
@@ -100,7 +101,7 @@ func (v *validator) validateBindings(host *Host) error {
 	return nil
 }
 
-func (v *validator) validateBinding(pathPrefix string, binding *Binding, index int) error {
+func (v *validator) validateBinding(ctx context.Context, pathPrefix string, binding *Binding, index int) error {
 	if net.ParseIP(binding.IP) == nil {
 		v.delegate.Add(pathPrefix+"["+strconv.Itoa(index)+"].ip", "Not a valid IPv4 or IPv6 address")
 	}
@@ -122,7 +123,7 @@ func (v *validator) validateBinding(pathPrefix string, binding *Binding, index i
 	case binding.Type == HttpsBindingType && binding.CertificateID == nil:
 		v.delegate.Add(certificateIdField, "Value must be informed for a HTTPS binding")
 	case binding.Type == HttpsBindingType:
-		exists, err := (*v.hostRepository).ExistsCertificateByID(*binding.CertificateID)
+		exists, err := (*v.hostRepository).ExistsCertificateByID(ctx, *binding.CertificateID)
 		if err != nil {
 			return err
 		}
