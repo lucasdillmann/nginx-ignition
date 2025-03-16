@@ -46,8 +46,6 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
                 return "XML"
             case CodeEditorLanguage.PLAIN_TEXT:
                 return "Plain text"
-            case CodeEditorLanguage.GENERIC:
-                return "Generic"
         }
     }
 
@@ -61,11 +59,11 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
 
         return (
             <Flex justify="end">
-                <Form.Item label="Language" layout="horizontal" style={{ width: 200 }} required>
+                <Form.Item label="Language" layout="horizontal" style={{ width: 250 }} required>
                     <Select
                         onChange={value => this.handleLanguageChange(value)}
                         value={currentLanguage}
-                        style={{ width: 100, textAlign: "left" }}
+                        style={{ width: 150, textAlign: "left" }}
                     >
                         {availableLanguages.map(language => (
                             <Select.Option key={language} value={language}>

@@ -257,7 +257,6 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         CodeEditorLanguage.YAML,
                         CodeEditorLanguage.JAVASCRIPT,
                         CodeEditorLanguage.PLAIN_TEXT,
-                        CodeEditorLanguage.GENERIC,
                     ]}
                 />
             </>
