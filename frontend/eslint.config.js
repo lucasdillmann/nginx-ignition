@@ -17,8 +17,8 @@ export default [
             parserOptions: {
                 ecmaFeatures: {
                     jsx: true,
-                }
-            }
+                },
+            },
         },
     },
     {
@@ -30,8 +30,8 @@ export default [
         settings: {
             react: {
                 version: "detect",
-            }
-        }
+            },
+        },
     },
     {
         files: ["src/**/*.{ts,tsx}"],
@@ -40,11 +40,14 @@ export default [
             "@typescript-eslint/no-extra-non-null-assertion": "off",
             "@typescript-eslint/no-this-alias": "off",
             "react/no-unescaped-entities": "off",
-            "@typescript-eslint/no-unused-vars": ["error", {
-                "argsIgnorePattern": "^_",
-                "varsIgnorePattern": "^_",
-                "caughtErrorsIgnorePattern": "^_"
-            }]
-        }
+            "@typescript-eslint/no-unused-vars": [
+                "error",
+                {
+                    argsIgnorePattern: "^_",
+                    varsIgnorePattern: "^_",
+                    caughtErrorsIgnorePattern: "^_",
+                },
+            ],
+        },
     },
 ]

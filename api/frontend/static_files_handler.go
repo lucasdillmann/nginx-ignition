@@ -20,11 +20,11 @@ const (
 	fallbackMimeType = "application/octet-stream"
 )
 
-type handler struct {
+type staticFilesHandler struct {
 	basePath *string
 }
 
-func (h handler) handle(ctx *gin.Context) {
+func (h staticFilesHandler) handle(ctx *gin.Context) {
 	path := ctx.Request.URL.Path
 	if h.basePath == nil || strings.HasPrefix(path, "/api/") {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "Not found"})
@@ -85,7 +85,7 @@ func sanitizePath(path string) (*string, error) {
 	return &absPath, nil
 }
 
-func (h handler) loadFile(path string) ([]byte, *string, error) {
+func (h staticFilesHandler) loadFile(path string) ([]byte, *string, error) {
 	baseDir := os.DirFS(*h.basePath)
 	file, err := baseDir.Open(path)
 	if errors.Is(err, os.ErrNotExist) || errors.Is(err, os.ErrInvalid) {

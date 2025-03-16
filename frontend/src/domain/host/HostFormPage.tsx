@@ -285,6 +285,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                     validationResult={validationResult}
                     integrations={integrations}
                     onRouteRemove={index => this.removeRoute(index)}
+                    onChange={() => this.formRef.current?.resetFields()}
                 />
 
                 <h2 className="hosts-form-section-name">Bindings</h2>

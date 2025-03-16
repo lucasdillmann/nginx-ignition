@@ -4,22 +4,26 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func Install(
 	router *gin.Engine,
 	configuration *configuration.Configuration,
 ) {
-	var handlerInstance handler
+	settingsHandlerInstance := &configurationHandler{configuration}
+	router.Handle(http.MethodGet, "/api/frontend/configuration", settingsHandlerInstance.handle)
+
+	var staticHandler staticFilesHandler
 	basePath, err := configuration.Get("nginx-ignition.server.frontend-path")
 
 	if err != nil || basePath == "" {
 		log.Warnf("Frontend path is not defined. Every request to it will be rejected with not found status.")
-		handlerInstance = handler{}
+		staticHandler = staticFilesHandler{}
 	} else {
 		log.Infof("Serving frontend files from %s", basePath)
-		handlerInstance = handler{&basePath}
+		staticHandler = staticFilesHandler{&basePath}
 	}
 
-	router.NoRoute(handlerInstance.handle)
+	router.NoRoute(staticHandler.handle)
 }

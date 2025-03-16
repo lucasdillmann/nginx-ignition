@@ -3,6 +3,7 @@
 ## Common configuration scenarios
 
 ### Defining a custom authentication token secret
+
 The nginx ignition uses JSON Web Tokens (JWT) to authenticate you and all the users in the application. A JWT is signed
 using a private key, allowing the application to check if any received value is trustworthy.
 
@@ -74,3 +75,4 @@ nginx ignition to suit you better, if needed.
 | NGINX_IGNITION_SECURITY_USER_PASSWORD_HASHING_ALGORITHM  | Which algorithm should be use to hash the user's passwords                                            | SHA-512      | SHA-512                   |
 | NGINX_IGNITION_SECURITY_USER_PASSWORD_HASHING_SALT_SIZE  | The amount of random bytes that should be appended to the user's passwords (improves security)        | 64           | 64                        |
 | NGINX_IGNITION_SECURITY_USER_PASSWORD_HASHING_ITERATIONS | How many times the passwords should be hashed (improves security)                                     | 1024         | 1024                      |
+| NGINX_IGNITION_FRONTEND_CODE_EDITOR_API_KEY              | Custom Codeium API key for the frontend's code editors (optional)                                     |              |                           |

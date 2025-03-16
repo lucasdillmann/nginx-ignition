@@ -16,6 +16,8 @@ import IntegrationService from "../../integration/IntegrationService"
 import HostFormValuesDefaults from "../model/HostFormValuesDefaults"
 import HostRouteSettingsModal from "./HostRouteSettingsModal"
 import { Link } from "react-router-dom"
+import CodeEditorModal from "../../../core/components/codeeditor/CodeEditorModal"
+import { CodeEditorLanguage } from "../../../core/components/codeeditor/CodeEditor"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -38,10 +40,12 @@ export interface HostRoutesProps {
     validationResult: ValidationResult
     integrations: IntegrationResponse[]
     onRouteRemove: (index: number) => void
+    onChange: () => void
 }
 
 interface HostRoutesState {
     routeSettingsOpenModalIndex?: number
+    routeCodeEditorOpenModalIndex?: number
 }
 
 export default class HostRoutes extends React.Component<HostRoutesProps, HostRoutesState> {
@@ -171,8 +175,31 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         )
     }
 
+    private handleRoutePayloadChange(index: number, payload: string) {
+        const { routes } = this.props
+
+        const route = routes[index]
+        if (!route?.response) {
+            return
+        }
+
+        route.response.payload = payload
+    }
+
+    private handleRouteCodeChange(index: number, code: string) {
+        const { routes } = this.props
+
+        const route = routes[index]
+        if (!route?.sourceCode) {
+            return
+        }
+
+        route.sourceCode.code = code
+    }
+
     private renderStaticResponseRoute(field: FormListFieldData, index: number): React.ReactNode {
-        const { validationResult } = this.props
+        const { validationResult, routes } = this.props
+        const { routeCodeEditorOpenModalIndex } = this.state
         const { name } = field
 
         return (
@@ -214,8 +241,16 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     label="Body / Payload"
                     required
                 >
-                    <TextArea rows={3} />
+                    <TextArea rows={3} onClick={() => this.openRouteCodeEditorModal(index)} />
                 </Form.Item>
+
+                <CodeEditorModal
+                    open={index === routeCodeEditorOpenModalIndex}
+                    onClose={() => this.closeRouteCodeEditorModal()}
+                    value={routes[index]?.response?.payload ?? ""}
+                    onChange={value => this.handleRoutePayloadChange(index, value)}
+                    language={[CodeEditorLanguage.JSON, CodeEditorLanguage.HTML]}
+                />
             </>
         )
     }
@@ -241,6 +276,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
 
     private renderSourceCodeRoute(field: FormListFieldData, index: number): React.ReactNode {
         const { validationResult, routes } = this.props
+        const { routeCodeEditorOpenModalIndex } = this.state
         const { name } = field
         const { sourceCode } = routes[index]
         const helpText = this.renderSourceCodeHelpText(index)
@@ -272,7 +308,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     label="Source code"
                     required
                 >
-                    <TextArea rows={3} />
+                    <TextArea rows={3} onClick={() => this.openRouteCodeEditorModal(index)} />
                 </Form.Item>
                 <If condition={sourceCode?.language === HostRouteSourceCodeLanguage.JAVASCRIPT}>
                     <Form.Item
@@ -288,6 +324,18 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         <Input />
                     </Form.Item>
                 </If>
+
+                <CodeEditorModal
+                    open={index === routeCodeEditorOpenModalIndex}
+                    onClose={() => this.closeRouteCodeEditorModal()}
+                    value={routes[index]?.sourceCode?.code ?? ""}
+                    onChange={value => this.handleRouteCodeChange(index, value)}
+                    language={
+                        sourceCode?.language === HostRouteSourceCodeLanguage.JAVASCRIPT
+                            ? CodeEditorLanguage.JAVASCRIPT
+                            : CodeEditorLanguage.LUA
+                    }
+                />
             </>
         )
     }
@@ -317,6 +365,17 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
 
     private closeRouteSettingsModal() {
         this.setState({ routeSettingsOpenModalIndex: undefined })
+    }
+
+    private openRouteCodeEditorModal(index: number) {
+        this.setState({ routeCodeEditorOpenModalIndex: index })
+    }
+
+    private closeRouteCodeEditorModal() {
+        const { onChange } = this.props
+
+        this.setState({ routeCodeEditorOpenModalIndex: undefined })
+        onChange()
     }
 
     private removeRoute(index: number) {
