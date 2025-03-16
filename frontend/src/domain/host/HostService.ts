@@ -3,6 +3,7 @@ import PageResponse from "../../core/pagination/PageResponse"
 import HostResponse from "./model/HostResponse"
 import { requireNullablePayload, requireSuccessPayload, requireSuccessResponse } from "../../core/apiclient/ApiResponse"
 import HostRequest from "./model/HostRequest"
+import GenericCreateResponse from "../../core/common/GenericCreateResponse"
 
 export default class HostService {
     private readonly gateway: HostGateway
@@ -35,7 +36,7 @@ export default class HostService {
         return this.gateway.putById(id, host).then(requireSuccessResponse)
     }
 
-    async create(host: HostRequest): Promise<void> {
-        return this.gateway.post(host).then(requireSuccessResponse)
+    async create(host: HostRequest): Promise<GenericCreateResponse> {
+        return this.gateway.post(host).then(requireSuccessPayload)
     }
 }

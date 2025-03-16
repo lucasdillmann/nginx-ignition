@@ -31,10 +31,10 @@ interface AccessListFormState {
 }
 
 export default class AccessListFormPage extends React.Component<unknown, AccessListFormState> {
-    private readonly accessListId?: string
     private readonly service: AccessListService
     private readonly saveModal: ModalPreloader
     private readonly formRef: React.RefObject<FormInstance | null>
+    private accessListId?: string
 
     constructor(props: any) {
         super(props)
@@ -59,10 +59,16 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
         const data = AccessListConverter.toRequest(formValues)
         const action =
             this.accessListId === undefined
-                ? this.service.create(data)
+                ? this.service.create(data).then(response => this.updateId(response.id))
                 : this.service.updateById(this.accessListId, data)
 
         action.then(() => this.handleSuccess()).catch(error => this.handleError(error))
+    }
+
+    private updateId(id: string) {
+        this.accessListId = id
+        navigateTo(`/access-lists/${id}`, true)
+        this.updateShellConfig(true)
     }
 
     private handleSuccess() {

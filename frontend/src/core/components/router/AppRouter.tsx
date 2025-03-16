@@ -13,8 +13,8 @@ function router() {
     return currentInstance.state.router
 }
 
-export function navigateTo(destination: string) {
-    return router()?.navigate(destination)
+export function navigateTo(destination: string, replace?: boolean) {
+    return router()?.navigate(destination, { replace })
 }
 
 export function routeParams(): Params {

@@ -31,5 +31,10 @@ func (h createHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	ctx.Status(http.StatusNoContent)
+	ctx.JSON(
+		http.StatusCreated,
+		map[string]any{
+			"id": domainModel.ID,
+		},
+	)
 }

@@ -3,6 +3,7 @@ import { requireNullablePayload, requireSuccessPayload, requireSuccessResponse }
 import PageResponse from "../../core/pagination/PageResponse"
 import AccessListRequest from "./model/AccessListRequest"
 import AccessListResponse from "./model/AccessListResponse"
+import GenericCreateResponse from "../../core/common/GenericCreateResponse"
 
 export default class AccessListService {
     private readonly gateway: AccessListGateway
@@ -31,7 +32,7 @@ export default class AccessListService {
         return this.gateway.putById(id, user).then(requireSuccessResponse)
     }
 
-    async create(user: AccessListRequest): Promise<void> {
-        return this.gateway.post(user).then(requireSuccessResponse)
+    async create(user: AccessListRequest): Promise<GenericCreateResponse> {
+        return this.gateway.post(user).then(requireSuccessPayload)
     }
 }

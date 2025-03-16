@@ -7,6 +7,7 @@ import UserRequest from "./model/UserRequest"
 import UserLoginRequest from "./model/UserLoginRequest"
 import AuthenticationService from "../../core/authentication/AuthenticationService"
 import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest"
+import GenericCreateResponse from "../../core/common/GenericCreateResponse"
 
 export default class UserService {
     private readonly gateway: UserGateway
@@ -59,8 +60,8 @@ export default class UserService {
         return this.gateway.putById(id, user).then(requireSuccessResponse)
     }
 
-    async create(user: UserRequest): Promise<void> {
-        return this.gateway.post(user).then(requireSuccessResponse)
+    async create(user: UserRequest): Promise<GenericCreateResponse> {
+        return this.gateway.post(user).then(requireSuccessPayload)
     }
 
     async changePassword(request: UserUpdatePasswordRequest): Promise<void> {

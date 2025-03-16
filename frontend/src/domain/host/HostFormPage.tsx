@@ -42,9 +42,9 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     private readonly hostService: HostService
     private readonly integrationService: IntegrationService
     private readonly accessListService: AccessListService
-    private readonly hostId?: string
     private readonly saveModal: ModalPreloader
     private readonly formRef: React.RefObject<FormInstance | null>
+    private hostId?: string
 
     constructor(props: any) {
         super(props)
@@ -78,13 +78,19 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
         const action =
             this.hostId === undefined
-                ? this.hostService.create(payload)
+                ? this.hostService.create(payload).then(response => this.updateId(response.id))
                 : this.hostService.updateById(this.hostId, payload)
 
         action
             .then(() => this.handleSuccess())
             .catch(error => this.handleError(error))
             .then(() => this.saveModal.close())
+    }
+
+    private updateId(id: string) {
+        this.hostId = id
+        navigateTo(`/hosts/${id}`, true)
+        this.updateShellConfig(true)
     }
 
     private handleSuccess() {

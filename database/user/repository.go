@@ -78,7 +78,7 @@ func (r *repository) FindByUsername(ctx context.Context, username string) (*user
 
 func (r *repository) FindPage(
 	ctx context.Context,
-	pageNumber, pageSize int,
+	pageSize, pageNumber int,
 	searchTerms *string,
 ) (*pagination.Page[*user.User], error) {
 	var models []userModel

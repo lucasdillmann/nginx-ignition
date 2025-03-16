@@ -28,9 +28,9 @@ interface UserFormState {
 }
 
 export default class UserFormPage extends React.Component<unknown, UserFormState> {
-    private readonly userId?: string
     private readonly service: UserService
     private readonly saveModal: ModalPreloader
+    private userId?: string
 
     constructor(props: any) {
         super(props)
@@ -58,13 +58,19 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
 
         const action =
             this.userId === undefined
-                ? this.service.create(formValues)
+                ? this.service.create(formValues).then(response => this.updateId(response.id))
                 : this.service.updateById(this.userId, formValues)
 
         action
             .then(() => this.handleSuccess())
             .catch(error => this.handleError(error))
             .then(() => this.saveModal.close())
+    }
+
+    private updateId(id: string) {
+        this.userId = id
+        navigateTo(`/users/${id}`, true)
+        this.updateShellConfig(true)
     }
 
     private handleSuccess() {

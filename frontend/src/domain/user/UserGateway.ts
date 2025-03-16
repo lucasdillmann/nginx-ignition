@@ -7,6 +7,7 @@ import UserOnboardingStatusResponse from "./model/UserOnboardingStatusResponse"
 import UserRequest from "./model/UserRequest"
 import PageResponse from "../../core/pagination/PageResponse"
 import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest"
+import GenericCreateResponse from "../../core/common/GenericCreateResponse"
 
 export default class UserGateway {
     private readonly client: ApiClient
@@ -55,7 +56,7 @@ export default class UserGateway {
         return this.client.delete(`/${id}`)
     }
 
-    async post(user: UserRequest): Promise<ApiResponse<void>> {
+    async post(user: UserRequest): Promise<ApiResponse<GenericCreateResponse>> {
         return this.client.post("", user)
     }
 

@@ -3,6 +3,7 @@ import ApiResponse from "../../core/apiclient/ApiResponse"
 import PageResponse from "../../core/pagination/PageResponse"
 import AccessListResponse from "./model/AccessListResponse"
 import AccessListRequest from "./model/AccessListRequest"
+import GenericCreateResponse from "../../core/common/GenericCreateResponse"
 
 export default class AccessListGateway {
     private readonly client: ApiClient
@@ -31,7 +32,7 @@ export default class AccessListGateway {
         return this.client.delete(`/${id}`)
     }
 
-    async post(accessList: AccessListRequest): Promise<ApiResponse<void>> {
+    async post(accessList: AccessListRequest): Promise<ApiResponse<GenericCreateResponse>> {
         return this.client.post("", accessList)
     }
 }

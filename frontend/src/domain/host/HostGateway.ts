@@ -3,6 +3,7 @@ import ApiResponse from "../../core/apiclient/ApiResponse"
 import PageResponse from "../../core/pagination/PageResponse"
 import HostResponse from "./model/HostResponse"
 import HostRequest from "./model/HostRequest"
+import GenericCreateResponse from "../../core/common/GenericCreateResponse"
 
 export default class HostGateway {
     private readonly client: ApiClient
@@ -39,7 +40,7 @@ export default class HostGateway {
         return this.client.put(`/${id}`, user)
     }
 
-    async post(user: HostRequest): Promise<ApiResponse<void>> {
+    async post(user: HostRequest): Promise<ApiResponse<GenericCreateResponse>> {
         return this.client.post("", user)
     }
 }
