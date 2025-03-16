@@ -20,6 +20,7 @@ export default defineConfig({
                     "vendor.react": ["react", "react-dom", "react-router-dom"],
                     "vendor.antd-core": ["antd", "@ant-design/icons"],
                     "vendor.antd-pro": ["@ant-design/pro-form", "@ant-design/pro-components"],
+                    "vendor.codeium": ["@codeium/react-code-editor"],
                     "vendor.utils": ["qs", "debounce", "typescript"],
                 },
             },
