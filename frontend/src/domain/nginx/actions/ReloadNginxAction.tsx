@@ -5,26 +5,49 @@ import { Checkbox, CheckboxRef, Modal } from "antd"
 import React from "react"
 import "./ReloadNginxAction.css"
 
+const MESSAGE_KEY = "nginxIgnition.nginxReload.message"
+const MESSAGE_TITLE = "Reload nginx configuration"
+
 class ReloadNginxAction {
     private readonly repository: LocalStorageRepository<boolean>
     private readonly service: NginxService
+    private running: boolean
 
     constructor() {
         this.repository = new LocalStorageRepository("nginxIgnition.nginxReload.skipConfirmation")
         this.service = new NginxService()
+        this.running = false
     }
 
     private async reload(): Promise<void> {
-        const messageTitle = "Reload nginx configuration"
+        if (this.running) return Promise.resolve()
+
+        this.running = true
+        this.showInProgressNotification()
+
         return this.service
             .reloadConfiguration()
-            .then(() => Notification.success(messageTitle, "Nginx server configuration was reloaded successfully"))
-            .catch(() =>
-                Notification.error(
-                    messageTitle,
-                    "Nginx server failed to reload the configuration. Please check the logs for more details.",
-                ),
-            )
+            .then(() => this.showSuccessNotification())
+            .catch(() => this.showErrorNotification())
+            .then(() => {
+                this.running = false
+            })
+    }
+
+    private showInProgressNotification() {
+        Notification.progress(MESSAGE_TITLE, "Please wait while we reload the nginx configuration...", MESSAGE_KEY)
+    }
+
+    private showSuccessNotification() {
+        Notification.success(MESSAGE_TITLE, "Nginx server configuration was reloaded successfully", MESSAGE_KEY)
+    }
+
+    private showErrorNotification() {
+        Notification.error(
+            MESSAGE_TITLE,
+            "Nginx server failed to reload the configuration. Please check the logs for more details.",
+            MESSAGE_KEY,
+        )
     }
 
     async execute(): Promise<void> {

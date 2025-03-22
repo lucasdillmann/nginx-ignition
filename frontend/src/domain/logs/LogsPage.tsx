@@ -78,6 +78,17 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         textarea.scrollTop = textarea.scrollHeight
     }
 
+    componentWillUnmount() {
+        this.stopAutoRefresh()
+    }
+
+    private stopAutoRefresh() {
+        if (this.refreshIntervalId !== undefined) {
+            window.clearInterval(this.refreshIntervalId)
+            this.refreshIntervalId = undefined
+        }
+    }
+
     private configureShell() {
         const { autoRefreshSeconds } = this.state
         const disabled = autoRefreshSeconds !== undefined
@@ -100,8 +111,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     private applyOptions() {
         const { autoRefreshSeconds } = this.state
 
-        if (this.refreshIntervalId !== undefined) window.clearInterval(this.refreshIntervalId)
-
+        this.stopAutoRefresh()
         if (autoRefreshSeconds !== undefined) {
             this.refreshIntervalId = window.setInterval(() => this.fetchLogs(), autoRefreshSeconds * 1000)
         }
