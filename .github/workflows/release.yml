@@ -30,13 +30,13 @@ jobs:
       - name: npm cache
         uses: actions/cache@v4
         with:
-          path: frontend/node_modules
+          path: $GITHUB_WORKSPACE/frontend/node_modules
           key: npm-cache
           restore-keys: npm-cache
       - name: go cache
         uses: actions/cache@v4
         with:
-          path: .go
+          path: $GITHUB_WORKSPACE/.go
           key: go-cache
           restore-keys: go-cache
       - name: Resolve version number from tag
@@ -49,8 +49,8 @@ jobs:
           npm run build
       - name: Backend build
         env:
-          GOPATH: .go
-          GOMODCACHE: .go/pkg/mod
+          GOPATH: $GITHUB_WORKSPACE/.go
+          GOMODCACHE: $GITHUB_WORKSPACE/.go/pkg/mod
           GOTOOLCHAIN: ""
           GOOS: linux
           CGO_ENABLED: "0"
