@@ -113,7 +113,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
 
         this.stopAutoRefresh()
         if (autoRefreshSeconds !== undefined) {
-            this.refreshIntervalId = window.setInterval(() => this.fetchLogs(), autoRefreshSeconds * 1000)
+            this.refreshIntervalId = window.setInterval(() => this.fetchLogs(true), autoRefreshSeconds * 1000)
         }
 
         this.refreshLogs()
@@ -127,7 +127,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         this.setState({ loading: true }, () => this.fetchLogs())
     }
 
-    private fetchLogs() {
+    private fetchLogs(omitNotifications?: boolean) {
         const { hostMode, lineCount, selectedHost, logType } = this.state
         if (hostMode && selectedHost === undefined) return this.setState({ loading: false })
 
@@ -143,7 +143,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                 })
             })
             .catch(error => {
-                CommonNotifications.failedToFetch()
+                if (!omitNotifications) CommonNotifications.failedToFetch()
                 this.setState({ loading: false, error })
             })
     }

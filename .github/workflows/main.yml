@@ -20,13 +20,18 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: 1.24.1
-          cache: true
       - name: npm cache
         uses: actions/cache@v4
         with:
           path: frontend/node_modules
           key: npm-cache
           restore-keys: npm-cache
+      - name: go cache
+        uses: actions/cache@v4
+        with:
+          path: .go
+          key: go-cache
+          restore-keys: go-cache
       - name: Prettier
         working-directory: frontend
         run: |
@@ -40,6 +45,9 @@ jobs:
       - name: Sonarqube
         uses: SonarSource/sonarqube-scan-action@v4.2.1
         env:
+          GOPATH: .go
+          GOMODCACHE: .go/pkg/mod
+          GOTOOLCHAIN: ""
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build:
@@ -52,7 +60,6 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: 1.24.1
-          cache: true
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
         with:
@@ -71,6 +78,12 @@ jobs:
           path: frontend/node_modules
           key: npm-cache
           restore-keys: npm-cache
+      - name: go cache
+        uses: actions/cache@v4
+        with:
+          path: .go
+          key: go-cache
+          restore-keys: go-cache
       - name: Frontend build
         working-directory: frontend
         run: |
@@ -78,6 +91,9 @@ jobs:
           npm run build
       - name: Backend build
         env:
+          GOPATH: .go
+          GOMODCACHE: .go/pkg/mod
+          GOTOOLCHAIN: ""
           GOOS: linux
           CGO_ENABLED: "0"
         run: |
