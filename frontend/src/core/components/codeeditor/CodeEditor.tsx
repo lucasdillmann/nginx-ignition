@@ -39,6 +39,8 @@ export default class CodeEditor extends React.Component<CodeEditorProps, any> {
                 value={value}
                 apiKey={configuration.codeEditor.apiKey}
                 onMount={editor => editor.focus()}
+                height="100%"
+                width="100%"
             />
         )
     }

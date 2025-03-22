@@ -58,12 +58,12 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
         }
 
         return (
-            <Flex justify="end">
-                <Form.Item label="Language" layout="horizontal" style={{ width: 250 }} required>
+            <Flex justify="right">
+                <Form.Item label="Language" layout="horizontal" style={{ width: 250, margin: 0, padding: 0 }} required>
                     <Select
                         onChange={value => this.handleLanguageChange(value)}
                         value={currentLanguage}
-                        style={{ width: 150, textAlign: "left" }}
+                        style={{ width: 150, textAlign: "left", float: "right" }}
                     >
                         {availableLanguages.map(language => (
                             <Select.Option key={language} value={language}>
@@ -88,7 +88,7 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
             <Drawer
                 title="Code editor"
                 placement="right"
-                width="100vh"
+                width="80vw"
                 onClose={onClose}
                 extra={this.renderLanguageSelector()}
                 open
