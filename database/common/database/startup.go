@@ -21,6 +21,6 @@ func (d startup) Async() bool {
 	return false
 }
 
-func (d startup) Run(ctx context.Context) error {
+func (d startup) Run(_ context.Context) error {
 	return d.database.init()
 }

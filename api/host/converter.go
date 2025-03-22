@@ -199,7 +199,7 @@ func toDomainModelRoute(input *routeDto) *host.Route {
 	return &host.Route{
 		Priority:     getIntValue(input.Priority),
 		Enabled:      getBoolValue(input.Enabled),
-		Type:         host.RouteType(*input.Type),
+		Type:         *input.Type,
 		SourcePath:   getStringValue(input.SourcePath),
 		Settings:     *toRouteSettings(input.Settings),
 		TargetURI:    input.TargetUri,
@@ -253,7 +253,7 @@ func toRouteSourceCode(input *routeSourceCodeDto) *host.RouteSourceCode {
 	}
 
 	return &host.RouteSourceCode{
-		Language:     host.CodeLanguage(*input.Language),
+		Language:     *input.Language,
 		Contents:     getStringValue(input.Code),
 		MainFunction: input.MainFunction,
 	}

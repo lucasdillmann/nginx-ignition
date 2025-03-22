@@ -49,9 +49,13 @@ func (p *accessListFileProvider) buildConfFile(accessList *access_list.AccessLis
 	var entriesContents []string
 	for _, entry := range accessList.Entries {
 		for _, sourceAddress := range entry.SourceAddress {
+			if sourceAddress == nil {
+				continue
+			}
+
 			entriesContents = append(
 				entriesContents,
-				fmt.Sprintf("%s %s;", toNginxOperation(entry.Outcome), sourceAddress),
+				fmt.Sprintf("%s %s;", toNginxOperation(entry.Outcome), *sourceAddress),
 			)
 		}
 	}

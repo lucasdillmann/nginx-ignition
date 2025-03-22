@@ -7,7 +7,6 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"fmt"
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
@@ -17,8 +16,8 @@ import (
 
 type containerMetadata struct {
 	name      string
-	container *types.Container
-	port      *types.Port
+	container *container.Summary
+	port      *container.Port
 }
 
 type Adapter struct {

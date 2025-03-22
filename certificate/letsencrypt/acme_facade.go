@@ -178,7 +178,8 @@ func fetchCertDates(pemBlock pem.Block, client *lego.Client) (
 		return
 	}
 
-	renewalInfo, err := client.Certificate.GetRenewalInfo(acmecertificate.RenewalInfoRequest{certDetails})
+	infoRequest := acmecertificate.RenewalInfoRequest{Cert: certDetails}
+	renewalInfo, err := client.Certificate.GetRenewalInfo(infoRequest)
 	if err != nil {
 		return
 	}
