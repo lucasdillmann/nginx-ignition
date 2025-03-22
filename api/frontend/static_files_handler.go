@@ -45,10 +45,10 @@ func (h staticFilesHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	etag, err := generateETag(fileContents)
+	etag, err := generateETag(fileType, fileContents)
 	if err != nil {
 		log.Warnf("Unable to generate ETag for file %s: %s", *sanitizedPath, err)
-	} else {
+	} else if etag != "" {
 		ifNoneMatchHeader := ctx.GetHeader("if-none-match")
 		if ifNoneMatchHeader == etag {
 			ctx.Status(http.StatusNotModified)
@@ -113,7 +113,11 @@ func (h staticFilesHandler) loadFile(path string) ([]byte, *string, error) {
 	return fileContents, &mimeType, nil
 }
 
-func generateETag(contents []byte) (string, error) {
+func generateETag(fileType *string, contents []byte) (string, error) {
+	if fileType != nil && strings.HasPrefix(*fileType, "text/html") {
+		return "", nil
+	}
+
 	hasher := sha256.New()
 	if _, err := hasher.Write(contents); err != nil {
 		return "", err
