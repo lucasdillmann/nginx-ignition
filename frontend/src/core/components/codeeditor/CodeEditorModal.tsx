@@ -1,6 +1,6 @@
 import React from "react"
 import CodeEditor, { CodeEditorLanguage } from "./CodeEditor"
-import { Flex, Form, Modal, Select } from "antd"
+import { Drawer, Flex, Form, Select } from "antd"
 
 interface CodeEditorModalState {
     language: CodeEditorLanguage
@@ -49,7 +49,7 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
         }
     }
 
-    private renderFooter() {
+    private renderLanguageSelector() {
         const { language: availableLanguages } = this.props
         const { language: currentLanguage } = this.state
 
@@ -85,17 +85,16 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
         }
 
         return (
-            <Modal
+            <Drawer
                 title="Code editor"
+                placement="right"
+                width="100vh"
                 onClose={onClose}
-                onCancel={onClose}
-                footer={this.renderFooter()}
-                width={1000}
-                centered
+                extra={this.renderLanguageSelector()}
                 open
             >
                 <CodeEditor value={value} onChange={onChange} language={language} />
-            </Modal>
+            </Drawer>
         )
     }
 }
