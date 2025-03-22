@@ -23,13 +23,13 @@ jobs:
       - name: npm cache
         uses: actions/cache@v4
         with:
-          path: $GITHUB_WORKSPACE/frontend/node_modules
+          path: ${{ github.workspace }}/frontend/node_modules
           key: npm-cache
           restore-keys: npm-cache
       - name: go cache
         uses: actions/cache@v4
         with:
-          path: $GITHUB_WORKSPACE/.go
+          path: ${{ github.workspace }}/.go
           key: go-cache
           restore-keys: go-cache
       - name: Prettier
@@ -45,8 +45,8 @@ jobs:
       - name: Sonarqube
         uses: SonarSource/sonarqube-scan-action@v4.2.1
         env:
-          GOPATH: $GITHUB_WORKSPACE/.go
-          GOMODCACHE: $GITHUB_WORKSPACE/.go/pkg/mod
+          GOPATH: ${{ github.workspace }}/.go
+          GOMODCACHE: ${{ github.workspace }}/.go/pkg/mod
           GOTOOLCHAIN: ""
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -75,13 +75,13 @@ jobs:
       - name: npm cache
         uses: actions/cache@v4
         with:
-          path: $GITHUB_WORKSPACE/frontend/node_modules
+          path: ${{ github.workspace }}/frontend/node_modules
           key: npm-cache
           restore-keys: npm-cache
       - name: go cache
         uses: actions/cache@v4
         with:
-          path: $GITHUB_WORKSPACE/.go
+          path: ${{ github.workspace }}/.go
           key: go-cache
           restore-keys: go-cache
       - name: Frontend build
@@ -91,8 +91,8 @@ jobs:
           npm run build
       - name: Backend build
         env:
-          GOPATH: $GITHUB_WORKSPACE/.go
-          GOMODCACHE: $GITHUB_WORKSPACE/.go/pkg/mod
+          GOPATH: ${{ github.workspace }}/.go
+          GOMODCACHE: ${{ github.workspace }}/.go/pkg/mod
           GOTOOLCHAIN: ""
           GOOS: linux
           CGO_ENABLED: "0"
