@@ -44,16 +44,16 @@ export default class GenericNginxAction {
                     action: () => this.service.reloadConfiguration(),
                     messages: {
                         inProgress: {
-                            title: "Reload nginx server configuration",
+                            title: "Reloading nginx configuration...",
                             content: "Please wait while we reload the nginx configuration",
                         },
                         success: {
-                            title: "Reload nginx server configuration",
-                            content: "Nginx configuration was reloaded successfully",
+                            title: "Nginx configuration reloaded",
+                            content: "The nginx configuration was reloaded successfully",
                         },
                         error: {
-                            title: "Reload nginx server configuration failed",
-                            content: "We're unable to reload the nginx configuration at this moment",
+                            title: "Unable to reload nginx configuration",
+                            content: "An unexpected error was found while trying to reload the nginx configuration",
                         },
                     },
                 }
@@ -62,16 +62,16 @@ export default class GenericNginxAction {
                     action: () => this.service.start(),
                     messages: {
                         inProgress: {
-                            title: "Start nginx server",
+                            title: "Starting nginx...",
                             content: "Please wait while we start the nginx server",
                         },
                         success: {
-                            title: "Start nginx server",
-                            content: "Nginx server was started successfully",
+                            title: "Nginx server started",
+                            content: "The nginx server was started successfully",
                         },
                         error: {
-                            title: "Start nginx server failed",
-                            content: "We're unable to start the nginx server at this moment",
+                            title: "Unable to start nginx server",
+                            content: "An unexpected error was found while trying to start the nginx server",
                         },
                     },
                 }
@@ -80,16 +80,16 @@ export default class GenericNginxAction {
                     action: () => this.service.stop(),
                     messages: {
                         inProgress: {
-                            title: "Stop nginx server",
+                            title: "Stopping nginx...",
                             content: "Please wait while we stop the nginx server",
                         },
                         success: {
-                            title: "Stop nginx server",
-                            content: "Nginx server was stopped successfully",
+                            title: "Nginx server stopped",
+                            content: "The nginx server was stopped successfully",
                         },
                         error: {
-                            title: "Stop nginx server failed",
-                            content: "We're unable to stop the nginx server at this moment",
+                            title: "Unable to stop nginx server",
+                            content: "An unexpected error was found while trying to stop the nginx server",
                         },
                     },
                 }
@@ -112,12 +112,7 @@ export default class GenericNginxAction {
             Modal.error({
                 width: 750,
                 title: "Error details",
-                content: (
-                    <>
-                        <p>The following message was produced by the nginx server with the details of what happened.</p>
-                        <code>{error.response?.body?.message ?? error.message}</code>
-                    </>
-                ),
+                content: <code>{error.response?.body?.message ?? error.message}</code>,
             })
 
         Notification.error(title, content, {
