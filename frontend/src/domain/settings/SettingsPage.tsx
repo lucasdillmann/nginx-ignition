@@ -70,7 +70,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
     private async handleSuccess() {
         Notification.success("Settings saved", "Global settings were updated successfully")
         this.saveModal.close()
-        return ReloadNginxAction.execute()
+        ReloadNginxAction.execute()
     }
 
     private handleError(error: Error) {

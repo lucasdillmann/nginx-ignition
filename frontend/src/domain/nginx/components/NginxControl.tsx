@@ -2,11 +2,11 @@ import React from "react"
 import { Badge, Button, ConfigProvider, Flex } from "antd"
 import Preloader from "../../../core/components/preloader/Preloader"
 import NginxService from "../NginxService"
-import Notification from "../../../core/components/notification/Notification"
 import { NginxEventListener } from "../listener/NginxEventListener"
 import NginxEventDispatcher from "../listener/NginxEventDispatcher"
 import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
 import "./NginxControl.css"
+import GenericNginxAction, { ActionType } from "../actions/GenericNginxAction"
 
 interface NginxStatusState {
     loading: boolean
@@ -71,45 +71,17 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
         )
     }
 
-    private stopNginx() {
+    private confirmStop() {
         UserConfirmation.ask("Do you really want to stop the nginx server?").then(() => {
-            this.performNginxAction(
-                "Stop nginx",
-                "Nginx server was stopped successfully",
-                "Nginx server failed to stop. Please check the logs for more details.",
-                () => this.service.stop(),
-            )
+            this.performNginxAction(ActionType.STOP)
         })
     }
 
-    private reloadNginx() {
-        this.performNginxAction(
-            "Reload nginx configuration",
-            "Nginx server configuration was reloaded successfully",
-            "Nginx server failed to reload the configuration. Please check the logs for more details.",
-            () => this.service.reloadConfiguration(),
-        )
-    }
-
-    private startNginx() {
-        this.performNginxAction(
-            "Start nginx",
-            "Nginx server was started successfully",
-            "Nginx server failed to start. Please check the logs for more details.",
-            () => this.service.start(),
-        )
-    }
-
-    private performNginxAction(
-        actionName: string,
-        successMessage: string,
-        errorMessage: string,
-        action: () => Promise<void>,
-    ) {
+    private performNginxAction(action: ActionType) {
         this.setState({ loading: true }, () => {
-            action()
-                .then(() => Notification.success(actionName, successMessage))
-                .catch(() => Notification.error(actionName, errorMessage))
+            new GenericNginxAction(action, "nginxIgnition.nginxControl")
+                .execute()
+                .catch(() => {})
                 .then(() => this.refreshNginxStatus())
         })
     }
@@ -119,21 +91,21 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
 
         if (!running)
             return (
-                <Button color="primary" variant="filled" onClick={() => this.startNginx()}>
+                <Button color="primary" variant="filled" onClick={() => this.performNginxAction(ActionType.START)}>
                     start
                 </Button>
             )
 
         return (
             <>
-                <Button color="danger" variant="filled" onClick={() => this.stopNginx()}>
+                <Button color="danger" variant="filled" onClick={() => this.confirmStop()}>
                     stop
                 </Button>
                 <Button
                     className="nginx-reload-button"
                     color="primary"
                     variant="filled"
-                    onClick={() => this.reloadNginx()}
+                    onClick={() => this.performNginxAction(ActionType.RELOAD)}
                 >
                     reload
                 </Button>

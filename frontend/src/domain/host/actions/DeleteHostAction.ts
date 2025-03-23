@@ -13,8 +13,10 @@ class DeleteHostAction {
     async execute(hostId: string): Promise<void> {
         return UserConfirmation.ask("Do you really want to delete the host?")
             .then(() => this.service.delete(hostId))
-            .then(() => Notification.success(`Host deleted`, `The host was deleted successfully`))
-            .then(() => ReloadNginxAction.execute())
+            .then(() => {
+                Notification.success(`Host deleted`, `The host was deleted successfully`)
+                ReloadNginxAction.execute()
+            })
             .catch(() =>
                 Notification.error(
                     `Unable to delete the host`,

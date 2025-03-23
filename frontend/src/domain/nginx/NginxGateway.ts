@@ -1,6 +1,7 @@
 import ApiClient from "../../core/apiclient/ApiClient"
 import ApiResponse from "../../core/apiclient/ApiResponse"
 import { NginxStatusResponse } from "./model/NginxStatusResponse"
+import { NginxActionResponse } from "./model/NginxActionResponse"
 
 export default class NginxGateway {
     private readonly client: ApiClient
@@ -9,15 +10,15 @@ export default class NginxGateway {
         this.client = new ApiClient("/api/nginx")
     }
 
-    async start(): Promise<ApiResponse<undefined>> {
+    async start(): Promise<ApiResponse<NginxActionResponse>> {
         return this.client.post("/start")
     }
 
-    async stop(): Promise<ApiResponse<undefined>> {
+    async stop(): Promise<ApiResponse<NginxActionResponse>> {
         return this.client.post("/stop")
     }
 
-    async reload(): Promise<ApiResponse<undefined>> {
+    async reload(): Promise<ApiResponse<NginxActionResponse>> {
         return this.client.post("/reload")
     }
 

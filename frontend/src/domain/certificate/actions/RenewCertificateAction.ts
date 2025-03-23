@@ -15,8 +15,10 @@ class RenewCertificateAction {
     private async invokeCertificateRenew(certificateId: string): Promise<void> {
         return this.service
             .renew(certificateId)
-            .then(() => Notification.success(`Certificate renewed`, `The certificate was renewed successfully`))
-            .then(() => ReloadNginxAction.execute())
+            .then(() => {
+                Notification.success(`Certificate renewed`, `The certificate was renewed successfully`)
+                ReloadNginxAction.execute()
+            })
             .catch((error: UnexpectedResponseError<RenewCertificateResponse>) =>
                 Notification.error(
                     `Unable to renew the certificate`,

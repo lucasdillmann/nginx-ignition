@@ -78,9 +78,11 @@ export default class HostListPage extends React.PureComponent {
         const action = host.enabled ? "disable" : "enable"
         UserConfirmation.ask(`Do you really want to ${action} the host?`)
             .then(() => this.service.toggleEnabled(host.id))
-            .then(() => Notification.success(`Host ${action}d`, `The host was ${action}d successfully`))
-            .then(() => this.table.current?.refresh())
-            .then(() => ReloadNginxAction.execute())
+            .then(() => {
+                Notification.success(`Host ${action}d`, `The host was ${action}d successfully`)
+                ReloadNginxAction.execute()
+                this.table.current?.refresh()
+            })
             .catch(() =>
                 Notification.error(
                     `Unable to ${action} the host`,
