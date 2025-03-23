@@ -1,8 +1,7 @@
 import NginxGateway from "./NginxGateway"
-import { requireSuccessPayload } from "../../core/apiclient/ApiResponse"
+import { requireSuccessPayload, requireSuccessResponse } from "../../core/apiclient/ApiResponse"
 import NginxEventDispatcher from "./listener/NginxEventDispatcher"
 import { NginxOperation } from "./listener/NginxEventListener"
-import { NginxActionResponse } from "./model/NginxActionResponse"
 
 export default class NginxService {
     private readonly gateway: NginxGateway
@@ -18,30 +17,30 @@ export default class NginxService {
             .then(response => response.running)
     }
 
-    async start(): Promise<NginxActionResponse> {
+    async start(): Promise<void> {
         return this.gateway
             .start()
-            .then(requireSuccessPayload)
+            .then(requireSuccessResponse)
             .then(response => {
                 NginxEventDispatcher.notify(NginxOperation.START)
                 return response
             })
     }
 
-    async stop(): Promise<NginxActionResponse> {
+    async stop(): Promise<void> {
         return this.gateway
             .stop()
-            .then(requireSuccessPayload)
+            .then(requireSuccessResponse)
             .then(response => {
                 NginxEventDispatcher.notify(NginxOperation.STOP)
                 return response
             })
     }
 
-    async reloadConfiguration(): Promise<NginxActionResponse> {
+    async reloadConfiguration(): Promise<void> {
         return this.gateway
             .reload()
-            .then(requireSuccessPayload)
+            .then(requireSuccessResponse)
             .then(response => {
                 NginxEventDispatcher.notify(NginxOperation.RELOAD)
                 return response

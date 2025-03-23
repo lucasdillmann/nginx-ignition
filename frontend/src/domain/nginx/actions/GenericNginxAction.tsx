@@ -2,7 +2,6 @@ import NginxService from "../NginxService"
 import Notification, { Props } from "../../../core/components/notification/Notification"
 import React from "react"
 import { Button, Modal } from "antd"
-import { NginxActionResponse } from "../model/NginxActionResponse"
 
 export enum ActionType {
     RELOAD,
@@ -16,7 +15,7 @@ interface Message {
 }
 
 interface Action {
-    action: () => Promise<NginxActionResponse>
+    action: () => Promise<void>
     messages: {
         inProgress: Message
         success: Message
