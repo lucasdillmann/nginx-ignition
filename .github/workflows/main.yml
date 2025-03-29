@@ -47,16 +47,6 @@ jobs:
           GOMODCACHE: ${{ github.workspace }}/.go/pkg/mod
           GOTOOLCHAIN: ""
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: npm cache upload
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ github.workspace }}/frontend/node_modules
-          key: npm-cache
-      - name: go cache upload
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ github.workspace }}/.go
-          key: go-cache
 
   build:
     runs-on: ubuntu-latest
