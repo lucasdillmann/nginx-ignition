@@ -137,3 +137,24 @@ func (s *service) isEnabled(ctx context.Context, id uuid.UUID) (bool, error) {
 func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*User], error) {
 	return (*s.repository).FindPage(ctx, pageSize, pageNumber, searchTerms)
 }
+
+func (s *service) resetPassword(ctx context.Context, username string) (string, error) {
+	user, err := (*s.repository).FindByUsername(ctx, username)
+	if err != nil {
+		return "", err
+	}
+
+	if user == nil {
+		return "", core_error.New("User not found", true)
+	}
+
+	newPassword := uuid.NewString()[:8]
+	updatedHash, updatedSalt, err := password_hash.New(s.configuration).Hash(newPassword)
+	if err != nil {
+		return "", err
+	}
+
+	user.PasswordHash = updatedHash
+	user.PasswordSalt = updatedSalt
+	return newPassword, (*s.repository).Save(ctx, user)
+}

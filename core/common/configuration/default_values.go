@@ -16,5 +16,6 @@ func defaultValues() map[string]string {
 		"nginx-ignition.security.jwt.renew-window-seconds":             "900",
 		"nginx-ignition.certificate.lets-encrypt.production":           "true",
 		"nginx-ignition.integration.truenas.api-cache-timeout-seconds": "15",
+		"nginx-ignition.password-reset.username":                       "",
 	}
 }

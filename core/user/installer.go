@@ -6,13 +6,19 @@ import (
 )
 
 func Install(container *dig.Container) error {
-	return container.Provide(buildCommands)
+	err := container.Provide(buildCommands)
+	if err != nil {
+		return err
+	}
+
+	return container.Invoke(registerStartup)
 }
 
 func buildCommands(
 	repository Repository,
 	configuration *configuration.Configuration,
 ) (
+	*service,
 	AuthenticateCommand,
 	DeleteCommand,
 	GetCommand,
@@ -24,7 +30,8 @@ func buildCommands(
 	OnboardingCompletedCommand,
 ) {
 	serviceInstance := &service{&repository, configuration}
-	return serviceInstance.authenticate,
+	return serviceInstance,
+		serviceInstance.authenticate,
 		serviceInstance.deleteById,
 		serviceInstance.getById,
 		serviceInstance.count,

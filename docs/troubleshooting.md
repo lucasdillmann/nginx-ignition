@@ -25,7 +25,7 @@ When the application starts, it will generate a new and random password for the 
 password in the logs like the example below. 
 
 ```text
-[2024-12-29 14:16:43.128] INFO: Password reset completed successfully for the user admin. New password: 7da75d54
+2025-03-29T18:15:02.291-0300	INFO	Password reset completed successfully for the user admin. New password: 0bd2189e
 ```
 
 Please note that nginx ignition will not finish the startup/boot process with the environment variable above set, it 
