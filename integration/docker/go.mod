@@ -1,9 +1,9 @@
 module dillmann.com.br/nginx-ignition/integration/docker
 
-go 1.24.1
+go 1.24.2
 
 require (
-	github.com/docker/docker v28.0.2+incompatible
+	github.com/docker/docker v28.1.1+incompatible
 	go.uber.org/dig v1.18.1
 )
 
@@ -29,6 +29,6 @@ require (
 	go.opentelemetry.io/otel v1.35.0 // indirect
 	go.opentelemetry.io/otel/metric v1.35.0 // indirect
 	go.opentelemetry.io/otel/trace v1.35.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/sys v0.32.0 // indirect
 	golang.org/x/time v0.11.0 // indirect
 )
