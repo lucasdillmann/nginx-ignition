@@ -12,6 +12,10 @@ import (
 	"github.com/uptrace/bun"
 )
 
+const (
+	byAccessListIdFilter = "access_list_id = ?"
+)
+
 type repository struct {
 	database *database.Database
 }
@@ -50,6 +54,11 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	}
 
 	defer transaction.Rollback()
+
+	err = r.cleanupLinkedModels(ctx, transaction, id)
+	if err != nil {
+		return err
+	}
 
 	_, err = transaction.NewDelete().
 		Model((*accessListModel)(nil)).
@@ -180,20 +189,7 @@ func (r *repository) performUpdate(ctx context.Context, model *accessListModel, 
 		return err
 	}
 
-	_, err = transaction.
-		NewDelete().
-		Table("access_list_credentials").
-		Where("access_list_id = ?", model.ID).
-		Exec(ctx)
-	if err != nil {
-		return err
-	}
-
-	_, err = transaction.
-		NewDelete().
-		Table("access_list_entry_set").
-		Where("access_list_id = ?", model.ID).
-		Exec(ctx)
+	err = r.cleanupLinkedModels(ctx, transaction, model.ID)
 	if err != nil {
 		return err
 	}
@@ -223,4 +219,24 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, m
 	}
 
 	return nil
+}
+
+func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx, id uuid.UUID) error {
+	_, err := transaction.
+		NewDelete().
+		Table("access_list_credentials").
+		Where(byAccessListIdFilter, id).
+		Exec(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = transaction.
+		NewDelete().
+		Table("access_list_entry_set").
+		Where(byAccessListIdFilter, id).
+		Exec(ctx)
+
+	return err
 }
