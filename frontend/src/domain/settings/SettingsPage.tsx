@@ -1,6 +1,6 @@
 import React from "react"
 import AppShellContext from "../../core/components/shell/AppShellContext"
-import { LogLevel, TimeUnit } from "./model/SettingsDto"
+import { LogLevel, RuntimeUser, TimeUnit } from "./model/SettingsDto"
 import SettingsService from "./SettingsService"
 import Preloader from "../../core/components/preloader/Preloader"
 import Notification from "../../core/components/notification/Notification"
@@ -220,6 +220,15 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
         return (
             <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
                 <Form.Item
+                    name={["nginx", "workerConnections"]}
+                    validateStatus={validationResult.getStatus("nginx.workerConnections")}
+                    help={validationResult.getMessage("nginx.workerConnections")}
+                    label="Connections per worker"
+                    required
+                >
+                    <InputNumber min={32} max={4096} />
+                </Form.Item>
+                <Form.Item
                     name={["nginx", "maximumBodySizeMb"]}
                     validateStatus={validationResult.getStatus("nginx.maximumBodySizeMb")}
                     help={validationResult.getMessage("nginx.maximumBodySizeMb")}
@@ -309,6 +318,18 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
                     <Input maxLength={128} minLength={1} />
                 </Form.Item>
                 <Form.Item
+                    name={["nginx", "runtimeUser"]}
+                    validateStatus={validationResult.getStatus("nginx.runtimeUser")}
+                    help={validationResult.getMessage("nginx.runtimeUser")}
+                    label="Runtime user"
+                    required
+                >
+                    <Select>
+                        <Select.Option value={RuntimeUser.ROOT}>root</Select.Option>
+                        <Select.Option value={RuntimeUser.NGINX}>nginx</Select.Option>
+                    </Select>
+                </Form.Item>
+                <Form.Item
                     name={["nginx", "workerProcesses"]}
                     validateStatus={validationResult.getStatus("nginx.workerProcesses")}
                     help={validationResult.getMessage("nginx.workerProcesses")}
@@ -316,15 +337,6 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
                     required
                 >
                     <InputNumber min={1} max={100} />
-                </Form.Item>
-                <Form.Item
-                    name={["nginx", "workerConnections"]}
-                    validateStatus={validationResult.getStatus("nginx.workerConnections")}
-                    help={validationResult.getMessage("nginx.workerConnections")}
-                    label="Connections per worker"
-                    required
-                >
-                    <InputNumber min={32} max={4096} />
                 </Form.Item>
             </Flex>
         )

@@ -33,7 +33,7 @@ func Handler(ctx *gin.Context, outcome any) {
 		handleHttpError(ctx, httpError)
 	case errors.As(err, &consistencyError):
 		handleConsistencyError(ctx, consistencyError)
-	case errors.As(err, &validationError):
+	case errors.As(err, validationError):
 		handleValidationError(ctx, validationError)
 	case errors.As(err, &coreError):
 		handleCoreError(ctx, coreError)

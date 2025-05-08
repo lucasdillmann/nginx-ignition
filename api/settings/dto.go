@@ -23,6 +23,7 @@ type nginxSettingsDto struct {
 	MaximumBodySizeMb   *int                      `json:"maximumBodySizeMb" validate:"required"`
 	SendfileEnabled     *bool                     `json:"sendfileEnabled" validate:"required"`
 	GzipEnabled         *bool                     `json:"gzipEnabled" validate:"required"`
+	RuntimeUser         *string                   `json:"runtimeUser" validate:"required"`
 }
 
 type logRotationSettingsDto struct {

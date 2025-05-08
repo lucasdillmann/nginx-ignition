@@ -42,7 +42,7 @@ func (v *validator) validate(ctx context.Context, settings *Settings) error {
 		return err
 	}
 
-	return nil
+	return v.delegate.Result()
 }
 
 func (v *validator) validateNginx(settings *NginxSettings) {
@@ -60,6 +60,13 @@ func (v *validator) validateNginx(settings *NginxSettings) {
 
 	if len(settings.DefaultContentType) > maximumDefaultContentTypeLength {
 		v.delegate.Add("nginx.defaultContentType", "Cannot have more than 128 characters")
+	}
+
+	switch settings.RuntimeUser {
+	case RootRuntimeUser, NginxRuntimeUser:
+		break
+	default:
+		v.delegate.Add("nginx.runtimeUser", "Must be either root or nginx")
 	}
 }
 

@@ -25,6 +25,7 @@ type nginxModel struct {
 	AccessLogsEnabled   bool      `bun:"access_logs_enabled"`
 	ErrorLogsEnabled    bool      `bun:"error_logs_enabled"`
 	ErrorLogsLevel      string    `bun:"error_logs_level"`
+	RuntimeUser         string    `bun:"runtime_user"`
 }
 
 type logRotationModel struct {

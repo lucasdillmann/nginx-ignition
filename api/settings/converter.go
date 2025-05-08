@@ -3,6 +3,7 @@ package settings
 import (
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
+	"github.com/aws/smithy-go/ptr"
 	"github.com/google/uuid"
 )
 
@@ -32,6 +33,7 @@ func toDto(settings *settings.Settings) *settingsDto {
 		MaximumBodySizeMb:   &settings.Nginx.MaximumBodySizeMb,
 		SendfileEnabled:     &settings.Nginx.SendfileEnabled,
 		GzipEnabled:         &settings.Nginx.GzipEnabled,
+		RuntimeUser:         ptr.String(string(settings.Nginx.RuntimeUser)),
 	}
 
 	logRotationModel := &logRotationSettingsDto{
@@ -98,6 +100,7 @@ func toDomain(input *settingsDto) *settings.Settings {
 		MaximumBodySizeMb:   *nginx.MaximumBodySizeMb,
 		SendfileEnabled:     *nginx.SendfileEnabled,
 		GzipEnabled:         *nginx.GzipEnabled,
+		RuntimeUser:         settings.RuntimeUser(*nginx.RuntimeUser),
 	}
 
 	logRotationSettings := &settings.LogRotationSettings{

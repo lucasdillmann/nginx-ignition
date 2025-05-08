@@ -33,6 +33,7 @@ func toDomain(
 			MaximumBodySizeMb:   nginx.MaximumBodySizeMb,
 			SendfileEnabled:     nginx.SendfileEnabled,
 			GzipEnabled:         nginx.GzipEnabled,
+			RuntimeUser:         settings.RuntimeUser(nginx.RuntimeUser),
 		},
 		LogRotation: &settings.LogRotationSettings{
 			Enabled:           logRotation.Enabled,
@@ -83,6 +84,7 @@ func toModel(settings *settings.Settings) (*nginxModel, *logRotationModel, *cert
 		MaximumBodySizeMb:   settings.Nginx.MaximumBodySizeMb,
 		SendfileEnabled:     settings.Nginx.SendfileEnabled,
 		GzipEnabled:         settings.Nginx.GzipEnabled,
+		RuntimeUser:         string(settings.Nginx.RuntimeUser),
 	}
 
 	logRotation := &logRotationModel{

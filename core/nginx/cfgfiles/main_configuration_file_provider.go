@@ -25,6 +25,7 @@ func (p *mainConfigurationFileProvider) provide(ctx context.Context, basePath st
 
 	contents := fmt.Sprintf(
 		`
+			user %s %s;
 			load_module modules/ndk_http_module.so;
 			load_module modules/ngx_http_js_module.so;
 			load_module modules/ngx_http_lua_module.so;
@@ -52,6 +53,8 @@ func (p *mainConfigurationFileProvider) provide(ctx context.Context, basePath st
 				%s
 			}
 		`,
+		cfg.Nginx.RuntimeUser,
+		cfg.Nginx.RuntimeUser,
 		cfg.Nginx.WorkerProcesses,
 		basePath,
 		p.getErrorLogPath(basePath, logs),

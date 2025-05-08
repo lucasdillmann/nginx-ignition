@@ -1,5 +1,5 @@
 import SettingsFormValues from "./model/SettingsFormValues"
-import { LogLevel, TimeUnit } from "./model/SettingsDto"
+import { LogLevel, RuntimeUser, TimeUnit } from "./model/SettingsDto"
 
 const SettingsDefaults: SettingsFormValues = {
     nginx: {
@@ -23,6 +23,7 @@ const SettingsDefaults: SettingsFormValues = {
         serverTokensEnabled: false,
         workerConnections: 1024,
         workerProcesses: 2,
+        runtimeUser: RuntimeUser.ROOT,
     },
     logRotation: {
         enabled: true,

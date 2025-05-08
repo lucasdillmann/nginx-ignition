@@ -19,6 +19,7 @@ type NginxSettings struct {
 	MaximumBodySizeMb   int
 	SendfileEnabled     bool
 	GzipEnabled         bool
+	RuntimeUser         RuntimeUser
 }
 
 type LogRotationSettings struct {
@@ -65,4 +66,11 @@ const (
 	MinutesTimeUnit = TimeUnit("MINUTES")
 	HoursTimeUnit   = TimeUnit("HOURS")
 	DaysTimeUnit    = TimeUnit("DAYS")
+)
+
+type RuntimeUser string
+
+const (
+	RootRuntimeUser  = RuntimeUser("root")
+	NginxRuntimeUser = RuntimeUser("nginx")
 )

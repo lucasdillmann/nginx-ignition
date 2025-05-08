@@ -49,8 +49,7 @@ func (v *validator) validate(
 	}
 
 	switch request.Role {
-	case RegularRole:
-	case AdminRole:
+	case RegularRole, AdminRole:
 		break
 	default:
 		v.delegate.Add("role", "Invalid role")
