@@ -157,7 +157,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
                 onChange={(_, option) => onChange?.((option as SelectOption<T>)?.item)}
                 onDeselect={() => onChange?.(undefined)}
                 onPopupScroll={event => this.handleScrollEvent(event)}
-                onDropdownVisibleChange={open => this.handleDropdownVisibilityChange(open)}
+                onOpenChange={open => this.handleDropdownVisibilityChange(open)}
                 onSearch={searchTerms => this.handleSearch(searchTerms)}
                 filterOption={false}
                 autoFocus={autoFocus}
