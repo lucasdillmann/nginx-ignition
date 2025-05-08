@@ -2,9 +2,9 @@ package access_list
 
 import (
 	"context"
+	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
-	"errors"
 	"github.com/google/uuid"
 )
 
@@ -35,7 +35,7 @@ func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if inUse {
-		return errors.New("access List is in use by one or more hosts")
+		return core_error.New("Access list is in use by one or more hosts", true)
 	}
 
 	return (*s.accessListRepository).DeleteByID(ctx, id)

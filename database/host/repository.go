@@ -297,5 +297,18 @@ func (r *repository) ExistsByAccessListID(ctx context.Context, accessListId uuid
 		return false, err
 	}
 
+	if count > 0 {
+		return true, nil
+	}
+
+	count, err = r.database.Select().
+		Model((*hostRouteModel)(nil)).
+		Where("access_list_id = ?", accessListId).
+		Count(ctx)
+
+	if err != nil {
+		return false, err
+	}
+
 	return count > 0, nil
 }
