@@ -17,7 +17,7 @@ WORKDIR /opt/nginx-ignition
 
 RUN mkdir data frontend migrations && \
     apk update && \
-    apk add nginx nginx-mod-http-js nginx-mod-http-lua && \
+    apk add nginx nginx-mod-http-js nginx-mod-http-lua nginx-mod-stream && \
     apk cache clean
 
 COPY ./database/common/migrations/scripts /opt/nginx-ignition/migrations

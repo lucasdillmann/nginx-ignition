@@ -9,6 +9,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/settings"
+	"dillmann.com.br/nginx-ignition/core/stream"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -16,18 +17,20 @@ import (
 )
 
 type Facade struct {
-	hostCommands  *host.Commands
-	providers     []fileProvider
-	configuration *configuration.Configuration
+	hostCommands   *host.Commands
+	streamCommands *stream.Commands
+	providers      []fileProvider
+	configuration  *configuration.Configuration
 }
 
 func newFacade(
 	hostCommands *host.Commands,
+	streamCommands *stream.Commands,
+	integrationCommands *integration.Commands,
 	configuration *configuration.Configuration,
 	accessListRepository access_list.Repository,
 	certificateRepository certificate.Repository,
 	settingsRepository settings.Repository,
-	integrationCommands *integration.Commands,
 ) *Facade {
 	providers := []fileProvider{
 		newAccessListFileProvider(accessListRepository),
@@ -36,12 +39,14 @@ func newFacade(
 		newHostRouteSourceCodeFileProvider(),
 		newMainConfigurationFileProvider(settingsRepository),
 		newMimeTypesFileProvider(),
+		newStreamFileProvider(),
 	}
 
 	return &Facade{
-		hostCommands:  hostCommands,
-		providers:     providers,
-		configuration: configuration,
+		hostCommands:   hostCommands,
+		streamCommands: streamCommands,
+		providers:      providers,
+		configuration:  configuration,
 	}
 }
 
@@ -51,7 +56,12 @@ func (f *Facade) ReplaceConfigurationFiles(ctx context.Context) error {
 		return err
 	}
 
-	log.Infof("Rebuilding nginx configuration files for %d hosts", len(hosts))
+	streams, err := f.streamCommands.GetAllEnabled(ctx)
+	if err != nil {
+		return err
+	}
+
+	log.Infof("Rebuilding nginx configuration files for %d hosts and %d streams", len(hosts), len(streams))
 
 	configDir, err := f.configuration.Get("nginx-ignition.nginx.config-path")
 	if err != nil {
@@ -67,9 +77,16 @@ func (f *Facade) ReplaceConfigurationFiles(ctx context.Context) error {
 		return err
 	}
 
+	providerCtx := &providerContext{
+		context:  ctx,
+		basePath: normalizedPath,
+		hosts:    hosts,
+		streams:  streams,
+	}
+
 	var configFiles []output
 	for _, provider := range f.providers {
-		files, err := provider.provide(ctx, normalizedPath, hosts)
+		files, err := provider.provide(providerCtx)
 		if err != nil {
 			return err
 		}

@@ -26,11 +26,11 @@ func newHostConfigurationFileProvider(
 	}
 }
 
-func (p *hostConfigurationFileProvider) provide(ctx context.Context, basePath string, hosts []*host.Host) ([]output, error) {
+func (p *hostConfigurationFileProvider) provide(ctx *providerContext) ([]output, error) {
 	var outputs []output
-	for _, h := range hosts {
+	for _, h := range ctx.hosts {
 		if h.Enabled {
-			output, err := p.buildHost(ctx, basePath, h)
+			output, err := p.buildHost(ctx.context, ctx.basePath, h)
 			if err != nil {
 				return nil, err
 			}

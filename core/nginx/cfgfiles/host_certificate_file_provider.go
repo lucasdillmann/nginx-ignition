@@ -24,13 +24,13 @@ func newHostCertificateFileProvider(certificateRepository certificate.Repository
 	}
 }
 
-func (p *hostCertificateFileProvider) provide(ctx context.Context, _ string, hosts []*host.Host) ([]output, error) {
+func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]output, error) {
 	var bindings []*host.Binding
-	for _, h := range hosts {
+	for _, h := range ctx.hosts {
 		bindings = append(bindings, h.Bindings...)
 	}
 
-	cgf, err := p.settingsRepository.Get(ctx)
+	cgf, err := p.settingsRepository.Get(ctx.context)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (p *hostCertificateFileProvider) provide(ctx context.Context, _ string, hos
 			if !uniqueCertIds[certId] {
 				uniqueCertIds[certId] = true
 
-				output, err := p.buildCertificateFile(ctx, *binding.CertificateID)
+				output, err := p.buildCertificateFile(ctx.context, *binding.CertificateID)
 				if err != nil {
 					return nil, err
 				}

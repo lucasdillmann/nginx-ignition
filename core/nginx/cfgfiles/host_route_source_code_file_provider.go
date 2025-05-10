@@ -1,7 +1,6 @@
 package cfgfiles
 
 import (
-	"context"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"fmt"
 )
@@ -12,9 +11,9 @@ func newHostRouteSourceCodeFileProvider() *hostRouteSourceCodeFileProvider {
 	return &hostRouteSourceCodeFileProvider{}
 }
 
-func (p *hostRouteSourceCodeFileProvider) provide(_ context.Context, _ string, hosts []*host.Host) ([]output, error) {
+func (p *hostRouteSourceCodeFileProvider) provide(ctx *providerContext) ([]output, error) {
 	var outputs []output
-	for _, h := range hosts {
+	for _, h := range ctx.hosts {
 		if h.Enabled {
 			outputs = append(outputs, p.buildSourceCodeFiles(h)...)
 		}

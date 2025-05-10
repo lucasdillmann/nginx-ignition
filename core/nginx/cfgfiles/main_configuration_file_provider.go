@@ -1,9 +1,9 @@
 package cfgfiles
 
 import (
-	"context"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
+	"dillmann.com.br/nginx-ignition/core/stream"
 	"fmt"
 	"strings"
 )
@@ -16,8 +16,8 @@ func newMainConfigurationFileProvider(settingsRepository settings.Repository) *m
 	return &mainConfigurationFileProvider{settingsRepository: settingsRepository}
 }
 
-func (p *mainConfigurationFileProvider) provide(ctx context.Context, basePath string, hosts []*host.Host) ([]output, error) {
-	cfg, err := p.settingsRepository.Get(ctx)
+func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]output, error) {
+	cfg, err := p.settingsRepository.Get(ctx.context)
 	if err != nil {
 		return nil, err
 	}
@@ -51,13 +51,14 @@ func (p *mainConfigurationFileProvider) provide(ctx context.Context, basePath st
 				
 				include %s/config/mime.types;
 				%s
+				%s
 			}
 		`,
 		cfg.Nginx.RuntimeUser,
 		cfg.Nginx.RuntimeUser,
 		cfg.Nginx.WorkerProcesses,
-		basePath,
-		p.getErrorLogPath(basePath, logs),
+		ctx.basePath,
+		p.getErrorLogPath(ctx.basePath, logs),
 		cfg.Nginx.WorkerConnections,
 		cfg.Nginx.DefaultContentType,
 		p.enabledFlag(cfg.Nginx.SendfileEnabled),
@@ -68,8 +69,9 @@ func (p *mainConfigurationFileProvider) provide(ctx context.Context, basePath st
 		cfg.Nginx.Timeouts.Read,
 		cfg.Nginx.Timeouts.Send,
 		cfg.Nginx.Timeouts.Send,
-		basePath,
-		p.getHostIncludes(basePath, hosts),
+		ctx.basePath,
+		p.getHostIncludes(ctx.basePath, ctx.hosts),
+		p.getStreamIncludes(ctx.basePath, ctx.streams),
 	)
 
 	return []output{
@@ -100,6 +102,15 @@ func (p *mainConfigurationFileProvider) getHostIncludes(basePath string, hosts [
 	var includes []string
 	for _, h := range hosts {
 		includes = append(includes, fmt.Sprintf("include %s/config/host-%s.conf;", basePath, h.ID))
+	}
+
+	return strings.Join(includes, "\n")
+}
+
+func (p *mainConfigurationFileProvider) getStreamIncludes(basePath string, streams []*stream.Stream) string {
+	var includes []string
+	for _, s := range streams {
+		includes = append(includes, fmt.Sprintf("include %s/config/stream-%s.conf;", basePath, s.ID))
 	}
 
 	return strings.Join(includes, "\n")

@@ -24,8 +24,8 @@ func Install(container *dig.Container) error {
 		certificate.Install,
 		host.Install,
 		integration.Install,
-		nginx.Install,
 		stream.Install,
+		nginx.Install,
 	}
 
 	for _, installer := range installers {

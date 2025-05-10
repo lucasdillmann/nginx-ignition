@@ -1,9 +1,7 @@
 package cfgfiles
 
 import (
-	"context"
 	"dillmann.com.br/nginx-ignition/core/access_list"
-	"dillmann.com.br/nginx-ignition/core/host"
 	"fmt"
 	"github.com/ncw/pwhash/apr1_crypt"
 	"strings"
@@ -17,15 +15,15 @@ func newAccessListFileProvider(accessListRepository access_list.Repository) *acc
 	return &accessListFileProvider{accessListRepository: accessListRepository}
 }
 
-func (p *accessListFileProvider) provide(ctx context.Context, basePath string, _ []*host.Host) ([]output, error) {
-	accessLists, err := p.accessListRepository.FindAll(ctx)
+func (p *accessListFileProvider) provide(ctx *providerContext) ([]output, error) {
+	accessLists, err := p.accessListRepository.FindAll(ctx.context)
 	if err != nil {
 		return nil, err
 	}
 
 	var outputs []output
 	for _, accessList := range accessLists {
-		outputs = append(outputs, p.build(accessList, basePath)...)
+		outputs = append(outputs, p.build(accessList, ctx.basePath)...)
 	}
 
 	return outputs, nil

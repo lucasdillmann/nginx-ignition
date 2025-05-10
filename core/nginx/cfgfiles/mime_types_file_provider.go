@@ -1,17 +1,12 @@
 package cfgfiles
 
-import (
-	"context"
-	"dillmann.com.br/nginx-ignition/core/host"
-)
-
 type mimeTypesFileProvider struct{}
 
 func newMimeTypesFileProvider() *mimeTypesFileProvider {
 	return &mimeTypesFileProvider{}
 }
 
-func (p *mimeTypesFileProvider) provide(_ context.Context, _ string, _ []*host.Host) ([]output, error) {
+func (p *mimeTypesFileProvider) provide(_ *providerContext) ([]output, error) {
 	contents := `
 		types {
 			text/html                                        html htm shtml;
