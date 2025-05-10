@@ -68,7 +68,7 @@ func (v *validator) validateAddress(fieldPrefix string, address Address) {
 func (v *validator) validateAddressProtocol(fieldPrefix string, address Address) {
 	if address.Protocol != SocketProtocol {
 		if address.Port == nil {
-			v.delegate.Add(fieldPrefix+".port", "Port is required when binding is using TCP or UDP protocol")
+			v.delegate.Add(fieldPrefix+".port", "Port is required when using TCP or UDP protocol")
 		} else if *address.Port < minimumPort || *address.Port > maximumPort {
 			v.delegate.Add(
 				fieldPrefix+".port",
@@ -82,14 +82,22 @@ func (v *validator) validateAddressProtocol(fieldPrefix string, address Address)
 }
 
 func (v *validator) validateAddressValue(fieldPrefix string, address Address) {
+	path := fieldPrefix + ".address"
+
 	if strings.TrimSpace(address.Address) == "" {
-		v.delegate.Add(fieldPrefix+".address", "Address cannot be empty")
-	} else {
-		if net.ParseIP(address.Address) == nil {
-			if address.Protocol != SocketProtocol && !constants.TLDPattern.MatchString(address.Address) {
-				v.delegate.Add(fieldPrefix+".address", "Not a valid IP address or domain name")
-			}
-		}
+		v.delegate.Add(path, "Address cannot be empty")
+		return
+	}
+
+	if address.Protocol == SocketProtocol && !strings.HasPrefix(address.Address, "/") {
+		v.delegate.Add(path, "Unix socket path must start with a /")
+		return
+	}
+
+	if address.Protocol != SocketProtocol &&
+		net.ParseIP(address.Address) == nil &&
+		!constants.TLDPattern.MatchString(address.Address) {
+		v.delegate.Add(path, "Not a valid IP address or domain name")
 	}
 }
 

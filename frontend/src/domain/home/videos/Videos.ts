@@ -1,6 +1,7 @@
 import AccessLists from "./access-lists.mp4"
 import Certificates from "./certificates.mp4"
 import Hosts from "./hosts.mp4"
+import Streams from "./hosts.mp4" // TODO: Record the streams demo video
 import Integrations from "./integrations.mp4"
 import Logs from "./logs.mp4"
 import Settings from "./settings.mp4"
@@ -12,4 +13,5 @@ export default {
     Integrations,
     Logs,
     Settings,
+    Streams,
 }

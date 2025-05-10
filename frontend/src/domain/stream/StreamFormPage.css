@@ -1,0 +1,41 @@
+.streams-form-inner-flex-container {
+    width: 100%;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.streams-form-inner-flex-container-column {
+    width: auto;
+    flex-direction: column;
+    flex: 1;
+    padding-right: 50px;
+}
+
+.streams-form-inner-flex-container-column:last-of-type {
+    padding-right: 0;
+}
+
+.streams-form-expanded-label-size {
+    max-width: 70%;
+}
+
+.streams-form-expanded-label-size .ant-form-item-label {
+    min-width: 70%;
+}
+
+.streams-form-section-name {
+    font-size: 19px;
+    margin: 50px 0 0 0;
+    padding: 0;
+}
+
+.streams-form-section-name:first-of-type {
+    margin-top: 0;
+}
+
+.streams-form-section-help-text {
+    color: #606060;
+    margin: 0 0 25px 0;
+    padding: 0;
+    font-size: 14px;
+}

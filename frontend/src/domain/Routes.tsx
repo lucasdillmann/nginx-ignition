@@ -11,6 +11,7 @@ import {
     HddOutlined,
     SettingOutlined,
     TeamOutlined,
+    MergeCellsOutlined,
 } from "@ant-design/icons"
 import HostListPage from "./host/HostListPage"
 import HostFormPage from "./host/HostFormPage"
@@ -26,6 +27,8 @@ import SettingsPage from "./settings/SettingsPage"
 import NotFoundPage from "./notfound/NotFoundPage"
 import AccessListFormPage from "./accesslist/AccessListFormPage"
 import AccessListListPage from "./accesslist/AccessListListPage"
+import StreamFormPage from "./stream/StreamFormPage"
+import StreamListPage from "./stream/StreamListPage"
 
 const Routes: AppRoute[] = [
     {
@@ -55,6 +58,23 @@ const Routes: AppRoute[] = [
         menuItem: {
             description: "Hosts",
             icon: <HddOutlined />,
+        },
+    },
+    {
+        path: "/streams/:id",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <StreamFormPage />,
+        activeMenuItemPath: "/streams",
+    },
+    {
+        path: "/streams",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <StreamListPage />,
+        menuItem: {
+            description: "Streams",
+            icon: <MergeCellsOutlined />,
         },
     },
     {

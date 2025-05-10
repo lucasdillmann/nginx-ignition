@@ -7,6 +7,7 @@ import {
     FileProtectOutlined,
     FileSearchOutlined,
     HddOutlined,
+    MergeCellsOutlined,
     SettingOutlined,
 } from "@ant-design/icons"
 import { Flex } from "antd"
@@ -58,8 +59,24 @@ export default class HomePage extends React.PureComponent {
 
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-left-side-video">
-                        <video src={Videos.Certificates} autoPlay loop controls />
+                        <video src={Videos.Streams} autoPlay loop controls />
                     </Flex>
+                    <Flex className="home-guide-section-content" vertical>
+                        <h2>
+                            <MergeCellsOutlined /> Streams
+                        </h2>
+                        <p>
+                            While hosts are the main way to expose your HTTP and HTTPS-based services, streams enable
+                            you to expose other services that rely on TCP, UDP and unix sockets.
+                        </p>
+                        <p>
+                            If you need to expose a game server, a database, a DNS server and anything else that don't
+                            use the HTTP protocol, streams are the way to go.
+                        </p>
+                    </Flex>
+                </Flex>
+
+                <Flex className="home-guide-section">
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
                             <AuditOutlined /> SSL certificates
@@ -78,9 +95,15 @@ export default class HomePage extends React.PureComponent {
                             selecting an option in the form.
                         </p>
                     </Flex>
+                    <Flex className="home-guide-right-side-video">
+                        <video src={Videos.Certificates} autoPlay loop controls />
+                    </Flex>
                 </Flex>
 
                 <Flex className="home-guide-section">
+                    <Flex className="home-guide-left-side-video">
+                        <video src={Videos.Logs} autoPlay loop controls />
+                    </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
                             <FileSearchOutlined /> Logs
@@ -97,15 +120,9 @@ export default class HomePage extends React.PureComponent {
                             it suits you best).
                         </p>
                     </Flex>
-                    <Flex className="home-guide-right-side-video">
-                        <video src={Videos.Logs} autoPlay loop controls />
-                    </Flex>
                 </Flex>
 
                 <Flex className="home-guide-section">
-                    <Flex className="home-guide-left-side-video">
-                        <video src={Videos.Integrations} autoPlay loop controls />
-                    </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
                             <BlockOutlined /> Integrations
@@ -116,9 +133,15 @@ export default class HomePage extends React.PureComponent {
                             that the host should forward the requests to.
                         </p>
                     </Flex>
+                    <Flex className="home-guide-right-side-video">
+                        <video src={Videos.Integrations} autoPlay loop controls />
+                    </Flex>
                 </Flex>
 
                 <Flex className="home-guide-section">
+                    <Flex className="home-guide-left-side-video">
+                        <video src={Videos.AccessLists} autoPlay loop controls />
+                    </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
                             <FileProtectOutlined /> Access lists
@@ -129,15 +152,9 @@ export default class HomePage extends React.PureComponent {
                             password (or even both, IP and credentials)
                         </p>
                     </Flex>
-                    <Flex className="home-guide-right-side-video">
-                        <video src={Videos.AccessLists} autoPlay loop controls />
-                    </Flex>
                 </Flex>
 
                 <Flex className="home-guide-section">
-                    <Flex className="home-guide-left-side-video">
-                        <video src={Videos.Settings} autoPlay loop controls />
-                    </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
                             <SettingOutlined /> Settings
@@ -155,6 +172,9 @@ export default class HomePage extends React.PureComponent {
                             Beyond that, you can also configure some of the nginx ignition's features there, like the
                             automatic renewal of SSL certificates and log rotation.
                         </p>
+                    </Flex>
+                    <Flex className="home-guide-right-side-video">
+                        <video src={Videos.Settings} autoPlay loop controls />
                     </Flex>
                 </Flex>
 
