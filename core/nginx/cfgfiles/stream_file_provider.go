@@ -49,7 +49,7 @@ func (p *streamFileProvider) buildConfigFileContents(s *stream.Stream) (*string,
 
 	contents := fmt.Sprintf(
 		`
-		stream {
+		server {
 			%s
 			%s
 			%s

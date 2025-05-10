@@ -29,6 +29,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]output,
 			load_module modules/ndk_http_module.so;
 			load_module modules/ngx_http_js_module.so;
 			load_module modules/ngx_http_lua_module.so;
+			load_module modules/ngx_stream_module.so;
 			worker_processes %d;
 			pid %s/nginx.pid;
 			error_log %s;
@@ -51,6 +52,9 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]output,
 				
 				include %s/config/mime.types;
 				%s
+			}
+			
+			stream {
 				%s
 			}
 		`,

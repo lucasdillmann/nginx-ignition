@@ -13,6 +13,8 @@ use a UI anyway), the project does aim to provide an intuitive and powerful way 
 
 Some of the available features include:
 - Multiple nginx virtual hosts, each one with its customized set of domains, routes and bindings (port listeners)
+- Multiple nginx streams (for proxying raw TCP, UPD and unix sockets traffic), each one with its customized binding and
+  backing service
 - Each host route can act as a proxy, redirection, execute custom code (JavaScript or Lua) or reply with a static 
   response
 - Easy configuration of the nginx server (maximum body/upload size, server tokens, timeouts, log level, etc)
