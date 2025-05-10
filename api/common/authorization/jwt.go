@@ -27,12 +27,12 @@ var (
 
 type Jwt struct {
 	configuration *configuration.Configuration
-	repository    *user.Repository
+	repository    user.Repository
 	revokedIds    []string
 	secretKey     []byte
 }
 
-func newJwt(configuration *configuration.Configuration, repository *user.Repository) (*Jwt, error) {
+func newJwt(configuration *configuration.Configuration, repository user.Repository) (*Jwt, error) {
 	prefixedConfiguration := configuration.WithPrefix("nginx-ignition.security.jwt")
 
 	secretKey, err := initializeSecret(prefixedConfiguration)
@@ -104,7 +104,7 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 			return nil, err
 		}
 
-		usr, err := (*j.repository).FindByID(ctx, userId)
+		usr, err := j.repository.FindByID(ctx, userId)
 		if err != nil {
 			return nil, err
 		}

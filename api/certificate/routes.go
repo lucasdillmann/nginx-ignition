@@ -5,22 +5,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Install(
-	router *gin.Engine,
-	deleteCommand certificate.DeleteCommand,
-	availableProvidersCommand certificate.AvailableProvidersCommand,
-	getCommand certificate.GetCommand,
-	listCommand certificate.ListCommand,
-	issueCommand certificate.IssueCommand,
-	renewCommand certificate.RenewCommand,
-) {
+func Install(router *gin.Engine, commands *certificate.Commands) {
 	basePath := router.Group("/api/certificates")
-	basePath.GET("", listHandler{&listCommand}.handle)
-	basePath.POST("/issue", issueHandler{&issueCommand}.handle)
-	basePath.GET("/available-providers", availableProvidersHandler{&availableProvidersCommand}.handle)
+	basePath.GET("", listHandler{commands}.handle)
+	basePath.POST("/issue", issueHandler{commands}.handle)
+	basePath.GET("/available-providers", availableProvidersHandler{commands}.handle)
 
 	byIdPath := basePath.Group("/:id")
-	byIdPath.GET("", getHandler{&getCommand}.handle)
-	byIdPath.DELETE("", deleteHandler{&deleteCommand}.handle)
-	byIdPath.POST("/renew", renewHandler{&renewCommand}.handle)
+	byIdPath.GET("", getHandler{commands}.handle)
+	byIdPath.DELETE("", deleteHandler{commands}.handle)
+	byIdPath.POST("/renew", renewHandler{commands}.handle)
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type listOptionsHandler struct {
-	command *integration.ListOptionsCommand
+	commands *integration.Commands
 }
 
 func (h listOptionsHandler) handle(ctx *gin.Context) {
@@ -23,7 +23,7 @@ func (h listOptionsHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	page, err := (*h.command)(ctx.Request.Context(), id, pageSize, pageNumber, searchTerms)
+	page, err := h.commands.ListOptions(ctx.Request.Context(), id, pageSize, pageNumber, searchTerms)
 	if err != nil {
 		panic(err)
 	}

@@ -9,7 +9,7 @@ import (
 )
 
 type updateHandler struct {
-	command *host.SaveCommand
+	commands *host.Commands
 }
 
 func (h updateHandler) handle(ctx *gin.Context) {
@@ -31,7 +31,7 @@ func (h updateHandler) handle(ctx *gin.Context) {
 	domainModel := toDomain(payload)
 	domainModel.ID = id
 
-	if err = (*h.command)(ctx.Request.Context(), domainModel); err != nil {
+	if err = h.commands.Save(ctx.Request.Context(), domainModel); err != nil {
 		panic(err)
 	}
 

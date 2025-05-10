@@ -33,27 +33,20 @@ func buildCommands(
 	hostRepository host.Repository,
 	settingsRepository settings.Repository,
 	configFilesManager *cfgfiles.Facade,
-) (
-	*service,
-	GetHostLogsCommand,
-	GetMainLogsCommand,
-	GetStatusCommand,
-	ReloadCommand,
-	StopCommand,
-	StartCommand,
-	error,
-) {
-	serviceInstance, err := newService(configuration, &settingsRepository, &hostRepository, configFilesManager)
+) (*service, *Commands, error) {
+	serviceInstance, err := newService(configuration, settingsRepository, hostRepository, configFilesManager)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, err
 	}
 
-	return serviceInstance,
-		serviceInstance.getHostLogs,
-		serviceInstance.getMainLogs,
-		serviceInstance.isRunning,
-		serviceInstance.reload,
-		serviceInstance.stop,
-		serviceInstance.start,
-		nil
+	commands := &Commands{
+		GetHostLogs: serviceInstance.getHostLogs,
+		GetMainLogs: serviceInstance.getMainLogs,
+		GetStatus:   serviceInstance.isRunning,
+		Reload:      serviceInstance.reload,
+		Stop:        serviceInstance.stop,
+		Start:       serviceInstance.start,
+	}
+
+	return serviceInstance, commands, nil
 }

@@ -11,11 +11,11 @@ import (
 )
 
 type validator struct {
-	hostRepository *Repository
+	hostRepository Repository
 	delegate       *validation.ConsistencyValidator
 }
 
-func newValidator(hostRepository *Repository) *validator {
+func newValidator(hostRepository Repository) *validator {
 	return &validator{
 		hostRepository: hostRepository,
 		delegate:       validation.NewValidator(),
@@ -53,7 +53,7 @@ func (v *validator) validateDefaultFlag(ctx context.Context, host *Host) error {
 		return nil
 	}
 
-	defaultServer, err := (*v.hostRepository).FindDefault(ctx)
+	defaultServer, err := v.hostRepository.FindDefault(ctx)
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func (v *validator) validateBinding(ctx context.Context, pathPrefix string, bind
 	case binding.Type == HttpsBindingType && binding.CertificateID == nil:
 		v.delegate.Add(certificateIdField, "Value must be informed for a HTTPS binding")
 	case binding.Type == HttpsBindingType:
-		exists, err := (*v.hostRepository).ExistsCertificateByID(ctx, *binding.CertificateID)
+		exists, err := v.hostRepository.ExistsCertificateByID(ctx, *binding.CertificateID)
 		if err != nil {
 			return err
 		}

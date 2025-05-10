@@ -21,7 +21,7 @@ NGINX_IGNITION_SECURITY_JWT_SECRET="e54rVg9NX5moIP6k2xmUwT0bauAG7pvkR7XI7ygJ6jz0
 
 ### Connecting to a PostgreSQL database
 
-nginx ignition can be used with its embedded database (powered by H2), but its strongly recommended that any long-term
+nginx ignition can be used with its embedded database (powered by SQLite), but its strongly recommended that any long-term
 installation is used alongside a PostgreSQL database. To do so, the following environment variables must be informed:
 
 - `NGINX_IGNITION_DATABASE_DRIVER` with the database type
@@ -41,10 +41,10 @@ variables should have the following values:
 NGINX_IGNITION_DATABASE_DRIVER=postgres
 NGINX_IGNITION_DATABASE_HOST=192.168.1.150
 NGINX_IGNITION_DATABASE_PORT=5432
-NGINX_IGNITION_DATABASE_NAME=my_custom_db_name
+NGINX_IGNITION_DATABASE_NAME=my_custom_db
 NGINX_IGNITION_DATABASE_SSL_MODE=disable
-NGINX_IGNITION_DATABASE_USERNAME="my_username"
-NGINX_IGNITION_DATABASE_PASSWORD="supersecretpassword"
+NGINX_IGNITION_DATABASE_USERNAME=my_username
+NGINX_IGNITION_DATABASE_PASSWORD=supersecretpassword
 ```
 
 nginx ignition will create all the required tables, indexes and alike when it boots. In future updates, any changes

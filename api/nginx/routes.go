@@ -5,18 +5,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Install(
-	router *gin.Engine,
-	reloadCommand nginx.ReloadCommand,
-	startCommand nginx.StartCommand,
-	stopCommand nginx.StopCommand,
-	statusCommand nginx.GetStatusCommand,
-	logsCommand nginx.GetMainLogsCommand,
-) {
+func Install(router *gin.Engine, commands *nginx.Commands) {
 	basePath := router.Group("/api/nginx")
-	basePath.POST("/start", startHandler{&startCommand}.handle)
-	basePath.POST("/stop", stopHandler{&stopCommand}.handle)
-	basePath.POST("/reload", reloadHandler{&reloadCommand}.handle)
-	basePath.GET("/status", statusHandler{&statusCommand}.handle)
-	basePath.GET("/logs", logsHandler{&logsCommand}.handle)
+	basePath.POST("/start", startHandler{commands}.handle)
+	basePath.POST("/stop", stopHandler{commands}.handle)
+	basePath.POST("/reload", reloadHandler{commands}.handle)
+	basePath.GET("/status", statusHandler{commands}.handle)
+	basePath.GET("/logs", logsHandler{commands}.handle)
 }

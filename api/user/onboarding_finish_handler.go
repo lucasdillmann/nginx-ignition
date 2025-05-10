@@ -9,14 +9,12 @@ import (
 )
 
 type onboardingFinishHandler struct {
-	statusCommand       *user.OnboardingCompletedCommand
-	saveCommand         *user.SaveCommand
-	authenticateCommand *user.AuthenticateCommand
-	authorizer          *authorization.RBAC
+	commands   *user.Commands
+	authorizer *authorization.RBAC
 }
 
 func (h onboardingFinishHandler) handle(ctx *gin.Context) {
-	alreadyFinished, err := (*h.statusCommand)(ctx.Request.Context())
+	alreadyFinished, err := h.commands.OnboardingCompleted(ctx.Request.Context())
 	if err != nil {
 		panic(err)
 	}
@@ -36,11 +34,11 @@ func (h onboardingFinishHandler) handle(ctx *gin.Context) {
 	domainModel.Enabled = true
 	domainModel.Role = user.AdminRole
 
-	if err = (*h.saveCommand)(ctx.Request.Context(), domainModel, nil); err != nil {
+	if err = h.commands.Save(ctx.Request.Context(), domainModel, nil); err != nil {
 		panic(err)
 	}
 
-	usr, err := (*h.authenticateCommand)(ctx.Request.Context(), domainModel.Username, *domainModel.Password)
+	usr, err := h.commands.Authenticate(ctx.Request.Context(), domainModel.Username, *domainModel.Password)
 	if err != nil {
 		panic(err)
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 type getHandler struct {
-	command *access_list.GetCommand
+	commands *access_list.Commands
 }
 
 func (h getHandler) handle(ctx *gin.Context) {
@@ -18,7 +18,7 @@ func (h getHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	accessList, err := (*h.command)(ctx.Request.Context(), id)
+	accessList, err := h.commands.Get(ctx.Request.Context(), id)
 	if err != nil {
 		panic(err)
 	}

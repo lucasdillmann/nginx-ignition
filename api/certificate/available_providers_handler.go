@@ -7,11 +7,11 @@ import (
 )
 
 type availableProvidersHandler struct {
-	command *certificate.AvailableProvidersCommand
+	commands *certificate.Commands
 }
 
 func (h availableProvidersHandler) handle(ctx *gin.Context) {
-	availableProviders, err := (*h.command)(ctx.Request.Context())
+	availableProviders, err := h.commands.AvailableProviders(ctx.Request.Context())
 	if err != nil {
 		panic(err)
 	}

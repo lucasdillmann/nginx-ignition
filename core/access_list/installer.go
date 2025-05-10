@@ -12,12 +12,12 @@ func Install(container *dig.Container) error {
 func buildCommands(
 	accessListRepository Repository,
 	hostRepository host.Repository,
-) (
-	GetCommand,
-	DeleteCommand,
-	ListCommand,
-	SaveCommand,
-) {
-	serviceInstance := newService(&accessListRepository, &hostRepository)
-	return serviceInstance.findById, serviceInstance.deleteById, serviceInstance.list, serviceInstance.save
+) *Commands {
+	serviceInstance := newService(accessListRepository, hostRepository)
+	return &Commands{
+		Delete: serviceInstance.deleteById,
+		Get:    serviceInstance.findById,
+		List:   serviceInstance.list,
+		Save:   serviceInstance.save,
+	}
 }

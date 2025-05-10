@@ -12,17 +12,17 @@ import (
 )
 
 type hostConfigurationFileProvider struct {
-	integrationOptionCommand integration.GetOptionUrlByIdCommand
-	settingsRepository       settings.Repository
+	integrationCommands *integration.Commands
+	settingsRepository  settings.Repository
 }
 
 func newHostConfigurationFileProvider(
 	settingsRepository settings.Repository,
-	integrationOptionCommand integration.GetOptionUrlByIdCommand,
+	integrationCommands *integration.Commands,
 ) *hostConfigurationFileProvider {
 	return &hostConfigurationFileProvider{
-		integrationOptionCommand: integrationOptionCommand,
-		settingsRepository:       settingsRepository,
+		integrationCommands: integrationCommands,
+		settingsRepository:  settingsRepository,
 	}
 }
 
@@ -272,7 +272,7 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	features host.FeatureSet,
 	basePath string,
 ) (string, error) {
-	proxyUrl, err := p.integrationOptionCommand(ctx, r.Integration.IntegrationID, r.Integration.OptionID)
+	proxyUrl, err := p.integrationCommands.GetOptionUrlById(ctx, r.Integration.IntegrationID, r.Integration.OptionID)
 	if err != nil {
 		return "", err
 	}

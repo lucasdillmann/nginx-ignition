@@ -28,21 +28,21 @@ type IssueRequest struct {
 }
 
 type AvailableProvider struct {
-	provider *Provider
+	provider Provider
 }
 
 func (a *AvailableProvider) ID() string {
-	return (*a.provider).ID()
+	return a.provider.ID()
 }
 
 func (a *AvailableProvider) Name() string {
-	return (*a.provider).Name()
+	return a.provider.Name()
 }
 
 func (a *AvailableProvider) DynamicFields() []*dynamic_fields.DynamicField {
-	return (*a.provider).DynamicFields()
+	return a.provider.DynamicFields()
 }
 
 func (a *AvailableProvider) Priority() int {
-	return (*a.provider).Priority()
+	return a.provider.Priority()
 }

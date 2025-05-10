@@ -7,11 +7,11 @@ import (
 )
 
 type shutdown struct {
-	command StopCommand
+	commands *Commands
 }
 
-func registerShutdown(lifecycle *lifecycle.Lifecycle, command StopCommand) {
-	lifecycle.RegisterShutdown(shutdown{command})
+func registerShutdown(lifecycle *lifecycle.Lifecycle, commands *Commands) {
+	lifecycle.RegisterShutdown(shutdown{commands})
 }
 
 func (s shutdown) Priority() int {
@@ -19,7 +19,7 @@ func (s shutdown) Priority() int {
 }
 
 func (s shutdown) Run(ctx context.Context) {
-	if err := s.command(ctx, nil); err != nil {
+	if err := s.commands.Stop(ctx); err != nil {
 		log.Warnf("Error stopping nginx: %s", err)
 	}
 }

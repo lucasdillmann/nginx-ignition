@@ -13,7 +13,7 @@ const minimumPasswordLength = 8
 
 type validator struct {
 	delegate   *validation.ConsistencyValidator
-	repository *Repository
+	repository Repository
 }
 
 func (v *validator) validate(
@@ -31,7 +31,7 @@ func (v *validator) validate(
 		v.delegate.Add("password", validation.ValueMissingMessage)
 	}
 
-	databaseUser, _ := (*v.repository).FindByUsername(ctx, updatedState.Username)
+	databaseUser, _ := v.repository.FindByUsername(ctx, updatedState.Username)
 	if databaseUser != nil && databaseUser.ID != updatedState.ID {
 		v.delegate.Add("username", "There's already a user with the same username")
 	}
@@ -62,7 +62,7 @@ func minimumLengthMessage(length int) string {
 	return "Should have at least " + strconv.Itoa(length) + " characters"
 }
 
-func newValidator(repository *Repository) *validator {
+func newValidator(repository Repository) *validator {
 	return &validator{
 		delegate:   validation.NewValidator(),
 		repository: repository,

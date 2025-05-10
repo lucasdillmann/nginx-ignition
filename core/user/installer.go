@@ -19,25 +19,20 @@ func buildCommands(
 	configuration *configuration.Configuration,
 ) (
 	*service,
-	AuthenticateCommand,
-	DeleteCommand,
-	GetCommand,
-	GetCountCommand,
-	GetStatusCommand,
-	ListCommand,
-	SaveCommand,
-	UpdatePasswordCommand,
-	OnboardingCompletedCommand,
+	*Commands,
 ) {
-	serviceInstance := &service{&repository, configuration}
-	return serviceInstance,
-		serviceInstance.authenticate,
-		serviceInstance.deleteById,
-		serviceInstance.getById,
-		serviceInstance.count,
-		serviceInstance.isEnabled,
-		serviceInstance.list,
-		serviceInstance.save,
-		serviceInstance.changePassword,
-		serviceInstance.isOnboardingCompleted
+	serviceInstance := &service{repository, configuration}
+	commands := &Commands{
+		Authenticate:        serviceInstance.authenticate,
+		Delete:              serviceInstance.deleteById,
+		Get:                 serviceInstance.getById,
+		GetCount:            serviceInstance.count,
+		GetStatus:           serviceInstance.isEnabled,
+		List:                serviceInstance.list,
+		Save:                serviceInstance.save,
+		UpdatePassword:      serviceInstance.changePassword,
+		OnboardingCompleted: serviceInstance.isOnboardingCompleted,
+	}
+
+	return serviceInstance, commands
 }

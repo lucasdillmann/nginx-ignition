@@ -9,6 +9,7 @@ import (
 	"dillmann.com.br/nginx-ignition/api/integration"
 	"dillmann.com.br/nginx-ignition/api/nginx"
 	"dillmann.com.br/nginx-ignition/api/settings"
+	"dillmann.com.br/nginx-ignition/api/stream"
 	"dillmann.com.br/nginx-ignition/api/user"
 	"go.uber.org/dig"
 )
@@ -18,36 +19,22 @@ func Install(container *dig.Container) error {
 		return err
 	}
 
-	if err := container.Invoke(settings.Install); err != nil {
-		return err
+	installFunctions := []interface{}{
+		settings.Install,
+		access_list.Install,
+		certificate.Install,
+		user.Install,
+		host.Install,
+		integration.Install,
+		nginx.Install,
+		stream.Install,
+		frontend.Install,
 	}
 
-	if err := container.Invoke(access_list.Install); err != nil {
-		return err
-	}
-
-	if err := container.Invoke(certificate.Install); err != nil {
-		return err
-	}
-
-	if err := container.Invoke(user.Install); err != nil {
-		return err
-	}
-
-	if err := container.Invoke(host.Install); err != nil {
-		return err
-	}
-
-	if err := container.Invoke(integration.Install); err != nil {
-		return err
-	}
-
-	if err := container.Invoke(nginx.Install); err != nil {
-		return err
-	}
-
-	if err := container.Invoke(frontend.Install); err != nil {
-		return err
+	for _, installFunc := range installFunctions {
+		if err := container.Invoke(installFunc); err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -9,45 +9,29 @@ import (
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/nginx"
 	"dillmann.com.br/nginx-ignition/core/settings"
+	"dillmann.com.br/nginx-ignition/core/stream"
 	"dillmann.com.br/nginx-ignition/core/user"
 	"go.uber.org/dig"
 )
 
 func Install(container *dig.Container) error {
-	if err := broadcast.Install(container); err != nil {
-		return err
+	installers := []func(*dig.Container) error{
+		broadcast.Install,
+		scheduler.Install,
+		settings.Install,
+		user.Install,
+		access_list.Install,
+		certificate.Install,
+		host.Install,
+		integration.Install,
+		nginx.Install,
+		stream.Install,
 	}
 
-	if err := scheduler.Install(container); err != nil {
-		return err
-	}
-
-	if err := settings.Install(container); err != nil {
-		return err
-	}
-
-	if err := user.Install(container); err != nil {
-		return err
-	}
-
-	if err := access_list.Install(container); err != nil {
-		return err
-	}
-
-	if err := certificate.Install(container); err != nil {
-		return err
-	}
-
-	if err := host.Install(container); err != nil {
-		return err
-	}
-
-	if err := integration.Install(container); err != nil {
-		return err
-	}
-
-	if err := nginx.Install(container); err != nil {
-		return err
+	for _, installer := range installers {
+		if err := installer(container); err != nil {
+			return err
+		}
 	}
 
 	return nil

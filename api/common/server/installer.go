@@ -39,7 +39,7 @@ func build(
 	engine := gin.New()
 	engine.Use(gin.CustomRecoveryWithWriter(nil, api_error.Handler))
 
-	authorizer, err := authorization.New(configuration, &repository)
+	authorizer, err := authorization.New(configuration, repository)
 	if err != nil {
 		return nil, nil, nil, err
 	}

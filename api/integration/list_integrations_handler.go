@@ -7,11 +7,11 @@ import (
 )
 
 type listIntegrationsHandler struct {
-	command *integration.ListCommand
+	commands *integration.Commands
 }
 
 func (h listIntegrationsHandler) handle(ctx *gin.Context) {
-	integrations, err := (*h.command)(ctx.Request.Context())
+	integrations, err := h.commands.List(ctx.Request.Context())
 	if err != nil {
 		panic(err)
 	}

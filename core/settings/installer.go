@@ -12,9 +12,12 @@ func Install(container *dig.Container) error {
 
 func buildCommands(
 	repository Repository,
-	validateBindingsCommand host.ValidateBindingCommand,
+	hostCommands *host.Commands,
 	scheduler *scheduler.Scheduler,
-) (GetCommand, SaveCommand) {
-	serviceInstance := newService(&repository, &validateBindingsCommand, scheduler)
-	return serviceInstance.get, serviceInstance.save
+) *Commands {
+	serviceInstance := newService(repository, hostCommands, scheduler)
+	return &Commands{
+		Get:  serviceInstance.get,
+		Save: serviceInstance.save,
+	}
 }

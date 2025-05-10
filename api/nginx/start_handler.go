@@ -8,11 +8,11 @@ import (
 )
 
 type startHandler struct {
-	command *nginx.StartCommand
+	commands *nginx.Commands
 }
 
 func (h startHandler) handle(ctx *gin.Context) {
-	if err := (*h.command)(ctx.Request.Context()); err != nil {
+	if err := h.commands.Start(ctx.Request.Context()); err != nil {
 		log.Warnf("Failed to start Nginx: %s", err.Error())
 		ctx.JSON(http.StatusFailedDependency, gin.H{"message": err.Error()})
 		return

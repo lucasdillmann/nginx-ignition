@@ -2,6 +2,7 @@ package settings
 
 import "context"
 
-type GetCommand func(ctx context.Context) (*Settings, error)
-
-type SaveCommand func(ctx context.Context, settings *Settings) error
+type Commands struct {
+	Get  func(ctx context.Context) (*Settings, error)
+	Save func(ctx context.Context, settings *Settings) error
+}

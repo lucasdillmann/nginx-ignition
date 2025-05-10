@@ -24,8 +24,8 @@ type service struct {
 
 func newService(
 	configuration *configuration.Configuration,
-	settingsRepository *settings.Repository,
-	hostRepository *host.Repository,
+	settingsRepository settings.Repository,
+	hostRepository host.Repository,
 	configFilesManager *cfgfiles.Facade,
 ) (*service, error) {
 	pManager, err := newProcessManager(configuration)
@@ -80,7 +80,7 @@ func (s *service) start(ctx context.Context) error {
 	})
 }
 
-func (s *service) stop(_ context.Context, _ *int) error {
+func (s *service) stop(_ context.Context) error {
 	if s.semaphore.currentState() == stoppedState {
 		return nil
 	}

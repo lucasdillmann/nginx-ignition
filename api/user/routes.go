@@ -21,34 +21,23 @@ const (
 func Install(
 	router *gin.Engine,
 	authorizer *authorization.RBAC,
-	getCommand user.GetCommand,
-	saveCommand user.SaveCommand,
-	deleteCommand user.DeleteCommand,
-	listCommand user.ListCommand,
-	updatePasswordCommand user.UpdatePasswordCommand,
-	authenticateCommand user.AuthenticateCommand,
-	onboardingStatusCommand user.OnboardingCompletedCommand,
+	commands *user.Commands,
 ) {
-	router.GET(basePath, listHandler{&listCommand}.handle)
-	router.POST(basePath, createHandler{&saveCommand}.handle)
+	router.GET(basePath, listHandler{commands}.handle)
+	router.POST(basePath, createHandler{commands}.handle)
 
-	router.GET(byIdPath, getHandler{&getCommand}.handle)
-	router.PUT(byIdPath, updateHandler{&saveCommand}.handle)
-	router.DELETE(byIdPath, deleteHandler{&deleteCommand}.handle)
+	router.GET(byIdPath, getHandler{commands}.handle)
+	router.PUT(byIdPath, updateHandler{commands}.handle)
+	router.DELETE(byIdPath, deleteHandler{commands}.handle)
 
-	router.GET(onboardingStatusPath, onboardingStatusHandler{&onboardingStatusCommand}.handle)
-	router.POST(onboardingFinishPath, onboardingFinishHandler{
-		&onboardingStatusCommand,
-		&saveCommand,
-		&authenticateCommand,
-		authorizer,
-	}.handle)
+	router.GET(onboardingStatusPath, onboardingStatusHandler{commands}.handle)
+	router.POST(onboardingFinishPath, onboardingFinishHandler{commands, authorizer}.handle)
 
 	router.POST(logoutPath, logoutHandler{authorizer}.handle)
-	router.POST(loginPath, loginHandler{&authenticateCommand, authorizer}.handle)
+	router.POST(loginPath, loginHandler{commands, authorizer}.handle)
 
 	router.GET(currentPath, currentHandler{}.handle)
-	router.POST(updatePasswordPath, updatePasswordHandler{&updatePasswordCommand}.handle)
+	router.POST(updatePasswordPath, updatePasswordHandler{commands}.handle)
 
 	authorizer.RequireRole("GET", basePath, user.AdminRole)
 	authorizer.RequireRole("POST", basePath, user.AdminRole)

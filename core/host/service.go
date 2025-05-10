@@ -8,15 +8,11 @@ import (
 )
 
 type service struct {
-	hostRepository *Repository
+	hostRepository Repository
 }
 
-func newService(
-	hostRepository *Repository,
-) *service {
-	return &service{
-		hostRepository,
-	}
+func newService(hostRepository Repository) *service {
+	return &service{hostRepository}
 }
 
 func (s *service) save(ctx context.Context, input *Host) error {
@@ -24,27 +20,27 @@ func (s *service) save(ctx context.Context, input *Host) error {
 		return err
 	}
 
-	return (*s.hostRepository).Save(ctx, input)
+	return s.hostRepository.Save(ctx, input)
 }
 
 func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
-	return (*s.hostRepository).DeleteByID(ctx, id)
+	return s.hostRepository.DeleteByID(ctx, id)
 }
 
 func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*Host], error) {
-	return (*s.hostRepository).FindPage(ctx, pageSize, pageNumber, searchTerms)
+	return s.hostRepository.FindPage(ctx, pageSize, pageNumber, searchTerms)
 }
 
 func (s *service) getByID(ctx context.Context, id uuid.UUID) (*Host, error) {
-	return (*s.hostRepository).FindByID(ctx, id)
+	return s.hostRepository.FindByID(ctx, id)
 }
 
 func (s *service) getAllEnabled(ctx context.Context) ([]*Host, error) {
-	return (*s.hostRepository).FindAllEnabled(ctx)
+	return s.hostRepository.FindAllEnabled(ctx)
 }
 
 func (s *service) existsByID(ctx context.Context, id uuid.UUID) (bool, error) {
-	return (*s.hostRepository).ExistsByID(ctx, id)
+	return s.hostRepository.ExistsByID(ctx, id)
 }
 
 func (s *service) validateBinding(

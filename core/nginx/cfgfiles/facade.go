@@ -16,37 +16,37 @@ import (
 )
 
 type Facade struct {
-	getHostsCommand host.GetAllEnabledCommand
-	providers       []fileProvider
-	configuration   *configuration.Configuration
+	hostCommands  *host.Commands
+	providers     []fileProvider
+	configuration *configuration.Configuration
 }
 
 func newFacade(
-	getHostsCommand host.GetAllEnabledCommand,
+	hostCommands *host.Commands,
 	configuration *configuration.Configuration,
 	accessListRepository access_list.Repository,
 	certificateRepository certificate.Repository,
 	settingsRepository settings.Repository,
-	integrationOptionCommand integration.GetOptionUrlByIdCommand,
+	integrationCommands *integration.Commands,
 ) *Facade {
 	providers := []fileProvider{
 		newAccessListFileProvider(accessListRepository),
 		newHostCertificateFileProvider(certificateRepository, settingsRepository),
-		newHostConfigurationFileProvider(settingsRepository, integrationOptionCommand),
+		newHostConfigurationFileProvider(settingsRepository, integrationCommands),
 		newHostRouteSourceCodeFileProvider(),
 		newMainConfigurationFileProvider(settingsRepository),
 		newMimeTypesFileProvider(),
 	}
 
 	return &Facade{
-		getHostsCommand: getHostsCommand,
-		providers:       providers,
-		configuration:   configuration,
+		hostCommands:  hostCommands,
+		providers:     providers,
+		configuration: configuration,
 	}
 }
 
 func (f *Facade) ReplaceConfigurationFiles(ctx context.Context) error {
-	hosts, err := f.getHostsCommand(ctx)
+	hosts, err := f.hostCommands.GetAllEnabled(ctx)
 	if err != nil {
 		return err
 	}

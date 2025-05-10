@@ -7,7 +7,7 @@ import (
 )
 
 type getOptionHandler struct {
-	command *integration.GetOptionByIdCommand
+	commands *integration.Commands
 }
 
 func (h getOptionHandler) handle(ctx *gin.Context) {
@@ -23,7 +23,7 @@ func (h getOptionHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	data, err := (*h.command)(ctx.Request.Context(), integrationId, optionId)
+	data, err := h.commands.GetOptionById(ctx.Request.Context(), integrationId, optionId)
 	if err != nil {
 		panic(err)
 	}

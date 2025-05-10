@@ -9,7 +9,7 @@ import (
 )
 
 type createHandler struct {
-	command *access_list.SaveCommand
+	commands *access_list.Commands
 }
 
 func (h createHandler) handle(ctx *gin.Context) {
@@ -25,7 +25,7 @@ func (h createHandler) handle(ctx *gin.Context) {
 	domainModel := toDomain(payload)
 	domainModel.ID = uuid.New()
 
-	if err := (*h.command)(ctx.Request.Context(), domainModel); err != nil {
+	if err := h.commands.Save(ctx.Request.Context(), domainModel); err != nil {
 		panic(err)
 	}
 

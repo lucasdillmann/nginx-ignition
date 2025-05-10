@@ -7,11 +7,11 @@ import (
 )
 
 type onboardingStatusHandler struct {
-	command *user.OnboardingCompletedCommand
+	commands *user.Commands
 }
 
 func (h onboardingStatusHandler) handle(ctx *gin.Context) {
-	finished, err := (*h.command)(ctx.Request.Context())
+	finished, err := h.commands.OnboardingCompleted(ctx.Request.Context())
 	if err != nil {
 		panic(err)
 	}

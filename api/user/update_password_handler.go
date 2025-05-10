@@ -9,7 +9,7 @@ import (
 )
 
 type updatePasswordHandler struct {
-	command *user.UpdatePasswordCommand
+	commands *user.Commands
 }
 
 func (h updatePasswordHandler) handle(ctx *gin.Context) {
@@ -24,7 +24,7 @@ func (h updatePasswordHandler) handle(ctx *gin.Context) {
 
 	currentUserId := authorization.CurrentSubject(ctx).User.ID
 
-	if err := (*h.command)(ctx.Request.Context(), currentUserId, *payload.CurrentPassword, *payload.NewPassword); err != nil {
+	if err := h.commands.UpdatePassword(ctx.Request.Context(), currentUserId, *payload.CurrentPassword, *payload.NewPassword); err != nil {
 		panic(err)
 	}
 

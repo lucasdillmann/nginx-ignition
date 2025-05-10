@@ -7,7 +7,7 @@ import (
 )
 
 type getConfigurationHandler struct {
-	command *integration.GetByIdCommand
+	commands *integration.Commands
 }
 
 func (h getConfigurationHandler) handle(ctx *gin.Context) {
@@ -17,7 +17,7 @@ func (h getConfigurationHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	data, err := (*h.command)(ctx.Request.Context(), id)
+	data, err := h.commands.GetById(ctx.Request.Context(), id)
 	if err != nil {
 		panic(err)
 	}

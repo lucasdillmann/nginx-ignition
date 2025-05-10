@@ -11,7 +11,7 @@ import (
 )
 
 type logsHandler struct {
-	command *nginx.GetHostLogsCommand
+	commands *nginx.Commands
 }
 
 const (
@@ -58,7 +58,7 @@ func (h logsHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	logs, err := (*h.command)(ctx.Request.Context(), id, qualifier, lineCount)
+	logs, err := h.commands.GetHostLogs(ctx.Request.Context(), id, qualifier, lineCount)
 	if err != nil {
 		panic(err)
 	}

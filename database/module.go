@@ -8,41 +8,37 @@ import (
 	"dillmann.com.br/nginx-ignition/database/host"
 	"dillmann.com.br/nginx-ignition/database/integration"
 	"dillmann.com.br/nginx-ignition/database/settings"
+	"dillmann.com.br/nginx-ignition/database/stream"
 	"dillmann.com.br/nginx-ignition/database/user"
 	"go.uber.org/dig"
 )
 
 func Install(container *dig.Container) error {
-	if err := database.Install(container); err != nil {
-		return err
+	installers := []func(*dig.Container) error{
+		database.Install,
+		migrations.Install,
 	}
 
-	if err := migrations.Install(container); err != nil {
-		return err
+	for _, installer := range installers {
+		if err := installer(container); err != nil {
+			return err
+		}
 	}
 
-	if err := container.Provide(access_list.New); err != nil {
-		return err
+	providers := []interface{}{
+		access_list.New,
+		host.New,
+		user.New,
+		settings.New,
+		certificate.New,
+		integration.New,
+		stream.New,
 	}
 
-	if err := container.Provide(host.New); err != nil {
-		return err
-	}
-
-	if err := container.Provide(user.New); err != nil {
-		return err
-	}
-
-	if err := container.Provide(settings.New); err != nil {
-		return err
-	}
-
-	if err := container.Provide(certificate.New); err != nil {
-		return err
-	}
-
-	if err := container.Provide(integration.New); err != nil {
-		return err
+	for _, provider := range providers {
+		if err := container.Provide(provider); err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -8,8 +8,7 @@ import (
 )
 
 type toggleEnabledHandler struct {
-	getCommand  *host.GetCommand
-	saveCommand *host.SaveCommand
+	commands *host.Commands
 }
 
 func (h toggleEnabledHandler) handle(ctx *gin.Context) {
@@ -19,7 +18,7 @@ func (h toggleEnabledHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	data, err := (*h.getCommand)(ctx.Request.Context(), id)
+	data, err := h.commands.Get(ctx.Request.Context(), id)
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +29,7 @@ func (h toggleEnabledHandler) handle(ctx *gin.Context) {
 	}
 
 	data.Enabled = !data.Enabled
-	err = (*h.saveCommand)(ctx.Request.Context(), data)
+	err = h.commands.Save(ctx.Request.Context(), data)
 
 	if err != nil {
 		panic(err)

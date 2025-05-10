@@ -10,21 +10,15 @@ func Install(container *dig.Container) error {
 
 func buildCommands(
 	hostRepository Repository,
-) (
-	SaveCommand,
-	DeleteCommand,
-	ListCommand,
-	GetCommand,
-	GetAllEnabledCommand,
-	ExistsCommand,
-	ValidateBindingCommand,
-) {
-	serviceInstance := newService(&hostRepository)
-	return serviceInstance.save,
-		serviceInstance.deleteByID,
-		serviceInstance.list,
-		serviceInstance.getByID,
-		serviceInstance.getAllEnabled,
-		serviceInstance.existsByID,
-		serviceInstance.validateBinding
+) *Commands {
+	serviceInstance := newService(hostRepository)
+	return &Commands{
+		Save:            serviceInstance.save,
+		Delete:          serviceInstance.deleteByID,
+		List:            serviceInstance.list,
+		Get:             serviceInstance.getByID,
+		GetAllEnabled:   serviceInstance.getAllEnabled,
+		Exists:          serviceInstance.existsByID,
+		ValidateBinding: serviceInstance.validateBinding,
+	}
 }

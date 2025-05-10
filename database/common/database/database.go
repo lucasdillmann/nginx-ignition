@@ -30,7 +30,7 @@ func (d *Database) Begin() (bun.Tx, error) {
 }
 
 func (d *Database) Select() *bun.SelectQuery {
-	return (*d.bun).NewSelect()
+	return d.bun.NewSelect()
 }
 
 func (d *Database) close() {

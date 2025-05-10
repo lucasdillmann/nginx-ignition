@@ -22,24 +22,21 @@ type ListOutput struct {
 	Enabled     bool
 }
 
-type ConfigureByIdCommand func(
-	ctx context.Context,
-	id string,
-	enabled bool,
-	parameters map[string]any,
-) error
-
-type GetByIdCommand func(ctx context.Context, id string) (*GetByIdOutput, error)
-
-type GetOptionByIdCommand func(ctx context.Context, integrationId, optionId string) (*AdapterOption, error)
-
-type GetOptionUrlByIdCommand func(ctx context.Context, integrationId, optionId string) (*string, error)
-
-type ListOptionsCommand func(
-	ctx context.Context,
-	integrationId string,
-	pageNumber, pageSize int,
-	searchTerms *string,
-) (*pagination.Page[*AdapterOption], error)
-
-type ListCommand func(ctx context.Context) ([]*ListOutput, error)
+type Commands struct {
+	GetById          func(ctx context.Context, id string) (*GetByIdOutput, error)
+	GetOptionById    func(ctx context.Context, integrationId, optionId string) (*AdapterOption, error)
+	GetOptionUrlById func(ctx context.Context, integrationId, optionId string) (*string, error)
+	List             func(ctx context.Context) ([]*ListOutput, error)
+	ConfigureById    func(
+		ctx context.Context,
+		id string,
+		enabled bool,
+		parameters map[string]any,
+	) error
+	ListOptions func(
+		ctx context.Context,
+		integrationId string,
+		pageNumber, pageSize int,
+		searchTerms *string,
+	) (*pagination.Page[*AdapterOption], error)
+}

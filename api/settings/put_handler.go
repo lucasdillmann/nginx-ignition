@@ -8,7 +8,7 @@ import (
 )
 
 type putHandler struct {
-	command *settings.SaveCommand
+	commands *settings.Commands
 }
 
 func (h putHandler) handle(ctx *gin.Context) {
@@ -22,7 +22,7 @@ func (h putHandler) handle(ctx *gin.Context) {
 	}
 
 	domain := toDomain(payload)
-	if err := (*h.command)(ctx.Request.Context(), domain); err != nil {
+	if err := h.commands.Save(ctx.Request.Context(), domain); err != nil {
 		panic(err)
 	}
 

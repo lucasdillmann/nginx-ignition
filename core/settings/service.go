@@ -7,14 +7,14 @@ import (
 )
 
 type service struct {
-	repository             *Repository
-	validateBindingCommand *host.ValidateBindingCommand
+	repository             Repository
+	validateBindingCommand *host.Commands
 	scheduler              *scheduler.Scheduler
 }
 
 func newService(
-	repository *Repository,
-	validateBindingCommand *host.ValidateBindingCommand,
+	repository Repository,
+	validateBindingCommand *host.Commands,
 	scheduler *scheduler.Scheduler,
 ) *service {
 	return &service{
@@ -25,7 +25,7 @@ func newService(
 }
 
 func (s *service) get(ctx context.Context) (*Settings, error) {
-	return (*s.repository).Get(ctx)
+	return s.repository.Get(ctx)
 }
 
 func (s *service) save(ctx context.Context, settings *Settings) error {
@@ -33,9 +33,9 @@ func (s *service) save(ctx context.Context, settings *Settings) error {
 		return err
 	}
 
-	if err := (*s.repository).Save(ctx, settings); err != nil {
+	if err := s.repository.Save(ctx, settings); err != nil {
 		return err
 	}
 
-	return (*s.scheduler).Reload(ctx)
+	return s.scheduler.Reload(ctx)
 }

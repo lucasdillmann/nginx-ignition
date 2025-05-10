@@ -10,7 +10,7 @@ import (
 )
 
 type createHandler struct {
-	command *user.SaveCommand
+	commands *user.Commands
 }
 
 func (h createHandler) handle(ctx *gin.Context) {
@@ -27,7 +27,7 @@ func (h createHandler) handle(ctx *gin.Context) {
 	domainModel.ID = uuid.New()
 	currentUserId := authorization.CurrentSubject(ctx).User.ID
 
-	if err := (*h.command)(ctx.Request.Context(), domainModel, &currentUserId); err != nil {
+	if err := h.commands.Save(ctx.Request.Context(), domainModel, &currentUserId); err != nil {
 		panic(err)
 	}
 

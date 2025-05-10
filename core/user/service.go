@@ -11,12 +11,12 @@ import (
 )
 
 type service struct {
-	repository    *Repository
+	repository    Repository
 	configuration *configuration.Configuration
 }
 
 func (s *service) authenticate(ctx context.Context, username string, password string) (*User, error) {
-	usr, err := (*s.repository).FindByUsername(ctx, username)
+	usr, err := s.repository.FindByUsername(ctx, username)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (s *service) authenticate(ctx context.Context, username string, password st
 
 func (s *service) changePassword(ctx context.Context, id uuid.UUID, currentPassword string, newPassword string) error {
 	hash := password_hash.New(s.configuration)
-	databaseState, err := (*s.repository).FindByID(ctx, id)
+	databaseState, err := s.repository.FindByID(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -68,23 +68,23 @@ func (s *service) changePassword(ctx context.Context, id uuid.UUID, currentPassw
 
 	databaseState.PasswordHash = updatedHash
 	databaseState.PasswordSalt = updatedSalt
-	return (*s.repository).Save(ctx, databaseState)
+	return s.repository.Save(ctx, databaseState)
 }
 
 func (s *service) getById(ctx context.Context, id uuid.UUID) (*User, error) {
-	return (*s.repository).FindByID(ctx, id)
+	return s.repository.FindByID(ctx, id)
 }
 
 func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
-	return (*s.repository).DeleteByID(ctx, id)
+	return s.repository.DeleteByID(ctx, id)
 }
 
 func (s *service) count(ctx context.Context) (int, error) {
-	return (*s.repository).Count(ctx)
+	return s.repository.Count(ctx)
 }
 
 func (s *service) isOnboardingCompleted(ctx context.Context) (bool, error) {
-	count, err := (*s.repository).Count(ctx)
+	count, err := s.repository.Count(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -97,7 +97,7 @@ func (s *service) save(ctx context.Context, request *SaveRequest, currentUserId 
 	var databaseState *User
 	var err error
 
-	databaseState, err = (*s.repository).FindByID(ctx, request.ID)
+	databaseState, err = s.repository.FindByID(ctx, request.ID)
 	if err != nil {
 		return err
 	}
@@ -127,19 +127,19 @@ func (s *service) save(ctx context.Context, request *SaveRequest, currentUserId 
 		return err
 	}
 
-	return (*s.repository).Save(ctx, updatedState)
+	return s.repository.Save(ctx, updatedState)
 }
 
 func (s *service) isEnabled(ctx context.Context, id uuid.UUID) (bool, error) {
-	return (*s.repository).IsEnabledByID(ctx, id)
+	return s.repository.IsEnabledByID(ctx, id)
 }
 
 func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*User], error) {
-	return (*s.repository).FindPage(ctx, pageSize, pageNumber, searchTerms)
+	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms)
 }
 
 func (s *service) resetPassword(ctx context.Context, username string) (string, error) {
-	user, err := (*s.repository).FindByUsername(ctx, username)
+	user, err := s.repository.FindByUsername(ctx, username)
 	if err != nil {
 		return "", err
 	}
@@ -156,5 +156,5 @@ func (s *service) resetPassword(ctx context.Context, username string) (string, e
 
 	user.PasswordHash = updatedHash
 	user.PasswordSalt = updatedSalt
-	return newPassword, (*s.repository).Save(ctx, user)
+	return newPassword, s.repository.Save(ctx, user)
 }

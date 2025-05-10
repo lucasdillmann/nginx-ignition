@@ -12,7 +12,7 @@ type RBAC struct {
 	jwt               *Jwt
 }
 
-func New(configuration *configuration.Configuration, repository *user.Repository) (*RBAC, error) {
+func New(configuration *configuration.Configuration, repository user.Repository) (*RBAC, error) {
 	jwt, err := newJwt(configuration, repository)
 	if err != nil {
 		return nil, err

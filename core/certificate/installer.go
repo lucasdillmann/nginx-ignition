@@ -19,15 +19,7 @@ func buildCommands(
 	hostRepository host.Repository,
 	certificateRepository Repository,
 	settingsRepository settings.Repository,
-) (
-	*service,
-	IssueCommand,
-	RenewCommand,
-	DeleteCommand,
-	GetCommand,
-	ListCommand,
-	AvailableProvidersCommand,
-) {
+) (*Commands, *service) {
 	providerResolver := func() ([]Provider, error) {
 		var output []Provider
 		if err := container.Invoke(func(providers []Provider) {
@@ -39,13 +31,14 @@ func buildCommands(
 		return output, nil
 	}
 
-	serviceInstance := newService(&certificateRepository, &hostRepository, &settingsRepository, providerResolver)
+	serviceInstance := newService(certificateRepository, hostRepository, settingsRepository, providerResolver)
+	commands := &Commands{
+		AvailableProviders: serviceInstance.availableProviders,
+		Delete:             serviceInstance.deleteById,
+		Get:                serviceInstance.getById,
+		List:               serviceInstance.list,
+		Renew:              serviceInstance.renew,
+	}
 
-	return serviceInstance,
-		serviceInstance.issue,
-		serviceInstance.renew,
-		serviceInstance.deleteById,
-		serviceInstance.getById,
-		serviceInstance.list,
-		serviceInstance.availableProviders
+	return commands, serviceInstance
 }

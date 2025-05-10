@@ -9,7 +9,7 @@ import (
 )
 
 type issueHandler struct {
-	command *certificate.IssueCommand
+	commands *certificate.Commands
 }
 
 func (h issueHandler) handle(ctx *gin.Context) {
@@ -24,7 +24,7 @@ func (h issueHandler) handle(ctx *gin.Context) {
 
 	domainModel := toIssueCertificateRequest(payload)
 
-	cert, err := (*h.command)(ctx.Request.Context(), domainModel)
+	cert, err := h.commands.Issue(ctx.Request.Context(), domainModel)
 	if api_error.CanHandle(err) {
 		panic(err)
 	}

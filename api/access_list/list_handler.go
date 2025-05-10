@@ -8,7 +8,7 @@ import (
 )
 
 type listHandler struct {
-	command *access_list.ListCommand
+	commands *access_list.Commands
 }
 
 func (h listHandler) handle(ctx *gin.Context) {
@@ -17,7 +17,7 @@ func (h listHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	page, err := (*h.command)(ctx.Request.Context(), pageSize, pageNumber, searchTerms)
+	page, err := h.commands.List(ctx.Request.Context(), pageSize, pageNumber, searchTerms)
 	if err != nil {
 		panic(err)
 	}

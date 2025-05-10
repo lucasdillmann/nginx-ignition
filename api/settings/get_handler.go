@@ -7,11 +7,11 @@ import (
 )
 
 type getHandler struct {
-	command *settings.GetCommand
+	commands *settings.Commands
 }
 
 func (h getHandler) handle(ctx *gin.Context) {
-	data, err := (*h.command)(ctx.Request.Context())
+	data, err := h.commands.Get(ctx.Request.Context())
 	if err != nil {
 		panic(err)
 	}

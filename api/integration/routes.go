@@ -10,24 +10,20 @@ import (
 func Install(
 	router *gin.Engine,
 	authorizer *authorization.RBAC,
-	listCommand integration.ListCommand,
-	getCommand integration.GetByIdCommand,
-	setConfigurationCommand integration.ConfigureByIdCommand,
-	listOptionsCommand integration.ListOptionsCommand,
-	getOptionCommand integration.GetOptionByIdCommand,
+	commands *integration.Commands,
 ) {
 	basePath := router.Group("/api/integrations")
-	basePath.GET("", listIntegrationsHandler{&listCommand}.handle)
+	basePath.GET("", listIntegrationsHandler{commands}.handle)
 
 	byIdPath := basePath.Group("/:id")
 
 	optionsPath := byIdPath.Group("/options")
-	optionsPath.GET("", listOptionsHandler{&listOptionsCommand}.handle)
-	optionsPath.GET("/:optionId", getOptionHandler{&getOptionCommand}.handle)
+	optionsPath.GET("", listOptionsHandler{commands}.handle)
+	optionsPath.GET("/:optionId", getOptionHandler{commands}.handle)
 
 	configurationPath := byIdPath.Group("/configuration")
-	configurationPath.GET("", getConfigurationHandler{&getCommand}.handle)
-	configurationPath.PUT("", putConfigurationHandler{&setConfigurationCommand}.handle)
+	configurationPath.GET("", getConfigurationHandler{commands}.handle)
+	configurationPath.PUT("", putConfigurationHandler{commands}.handle)
 
 	authorizer.RequireRole("GET", "/api/integrations/:id/configuration", user.AdminRole)
 	authorizer.RequireRole("PUT", "/api/integrations/:id/configuration", user.AdminRole)

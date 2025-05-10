@@ -9,11 +9,11 @@ import (
 )
 
 type service struct {
-	accessListRepository *Repository
-	hostRepository       *host.Repository
+	accessListRepository Repository
+	hostRepository       host.Repository
 }
 
-func newService(accessListRepository *Repository, hostRepository *host.Repository) *service {
+func newService(accessListRepository Repository, hostRepository host.Repository) *service {
 	return &service{
 		accessListRepository: accessListRepository,
 		hostRepository:       hostRepository,
@@ -25,11 +25,11 @@ func (s *service) save(ctx context.Context, accessList *AccessList) error {
 		return err
 	}
 
-	return (*s.accessListRepository).Save(ctx, accessList)
+	return s.accessListRepository.Save(ctx, accessList)
 }
 
 func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
-	inUse, err := (*s.hostRepository).ExistsByAccessListID(ctx, id)
+	inUse, err := s.hostRepository.ExistsByAccessListID(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -38,15 +38,15 @@ func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
 		return core_error.New("Access list is in use by one or more hosts", true)
 	}
 
-	return (*s.accessListRepository).DeleteByID(ctx, id)
+	return s.accessListRepository.DeleteByID(ctx, id)
 }
 
 func (s *service) findById(ctx context.Context, id uuid.UUID) (*AccessList, error) {
-	return (*s.accessListRepository).FindByID(ctx, id)
+	return s.accessListRepository.FindByID(ctx, id)
 }
 
 func (s *service) findAll(ctx context.Context) ([]*AccessList, error) {
-	return (*s.accessListRepository).FindAll(ctx)
+	return s.accessListRepository.FindAll(ctx)
 }
 
 func (s *service) list(
@@ -55,5 +55,5 @@ func (s *service) list(
 	pageNumber int,
 	searchTerms *string,
 ) (*pagination.Page[*AccessList], error) {
-	return (*s.accessListRepository).FindPage(ctx, pageNumber, pageSize, searchTerms)
+	return s.accessListRepository.FindPage(ctx, pageNumber, pageSize, searchTerms)
 }

@@ -22,13 +22,13 @@ var (
 )
 
 type validator struct {
-	validateBindingCommand *host.ValidateBindingCommand
-	delegate               *validation.ConsistencyValidator
+	commands *host.Commands
+	delegate *validation.ConsistencyValidator
 }
 
-func newValidator(validateBindingCommand *host.ValidateBindingCommand) *validator {
+func newValidator(commands *host.Commands) *validator {
 	return &validator{
-		validateBindingCommand,
+		commands,
 		validation.NewValidator(),
 	}
 }
@@ -81,7 +81,7 @@ func (v *validator) validateCertificateAutoRenew(settings *CertificateAutoRenewS
 
 func (v *validator) validateGlobalBindings(ctx context.Context, settings []*host.Binding) error {
 	for index, binding := range settings {
-		if err := (*v.validateBindingCommand)(ctx, "globalBindings", index, binding, v.delegate); err != nil {
+		if err := v.commands.ValidateBinding(ctx, "globalBindings", index, binding, v.delegate); err != nil {
 			return err
 		}
 	}

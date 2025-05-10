@@ -8,7 +8,7 @@ import (
 )
 
 type putConfigurationHandler struct {
-	command *integration.ConfigureByIdCommand
+	commands *integration.Commands
 }
 
 func (h putConfigurationHandler) handle(ctx *gin.Context) {
@@ -27,7 +27,7 @@ func (h putConfigurationHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	if err := (*h.command)(ctx.Request.Context(), id, *payload.Enabled, *payload.Parameters); err != nil {
+	if err := h.commands.ConfigureById(ctx.Request.Context(), id, *payload.Enabled, *payload.Parameters); err != nil {
 		panic(err)
 	}
 

@@ -19,7 +19,7 @@ func (d *Database) init() error {
 	var driver string
 	var err error
 
-	if driver, err = (*d.configuration).Get("driver"); err != nil {
+	if driver, err = d.configuration.Get("driver"); err != nil {
 		return err
 	}
 
@@ -82,7 +82,7 @@ func (d *Database) initSqlite() error {
 			"production environments, please refer to the documentation in order to migrate to PostgreSQL.",
 	)
 
-	folder, err := (*d.configuration).Get("data-path")
+	folder, err := d.configuration.Get("data-path")
 	if err != nil {
 		return err
 	}

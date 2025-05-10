@@ -9,7 +9,7 @@ import (
 )
 
 type loginHandler struct {
-	command    *user.AuthenticateCommand
+	commands   *user.Commands
 	authorizer *authorization.RBAC
 }
 
@@ -23,7 +23,7 @@ func (h loginHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	usr, err := (*h.command)(ctx.Request.Context(), *requestPayload.Username, *requestPayload.Password)
+	usr, err := h.commands.Authenticate(ctx.Request.Context(), *requestPayload.Username, *requestPayload.Password)
 	if err != nil {
 		panic(err)
 	}

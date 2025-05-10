@@ -6,10 +6,9 @@ import (
 	"github.com/google/uuid"
 )
 
-type DeleteCommand func(ctx context.Context, id uuid.UUID) error
-
-type GetCommand func(ctx context.Context, id uuid.UUID) (*AccessList, error)
-
-type ListCommand func(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*AccessList], error)
-
-type SaveCommand func(ctx context.Context, accessList *AccessList) error
+type Commands struct {
+	Delete func(ctx context.Context, id uuid.UUID) error
+	Get    func(ctx context.Context, id uuid.UUID) (*AccessList, error)
+	List   func(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*AccessList], error)
+	Save   func(ctx context.Context, accessList *AccessList) error
+}

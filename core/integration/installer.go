@@ -11,14 +11,7 @@ func Install(container *dig.Container) error {
 func buildCommands(
 	container *dig.Container,
 	repository Repository,
-) (
-	ConfigureByIdCommand,
-	GetByIdCommand,
-	GetOptionByIdCommand,
-	GetOptionUrlByIdCommand,
-	ListOptionsCommand,
-	ListCommand,
-) {
+) *Commands {
 	adapterResolver := func() ([]Adapter, error) {
 		var output []Adapter
 		if err := container.Invoke(func(adapters []Adapter) {
@@ -32,10 +25,12 @@ func buildCommands(
 
 	serviceInstance := newService(repository, adapterResolver)
 
-	return serviceInstance.configureById,
-		serviceInstance.getById,
-		serviceInstance.getOptionById,
-		serviceInstance.getOptionUrl,
-		serviceInstance.listOptions,
-		serviceInstance.list
+	return &Commands{
+		ConfigureById:    serviceInstance.configureById,
+		GetById:          serviceInstance.getById,
+		GetOptionById:    serviceInstance.getOptionById,
+		GetOptionUrlById: serviceInstance.getOptionUrl,
+		ListOptions:      serviceInstance.listOptions,
+		List:             serviceInstance.list,
+	}
 }

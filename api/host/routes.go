@@ -6,22 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Install(
-	router *gin.Engine,
-	getCommand host.GetCommand,
-	saveCommand host.SaveCommand,
-	deleteCommand host.DeleteCommand,
-	listCommand host.ListCommand,
-	logsCommand nginx.GetHostLogsCommand,
-) {
+func Install(router *gin.Engine, hostCommands *host.Commands, nginxCommands *nginx.Commands) {
 	basePath := router.Group("/api/hosts")
-	basePath.GET("", listHandler{&listCommand}.handle)
-	basePath.POST("", createHandler{&saveCommand}.handle)
+	basePath.GET("", listHandler{hostCommands}.handle)
+	basePath.POST("", createHandler{hostCommands}.handle)
 
 	byIdPath := basePath.Group("/:id")
-	byIdPath.GET("", getHandler{&getCommand}.handle)
-	byIdPath.PUT("", updateHandler{&saveCommand}.handle)
-	byIdPath.DELETE("", deleteHandler{&deleteCommand}.handle)
-	byIdPath.POST("/toggle-enabled", toggleEnabledHandler{&getCommand, &saveCommand}.handle)
-	byIdPath.GET("/logs/:qualifier", logsHandler{&logsCommand}.handle)
+	byIdPath.GET("", getHandler{hostCommands}.handle)
+	byIdPath.PUT("", updateHandler{hostCommands}.handle)
+	byIdPath.DELETE("", deleteHandler{hostCommands}.handle)
+	byIdPath.POST("/toggle-enabled", toggleEnabledHandler{hostCommands}.handle)
+	byIdPath.GET("/logs/:qualifier", logsHandler{nginxCommands}.handle)
 }

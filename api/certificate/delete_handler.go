@@ -8,7 +8,7 @@ import (
 )
 
 type deleteHandler struct {
-	command *certificate.DeleteCommand
+	commands *certificate.Commands
 }
 
 func (h deleteHandler) handle(ctx *gin.Context) {
@@ -18,7 +18,7 @@ func (h deleteHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	err = (*h.command)(ctx.Request.Context(), id)
+	err = h.commands.Delete(ctx.Request.Context(), id)
 	if err != nil {
 		panic(err)
 	}

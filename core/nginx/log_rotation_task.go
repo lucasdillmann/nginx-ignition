@@ -11,7 +11,7 @@ import (
 
 type logRotationTask struct {
 	service            *service
-	settingsRepository *settings.Repository
+	settingsRepository settings.Repository
 }
 
 func registerScheduledTask(
@@ -20,7 +20,7 @@ func registerScheduledTask(
 	settingsRepository settings.Repository,
 	scheduler *scheduler.Scheduler,
 ) error {
-	task := logRotationTask{service, &settingsRepository}
+	task := logRotationTask{service, settingsRepository}
 	return scheduler.Register(ctx, &task)
 }
 
@@ -29,7 +29,7 @@ func (t logRotationTask) Run(ctx context.Context) error {
 }
 
 func (t logRotationTask) Schedule(ctx context.Context) (*scheduler.Schedule, error) {
-	cfg, err := (*t.settingsRepository).Get(ctx)
+	cfg, err := t.settingsRepository.Get(ctx)
 	if err != nil {
 		return nil, err
 	}

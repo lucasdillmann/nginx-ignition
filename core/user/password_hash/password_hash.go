@@ -76,7 +76,7 @@ func (h *PasswordHash) hashValue(password []byte, salt []byte, hashIterations in
 }
 
 func readConfigValues(configuration *configuration.Configuration) (int, int, error) {
-	prefixedConfiguration := (*configuration).WithPrefix("nginx-ignition.security.user-password-hashing")
+	prefixedConfiguration := configuration.WithPrefix("nginx-ignition.security.user-password-hashing")
 	saltSize, err := prefixedConfiguration.GetInt("salt-size")
 	if err != nil {
 		return 0, 0, err

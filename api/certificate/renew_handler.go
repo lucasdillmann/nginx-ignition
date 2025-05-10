@@ -9,7 +9,7 @@ import (
 )
 
 type renewHandler struct {
-	command *certificate.RenewCommand
+	commands *certificate.Commands
 }
 
 func (h renewHandler) handle(ctx *gin.Context) {
@@ -19,7 +19,7 @@ func (h renewHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	err = (*h.command)(ctx.Request.Context(), id)
+	err = h.commands.Renew(ctx.Request.Context(), id)
 	if api_error.CanHandle(err) {
 		panic(err)
 	}
