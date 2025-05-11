@@ -42,14 +42,14 @@ export default class StreamListPage extends React.PureComponent {
     private buildColumns(): DataTableColumn<StreamResponse>[] {
         return [
             {
-                id: "description",
-                description: "Description",
-                renderer: item => item.description,
+                id: "name",
+                description: "Name",
+                renderer: item => item.name,
             },
             {
                 id: "binding.address",
-                description: "Address",
-                renderer: item => item.binding.address,
+                description: "Binding",
+                renderer: item => `${item.binding.address}:${item.binding.port}`,
                 width: 250,
             },
             {

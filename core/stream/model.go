@@ -11,12 +11,12 @@ const (
 )
 
 type Stream struct {
-	ID          uuid.UUID
-	Enabled     bool
-	Description string
-	Binding     Address
-	Backend     Address
-	FeatureSet  FeatureSet
+	ID         uuid.UUID
+	Enabled    bool
+	Name       string
+	Binding    Address
+	Backend    Address
+	FeatureSet FeatureSet
 }
 
 type Address struct {
@@ -27,7 +27,7 @@ type Address struct {
 
 type FeatureSet struct {
 	UseProxyProtocol bool
-	SSL              bool
+	SocketKeepAlive  bool
 	TCPKeepAlive     bool
 	TCPNoDelay       bool
 	TCPDeferred      bool

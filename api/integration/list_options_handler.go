@@ -23,7 +23,12 @@ func (h listOptionsHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	page, err := h.commands.ListOptions(ctx.Request.Context(), id, pageSize, pageNumber, searchTerms)
+	tcpOnly := false
+	if ctx.Query("tcpOnly") == "true" {
+		tcpOnly = true
+	}
+
+	page, err := h.commands.ListOptions(ctx.Request.Context(), id, pageSize, pageNumber, searchTerms, tcpOnly)
 	if err != nil {
 		panic(err)
 	}

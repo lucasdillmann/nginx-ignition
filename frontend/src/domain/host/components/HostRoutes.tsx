@@ -121,7 +121,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
     ): Promise<PageResponse<IntegrationOptionResponse>> {
         if (integrationId === undefined) return emptyPageResponse<IntegrationOptionResponse>()
 
-        return this.integrationService.getOptions(integrationId!!, pageSize, pageNumber, searchTerms)
+        return this.integrationService.getOptions(integrationId!!, pageSize, pageNumber, searchTerms, true)
     }
 
     private handleIntegrationChange() {
@@ -165,7 +165,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         ref={this.optionsRef}
                         disabled={currentIntegrationId === undefined}
                         itemKey={item => item.id}
-                        itemDescription={item => item.name}
+                        itemDescription={item => `${item.name} (${item.port} HTTP)`}
                         pageProvider={(pageSize, pageNumber, searchTerms) =>
                             this.fetchIntegrationOptions(pageSize, pageNumber, searchTerms, currentIntegrationId)
                         }

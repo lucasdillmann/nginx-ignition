@@ -47,9 +47,15 @@ func (p *streamFileProvider) buildConfigFileContents(s *stream.Stream) (*string,
 		tcpNoDelay = "tcp_nodelay on;"
 	}
 
+	socketKeepAlive := ""
+	if s.FeatureSet.SocketKeepAlive {
+		socketKeepAlive = "proxy_socket_keepalive on;"
+	}
+
 	contents := fmt.Sprintf(
 		`
 		server {
+			%s
 			%s
 			%s
 			%s
@@ -58,6 +64,7 @@ func (p *streamFileProvider) buildConfigFileContents(s *stream.Stream) (*string,
 		*binding,
 		*backend,
 		tcpNoDelay,
+		socketKeepAlive,
 	)
 
 	return &contents, nil
@@ -84,10 +91,6 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 
 		if s.FeatureSet.TCPKeepAlive {
 			instruction.WriteString(" so_keepalive=on")
-		}
-
-		if s.FeatureSet.SSL {
-			instruction.WriteString(" ssl")
 		}
 
 	case stream.UDPProtocol:

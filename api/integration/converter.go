@@ -16,8 +16,10 @@ func toDto(integration *integration.ListOutput) *integrationResponse {
 
 func toOptionDto(option *integration.AdapterOption) *integrationOptionResponse {
 	return &integrationOptionResponse{
-		ID:   option.ID,
-		Name: option.Name,
+		ID:       option.ID,
+		Name:     option.Name,
+		Port:     option.Port,
+		Protocol: string(option.Protocol),
 	}
 }
 

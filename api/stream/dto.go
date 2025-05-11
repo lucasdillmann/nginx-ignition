@@ -6,16 +6,16 @@ import (
 )
 
 type streamRequestDto struct {
-	Enabled     *bool          `json:"enabled" validate:"required"`
-	Description *string        `json:"description" validate:"required"`
-	FeatureSet  *featureSetDto `json:"featureSet" validate:"required"`
-	Backend     *addressDto    `json:"backend" validate:"required"`
-	Binding     *addressDto    `json:"binding" validate:"required"`
+	Enabled    *bool          `json:"enabled" validate:"required"`
+	Name       *string        `json:"name" validate:"required"`
+	FeatureSet *featureSetDto `json:"featureSet" validate:"required"`
+	Backend    *addressDto    `json:"backend" validate:"required"`
+	Binding    *addressDto    `json:"binding" validate:"required"`
 }
 
 type featureSetDto struct {
 	UseProxyProtocol *bool `json:"useProxyProtocol"`
-	SSL              *bool `json:"ssl"`
+	SocketKeepAlive  *bool `json:"socketKeepAlive"`
 	TCPKeepAlive     *bool `json:"tcpKeepAlive"`
 	TCPNoDelay       *bool `json:"tcpNoDelay"`
 	TCPDeferred      *bool `json:"tcpDeferred"`
@@ -28,10 +28,10 @@ type addressDto struct {
 }
 
 type streamResponseDto struct {
-	ID          *uuid.UUID     `json:"id" validate:"required"`
-	Enabled     *bool          `json:"enabled" validate:"required"`
-	Description *string        `json:"description" validate:"required"`
-	FeatureSet  *featureSetDto `json:"featureSet" validate:"required"`
-	Backend     *addressDto    `json:"backend" validate:"required"`
-	Binding     *addressDto    `json:"binding" validate:"required"`
+	ID         *uuid.UUID     `json:"id" validate:"required"`
+	Enabled    *bool          `json:"enabled" validate:"required"`
+	Name       *string        `json:"name" validate:"required"`
+	FeatureSet *featureSetDto `json:"featureSet" validate:"required"`
+	Backend    *addressDto    `json:"backend" validate:"required"`
+	Binding    *addressDto    `json:"binding" validate:"required"`
 }

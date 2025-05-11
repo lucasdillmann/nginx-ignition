@@ -91,6 +91,7 @@ func (s *service) listOptions(
 	integrationId string,
 	pageNumber, pageSize int,
 	searchTerms *string,
+	tcpOnly bool,
 ) (*pagination.Page[*AdapterOption], error) {
 	adapter := s.findAdapter(integrationId)
 	if adapter == nil {
@@ -106,7 +107,7 @@ func (s *service) listOptions(
 		return nil, integrationDisabledError()
 	}
 
-	options, err := adapter.GetAvailableOptions(ctx, settings.Parameters, pageNumber, pageSize, searchTerms)
+	options, err := adapter.GetAvailableOptions(ctx, settings.Parameters, pageNumber, pageSize, searchTerms, tcpOnly)
 	if err != nil {
 		return nil, err
 	}

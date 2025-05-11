@@ -1,11 +1,11 @@
 import StreamRequest, { StreamProtocol } from "./model/StreamRequest"
 
 const StreamFormDefaults: StreamRequest = {
-    description: "",
+    name: "",
     enabled: true,
     featureSet: {
         useProxyProtocol: false,
-        ssl: false,
+        socketKeepAlive: false,
         tcpKeepAlive: false,
         tcpNoDelay: false,
         tcpDeferred: false,

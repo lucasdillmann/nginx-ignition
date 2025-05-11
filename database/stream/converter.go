@@ -10,9 +10,9 @@ func toDomain(model *streamModel) *stream.Stream {
 	}
 
 	return &stream.Stream{
-		ID:          model.ID,
-		Enabled:     model.Enabled,
-		Description: model.Description,
+		ID:      model.ID,
+		Enabled: model.Enabled,
+		Name:    model.Name,
 		Binding: stream.Address{
 			Protocol: stream.Protocol(model.BindingProtocol),
 			Address:  model.BindingAddress,
@@ -25,7 +25,7 @@ func toDomain(model *streamModel) *stream.Stream {
 		},
 		FeatureSet: stream.FeatureSet{
 			UseProxyProtocol: model.UseProxyProtocol,
-			SSL:              model.SSL,
+			SocketKeepAlive:  model.SocketKeepAlive,
 			TCPKeepAlive:     model.TCPKeepAlive,
 			TCPNoDelay:       model.TCPNoDelay,
 			TCPDeferred:      model.TCPDeferred,
@@ -41,7 +41,7 @@ func toModel(domain *stream.Stream) *streamModel {
 	return &streamModel{
 		ID:               domain.ID,
 		Enabled:          domain.Enabled,
-		Description:      domain.Description,
+		Name:             domain.Name,
 		BindingProtocol:  string(domain.Binding.Protocol),
 		BindingAddress:   domain.Binding.Address,
 		BindingPort:      domain.Binding.Port,
@@ -49,7 +49,7 @@ func toModel(domain *stream.Stream) *streamModel {
 		BackendAddress:   domain.Backend.Address,
 		BackendPort:      domain.Backend.Port,
 		UseProxyProtocol: domain.FeatureSet.UseProxyProtocol,
-		SSL:              domain.FeatureSet.SSL,
+		SocketKeepAlive:  domain.FeatureSet.SocketKeepAlive,
 		TCPKeepAlive:     domain.FeatureSet.TCPKeepAlive,
 		TCPNoDelay:       domain.FeatureSet.TCPNoDelay,
 		TCPDeferred:      domain.FeatureSet.TCPDeferred,

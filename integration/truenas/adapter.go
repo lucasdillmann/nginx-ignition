@@ -59,13 +59,14 @@ func (a *Adapter) GetAvailableOptions(
 	parameters map[string]any,
 	_, _ int,
 	searchTerms *string,
+	tcpOnly bool,
 ) (*pagination.Page[*integration.AdapterOption], error) {
 	apps, err := a.getAvailableApps(parameters)
 	if err != nil {
 		return nil, err
 	}
 
-	options := a.buildOptions(apps)
+	options := a.buildOptions(apps, tcpOnly)
 
 	if searchTerms != nil {
 		var filteredOptions []*integration.AdapterOption
@@ -101,8 +102,10 @@ func (a *Adapter) GetAvailableOptionById(
 	}
 
 	return &integration.AdapterOption{
-		ID:   id,
-		Name: app.Name + " (port " + strconv.Itoa(port.HostPorts[0].HostPort) + " HTTP)",
+		ID:       id,
+		Name:     app.Name,
+		Port:     port.HostPorts[0].HostPort,
+		Protocol: integration.Protocol(strings.ToUpper(port.Protocol)),
 	}, nil
 }
 
@@ -174,22 +177,27 @@ func (a *Adapter) getWorkloadPort(
 	return nil, nil, nil
 }
 
-func (a *Adapter) buildOptions(apps []client.AvailableAppDTO) []*integration.AdapterOption {
+func (a *Adapter) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []*integration.AdapterOption {
 	var options []*integration.AdapterOption
 
 	for _, app := range apps {
 		for _, port := range app.ActiveWorkloads.UsedPorts {
-			if strings.ToLower(port.Protocol) == "tcp" {
-				for _, hostPort := range port.HostPorts {
-					if strings.Contains(hostPort.HostIp, ":") {
-						continue
-					}
-
-					options = append(options, &integration.AdapterOption{
-						ID:   app.ID + ":" + strconv.Itoa(port.ContainerPort),
-						Name: app.Name + " (port " + strconv.Itoa(hostPort.HostPort) + " HTTP)",
-					})
+			for _, hostPort := range port.HostPorts {
+				if strings.Contains(hostPort.HostIp, ":") {
+					continue
 				}
+
+				protocol := strings.ToUpper(port.Protocol)
+				if tcpOnly && protocol != "TCP" {
+					continue
+				}
+
+				options = append(options, &integration.AdapterOption{
+					ID:       fmt.Sprintf("%s:%d", app.ID, port.ContainerPort),
+					Name:     app.Name,
+					Port:     hostPort.HostPort,
+					Protocol: integration.Protocol(protocol),
+				})
 			}
 		}
 	}

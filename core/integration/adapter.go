@@ -6,6 +6,13 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
+type Protocol string
+
+const (
+	TCPProtocol Protocol = "TCP"
+	UDPProtocol Protocol = "UDP"
+)
+
 type Adapter interface {
 	ID() string
 	Name() string
@@ -17,6 +24,7 @@ type Adapter interface {
 		parameters map[string]any,
 		pageNumber, pageSize int,
 		searchTerms *string,
+		tcpOnly bool,
 	) (*pagination.Page[*AdapterOption], error)
 	GetAvailableOptionById(
 		ctx context.Context,
@@ -31,6 +39,8 @@ type Adapter interface {
 }
 
 type AdapterOption struct {
-	ID   string
-	Name string
+	ID       string
+	Name     string
+	Port     int
+	Protocol Protocol
 }

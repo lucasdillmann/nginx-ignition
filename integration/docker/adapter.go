@@ -58,8 +58,9 @@ func (a *Adapter) GetAvailableOptions(
 	parameters map[string]any,
 	_, _ int,
 	searchTerms *string,
+	tcpOnly bool,
 ) (*pagination.Page[*integration.AdapterOption], error) {
-	options, err := a.resolveAvailableOptions(ctx, parameters, searchTerms)
+	options, err := a.resolveAvailableOptions(ctx, parameters, searchTerms, tcpOnly)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +133,7 @@ func (a *Adapter) resolveAvailableOptionById(
 	parameters map[string]any,
 	id string,
 ) (*containerMetadata, error) {
-	options, err := a.resolveAvailableOptions(ctx, parameters, nil)
+	options, err := a.resolveAvailableOptions(ctx, parameters, nil, false)
 	if err != nil {
 		return nil, err
 	}
@@ -158,6 +159,7 @@ func (a *Adapter) resolveAvailableOptions(
 	ctx context.Context,
 	parameters map[string]any,
 	searchTerms *string,
+	tcpOnly bool,
 ) ([]*containerMetadata, error) {
 	dockerClient, err := startClient(parameters)
 	if err != nil {
@@ -175,19 +177,7 @@ func (a *Adapter) resolveAvailableOptions(
 		return nil, err
 	}
 
-	var options []*containerMetadata
-	for _, item := range containers {
-		for _, port := range item.Ports {
-			if port.Type == "tcp" && port.PublicPort != 0 {
-				option := &containerMetadata{
-					name:      strings.TrimPrefix(item.Names[0], "/"),
-					container: &item,
-					port:      &port,
-				}
-				options = append(options, option)
-			}
-		}
-	}
+	options := a.buildOptions(containers, tcpOnly)
 
 	if searchTerms != nil {
 		filteredOptions := make([]*containerMetadata, 0)
@@ -203,10 +193,36 @@ func (a *Adapter) resolveAvailableOptions(
 	return options, nil
 }
 
+func (a *Adapter) buildOptions(containers []container.Summary, tcpOnly bool) []*containerMetadata {
+	var options []*containerMetadata
+	for _, item := range containers {
+		for _, port := range item.Ports {
+			if tcpOnly && strings.ToUpper(port.Type) != "TCP" {
+				continue
+			}
+
+			if port.PublicPort != 0 {
+				option := &containerMetadata{
+					name:      strings.TrimPrefix(item.Names[0], "/"),
+					container: &item,
+					port:      &port,
+				}
+				options = append(options, option)
+			}
+		}
+	}
+	return options
+}
+
 func toAdapterOption(option *containerMetadata) *integration.AdapterOption {
+	port := option.port
+	protocol := strings.ToUpper(port.Type)
+
 	return &integration.AdapterOption{
-		ID:   fmt.Sprintf("%s:%d", option.container.ID, option.port.PublicPort),
-		Name: fmt.Sprintf("%s (%d HTTP)", option.name, option.port.PublicPort),
+		ID:       fmt.Sprintf("%s:%d", option.container.ID, port.PublicPort),
+		Name:     option.name,
+		Port:     int(port.PublicPort),
+		Protocol: integration.Protocol(protocol),
 	}
 }
 

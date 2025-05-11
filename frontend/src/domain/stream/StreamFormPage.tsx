@@ -109,7 +109,6 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
             featureSet.tcpDeferred = false
             featureSet.tcpNoDelay = false
             featureSet.tcpKeepAlive = false
-            featureSet.ssl = false
         }
 
         this.setState(
@@ -168,10 +167,10 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                             <Switch />
                         </Form.Item>
                         <Form.Item
-                            name="description"
-                            validateStatus={validationResult.getStatus("description")}
-                            help={validationResult.getMessage("description")}
-                            label="Description"
+                            name="name"
+                            validateStatus={validationResult.getStatus("name")}
+                            help={validationResult.getMessage("name")}
+                            label="Name"
                             required
                         >
                             <Input />
@@ -216,21 +215,21 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                             <Switch />
                         </Form.Item>
                         <Form.Item
-                            name={["featureSet", "ssl"]}
-                            validateStatus={validationResult.getStatus("featureSet.ssl")}
-                            help={validationResult.getMessage("featureSet.ssl")}
+                            name={["featureSet", "socketKeepAlive"]}
+                            validateStatus={validationResult.getStatus("featureSet.socketKeepAlive")}
+                            help={validationResult.getMessage("featureSet.socketKeepAlive")}
                             className="streams-form-expanded-label-size"
-                            label="SSL"
+                            label="Socket keep alive"
                             required
                         >
-                            <Switch disabled={!bindingTcp} />
+                            <Switch />
                         </Form.Item>
                         <Form.Item
                             name={["featureSet", "tcpKeepAlive"]}
                             validateStatus={validationResult.getStatus("featureSet.tcpKeepAlive")}
                             help={validationResult.getMessage("featureSet.tcpKeepAlive")}
                             className="streams-form-expanded-label-size"
-                            label="TCP keepalive"
+                            label="TCP keep alive"
                             required
                         >
                             <Switch disabled={!bindingTcp} />

@@ -10,12 +10,12 @@ func toDto(input *stream.Stream) *streamResponseDto {
 	}
 
 	return &streamResponseDto{
-		ID:          &input.ID,
-		Enabled:     &input.Enabled,
-		Description: &input.Description,
-		FeatureSet:  toFeatureSetDto(&input.FeatureSet),
-		Backend:     toAddressDto(&input.Backend),
-		Binding:     toAddressDto(&input.Binding),
+		ID:         &input.ID,
+		Enabled:    &input.Enabled,
+		Name:       &input.Name,
+		FeatureSet: toFeatureSetDto(&input.FeatureSet),
+		Backend:    toAddressDto(&input.Backend),
+		Binding:    toAddressDto(&input.Binding),
 	}
 }
 
@@ -25,11 +25,11 @@ func toDomain(input *streamRequestDto) *stream.Stream {
 	}
 
 	return &stream.Stream{
-		Enabled:     getBoolValue(input.Enabled),
-		Description: getStringValue(input.Description),
-		FeatureSet:  *toFeatureSet(input.FeatureSet),
-		Backend:     *toAddress(input.Backend),
-		Binding:     *toAddress(input.Binding),
+		Enabled:    getBoolValue(input.Enabled),
+		Name:       getStringValue(input.Name),
+		FeatureSet: *toFeatureSet(input.FeatureSet),
+		Backend:    *toAddress(input.Backend),
+		Binding:    *toAddress(input.Binding),
 	}
 }
 
@@ -40,7 +40,7 @@ func toFeatureSetDto(featureSet *stream.FeatureSet) *featureSetDto {
 
 	return &featureSetDto{
 		UseProxyProtocol: &featureSet.UseProxyProtocol,
-		SSL:              &featureSet.SSL,
+		SocketKeepAlive:  &featureSet.SocketKeepAlive,
 		TCPKeepAlive:     &featureSet.TCPKeepAlive,
 		TCPNoDelay:       &featureSet.TCPNoDelay,
 		TCPDeferred:      &featureSet.TCPDeferred,
@@ -66,7 +66,7 @@ func toFeatureSet(input *featureSetDto) *stream.FeatureSet {
 
 	return &stream.FeatureSet{
 		UseProxyProtocol: getBoolValue(input.UseProxyProtocol),
-		SSL:              getBoolValue(input.SSL),
+		SocketKeepAlive:  getBoolValue(input.SocketKeepAlive),
 		TCPKeepAlive:     getBoolValue(input.TCPKeepAlive),
 		TCPNoDelay:       getBoolValue(input.TCPNoDelay),
 		TCPDeferred:      getBoolValue(input.TCPDeferred),

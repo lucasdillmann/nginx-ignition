@@ -12,7 +12,7 @@ export interface StreamAddress {
 
 export interface StreamFeatureSet {
     useProxyProtocol: boolean
-    ssl: boolean
+    socketKeepAlive: boolean
     tcpKeepAlive: boolean
     tcpNoDelay: boolean
     tcpDeferred: boolean
@@ -20,7 +20,7 @@ export interface StreamFeatureSet {
 
 export default interface StreamRequest {
     enabled: boolean
-    description: string
+    name: string
     featureSet: StreamFeatureSet
     binding: StreamAddress
     backend: StreamAddress

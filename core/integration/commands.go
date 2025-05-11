@@ -38,5 +38,6 @@ type Commands struct {
 		integrationId string,
 		pageNumber, pageSize int,
 		searchTerms *string,
+		tcpOnly bool,
 	) (*pagination.Page[*AdapterOption], error)
 }

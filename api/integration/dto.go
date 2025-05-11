@@ -17,8 +17,10 @@ type integrationConfigurationResponse struct {
 }
 
 type integrationOptionResponse struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Port     int    `json:"port"`
+	Protocol string `json:"protocol"`
 }
 
 type integrationResponse struct {

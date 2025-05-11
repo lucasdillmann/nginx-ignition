@@ -97,7 +97,7 @@ func (r *repository) FindPage(
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil && *searchTerms != "" {
-		query = query.Where("description ILIKE ?", "%"+*searchTerms+"%")
+		query = query.Where("name ILIKE ?", "%"+*searchTerms+"%")
 	}
 
 	count, err := query.Count(ctx)
@@ -108,7 +108,7 @@ func (r *repository) FindPage(
 	err = query.
 		Limit(pageSize).
 		Offset(pageSize * pageNumber).
-		Order("description").
+		Order("name").
 		Scan(ctx)
 
 	if err != nil {

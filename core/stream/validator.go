@@ -31,7 +31,7 @@ func (v *validator) validate(_ context.Context, stream *Stream) error {
 		return v.delegate.Result()
 	}
 
-	v.validateDescription(stream)
+	v.validateName(stream)
 	v.validateBinding(stream)
 	v.validateBackend(stream)
 	v.validateFeatureSet(stream)
@@ -39,9 +39,9 @@ func (v *validator) validate(_ context.Context, stream *Stream) error {
 	return v.delegate.Result()
 }
 
-func (v *validator) validateDescription(stream *Stream) {
-	if strings.TrimSpace(stream.Description) == "" {
-		v.delegate.Add("description", "Description cannot be empty")
+func (v *validator) validateName(stream *Stream) {
+	if strings.TrimSpace(stream.Name) == "" {
+		v.delegate.Add("name", "Name cannot be empty")
 	}
 }
 
@@ -102,24 +102,19 @@ func (v *validator) validateAddressValue(fieldPrefix string, address Address) {
 }
 
 func (v *validator) validateFeatureSet(stream *Stream) {
-	if stream.Binding.Protocol != UDPProtocol {
+	if stream.Binding.Protocol == TCPProtocol {
 		return
 	}
 
 	if stream.FeatureSet.TCPKeepAlive {
-		v.delegate.Add("featureSet.tcpKeepAlive", "TCP Keep Alive cannot be enabled when binding uses the UDP protocol")
+		v.delegate.Add("featureSet.tcpKeepAlive", "TCP Keep Alive can be enabled only when binding uses the TCP protocol")
 	}
 
 	if stream.FeatureSet.TCPNoDelay {
-		v.delegate.Add("featureSet.tcpNoDelay", "TCP No Delay cannot be enabled when binding uses the UDP protocol")
+		v.delegate.Add("featureSet.tcpNoDelay", "TCP No Delay can be enabled only when binding uses the TCP protocol")
 	}
 
 	if stream.FeatureSet.TCPDeferred {
-		v.delegate.Add("featureSet.tcpDeferred", "TCP Deferred cannot be enabled when binding uses the UDP protocol")
+		v.delegate.Add("featureSet.tcpDeferred", "TCP Deferred can be enabled only when binding uses the TCP protocol")
 	}
-
-	if stream.FeatureSet.SSL {
-		v.delegate.Add("featureSet.ssl", "SSL cannot be enabled when binding uses the UDP protocol")
-	}
-
 }
