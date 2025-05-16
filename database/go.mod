@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/database
 
-go 1.24.2
+go 1.24.3
 
 require (
 	github.com/golang-migrate/migrate/v4 v4.18.3
@@ -9,7 +9,7 @@ require (
 	github.com/uptrace/bun v1.2.11
 	github.com/uptrace/bun/dialect/pgdialect v1.2.11
 	github.com/uptrace/bun/dialect/sqlitedialect v1.2.11
-	go.uber.org/dig v1.18.1
+	go.uber.org/dig v1.19.0
 	modernc.org/sqlite v1.37.0
 )
 
@@ -35,9 +35,9 @@ require (
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.60.0 // indirect
 	go.opentelemetry.io/otel/trace v1.35.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
-	golang.org/x/sys v0.32.0 // indirect
-	modernc.org/libc v1.64.0 // indirect
+	golang.org/x/exp v0.0.0-20250506013437-ce4c2cf36ca6 // indirect
+	golang.org/x/sys v0.33.0 // indirect
+	modernc.org/libc v1.65.6 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.10.0 // indirect
 )

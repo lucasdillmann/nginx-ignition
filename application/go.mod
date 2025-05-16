@@ -1,8 +1,8 @@
 module dillmann.com.br/nginx-ignition/application
 
-go 1.24.2
+go 1.24.3
 
-require go.uber.org/dig v1.18.1
+require go.uber.org/dig v1.19.0
 
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect

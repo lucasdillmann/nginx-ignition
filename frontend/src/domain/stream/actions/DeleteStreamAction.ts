@@ -2,6 +2,7 @@ import StreamService from "../StreamService"
 import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
 import Notification from "../../../core/components/notification/Notification"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
+import ReloadNginxAction from "../../nginx/actions/ReloadNginxAction"
 
 class DeleteStreamAction {
     private readonly service: StreamService
@@ -29,6 +30,7 @@ class DeleteStreamAction {
         return UserConfirmation.ask("Do you really want to delete the stream?")
             .then(() => this.service.delete(streamId))
             .then(() => Notification.success(`Stream deleted`, `The stream was deleted successfully`))
+            .then(() => ReloadNginxAction.execute())
             .catch(error => this.handleError(error))
     }
 }

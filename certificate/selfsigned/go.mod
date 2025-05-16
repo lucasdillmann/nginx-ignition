@@ -1,10 +1,10 @@
 module dillmann.com.br/nginx-ignition/certificate/selfsigned
 
-go 1.24.2
+go 1.24.3
 
 require (
 	github.com/google/uuid v1.6.0
-	go.uber.org/dig v1.18.1
+	go.uber.org/dig v1.19.0
 )
 
 require (
