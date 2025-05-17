@@ -17,4 +17,4 @@ create table stream (
 );
 
 create index idx_stream_enabled on stream (enabled);
-create index idx_stream_description on stream (description);
+create index idx_stream_name on stream (name);
