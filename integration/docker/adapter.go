@@ -243,5 +243,6 @@ func startClient(parameters map[string]any) (*client.Client, error) {
 
 	return client.NewClientWithOpts(
 		client.WithHost(connectionString),
+		client.WithAPIVersionNegotiation(),
 	)
 }
