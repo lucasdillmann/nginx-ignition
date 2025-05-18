@@ -7,6 +7,7 @@ import FullPageError from "../core/components/error/FullPageError"
 import ShellUserMenu from "./user/components/ShellUserMenu"
 import NginxControl from "./nginx/components/NginxControl"
 import CommonNotifications from "../core/components/notification/CommonNotifications"
+import NewVersionNotifier from "./version/NewVersionNotifier"
 
 interface AppContainerState {
     loading: boolean
@@ -26,6 +27,7 @@ export default class AppContainer extends React.Component<unknown, AppContainerS
             .then(context => {
                 AppContext.replace(context)
                 this.setState({ loading: false })
+                NewVersionNotifier.checkAndNotify()
             })
             .catch(error => {
                 CommonNotifications.failedToFetch()

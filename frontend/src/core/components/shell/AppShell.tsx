@@ -7,6 +7,7 @@ import "./AppShell.css"
 import If from "../flowcontrol/If"
 import AppShellContext, { ShellAction, ShellConfig } from "./AppShellContext"
 import { GithubFilled, LinkedinFilled } from "@ant-design/icons"
+import AppContext from "../context/AppContext"
 const { Sider, Content } = Layout
 
 export interface AppShellMenuItem {
@@ -113,6 +114,9 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
             updateConfig: config => this.setState({ config }),
         })
 
+        const { version } = AppContext.get().configuration
+        const versionDescription = version.current ? `Version ${version.current}` : "Development version"
+
         const { activeRoute, children, userMenu, serverControl } = this.props
         const { config } = this.state
         const activeMenuItemPath = activeRoute.activeMenuItemPath ?? activeRoute.path
@@ -139,6 +143,8 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                     />
                     <div className="shell-sider-bottom">
                         <div className="shell-sider-bottom-credits">
+                            {versionDescription}
+                            <br />
                             Made by Lucas Dillmann
                             <LinkedinFilled onClick={() => this.handleLinkedInClick()} />
                             <GithubFilled onClick={() => this.handleGithubClick()} />

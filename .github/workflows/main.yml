@@ -101,6 +101,7 @@ jobs:
           docker buildx build \
             --tag dillmann/nginx-ignition:snapshot \
             --platform linux/amd64,linux/arm64 \
+            --build-arg NGINX_IGNITION_VERSION="" \
             --push .
       - name: npm cache upload
         uses: actions/cache/save@v4

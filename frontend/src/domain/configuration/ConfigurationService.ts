@@ -6,6 +6,7 @@ const FALLBACK_RESPONSE: Configuration = {
     codeEditor: {
         apiKey: undefined,
     },
+    version: {},
 }
 
 export default class ConfigurationService {

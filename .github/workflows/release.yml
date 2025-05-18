@@ -62,6 +62,7 @@ jobs:
             --tag dillmann/nginx-ignition:${{ steps.tag.outputs.VERSION }} \
             --tag dillmann/nginx-ignition:latest \
             --platform linux/amd64,linux/arm64 \
+            --build-arg NGINX_IGNITION_VERSION="${{ steps.tag.outputs.VERSION }}" \
             --push .
       - name: npm cache upload
         uses: actions/cache/save@v4
