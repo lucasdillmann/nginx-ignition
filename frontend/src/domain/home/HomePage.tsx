@@ -96,7 +96,7 @@ export default class HomePage extends React.PureComponent {
                         </p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
-                        <video src={Videos.Certificates} autoPlay loop controls />
+                        <video src={Videos.SslCertificates} autoPlay loop controls />
                     </Flex>
                 </Flex>
 
