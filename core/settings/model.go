@@ -53,24 +53,24 @@ type NginxLogsSettings struct {
 type LogLevel string
 
 const (
-	WarnLogLevel  = LogLevel("WARN")
-	ErrorLogLevel = LogLevel("ERROR")
-	CritLogLevel  = LogLevel("CRIT")
-	AlertLogLevel = LogLevel("ALERT")
-	EmergLogLevel = LogLevel("EMERG")
+	WarnLogLevel  LogLevel = "WARN"
+	ErrorLogLevel LogLevel = "ERROR"
+	CritLogLevel  LogLevel = "CRIT"
+	AlertLogLevel LogLevel = "ALERT"
+	EmergLogLevel LogLevel = "EMERG"
 )
 
 type TimeUnit string
 
 const (
-	MinutesTimeUnit = TimeUnit("MINUTES")
-	HoursTimeUnit   = TimeUnit("HOURS")
-	DaysTimeUnit    = TimeUnit("DAYS")
+	MinutesTimeUnit TimeUnit = "MINUTES"
+	HoursTimeUnit   TimeUnit = "HOURS"
+	DaysTimeUnit    TimeUnit = "DAYS"
 )
 
 type RuntimeUser string
 
 const (
-	RootRuntimeUser  = RuntimeUser("root")
-	NginxRuntimeUser = RuntimeUser("nginx")
+	RootRuntimeUser  RuntimeUser = "root"
+	NginxRuntimeUser RuntimeUser = "nginx"
 )

@@ -5,7 +5,13 @@ import HostFormValues, {
     HostFormRouteIntegration,
     HostFormStaticResponse,
 } from "./model/HostFormValues"
-import HostRequest, { HostBinding, HostRoute, HostRouteIntegration, HostRouteStaticResponse } from "./model/HostRequest"
+import HostRequest, {
+    HostBinding,
+    HostRoute,
+    HostRouteIntegration,
+    HostRouteStaticResponse,
+    HostRouteType,
+} from "./model/HostRequest"
 import CertificateService from "../certificate/CertificateService"
 import IntegrationService from "../integration/IntegrationService"
 import AccessListService from "../accesslist/AccessListService"
@@ -56,9 +62,10 @@ class HostConverter {
             ? await this.accessListService.getById(route.accessListId!!)
             : undefined
         const response = this.notNull(route.response) ? this.staticResponseToFormValues(route.response!!) : undefined
-        const integration = this.notNull(route.integration)
-            ? await this.integrationToFormValues(route.integration!!)
-            : undefined
+        const integration =
+            this.notNull(route.integration) && route.type === HostRouteType.INTEGRATION
+                ? await this.integrationToFormValues(route.integration!!)
+                : undefined
 
         return {
             ...route,

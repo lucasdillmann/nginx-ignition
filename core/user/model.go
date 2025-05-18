@@ -14,8 +14,8 @@ type SaveRequest struct {
 type Role string
 
 const (
-	RegularRole = Role("REGULAR_USER")
-	AdminRole   = Role("ADMIN")
+	RegularRole Role = "REGULAR_USER"
+	AdminRole   Role = "ADMIN"
 )
 
 type User struct {

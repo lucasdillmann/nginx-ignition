@@ -7,8 +7,8 @@ import (
 type Outcome string
 
 const (
-	AllowOutcome = Outcome("ALLOW")
-	DenyOutcome  = Outcome("DENY")
+	AllowOutcome Outcome = "ALLOW"
+	DenyOutcome  Outcome = "DENY"
 )
 
 type AccessList struct {

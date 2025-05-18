@@ -5,25 +5,25 @@ import "github.com/google/uuid"
 type BindingType string
 
 const (
-	HttpBindingType  = BindingType("HTTP")
-	HttpsBindingType = BindingType("HTTPS")
+	HttpBindingType  BindingType = "HTTP"
+	HttpsBindingType BindingType = "HTTPS"
 )
 
 type CodeLanguage string
 
 const (
-	JavascriptCodeLanguage = CodeLanguage("JAVASCRIPT")
-	LuaCodeLanguage        = CodeLanguage("LUA")
+	JavascriptCodeLanguage CodeLanguage = "JAVASCRIPT"
+	LuaCodeLanguage        CodeLanguage = "LUA"
 )
 
 type RouteType string
 
 const (
-	ProxyRouteType          = RouteType("PROXY")
-	RedirectRouteType       = RouteType("REDIRECT")
-	StaticResponseRouteType = RouteType("STATIC_RESPONSE")
-	IntegrationRouteType    = RouteType("INTEGRATION")
-	SourceCodeRouteType     = RouteType("SOURCE_CODE")
+	ProxyRouteType          RouteType = "PROXY"
+	RedirectRouteType       RouteType = "REDIRECT"
+	StaticResponseRouteType RouteType = "STATIC_RESPONSE"
+	IntegrationRouteType    RouteType = "INTEGRATION"
+	SourceCodeRouteType     RouteType = "SOURCE_CODE"
 )
 
 type Host struct {

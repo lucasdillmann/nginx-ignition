@@ -15,8 +15,11 @@ func Validate(
 	var violations []validation.ConsistencyViolation
 	for _, field := range dynamicFields {
 		value, exists := parameters[field.ID]
-		conditionSatisfied := isConditionSatisfied(field, parameters)
+		if !field.Required && (!exists || value == "" || value == nil) {
+			continue
+		}
 
+		conditionSatisfied := isConditionSatisfied(field, parameters)
 		if !exists && field.Required && conditionSatisfied {
 			violations = append(violations, validation.ConsistencyViolation{
 				Path:    "parameters." + field.ID,

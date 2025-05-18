@@ -9,6 +9,7 @@ export enum HostRouteType {
     STATIC_RESPONSE = "STATIC_RESPONSE",
     INTEGRATION = "INTEGRATION",
     SOURCE_CODE = "SOURCE_CODE",
+    DIRECTORY = "DIRECTORY",
 }
 
 export enum HostRouteSourceCodeLanguage {
