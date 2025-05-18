@@ -38,6 +38,7 @@ func buildCommands(
 		Get:                serviceInstance.getById,
 		List:               serviceInstance.list,
 		Renew:              serviceInstance.renew,
+		Issue:              serviceInstance.issue,
 	}
 
 	return commands, serviceInstance
