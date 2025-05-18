@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="docs/readme-screenshots-v2.png" alt="" width="600" />
+    <img src="docs/readme-screenshots.png" alt="" width="600" />
 </p>
 <h1 align="center">
     nginx ignition
