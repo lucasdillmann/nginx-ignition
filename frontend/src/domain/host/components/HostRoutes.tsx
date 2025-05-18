@@ -2,7 +2,14 @@ import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import { Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Select, Switch } from "antd"
 import If from "../../../core/components/flowcontrol/If"
-import { ArrowDownOutlined, ArrowUpOutlined, CloseOutlined, PlusOutlined, SettingOutlined } from "@ant-design/icons"
+import {
+    ArrowDownOutlined,
+    ArrowUpOutlined,
+    CloseOutlined,
+    PlusOutlined,
+    QuestionCircleFilled,
+    SettingOutlined,
+} from "@ant-design/icons"
 import { HostFormRoute } from "../model/HostFormValues"
 import { HostRouteSourceCodeLanguage, HostRouteType } from "../model/HostRequest"
 import FormLayout from "../../../core/components/form/FormLayout"
@@ -72,6 +79,26 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
                 help={validationResult.getMessage(`routes[${index}].targetUri`)}
                 label="Destination URL"
+                required
+            >
+                <Input />
+            </Form.Item>
+        )
+    }
+
+    private renderDirectoryRoute(field: FormListFieldData, index: number): React.ReactNode {
+        const { validationResult } = this.props
+        const { name } = field
+
+        return (
+            <Form.Item
+                {...FormLayout.ExpandedLabeledItem}
+                className="host-form-route-target-uri"
+                layout="vertical"
+                name={[name, "targetUri"]}
+                validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
+                help={validationResult.getMessage(`routes[${index}].targetUri`)}
+                label="Directory path"
                 required
             >
                 <Input />
@@ -391,6 +418,32 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         onRouteRemove(index)
     }
 
+    private buildRouteTypeTooltipContents() {
+        return (
+            <>
+                <p>The route type defines how the requests should be handled</p>
+                <p>
+                    <b>Integration:</b> Proxies requests to an app running in a TrueNAS or Docker container
+                </p>
+                <p>
+                    <b>Proxy:</b> Proxies requests to an app using a target URL
+                </p>
+                <p>
+                    <b>Redirect:</b> Redirects requests to an third-party URL
+                </p>
+                <p>
+                    <b>Static response:</b> Returns a static response with a predefined status code, headers and body
+                </p>
+                <p>
+                    <b>Source code:</b> Executes a JavaScript or Lua code to handle requests
+                </p>
+                <p>
+                    <b>Directory:</b> Serves static files from a directory with listing enabled
+                </p>
+            </>
+        )
+    }
+
     private renderRoute(field: FormListFieldData, operations: FormListOperation, index: number) {
         const { validationResult, routes } = this.props
         const { routeSettingsOpenModalIndex } = this.state
@@ -407,6 +460,10 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     validateStatus={validationResult.getStatus(`routes[${index}].type`)}
                     help={validationResult.getMessage(`routes[${index}].type`)}
                     label="Type"
+                    tooltip={{
+                        title: this.buildRouteTypeTooltipContents(),
+                        icon: <QuestionCircleFilled />,
+                    }}
                     required
                 >
                     <Select>
@@ -415,6 +472,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         <Select.Option value={HostRouteType.REDIRECT}>Redirect</Select.Option>
                         <Select.Option value={HostRouteType.STATIC_RESPONSE}>Static response</Select.Option>
                         <Select.Option value={HostRouteType.SOURCE_CODE}>Source code</Select.Option>
+                        <Select.Option value={HostRouteType.DIRECTORY}>Directory listing</Select.Option>
                     </Select>
                 </Form.Item>
                 <Form.Item
@@ -437,6 +495,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     {this.renderStaticResponseRoute(field, index)}
                 </If>
                 <If condition={type === HostRouteType.SOURCE_CODE}>{this.renderSourceCodeRoute(field, index)}</If>
+                <If condition={type === HostRouteType.DIRECTORY}>{this.renderDirectoryRoute(field, index)}</If>
 
                 <HostRouteSettingsModal
                     open={index === routeSettingsOpenModalIndex}

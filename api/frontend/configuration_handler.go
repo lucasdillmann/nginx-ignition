@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
+	"time"
 )
 
 type configurationHandler struct {
@@ -41,7 +42,11 @@ func (h *configurationHandler) handle(ctx *gin.Context) {
 }
 
 func resolveLatestAvailableVersion() *string {
-	resp, err := http.Get("https://api.github.com/repos/lucasdillmann/nginx-ignition/releases?per_page=1&page=0")
+	client := http.Client{
+		Timeout: 1 * time.Second,
+	}
+
+	resp, err := client.Get("https://api.github.com/repos/lucasdillmann/nginx-ignition/releases?per_page=1&page=0")
 	if err != nil {
 		log.Warnf("Failed to fetch latest available version: %s", err)
 		return nil

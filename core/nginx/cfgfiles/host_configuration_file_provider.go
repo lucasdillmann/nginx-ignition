@@ -211,9 +211,34 @@ func (p *hostConfigurationFileProvider) buildRoute(
 		return p.buildIntegrationRoute(ctx, r, h.FeatureSet, basePath)
 	case host.SourceCodeRouteType:
 		return p.buildSourceCodeRoute(h, r, basePath), nil
+	case host.DirectoryRouteType:
+		return p.buildDirectoryRoute(r, basePath), nil
 	default:
 		return "", fmt.Errorf("invalid route type: %s", r.Type)
 	}
+}
+
+func (p *hostConfigurationFileProvider) buildDirectoryRoute(r *host.Route, basePath string) string {
+	normalizedSourcePath := r.SourcePath
+	if !strings.HasSuffix(normalizedSourcePath, "/") {
+		normalizedSourcePath += "/"
+	}
+
+	return fmt.Sprintf(
+		`location %s {
+			rewrite  ^%s(.*) /$1 break;
+			root %s;
+			autoindex on;
+			autoindex_exact_size off;
+			autoindex_format html;
+			autoindex_localtime on;
+			%s
+		}`,
+		normalizedSourcePath,
+		normalizedSourcePath,
+		*r.TargetURI,
+		p.buildRouteSettings(r, basePath),
+	)
 }
 
 func (p *hostConfigurationFileProvider) buildStaticResponseRoute(

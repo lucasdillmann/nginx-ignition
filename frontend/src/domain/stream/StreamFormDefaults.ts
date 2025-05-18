@@ -5,7 +5,7 @@ const StreamFormDefaults: StreamRequest = {
     enabled: true,
     featureSet: {
         useProxyProtocol: false,
-        socketKeepAlive: false,
+        socketKeepAlive: true,
         tcpKeepAlive: false,
         tcpNoDelay: false,
         tcpDeferred: false,

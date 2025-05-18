@@ -6,6 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"net"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -184,8 +185,26 @@ func (v *validator) validateRoute(route *Route, index int, distinctPaths *map[st
 		v.validateIntegrationRoute(route, index)
 	case SourceCodeRouteType:
 		v.validateSourceCodeRoute(route, index)
+	case DirectoryRouteType:
+		v.validateDirectoryRoute(route, index)
 	default:
 		v.delegate.Add(buildIndexedRoutePath(index, "type"), invalidValue)
+	}
+}
+
+func (v *validator) validateDirectoryRoute(route *Route, index int) {
+	targetUriField := buildIndexedRoutePath(index, "targetUri")
+	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
+		v.delegate.Add(targetUriField, "Value is required when the type of the route is directory")
+		return
+	}
+
+	if !strings.HasPrefix(*route.TargetURI, "/") {
+		v.delegate.Add(targetUriField, "Value must start with a /")
+	}
+
+	if file, err := os.Stat(*route.TargetURI); err != nil || !file.IsDir() {
+		v.delegate.Add(targetUriField, "Path doesn't exist or isn't a valid directory")
 	}
 }
 

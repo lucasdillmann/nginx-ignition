@@ -24,6 +24,7 @@ const (
 	StaticResponseRouteType RouteType = "STATIC_RESPONSE"
 	IntegrationRouteType    RouteType = "INTEGRATION"
 	SourceCodeRouteType     RouteType = "SOURCE_CODE"
+	DirectoryRouteType      RouteType = "DIRECTORY"
 )
 
 type Host struct {
