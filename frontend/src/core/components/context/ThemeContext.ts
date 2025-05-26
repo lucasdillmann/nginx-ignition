@@ -12,8 +12,10 @@ class ThemeContext {
 
     constructor() {
         this.repository = new LocalStorageRepository("nginxIgnition.theme")
-        this.current = this.repository.getOrDefault("light")
         this.listeners = []
+
+        const prefersDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+        this.current = this.repository.getOrDefault(prefersDarkMode ? "dark" : "light")
     }
 
     register(listener: ThemeListener) {
