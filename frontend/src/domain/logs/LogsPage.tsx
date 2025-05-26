@@ -257,7 +257,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
 
     private renderEmptyState(message: string, userActionOutcome: boolean = true) {
         const icon = userActionOutcome ? (
-            <ExclamationCircleOutlined style={{ fontSize: 70, color: "#b8b8b8" }} />
+            <ExclamationCircleOutlined style={{ fontSize: 70, color: "var(--nginxIgnition-colorTextDisabled)" }} />
         ) : undefined
 
         return <Empty image={icon} description={message} />

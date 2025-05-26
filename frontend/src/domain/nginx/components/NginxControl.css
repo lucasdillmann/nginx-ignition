@@ -1,9 +1,9 @@
 .nginx-control-container {
     padding: 15px 20px;
     margin: 0 0 10px;
-    background: #032c53;
+    background: var(--nginxIgnition-colorPrimary);
     border-radius: 0;
-    color: #fff;
+    color: white;
 }
 
 .nginx-control-status-title {

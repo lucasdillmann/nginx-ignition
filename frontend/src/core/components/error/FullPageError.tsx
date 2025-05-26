@@ -1,7 +1,8 @@
 import React from "react"
-import { Button, Flex, Modal } from "antd"
+import { Button, Flex } from "antd"
 import "./FullPageError.css"
 import { ExclamationCircleFilled } from "@ant-design/icons"
+import { themedModal } from "../theme/ThemedResources"
 
 export interface FullPageErrorProps {
     title?: string
@@ -13,7 +14,7 @@ export interface FullPageErrorProps {
 export default class FullPageError extends React.Component<FullPageErrorProps> {
     private openErrorDetailsModal() {
         const { error } = this.props
-        Modal.info({
+        themedModal().info({
             title: "Error details",
             type: "info",
             width: 1000,
@@ -41,7 +42,7 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
         const { icon } = this.props
         if (icon !== undefined) return icon
 
-        return <ExclamationCircleFilled style={{ fontSize: 48, color: "red" }} />
+        return <ExclamationCircleFilled style={{ fontSize: 48, color: "var(--nginxIgnition-colorError)" }} />
     }
 
     render() {

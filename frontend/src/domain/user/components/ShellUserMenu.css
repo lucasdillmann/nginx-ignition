@@ -1,7 +1,7 @@
 .shell-user-menu-container {
     color: white;
     padding: 20px;
-    background-color: #032c53;
+    background-color: var(--nginxIgnition-colorPrimary);
     width: 100%;
     font-size: 16px;
 }
@@ -10,7 +10,8 @@
     padding-right: 10px;
 }
 
-.shell-user-menu-actions span {
+.shell-user-menu-actions span,
+.shell-user-menu-actions .theme-toggle-button {
     padding-left: 10px;
 }
 

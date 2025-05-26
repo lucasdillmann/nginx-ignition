@@ -19,13 +19,13 @@
 }
 
 .shell-sider-logo {
-    color: #fff;
+    color: white;
     font-size: 18px;
     padding: 58px 20px 20px;
 }
 
 .shell-sider-logo-link {
-    color: #fff;
+    color: white;
     font-size: 26px;
 }
 
@@ -41,7 +41,7 @@
 }
 
 .shell-sider-bottom-credits {
-    color: #aeaeae;
+    color: var(--nginxIgnition-colorTextSecondary);
     padding: 10px;
     align-content: center;
     text-align: center;
@@ -62,7 +62,7 @@
     vertical-align: center;
     position: sticky;
     top: 0;
-    background: #f5f5f5;
+    background: var(--nginxIgnition-colorBgLayout);
     z-index: 99;
 }
 
@@ -90,7 +90,7 @@
 }
 
 .shell-content-main {
-    background: #fff;
+    background: var(--nginxIgnition-colorBgContainer);
     padding: 25px;
     flex-grow: 1;
     z-index: 98;

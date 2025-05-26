@@ -1,7 +1,8 @@
 import React from "react"
 import { Flex, Form, FormInstance, Modal } from "antd"
-import { UserOutlined, LogoutOutlined, LockOutlined } from "@ant-design/icons"
+import { LockOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons"
 import AppContext from "../../../core/components/context/AppContext"
+import ThemeToggle from "../../../core/components/theme/ThemeToggle"
 import "./ShellUserMenu.css"
 import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
 import UserService from "../UserService"
@@ -139,6 +140,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
                 </Flex>
                 <Flex className="shell-user-menu-user-name">{user?.name}</Flex>
                 <Flex className="shell-user-menu-actions">
+                    <ThemeToggle />
                     <LockOutlined onClick={() => this.openChangePasswordModal()} />
                     <LogoutOutlined onClick={() => this.handleLogout()} />
                 </Flex>

@@ -34,12 +34,12 @@ const ACTION_ICON_STYLE = {
 
 const DISABLED_ACTION_ICON_STYLE = {
     ...ACTION_ICON_STYLE,
-    color: "#a8a8a8",
+    color: "var(--nginxIgnition-colorTextSecondary)",
 }
 
 const ENABLED_ACTION_ICON_STYLE = {
     ...ACTION_ICON_STYLE,
-    color: "#000000",
+    color: "var(--nginxIgnition-colorText)",
 }
 
 export interface HostRoutesProps {

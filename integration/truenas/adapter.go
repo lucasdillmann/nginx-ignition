@@ -28,7 +28,7 @@ func newAdapter(configuration *configuration.Configuration) (*Adapter, error) {
 }
 
 func (a *Adapter) ID() string {
-	return "TRUENAS_SCALE"
+	return "TRUENAS"
 }
 
 func (a *Adapter) Name() string {

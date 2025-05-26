@@ -14,7 +14,9 @@ export default class NotFoundPage extends React.PureComponent {
             <FullPageError
                 title="Not found"
                 message="There's nothing here. Try checking if the address you've opened is the right one."
-                icon={<QuestionCircleFilled style={{ fontSize: 48, color: "grey" }} />}
+                icon={
+                    <QuestionCircleFilled style={{ fontSize: 48, color: "var(--nginxIgnition-colorTextSecondary)" }} />
+                }
             />
         )
     }

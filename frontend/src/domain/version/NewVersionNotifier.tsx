@@ -1,6 +1,6 @@
 import AppContext from "../../core/components/context/AppContext"
 import LocalStorageRepository from "../../core/repository/LocalStorageRepository"
-import { Modal } from "antd"
+import { themedModal } from "../../core/components/theme/ThemedResources"
 
 class NewVersionNotifier {
     private readonly repository: LocalStorageRepository<string>
@@ -16,7 +16,7 @@ class NewVersionNotifier {
 
         if (current && latest && current !== latest && lastNotifiedNewVersion !== latest) {
             this.repository.set(latest)
-            const modalInstance = Modal.info({
+            const modalInstance = themedModal().info({
                 type: "info",
                 title: "New version available",
                 content: `nginx ignition ${latest} is available with (probably) new features. You can check the project release page for the changelog and more.`,

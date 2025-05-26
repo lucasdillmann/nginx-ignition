@@ -53,13 +53,17 @@ export default class HomePage extends React.PureComponent {
                         </p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
-                        <video src={Videos.Hosts} autoPlay loop controls />
+                        <div className="home-guide-video-mask">
+                            <video src={Videos.Hosts} autoPlay loop controls />
+                        </div>
                     </Flex>
                 </Flex>
 
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-left-side-video">
-                        <video src={Videos.Streams} autoPlay loop controls />
+                        <div className="home-guide-video-mask">
+                            <video src={Videos.Streams} autoPlay loop controls />
+                        </div>
                     </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
@@ -96,13 +100,17 @@ export default class HomePage extends React.PureComponent {
                         </p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
-                        <video src={Videos.SslCertificates} autoPlay loop controls />
+                        <div className="home-guide-video-mask">
+                            <video src={Videos.SslCertificates} autoPlay loop controls />
+                        </div>
                     </Flex>
                 </Flex>
 
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-left-side-video">
-                        <video src={Videos.Logs} autoPlay loop controls />
+                        <div className="home-guide-video-mask">
+                            <video src={Videos.Logs} autoPlay loop controls />
+                        </div>
                     </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
@@ -134,13 +142,17 @@ export default class HomePage extends React.PureComponent {
                         </p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
-                        <video src={Videos.Integrations} autoPlay loop controls />
+                        <div className="home-guide-video-mask">
+                            <video src={Videos.Integrations} autoPlay loop controls />
+                        </div>
                     </Flex>
                 </Flex>
 
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-left-side-video">
-                        <video src={Videos.AccessLists} autoPlay loop controls />
+                        <div className="home-guide-video-mask">
+                            <video src={Videos.AccessLists} autoPlay loop controls />
+                        </div>
                     </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
@@ -174,7 +186,9 @@ export default class HomePage extends React.PureComponent {
                         </p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
-                        <video src={Videos.Settings} autoPlay loop controls />
+                        <div className="home-guide-video-mask">
+                            <video src={Videos.Settings} autoPlay loop controls />
+                        </div>
                     </Flex>
                 </Flex>
 

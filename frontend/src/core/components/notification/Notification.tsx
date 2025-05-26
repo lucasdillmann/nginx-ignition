@@ -1,7 +1,7 @@
-import { notification } from "antd"
 import { IconType } from "antd/es/notification/interface"
 import React from "react"
 import { LoadingOutlined } from "@ant-design/icons"
+import { themedNotification } from "../theme/ThemedResources"
 
 export interface Props {
     key?: React.Key
@@ -24,7 +24,7 @@ function showNotification(
         duration = role === "status" ? undefined : 5
     }
 
-    notification.open({
+    themedNotification().open({
         closable: role !== "status",
         showProgress: role !== "status",
         placement: "bottomRight",
@@ -59,7 +59,7 @@ class Notification {
     }
 
     close(key: React.Key) {
-        notification.destroy(key)
+        themedNotification().destroy(key)
     }
 }
 

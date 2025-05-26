@@ -94,7 +94,7 @@ export default class StreamAddressInput extends React.Component<StreamAddressInp
                         <div
                             id="description_help"
                             className="ant-form-item-explain ant-form-item-explain-connected"
-                            style={{ color: "red" }}
+                            style={{ color: "var(--nginxIgnition-colorError)" }}
                         >
                             <div className="ant-form-item-explain-error">{validationMessage}</div>
                         </div>

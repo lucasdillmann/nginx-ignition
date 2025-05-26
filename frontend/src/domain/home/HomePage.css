@@ -11,7 +11,7 @@
 }
 
 .home-guide-header-container {
-    background: #f5f5f5;
+    background: var(--nginxIgnition-colorBgLayout);
     padding: 120px 40px;
     margin-bottom: 50px;
 }
@@ -46,6 +46,19 @@
     margin: 0 40px 0 0;
 }
 
+.home-guide-video-mask {
+    border-radius: 10px;
+    overflow: hidden;
+    height: fit-content;
+    line-height: 0;
+}
+
+.home-guide-video-mask video {
+    margin: 0;
+    padding: 0;
+    line-height: 0 !important;
+}
+
 .home-guide-section {
     margin-bottom: 80px;
     padding: 0 40px;
@@ -57,7 +70,7 @@
 }
 
 .home-guide-footer-container {
-    background: #f5f5f5;
+    background: var(--nginxIgnition-colorBgLayout);
     padding: 60px 40px;
 }
 

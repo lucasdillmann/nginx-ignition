@@ -1,5 +1,5 @@
-import { Modal } from "antd"
 import React from "react"
+import { themedModal } from "../theme/ThemedResources"
 
 class UserConfirmation {
     ask(message: React.ReactNode): Promise<void> {
@@ -10,7 +10,7 @@ class UserConfirmation {
         const messageContainer = <div style={{ margin: "0 0 15px" }}>{message}</div>
 
         return new Promise(resolve => {
-            Modal.confirm({
+            themedModal().confirm({
                 title: "Beware, young padawan",
                 content: messageContainer,
                 cancelText: "No",

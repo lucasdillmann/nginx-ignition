@@ -1,3 +1,33 @@
+:root {
+    --nginxIgnition-colorBgLayout: #f5f5f5;
+    --nginxIgnition-colorBgContainer: #fff;
+    --nginxIgnition-colorText: #000;
+    --nginxIgnition-colorTextSecondary: #aeaeae;
+    --nginxIgnition-colorBgElevated: #fafafa;
+    --nginxIgnition-colorBorderSecondary: #f0f0f0;
+    --nginxIgnition-colorWarning: #a67a17;
+    --nginxIgnition-colorSuccess: #3f831a;
+    --nginxIgnition-colorError: #af1f1f;
+    --nginxIgnition-colorTextDisabled: #b8b8b8;
+    --nginxIgnition-colorTextTertiary: #606060;
+    --nginxIgnition-colorPrimary: #032c53;
+}
+
+html[data-theme="dark"] {
+    --nginxIgnition-colorBgLayout: #1f1f1f;
+    --nginxIgnition-colorBgContainer: #141414;
+    --nginxIgnition-colorText: #fff;
+    --nginxIgnition-colorTextSecondary: #8c8c8c;
+    --nginxIgnition-colorBgElevated: #272727;
+    --nginxIgnition-colorBorderSecondary: #303030;
+    --nginxIgnition-colorWarning: #d8bd14;
+    --nginxIgnition-colorSuccess: #49aa19;
+    --nginxIgnition-colorError: #d32029;
+    --nginxIgnition-colorTextDisabled: #5a5a5a;
+    --nginxIgnition-colorTextTertiary: #a6a6a6;
+    --nginxIgnition-colorPrimary: #032c53;
+}
+
 body {
     margin: 0;
     font-family:
@@ -5,7 +35,7 @@ body {
         "Droid Sans", "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: #f5f5f5;
+    background: var(--nginxIgnition-colorBgLayout);
 }
 
 .ant-app,
@@ -18,7 +48,7 @@ code {
 }
 
 .preloader-container {
-    background: #f5f5f5;
+    background: var(--nginxIgnition-colorBgLayout);
     position: fixed;
     top: 0;
     left: 0;

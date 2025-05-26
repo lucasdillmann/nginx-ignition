@@ -58,9 +58,9 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
         const { running } = this.state
 
         let metadata: { color: string; description: string }
-        if (running === undefined) metadata = { color: "#a67a17", description: "unknown" }
-        else if (running) metadata = { color: "#3f831a", description: "online" }
-        else metadata = { color: "#af1f1f", description: "offline" }
+        if (running === undefined) metadata = { color: "var(--nginxIgnition-colorWarning)", description: "unknown" }
+        else if (running) metadata = { color: "var(--nginxIgnition-colorSuccess)", description: "online" }
+        else metadata = { color: "var(--nginxIgnition-colorError)", description: "offline" }
 
         return (
             <Badge

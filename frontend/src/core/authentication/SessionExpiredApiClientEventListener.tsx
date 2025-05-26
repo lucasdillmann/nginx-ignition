@@ -2,9 +2,9 @@ import React from "react"
 import ApiClientEventListener from "../apiclient/event/ApiClientEventListener"
 import ApiResponse from "../apiclient/ApiResponse"
 import AppContext from "../components/context/AppContext"
-import { Modal } from "antd"
 import { navigateTo } from "../components/router/AppRouter"
 import { buildLoginUrl } from "./buildLoginUrl"
+import { themedModal } from "../components/theme/ThemedResources"
 
 export default class SessionExpiredApiClientEventListener implements ApiClientEventListener {
     private alreadyShown: boolean
@@ -28,7 +28,7 @@ export default class SessionExpiredApiClientEventListener implements ApiClientEv
 
         this.alreadyShown = true
 
-        Modal.confirm({
+        themedModal().confirm({
             title: "Your AFK was too long",
             content: (
                 <>

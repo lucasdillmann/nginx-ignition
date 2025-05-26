@@ -1,7 +1,8 @@
 import NginxService from "../NginxService"
 import Notification, { Props } from "../../../core/components/notification/Notification"
 import React from "react"
-import { Button, Modal } from "antd"
+import { Button } from "antd"
+import { themedModal } from "../../../core/components/theme/ThemedResources"
 
 export enum ActionType {
     RELOAD,
@@ -108,7 +109,7 @@ export default class GenericNginxAction {
     private showErrorNotification(error: any) {
         const { title, content } = this.metadata().messages.error
         const onClick = () =>
-            Modal.error({
+            themedModal().error({
                 width: 750,
                 title: "Error details",
                 content: <code>{error.response?.body?.message ?? error.message}</code>,

@@ -1,14 +1,14 @@
-import { Modal } from "antd"
 import { LoadingOutlined } from "@ant-design/icons"
 import React from "react"
 import "./ModalPreloader.css"
+import { themedModal } from "../theme/ThemedResources"
 
 export default class ModalPreloader {
     private timeoutId?: number
     private instance?: { destroy: () => void }
 
     private open(title: string, content: string) {
-        this.instance = Modal.info({
+        this.instance = themedModal().info({
             title,
             content,
             footer: null,

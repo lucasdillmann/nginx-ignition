@@ -1,8 +1,9 @@
 import LocalStorageRepository from "../../../core/repository/LocalStorageRepository"
-import { Checkbox, CheckboxRef, Modal } from "antd"
+import { Checkbox, CheckboxRef } from "antd"
 import React from "react"
 import "./ReloadNginxAction.css"
 import GenericNginxAction, { ActionType } from "./GenericNginxAction"
+import { themedModal } from "../../../core/components/theme/ThemedResources"
 
 class ReloadNginxAction {
     private readonly repository: LocalStorageRepository<boolean>
@@ -20,7 +21,7 @@ class ReloadNginxAction {
         return new Promise(resolve => {
             const skipRef = React.createRef<CheckboxRef>()
 
-            Modal.confirm({
+            themedModal().confirm({
                 onCancel: () => resolve(),
                 onOk: () => {
                     if (skipRef.current?.input?.checked) this.repository.set(true)
