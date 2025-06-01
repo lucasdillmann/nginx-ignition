@@ -8,6 +8,9 @@ import AppShellContext from "../../core/components/shell/AppShellContext"
 import AccessListResponse from "./model/AccessListResponse"
 import DeleteAccessListAction from "./actions/DeleteAccessListAction"
 import { AccessListOutcome } from "./model/AccessListRequest"
+import AccessControl from "../../core/components/accesscontrol/AccessControl"
+import { UserAccessLevel } from "../user/model/UserAccessLevel"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 
 export default class AccessListListPage extends React.PureComponent {
     private readonly service: AccessListService
@@ -90,6 +93,7 @@ export default class AccessListListPage extends React.PureComponent {
                 {
                     description: "New access list",
                     onClick: "/access-lists/new",
+                    disabled: !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.accessLists),
                 },
             ],
         })
@@ -97,12 +101,19 @@ export default class AccessListListPage extends React.PureComponent {
 
     render() {
         return (
-            <DataTable
-                ref={this.table}
-                columns={this.buildColumns()}
-                dataProvider={(pageSize, pageNumber, searchTerms) => this.fetchData(pageSize, pageNumber, searchTerms)}
-                rowKey={item => item.id}
-            />
+            <AccessControl
+                requiredAccessLevel={UserAccessLevel.READ_ONLY}
+                permissionResolver={permissions => permissions.accessLists}
+            >
+                <DataTable
+                    ref={this.table}
+                    columns={this.buildColumns()}
+                    dataProvider={(pageSize, pageNumber, searchTerms) =>
+                        this.fetchData(pageSize, pageNumber, searchTerms)
+                    }
+                    rowKey={item => item.id}
+                />
+            </AccessControl>
         )
     }
 }

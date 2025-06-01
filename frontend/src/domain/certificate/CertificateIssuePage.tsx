@@ -19,6 +19,9 @@ import AppShellContext from "../../core/components/shell/AppShellContext"
 import { DynamicFieldType } from "../../core/dynamicfield/DynamicField"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import { UserAccessLevel } from "../user/model/UserAccessLevel"
+import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 
 interface CertificateIssuePageState {
     availableProviders: AvailableProviderResponse[]
@@ -205,6 +208,10 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
     }
 
     render() {
+        if (!isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.certificates)) {
+            return <AccessDeniedPage />
+        }
+
         const { loading, availableProviders, error } = this.state
         if (error !== undefined) return EmptyStates.FailedToFetch
 

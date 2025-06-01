@@ -19,6 +19,9 @@ import StreamRequest, { StreamAddress, StreamProtocol } from "./model/StreamRequ
 import "./StreamFormPage.css"
 import StreamAddressInput from "./components/StreamAddressInput"
 import CompatibleStreamProtocolResolver from "./utils/CompatibleStreamProtocolResolver"
+import { UserAccessLevel } from "../user/model/UserAccessLevel"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 
 interface StreamFormPageState {
     formValues: StreamRequest
@@ -267,6 +270,10 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
     }
 
     private updateShellConfig(enableActions: boolean) {
+        if (!isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.streams)) {
+            enableActions = false
+        }
+
         const actions: ShellAction[] = [
             {
                 description: "Save",
@@ -315,6 +322,10 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
     }
 
     render() {
+        if (!isAccessGranted(UserAccessLevel.READ_ONLY, permissions => permissions.streams)) {
+            return <AccessDeniedPage />
+        }
+
         const { loading, notFound, error } = this.state
 
         if (error !== undefined) return EmptyStates.FailedToFetch

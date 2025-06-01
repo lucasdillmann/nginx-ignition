@@ -18,6 +18,9 @@ import SettingsConverter from "./SettingsConverter"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import SettingsDefaults from "./SettingsDefaults"
+import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
+import { UserAccessLevel } from "../user/model/UserAccessLevel"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 
 const INTEGER_MAX = 2147483647
 
@@ -404,6 +407,10 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
     }
 
     private updateShellConfig(enableActions: boolean) {
+        if (!isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.settings)) {
+            enableActions = false
+        }
+
         AppShellContext.get().updateConfig({
             title: "Settings",
             subtitle: "Globals settings for the nginx server and nginx ignition",
@@ -444,6 +451,10 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
     }
 
     render() {
+        if (!isAccessGranted(UserAccessLevel.READ_ONLY, permissions => permissions.settings)) {
+            return <AccessDeniedPage />
+        }
+
         const { loading, error } = this.state
         if (loading) return <Preloader loading />
         if (error !== undefined) return EmptyStates.FailedToFetch

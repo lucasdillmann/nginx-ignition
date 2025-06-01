@@ -4,11 +4,11 @@ import HostResponse from "../host/model/HostResponse"
 import PaginatedSelect from "../../core/components/select/PaginatedSelect"
 import { Empty, Flex, Segmented, Select } from "antd"
 import {
-    HddOutlined,
-    ClusterOutlined,
     AuditOutlined,
-    FileExcelOutlined,
+    ClusterOutlined,
     ExclamationCircleOutlined,
+    FileExcelOutlined,
+    HddOutlined,
 } from "@ant-design/icons"
 import If from "../../core/components/flowcontrol/If"
 import "./LogsPage.css"
@@ -21,6 +21,9 @@ import SettingsDto from "../settings/model/SettingsDto"
 import SettingsService from "../settings/SettingsService"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import { UserAccessLevel } from "../user/model/UserAccessLevel"
+import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 
 interface LogsPageState {
     settings?: SettingsDto
@@ -298,6 +301,10 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     }
 
     render() {
+        if (!isAccessGranted(UserAccessLevel.READ_ONLY, permissions => permissions.logs)) {
+            return <AccessDeniedPage />
+        }
+
         const { loading, error } = this.state
         if (error !== undefined) return EmptyStates.FailedToFetch
 

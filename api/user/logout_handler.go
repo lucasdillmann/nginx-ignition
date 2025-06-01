@@ -7,7 +7,7 @@ import (
 )
 
 type logoutHandler struct {
-	authorizer *authorization.RBAC
+	authorizer *authorization.ABAC
 }
 
 func (h logoutHandler) handle(ctx *gin.Context) {

@@ -1,9 +1,8 @@
 import React from "react"
 import { navigateTo, routeParams } from "../../core/components/router/AppRouter"
 import UserRequest from "./model/UserRequest"
-import { UserRole } from "./model/UserRole"
 import UserService from "./UserService"
-import { Form, Input, Select, Switch } from "antd"
+import { Form, Input, Switch } from "antd"
 import Preloader from "../../core/components/preloader/Preloader"
 import FormLayout from "../../core/components/form/FormLayout"
 import ValidationResult from "../../core/validation/ValidationResult"
@@ -18,6 +17,10 @@ import DeleteUserAction from "./actions/DeleteUserAction"
 import AppContext from "../../core/components/context/AppContext"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
+import { UserPermissionToggle } from "./components/UserPermissionToggle"
+import { UserAccessLevel } from "./model/UserAccessLevel"
+import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 
 interface UserFormState {
     formValues: UserRequest
@@ -42,8 +45,18 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
             formValues: {
                 name: "",
                 enabled: true,
-                role: UserRole.REGULAR_USER,
                 username: "",
+                permissions: {
+                    hosts: UserAccessLevel.READ_WRITE,
+                    streams: UserAccessLevel.READ_WRITE,
+                    certificates: UserAccessLevel.READ_WRITE,
+                    logs: UserAccessLevel.READ_WRITE,
+                    integrations: UserAccessLevel.READ_WRITE,
+                    accessLists: UserAccessLevel.READ_WRITE,
+                    settings: UserAccessLevel.READ_WRITE,
+                    users: UserAccessLevel.READ_WRITE,
+                    nginxServer: UserAccessLevel.READ_WRITE,
+                },
             },
             validationResult: new ValidationResult(),
             loading: true,
@@ -90,8 +103,17 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
         return this.userId === undefined ? undefined : "Leave empty if you want to keep the user's password unchanged"
     }
 
+    private updatePermission(key: string, value: UserAccessLevel) {
+        const { formValues } = this.state
+
+        // @ts-expect-error Generic logic
+        formValues.permissions[key] = value
+        this.setState({ formValues })
+    }
+
     private renderForm() {
         const { validationResult, formValues } = this.state
+        const { permissions } = formValues
 
         return (
             <Form<UserRequest>
@@ -135,25 +157,62 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                 >
                     <Password />
                 </Form.Item>
-                <Form.Item
-                    name="role"
-                    validateStatus={validationResult.getStatus("role")}
-                    help={validationResult.getMessage("role")}
-                    label="Role"
-                    required
-                >
-                    <Select>
-                        <Select.Option value={UserRole.ADMIN}>Admin</Select.Option>
-                        <Select.Option value={UserRole.REGULAR_USER}>Regular user</Select.Option>
-                    </Select>
+                <Form.Item label="Permissions" required>
+                    <UserPermissionToggle
+                        value={permissions.hosts}
+                        onChange={value => this.updatePermission("hosts", value)}
+                        label="Hosts"
+                    />
+                    <UserPermissionToggle
+                        value={permissions.streams}
+                        onChange={value => this.updatePermission("streams", value)}
+                        label="Streams"
+                    />
+                    <UserPermissionToggle
+                        value={permissions.certificates}
+                        onChange={value => this.updatePermission("certificates", value)}
+                        label="SSL certificates"
+                    />
+                    <UserPermissionToggle
+                        value={permissions.integrations}
+                        onChange={value => this.updatePermission("integrations", value)}
+                        label="Integrations"
+                    />
+                    <UserPermissionToggle
+                        value={permissions.accessLists}
+                        onChange={value => this.updatePermission("accessLists", value)}
+                        label="Access lists"
+                    />
+                    <UserPermissionToggle
+                        value={permissions.settings}
+                        onChange={value => this.updatePermission("settings", value)}
+                        label="Settings"
+                    />
+                    <UserPermissionToggle
+                        value={permissions.users}
+                        onChange={value => this.updatePermission("users", value)}
+                        label="Users"
+                    />
+                    <UserPermissionToggle
+                        value={permissions.logs}
+                        onChange={value => this.updatePermission("logs", value)}
+                        label="Logs"
+                        disableReadWrite
+                    />
+                    <UserPermissionToggle
+                        value={permissions.nginxServer}
+                        onChange={value => this.updatePermission("nginxServer", value)}
+                        label="Nginx server control"
+                        disableNoAccess
+                    />
                 </Form.Item>
             </Form>
         )
     }
 
     private convertToUserRequest(response: UserResponse): UserRequest {
-        const { enabled, name, username, role } = response
-        return { enabled, name, username, role }
+        const { enabled, name, username, permissions } = response
+        return { enabled, name, username, permissions }
     }
 
     private async delete() {
@@ -163,6 +222,10 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
     }
 
     private updateShellConfig(enableActions: boolean) {
+        if (!isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.users)) {
+            enableActions = false
+        }
+
         const actions: ShellAction[] = [
             {
                 description: "Save",
@@ -211,6 +274,10 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
     }
 
     render() {
+        if (!isAccessGranted(UserAccessLevel.READ_ONLY, permissions => permissions.users)) {
+            return <AccessDeniedPage />
+        }
+
         const { loading, notFound, error } = this.state
 
         if (error !== undefined) return EmptyStates.FailedToFetch

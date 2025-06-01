@@ -21,6 +21,9 @@ import AccessListEntrySets from "./components/AccessListEntrySets"
 import AccessListCredentials from "./components/AccessListCredentials"
 import { AccessListOutcome } from "./model/AccessListRequest"
 import "./AccessListFormPage.css"
+import { UserAccessLevel } from "../user/model/UserAccessLevel"
+import AccessControl from "../../core/components/accesscontrol/AccessControl"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 
 interface AccessListFormState {
     formValues: AccessListFormValues
@@ -223,6 +226,10 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
     }
 
     private updateShellConfig(enableActions: boolean) {
+        if (!isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.accessLists)) {
+            enableActions = false
+        }
+
         const actions: ShellAction[] = [
             {
                 description: "Save",
@@ -277,6 +284,13 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
         if (notFound) return EmptyStates.NotFound
         if (loading) return <Preloader loading />
 
-        return this.renderForm()
+        return (
+            <AccessControl
+                requiredAccessLevel={UserAccessLevel.READ_ONLY}
+                permissionResolver={permissions => permissions.accessLists}
+            >
+                {this.renderForm()}
+            </AccessControl>
+        )
     }
 }

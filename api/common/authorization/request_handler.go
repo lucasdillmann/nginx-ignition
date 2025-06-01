@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	RequestSubject = "RBAC:Subject"
+	RequestSubject = "ABAC:Subject"
 )
 
-func (m *RBAC) HandleRequest(ctx *gin.Context) {
+func (m *ABAC) HandleRequest(ctx *gin.Context) {
 	path := ctx.FullPath()
 	if !strings.HasPrefix(path, "/api/") {
 		ctx.Next()
@@ -38,13 +38,15 @@ func (m *RBAC) HandleRequest(ctx *gin.Context) {
 		))
 	}
 
-	requiredRole := m.findRequiredRole(ctx.Request.Method, path)
-	if requiredRole != nil && subject.User.Role != *requiredRole {
-		ctx.Abort()
-		panic(api_error.New(
-			http.StatusForbidden,
-			"User does not have the required role to access this resource",
-		))
+	if !m.isAllowedForAllUsers(ctx.Request.Method, path) {
+		accessGranted := m.isAccessGranted(ctx.Request.Method, path, &subject.User.Permissions)
+		if !accessGranted {
+			ctx.Abort()
+			panic(api_error.New(
+				http.StatusForbidden,
+				"User does not have the required permission to access this resource",
+			))
+		}
 	}
 
 	refreshedToken, _ := m.jwt.RefreshToken(subject)

@@ -10,7 +10,7 @@ import (
 
 type loginHandler struct {
 	commands   *user.Commands
-	authorizer *authorization.RBAC
+	authorizer *authorization.ABAC
 }
 
 func (h loginHandler) handle(ctx *gin.Context) {

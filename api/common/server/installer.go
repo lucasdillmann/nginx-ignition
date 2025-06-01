@@ -31,7 +31,7 @@ func build(
 ) (
 	*gin.Engine,
 	*state,
-	*authorization.RBAC,
+	*authorization.ABAC,
 	error,
 ) {
 	gin.SetMode(gin.ReleaseMode)

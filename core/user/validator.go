@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
+	"fmt"
 	"github.com/google/uuid"
 	"strconv"
 )
@@ -48,14 +49,38 @@ func (v *validator) validate(
 		v.delegate.Add("password", minimumLengthMessage(minimumPasswordLength))
 	}
 
-	switch request.Role {
-	case RegularRole, AdminRole:
-		break
-	default:
-		v.delegate.Add("role", "Invalid role")
-	}
+	v.validatePermissions(request.Permissions)
 
 	return v.delegate.Result()
+}
+
+func (v *validator) validatePermissions(permissions Permissions) {
+	v.validatePermission("hosts", permissions.Hosts)
+	v.validatePermission("streams", permissions.Streams)
+	v.validatePermission("certificates", permissions.Certificates)
+	v.validatePermission("logs", permissions.Logs)
+	v.validatePermission("integrations", permissions.Integrations)
+	v.validatePermission("accessLists", permissions.AccessLists)
+	v.validatePermission("settings", permissions.Settings)
+	v.validatePermission("users", permissions.Users)
+	v.validatePermission("nginxServer", permissions.NginxServer)
+
+	if permissions.NginxServer == NoAccessAccessLevel {
+		v.delegate.Add("permissions.nginxServer", "At least read-only access is required")
+	}
+
+	if permissions.Logs == ReadWriteAccessLevel {
+		v.delegate.Add("permissions.logs", "Cannot have read-write access to logs")
+	}
+}
+
+func (v *validator) validatePermission(key string, value AccessLevel) {
+	switch value {
+	case NoAccessAccessLevel, ReadOnlyAccessLevel, ReadWriteAccessLevel:
+		break
+	default:
+		v.delegate.Add(fmt.Sprintf("permissions.%s", key), "Invalid access level")
+	}
 }
 
 func minimumLengthMessage(length int) string {

@@ -3,19 +3,20 @@ package user
 import "github.com/google/uuid"
 
 type SaveRequest struct {
-	ID       uuid.UUID
-	Enabled  bool
-	Name     string
-	Username string
-	Password *string
-	Role     Role
+	ID          uuid.UUID
+	Enabled     bool
+	Name        string
+	Username    string
+	Password    *string
+	Permissions Permissions
 }
 
-type Role string
+type AccessLevel string
 
 const (
-	RegularRole Role = "REGULAR_USER"
-	AdminRole   Role = "ADMIN"
+	NoAccessAccessLevel  AccessLevel = "NO_ACCESS"
+	ReadOnlyAccessLevel  AccessLevel = "READ_ONLY"
+	ReadWriteAccessLevel AccessLevel = "READ_WRITE"
 )
 
 type User struct {
@@ -25,5 +26,17 @@ type User struct {
 	Username     string
 	PasswordHash string
 	PasswordSalt string
-	Role         Role
+	Permissions  Permissions
+}
+
+type Permissions struct {
+	Hosts        AccessLevel
+	Streams      AccessLevel
+	Certificates AccessLevel
+	Logs         AccessLevel
+	Integrations AccessLevel
+	AccessLists  AccessLevel
+	Settings     AccessLevel
+	Users        AccessLevel
+	NginxServer  AccessLevel
 }

@@ -15,6 +15,9 @@ import AppShellContext from "../../core/components/shell/AppShellContext"
 import DynamicField, { DynamicFieldType } from "../../core/dynamicfield/DynamicField"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import { UserAccessLevel } from "../user/model/UserAccessLevel"
+import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 
 interface CertificateDetailsPageState {
     loading: boolean
@@ -48,6 +51,10 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
     }
 
     private updateShellConfig(enableActions: boolean) {
+        if (!isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.certificates)) {
+            enableActions = false
+        }
+
         AppShellContext.get().updateConfig({
             title: "SSL certificate details",
             subtitle: "Details of a uploaded or issued SSL certificate",
@@ -202,6 +209,10 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
     }
 
     render() {
+        if (!isAccessGranted(UserAccessLevel.READ_ONLY, permissions => permissions.certificates)) {
+            return <AccessDeniedPage />
+        }
+
         const { certificate, loading, error } = this.state
         if (loading) return <Preloader loading />
         if (error !== undefined) return EmptyStates.FailedToFetch

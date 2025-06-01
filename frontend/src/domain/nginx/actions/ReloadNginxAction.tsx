@@ -4,6 +4,8 @@ import React from "react"
 import "./ReloadNginxAction.css"
 import GenericNginxAction, { ActionType } from "./GenericNginxAction"
 import { themedModal } from "../../../core/components/theme/ThemedResources"
+import { isAccessGranted } from "../../../core/components/accesscontrol/IsAccessGranted"
+import { UserAccessLevel } from "../../user/model/UserAccessLevel"
 
 class ReloadNginxAction {
     private readonly repository: LocalStorageRepository<boolean>
@@ -15,6 +17,10 @@ class ReloadNginxAction {
     }
 
     async execute(): Promise<void> {
+        if (!isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.nginxServer)) {
+            return
+        }
+
         const skipConfirmation = this.repository.getOrDefault(false)
         if (skipConfirmation) return this.delegate.execute()
 

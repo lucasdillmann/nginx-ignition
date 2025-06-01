@@ -7,6 +7,8 @@ import NginxEventDispatcher from "../listener/NginxEventDispatcher"
 import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
 import "./NginxControl.css"
 import GenericNginxAction, { ActionType } from "../actions/GenericNginxAction"
+import { isAccessGranted } from "../../../core/components/accesscontrol/IsAccessGranted"
+import { UserAccessLevel } from "../../user/model/UserAccessLevel"
 
 interface NginxStatusState {
     loading: boolean
@@ -88,17 +90,23 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
 
     private renderActionButtons() {
         const { running } = this.state
+        const readOnly = !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.nginxServer)
 
         if (!running)
             return (
-                <Button color="primary" variant="filled" onClick={() => this.performNginxAction(ActionType.START)}>
+                <Button
+                    color="primary"
+                    variant="filled"
+                    onClick={() => this.performNginxAction(ActionType.START)}
+                    disabled={readOnly}
+                >
                     start
                 </Button>
             )
 
         return (
             <>
-                <Button color="danger" variant="filled" onClick={() => this.confirmStop()}>
+                <Button color="danger" variant="filled" onClick={() => this.confirmStop()} disabled={readOnly}>
                     stop
                 </Button>
                 <Button
@@ -106,6 +114,7 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
                     color="primary"
                     variant="filled"
                     onClick={() => this.performNginxAction(ActionType.RELOAD)}
+                    disabled={readOnly}
                 >
                     reload
                 </Button>

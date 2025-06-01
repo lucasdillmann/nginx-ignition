@@ -12,18 +12,36 @@ func toDomain(model *userModel) *user.User {
 		Username:     model.Username,
 		PasswordHash: model.PasswordHash,
 		PasswordSalt: model.PasswordSalt,
-		Role:         user.Role(model.Role),
+		Permissions: user.Permissions{
+			Hosts:        user.AccessLevel(model.HostsAccessLevel),
+			Streams:      user.AccessLevel(model.StreamsAccessLevel),
+			Certificates: user.AccessLevel(model.CertificatesAccessLevel),
+			Logs:         user.AccessLevel(model.LogsAccessLevel),
+			Integrations: user.AccessLevel(model.IntegrationsAccessLevel),
+			AccessLists:  user.AccessLevel(model.AccessListsAccessLevel),
+			Settings:     user.AccessLevel(model.SettingsAccessLevel),
+			Users:        user.AccessLevel(model.UsersAccessLevel),
+			NginxServer:  user.AccessLevel(model.NginxServerAccessLevel),
+		},
 	}
 }
 
 func toModel(domain *user.User) *userModel {
 	return &userModel{
-		ID:           domain.ID,
-		Enabled:      domain.Enabled,
-		Name:         domain.Name,
-		Username:     domain.Username,
-		PasswordHash: domain.PasswordHash,
-		PasswordSalt: domain.PasswordSalt,
-		Role:         string(domain.Role),
+		ID:                      domain.ID,
+		Enabled:                 domain.Enabled,
+		Name:                    domain.Name,
+		Username:                domain.Username,
+		PasswordHash:            domain.PasswordHash,
+		PasswordSalt:            domain.PasswordSalt,
+		HostsAccessLevel:        string(domain.Permissions.Hosts),
+		StreamsAccessLevel:      string(domain.Permissions.Streams),
+		CertificatesAccessLevel: string(domain.Permissions.Certificates),
+		LogsAccessLevel:         string(domain.Permissions.Logs),
+		IntegrationsAccessLevel: string(domain.Permissions.Integrations),
+		AccessListsAccessLevel:  string(domain.Permissions.AccessLists),
+		SettingsAccessLevel:     string(domain.Permissions.Settings),
+		UsersAccessLevel:        string(domain.Permissions.Users),
+		NginxServerAccessLevel:  string(domain.Permissions.NginxServer),
 	}
 }

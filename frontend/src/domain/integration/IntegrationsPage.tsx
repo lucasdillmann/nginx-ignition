@@ -10,6 +10,9 @@ import If from "../../core/components/flowcontrol/If"
 import IntegrationConfigurationModal from "./component/IntegrationConfigurationModal"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
+import { UserAccessLevel } from "../user/model/UserAccessLevel"
+import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 
 interface IntegrationsPageState {
     loading: boolean
@@ -103,6 +106,10 @@ export default class IntegrationsPage extends React.Component<any, IntegrationsP
     }
 
     render() {
+        if (!isAccessGranted(UserAccessLevel.READ_ONLY, permissions => permissions.integrations)) {
+            return <AccessDeniedPage />
+        }
+
         const { loading, integrationBeingChanged, error } = this.state
         if (error !== undefined) return EmptyStates.FailedToFetch
         if (loading) return <Preloader loading />

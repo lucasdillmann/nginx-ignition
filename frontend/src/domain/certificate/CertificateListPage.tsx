@@ -14,6 +14,10 @@ import DeleteCertificateAction from "./actions/DeleteCertificateAction"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import { UserAccessLevel } from "../user/model/UserAccessLevel"
+import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
+import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
 
 interface CertificateListPageState {
     loading: boolean
@@ -33,6 +37,10 @@ export default class CertificateListPage extends React.Component<any, Certificat
             loading: true,
             providers: [],
         }
+    }
+
+    private isReadOnlyMode() {
+        return !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.certificates)
     }
 
     private translateProviderName(providerId: string): string {
@@ -76,10 +84,18 @@ export default class CertificateListPage extends React.Component<any, Certificat
     }
 
     private async renewCertificate(certificate: CertificateResponse) {
+        if (this.isReadOnlyMode()) {
+            return AccessDeniedModal.show()
+        }
+
         return RenewCertificateAction.execute(certificate.id).then(() => this.table.current?.refresh())
     }
 
     private async deleteCertificate(certificate: CertificateResponse) {
+        if (this.isReadOnlyMode()) {
+            return AccessDeniedModal.show()
+        }
+
         return DeleteCertificateAction.execute(certificate.id).then(() => this.table.current?.refresh())
     }
 
@@ -112,12 +128,17 @@ export default class CertificateListPage extends React.Component<any, Certificat
                 {
                     description: "Issue certificate",
                     onClick: "/certificates/new",
+                    disabled: this.isReadOnlyMode(),
                 },
             ],
         })
     }
 
     render() {
+        if (!isAccessGranted(UserAccessLevel.READ_ONLY, permissions => permissions.certificates)) {
+            return <AccessDeniedPage />
+        }
+
         const { loading, error } = this.state
         if (loading)
             return (

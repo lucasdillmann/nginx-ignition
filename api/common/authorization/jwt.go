@@ -70,15 +70,13 @@ func (j *Jwt) GenerateToken(usr *user.User) (*string, error) {
 		Unix()
 
 	claims := jwt.MapClaims{
-		"aud":      uniqueIdentifier,
-		"iss":      uniqueIdentifier,
-		"nbf":      notBefore,
-		"iat":      time.Now().Unix(),
-		"exp":      expiresAt,
-		"jti":      uuid.New().String(),
-		"sub":      usr.ID.String(),
-		"username": usr.Username,
-		"role":     usr.Role,
+		"aud": uniqueIdentifier,
+		"iss": uniqueIdentifier,
+		"nbf": notBefore,
+		"iat": time.Now().Unix(),
+		"exp": expiresAt,
+		"jti": uuid.New().String(),
+		"sub": usr.ID.String(),
 	}
 
 	return j.sign(&claims)

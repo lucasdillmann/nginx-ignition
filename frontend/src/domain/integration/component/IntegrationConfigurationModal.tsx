@@ -11,6 +11,9 @@ import ValidationResultConverter from "../../../core/validation/ValidationResult
 import FormLayout from "../../../core/components/form/FormLayout"
 import DynamicInput from "../../../core/components/dynamicfield/DynamicInput"
 import CommonNotifications from "../../../core/components/notification/CommonNotifications"
+import { isAccessGranted } from "../../../core/components/accesscontrol/IsAccessGranted"
+import { UserAccessLevel } from "../../user/model/UserAccessLevel"
+import AccessDeniedModal from "../../../core/components/accesscontrol/AccessDeniedModal"
 
 export interface IntegrationConfigurationModalProps {
     integrationId: string
@@ -42,6 +45,10 @@ export default class IntegrationConfigurationModal extends React.Component<
     }
 
     private saveConfiguration() {
+        if (!isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.integrations)) {
+            return AccessDeniedModal.show()
+        }
+
         const { integrationId } = this.props
         const { formValues } = this.state
 
@@ -144,6 +151,9 @@ export default class IntegrationConfigurationModal extends React.Component<
                 onClose={() => onClose(false)}
                 onCancel={() => onClose(false)}
                 onOk={() => this.saveConfiguration()}
+                okButtonProps={{
+                    disabled: !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.integrations),
+                }}
                 title={integration?.name}
                 width={800}
                 open

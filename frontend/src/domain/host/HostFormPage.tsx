@@ -28,6 +28,9 @@ import PaginatedSelect from "../../core/components/select/PaginatedSelect"
 import AccessListResponse from "../accesslist/model/AccessListResponse"
 import PageResponse from "../../core/pagination/PageResponse"
 import AccessListService from "../accesslist/AccessListService"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import { UserAccessLevel } from "../user/model/UserAccessLevel"
+import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -108,6 +111,10 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     private updateShellConfig(enableActions: boolean) {
+        if (!isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.hosts)) {
+            enableActions = false
+        }
+
         const actions: ShellAction[] = [
             {
                 description: "Save",
@@ -363,6 +370,10 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     render() {
+        if (!isAccessGranted(UserAccessLevel.READ_ONLY, permissions => permissions.hosts)) {
+            return <AccessDeniedPage />
+        }
+
         const { loading, notFound, error } = this.state
 
         if (error !== undefined) return EmptyStates.FailedToFetch

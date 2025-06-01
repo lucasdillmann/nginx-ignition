@@ -6,11 +6,14 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons"
 import PageResponse from "../../core/pagination/PageResponse"
 import UserService from "./UserService"
 import UserResponse from "./model/UserResponse"
-import { UserRole } from "./model/UserRole"
 import AppContext from "../../core/components/context/AppContext"
 import { Tooltip } from "antd"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import DeleteUserAction from "./actions/DeleteUserAction"
+import { UserAccessLevel } from "./model/UserAccessLevel"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import AccessControl from "../../core/components/accesscontrol/AccessControl"
+import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
 
 export default class UserListPage extends React.PureComponent {
     private readonly service: UserService
@@ -20,6 +23,10 @@ export default class UserListPage extends React.PureComponent {
         super(props)
         this.service = new UserService()
         this.table = React.createRef()
+    }
+
+    private isReadOnlyMode(): boolean {
+        return !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.users)
     }
 
     private renderDeleteButton(item: UserResponse): React.ReactNode {
@@ -52,12 +59,6 @@ export default class UserListPage extends React.PureComponent {
                 width: 250,
             },
             {
-                id: "role",
-                description: "Role",
-                renderer: item => this.translateRole(item.role),
-                width: 150,
-            },
-            {
                 id: "enabled",
                 description: "Enabled",
                 renderer: item => DataTableRenderers.yesNo(item.enabled),
@@ -80,16 +81,11 @@ export default class UserListPage extends React.PureComponent {
         ]
     }
 
-    private translateRole(role: UserRole): string {
-        switch (role) {
-            case UserRole.REGULAR_USER:
-                return "Regular user"
-            case UserRole.ADMIN:
-                return "Admin"
-        }
-    }
-
     private async deleteUser(user: UserResponse) {
+        if (this.isReadOnlyMode()) {
+            return AccessDeniedModal.show()
+        }
+
         return DeleteUserAction.execute(user.id).then(() => this.table.current?.refresh())
     }
 
@@ -105,6 +101,7 @@ export default class UserListPage extends React.PureComponent {
                 {
                     description: "New user",
                     onClick: "/users/new",
+                    disabled: this.isReadOnlyMode(),
                 },
             ],
         })
@@ -112,12 +109,19 @@ export default class UserListPage extends React.PureComponent {
 
     render() {
         return (
-            <DataTable
-                ref={this.table}
-                columns={this.buildColumns()}
-                dataProvider={(pageSize, pageNumber, searchTerms) => this.fetchData(pageSize, pageNumber, searchTerms)}
-                rowKey={item => item.id}
-            />
+            <AccessControl
+                requiredAccessLevel={UserAccessLevel.READ_ONLY}
+                permissionResolver={permissions => permissions.users}
+            >
+                <DataTable
+                    ref={this.table}
+                    columns={this.buildColumns()}
+                    dataProvider={(pageSize, pageNumber, searchTerms) =>
+                        this.fetchData(pageSize, pageNumber, searchTerms)
+                    }
+                    rowKey={item => item.id}
+                />
+            </AccessControl>
         )
     }
 }

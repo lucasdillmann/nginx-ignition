@@ -45,20 +45,10 @@ export default class AppRouter extends React.Component<AppRouterProps, AppRouter
         currentInstance = this
     }
 
-    private isRouteVisible(route: AppRoute): boolean {
-        if (!Array.isArray(route.visibleRoles)) return true
-
-        const { user } = AppContext.get()
-        if (user === undefined) return false
-
-        return route.visibleRoles.includes(user.role)
-    }
-
     private buildMenuItemsAdapter(): AppShellMenuItem[] {
         const { routes } = this.props
         return routes
             .filter(route => route.menuItem !== undefined)
-            .filter(route => this.isRouteVisible(route))
             .map(route => ({
                 icon: route.menuItem!!.icon,
                 description: route.menuItem!!.description,
@@ -95,13 +85,11 @@ export default class AppRouter extends React.Component<AppRouterProps, AppRouter
 
     private buildRouteAdapters(): RouteObject[] {
         const { routes } = this.props
-        return routes
-            .filter(route => this.isRouteVisible(route))
-            .map(route => ({
-                path: route.path,
-                element: this.buildRouteComponent(route),
-                hasErrorBoundary: true,
-            }))
+        return routes.map(route => ({
+            path: route.path,
+            element: this.buildRouteComponent(route),
+            hasErrorBoundary: true,
+        }))
     }
 
     componentDidMount() {

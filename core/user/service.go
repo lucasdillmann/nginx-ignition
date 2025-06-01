@@ -120,7 +120,7 @@ func (s *service) save(ctx context.Context, request *SaveRequest, currentUserId 
 		Username:     request.Username,
 		PasswordHash: passwordHash,
 		PasswordSalt: passwordSalt,
-		Role:         request.Role,
+		Permissions:  request.Permissions,
 	}
 
 	if err := newValidator(s.repository).validate(ctx, updatedState, databaseState, request, currentUserId); err != nil {

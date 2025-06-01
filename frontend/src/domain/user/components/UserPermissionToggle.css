@@ -1,0 +1,11 @@
+.user-permission-toggle-container {
+    margin-top: 10px;
+}
+
+.user-permission-toggle-label {
+    width: 200px;
+    font-size: 14px;
+    line-height: 32px;
+    vertical-align: center;
+    height: 32px;
+}

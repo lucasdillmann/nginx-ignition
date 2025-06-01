@@ -21,7 +21,6 @@ import CertificateDetailsPage from "./certificate/CertificateDetailsPage"
 import LogsPage from "./logs/LogsPage"
 import UserListPage from "./user/UserListPage"
 import UserFormPage from "./user/UserFormPage"
-import { UserRole } from "./user/model/UserRole"
 import IntegrationsPage from "./integration/IntegrationsPage"
 import SettingsPage from "./settings/SettingsPage"
 import NotFoundPage from "./notfound/NotFoundPage"
@@ -116,7 +115,6 @@ const Routes: AppRoute[] = [
         requiresAuthentication: true,
         fullPage: false,
         component: <IntegrationsPage />,
-        visibleRoles: [UserRole.ADMIN],
         menuItem: {
             description: "Integrations",
             icon: <BlockOutlined />,
@@ -144,7 +142,6 @@ const Routes: AppRoute[] = [
         requiresAuthentication: true,
         fullPage: false,
         component: <SettingsPage />,
-        visibleRoles: [UserRole.ADMIN],
         menuItem: {
             description: "Settings",
             icon: <SettingOutlined />,
@@ -155,7 +152,6 @@ const Routes: AppRoute[] = [
         requiresAuthentication: true,
         fullPage: false,
         component: <UserFormPage />,
-        visibleRoles: [UserRole.ADMIN],
         activeMenuItemPath: "/users",
     },
     {
@@ -163,7 +159,6 @@ const Routes: AppRoute[] = [
         requiresAuthentication: true,
         fullPage: false,
         component: <UserListPage />,
-        visibleRoles: [UserRole.ADMIN],
         menuItem: {
             description: "Users",
             icon: <TeamOutlined />,

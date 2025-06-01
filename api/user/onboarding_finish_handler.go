@@ -10,7 +10,7 @@ import (
 
 type onboardingFinishHandler struct {
 	commands   *user.Commands
-	authorizer *authorization.RBAC
+	authorizer *authorization.ABAC
 }
 
 func (h onboardingFinishHandler) handle(ctx *gin.Context) {
@@ -32,7 +32,17 @@ func (h onboardingFinishHandler) handle(ctx *gin.Context) {
 	domainModel := toDomain(requestPayload)
 	domainModel.ID = uuid.New()
 	domainModel.Enabled = true
-	domainModel.Role = user.AdminRole
+	domainModel.Permissions = user.Permissions{
+		Hosts:        user.ReadWriteAccessLevel,
+		Streams:      user.ReadWriteAccessLevel,
+		Certificates: user.ReadWriteAccessLevel,
+		Logs:         user.ReadOnlyAccessLevel,
+		Integrations: user.ReadWriteAccessLevel,
+		AccessLists:  user.ReadWriteAccessLevel,
+		Settings:     user.ReadWriteAccessLevel,
+		Users:        user.ReadWriteAccessLevel,
+		NginxServer:  user.ReadWriteAccessLevel,
+	}
 
 	if err = h.commands.Save(ctx.Request.Context(), domainModel, nil); err != nil {
 		panic(err)

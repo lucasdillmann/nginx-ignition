@@ -11,6 +11,10 @@ import DeleteStreamAction from "./actions/DeleteStreamAction"
 import UserConfirmation from "../../core/components/confirmation/UserConfirmation"
 import Notification from "../../core/components/notification/Notification"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
+import AccessControl from "../../core/components/accesscontrol/AccessControl"
+import { UserAccessLevel } from "../user/model/UserAccessLevel"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
 
 export default class StreamListPage extends React.PureComponent {
     private readonly service: StreamService
@@ -22,7 +26,15 @@ export default class StreamListPage extends React.PureComponent {
         this.table = React.createRef()
     }
 
+    private isReadOnlyMode(): boolean {
+        return !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.streams)
+    }
+
     private toggleStreamStatus(stream: StreamResponse) {
+        if (this.isReadOnlyMode()) {
+            return AccessDeniedModal.show()
+        }
+
         const action = stream.enabled ? "disable" : "enable"
         UserConfirmation.ask(`Do you really want to ${action} the stream?`)
             .then(() => this.service.toggleEnabled(stream.id))
@@ -88,6 +100,10 @@ export default class StreamListPage extends React.PureComponent {
     }
 
     private async deleteStream(stream: StreamResponse) {
+        if (this.isReadOnlyMode()) {
+            return AccessDeniedModal.show()
+        }
+
         return DeleteStreamAction.execute(stream.id).then(() => this.table.current?.refresh())
     }
 
@@ -107,6 +123,7 @@ export default class StreamListPage extends React.PureComponent {
                 {
                     description: "New stream",
                     onClick: "/streams/new",
+                    disabled: this.isReadOnlyMode(),
                 },
             ],
         })
@@ -114,12 +131,19 @@ export default class StreamListPage extends React.PureComponent {
 
     render() {
         return (
-            <DataTable
-                ref={this.table}
-                columns={this.buildColumns()}
-                dataProvider={(pageSize, pageNumber, searchTerms) => this.fetchData(pageSize, pageNumber, searchTerms)}
-                rowKey={item => item.id}
-            />
+            <AccessControl
+                requiredAccessLevel={UserAccessLevel.READ_ONLY}
+                permissionResolver={permissions => permissions.streams}
+            >
+                <DataTable
+                    ref={this.table}
+                    columns={this.buildColumns()}
+                    dataProvider={(pageSize, pageNumber, searchTerms) =>
+                        this.fetchData(pageSize, pageNumber, searchTerms)
+                    }
+                    rowKey={item => item.id}
+                />
+            </AccessControl>
         )
     }
 }

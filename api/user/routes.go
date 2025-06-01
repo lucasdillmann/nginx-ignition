@@ -6,48 +6,36 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	basePath             = "/api/users"
-	byIdPath             = basePath + "/:id"
-	onboardingPath       = basePath + "/onboarding"
-	onboardingStatusPath = onboardingPath + "/status"
-	onboardingFinishPath = onboardingPath + "/finish"
-	logoutPath           = basePath + "/logout"
-	loginPath            = basePath + "/login"
-	currentPath          = basePath + "/current"
-	updatePasswordPath   = currentPath + "/update-password"
-)
-
 func Install(
 	router *gin.Engine,
-	authorizer *authorization.RBAC,
+	authorizer *authorization.ABAC,
 	commands *user.Commands,
 ) {
-	router.GET(basePath, listHandler{commands}.handle)
-	router.POST(basePath, createHandler{commands}.handle)
+	basePath := authorizer.ConfigureGroup(
+		router,
+		"/api/users",
+		func(permissions user.Permissions) user.AccessLevel { return permissions.Users },
+	)
+	basePath.GET("", listHandler{commands}.handle)
+	basePath.POST("", createHandler{commands}.handle)
 
-	router.GET(byIdPath, getHandler{commands}.handle)
-	router.PUT(byIdPath, updateHandler{commands}.handle)
-	router.DELETE(byIdPath, deleteHandler{commands}.handle)
+	byIdPath := basePath.Group("/:id")
+	byIdPath.GET("", getHandler{commands}.handle)
+	byIdPath.PUT("", updateHandler{commands}.handle)
+	byIdPath.DELETE("", deleteHandler{commands}.handle)
 
-	router.GET(onboardingStatusPath, onboardingStatusHandler{commands}.handle)
-	router.POST(onboardingFinishPath, onboardingFinishHandler{commands, authorizer}.handle)
+	onboardingPath := basePath.Group("/onboarding")
+	onboardingPath.GET("/status", onboardingStatusHandler{commands}.handle)
+	onboardingPath.POST("/finish", onboardingFinishHandler{commands, authorizer}.handle)
 
-	router.POST(logoutPath, logoutHandler{authorizer}.handle)
-	router.POST(loginPath, loginHandler{commands, authorizer}.handle)
+	basePath.POST("/logout", logoutHandler{authorizer}.handle)
+	basePath.POST("/login", loginHandler{commands, authorizer}.handle)
+	basePath.GET("/current", currentHandler{}.handle)
+	basePath.POST("/current/update-password", updatePasswordHandler{commands}.handle)
 
-	router.GET(currentPath, currentHandler{}.handle)
-	router.POST(updatePasswordPath, updatePasswordHandler{commands}.handle)
-
-	authorizer.RequireRole("GET", basePath, user.AdminRole)
-	authorizer.RequireRole("POST", basePath, user.AdminRole)
-
-	authorizer.RequireRole("GET", byIdPath, user.AdminRole)
-	authorizer.RequireRole("PUT", byIdPath, user.AdminRole)
-	authorizer.RequireRole("DELETE", byIdPath, user.AdminRole)
-
-	authorizer.AllowAnonymous("GET", onboardingStatusPath)
-	authorizer.AllowAnonymous("POST", onboardingFinishPath)
-
-	authorizer.AllowAnonymous("POST", loginPath)
+	authorizer.AllowAnonymous("GET", "/api/users/onboarding/status")
+	authorizer.AllowAnonymous("POST", "/api/users/onboarding/finish")
+	authorizer.AllowAnonymous("POST", "/api/users/login")
+	authorizer.AllowAllUsers("POST", "/api/users/logout")
+	authorizer.AllowAllUsers("GET", "/api/users/current")
 }

@@ -3,6 +3,8 @@ import Notification, { Props } from "../../../core/components/notification/Notif
 import React from "react"
 import { Button } from "antd"
 import { themedModal } from "../../../core/components/theme/ThemedResources"
+import { UserAccessLevel } from "../../user/model/UserAccessLevel"
+import { isAccessGranted } from "../../../core/components/accesscontrol/IsAccessGranted"
 
 export enum ActionType {
     RELOAD,
@@ -134,7 +136,8 @@ export default class GenericNginxAction {
     }
 
     async execute(): Promise<void> {
-        if (this.startedAt !== undefined) return Promise.resolve()
+        const readOnly = !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.nginxServer)
+        if (readOnly || this.startedAt !== undefined) return Promise.resolve()
 
         this.startedAt = new Date()
         this.showInProgressNotification()

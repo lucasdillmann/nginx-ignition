@@ -1,6 +1,7 @@
 package frontend
 
 import (
+	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"github.com/gin-gonic/gin"
@@ -10,9 +11,11 @@ import (
 func Install(
 	router *gin.Engine,
 	configuration *configuration.Configuration,
+	authorizer *authorization.ABAC,
 ) {
 	settingsHandlerInstance := &configurationHandler{configuration}
 	router.Handle(http.MethodGet, "/api/frontend/configuration", settingsHandlerInstance.handle)
+	authorizer.AllowAllUsers(http.MethodGet, "/api/frontend/configuration")
 
 	var staticHandler staticFilesHandler
 	basePath, err := configuration.Get("nginx-ignition.server.frontend-path")
