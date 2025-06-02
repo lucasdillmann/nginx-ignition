@@ -18,6 +18,7 @@ import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGra
 import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
 import { navigateTo } from "../../core/components/router/AppRouter"
+import { Button } from "antd"
 
 export default class HostListPage extends React.PureComponent {
     private readonly service: HostService
@@ -66,16 +67,21 @@ export default class HostListPage extends React.PureComponent {
                         <Link to={`/hosts/${item.id}`}>
                             <EditOutlined className="action-icon" />
                         </Link>
-                        <Link to="" onClick={() => this.cloneHost(item)}>
-                            <CopyOutlined className="action-icon" />
-                        </Link>
-                        <Link to="" onClick={() => this.toggleHostStatus(item)}>
-                            <PoweroffOutlined className="action-icon" />
-                        </Link>
-
-                        <Link to="" onClick={() => this.deleteHost(item)}>
-                            <DeleteOutlined className="action-icon" />
-                        </Link>
+                        <Button
+                            type="link"
+                            onClick={() => this.cloneHost(item)}
+                            icon={<CopyOutlined className="action-icon" />}
+                        />
+                        <Button
+                            type="link"
+                            onClick={() => this.toggleHostStatus(item)}
+                            icon={<PoweroffOutlined className="action-icon" />}
+                        />
+                        <Button
+                            type="link"
+                            onClick={() => this.deleteHost(item)}
+                            icon={<DeleteOutlined className="action-icon" />}
+                        />
                     </>
                 ),
                 width: 160,
