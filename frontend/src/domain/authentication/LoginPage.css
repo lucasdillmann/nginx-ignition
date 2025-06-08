@@ -1,27 +1,18 @@
-.login-container {
-    margin: 0 auto;
-    width: 380px;
+.ant-pro-form-login-page-title,
+.ant-pro-form-login-page-desc {
+    color: #fff;
 }
 
-.login-section {
-    align-items: center;
-    display: flex;
+.ant-pro-form-login-page-title {
+    font-size: 28px;
 }
 
-.login-title {
-    margin-top: 0;
-    font-size: 24px;
+.ant-pro-form-login-page-desc {
+    margin: 2px 0 40px;
+    font-size: 16px;
+    text-align: left;
 }
 
-.login-header {
-    margin-top: 40px;
-    margin-bottom: 30px;
-}
-
-.login-text {
-    font-size: 14px;
-}
-
-.login-form-input {
-    margin-bottom: 10px;
+.ant-pro-form-login-page-header {
+    justify-content: left;
 }

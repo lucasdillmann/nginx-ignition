@@ -1,5 +1,4 @@
 import React from "react"
-import { Button, Form, Input, Typography } from "antd"
 import { LockOutlined, UserOutlined } from "@ant-design/icons"
 import { Navigate } from "react-router-dom"
 import AppContext from "../../core/components/context/AppContext"
@@ -8,8 +7,10 @@ import Notification from "../../core/components/notification/Notification"
 import "./LoginPage.css"
 import UserService from "../user/UserService"
 import { queryParams } from "../../core/components/router/AppRouter"
-
-const { Text, Title } = Typography
+import { LoginFormPage, ProFormText } from "@ant-design/pro-components"
+import ThemeContext from "../../core/components/context/ThemeContext"
+import LightBackground from "./background/light.jpg"
+import DarkBackground from "./background/dark.jpg"
 
 interface LoginPageState {
     loading: boolean
@@ -18,6 +19,7 @@ interface LoginPageState {
 
 export default class LoginPage extends React.Component<any, LoginPageState> {
     private readonly service: UserService
+    private readonly backgroundImageUrl: string
 
     constructor(props: any) {
         super(props)
@@ -26,6 +28,8 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
             loading: false,
             attemptFailed: false,
         }
+
+        this.backgroundImageUrl = ThemeContext.isDarkMode() ? DarkBackground : LightBackground
     }
 
     private handleSubmit(values: { username: string; password: string }) {
@@ -50,38 +54,40 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
     }
 
     private renderForm() {
-        const { attemptFailed } = this.state
-        const inputStatus = attemptFailed ? "error" : undefined
-
         return (
-            <section className="login-section">
-                <div className="login-container">
-                    <div className="login-header">
-                        <Title className="login-title">nginx ignition</Title>
-                        <Text className="login-text">
-                            Welcome back. Please enter your username and password to continue.
-                        </Text>
-                    </div>
-                    <Form onFinish={values => this.handleSubmit(values)} layout="vertical" requiredMark="optional">
-                        <Form.Item name="username" className="login-form-input">
-                            <Input prefix={<UserOutlined />} placeholder="Username" status={inputStatus} autoFocus />
-                        </Form.Item>
-                        <Form.Item name="password">
-                            <Input.Password
-                                prefix={<LockOutlined />}
-                                type="password"
-                                placeholder="Password"
-                                status={inputStatus}
-                            />
-                        </Form.Item>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit">
-                                Log in
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </div>
-            </section>
+            <LoginFormPage
+                title="nginx ignition"
+                subTitle="Welcome back. Please sign in to continue."
+                onFinish={this.handleSubmit.bind(this)}
+                backgroundImageUrl={this.backgroundImageUrl}
+                submitter={{
+                    searchConfig: {
+                        submitText: "Log in",
+                    },
+                }}
+                containerStyle={{
+                    backgroundColor: "rgba(0, 0, 0, 0.65)",
+                    backdropFilter: "blur(4px)",
+                    color: "white",
+                }}
+            >
+                <ProFormText
+                    name="username"
+                    placeholder="username"
+                    fieldProps={{
+                        size: "large",
+                        prefix: <UserOutlined />,
+                    }}
+                />
+                <ProFormText.Password
+                    name="password"
+                    placeholder="password"
+                    fieldProps={{
+                        size: "large",
+                        prefix: <LockOutlined />,
+                    }}
+                />
+            </LoginFormPage>
         )
     }
 

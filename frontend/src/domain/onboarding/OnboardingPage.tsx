@@ -1,6 +1,6 @@
 import React from "react"
 import { Button, Form, Input, Typography } from "antd"
-import { LockOutlined, UserOutlined, IdcardOutlined } from "@ant-design/icons"
+import { IdcardOutlined, LockOutlined, UserOutlined } from "@ant-design/icons"
 import { Navigate } from "react-router-dom"
 import AppContext from "../../core/components/context/AppContext"
 import Preloader from "../../core/components/preloader/Preloader"
@@ -10,6 +10,7 @@ import OnboardingService from "./OnboardingService"
 import { UnexpectedResponseError } from "../../core/apiclient/ApiResponse"
 import ValidationResultConverter from "../../core/validation/ValidationResultConverter"
 import "./OnboardingPage.css"
+
 const { Text, Title } = Typography
 
 interface OnboardingPageState {
@@ -65,9 +66,8 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                     <div className="onboarding-header">
                         <Title className="onboarding-title">nginx ignition</Title>
                         <Text className="onboarding-text">
-                            Welcome to the nginx ignition. This seems to be your first access, and we need to create the
-                            first user of the application. Please fill the form below with your details and you will be
-                            ready to go.
+                            Welcome to the nginx ignition. This seems to be your first access, please fill the form
+                            below to the create your user and we'll be ready to go.
                         </Text>
                     </div>
                     <Form onFinish={values => this.handleSubmit(values)} layout="vertical" requiredMark="optional">
