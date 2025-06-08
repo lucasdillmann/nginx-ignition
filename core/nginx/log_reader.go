@@ -26,7 +26,6 @@ func (r *logReader) read(_ context.Context, fileName string, tailSize int) ([]st
 	}
 
 	normalizedPath := strings.TrimRight(basePath, "/") + "/logs"
-
 	filePath := filepath.Join(normalizedPath, fileName)
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -47,6 +46,10 @@ func (r *logReader) read(_ context.Context, fileName string, tailSize int) ([]st
 
 	if len(lines) > tailSize {
 		lines = lines[len(lines)-tailSize:]
+	}
+
+	for i := 0; i < len(lines)/2; i++ {
+		lines[i], lines[len(lines)-1-i] = lines[len(lines)-1-i], lines[i]
 	}
 
 	return lines, nil
