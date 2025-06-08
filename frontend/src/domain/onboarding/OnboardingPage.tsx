@@ -78,7 +78,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                             className="onboarding-form-input"
                             initialValue={values.name}
                         >
-                            <Input prefix={<IdcardOutlined />} placeholder="Name" autoFocus />
+                            <Input size="large" prefix={<IdcardOutlined />} placeholder="Name" autoFocus />
                         </Form.Item>
                         <Form.Item
                             name="username"
@@ -87,7 +87,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                             className="onboarding-form-input"
                             initialValue={values.username}
                         >
-                            <Input prefix={<UserOutlined />} placeholder="Username" />
+                            <Input size="large" prefix={<UserOutlined />} placeholder="Username" />
                         </Form.Item>
                         <Form.Item
                             name="password"
@@ -95,10 +95,15 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                             help={validationResult.getMessage("password")}
                             initialValue={values.password}
                         >
-                            <Input.Password prefix={<LockOutlined />} type="password" placeholder="Password" />
+                            <Input.Password
+                                size="large"
+                                prefix={<LockOutlined />}
+                                type="password"
+                                placeholder="Password"
+                            />
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit">
+                            <Button size="large" type="primary" htmlType="submit">
                                 Continue
                             </Button>
                         </Form.Item>

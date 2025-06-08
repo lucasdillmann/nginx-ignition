@@ -56,6 +56,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
     private renderForm() {
         return (
             <LoginFormPage
+                id="nginx-ignition-login-form"
                 title="nginx ignition"
                 subTitle="Welcome back. Please sign in to continue."
                 onFinish={this.handleSubmit.bind(this)}

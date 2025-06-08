@@ -16,3 +16,7 @@
 .ant-pro-form-login-page-header {
     justify-content: left;
 }
+
+#nginx-ignition-login-form .ant-form-item:first-of-type {
+    margin-bottom: 12px;
+}
