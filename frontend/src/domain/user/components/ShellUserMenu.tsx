@@ -95,7 +95,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
                 <Modal
                     title="Change password"
                     onCancel={() => this.closeChangePasswordModal()}
-                    onClose={() => this.closeChangePasswordModal()}
+                    afterClose={() => this.closeChangePasswordModal()}
                     onOk={() => this.executePasswordChange()}
                     open={modalOpen}
                 >

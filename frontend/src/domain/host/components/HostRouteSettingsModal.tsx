@@ -173,7 +173,14 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
     render() {
         const { open, onClose, onCancel } = this.props
         return (
-            <Modal title="Route settings" open={open} onClose={onClose} onCancel={onCancel} footer={null} width={750}>
+            <Modal
+                title="Route settings"
+                open={open}
+                afterClose={onClose}
+                onCancel={onCancel}
+                footer={null}
+                width={750}
+            >
                 <Tabs defaultActiveKey="1" items={this.tabsDefinitions()} />
             </Modal>
         )

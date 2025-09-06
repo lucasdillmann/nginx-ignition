@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/certificate/custom
 
-go 1.24.3
+go 1.25.1
 
 require (
 	github.com/google/uuid v1.6.0

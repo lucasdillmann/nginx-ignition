@@ -148,7 +148,7 @@ export default class IntegrationConfigurationModal extends React.Component<
         const { integration } = this.state
         return (
             <Modal
-                onClose={() => onClose(false)}
+                afterClose={() => onClose(false)}
                 onCancel={() => onClose(false)}
                 onOk={() => this.saveConfiguration()}
                 okButtonProps={{
