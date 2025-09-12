@@ -2,6 +2,9 @@ package letsencrypt
 
 import (
 	"context"
+	"strings"
+	"time"
+
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -12,12 +15,11 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/cloudflare"
 	"github.com/go-acme/lego/v4/providers/dns/gcloud"
 	"github.com/go-acme/lego/v4/providers/dns/route53"
-	"strings"
-	"time"
 )
 
 const (
 	ttl                = 60
+	cloudflareTTL      = 120
 	maxRetries         = 3
 	propagationTimeout = 180 * time.Second
 	poolingInterval    = 1 * time.Second
@@ -91,7 +93,10 @@ func buildCloudflareProvider(parameters map[string]any) (challenge.Provider, err
 	apiToken, _ := parameters[cloudflareApiToken.ID].(string)
 
 	cfg := &cloudflare.Config{
-		AuthToken: apiToken,
+		AuthToken:          apiToken,
+		TTL:                cloudflareTTL,
+		PropagationTimeout: propagationTimeout,
+		PollingInterval:    poolingInterval,
 	}
 
 	return cloudflare.NewDNSProviderConfig(cfg)
