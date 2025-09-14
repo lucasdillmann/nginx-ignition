@@ -2,7 +2,7 @@ name: main-pipeline
 on:
   push:
     branches:
-      - '*'
+      - main
   pull_request:
     branches:
       - '*'
