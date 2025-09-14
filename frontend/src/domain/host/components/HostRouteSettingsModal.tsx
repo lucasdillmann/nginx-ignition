@@ -10,13 +10,15 @@ import PageResponse from "../../../core/pagination/PageResponse"
 import AccessListService from "../../accesslist/AccessListService"
 import { HostRouteType } from "../model/HostRequest"
 import { HostFormRoute } from "../model/HostFormValues"
+import HideableFormInput from "../../../core/components/form/HideableFormInput"
 
+const NOT_AVAILABLE_REASON = "Not available for this route type"
+const PROXY_ROUTE_TYPES: HostRouteType[] = [HostRouteType.INTEGRATION, HostRouteType.PROXY]
 const ACCESS_LIST_SUPPORTED_ROUTE_TYPES: HostRouteType[] = [
     HostRouteType.INTEGRATION,
     HostRouteType.PROXY,
     HostRouteType.STATIC_FILES,
 ]
-const PROXY_ROUTE_TYPES: HostRouteType[] = [HostRouteType.INTEGRATION, HostRouteType.PROXY]
 
 const ItemProps: FormItemProps = {
     labelCol: {
@@ -89,86 +91,101 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
         return this.accessListService.list(pageSize, pageNumber, searchTerms)
     }
 
+    private renderConditionally(props: { types: HostRouteType[]; children: any }) {
+        const { route } = this.props
+        const { types } = props
+
+        return (
+            <HideableFormInput hidden={!types.includes(route.type)} reason={NOT_AVAILABLE_REASON}>
+                {props.children}
+            </HideableFormInput>
+        )
+    }
+
     private renderMainTab() {
-        const { index, validationResult, fieldPath, route } = this.props
-        const proxyRoute = PROXY_ROUTE_TYPES.includes(route.type)
-        const accessListSupported = ACCESS_LIST_SUPPORTED_ROUTE_TYPES.includes(route.type)
+        const { index, validationResult, fieldPath } = this.props
+        const Conditional = this.renderConditionally.bind(this)
 
         return (
             <>
-                <Form.Item
-                    {...ItemProps}
-                    name={[fieldPath, "accessList"]}
-                    validateStatus={validationResult.getStatus(`routes[${index}].accessListId`)}
-                    help={validationResult.getMessage(`routes[${index}].accessListId`)}
-                    label="Access list"
-                    className={!accessListSupported ? "hosts-form-invisible-input" : undefined}
-                >
-                    <PaginatedSelect<AccessListResponse>
-                        itemDescription={item => item?.name}
-                        itemKey={item => item?.id}
-                        pageProvider={(pageSize, pageNumber, searchTerms) =>
-                            this.fetchAccessLists(pageSize, pageNumber, searchTerms)
+                <Conditional types={ACCESS_LIST_SUPPORTED_ROUTE_TYPES}>
+                    <Form.Item
+                        {...ItemProps}
+                        name={[fieldPath, "accessList"]}
+                        validateStatus={validationResult.getStatus(`routes[${index}].accessListId`)}
+                        help={validationResult.getMessage(`routes[${index}].accessListId`)}
+                        label="Access list"
+                    >
+                        <PaginatedSelect<AccessListResponse>
+                            itemDescription={item => item?.name}
+                            itemKey={item => item?.id}
+                            pageProvider={(pageSize, pageNumber, searchTerms) =>
+                                this.fetchAccessLists(pageSize, pageNumber, searchTerms)
+                            }
+                            allowEmpty
+                        />
+                    </Form.Item>
+                </Conditional>
+                <Conditional types={[HostRouteType.STATIC_FILES]}>
+                    <Form.Item
+                        {...ItemProps}
+                        name={[fieldPath, "settings", "directoryListingEnabled"]}
+                        label="Enable directory listing"
+                        validateStatus={validationResult.getStatus(`routes[${index}].settings.directoryListingEnabled`)}
+                        help={
+                            validationResult.getMessage(`routes[${index}].settings.directoryListingEnabled`) ??
+                            "Defines if the list of files in the directories should be shown"
                         }
-                        allowEmpty
-                    />
-                </Form.Item>
-                <Form.Item
-                    {...ItemProps}
-                    name={[fieldPath, "settings", "directoryListingEnabled"]}
-                    label="Enable directory listing"
-                    validateStatus={validationResult.getStatus(`routes[${index}].settings.directoryListingEnabled`)}
-                    help={
-                        validationResult.getMessage(`routes[${index}].settings.directoryListingEnabled`) ??
-                        "Defines if the list of files in the directories should be shown"
-                    }
-                    className={route.type !== HostRouteType.STATIC_FILES ? "hosts-form-invisible-input" : undefined}
-                    required
-                >
-                    <Switch />
-                </Form.Item>
-                <Form.Item
-                    {...ItemProps}
-                    name={[fieldPath, "settings", "keepOriginalDomainName"]}
-                    label="Keep the original domain name"
-                    validateStatus={validationResult.getStatus(`routes[${index}].settings.keepOriginalDomainName`)}
-                    help={
-                        validationResult.getMessage(`routes[${index}].settings.keepOriginalDomainName`) ??
-                        "Defines if the request made by nginx to the target host should use the target's domain as the host"
-                    }
-                    className={!proxyRoute ? "hosts-form-invisible-input" : undefined}
-                    required
-                >
-                    <Switch />
-                </Form.Item>
-                <Form.Item
-                    {...ItemProps}
-                    name={[fieldPath, "settings", "proxySslServerName"]}
-                    label="Proxy SSL server name"
-                    validateStatus={validationResult.getStatus(`routes[${index}].settings.proxySslServerName`)}
-                    help={
-                        validationResult.getMessage(`routes[${index}].settings.proxySslServerName`) ??
-                        "Defines if the SSL negotiation should be made using the target's domain"
-                    }
-                    className={!proxyRoute ? "hosts-form-invisible-input" : undefined}
-                    required
-                >
-                    <Switch />
-                </Form.Item>
-                <Form.Item
-                    {...ItemProps}
-                    name={[fieldPath, "settings", "includeForwardHeaders"]}
-                    label="Include forward headers"
-                    validateStatus={validationResult.getStatus(`routes[${index}].settings.includeForwardHeaders`)}
-                    help={
-                        validationResult.getMessage(`routes[${index}].settings.includeForwardHeaders`) ??
-                        "Defines if headers like 'x-forwarded-for' should be included in the request to the target"
-                    }
-                    className={!proxyRoute ? "hosts-form-invisible-input" : undefined}
-                    required
-                >
-                    <Switch />
-                </Form.Item>
+                        required
+                    >
+                        <Switch />
+                    </Form.Item>
+                </Conditional>
+                <Conditional types={PROXY_ROUTE_TYPES}>
+                    <Form.Item
+                        {...ItemProps}
+                        name={[fieldPath, "settings", "keepOriginalDomainName"]}
+                        label="Keep the original domain name"
+                        validateStatus={validationResult.getStatus(`routes[${index}].settings.keepOriginalDomainName`)}
+                        help={
+                            validationResult.getMessage(`routes[${index}].settings.keepOriginalDomainName`) ??
+                            "Defines if the request made by nginx to the target host should use the target's domain as the host"
+                        }
+                        required
+                    >
+                        <Switch />
+                    </Form.Item>
+                </Conditional>
+                <Conditional types={PROXY_ROUTE_TYPES}>
+                    <Form.Item
+                        {...ItemProps}
+                        name={[fieldPath, "settings", "proxySslServerName"]}
+                        label="Proxy SSL server name"
+                        validateStatus={validationResult.getStatus(`routes[${index}].settings.proxySslServerName`)}
+                        help={
+                            validationResult.getMessage(`routes[${index}].settings.proxySslServerName`) ??
+                            "Defines if the SSL negotiation should be made using the target's domain"
+                        }
+                        required
+                    >
+                        <Switch />
+                    </Form.Item>
+                </Conditional>
+                <Conditional types={PROXY_ROUTE_TYPES}>
+                    <Form.Item
+                        {...ItemProps}
+                        name={[fieldPath, "settings", "includeForwardHeaders"]}
+                        label="Include forward headers"
+                        validateStatus={validationResult.getStatus(`routes[${index}].settings.includeForwardHeaders`)}
+                        help={
+                            validationResult.getMessage(`routes[${index}].settings.includeForwardHeaders`) ??
+                            "Defines if headers like 'x-forwarded-for' should be included in the request to the target"
+                        }
+                        required
+                    >
+                        <Switch />
+                    </Form.Item>
+                </Conditional>
             </>
         )
     }
