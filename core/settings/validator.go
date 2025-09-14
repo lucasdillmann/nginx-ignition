@@ -2,10 +2,11 @@ package settings
 
 import (
 	"context"
+	"strconv"
+
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/common/value_range"
 	"dillmann.com.br/nginx-ignition/core/host"
-	"strconv"
 )
 
 const (

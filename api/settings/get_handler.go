@@ -1,9 +1,11 @@
 package settings
 
 import (
-	"dillmann.com.br/nginx-ignition/core/settings"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 type getHandler struct {

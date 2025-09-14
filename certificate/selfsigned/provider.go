@@ -3,12 +3,14 @@ package selfsigned
 import (
 	"context"
 	"crypto/x509"
+	"encoding/base64"
+	"time"
+
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
-	"encoding/base64"
-	"github.com/google/uuid"
-	"time"
 )
 
 type Provider struct{}

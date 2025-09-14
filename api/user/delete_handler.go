@@ -1,11 +1,13 @@
 package user
 
 import (
-	"dillmann.com.br/nginx-ignition/api/common/authorization"
-	"dillmann.com.br/nginx-ignition/core/user"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"net/http"
+
+	"dillmann.com.br/nginx-ignition/api/common/authorization"
+	"dillmann.com.br/nginx-ignition/core/user"
 )
 
 type deleteHandler struct {

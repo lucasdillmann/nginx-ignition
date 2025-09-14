@@ -1,11 +1,12 @@
 package cfgfiles
 
 import (
+	"fmt"
+	"strings"
+
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/stream"
-	"fmt"
-	"strings"
 )
 
 type mainConfigurationFileProvider struct {

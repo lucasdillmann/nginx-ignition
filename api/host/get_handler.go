@@ -1,10 +1,12 @@
 package host
 
 import (
-	"dillmann.com.br/nginx-ignition/core/host"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"net/http"
+
+	"dillmann.com.br/nginx-ignition/core/host"
 )
 
 type getHandler struct {

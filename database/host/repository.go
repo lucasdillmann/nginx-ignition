@@ -3,14 +3,16 @@ package host
 import (
 	"context"
 	"database/sql"
+	"errors"
+
+	"github.com/google/uuid"
+	"github.com/uptrace/bun"
+
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/database/certificate"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
-	"errors"
-	"github.com/google/uuid"
-	"github.com/uptrace/bun"
 )
 
 const buHostIdFilter = "host_id = ?"

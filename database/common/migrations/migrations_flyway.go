@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"database/sql"
+
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 

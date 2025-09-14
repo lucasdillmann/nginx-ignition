@@ -3,15 +3,17 @@ package custom
 import (
 	"context"
 	"crypto/x509"
+	"encoding/base64"
+	"encoding/pem"
+	"strings"
+	"time"
+
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
-	"encoding/base64"
-	"encoding/pem"
-	"github.com/google/uuid"
-	"strings"
-	"time"
 )
 
 type Provider struct{}
@@ -123,7 +125,7 @@ func parseCertificateChain(chain string) ([]*x509.Certificate, error) {
 		return nil, core_error.New("Failed to decode chain", true)
 	}
 
-	var certs []*x509.Certificate
+	certs := make([]*x509.Certificate, 0)
 	for _, cert := range strings.Split(string(decodedChain), "-----END CERTIFICATE-----") {
 		if cert == "" {
 			continue

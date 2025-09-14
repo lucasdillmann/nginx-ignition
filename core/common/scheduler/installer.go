@@ -1,8 +1,9 @@
 package scheduler
 
 import (
-	"go.uber.org/dig"
 	"time"
+
+	"go.uber.org/dig"
 )
 
 func Install(container *dig.Container) error {

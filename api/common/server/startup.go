@@ -2,11 +2,12 @@ package server
 
 import (
 	"context"
+	"net"
+	"net/http"
+
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 	"dillmann.com.br/nginx-ignition/core/common/log"
-	"net"
-	"net/http"
 )
 
 type startup struct {

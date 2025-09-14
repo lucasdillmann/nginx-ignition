@@ -2,6 +2,7 @@ package settings
 
 import (
 	"context"
+
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
 	"dillmann.com.br/nginx-ignition/core/host"
 )

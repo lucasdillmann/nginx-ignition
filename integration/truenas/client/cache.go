@@ -1,9 +1,10 @@
 package client
 
 import (
-	"github.com/patrickmn/go-cache"
 	"sync"
 	"time"
+
+	"github.com/patrickmn/go-cache"
 )
 
 type apiCache[T any] struct {

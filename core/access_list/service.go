@@ -2,10 +2,12 @@ package access_list
 
 import (
 	"context"
+
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
-	"github.com/google/uuid"
 )
 
 type service struct {

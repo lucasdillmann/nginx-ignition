@@ -1,9 +1,11 @@
 package certificate
 
 import (
-	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
 )
 
 type availableProviderResponse struct {

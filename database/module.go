@@ -1,6 +1,8 @@
 package database
 
 import (
+	"go.uber.org/dig"
+
 	"dillmann.com.br/nginx-ignition/database/access_list"
 	"dillmann.com.br/nginx-ignition/database/certificate"
 	"dillmann.com.br/nginx-ignition/database/common/database"
@@ -10,7 +12,6 @@ import (
 	"dillmann.com.br/nginx-ignition/database/settings"
 	"dillmann.com.br/nginx-ignition/database/stream"
 	"dillmann.com.br/nginx-ignition/database/user"
-	"go.uber.org/dig"
 )
 
 func Install(container *dig.Container) error {

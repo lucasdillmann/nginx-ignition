@@ -1,9 +1,11 @@
 package certificate
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 )
 
 type Certificate struct {

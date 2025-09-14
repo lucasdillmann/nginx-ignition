@@ -1,9 +1,10 @@
 package user
 
 import (
-	"dillmann.com.br/nginx-ignition/core/user"
 	"github.com/aws/smithy-go/ptr"
 	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/user"
 )
 
 func toDomain(dto *userRequestDto) *user.SaveRequest {

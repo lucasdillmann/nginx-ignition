@@ -1,10 +1,12 @@
 package cfgfiles
 
 import (
-	"dillmann.com.br/nginx-ignition/core/access_list"
 	"fmt"
-	"github.com/ncw/pwhash/apr1_crypt"
 	"strings"
+
+	"github.com/ncw/pwhash/apr1_crypt"
+
+	"dillmann.com.br/nginx-ignition/core/access_list"
 )
 
 type accessListFileProvider struct {

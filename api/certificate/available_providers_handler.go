@@ -1,9 +1,11 @@
 package certificate
 
 import (
-	"dillmann.com.br/nginx-ignition/core/certificate"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
 type availableProvidersHandler struct {

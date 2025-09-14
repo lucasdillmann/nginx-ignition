@@ -1,11 +1,13 @@
 package stream
 
 import (
-	"dillmann.com.br/nginx-ignition/core/stream"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"net/http"
+
+	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
 type updateHandler struct {

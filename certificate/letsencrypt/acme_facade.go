@@ -3,10 +3,11 @@ package letsencrypt
 import (
 	"context"
 	"crypto/x509"
-	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"encoding/base64"
 	"encoding/pem"
+	"strings"
+	"time"
+
 	"github.com/go-acme/lego/v4/certcrypto"
 	acmecertificate "github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/challenge"
@@ -14,8 +15,9 @@ import (
 	"github.com/go-acme/lego/v4/registration"
 	"github.com/google/uuid"
 	jsoniter "github.com/json-iterator/go"
-	"strings"
-	"time"
+
+	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/common/core_error"
 )
 
 func issueCertificate(

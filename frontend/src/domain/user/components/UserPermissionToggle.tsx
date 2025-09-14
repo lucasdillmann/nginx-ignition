@@ -1,6 +1,6 @@
 import { UserAccessLevel } from "../model/UserAccessLevel"
-import { StopOutlined, EyeOutlined, CheckCircleOutlined } from "@ant-design/icons"
-import { Segmented, Flex } from "antd"
+import { CheckCircleOutlined, EyeOutlined, StopOutlined } from "@ant-design/icons"
+import { Flex, Segmented } from "antd"
 import React from "react"
 import "./UserPermissionToggle.css"
 

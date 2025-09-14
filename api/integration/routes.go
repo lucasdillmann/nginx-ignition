@@ -1,10 +1,11 @@
 package integration
 
 import (
+	"github.com/gin-gonic/gin"
+
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/user"
-	"github.com/gin-gonic/gin"
 )
 
 func Install(

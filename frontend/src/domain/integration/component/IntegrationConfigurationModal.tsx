@@ -20,7 +20,7 @@ export interface IntegrationConfigurationModalProps {
     onClose: (updated: boolean) => void
 }
 
-interface IntegraitonConfigurationModalState {
+interface IntegrationConfigurationModalState {
     integration?: IntegrationConfigurationResponse
     formValues: IntegrationConfigurationRequest
     validationResult: ValidationResult
@@ -28,7 +28,7 @@ interface IntegraitonConfigurationModalState {
 
 export default class IntegrationConfigurationModal extends React.Component<
     IntegrationConfigurationModalProps,
-    IntegraitonConfigurationModalState
+    IntegrationConfigurationModalState
 > {
     private readonly service: IntegrationService
 

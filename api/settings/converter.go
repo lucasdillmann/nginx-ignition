@@ -1,10 +1,11 @@
 package settings
 
 import (
-	"dillmann.com.br/nginx-ignition/core/host"
-	"dillmann.com.br/nginx-ignition/core/settings"
 	"github.com/aws/smithy-go/ptr"
 	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 func toDto(settings *settings.Settings) *settingsDto {

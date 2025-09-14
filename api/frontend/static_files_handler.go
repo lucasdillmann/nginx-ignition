@@ -2,10 +2,8 @@ package frontend
 
 import (
 	"crypto/sha256"
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"encoding/hex"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"io"
 	"mime"
 	"net/http"
@@ -13,6 +11,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+
+	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
 const (

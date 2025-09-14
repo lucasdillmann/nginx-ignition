@@ -1,11 +1,13 @@
 package certificate
 
 import (
-	"dillmann.com.br/nginx-ignition/api/common/api_error"
-	"dillmann.com.br/nginx-ignition/core/certificate"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"net/http"
+
+	"dillmann.com.br/nginx-ignition/api/common/api_error"
+	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
 type renewHandler struct {

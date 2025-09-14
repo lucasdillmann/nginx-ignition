@@ -2,6 +2,9 @@ package boot
 
 import (
 	"context"
+
+	"go.uber.org/dig"
+
 	"dillmann.com.br/nginx-ignition/api"
 	"dillmann.com.br/nginx-ignition/certificate/custom"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt"
@@ -14,7 +17,6 @@ import (
 	"dillmann.com.br/nginx-ignition/database"
 	"dillmann.com.br/nginx-ignition/integration/docker"
 	"dillmann.com.br/nginx-ignition/integration/truenas"
-	"go.uber.org/dig"
 )
 
 func startContainer(ctx context.Context) (*dig.Container, error) {

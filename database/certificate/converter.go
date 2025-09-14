@@ -1,8 +1,9 @@
 package certificate
 
 import (
-	"dillmann.com.br/nginx-ignition/core/certificate"
 	"encoding/json"
+
+	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
 func toDomain(model *certificateModel) (*certificate.Certificate, error) {

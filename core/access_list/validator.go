@@ -1,10 +1,11 @@
 package access_list
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"net"
 	"strconv"
 	"strings"
+
+	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
 type validator struct {

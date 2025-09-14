@@ -1,10 +1,12 @@
 package access_list
 
 import (
-	"dillmann.com.br/nginx-ignition/core/access_list"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"net/http"
+
+	"dillmann.com.br/nginx-ignition/core/access_list"
 )
 
 type getHandler struct {

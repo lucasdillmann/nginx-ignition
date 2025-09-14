@@ -3,10 +3,11 @@ package password_hash
 import (
 	"crypto/rand"
 	"crypto/sha512"
-	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"encoding/base64"
 	"reflect"
 	"slices"
+
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
 )
 
 type PasswordHash struct {

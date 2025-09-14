@@ -3,10 +3,11 @@ package integration
 import (
 	"context"
 	"database/sql"
+	"errors"
+
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
-	"errors"
 )
 
 type repository struct {

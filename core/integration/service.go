@@ -2,10 +2,11 @@ package integration
 
 import (
 	"context"
+	"sort"
+
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
-	"sort"
 )
 
 type service struct {

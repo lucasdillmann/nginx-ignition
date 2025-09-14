@@ -2,15 +2,16 @@ package truenas
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"strconv"
+	"strings"
+
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/integration/truenas/client"
-	"fmt"
-	"net/url"
-	"strconv"
-	"strings"
 )
 
 type Adapter struct {
@@ -133,21 +134,24 @@ func (a *Adapter) GetOptionProxyUrl(
 	hostIp := port.HostPorts[0].HostIp
 
 	var endpoint string
-	if proxyUrl != "" {
+	switch {
+	case proxyUrl != "":
 		parseResult, err := url.Parse(proxyUrl)
 		if err != nil {
 			return nil, err
 		}
 
 		endpoint = parseResult.Host
-	} else if hostIp == "0.0.0.0" {
+
+	case hostIp == "0.0.0.0":
 		parseResult, err := url.Parse(baseUrl)
 		if err != nil {
 			return nil, err
 		}
 
 		endpoint = parseResult.Host
-	} else {
+
+	default:
 		endpoint = hostIp
 	}
 

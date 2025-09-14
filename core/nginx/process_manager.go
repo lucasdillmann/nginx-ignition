@@ -1,13 +1,14 @@
 package nginx
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"errors"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
 type processManager struct {

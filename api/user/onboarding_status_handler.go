@@ -1,9 +1,11 @@
 package user
 
 import (
-	"dillmann.com.br/nginx-ignition/core/user"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"dillmann.com.br/nginx-ignition/core/user"
 )
 
 type onboardingStatusHandler struct {

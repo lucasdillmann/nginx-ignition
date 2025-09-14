@@ -3,13 +3,14 @@ package nginx
 import (
 	"bufio"
 	"context"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 type logRotator struct {

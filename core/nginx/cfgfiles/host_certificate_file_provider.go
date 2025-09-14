@@ -2,14 +2,16 @@ package cfgfiles
 
 import (
 	"context"
-	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/host"
-	"dillmann.com.br/nginx-ignition/core/settings"
 	"encoding/base64"
 	"encoding/pem"
 	"fmt"
-	"github.com/google/uuid"
 	"strings"
+
+	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 type hostCertificateFileProvider struct {

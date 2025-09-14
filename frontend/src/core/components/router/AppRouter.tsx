@@ -1,7 +1,7 @@
 import AppRoute from "./AppRoute"
 import React from "react"
 import AppContext from "../context/AppContext"
-import { RouteObject, createBrowserRouter, RouterProvider, Navigate, Params } from "react-router-dom"
+import { createBrowserRouter, Navigate, Params, RouteObject, RouterProvider } from "react-router-dom"
 import AppShell, { AppShellMenuItem } from "../shell/AppShell"
 import ErrorBoundary from "../errorboundary/ErrorBoundary"
 import qs, { ParsedQs } from "qs"

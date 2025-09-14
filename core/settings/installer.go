@@ -1,9 +1,10 @@
 package settings
 
 import (
+	"go.uber.org/dig"
+
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
 	"dillmann.com.br/nginx-ignition/core/host"
-	"go.uber.org/dig"
 )
 
 func Install(container *dig.Container) error {

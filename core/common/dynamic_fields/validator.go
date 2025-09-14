@@ -1,11 +1,12 @@
 package dynamic_fields
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"encoding/base64"
 	"net/mail"
 	"net/url"
 	"strings"
+
+	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
 func Validate(

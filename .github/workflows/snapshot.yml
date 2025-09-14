@@ -30,16 +30,8 @@ jobs:
         with:
           path: ${{ github.workspace }}/.go
           key: go-cache
-      - name: Prettier
-        working-directory: frontend
-        run: |
-          npm install && \
-          npx prettier --check src
-      - name: Eslint
-        working-directory: frontend
-        run: |
-          npm install && \
-          npx eslint src
+      - name: Lint
+        run: make check
       - name: Sonarqube
         uses: SonarSource/sonarqube-scan-action@v5
         env:
@@ -80,37 +72,12 @@ jobs:
         with:
           path: ${{ github.workspace }}/.go
           key: go-cache
-      - name: Frontend build
-        working-directory: frontend
-        run: |
-          npm install && \
-          npm run build
-      - name: Backend build
+      - name: Build and release
         env:
           GOPATH: ${{ github.workspace }}/.go
           GOMODCACHE: ${{ github.workspace }}/.go/pkg/mod
           GOTOOLCHAIN: ""
-          GOOS: linux
-          CGO_ENABLED: "0"
-        run: |
-          go work sync && \
-          GOARCH=amd64 go build -o build/linux/amd64 application/main.go && \
-          GOARCH=arm64 go build -o build/linux/arm64 application/main.go
-      - name: Generate Docker tag
-        id: docker-tag
-        run: |
-          if [ "${{ github.ref_name }}" = "main" ]; then
-            echo "DOCKER_TAG=snapshot" >> $GITHUB_OUTPUT
-          else
-            echo "DOCKER_TAG=pr-${{ github.event.pull_request.number }}-snapshot" >> $GITHUB_OUTPUT
-          fi
-      - name: Build and push Docker images
-        run: |
-          docker buildx build \
-            --tag dillmann/nginx-ignition:${{ steps.docker-tag.outputs.DOCKER_TAG }} \
-            --platform linux/amd64,linux/arm64 \
-            --build-arg NGINX_IGNITION_VERSION="" \
-            --push .
+        run: make build-snapshot PR_ID=${{ github.event.pull_request.number }}
       - name: npm cache upload
         uses: actions/cache/save@v4
         with:

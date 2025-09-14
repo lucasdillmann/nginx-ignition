@@ -1,10 +1,12 @@
 package integration
 
 import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
 	"dillmann.com.br/nginx-ignition/api/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
-	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type listOptionsHandler struct {

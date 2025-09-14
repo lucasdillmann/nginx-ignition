@@ -1,10 +1,12 @@
 package nginx
 
 import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/nginx"
-	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type reloadHandler struct {

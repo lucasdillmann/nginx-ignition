@@ -2,14 +2,16 @@ package database
 
 import (
 	"database/sql"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"fmt"
+	"os"
+
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
 	"github.com/uptrace/bun/schema"
-	"os"
+
+	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 
 	_ "github.com/lib/pq"
 	_ "modernc.org/sqlite"

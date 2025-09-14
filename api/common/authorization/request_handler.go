@@ -1,10 +1,12 @@
 package authorization
 
 import (
-	"dillmann.com.br/nginx-ignition/api/common/api_error"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+
+	"dillmann.com.br/nginx-ignition/api/common/api_error"
 )
 
 const (

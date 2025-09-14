@@ -1,8 +1,9 @@
 package user
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"go.uber.org/dig"
+
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
 )
 
 func Install(container *dig.Container) error {

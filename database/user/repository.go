@@ -3,12 +3,14 @@ package user
 import (
 	"context"
 	"database/sql"
+	"errors"
+
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/user"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
-	"errors"
-	"github.com/google/uuid"
 )
 
 type repository struct {

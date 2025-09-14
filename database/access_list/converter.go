@@ -1,9 +1,10 @@
 package access_list
 
 import (
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/access_list"
 	"dillmann.com.br/nginx-ignition/core/common/pointers"
-	"github.com/google/uuid"
 )
 
 func toDomain(model *accessListModel) *access_list.AccessList {

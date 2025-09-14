@@ -1,11 +1,12 @@
 package commons
 
 import (
+	"fmt"
+
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
-	"fmt"
 )
 
 func Validate(request *certificate.IssueRequest, domainRules DomainRules) error {

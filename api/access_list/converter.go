@@ -1,8 +1,9 @@
 package access_list
 
 import (
-	"dillmann.com.br/nginx-ignition/core/access_list"
 	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/access_list"
 )
 
 func toDto(accessList *access_list.AccessList) *accessListResponseDto {

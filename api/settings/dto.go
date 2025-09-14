@@ -1,9 +1,10 @@
 package settings
 
 import (
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
-	"github.com/google/uuid"
 )
 
 type settingsDto struct {

@@ -2,12 +2,14 @@ package user
 
 import (
 	"context"
+
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/user/password_hash"
-	"github.com/google/uuid"
 )
 
 type service struct {

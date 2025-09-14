@@ -1,9 +1,10 @@
 package certificate
 
 import (
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"github.com/google/uuid"
 )
 
 func toAvailableProviderResponse(input []*certificate.AvailableProvider) []*availableProviderResponse {

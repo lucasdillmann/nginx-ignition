@@ -2,6 +2,9 @@ package certificate
 
 import (
 	"context"
+
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/common/broadcast"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
@@ -9,7 +12,6 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
-	"github.com/google/uuid"
 )
 
 type service struct {
