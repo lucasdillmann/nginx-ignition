@@ -23,8 +23,8 @@ const (
 	RedirectRouteType       RouteType = "REDIRECT"
 	StaticResponseRouteType RouteType = "STATIC_RESPONSE"
 	IntegrationRouteType    RouteType = "INTEGRATION"
-	SourceCodeRouteType     RouteType = "SOURCE_CODE"
-	DirectoryRouteType      RouteType = "DIRECTORY"
+	ExecuteCodeRouteType    RouteType = "EXECUTE_CODE"
+	StaticFilesRouteType    RouteType = "STATIC_FILES"
 )
 
 type Host struct {
@@ -67,10 +67,11 @@ type RouteSourceCode struct {
 }
 
 type RouteSettings struct {
-	IncludeForwardHeaders  bool
-	ProxySSLServerName     bool
-	KeepOriginalDomainName bool
-	Custom                 *string
+	IncludeForwardHeaders   bool
+	ProxySSLServerName      bool
+	KeepOriginalDomainName  bool
+	DirectoryListingEnabled bool
+	Custom                  *string
 }
 
 type RouteStaticResponse struct {

@@ -8,8 +8,8 @@ export enum HostRouteType {
     REDIRECT = "REDIRECT",
     STATIC_RESPONSE = "STATIC_RESPONSE",
     INTEGRATION = "INTEGRATION",
-    SOURCE_CODE = "SOURCE_CODE",
-    DIRECTORY = "DIRECTORY",
+    EXECUTE_CODE = "EXECUTE_CODE",
+    STATIC_FILES = "STATIC_FILES",
 }
 
 export enum HostRouteSourceCodeLanguage {
@@ -40,6 +40,7 @@ export interface HostRouteSettings {
     includeForwardHeaders: boolean
     proxySslServerName: boolean
     keepOriginalDomainName: boolean
+    directoryListingEnabled: boolean
     custom?: string
 }
 

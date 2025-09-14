@@ -35,25 +35,26 @@ type hostBindingModel struct {
 type hostRouteModel struct {
 	bun.BaseModel `bun:"host_route"`
 
-	ID                     uuid.UUID  `bun:"id,pk"`
-	HostID                 uuid.UUID  `bun:"host_id,notnull"`
-	Priority               int        `bun:"priority,notnull"`
-	Type                   string     `bun:"type,notnull"`
-	SourcePath             string     `bun:"source_path,notnull"`
-	TargetURI              *string    `bun:"target_uri"`
-	CustomSettings         *string    `bun:"custom_settings"`
-	StaticResponseCode     *int       `bun:"static_response_code"`
-	StaticResponsePayload  *string    `bun:"static_response_payload"`
-	StaticResponseHeaders  *string    `bun:"static_response_headers"`
-	RedirectCode           *int       `bun:"redirect_code"`
-	IntegrationID          *string    `bun:"integration_id"`
-	IntegrationOptionID    *string    `bun:"integration_option_id"`
-	IncludeForwardHeaders  bool       `bun:"include_forward_headers,notnull"`
-	ProxySSLServerName     bool       `bun:"proxy_ssl_server_name,notnull"`
-	KeepOriginalDomainName bool       `bun:"keep_original_domain_name,notnull"`
-	AccessListID           *uuid.UUID `bun:"access_list_id"`
-	CodeLanguage           *string    `bun:"code_language"`
-	CodeContents           *string    `bun:"code_contents"`
-	CodeMainFunction       *string    `bun:"code_main_function"`
-	Enabled                bool       `bun:"enabled,notnull"`
+	ID                      uuid.UUID  `bun:"id,pk"`
+	HostID                  uuid.UUID  `bun:"host_id,notnull"`
+	Priority                int        `bun:"priority,notnull"`
+	Type                    string     `bun:"type,notnull"`
+	SourcePath              string     `bun:"source_path,notnull"`
+	TargetURI               *string    `bun:"target_uri"`
+	CustomSettings          *string    `bun:"custom_settings"`
+	StaticResponseCode      *int       `bun:"static_response_code"`
+	StaticResponsePayload   *string    `bun:"static_response_payload"`
+	StaticResponseHeaders   *string    `bun:"static_response_headers"`
+	RedirectCode            *int       `bun:"redirect_code"`
+	IntegrationID           *string    `bun:"integration_id"`
+	IntegrationOptionID     *string    `bun:"integration_option_id"`
+	IncludeForwardHeaders   bool       `bun:"include_forward_headers,notnull"`
+	ProxySSLServerName      bool       `bun:"proxy_ssl_server_name,notnull"`
+	KeepOriginalDomainName  bool       `bun:"keep_original_domain_name,notnull"`
+	DirectoryListingEnabled bool       `bun:"directory_listing_enabled,notnull"`
+	AccessListID            *uuid.UUID `bun:"access_list_id"`
+	CodeLanguage            *string    `bun:"code_language"`
+	CodeContents            *string    `bun:"code_contents"`
+	CodeMainFunction        *string    `bun:"code_main_function"`
+	Enabled                 bool       `bun:"enabled,notnull"`
 }

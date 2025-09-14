@@ -1,11 +1,11 @@
-name: main-pipeline
+name: snapshot-pipeline
 on:
   push:
     branches:
       - main
   pull_request:
     branches:
-      - main
+      - '*'
 
 jobs:
   quality-checks:
@@ -96,10 +96,18 @@ jobs:
           go work sync && \
           GOARCH=amd64 go build -o build/linux/amd64 application/main.go && \
           GOARCH=arm64 go build -o build/linux/arm64 application/main.go
+      - name: Generate Docker tag
+        id: docker-tag
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "DOCKER_TAG=snapshot" >> $GITHUB_OUTPUT
+          else
+            echo "DOCKER_TAG=pr-${{ github.event.pull_request.number }}-snapshot" >> $GITHUB_OUTPUT
+          fi
       - name: Build and push Docker images
         run: |
           docker buildx build \
-            --tag dillmann/nginx-ignition:snapshot \
+            --tag dillmann/nginx-ignition:${{ steps.docker-tag.outputs.DOCKER_TAG }} \
             --platform linux/amd64,linux/arm64 \
             --build-arg NGINX_IGNITION_VERSION="" \
             --push .

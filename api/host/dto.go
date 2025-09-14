@@ -37,10 +37,11 @@ type routeSourceCodeDto struct {
 }
 
 type routeSettingsDto struct {
-	IncludeForwardHeaders  *bool   `json:"includeForwardHeaders" validate:"required"`
-	ProxySslServerName     *bool   `json:"proxySslServerName" validate:"required"`
-	KeepOriginalDomainName *bool   `json:"keepOriginalDomainName" validate:"required"`
-	Custom                 *string `json:"custom"`
+	IncludeForwardHeaders   *bool   `json:"includeForwardHeaders" validate:"required"`
+	ProxySslServerName      *bool   `json:"proxySslServerName" validate:"required"`
+	KeepOriginalDomainName  *bool   `json:"keepOriginalDomainName" validate:"required"`
+	DirectoryListingEnabled *bool   `json:"directoryListingEnabled" validate:"required"`
+	Custom                  *string `json:"custom"`
 }
 
 type integrationConfigDto struct {

@@ -16,7 +16,7 @@ Some of the available features include:
 - Multiple nginx streams (for proxying raw TCP, UPD and unix sockets traffic), each one with its customized binding and
   backing service
 - Each host route can act as a proxy, redirection, execute custom code (JavaScript or Lua), reply with a static 
-  response or serve static files with directory listing enabled
+  response or serve static files (directory listing can be optionally enabled)
 - Easy configuration of the nginx server (maximum body/upload size, server tokens, timeouts, log level, etc)
 - SSL certificates (Let's Encrypt, self-signed or bring your custom one) with automatic renew (when applicable)
 - Server and virtual hosts access and error logs with automatic log rotation

@@ -24,6 +24,7 @@ const HostFormValuesDefaults: HostFormValues = {
                 keepOriginalDomainName: true,
                 proxySslServerName: true,
                 includeForwardHeaders: true,
+                directoryListingEnabled: false,
             },
         },
     ],

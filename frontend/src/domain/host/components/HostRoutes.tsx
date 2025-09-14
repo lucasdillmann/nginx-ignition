@@ -86,7 +86,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         )
     }
 
-    private renderDirectoryRoute(field: FormListFieldData, index: number): React.ReactNode {
+    private renderStaticFilesRoute(field: FormListFieldData, index: number): React.ReactNode {
         const { validationResult } = this.props
         const { name } = field
 
@@ -98,7 +98,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 name={[name, "targetUri"]}
                 validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
                 help={validationResult.getMessage(`routes[${index}].targetUri`)}
-                label="Directory path"
+                label="Target directory path"
                 required
             >
                 <Input />
@@ -471,8 +471,8 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         <Select.Option value={HostRouteType.PROXY}>Proxy</Select.Option>
                         <Select.Option value={HostRouteType.REDIRECT}>Redirect</Select.Option>
                         <Select.Option value={HostRouteType.STATIC_RESPONSE}>Static response</Select.Option>
-                        <Select.Option value={HostRouteType.SOURCE_CODE}>Source code</Select.Option>
-                        <Select.Option value={HostRouteType.DIRECTORY}>Directory listing</Select.Option>
+                        <Select.Option value={HostRouteType.STATIC_FILES}>Static files</Select.Option>
+                        <Select.Option value={HostRouteType.EXECUTE_CODE}>Execute code</Select.Option>
                     </Select>
                 </Form.Item>
                 <Form.Item
@@ -494,8 +494,8 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 <If condition={type === HostRouteType.STATIC_RESPONSE}>
                     {this.renderStaticResponseRoute(field, index)}
                 </If>
-                <If condition={type === HostRouteType.SOURCE_CODE}>{this.renderSourceCodeRoute(field, index)}</If>
-                <If condition={type === HostRouteType.DIRECTORY}>{this.renderDirectoryRoute(field, index)}</If>
+                <If condition={type === HostRouteType.EXECUTE_CODE}>{this.renderSourceCodeRoute(field, index)}</If>
+                <If condition={type === HostRouteType.STATIC_FILES}>{this.renderStaticFilesRoute(field, index)}</If>
 
                 <HostRouteSettingsModal
                     open={index === routeSettingsOpenModalIndex}

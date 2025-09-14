@@ -131,6 +131,9 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
                     rowKey={row => rowKey(row)}
                     pagination={false}
                     tableLayout="fixed"
+                    scroll={{
+                        scrollToFirstRowOnChange: true,
+                    }}
                     virtual
                     bordered
                 />

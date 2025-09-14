@@ -20,6 +20,10 @@ import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedM
 import { navigateTo } from "../../core/components/router/AppRouter"
 import { Button } from "antd"
 
+const BUTTON_STYLE = {
+    height: "auto",
+}
+
 export default class HostListPage extends React.PureComponent {
     private readonly service: HostService
     private readonly table: React.RefObject<DataTable<HostResponse> | null>
@@ -70,16 +74,19 @@ export default class HostListPage extends React.PureComponent {
                         <Button
                             type="link"
                             onClick={() => this.cloneHost(item)}
+                            style={BUTTON_STYLE}
                             icon={<CopyOutlined className="action-icon" />}
                         />
                         <Button
                             type="link"
                             onClick={() => this.toggleHostStatus(item)}
+                            style={BUTTON_STYLE}
                             icon={<PoweroffOutlined className="action-icon" />}
                         />
                         <Button
                             type="link"
                             onClick={() => this.deleteHost(item)}
+                            style={BUTTON_STYLE}
                             icon={<DeleteOutlined className="action-icon" />}
                         />
                     </>
