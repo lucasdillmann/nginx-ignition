@@ -108,11 +108,11 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                 </Form.Item>
                 <Form.Item
                     {...ItemProps}
-                    name={[fieldPath, "settings", "enableDirectoryListing"]}
+                    name={[fieldPath, "settings", "directoryListingEnabled"]}
                     label="Enable directory listing"
-                    validateStatus={validationResult.getStatus(`routes[${index}].settings.enableDirectoryListing`)}
+                    validateStatus={validationResult.getStatus(`routes[${index}].settings.directoryListingEnabled`)}
                     help={
-                        validationResult.getMessage(`routes[${index}].settings.enableDirectoryListing`) ??
+                        validationResult.getMessage(`routes[${index}].settings.directoryListingEnabled`) ??
                         "Defines if the list of files in the directories should be shown"
                     }
                     className={route.type !== HostRouteType.STATIC_FILES ? "hosts-form-invisible-input" : undefined}
