@@ -116,10 +116,11 @@ func toRouteSettingsDto(settings *host.RouteSettings) *routeSettingsDto {
 	}
 
 	return &routeSettingsDto{
-		IncludeForwardHeaders:  &settings.IncludeForwardHeaders,
-		ProxySslServerName:     &settings.ProxySSLServerName,
-		KeepOriginalDomainName: &settings.KeepOriginalDomainName,
-		Custom:                 settings.Custom,
+		IncludeForwardHeaders:   &settings.IncludeForwardHeaders,
+		ProxySslServerName:      &settings.ProxySSLServerName,
+		KeepOriginalDomainName:  &settings.KeepOriginalDomainName,
+		DirectoryListingEnabled: &settings.DirectoryListingEnabled,
+		Custom:                  settings.Custom,
 	}
 }
 
@@ -217,10 +218,11 @@ func toRouteSettings(input *routeSettingsDto) *host.RouteSettings {
 	}
 
 	return &host.RouteSettings{
-		IncludeForwardHeaders:  getBoolValue(input.IncludeForwardHeaders),
-		ProxySSLServerName:     getBoolValue(input.ProxySslServerName),
-		KeepOriginalDomainName: getBoolValue(input.KeepOriginalDomainName),
-		Custom:                 input.Custom,
+		IncludeForwardHeaders:   getBoolValue(input.IncludeForwardHeaders),
+		ProxySSLServerName:      getBoolValue(input.ProxySslServerName),
+		KeepOriginalDomainName:  getBoolValue(input.KeepOriginalDomainName),
+		DirectoryListingEnabled: getBoolValue(input.DirectoryListingEnabled),
+		Custom:                  input.Custom,
 	}
 }
 

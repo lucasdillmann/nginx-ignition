@@ -1,9 +1,10 @@
 package host
 
 import (
+	"encoding/json"
+
 	"dillmann.com.br/nginx-ignition/core/common/pointers"
 	"dillmann.com.br/nginx-ignition/core/host"
-	"encoding/json"
 )
 
 func toDomain(model *hostModel) (*host.Host, error) {
@@ -61,10 +62,11 @@ func toDomain(model *hostModel) (*host.Host, error) {
 			RedirectCode: route.RedirectCode,
 			AccessListID: route.AccessListID,
 			Settings: host.RouteSettings{
-				IncludeForwardHeaders:  route.IncludeForwardHeaders,
-				ProxySSLServerName:     route.ProxySSLServerName,
-				KeepOriginalDomainName: route.KeepOriginalDomainName,
-				Custom:                 route.CustomSettings,
+				IncludeForwardHeaders:   route.IncludeForwardHeaders,
+				ProxySSLServerName:      route.ProxySSLServerName,
+				KeepOriginalDomainName:  route.KeepOriginalDomainName,
+				DirectoryListingEnabled: route.DirectoryListingEnabled,
+				Custom:                  route.CustomSettings,
 			},
 			Response:    response,
 			Integration: integration,
@@ -132,27 +134,28 @@ func toModel(domain *host.Host) (*hostModel, error) {
 		}
 
 		routes[index] = &hostRouteModel{
-			ID:                     route.ID,
-			HostID:                 domain.ID,
-			Priority:               route.Priority,
-			Type:                   string(route.Type),
-			SourcePath:             route.SourcePath,
-			TargetURI:              route.TargetURI,
-			CustomSettings:         route.Settings.Custom,
-			StaticResponseCode:     responseStatusCode,
-			StaticResponsePayload:  responsePayload,
-			StaticResponseHeaders:  responseHeaders,
-			RedirectCode:           route.RedirectCode,
-			IntegrationID:          integrationID,
-			IntegrationOptionID:    integrationOptionID,
-			IncludeForwardHeaders:  route.Settings.IncludeForwardHeaders,
-			ProxySSLServerName:     route.Settings.ProxySSLServerName,
-			KeepOriginalDomainName: route.Settings.KeepOriginalDomainName,
-			AccessListID:           route.AccessListID,
-			CodeLanguage:           codeLanguage,
-			CodeContents:           codeContents,
-			CodeMainFunction:       codeMainFunction,
-			Enabled:                route.Enabled,
+			ID:                      route.ID,
+			HostID:                  domain.ID,
+			Priority:                route.Priority,
+			Type:                    string(route.Type),
+			SourcePath:              route.SourcePath,
+			TargetURI:               route.TargetURI,
+			CustomSettings:          route.Settings.Custom,
+			StaticResponseCode:      responseStatusCode,
+			StaticResponsePayload:   responsePayload,
+			StaticResponseHeaders:   responseHeaders,
+			RedirectCode:            route.RedirectCode,
+			IntegrationID:           integrationID,
+			IntegrationOptionID:     integrationOptionID,
+			IncludeForwardHeaders:   route.Settings.IncludeForwardHeaders,
+			ProxySSLServerName:      route.Settings.ProxySSLServerName,
+			KeepOriginalDomainName:  route.Settings.KeepOriginalDomainName,
+			DirectoryListingEnabled: route.Settings.DirectoryListingEnabled,
+			AccessListID:            route.AccessListID,
+			CodeLanguage:            codeLanguage,
+			CodeContents:            codeContents,
+			CodeMainFunction:        codeMainFunction,
+			Enabled:                 route.Enabled,
 		}
 	}
 

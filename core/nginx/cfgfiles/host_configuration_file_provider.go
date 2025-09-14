@@ -2,13 +2,14 @@ package cfgfiles
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"strings"
+
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/settings"
-	"fmt"
-	"net/url"
-	"strings"
 )
 
 type hostConfigurationFileProvider struct {
@@ -209,26 +210,28 @@ func (p *hostConfigurationFileProvider) buildRoute(
 		return p.buildRedirectRoute(r, h.FeatureSet, basePath), nil
 	case host.IntegrationRouteType:
 		return p.buildIntegrationRoute(ctx, r, h.FeatureSet, basePath)
-	case host.SourceCodeRouteType:
-		return p.buildSourceCodeRoute(h, r, basePath), nil
-	case host.DirectoryRouteType:
-		return p.buildDirectoryRoute(r, basePath), nil
+	case host.ExecuteCodeRouteType:
+		return p.buildExecuteCodeRoute(h, r, basePath), nil
+	case host.StaticFilesRouteType:
+		return p.buildStaticFilesRoute(r, basePath), nil
 	default:
 		return "", fmt.Errorf("invalid route type: %s", r.Type)
 	}
 }
 
-func (p *hostConfigurationFileProvider) buildDirectoryRoute(r *host.Route, basePath string) string {
+func (p *hostConfigurationFileProvider) buildStaticFilesRoute(r *host.Route, basePath string) string {
 	normalizedSourcePath := r.SourcePath
 	if !strings.HasSuffix(normalizedSourcePath, "/") {
 		normalizedSourcePath += "/"
 	}
 
+	autoIndex := p.flag(r.Settings.DirectoryListingEnabled, "on", "off")
+
 	return fmt.Sprintf(
 		`location %s {
 			rewrite  ^%s(.*) /$1 break;
 			root %s;
-			autoindex on;
+			autoindex %s;
 			autoindex_exact_size off;
 			autoindex_format html;
 			autoindex_localtime on;
@@ -237,6 +240,7 @@ func (p *hostConfigurationFileProvider) buildDirectoryRoute(r *host.Route, baseP
 		normalizedSourcePath,
 		normalizedSourcePath,
 		*r.TargetURI,
+		autoIndex,
 		p.buildRouteSettings(r, basePath),
 	)
 }
@@ -338,7 +342,7 @@ func (p *hostConfigurationFileProvider) buildRedirectRoute(
 	)
 }
 
-func (p *hostConfigurationFileProvider) buildSourceCodeRoute(h *host.Host, r *host.Route, basePath string) string {
+func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(h *host.Host, r *host.Route, basePath string) string {
 	var headerBlock, routeBlock string
 	switch r.SourceCode.Language {
 	case host.JavascriptCodeLanguage:

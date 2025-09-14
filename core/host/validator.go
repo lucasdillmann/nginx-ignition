@@ -2,13 +2,14 @@ package host
 
 import (
 	"context"
-	"dillmann.com.br/nginx-ignition/core/common/constants"
-	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"net"
 	"net/url"
 	"os"
 	"strconv"
 	"strings"
+
+	"dillmann.com.br/nginx-ignition/core/common/constants"
+	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
 type validator struct {
@@ -183,16 +184,16 @@ func (v *validator) validateRoute(route *Route, index int, distinctPaths *map[st
 		v.validateStaticResponseRoute(route, index)
 	case IntegrationRouteType:
 		v.validateIntegrationRoute(route, index)
-	case SourceCodeRouteType:
-		v.validateSourceCodeRoute(route, index)
-	case DirectoryRouteType:
-		v.validateDirectoryRoute(route, index)
+	case ExecuteCodeRouteType:
+		v.validateExecuteCodeRoute(route, index)
+	case StaticFilesRouteType:
+		v.validateStaticFilesRoute(route, index)
 	default:
 		v.delegate.Add(buildIndexedRoutePath(index, "type"), invalidValue)
 	}
 }
 
-func (v *validator) validateDirectoryRoute(route *Route, index int) {
+func (v *validator) validateStaticFilesRoute(route *Route, index int) {
 	targetUriField := buildIndexedRoutePath(index, "targetUri")
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
 		v.delegate.Add(targetUriField, "Value is required when the type of the route is directory")
@@ -273,7 +274,7 @@ func (v *validator) validateIntegrationRoute(route *Route, index int) {
 	}
 }
 
-func (v *validator) validateSourceCodeRoute(route *Route, index int) {
+func (v *validator) validateExecuteCodeRoute(route *Route, index int) {
 	requiredMessage := "Value is required when the type of the route is source code"
 
 	if route.SourceCode == nil {

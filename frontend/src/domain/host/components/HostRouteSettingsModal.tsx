@@ -8,11 +8,10 @@ import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
 import AccessListResponse from "../../accesslist/model/AccessListResponse"
 import PageResponse from "../../../core/pagination/PageResponse"
 import AccessListService from "../../accesslist/AccessListService"
-import If from "../../../core/components/flowcontrol/If"
 import { HostRouteType } from "../model/HostRequest"
 import { HostFormRoute } from "../model/HostFormValues"
 
-const ACCESS_LIST_SUPPORTED_ROUTE_TYPES: HostRouteType[] = [HostRouteType.INTEGRATION, HostRouteType.PROXY]
+const PROXY_ROUTE_TYPES: HostRouteType[] = [HostRouteType.INTEGRATION, HostRouteType.PROXY]
 
 const ItemProps: FormItemProps = {
     labelCol: {
@@ -87,21 +86,16 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
 
     private renderMainTab() {
         const { index, validationResult, fieldPath, route } = this.props
-        const accessListSupported = ACCESS_LIST_SUPPORTED_ROUTE_TYPES.includes(route.type)
+        const proxyRoute = PROXY_ROUTE_TYPES.includes(route.type)
+
         return (
             <>
-                <If condition={!accessListSupported}>
-                    <Form.Item {...ItemProps} label="Access list">
-                        Only available for proxy and integration routes
-                    </Form.Item>
-                </If>
                 <Form.Item
                     {...ItemProps}
                     name={[fieldPath, "accessList"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].accessListId`)}
                     help={validationResult.getMessage(`routes[${index}].accessListId`)}
                     label="Access list"
-                    className={!accessListSupported ? "hosts-form-invisible-input" : undefined}
                 >
                     <PaginatedSelect<AccessListResponse>
                         itemDescription={item => item?.name}
@@ -114,6 +108,20 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                 </Form.Item>
                 <Form.Item
                     {...ItemProps}
+                    name={[fieldPath, "settings", "enableDirectoryListing"]}
+                    label="Enable directory listing"
+                    validateStatus={validationResult.getStatus(`routes[${index}].settings.enableDirectoryListing`)}
+                    help={
+                        validationResult.getMessage(`routes[${index}].settings.enableDirectoryListing`) ??
+                        "Defines if the list of files in the directories should be shown"
+                    }
+                    className={route.type !== HostRouteType.STATIC_FILES ? "hosts-form-invisible-input" : undefined}
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                <Form.Item
+                    {...ItemProps}
                     name={[fieldPath, "settings", "keepOriginalDomainName"]}
                     label="Keep the original domain name"
                     validateStatus={validationResult.getStatus(`routes[${index}].settings.keepOriginalDomainName`)}
@@ -121,6 +129,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         validationResult.getMessage(`routes[${index}].settings.keepOriginalDomainName`) ??
                         "Defines if the request made by nginx to the target host should use the target's domain as the host"
                     }
+                    className={!proxyRoute ? "hosts-form-invisible-input" : undefined}
                     required
                 >
                     <Switch />
@@ -134,6 +143,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         validationResult.getMessage(`routes[${index}].settings.proxySslServerName`) ??
                         "Defines if the SSL negotiation should be made using the target's domain"
                     }
+                    className={!proxyRoute ? "hosts-form-invisible-input" : undefined}
                     required
                 >
                     <Switch />
@@ -147,6 +157,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         validationResult.getMessage(`routes[${index}].settings.includeForwardHeaders`) ??
                         "Defines if headers like 'x-forwarded-for' should be included in the request to the target"
                     }
+                    className={!proxyRoute ? "hosts-form-invisible-input" : undefined}
                     required
                 >
                     <Switch />
