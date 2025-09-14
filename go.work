@@ -11,4 +11,5 @@ use (
 	database
 	integration/docker
 	integration/truenas
+	tools
 )

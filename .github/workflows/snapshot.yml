@@ -85,8 +85,6 @@ jobs:
           GOPATH: ${{ github.workspace }}/.go
           GOMODCACHE: ${{ github.workspace }}/.go/pkg/mod
           GOTOOLCHAIN: ""
-          GOOS: linux
-          CGO_ENABLED: "0"
         run: make build-snapshot PR_ID=${{ github.event.pull_request.number }}
       - name: npm cache upload
         uses: actions/cache/save@v4

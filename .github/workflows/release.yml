@@ -45,8 +45,6 @@ jobs:
           GOPATH: ${{ github.workspace }}/.go
           GOMODCACHE: ${{ github.workspace }}/.go/pkg/mod
           GOTOOLCHAIN: ""
-          GOOS: linux
-          CGO_ENABLED: "0"
         run: make build-release VERSION=${{ steps.tag.outputs.VERSION }}
       - name: npm cache upload
         uses: actions/cache/save@v4

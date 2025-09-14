@@ -8,6 +8,17 @@ prerequisites:
 
 check: prerequisites
 	cd frontend/ && npm run check
+	go tool golangci-lint run \
+		./api \
+		./application \
+		./certificate/commons \
+		./certificate/custom \
+		./certificate/letsencrypt \
+		./certificate/selfsigned \
+		./core \
+		./database \
+		./integration/truenas \
+		./integration/docker
 
 format: prerequisites
 	cd frontend/ && npx prettier --write .
