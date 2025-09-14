@@ -1,13 +1,14 @@
 package frontend
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 	"time"
+
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/core/common/log"
+	"github.com/gin-gonic/gin"
 )
 
 type configurationHandler struct {

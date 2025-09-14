@@ -2,9 +2,10 @@ package scheduler
 
 import (
 	"context"
+	"time"
+
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/log"
-	"time"
 )
 
 var (

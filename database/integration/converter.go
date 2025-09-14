@@ -1,8 +1,9 @@
 package integration
 
 import (
-	"dillmann.com.br/nginx-ignition/core/integration"
 	"encoding/json"
+
+	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
 func toDomain(model *integrationModel) (*integration.Integration, error) {

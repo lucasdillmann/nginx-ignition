@@ -2,11 +2,12 @@ package stream
 
 import (
 	"context"
-	"dillmann.com.br/nginx-ignition/core/common/constants"
-	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"net"
 	"strconv"
 	"strings"
+
+	"dillmann.com.br/nginx-ignition/core/common/constants"
+	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
 type validator struct {

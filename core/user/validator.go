@@ -2,10 +2,11 @@ package user
 
 import (
 	"context"
-	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"fmt"
-	"github.com/google/uuid"
 	"strconv"
+
+	"dillmann.com.br/nginx-ignition/core/common/validation"
+	"github.com/google/uuid"
 )
 
 const minimumUsernameLength = 3

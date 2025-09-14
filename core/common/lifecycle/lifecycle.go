@@ -2,8 +2,9 @@ package lifecycle
 
 import (
 	"context"
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"sort"
+
+	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
 type Lifecycle struct {

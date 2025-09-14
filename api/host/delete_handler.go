@@ -1,10 +1,11 @@
 package host
 
 import (
+	"net/http"
+
 	"dillmann.com.br/nginx-ignition/core/host"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"net/http"
 )
 
 type deleteHandler struct {

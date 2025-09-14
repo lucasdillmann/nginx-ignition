@@ -2,6 +2,7 @@ package certificate
 
 import (
 	"context"
+
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 )
 

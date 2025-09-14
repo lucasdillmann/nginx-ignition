@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 )
 

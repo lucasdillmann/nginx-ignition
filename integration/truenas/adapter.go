@@ -2,15 +2,16 @@ package truenas
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"strconv"
+	"strings"
+
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/integration/truenas/client"
-	"fmt"
-	"net/url"
-	"strconv"
-	"strings"
 )
 
 type Adapter struct {

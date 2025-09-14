@@ -2,12 +2,13 @@ package boot
 
 import (
 	"context"
-	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
 func StartApplication() error {

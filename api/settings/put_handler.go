@@ -1,10 +1,11 @@
 package settings
 
 import (
+	"net/http"
+
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"net/http"
 )
 
 type putHandler struct {

@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"github.com/uptrace/bun"

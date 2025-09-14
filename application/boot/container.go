@@ -2,6 +2,7 @@ package boot
 
 import (
 	"context"
+
 	"dillmann.com.br/nginx-ignition/api"
 	"dillmann.com.br/nginx-ignition/certificate/custom"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt"

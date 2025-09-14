@@ -1,5 +1,5 @@
 import React from "react"
-import { SunOutlined, MoonOutlined } from "@ant-design/icons"
+import { MoonOutlined, SunOutlined } from "@ant-design/icons"
 import "./ThemeToggle.css"
 import ThemeContext from "../context/ThemeContext"
 

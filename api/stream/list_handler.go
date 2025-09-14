@@ -1,10 +1,11 @@
 package stream
 
 import (
+	"net/http"
+
 	"dillmann.com.br/nginx-ignition/api/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/stream"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type listHandler struct {

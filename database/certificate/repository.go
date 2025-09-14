@@ -3,13 +3,14 @@ package certificate
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"time"
+
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
-	"errors"
 	"github.com/google/uuid"
-	"time"
 )
 
 type repository struct {

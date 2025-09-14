@@ -1,11 +1,12 @@
 package host
 
 import (
+	"net/http"
+
 	"dillmann.com.br/nginx-ignition/core/host"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"net/http"
 )
 
 type createHandler struct {

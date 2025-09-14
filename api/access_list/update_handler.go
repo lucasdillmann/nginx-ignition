@@ -1,11 +1,12 @@
 package access_list
 
 import (
+	"net/http"
+
 	"dillmann.com.br/nginx-ignition/core/access_list"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"net/http"
 )
 
 type updateHandler struct {

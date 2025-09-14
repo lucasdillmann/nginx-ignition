@@ -1,10 +1,11 @@
 package authorization
 
 import (
+	"strings"
+
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/user"
 	"github.com/gin-gonic/gin"
-	"strings"
 )
 
 type PermissionResolver func(permissions user.Permissions) user.AccessLevel

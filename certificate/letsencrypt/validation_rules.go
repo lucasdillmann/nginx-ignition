@@ -1,10 +1,11 @@
 package letsencrypt
 
 import (
+	"fmt"
+
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
-	"fmt"
 )
 
 type validationRules struct {

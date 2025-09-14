@@ -2,6 +2,7 @@ package cfgfiles
 
 import (
 	"context"
+
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )

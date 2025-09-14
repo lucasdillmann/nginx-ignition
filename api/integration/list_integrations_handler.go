@@ -1,9 +1,10 @@
 package integration
 
 import (
+	"net/http"
+
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type listIntegrationsHandler struct {

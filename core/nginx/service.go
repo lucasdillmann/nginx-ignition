@@ -2,6 +2,8 @@ package nginx
 
 import (
 	"context"
+	"sync"
+
 	"dillmann.com.br/nginx-ignition/core/common/broadcast"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
@@ -10,7 +12,6 @@ import (
 	"dillmann.com.br/nginx-ignition/core/nginx/cfgfiles"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"github.com/google/uuid"
-	"sync"
 )
 
 type service struct {

@@ -3,10 +3,11 @@ package nginx
 import (
 	"bufio"
 	"context"
-	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
 )
 
 type logReader struct {

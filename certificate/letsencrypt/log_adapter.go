@@ -1,9 +1,10 @@
 package letsencrypt
 
 import (
+	"strings"
+
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	acmelog "github.com/go-acme/lego/v4/log"
-	"strings"
 )
 
 var (

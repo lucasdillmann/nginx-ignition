@@ -2,9 +2,10 @@ package migrations
 
 import (
 	"database/sql"
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"errors"
 	"fmt"
+
+	"dillmann.com.br/nginx-ignition/core/common/log"
 	"github.com/golang-migrate/migrate/v4"
 	migratordb "github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/postgres"

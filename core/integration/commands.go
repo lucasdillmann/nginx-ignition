@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )

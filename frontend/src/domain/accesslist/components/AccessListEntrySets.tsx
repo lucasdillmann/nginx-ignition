@@ -1,7 +1,7 @@
 import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import { Button, Flex, Form, FormListFieldData, FormListOperation, Select } from "antd"
-import { CloseOutlined, PlusOutlined, ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons"
+import { ArrowDownOutlined, ArrowUpOutlined, CloseOutlined, PlusOutlined } from "@ant-design/icons"
 import FormLayout from "../../../core/components/form/FormLayout"
 import TextArea from "antd/es/input/TextArea"
 import { AccessListOutcome } from "../model/AccessListRequest"

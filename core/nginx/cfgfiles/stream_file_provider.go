@@ -1,10 +1,11 @@
 package cfgfiles
 
 import (
-	"dillmann.com.br/nginx-ignition/core/stream"
 	"fmt"
-	"github.com/aws/smithy-go/ptr"
 	"strings"
+
+	"dillmann.com.br/nginx-ignition/core/stream"
+	"github.com/aws/smithy-go/ptr"
 )
 
 type streamFileProvider struct{}

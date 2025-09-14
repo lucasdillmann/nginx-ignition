@@ -9,9 +9,9 @@ import {
     FileProtectOutlined,
     FileSearchOutlined,
     HddOutlined,
+    MergeCellsOutlined,
     SettingOutlined,
     TeamOutlined,
-    MergeCellsOutlined,
 } from "@ant-design/icons"
 import HostListPage from "./host/HostListPage"
 import HostFormPage from "./host/HostFormPage"

@@ -3,11 +3,12 @@ package stream
 import (
 	"context"
 	"database/sql"
+	"errors"
+
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/stream"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
-	"errors"
 	"github.com/google/uuid"
 )
 
