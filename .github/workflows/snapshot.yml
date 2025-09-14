@@ -80,11 +80,6 @@ jobs:
         with:
           path: ${{ github.workspace }}/.go
           key: go-cache
-      - name: Frontend build
-        working-directory: frontend
-        run: |
-          npm install && \
-          npm run build
       - name: Build and release
         env:
           GOPATH: ${{ github.workspace }}/.go

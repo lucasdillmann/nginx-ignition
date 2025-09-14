@@ -40,11 +40,6 @@ jobs:
       - name: Resolve version number from tag
         id: tag
         run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
-      - name: Frontend build
-        working-directory: frontend
-        run: |
-          npm install && \
-          npm run build
       - name: Build and release
         env:
           GOPATH: ${{ github.workspace }}/.go
