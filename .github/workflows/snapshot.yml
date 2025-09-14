@@ -1,4 +1,4 @@
-name: main-pipeline
+name: snapshot-pipeline
 on:
   push:
     branches:
