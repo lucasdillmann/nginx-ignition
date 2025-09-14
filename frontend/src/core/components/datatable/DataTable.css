@@ -8,6 +8,10 @@
     border-radius: 0 !important;
 }
 
+.data-table .ant-table-content {
+    overflow: unset !important;
+}
+
 .data-table-search-bar-container {
     padding: 10px 10px;
     background: var(--nginxIgnition-colorBgElevated);
