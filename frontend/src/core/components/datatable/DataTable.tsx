@@ -134,7 +134,6 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
                     scroll={{
                         scrollToFirstRowOnChange: true,
                     }}
-                    getContainerWidth={() => -1}
                     virtual
                     bordered
                 />
