@@ -11,6 +11,11 @@ import AccessListService from "../../accesslist/AccessListService"
 import { HostRouteType } from "../model/HostRequest"
 import { HostFormRoute } from "../model/HostFormValues"
 
+const ACCESS_LIST_SUPPORTED_ROUTE_TYPES: HostRouteType[] = [
+    HostRouteType.INTEGRATION,
+    HostRouteType.PROXY,
+    HostRouteType.STATIC_FILES,
+]
 const PROXY_ROUTE_TYPES: HostRouteType[] = [HostRouteType.INTEGRATION, HostRouteType.PROXY]
 
 const ItemProps: FormItemProps = {
@@ -87,6 +92,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
     private renderMainTab() {
         const { index, validationResult, fieldPath, route } = this.props
         const proxyRoute = PROXY_ROUTE_TYPES.includes(route.type)
+        const accessListSupported = ACCESS_LIST_SUPPORTED_ROUTE_TYPES.includes(route.type)
 
         return (
             <>
@@ -96,6 +102,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     validateStatus={validationResult.getStatus(`routes[${index}].accessListId`)}
                     help={validationResult.getMessage(`routes[${index}].accessListId`)}
                     label="Access list"
+                    className={!accessListSupported ? "hosts-form-invisible-input" : undefined}
                 >
                     <PaginatedSelect<AccessListResponse>
                         itemDescription={item => item?.name}
