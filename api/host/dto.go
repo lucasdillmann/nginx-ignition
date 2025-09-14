@@ -1,8 +1,9 @@
 package host
 
 import (
-	"dillmann.com.br/nginx-ignition/core/host"
 	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/host"
 )
 
 type hostRequestDto struct {

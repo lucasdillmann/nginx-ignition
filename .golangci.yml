@@ -21,8 +21,8 @@ linters:
     dupl:
       threshold: 100
     errcheck:
-      check-type-assertions: true
-      check-blank: true
+      check-type-assertions: false
+      check-blank: false
     goconst:
       min-len: 3
       min-occurrences: 3

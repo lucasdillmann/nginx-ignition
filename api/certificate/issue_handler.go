@@ -3,10 +3,11 @@ package certificate
 import (
 	"net/http"
 
-	"dillmann.com.br/nginx-ignition/api/common/api_error"
-	"dillmann.com.br/nginx-ignition/core/certificate"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+
+	"dillmann.com.br/nginx-ignition/api/common/api_error"
+	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
 type issueHandler struct {

@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/api/common/api_error"
 	"github.com/gin-gonic/gin"
+
+	"dillmann.com.br/nginx-ignition/api/common/api_error"
 )
 
 const (

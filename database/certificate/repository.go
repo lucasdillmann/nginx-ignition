@@ -6,11 +6,12 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
-	"github.com/google/uuid"
 )
 
 type repository struct {

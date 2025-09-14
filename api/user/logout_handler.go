@@ -3,8 +3,9 @@ package user
 import (
 	"net/http"
 
-	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"github.com/gin-gonic/gin"
+
+	"dillmann.com.br/nginx-ignition/api/common/authorization"
 )
 
 type logoutHandler struct {

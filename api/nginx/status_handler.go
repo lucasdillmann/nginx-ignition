@@ -3,8 +3,9 @@ package nginx
 import (
 	"net/http"
 
-	"dillmann.com.br/nginx-ignition/core/nginx"
 	"github.com/gin-gonic/gin"
+
+	"dillmann.com.br/nginx-ignition/core/nginx"
 )
 
 type statusHandler struct {

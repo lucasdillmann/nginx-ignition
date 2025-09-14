@@ -3,9 +3,10 @@ package settings
 import (
 	"context"
 
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/database/common/database"
-	"github.com/google/uuid"
 )
 
 type repository struct {

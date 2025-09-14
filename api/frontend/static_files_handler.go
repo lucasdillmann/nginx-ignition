@@ -12,8 +12,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"github.com/gin-gonic/gin"
+
+	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
 const (

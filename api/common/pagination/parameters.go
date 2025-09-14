@@ -5,9 +5,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gin-gonic/gin"
+
 	"dillmann.com.br/nginx-ignition/api/common/api_error"
 	"dillmann.com.br/nginx-ignition/core/common/value_range"
-	"github.com/gin-gonic/gin"
 )
 
 var (

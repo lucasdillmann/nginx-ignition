@@ -5,12 +5,13 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/google/uuid"
+	"github.com/uptrace/bun"
+
 	"dillmann.com.br/nginx-ignition/core/access_list"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
-	"github.com/google/uuid"
-	"github.com/uptrace/bun"
 )
 
 const (

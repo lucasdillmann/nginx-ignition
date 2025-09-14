@@ -3,9 +3,10 @@ package user
 import (
 	"net/http"
 
-	"dillmann.com.br/nginx-ignition/core/user"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/user"
 )
 
 type getHandler struct {

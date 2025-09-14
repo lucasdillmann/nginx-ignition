@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"net/http"
 
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
-	"dillmann.com.br/nginx-ignition/core/common/log"
-	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
+
+	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/log"
+	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
 type problemDetail struct {

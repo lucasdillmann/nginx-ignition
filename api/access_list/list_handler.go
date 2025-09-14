@@ -3,9 +3,10 @@ package access_list
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"dillmann.com.br/nginx-ignition/api/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/access_list"
-	"github.com/gin-gonic/gin"
 )
 
 type listHandler struct {

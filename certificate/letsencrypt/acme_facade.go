@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"github.com/go-acme/lego/v4/certcrypto"
 	acmecertificate "github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/challenge"
@@ -17,6 +15,9 @@ import (
 	"github.com/go-acme/lego/v4/registration"
 	"github.com/google/uuid"
 	jsoniter "github.com/json-iterator/go"
+
+	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/common/core_error"
 )
 
 func issueCertificate(

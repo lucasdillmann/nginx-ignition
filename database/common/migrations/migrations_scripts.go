@@ -5,11 +5,12 @@ import (
 	"errors"
 	"fmt"
 
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"github.com/golang-migrate/migrate/v4"
 	migratordb "github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
+
+	"dillmann.com.br/nginx-ignition/core/common/log"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )

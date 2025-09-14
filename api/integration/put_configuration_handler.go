@@ -3,9 +3,10 @@ package integration
 import (
 	"net/http"
 
-	"dillmann.com.br/nginx-ignition/core/integration"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+
+	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
 type putConfigurationHandler struct {

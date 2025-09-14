@@ -3,8 +3,9 @@ package letsencrypt
 import (
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	acmelog "github.com/go-acme/lego/v4/log"
+
+	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
 var (
@@ -35,13 +36,16 @@ func (l *logAdapter) Println(args ...interface{}) {
 }
 
 func (l *logAdapter) Printf(format string, args ...interface{}) {
-	if strings.HasPrefix(format, "[INFO] ") {
-		format = strings.Replace(format, "[INFO] ", "", -1)
+	switch {
+	case strings.HasPrefix(format, "[INFO] "):
+		format = strings.Replace(format, "[INFO] ", "", 1)
 		log.Infof(format, args...)
-	} else if strings.HasPrefix(format, "[WARN] ") {
-		format = strings.Replace(format, "[WARN] ", "", -1)
+
+	case strings.HasPrefix(format, "[WARN] "):
+		format = strings.Replace(format, "[WARN] ", "", 1)
 		log.Warnf(format, args...)
-	} else {
+
+	default:
 		log.Infof(format, args...)
 	}
 }

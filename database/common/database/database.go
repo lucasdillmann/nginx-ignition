@@ -3,9 +3,10 @@ package database
 import (
 	"database/sql"
 
+	"github.com/uptrace/bun"
+
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
-	"github.com/uptrace/bun"
 )
 
 type Database struct {

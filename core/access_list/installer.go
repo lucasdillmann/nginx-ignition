@@ -1,8 +1,9 @@
 package access_list
 
 import (
-	"dillmann.com.br/nginx-ignition/core/host"
 	"go.uber.org/dig"
+
+	"dillmann.com.br/nginx-ignition/core/host"
 )
 
 func Install(container *dig.Container) error {

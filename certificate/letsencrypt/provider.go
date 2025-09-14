@@ -8,12 +8,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
+	acmelog "github.com/go-acme/lego/v4/log"
+
 	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
-	acmelog "github.com/go-acme/lego/v4/log"
 )
 
 const (

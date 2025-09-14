@@ -3,8 +3,9 @@ package certificate
 import (
 	"time"
 
-	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
 	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
 )
 
 type availableProviderResponse struct {

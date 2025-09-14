@@ -1,6 +1,8 @@
 package api
 
 import (
+	"go.uber.org/dig"
+
 	"dillmann.com.br/nginx-ignition/api/access_list"
 	"dillmann.com.br/nginx-ignition/api/certificate"
 	"dillmann.com.br/nginx-ignition/api/common/server"
@@ -11,7 +13,6 @@ import (
 	"dillmann.com.br/nginx-ignition/api/settings"
 	"dillmann.com.br/nginx-ignition/api/stream"
 	"dillmann.com.br/nginx-ignition/api/user"
-	"go.uber.org/dig"
 )
 
 func Install(container *dig.Container) error {

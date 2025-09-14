@@ -1,8 +1,9 @@
 package stream
 
 import (
-	"dillmann.com.br/nginx-ignition/core/stream"
 	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
 type streamRequestDto struct {

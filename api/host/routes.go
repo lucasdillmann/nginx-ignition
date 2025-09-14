@@ -1,11 +1,12 @@
 package host
 
 import (
+	"github.com/gin-gonic/gin"
+
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/nginx"
 	"dillmann.com.br/nginx-ignition/core/user"
-	"github.com/gin-gonic/gin"
 )
 
 func Install(

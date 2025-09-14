@@ -3,10 +3,11 @@ package frontend
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
-	"github.com/gin-gonic/gin"
 )
 
 func Install(

@@ -3,9 +3,10 @@ package access_list
 import (
 	"net/http"
 
-	"dillmann.com.br/nginx-ignition/core/access_list"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/access_list"
 )
 
 type deleteHandler struct {

@@ -3,9 +3,10 @@ package certificate
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"dillmann.com.br/nginx-ignition/api/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"github.com/gin-gonic/gin"
 )
 
 type listHandler struct {

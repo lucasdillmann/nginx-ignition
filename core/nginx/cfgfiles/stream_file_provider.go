@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/core/stream"
 	"github.com/aws/smithy-go/ptr"
+
+	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
 type streamFileProvider struct{}

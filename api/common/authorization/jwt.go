@@ -8,12 +8,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/api/common/api_error"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/user"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 )
 
 const (

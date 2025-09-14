@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/core/access_list"
 	"github.com/ncw/pwhash/apr1_crypt"
+
+	"dillmann.com.br/nginx-ignition/core/access_list"
 )
 
 type accessListFileProvider struct {

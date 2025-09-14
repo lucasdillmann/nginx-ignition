@@ -1,12 +1,13 @@
 package server
 
 import (
+	"github.com/gin-gonic/gin"
+	"go.uber.org/dig"
+
 	"dillmann.com.br/nginx-ignition/api/common/api_error"
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/user"
-	"github.com/gin-gonic/gin"
-	"go.uber.org/dig"
 )
 
 func Install(container *dig.Container) error {

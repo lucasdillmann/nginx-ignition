@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
 const minimumUsernameLength = 3

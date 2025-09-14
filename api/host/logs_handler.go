@@ -5,10 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"dillmann.com.br/nginx-ignition/core/common/value_range"
-	"dillmann.com.br/nginx-ignition/core/nginx"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/common/value_range"
+	"dillmann.com.br/nginx-ignition/core/nginx"
 )
 
 type logsHandler struct {

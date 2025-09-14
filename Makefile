@@ -6,19 +6,23 @@ prerequisites:
 	go work sync
 	cd frontend/ && npm i
 
-check: prerequisites
+frontend-check: prerequisites
 	cd frontend/ && npm run check
+
+backend-check: prerequisites
 	go tool golangci-lint run \
-		./api \
-		./application \
-		./certificate/commons \
-		./certificate/custom \
-		./certificate/letsencrypt \
-		./certificate/selfsigned \
-		./core \
-		./database \
-		./integration/truenas \
-		./integration/docker
+    		./api \
+    		./application \
+    		./certificate/commons \
+    		./certificate/custom \
+    		./certificate/letsencrypt \
+    		./certificate/selfsigned \
+    		./core \
+    		./database \
+    		./integration/truenas \
+    		./integration/docker
+
+check: frontend-check backend-check
 
 format: prerequisites
 	cd frontend/ && npx prettier --write .

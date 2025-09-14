@@ -8,11 +8,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
-	"github.com/google/uuid"
 )
 
 type Provider struct{}

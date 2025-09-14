@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
@@ -15,6 +14,8 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/cloudflare"
 	"github.com/go-acme/lego/v4/providers/dns/gcloud"
 	"github.com/go-acme/lego/v4/providers/dns/route53"
+
+	"dillmann.com.br/nginx-ignition/core/common/core_error"
 )
 
 const (

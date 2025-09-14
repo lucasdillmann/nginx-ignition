@@ -134,21 +134,24 @@ func (a *Adapter) GetOptionProxyUrl(
 	hostIp := port.HostPorts[0].HostIp
 
 	var endpoint string
-	if proxyUrl != "" {
+	switch {
+	case proxyUrl != "":
 		parseResult, err := url.Parse(proxyUrl)
 		if err != nil {
 			return nil, err
 		}
 
 		endpoint = parseResult.Host
-	} else if hostIp == "0.0.0.0" {
+
+	case hostIp == "0.0.0.0":
 		parseResult, err := url.Parse(baseUrl)
 		if err != nil {
 			return nil, err
 		}
 
 		endpoint = parseResult.Host
-	} else {
+
+	default:
 		endpoint = hostIp
 	}
 

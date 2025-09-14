@@ -5,11 +5,12 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/stream"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
-	"github.com/google/uuid"
 )
 
 type repository struct {
