@@ -102,7 +102,7 @@ jobs:
           if [ "${{ github.ref_name }}" = "main" ]; then
             echo "DOCKER_TAG=snapshot" >> $GITHUB_OUTPUT
           else
-            echo "DOCKER_TAG=${{ github.ref_name }}-snapshot" >> $GITHUB_OUTPUT
+            echo "DOCKER_TAG=pr-${{ github.event.pull_request.number }}-snapshot" >> $GITHUB_OUTPUT
           fi
       - name: Build and push Docker images
         run: |
