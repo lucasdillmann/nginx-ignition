@@ -62,7 +62,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		cfg.Nginx.RuntimeUser,
 		cfg.Nginx.RuntimeUser,
 		cfg.Nginx.WorkerProcesses,
-		ctx.paths.AbsoluteConfig,
+		ctx.paths.Config,
 		p.getErrorLogPath(ctx.paths, logs),
 		cfg.Nginx.WorkerConnections,
 		cfg.Nginx.DefaultContentType,
@@ -89,7 +89,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 
 func (p *mainConfigurationFileProvider) getErrorLogPath(paths *Paths, logs *settings.NginxLogsSettings) string {
 	if logs.ServerLogsEnabled {
-		return fmt.Sprintf("%smain.log %s", paths.AbsoluteLogs, strings.ToLower(string(logs.ServerLogsLevel)))
+		return fmt.Sprintf("%smain.log %s", paths.Logs, strings.ToLower(string(logs.ServerLogsLevel)))
 	}
 
 	return "off"
@@ -106,7 +106,7 @@ func (p *mainConfigurationFileProvider) enabledFlag(value bool) string {
 func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []*host.Host) string {
 	var includes []string
 	for _, h := range hosts {
-		includes = append(includes, fmt.Sprintf("include %shost-%s.conf;", paths.AbsoluteConfig, h.ID))
+		includes = append(includes, fmt.Sprintf("include %shost-%s.conf;", paths.Config, h.ID))
 	}
 
 	return strings.Join(includes, "\n")
@@ -115,7 +115,7 @@ func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []*h
 func (p *mainConfigurationFileProvider) getStreamIncludes(paths *Paths, streams []*stream.Stream) string {
 	var includes []string
 	for _, s := range streams {
-		includes = append(includes, fmt.Sprintf("include %sstream-%s.conf;", paths.AbsoluteConfig, s.ID))
+		includes = append(includes, fmt.Sprintf("include %sstream-%s.conf;", paths.Config, s.ID))
 	}
 
 	return strings.Join(includes, "\n")

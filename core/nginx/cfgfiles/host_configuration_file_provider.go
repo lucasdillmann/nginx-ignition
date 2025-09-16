@@ -141,7 +141,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			b.IP,
 			b.Port,
 			p.buildBindingAdditionalParams(h),
-			paths.AbsoluteConfig,
+			paths.Config,
 			b.CertificateID,
 			paths,
 			b.CertificateID,
@@ -174,11 +174,11 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			%s
 			%s
 		}`,
-		p.flag(logs.AccessLogsEnabled, fmt.Sprintf("%shost-%s.access.log", paths.AbsoluteLogs, h.ID), "off"),
-		p.flag(logs.ErrorLogsEnabled, fmt.Sprintf("%shost-%s.error.log %s", paths.AbsoluteLogs, h.ID, strings.ToLower(string(logs.ErrorLogsLevel))), "off"),
+		p.flag(logs.AccessLogsEnabled, fmt.Sprintf("%shost-%s.access.log", paths.Logs, h.ID), "off"),
+		p.flag(logs.ErrorLogsEnabled, fmt.Sprintf("%shost-%s.error.log %s", paths.Logs, h.ID, strings.ToLower(string(logs.ErrorLogsLevel))), "off"),
 		p.flag(cfg.Nginx.GzipEnabled, "on", "off"),
 		cfg.Nginx.MaximumBodySizeMb,
-		p.flag(h.AccessListID != nil, fmt.Sprintf("include %saccess-list-%s.conf;", paths.AbsoluteConfig, h.AccessListID), ""),
+		p.flag(h.AccessListID != nil, fmt.Sprintf("include %saccess-list-%s.conf;", paths.Config, h.AccessListID), ""),
 		conditionalHttpsRedirect,
 		http2,
 		listen,
@@ -346,7 +346,7 @@ func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(h *host.Host, r *h
 	var headerBlock, routeBlock string
 	switch r.SourceCode.Language {
 	case host.JavascriptCodeLanguage:
-		headerBlock = fmt.Sprintf("js_import route_%d from %shost-%s-route-%d.js;", r.Priority, paths.AbsoluteConfig, h.ID, r.Priority)
+		headerBlock = fmt.Sprintf("js_import route_%d from %shost-%s-route-%d.js;", r.Priority, paths.Config, h.ID, r.Priority)
 		routeBlock = fmt.Sprintf("js_content route_%d.%s;", r.Priority, *r.SourceCode.MainFunction)
 	case host.LuaCodeLanguage:
 		routeBlock = fmt.Sprintf(
@@ -423,7 +423,7 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(r *host.Route, paths 
 	}
 
 	if r.AccessListID != nil {
-		builder.WriteString(fmt.Sprintf("include %saccess-list-%s.conf;", paths.AbsoluteConfig, *r.AccessListID))
+		builder.WriteString(fmt.Sprintf("include %saccess-list-%s.conf;", paths.Config, *r.AccessListID))
 	}
 
 	return builder.String()

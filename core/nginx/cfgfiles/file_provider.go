@@ -15,8 +15,8 @@ type providerContext struct {
 }
 
 type Paths struct {
-	AbsoluteConfig string
-	AbsoluteLogs   string
+	Config string
+	Logs   string
 }
 
 type fileProvider interface {

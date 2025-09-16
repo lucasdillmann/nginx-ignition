@@ -67,7 +67,7 @@ func (p *accessListFileProvider) buildConfFile(accessList *access_list.AccessLis
 				auth_basic "%s"; 
 				auth_basic_user_file %saccess-list-%s.htpasswd;
 			`,
-			accessList.Realm, paths.AbsoluteConfig, accessList.ID,
+			accessList.Realm, paths.Config, accessList.ID,
 		)
 	}
 

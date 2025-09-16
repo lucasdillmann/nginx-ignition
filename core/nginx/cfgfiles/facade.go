@@ -95,8 +95,8 @@ func (f *Facade) ReplaceConfigurationFiles(ctx context.Context) error {
 
 	normalizedPath := strings.TrimRight(configDir, "/")
 	paths := &Paths{
-		AbsoluteConfig: normalizedPath + "/config/",
-		AbsoluteLogs:   normalizedPath + "/logs/",
+		Config: normalizedPath + "/config/",
+		Logs:   normalizedPath + "/logs/",
 	}
 
 	if err := f.createMissingFolders(paths); err != nil {
@@ -123,7 +123,7 @@ func (f *Facade) ReplaceConfigurationFiles(ctx context.Context) error {
 }
 
 func (f *Facade) createMissingFolders(paths *Paths) error {
-	for _, folderPath := range []string{paths.AbsoluteConfig, paths.AbsoluteLogs} {
+	for _, folderPath := range []string{paths.Config, paths.Logs} {
 		if _, err := os.Stat(folderPath); os.IsNotExist(err) {
 			if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
 				return fmt.Errorf("unable to create folder %s: %w", folderPath, err)
@@ -135,13 +135,13 @@ func (f *Facade) createMissingFolders(paths *Paths) error {
 }
 
 func (f *Facade) emptyConfigFolder(paths *Paths) error {
-	files, err := os.ReadDir(paths.AbsoluteConfig)
+	files, err := os.ReadDir(paths.Config)
 	if err != nil {
 		return err
 	}
 
 	for _, file := range files {
-		if err := os.RemoveAll(filepath.Join(paths.AbsoluteConfig, file.Name())); err != nil {
+		if err := os.RemoveAll(filepath.Join(paths.Config, file.Name())); err != nil {
 			return err
 		}
 	}
@@ -150,7 +150,7 @@ func (f *Facade) emptyConfigFolder(paths *Paths) error {
 }
 
 func (f *Facade) writeConfigFile(paths *Paths, file File) error {
-	filePath := filepath.Join(paths.AbsoluteConfig, file.Name)
+	filePath := filepath.Join(paths.Config, file.Name)
 	if err := os.WriteFile(filePath, []byte(file.Contents), os.ModePerm); err != nil {
 		return fmt.Errorf("unable to write file %s: %w", filePath, err)
 	}
