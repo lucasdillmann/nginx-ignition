@@ -17,9 +17,9 @@ import (
 )
 
 type containerMetadata struct {
-	name      string
 	container *container.Summary
 	port      *container.Port
+	name      string
 }
 
 type Adapter struct {

@@ -15,8 +15,8 @@ func newStreamFileProvider() *streamFileProvider {
 	return &streamFileProvider{}
 }
 
-func (p *streamFileProvider) provide(ctx *providerContext) ([]output, error) {
-	files := make([]output, 0, len(ctx.streams))
+func (p *streamFileProvider) provide(ctx *providerContext) ([]File, error) {
+	files := make([]File, 0, len(ctx.streams))
 
 	for _, s := range ctx.streams {
 		contents, err := p.buildConfigFileContents(s)
@@ -24,9 +24,9 @@ func (p *streamFileProvider) provide(ctx *providerContext) ([]output, error) {
 			return nil, err
 		}
 
-		files = append(files, output{
-			name:     fmt.Sprintf("stream-%s.conf", s.ID),
-			contents: *contents,
+		files = append(files, File{
+			Name:     fmt.Sprintf("stream-%s.conf", s.ID),
+			Contents: *contents,
 		})
 	}
 

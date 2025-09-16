@@ -105,6 +105,7 @@ func (d *Database) initSqlite() error {
 
 func (d *Database) initBun(driverName, connectionParams string, dialect schema.Dialect) error {
 	var err error
+	d.connectionString = connectionParams
 
 	if d.db, err = sql.Open(driverName, connectionParams); err != nil {
 		return err

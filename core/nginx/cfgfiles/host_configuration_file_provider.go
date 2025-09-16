@@ -27,11 +27,11 @@ func newHostConfigurationFileProvider(
 	}
 }
 
-func (p *hostConfigurationFileProvider) provide(ctx *providerContext) ([]output, error) {
-	var outputs []output
+func (p *hostConfigurationFileProvider) provide(ctx *providerContext) ([]File, error) {
+	var outputs []File
 	for _, h := range ctx.hosts {
 		if h.Enabled {
-			output, err := p.buildHost(ctx.context, ctx.basePath, h)
+			output, err := p.buildHost(ctx.context, ctx.paths, h)
 			if err != nil {
 				return nil, err
 			}
@@ -43,11 +43,11 @@ func (p *hostConfigurationFileProvider) provide(ctx *providerContext) ([]output,
 	return outputs, nil
 }
 
-func (p *hostConfigurationFileProvider) buildHost(ctx context.Context, basePath string, h *host.Host) (*output, error) {
+func (p *hostConfigurationFileProvider) buildHost(ctx context.Context, paths *Paths, h *host.Host) (*File, error) {
 	var routes []string
 	for _, r := range h.Routes {
 		if r.Enabled {
-			route, err := p.buildRoute(ctx, h, r, basePath)
+			route, err := p.buildRoute(ctx, h, r, paths)
 			if err != nil {
 				return nil, err
 			}
@@ -83,16 +83,16 @@ func (p *hostConfigurationFileProvider) buildHost(ctx context.Context, basePath 
 
 	var contents []string
 	for _, b := range bindings {
-		binding, err := p.buildBinding(ctx, basePath, h, b, routes, *serverNames, httpsRedirect, http2)
+		binding, err := p.buildBinding(ctx, paths, h, b, routes, *serverNames, httpsRedirect, http2)
 		if err != nil {
 			return nil, err
 		}
 		contents = append(contents, binding)
 	}
 
-	return &output{
-		name:     fmt.Sprintf("host-%s.conf", h.ID),
-		contents: strings.Join(contents, "\n"),
+	return &File{
+		Name:     fmt.Sprintf("host-%s.conf", h.ID),
+		Contents: strings.Join(contents, "\n"),
 	}, nil
 }
 
@@ -105,7 +105,7 @@ func (p *hostConfigurationFileProvider) buildServerNames(h *host.Host) (*string,
 		domainNames := make([]string, len(h.DomainNames))
 		for index, domainName := range h.DomainNames {
 			if domainName == nil {
-				return nil, core_error.New("Unexpected null domain name", false)
+				return nil, core_error.New("Unexpected null domain Name", false)
 			}
 
 			domainNames[index] = *domainName
@@ -119,7 +119,7 @@ func (p *hostConfigurationFileProvider) buildServerNames(h *host.Host) (*string,
 
 func (p *hostConfigurationFileProvider) buildBinding(
 	ctx context.Context,
-	basePath string,
+	paths *Paths,
 	h *host.Host,
 	b *host.Binding,
 	routes []string,
@@ -133,17 +133,17 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		listen = fmt.Sprintf(
 			`
 				listen %s:%d ssl %s;
-				ssl_certificate %s/config/certificate-%s.pem;
-				ssl_certificate_key %s/config/certificate-%s.pem;
+				ssl_certificate %scertificate-%s.pem;
+				ssl_certificate_key %scertificate-%s.pem;
 				ssl_protocols TLSv1.2 TLSv1.3;
 				ssl_ciphers HIGH:!aNULL:!MD5;
 			`,
 			b.IP,
 			b.Port,
 			p.buildBindingAdditionalParams(h),
-			basePath,
+			paths.Config,
 			b.CertificateID,
-			basePath,
+			paths.Config,
 			b.CertificateID,
 		)
 	}
@@ -174,11 +174,11 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			%s
 			%s
 		}`,
-		p.flag(logs.AccessLogsEnabled, fmt.Sprintf("%s/logs/host-%s.access.log", basePath, h.ID), "off"),
-		p.flag(logs.ErrorLogsEnabled, fmt.Sprintf("%s/logs/host-%s.error.log %s", basePath, h.ID, strings.ToLower(string(logs.ErrorLogsLevel))), "off"),
+		p.flag(logs.AccessLogsEnabled, fmt.Sprintf("%shost-%s.access.log", paths.Logs, h.ID), "off"),
+		p.flag(logs.ErrorLogsEnabled, fmt.Sprintf("%shost-%s.error.log %s", paths.Logs, h.ID, strings.ToLower(string(logs.ErrorLogsLevel))), "off"),
 		p.flag(cfg.Nginx.GzipEnabled, "on", "off"),
 		cfg.Nginx.MaximumBodySizeMb,
-		p.flag(h.AccessListID != nil, fmt.Sprintf("include %s/config/access-list-%s.conf;", basePath, h.AccessListID), ""),
+		p.flag(h.AccessListID != nil, fmt.Sprintf("include %saccess-list-%s.conf;", paths.Config, h.AccessListID), ""),
 		conditionalHttpsRedirect,
 		http2,
 		listen,
@@ -199,27 +199,27 @@ func (p *hostConfigurationFileProvider) buildRoute(
 	ctx context.Context,
 	h *host.Host,
 	r *host.Route,
-	basePath string,
+	paths *Paths,
 ) (string, error) {
 	switch r.Type {
 	case host.StaticResponseRouteType:
-		return p.buildStaticResponseRoute(r, h.FeatureSet, basePath), nil
+		return p.buildStaticResponseRoute(r, h.FeatureSet, paths), nil
 	case host.ProxyRouteType:
-		return p.buildProxyRoute(r, h.FeatureSet, basePath), nil
+		return p.buildProxyRoute(r, h.FeatureSet, paths), nil
 	case host.RedirectRouteType:
-		return p.buildRedirectRoute(r, h.FeatureSet, basePath), nil
+		return p.buildRedirectRoute(r, h.FeatureSet, paths), nil
 	case host.IntegrationRouteType:
-		return p.buildIntegrationRoute(ctx, r, h.FeatureSet, basePath)
+		return p.buildIntegrationRoute(ctx, r, h.FeatureSet, paths)
 	case host.ExecuteCodeRouteType:
-		return p.buildExecuteCodeRoute(h, r, basePath), nil
+		return p.buildExecuteCodeRoute(h, r, paths), nil
 	case host.StaticFilesRouteType:
-		return p.buildStaticFilesRoute(r, basePath), nil
+		return p.buildStaticFilesRoute(r, paths), nil
 	default:
 		return "", fmt.Errorf("invalid route type: %s", r.Type)
 	}
 }
 
-func (p *hostConfigurationFileProvider) buildStaticFilesRoute(r *host.Route, basePath string) string {
+func (p *hostConfigurationFileProvider) buildStaticFilesRoute(r *host.Route, paths *Paths) string {
 	normalizedSourcePath := r.SourcePath
 	if !strings.HasSuffix(normalizedSourcePath, "/") {
 		normalizedSourcePath += "/"
@@ -241,14 +241,14 @@ func (p *hostConfigurationFileProvider) buildStaticFilesRoute(r *host.Route, bas
 		normalizedSourcePath,
 		*r.TargetURI,
 		autoIndex,
-		p.buildRouteSettings(r, basePath),
+		p.buildRouteSettings(r, paths),
 	)
 }
 
 func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 	r *host.Route,
 	features host.FeatureSet,
-	basePath string,
+	paths *Paths,
 ) string {
 	var headers []string
 	for key, value := range r.Response.Headers {
@@ -273,14 +273,14 @@ func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 		r.Response.StatusCode,
 		payload,
 		p.buildRouteFeatures(features),
-		p.buildRouteSettings(r, basePath),
+		p.buildRouteSettings(r, paths),
 	)
 }
 
 func (p *hostConfigurationFileProvider) buildProxyRoute(
 	r *host.Route,
 	features host.FeatureSet,
-	basePath string,
+	paths *Paths,
 ) string {
 	return fmt.Sprintf(
 		`location %s {
@@ -291,7 +291,7 @@ func (p *hostConfigurationFileProvider) buildProxyRoute(
 		r.SourcePath,
 		p.buildProxyPass(r),
 		p.buildRouteFeatures(features),
-		p.buildRouteSettings(r, basePath),
+		p.buildRouteSettings(r, paths),
 	)
 }
 
@@ -299,7 +299,7 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	ctx context.Context,
 	r *host.Route,
 	features host.FeatureSet,
-	basePath string,
+	paths *Paths,
 ) (string, error) {
 	proxyUrl, err := p.integrationCommands.GetOptionUrlById(ctx, r.Integration.IntegrationID, r.Integration.OptionID)
 	if err != nil {
@@ -319,14 +319,14 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 		r.SourcePath,
 		p.buildProxyPass(r, *proxyUrl),
 		p.buildRouteFeatures(features),
-		p.buildRouteSettings(r, basePath),
+		p.buildRouteSettings(r, paths),
 	), nil
 }
 
 func (p *hostConfigurationFileProvider) buildRedirectRoute(
 	r *host.Route,
 	features host.FeatureSet,
-	basePath string,
+	paths *Paths,
 ) string {
 	return fmt.Sprintf(
 		`location %s {
@@ -338,15 +338,15 @@ func (p *hostConfigurationFileProvider) buildRedirectRoute(
 		*r.RedirectCode,
 		*r.TargetURI,
 		p.buildRouteFeatures(features),
-		p.buildRouteSettings(r, basePath),
+		p.buildRouteSettings(r, paths),
 	)
 }
 
-func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(h *host.Host, r *host.Route, basePath string) string {
+func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(h *host.Host, r *host.Route, paths *Paths) string {
 	var headerBlock, routeBlock string
 	switch r.SourceCode.Language {
 	case host.JavascriptCodeLanguage:
-		headerBlock = fmt.Sprintf("js_import route_%d from %s/config/host-%s-route-%d.js;", r.Priority, basePath, h.ID, r.Priority)
+		headerBlock = fmt.Sprintf("js_import route_%d from %shost-%s-route-%d.js;", r.Priority, paths.Config, h.ID, r.Priority)
 		routeBlock = fmt.Sprintf("js_content route_%d.%s;", r.Priority, *r.SourceCode.MainFunction)
 	case host.LuaCodeLanguage:
 		routeBlock = fmt.Sprintf(
@@ -368,7 +368,7 @@ func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(h *host.Host, r *h
 		r.SourcePath,
 		routeBlock,
 		p.buildRouteFeatures(h.FeatureSet),
-		p.buildRouteSettings(r, basePath),
+		p.buildRouteSettings(r, paths),
 	)
 }
 
@@ -395,13 +395,13 @@ func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...str
 
 	if r.Settings.KeepOriginalDomainName {
 		u, _ := url.Parse(*targetUri)
-		builder.WriteString(fmt.Sprintf("proxy_set_header Host %s;", u.Host))
+		builder.WriteString(fmt.Sprintf("\nproxy_set_header Host %s;", u.Host))
 	}
 
 	return builder.String()
 }
 
-func (p *hostConfigurationFileProvider) buildRouteSettings(r *host.Route, basePath string) string {
+func (p *hostConfigurationFileProvider) buildRouteSettings(r *host.Route, paths *Paths) string {
 	builder := strings.Builder{}
 	if r.Settings.ProxySSLServerName {
 		builder.WriteString("proxy_ssl_server_name on;")
@@ -419,11 +419,12 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(r *host.Route, basePa
 	}
 
 	if r.Settings.Custom != nil {
+		builder.WriteString("\n")
 		builder.WriteString(*r.Settings.Custom)
 	}
 
 	if r.AccessListID != nil {
-		builder.WriteString(fmt.Sprintf("include %s/config/access-list-%s.conf;", basePath, *r.AccessListID))
+		builder.WriteString(fmt.Sprintf("\ninclude %saccess-list-%s.conf;", paths.Config, *r.AccessListID))
 	}
 
 	return builder.String()

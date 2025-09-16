@@ -24,6 +24,7 @@ func toDomain(dto *userRequestDto) *user.SaveRequest {
 			Settings:     user.AccessLevel(*dto.Permissions.Settings),
 			Users:        user.AccessLevel(*dto.Permissions.Users),
 			NginxServer:  user.AccessLevel(*dto.Permissions.NginxServer),
+			ExportData:   user.AccessLevel(*dto.Permissions.ExportData),
 		},
 	}
 }
@@ -44,6 +45,7 @@ func toDto(domain *user.User) *userResponseDto {
 			Settings:     ptr.String(string(domain.Permissions.Settings)),
 			Users:        ptr.String(string(domain.Permissions.Users)),
 			NginxServer:  ptr.String(string(domain.Permissions.NginxServer)),
+			ExportData:   ptr.String(string(domain.Permissions.ExportData)),
 		},
 	}
 }

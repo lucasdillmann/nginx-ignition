@@ -50,12 +50,13 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     hosts: UserAccessLevel.READ_WRITE,
                     streams: UserAccessLevel.READ_WRITE,
                     certificates: UserAccessLevel.READ_WRITE,
-                    logs: UserAccessLevel.READ_WRITE,
+                    logs: UserAccessLevel.READ_ONLY,
                     integrations: UserAccessLevel.READ_WRITE,
                     accessLists: UserAccessLevel.READ_WRITE,
                     settings: UserAccessLevel.READ_WRITE,
                     users: UserAccessLevel.READ_WRITE,
                     nginxServer: UserAccessLevel.READ_WRITE,
+                    exportData: UserAccessLevel.READ_ONLY,
                 },
             },
             validationResult: new ValidationResult(),
@@ -103,17 +104,8 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
         return this.userId === undefined ? undefined : "Leave empty if you want to keep the user's password unchanged"
     }
 
-    private updatePermission(key: string, value: UserAccessLevel) {
-        const { formValues } = this.state
-
-        // @ts-expect-error Generic logic
-        formValues.permissions[key] = value
-        this.setState({ formValues })
-    }
-
     private renderForm() {
         const { validationResult, formValues } = this.state
-        const { permissions } = formValues
 
         return (
             <Form<UserRequest>
@@ -158,53 +150,16 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     <Password />
                 </Form.Item>
                 <Form.Item label="Permissions" required>
-                    <UserPermissionToggle
-                        value={permissions.hosts}
-                        onChange={value => this.updatePermission("hosts", value)}
-                        label="Hosts"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.streams}
-                        onChange={value => this.updatePermission("streams", value)}
-                        label="Streams"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.certificates}
-                        onChange={value => this.updatePermission("certificates", value)}
-                        label="SSL certificates"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.integrations}
-                        onChange={value => this.updatePermission("integrations", value)}
-                        label="Integrations"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.accessLists}
-                        onChange={value => this.updatePermission("accessLists", value)}
-                        label="Access lists"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.settings}
-                        onChange={value => this.updatePermission("settings", value)}
-                        label="Settings"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.users}
-                        onChange={value => this.updatePermission("users", value)}
-                        label="Users"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.logs}
-                        onChange={value => this.updatePermission("logs", value)}
-                        label="Logs"
-                        disableReadWrite
-                    />
-                    <UserPermissionToggle
-                        value={permissions.nginxServer}
-                        onChange={value => this.updatePermission("nginxServer", value)}
-                        label="Nginx server control"
-                        disableNoAccess
-                    />
+                    <UserPermissionToggle id="hosts" label="Hosts" />
+                    <UserPermissionToggle id="streams" label="Streams" />
+                    <UserPermissionToggle id="certificates" label="SSL certificates" />
+                    <UserPermissionToggle id="integrations" label="Integrations" />
+                    <UserPermissionToggle id="accessLists" label="Access lists" />
+                    <UserPermissionToggle id="settings" label="Settings" />
+                    <UserPermissionToggle id="users" label="Users" />
+                    <UserPermissionToggle id="logs" label="Logs" disableReadWrite />
+                    <UserPermissionToggle id="exportData" label="Export and backup" disableReadWrite />
+                    <UserPermissionToggle id="nginxServer" label="Nginx server control" disableNoAccess />
                 </Form.Item>
             </Form>
         )

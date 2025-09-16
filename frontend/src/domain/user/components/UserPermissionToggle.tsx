@@ -1,13 +1,12 @@
 import { UserAccessLevel } from "../model/UserAccessLevel"
 import { CheckCircleOutlined, EyeOutlined, StopOutlined } from "@ant-design/icons"
-import { Flex, Segmented } from "antd"
+import { Flex, Form, Segmented } from "antd"
 import React from "react"
 import "./UserPermissionToggle.css"
 
 export interface UserPermissionToggleProps {
+    id: string
     label: string
-    value: UserAccessLevel
-    onChange: (value: UserAccessLevel) => void
     disableReadWrite?: boolean
     disableNoAccess?: boolean
 }
@@ -47,13 +46,15 @@ export class UserPermissionToggle extends React.Component<UserPermissionTogglePr
     }
 
     render() {
-        const { onChange, value, label } = this.props
+        const { id, label } = this.props
 
         return (
             <Flex className="user-permission-toggle-container">
                 <div className="user-permission-toggle-label">{label}</div>
                 <div>
-                    <Segmented label={label} options={this.buildOptions()} value={value} onChange={onChange} />
+                    <Form.Item name={["permissions", id]} style={{ margin: 0, padding: 0 }}>
+                        <Segmented label={label} options={this.buildOptions()} />
+                    </Form.Item>
                 </div>
             </Flex>
         )

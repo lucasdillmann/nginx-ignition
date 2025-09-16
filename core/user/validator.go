@@ -66,6 +66,7 @@ func (v *validator) validatePermissions(permissions Permissions) {
 	v.validatePermission("settings", permissions.Settings)
 	v.validatePermission("users", permissions.Users)
 	v.validatePermission("nginxServer", permissions.NginxServer)
+	v.validatePermission("exportData", permissions.ExportData)
 
 	if permissions.NginxServer == NoAccessAccessLevel {
 		v.delegate.Add("permissions.nginxServer", "At least read-only access is required")
@@ -73,6 +74,10 @@ func (v *validator) validatePermissions(permissions Permissions) {
 
 	if permissions.Logs == ReadWriteAccessLevel {
 		v.delegate.Add("permissions.logs", "Cannot have read-write access to logs")
+	}
+
+	if permissions.ExportData == ReadWriteAccessLevel {
+		v.delegate.Add("permissions.exportData", "Cannot have read-write access to data export")
 	}
 }
 

@@ -8,9 +8,9 @@ import (
 )
 
 type userDetails struct {
-	email        string
 	registration *registration.Resource
 	privateKey   *rsa.PrivateKey
+	email        string
 	newAccount   bool
 }
 

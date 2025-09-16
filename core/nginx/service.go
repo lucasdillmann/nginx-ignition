@@ -1,6 +1,8 @@
 package nginx
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
 	"sync"
 
@@ -116,4 +118,37 @@ func (s *service) attachListeners() {
 			log.Warnf("Failed to reload nginx: %v", err)
 		}
 	}
+}
+
+func (s *service) getConfigFilesZipFile(ctx context.Context, configPath, logPath string) ([]byte, error) {
+	paths := &cfgfiles.Paths{
+		Config: configPath,
+		Logs:   logPath,
+	}
+
+	configFiles, _, _, err := s.configFilesManager.GetConfigurationFiles(ctx, paths)
+	if err != nil {
+		return nil, err
+	}
+
+	buffer := new(bytes.Buffer)
+	zipWriter := zip.NewWriter(buffer)
+	defer zipWriter.Close()
+
+	for _, file := range configFiles {
+		itemWriter, err := zipWriter.Create(file.Name)
+		if err != nil {
+			return nil, err
+		}
+
+		if _, err := itemWriter.Write([]byte(file.FormattedContents())); err != nil {
+			return nil, err
+		}
+	}
+
+	if err := zipWriter.Close(); err != nil {
+		return nil, err
+	}
+
+	return buffer.Bytes(), nil
 }

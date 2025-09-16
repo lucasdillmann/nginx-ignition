@@ -39,4 +39,5 @@ type Permissions struct {
 	Settings     AccessLevel
 	Users        AccessLevel
 	NginxServer  AccessLevel
+	ExportData   AccessLevel
 }

@@ -23,4 +23,5 @@ type userModel struct {
 	SettingsAccessLevel     string    `bun:"settings_access_level,notnull"`
 	UsersAccessLevel        string    `bun:"users_access_level,notnull"`
 	NginxServerAccessLevel  string    `bun:"nginx_server_access_level,notnull"`
+	ExportDataAccessLevel   string    `bun:"export_data_access_level,notnull"`
 }

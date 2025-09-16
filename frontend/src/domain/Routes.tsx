@@ -12,6 +12,7 @@ import {
     MergeCellsOutlined,
     SettingOutlined,
     TeamOutlined,
+    DownloadOutlined,
 } from "@ant-design/icons"
 import HostListPage from "./host/HostListPage"
 import HostFormPage from "./host/HostFormPage"
@@ -28,6 +29,7 @@ import AccessListFormPage from "./accesslist/AccessListFormPage"
 import AccessListListPage from "./accesslist/AccessListListPage"
 import StreamFormPage from "./stream/StreamFormPage"
 import StreamListPage from "./stream/StreamListPage"
+import ExportPage from "./export/ExportPage"
 
 const Routes: AppRoute[] = [
     {
@@ -135,6 +137,16 @@ const Routes: AppRoute[] = [
         menuItem: {
             description: "Access lists",
             icon: <FileProtectOutlined />,
+        },
+    },
+    {
+        path: "/export",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <ExportPage />,
+        menuItem: {
+            description: "Export and backup",
+            icon: <DownloadOutlined />,
         },
     },
     {

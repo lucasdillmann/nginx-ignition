@@ -27,6 +27,7 @@ export default class OnboardingService {
                 settings: UserAccessLevel.READ_WRITE,
                 users: UserAccessLevel.READ_WRITE,
                 nginxServer: UserAccessLevel.READ_WRITE,
+                exportData: UserAccessLevel.READ_ONLY,
             },
         }
 
