@@ -151,7 +151,7 @@ func (f *Facade) emptyConfigFolder(paths *Paths) error {
 
 func (f *Facade) writeConfigFile(paths *Paths, file File) error {
 	filePath := filepath.Join(paths.Config, file.Name)
-	if err := os.WriteFile(filePath, []byte(file.Contents), os.ModePerm); err != nil {
+	if err := os.WriteFile(filePath, []byte(file.FormattedContents()), os.ModePerm); err != nil {
 		return fmt.Errorf("unable to write file %s: %w", filePath, err)
 	}
 

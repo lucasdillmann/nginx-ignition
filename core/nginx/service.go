@@ -136,7 +136,7 @@ func (s *service) getConfigFilesZipFile(ctx context.Context) ([]byte, error) {
 			return nil, err
 		}
 
-		if _, err := itemWriter.Write([]byte(file.Contents)); err != nil {
+		if _, err := itemWriter.Write([]byte(file.FormattedContents())); err != nil {
 			return nil, err
 		}
 	}

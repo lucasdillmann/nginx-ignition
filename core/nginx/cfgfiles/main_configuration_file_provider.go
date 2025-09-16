@@ -32,7 +32,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 			load_module modules/ngx_http_lua_module.so;
 			load_module modules/ngx_stream_module.so;
 			worker_processes %d;
-			pid %s/nginx.pid;
+			pid %snginx.pid;
 			error_log %s;
 			
 			events {
@@ -74,7 +74,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		cfg.Nginx.Timeouts.Read,
 		cfg.Nginx.Timeouts.Send,
 		cfg.Nginx.Timeouts.Send,
-		ctx.paths,
+		ctx.paths.Config,
 		p.getHostIncludes(ctx.paths, ctx.hosts),
 		p.getStreamIncludes(ctx.paths, ctx.streams),
 	)
