@@ -28,7 +28,7 @@ func Install(router *gin.Engine, commands *nginx.Commands, authorizer *authoriza
 
 	exportPath := authorizer.ConfigureGroup(
 		router,
-		"/api/nginx/config-files",
+		"/api/nginx/config",
 		func(permissions user.Permissions) user.AccessLevel { return permissions.ExportData },
 	)
 	exportPath.GET("", configFilesHandler{commands}.handle)

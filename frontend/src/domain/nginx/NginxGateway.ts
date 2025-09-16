@@ -30,6 +30,6 @@ export default class NginxGateway {
     }
 
     async configFiles(): Promise<ApiResponse<any>> {
-        return this.client.get("/config-files", undefined, undefined, true)
+        return this.client.get("/config", undefined, undefined, true)
     }
 }

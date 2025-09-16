@@ -18,6 +18,6 @@ func (h configFilesHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	ctx.Header("Content-Disposition", "attachment; filename=nginx-config-files.zip")
+	ctx.Header("Content-Disposition", "attachment; filename=nginx-config.zip")
 	ctx.Data(http.StatusOK, "application/zip", bytes)
 }

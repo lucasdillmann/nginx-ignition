@@ -34,8 +34,8 @@ export default class ExportService {
         const contentDisposition = response.headers.get("content-disposition")
         if (!contentDisposition) return fallbackName
 
-        const fileNameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)
-        if (fileNameMatch && fileNameMatch[1]) {
+        const fileNameMatch = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition)
+        if (fileNameMatch?.[1]) {
             return fileNameMatch[1].replace(/['"]/g, "")
         }
 
