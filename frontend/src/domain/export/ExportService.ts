@@ -1,32 +1,58 @@
 import NginxGateway from "../nginx/NginxGateway"
+import BackupGateway from "../backup/BackupGateway"
 
 export default class ExportService {
     private readonly nginxGateway: NginxGateway
+    private readonly backupGateway: BackupGateway
 
     constructor() {
         this.nginxGateway = new NginxGateway()
+        this.backupGateway = new BackupGateway()
     }
 
     async downloadNginxConfigurationFiles(): Promise<void> {
         return this.nginxGateway
             .configFiles()
             .then(response => response.raw.blob())
-            .then(blob => {
-                const downloadUrl = window.URL.createObjectURL(blob)
-                const link = document.createElement("a")
-
-                link.href = downloadUrl
-                link.download = "nginx-config.zip"
-
-                document.body.appendChild(link)
-                link.click()
-
-                document.body.removeChild(link)
-                window.URL.revokeObjectURL(downloadUrl)
-            })
+            .then(blob => this.sendBlob(blob, "nginx-config.zip"))
     }
 
     async downloadDatabaseBackup(): Promise<void> {
-        return Promise.reject(new Error("Not implemented yet"))
+        return this.backupGateway
+            .download()
+            .then(response => Promise.all([response.raw.blob(), response.raw]))
+            .then(([blob, response]) => ({
+                blob,
+                fileName: this.getFileName(response),
+            }))
+            .then(data => this.sendBlob(data.blob, data.fileName))
+    }
+
+    private getFileName(response: Response): string {
+        const fallbackName = "backup.bin"
+
+        const contentDisposition = response.headers.get("content-disposition")
+        if (!contentDisposition) return fallbackName
+
+        const fileNameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)
+        if (fileNameMatch && fileNameMatch[1]) {
+            return fileNameMatch[1].replace(/['"]/g, "")
+        }
+
+        return fallbackName
+    }
+
+    private async sendBlob(blob: Blob, fileName: string): Promise<void> {
+        const downloadUrl = window.URL.createObjectURL(blob)
+        const link = document.createElement("a")
+
+        link.href = downloadUrl
+        link.download = fileName
+
+        document.body.appendChild(link)
+        link.click()
+
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(downloadUrl)
     }
 }

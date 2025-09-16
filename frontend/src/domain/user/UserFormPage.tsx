@@ -104,14 +104,6 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
         return this.userId === undefined ? undefined : "Leave empty if you want to keep the user's password unchanged"
     }
 
-    private updatePermission(key: string, value: UserAccessLevel) {
-        const { formValues } = this.state
-
-        // @ts-expect-error Generic logic
-        formValues.permissions[key] = value
-        this.setState({ formValues })
-    }
-
     private renderForm() {
         const { validationResult, formValues } = this.state
 

@@ -10,9 +10,10 @@ import (
 )
 
 type Database struct {
-	configuration *configuration.Configuration
-	db            *sql.DB
-	bun           *bun.DB
+	configuration    *configuration.Configuration
+	db               *sql.DB
+	bun              *bun.DB
+	connectionString string
 }
 
 func newDatabase(configuration *configuration.Configuration) *Database {
@@ -33,6 +34,10 @@ func (d *Database) Begin() (bun.Tx, error) {
 
 func (d *Database) Select() *bun.SelectQuery {
 	return d.bun.NewSelect()
+}
+
+func (d *Database) ConnectionString() string {
+	return d.connectionString
 }
 
 func (d *Database) close() {

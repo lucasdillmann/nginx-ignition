@@ -4,6 +4,7 @@ import (
 	"go.uber.org/dig"
 
 	"dillmann.com.br/nginx-ignition/api/access_list"
+	"dillmann.com.br/nginx-ignition/api/backup"
 	"dillmann.com.br/nginx-ignition/api/certificate"
 	"dillmann.com.br/nginx-ignition/api/common/server"
 	"dillmann.com.br/nginx-ignition/api/frontend"
@@ -29,6 +30,7 @@ func Install(container *dig.Container) error {
 		integration.Install,
 		nginx.Install,
 		stream.Install,
+		backup.Install,
 		frontend.Install,
 	}
 
