@@ -22,6 +22,7 @@ func toDomain(model *userModel) *user.User {
 			Settings:     user.AccessLevel(model.SettingsAccessLevel),
 			Users:        user.AccessLevel(model.UsersAccessLevel),
 			NginxServer:  user.AccessLevel(model.NginxServerAccessLevel),
+			ExportData:   user.AccessLevel(model.ExportDataAccessLevel),
 		},
 	}
 }
@@ -43,5 +44,6 @@ func toModel(domain *user.User) *userModel {
 		SettingsAccessLevel:     string(domain.Permissions.Settings),
 		UsersAccessLevel:        string(domain.Permissions.Users),
 		NginxServerAccessLevel:  string(domain.Permissions.NginxServer),
+		ExportDataAccessLevel:   string(domain.Permissions.ExportData),
 	}
 }

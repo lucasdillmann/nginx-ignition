@@ -8,17 +8,22 @@ import (
 )
 
 type providerContext struct {
-	context  context.Context
-	basePath string
-	hosts    []*host.Host
-	streams  []*stream.Stream
+	context context.Context
+	paths   *Paths
+	hosts   []*host.Host
+	streams []*stream.Stream
+}
+
+type Paths struct {
+	AbsoluteConfig string
+	AbsoluteLogs   string
 }
 
 type fileProvider interface {
-	provide(ctx *providerContext) ([]output, error)
+	provide(ctx *providerContext) ([]File, error)
 }
 
-type output struct {
-	name     string
-	contents string
+type File struct {
+	Name     string
+	Contents string
 }

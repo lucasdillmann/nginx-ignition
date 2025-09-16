@@ -41,12 +41,13 @@ func buildCommands(
 	}
 
 	commands := &Commands{
-		GetHostLogs: serviceInstance.getHostLogs,
-		GetMainLogs: serviceInstance.getMainLogs,
-		GetStatus:   serviceInstance.isRunning,
-		Reload:      serviceInstance.reload,
-		Stop:        serviceInstance.stop,
-		Start:       serviceInstance.start,
+		GetHostLogs:    serviceInstance.getHostLogs,
+		GetMainLogs:    serviceInstance.getMainLogs,
+		GetStatus:      serviceInstance.isRunning,
+		GetConfigFiles: serviceInstance.getConfigFilesZipFile,
+		Reload:         serviceInstance.reload,
+		Stop:           serviceInstance.stop,
+		Start:          serviceInstance.start,
 	}
 
 	return serviceInstance, commands, nil

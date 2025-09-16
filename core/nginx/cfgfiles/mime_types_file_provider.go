@@ -6,7 +6,7 @@ func newMimeTypesFileProvider() *mimeTypesFileProvider {
 	return &mimeTypesFileProvider{}
 }
 
-func (p *mimeTypesFileProvider) provide(_ *providerContext) ([]output, error) {
+func (p *mimeTypesFileProvider) provide(ctx *providerContext) ([]File, error) {
 	contents := `
 		types {
 			text/html                                        html htm shtml;
@@ -108,8 +108,8 @@ func (p *mimeTypesFileProvider) provide(_ *providerContext) ([]output, error) {
 		}
 	`
 
-	return []output{{
-		name:     "mime.types",
-		contents: contents,
+	return []File{{
+		Name:     "mime.types",
+		Contents: contents,
 	}}, nil
 }

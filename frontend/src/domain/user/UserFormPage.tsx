@@ -56,6 +56,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     settings: UserAccessLevel.READ_WRITE,
                     users: UserAccessLevel.READ_WRITE,
                     nginxServer: UserAccessLevel.READ_WRITE,
+                    exportData: UserAccessLevel.READ_ONLY,
                 },
             },
             validationResult: new ValidationResult(),
@@ -197,6 +198,12 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                         value={permissions.logs}
                         onChange={value => this.updatePermission("logs", value)}
                         label="Logs"
+                        disableReadWrite
+                    />
+                    <UserPermissionToggle
+                        value={permissions.exportData}
+                        onChange={value => this.updatePermission("exportData", value)}
+                        label="Export settings and files"
                         disableReadWrite
                     />
                     <UserPermissionToggle

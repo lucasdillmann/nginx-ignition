@@ -1,6 +1,7 @@
 import Header from "./Header"
 
 export default interface ApiResponse<T> {
+    raw: Response
     statusCode: number
     headers: Header[]
     body?: T

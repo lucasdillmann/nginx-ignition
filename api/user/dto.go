@@ -48,4 +48,5 @@ type userPermissionsDto struct {
 	Settings     *string `json:"settings" validate:"required"`
 	Users        *string `json:"users" validate:"required"`
 	NginxServer  *string `json:"nginxServer" validate:"required"`
+	ExportData   *string `json:"exportData" validate:"required"`
 }

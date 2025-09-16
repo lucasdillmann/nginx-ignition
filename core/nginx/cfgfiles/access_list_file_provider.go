@@ -17,24 +17,24 @@ func newAccessListFileProvider(accessListRepository access_list.Repository) *acc
 	return &accessListFileProvider{accessListRepository: accessListRepository}
 }
 
-func (p *accessListFileProvider) provide(ctx *providerContext) ([]output, error) {
+func (p *accessListFileProvider) provide(ctx *providerContext) ([]File, error) {
 	accessLists, err := p.accessListRepository.FindAll(ctx.context)
 	if err != nil {
 		return nil, err
 	}
 
-	var outputs []output
+	var outputs []File
 	for _, accessList := range accessLists {
-		outputs = append(outputs, p.build(accessList, ctx.basePath)...)
+		outputs = append(outputs, p.build(accessList, ctx.paths)...)
 	}
 
 	return outputs, nil
 }
 
-func (p *accessListFileProvider) build(accessList *access_list.AccessList, basePath string) []output {
-	var outputs []output
+func (p *accessListFileProvider) build(accessList *access_list.AccessList, paths *Paths) []File {
+	var outputs []File
 
-	if confFile := p.buildConfFile(accessList, basePath); confFile != nil {
+	if confFile := p.buildConfFile(accessList, paths); confFile != nil {
 		outputs = append(outputs, *confFile)
 	}
 
@@ -45,7 +45,7 @@ func (p *accessListFileProvider) build(accessList *access_list.AccessList, baseP
 	return outputs
 }
 
-func (p *accessListFileProvider) buildConfFile(accessList *access_list.AccessList, basePath string) *output {
+func (p *accessListFileProvider) buildConfFile(accessList *access_list.AccessList, paths *Paths) *File {
 	var entriesContents []string
 	for _, entry := range accessList.Entries {
 		for _, sourceAddress := range entry.SourceAddress {
@@ -65,9 +65,9 @@ func (p *accessListFileProvider) buildConfFile(accessList *access_list.AccessLis
 		usernamePasswordContents = fmt.Sprintf(
 			`
 				auth_basic "%s"; 
-				auth_basic_user_file %s/config/access-list-%s.htpasswd;
+				auth_basic_user_file %saccess-list-%s.htpasswd;
 			`,
-			accessList.Realm, basePath, accessList.ID,
+			accessList.Realm, paths.AbsoluteConfig, accessList.ID,
 		)
 	}
 
@@ -94,13 +94,13 @@ func (p *accessListFileProvider) buildConfFile(accessList *access_list.AccessLis
 		forwardHeadersContents,
 	)
 
-	return &output{
-		name:     fmt.Sprintf("access-list-%s.conf", accessList.ID),
-		contents: contents,
+	return &File{
+		Name:     fmt.Sprintf("access-list-%s.conf", accessList.ID),
+		Contents: contents,
 	}
 }
 
-func (p *accessListFileProvider) buildHtpasswdFile(accessList *access_list.AccessList) *output {
+func (p *accessListFileProvider) buildHtpasswdFile(accessList *access_list.AccessList) *File {
 	if len(accessList.Credentials) == 0 {
 		return nil
 	}
@@ -111,9 +111,9 @@ func (p *accessListFileProvider) buildHtpasswdFile(accessList *access_list.Acces
 		contents = append(contents, fmt.Sprintf("%s:%s", credential.Username, hash))
 	}
 
-	return &output{
-		name:     fmt.Sprintf("access-list-%s.htpasswd", accessList.ID),
-		contents: strings.Join(contents, "\n"),
+	return &File{
+		Name:     fmt.Sprintf("access-list-%s.htpasswd", accessList.ID),
+		Contents: strings.Join(contents, "\n"),
 	}
 }
 

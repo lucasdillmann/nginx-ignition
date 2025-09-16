@@ -17,7 +17,7 @@ func newMainConfigurationFileProvider(settingsRepository settings.Repository) *m
 	return &mainConfigurationFileProvider{settingsRepository: settingsRepository}
 }
 
-func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]output, error) {
+func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, error) {
 	cfg, err := p.settingsRepository.Get(ctx.context)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]output,
 				proxy_send_timeout %d;
 				send_timeout %d;
 				
-				include %s/config/mime.types;
+				include %smime.types;
 				%s
 			}
 			
@@ -62,8 +62,8 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]output,
 		cfg.Nginx.RuntimeUser,
 		cfg.Nginx.RuntimeUser,
 		cfg.Nginx.WorkerProcesses,
-		ctx.basePath,
-		p.getErrorLogPath(ctx.basePath, logs),
+		ctx.paths.AbsoluteConfig,
+		p.getErrorLogPath(ctx.paths, logs),
 		cfg.Nginx.WorkerConnections,
 		cfg.Nginx.DefaultContentType,
 		p.enabledFlag(cfg.Nginx.SendfileEnabled),
@@ -74,22 +74,22 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]output,
 		cfg.Nginx.Timeouts.Read,
 		cfg.Nginx.Timeouts.Send,
 		cfg.Nginx.Timeouts.Send,
-		ctx.basePath,
-		p.getHostIncludes(ctx.basePath, ctx.hosts),
-		p.getStreamIncludes(ctx.basePath, ctx.streams),
+		ctx.paths,
+		p.getHostIncludes(ctx.paths, ctx.hosts),
+		p.getStreamIncludes(ctx.paths, ctx.streams),
 	)
 
-	return []output{
+	return []File{
 		{
-			name:     "nginx.conf",
-			contents: contents,
+			Name:     "nginx.conf",
+			Contents: contents,
 		},
 	}, nil
 }
 
-func (p *mainConfigurationFileProvider) getErrorLogPath(basePath string, logs *settings.NginxLogsSettings) string {
+func (p *mainConfigurationFileProvider) getErrorLogPath(paths *Paths, logs *settings.NginxLogsSettings) string {
 	if logs.ServerLogsEnabled {
-		return fmt.Sprintf("%s/logs/main.log %s", basePath, strings.ToLower(string(logs.ServerLogsLevel)))
+		return fmt.Sprintf("%smain.log %s", paths.AbsoluteLogs, strings.ToLower(string(logs.ServerLogsLevel)))
 	}
 
 	return "off"
@@ -103,19 +103,19 @@ func (p *mainConfigurationFileProvider) enabledFlag(value bool) string {
 	return "off"
 }
 
-func (p *mainConfigurationFileProvider) getHostIncludes(basePath string, hosts []*host.Host) string {
+func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []*host.Host) string {
 	var includes []string
 	for _, h := range hosts {
-		includes = append(includes, fmt.Sprintf("include %s/config/host-%s.conf;", basePath, h.ID))
+		includes = append(includes, fmt.Sprintf("include %shost-%s.conf;", paths.AbsoluteConfig, h.ID))
 	}
 
 	return strings.Join(includes, "\n")
 }
 
-func (p *mainConfigurationFileProvider) getStreamIncludes(basePath string, streams []*stream.Stream) string {
+func (p *mainConfigurationFileProvider) getStreamIncludes(paths *Paths, streams []*stream.Stream) string {
 	var includes []string
 	for _, s := range streams {
-		includes = append(includes, fmt.Sprintf("include %s/config/stream-%s.conf;", basePath, s.ID))
+		includes = append(includes, fmt.Sprintf("include %sstream-%s.conf;", paths.AbsoluteConfig, s.ID))
 	}
 
 	return strings.Join(includes, "\n")
