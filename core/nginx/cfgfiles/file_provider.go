@@ -30,23 +30,14 @@ type File struct {
 }
 
 func (f *File) FormattedContents() string {
-	if f.Contents == "" {
-		return ""
-	}
-
-	lines := strings.Split(f.Contents, "\n")
-
-	var formatted []string
 	indentLevel := 0
 	indentValue := strings.Repeat(" ", 4)
+	originalLines := strings.Split(f.Contents, "\n")
+	formattedLines := make([]string, 0, len(originalLines))
 
-	for index, line := range lines {
+	for index, line := range originalLines {
 		trimmed := strings.TrimSpace(line)
-		if trimmed == "" {
-			if index != 0 {
-				formatted = append(formatted, "")
-			}
-
+		if trimmed == "" && index == 0 {
 			continue
 		}
 
@@ -57,12 +48,12 @@ func (f *File) FormattedContents() string {
 		}
 
 		indentedLine := strings.Repeat(indentValue, indentLevel) + trimmed
-		formatted = append(formatted, indentedLine)
+		formattedLines = append(formattedLines, indentedLine)
 
 		if strings.HasSuffix(trimmed, "{") && !strings.HasSuffix(trimmed, "};") {
 			indentLevel++
 		}
 	}
 
-	return strings.Join(formatted, "\n")
+	return strings.Join(formattedLines, "\n")
 }
