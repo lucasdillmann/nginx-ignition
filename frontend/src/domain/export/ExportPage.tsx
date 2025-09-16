@@ -47,6 +47,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
         window.open(
             "https://github.com/lucasdillmann/nginx-ignition/blob/main/docs/database-restore-guide.md",
             "_blank",
+            "noopener",
         )
     }
 
