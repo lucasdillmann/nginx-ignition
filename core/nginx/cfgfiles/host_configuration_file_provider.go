@@ -143,7 +143,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			p.buildBindingAdditionalParams(h),
 			paths.Config,
 			b.CertificateID,
-			paths,
+			paths.Config,
 			b.CertificateID,
 		)
 	}
