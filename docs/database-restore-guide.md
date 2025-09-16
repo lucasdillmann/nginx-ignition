@@ -53,4 +53,4 @@ Steps to restore the database:
    - Example: `psql --host=<your-db-host> --port=5432 --username=<your-username> --dbname=<your-db-name> --file=/path/to/nginx-ignition.sql`
 4) Fill the database password if and when prompted
 5) Start the container again
-   - Example: `docker start nginx-ignition`
+   - Example: `docker start <container-name>`
