@@ -395,7 +395,7 @@ func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...str
 
 	if r.Settings.KeepOriginalDomainName {
 		u, _ := url.Parse(*targetUri)
-		builder.WriteString(fmt.Sprintf("proxy_set_header Host %s;", u.Host))
+		builder.WriteString(fmt.Sprintf("\nproxy_set_header Host %s;", u.Host))
 	}
 
 	return builder.String()
@@ -419,11 +419,12 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(r *host.Route, paths 
 	}
 
 	if r.Settings.Custom != nil {
+		builder.WriteString("\n")
 		builder.WriteString(*r.Settings.Custom)
 	}
 
 	if r.AccessListID != nil {
-		builder.WriteString(fmt.Sprintf("include %saccess-list-%s.conf;", paths.Config, *r.AccessListID))
+		builder.WriteString(fmt.Sprintf("\ninclude %saccess-list-%s.conf;", paths.Config, *r.AccessListID))
 	}
 
 	return builder.String()
