@@ -13,7 +13,10 @@ type configFilesHandler struct {
 }
 
 func (h configFilesHandler) handle(ctx *gin.Context) {
-	bytes, err := h.commands.GetConfigFiles(ctx.Request.Context())
+	configPath := ctx.Query("configPath")
+	logPath := ctx.Query("logPath")
+
+	bytes, err := h.commands.GetConfigFiles(ctx.Request.Context(), configPath, logPath)
 	if err != nil {
 		panic(err)
 	}

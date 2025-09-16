@@ -16,10 +16,14 @@ export class UnexpectedResponseError<T> extends Error {
     }
 }
 
-export function requireSuccessResponse<T>(response: ApiResponse<T>): T | undefined {
+export function requireSuccessRawResponse<T>(response: ApiResponse<T>): ApiResponse<T> {
     if (response.statusCode < 200 || response.statusCode > 299) throw new UnexpectedResponseError(response)
 
-    return response.body
+    return response
+}
+
+export function requireSuccessResponse<T>(response: ApiResponse<T>): T | undefined {
+    return requireSuccessRawResponse(response).body
 }
 
 export function requireSuccessPayload<T>(response: ApiResponse<T>): T {

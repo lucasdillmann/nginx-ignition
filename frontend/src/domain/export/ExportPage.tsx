@@ -2,15 +2,18 @@ import React, { ReactNode } from "react"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
-import { Button, Flex } from "antd"
+import { Button, Flex, Form, Input, Modal, Space } from "antd"
 import ExportService from "./ExportService"
 import AppShellContext from "../../core/components/shell/AppShellContext"
-import { DatabaseOutlined, DownloadOutlined, FileZipOutlined } from "@ant-design/icons"
+import { DatabaseOutlined, DownloadOutlined, FileZipOutlined, QuestionCircleOutlined } from "@ant-design/icons"
 import Notification from "../../core/components/notification/Notification"
 import { themedModal } from "../../core/components/theme/ThemedResources"
 import "./ExportPage.css"
 
 interface ExportPageState {
+    nginxModalOpen: boolean
+    nginxConfigPath: string
+    nginxLogPath: string
     nginxLoading: boolean
     databaseLoading: boolean
 }
@@ -23,7 +26,10 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
 
         this.service = new ExportService()
         this.state = {
+            nginxModalOpen: false,
             nginxLoading: false,
+            nginxConfigPath: "",
+            nginxLogPath: "",
             databaseLoading: false,
         }
     }
@@ -37,10 +43,27 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
         )
     }
 
+    private openDatabaseHelpGuide() {
+        window.open(
+            "https://github.com/lucasdillmann/nginx-ignition/blob/main/docs/database-restore-guide.md",
+            "_blank",
+        )
+    }
+
+    private openNginxModal() {
+        this.setState({ nginxModalOpen: true })
+    }
+
+    private closeNginxModal() {
+        this.setState({ nginxModalOpen: false })
+    }
+
     private nginxConfigurationFiles() {
-        this.setState({ nginxLoading: true }, () =>
+        const { nginxConfigPath, nginxLogPath } = this.state
+
+        this.setState({ nginxLoading: true, nginxModalOpen: false }, () =>
             this.service
-                .downloadNginxConfigurationFiles()
+                .downloadNginxConfigurationFiles(nginxConfigPath, nginxLogPath)
                 .catch(error => this.showErrorNotification(error))
                 .then(() => this.setState({ nginxLoading: false })),
         )
@@ -56,6 +79,15 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                             <DatabaseOutlined /> Database backup
                         </h2>
                         <div className="export-guide-section-action">
+                            <Button
+                                type="default"
+                                size="large"
+                                onClick={() => this.openDatabaseHelpGuide()}
+                                style={{ marginRight: 10 }}
+                            >
+                                <QuestionCircleOutlined />
+                            </Button>
+                            <Space />
                             <Button
                                 type="primary"
                                 size="large"
@@ -100,7 +132,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                                 type="primary"
                                 size="large"
                                 loading={nginxLoading}
-                                onClick={() => this.nginxConfigurationFiles()}
+                                onClick={() => this.openNginxModal()}
                             >
                                 <DownloadOutlined /> Download
                             </Button>
@@ -117,6 +149,58 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                     </p>
                 </Flex>
             </Flex>
+        )
+    }
+
+    private setValue(field: string, value: string) {
+        this.setState(current => ({
+            ...current,
+            [field]: value,
+        }))
+    }
+
+    private renderNginxConfigurationModal(): ReactNode {
+        const { nginxModalOpen, nginxConfigPath, nginxLogPath, nginxLoading } = this.state
+        return (
+            <Modal
+                afterClose={() => this.closeNginxModal()}
+                onCancel={() => this.closeNginxModal()}
+                onOk={() => this.nginxConfigurationFiles()}
+                okButtonProps={{
+                    disabled: nginxLoading,
+                }}
+                title="nginx configuration"
+                width={800}
+                open={nginxModalOpen}
+                okText="Continue"
+                cancelText="Cancel"
+            >
+                <p>
+                    If needed, you can customize the paths that the configuration files should use by filling the fields
+                    below. This action is optional and, if left empty, the files will be generated using relative paths.
+                </p>
+                <br />
+                <Form.Item
+                    label="Path for the nginx configuration files"
+                    initialValue={nginxConfigPath}
+                    layout="vertical"
+                >
+                    <Input
+                        size="large"
+                        onChange={event => this.setValue("nginxConfigPath", event.target.value)}
+                        required={false}
+                        autoFocus
+                    />
+                </Form.Item>
+                <Form.Item label="Path for the nginx log files" initialValue={nginxLogPath} layout="vertical">
+                    <Input
+                        size="large"
+                        onChange={event => this.setValue("nginxLogPath", event.target.value)}
+                        required={false}
+                        autoFocus
+                    />
+                </Form.Item>
+            </Modal>
         )
     }
 
@@ -142,6 +226,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
             <div className="export-guide-container">
                 {this.renderDatabaseBackup()}
                 {this.renderNginxConfigurationFiles()}
+                {this.renderNginxConfigurationModal()}
             </div>
         )
     }

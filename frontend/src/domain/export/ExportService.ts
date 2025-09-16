@@ -1,5 +1,6 @@
 import NginxGateway from "../nginx/NginxGateway"
 import BackupGateway from "../backup/BackupGateway"
+import { requireSuccessRawResponse } from "../../core/apiclient/ApiResponse"
 
 export default class ExportService {
     private readonly nginxGateway: NginxGateway
@@ -10,9 +11,10 @@ export default class ExportService {
         this.backupGateway = new BackupGateway()
     }
 
-    async downloadNginxConfigurationFiles(): Promise<void> {
+    async downloadNginxConfigurationFiles(configPath: string, logPath: string): Promise<void> {
         return this.nginxGateway
-            .configFiles()
+            .configFiles(configPath, logPath)
+            .then(requireSuccessRawResponse)
             .then(response => response.raw.blob())
             .then(blob => this.sendBlob(blob, "nginx-config.zip"))
     }
@@ -20,6 +22,7 @@ export default class ExportService {
     async downloadDatabaseBackup(): Promise<void> {
         return this.backupGateway
             .download()
+            .then(requireSuccessRawResponse)
             .then(response => Promise.all([response.raw.blob(), response.raw]))
             .then(([blob, response]) => ({
                 blob,
