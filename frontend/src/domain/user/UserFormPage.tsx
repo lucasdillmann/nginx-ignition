@@ -114,7 +114,6 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
 
     private renderForm() {
         const { validationResult, formValues } = this.state
-        const { permissions } = formValues
 
         return (
             <Form<UserRequest>
@@ -159,59 +158,16 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     <Password />
                 </Form.Item>
                 <Form.Item label="Permissions" required>
-                    <UserPermissionToggle
-                        value={permissions.hosts}
-                        onChange={value => this.updatePermission("hosts", value)}
-                        label="Hosts"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.streams}
-                        onChange={value => this.updatePermission("streams", value)}
-                        label="Streams"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.certificates}
-                        onChange={value => this.updatePermission("certificates", value)}
-                        label="SSL certificates"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.integrations}
-                        onChange={value => this.updatePermission("integrations", value)}
-                        label="Integrations"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.accessLists}
-                        onChange={value => this.updatePermission("accessLists", value)}
-                        label="Access lists"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.settings}
-                        onChange={value => this.updatePermission("settings", value)}
-                        label="Settings"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.users}
-                        onChange={value => this.updatePermission("users", value)}
-                        label="Users"
-                    />
-                    <UserPermissionToggle
-                        value={permissions.logs}
-                        onChange={value => this.updatePermission("logs", value)}
-                        label="Logs"
-                        disableReadWrite
-                    />
-                    <UserPermissionToggle
-                        value={permissions.exportData}
-                        onChange={value => this.updatePermission("exportData", value)}
-                        label="Export and backup"
-                        disableReadWrite
-                    />
-                    <UserPermissionToggle
-                        value={permissions.nginxServer}
-                        onChange={value => this.updatePermission("nginxServer", value)}
-                        label="Nginx server control"
-                        disableNoAccess
-                    />
+                    <UserPermissionToggle id="hosts" label="Hosts" />
+                    <UserPermissionToggle id="streams" label="Streams" />
+                    <UserPermissionToggle id="certificates" label="SSL certificates" />
+                    <UserPermissionToggle id="integrations" label="Integrations" />
+                    <UserPermissionToggle id="accessLists" label="Access lists" />
+                    <UserPermissionToggle id="settings" label="Settings" />
+                    <UserPermissionToggle id="users" label="Users" />
+                    <UserPermissionToggle id="logs" label="Logs" disableReadWrite />
+                    <UserPermissionToggle id="exportData" label="Export and backup" disableReadWrite />
+                    <UserPermissionToggle id="nginxServer" label="Nginx server control" disableNoAccess />
                 </Form.Item>
             </Form>
         )
