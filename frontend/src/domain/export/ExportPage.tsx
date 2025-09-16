@@ -67,13 +67,19 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                         </div>
                     </Flex>
                     <p>
-                        A database backup is a snapshot of the database contents that can be used to restore the app to
-                        a previous state or recover from a failure/data loss, enabling you to get nginx ignition back
-                        running again. It's a good practice to backup your database regularly.
+                        A database backup is a snapshot of the nginx ignition configurations (hosts, certificates,
+                        streams, etc) that can be used to restore the app to a previous state or recover from a
+                        failure/data loss, enabling you to get nginx ignition back and running again.
                     </p>
                     <p>
-                        A backup file can take a while to be generated depending on the size of the database. The
-                        produced file type will vary depending if you're using SQLite or PostgreSQL.
+                        It's a good idea to backup your database regularly using an automated process whenever possible
+                        (which can be done using cron jobs or similar tools calling the nginx ignition API to generate
+                        the backup file or by interacting with the database directly).
+                    </p>
+                    <p>
+                        Please note that a backup file can take a while to be generated depending on the size of the
+                        database. The produced file type will vary depending if you're using SQLite or PostgreSQL (more
+                        details available at the nginx ignition's documentations).
                     </p>
                 </Flex>
             </Flex>
@@ -101,13 +107,13 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                         </div>
                     </Flex>
                     <p>
-                        Whenever you make any changes using nginx ignition and reload the server, the nginx
-                        configuration files generated with all the hosts, streams, SSL certificates and more that you've
-                        configured.
+                        Whenever you make a change using nginx ignition and reload the server, the nginx configuration
+                        files are generated or updated with all the hosts, streams, SSL certificates and more that
+                        you've enabled.
                     </p>
                     <p>
-                        By downloading the nginx configuration files, you can analyze its contents or even deploy a
-                        nginx server with these same settings and behaviours mostly the same way nginx ignition does.
+                        By downloading the nginx configuration files, you can analyze/review its contents or even deploy
+                        a nginx server with these same settings and behaviours mostly the same way nginx ignition does.
                     </p>
                 </Flex>
             </Flex>
