@@ -4,7 +4,6 @@ import (
 	"context"
 	"net"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 
@@ -202,10 +201,6 @@ func (v *validator) validateStaticFilesRoute(route *Route, index int) {
 
 	if !strings.HasPrefix(*route.TargetURI, "/") {
 		v.delegate.Add(targetUriField, "Value must start with a /")
-	}
-
-	if file, err := os.Stat(*route.TargetURI); err != nil || !file.IsDir() {
-		v.delegate.Add(targetUriField, "Path doesn't exist or isn't a valid directory")
 	}
 }
 
