@@ -29,5 +29,9 @@ func (h configFilesHandler) handle(ctx *gin.Context) {
 
 func normalizePathQuery(ctx *gin.Context, name string) string {
 	value := ctx.Query(name)
+	if value == "" {
+		return ""
+	}
+
 	return strings.TrimRight(value, "/") + "/"
 }
