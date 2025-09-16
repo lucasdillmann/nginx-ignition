@@ -95,6 +95,7 @@ func (f *Facade) ReplaceConfigurationFiles(ctx context.Context) error {
 
 	normalizedPath := strings.TrimRight(configDir, "/")
 	paths := &Paths{
+		Base:   normalizedPath + "/",
 		Config: normalizedPath + "/config/",
 		Logs:   normalizedPath + "/logs/",
 	}

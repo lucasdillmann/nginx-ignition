@@ -16,6 +16,7 @@ type providerContext struct {
 }
 
 type Paths struct {
+	Base   string
 	Config string
 	Logs   string
 }

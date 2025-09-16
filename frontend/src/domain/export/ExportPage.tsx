@@ -12,6 +12,7 @@ import "./ExportPage.css"
 
 interface ExportPageState {
     nginxModalOpen: boolean
+    nginxBasePath: string
     nginxConfigPath: string
     nginxLogPath: string
     nginxLoading: boolean
@@ -28,6 +29,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
         this.state = {
             nginxModalOpen: false,
             nginxLoading: false,
+            nginxBasePath: "",
             nginxConfigPath: "",
             nginxLogPath: "",
             databaseLoading: false,
@@ -60,11 +62,11 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
     }
 
     private nginxConfigurationFiles() {
-        const { nginxConfigPath, nginxLogPath } = this.state
+        const { nginxBasePath, nginxConfigPath, nginxLogPath } = this.state
 
         this.setState({ nginxLoading: true, nginxModalOpen: false }, () =>
             this.service
-                .downloadNginxConfigurationFiles(nginxConfigPath, nginxLogPath)
+                .downloadNginxConfigurationFiles(nginxBasePath, nginxConfigPath, nginxLogPath)
                 .catch(error => this.showErrorNotification(error))
                 .then(() => this.setState({ nginxLoading: false })),
         )
@@ -161,7 +163,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
     }
 
     private renderNginxConfigurationModal(): ReactNode {
-        const { nginxModalOpen, nginxConfigPath, nginxLogPath, nginxLoading } = this.state
+        const { nginxModalOpen, nginxBasePath, nginxConfigPath, nginxLogPath, nginxLoading } = this.state
         return (
             <Modal
                 afterClose={() => this.closeNginxModal()}
@@ -181,6 +183,15 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                     below. This action is optional and, if left empty, the files will be generated using relative paths.
                 </p>
                 <br />
+                <Form.Item label="Base path for the nginx files" initialValue={nginxBasePath} layout="vertical">
+                    <Input
+                        size="large"
+                        onChange={event => this.setValue("nginxBasePath", event.target.value)}
+                        required={false}
+                        placeholder="e.g. /etc/nginx"
+                        autoFocus
+                    />
+                </Form.Item>
                 <Form.Item
                     label="Path for the nginx configuration files"
                     initialValue={nginxConfigPath}
@@ -190,6 +201,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                         size="large"
                         onChange={event => this.setValue("nginxConfigPath", event.target.value)}
                         required={false}
+                        placeholder="e.g. /etc/nginx/config"
                         autoFocus
                     />
                 </Form.Item>
@@ -198,6 +210,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                         size="large"
                         onChange={event => this.setValue("nginxLogPath", event.target.value)}
                         required={false}
+                        placeholder="e.g. /var/log/nginx"
                         autoFocus
                     />
                 </Form.Item>

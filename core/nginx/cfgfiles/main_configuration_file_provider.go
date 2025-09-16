@@ -62,7 +62,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		cfg.Nginx.RuntimeUser,
 		cfg.Nginx.RuntimeUser,
 		cfg.Nginx.WorkerProcesses,
-		ctx.paths.Config,
+		ctx.paths.Base,
 		p.getErrorLogPath(ctx.paths, logs),
 		cfg.Nginx.WorkerConnections,
 		cfg.Nginx.DefaultContentType,

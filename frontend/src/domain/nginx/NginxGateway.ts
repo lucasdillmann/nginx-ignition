@@ -29,7 +29,7 @@ export default class NginxGateway {
         return this.client.get("/logs", undefined, { lines })
     }
 
-    async configFiles(configPath: string, logPath: string): Promise<ApiResponse<any>> {
-        return this.client.get("/config", undefined, { configPath, logPath }, true)
+    async configFiles(basePath: string, configPath: string, logPath: string): Promise<ApiResponse<any>> {
+        return this.client.get("/config", undefined, { basePath, configPath, logPath }, true)
     }
 }

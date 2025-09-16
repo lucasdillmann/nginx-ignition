@@ -120,8 +120,9 @@ func (s *service) attachListeners() {
 	}
 }
 
-func (s *service) getConfigFilesZipFile(ctx context.Context, configPath, logPath string) ([]byte, error) {
+func (s *service) getConfigFilesZipFile(ctx context.Context, basePath, configPath, logPath string) ([]byte, error) {
 	paths := &cfgfiles.Paths{
+		Base:   basePath,
 		Config: configPath,
 		Logs:   logPath,
 	}
