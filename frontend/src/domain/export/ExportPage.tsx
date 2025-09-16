@@ -93,7 +93,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                 <Flex className="export-guide-section-content" vertical>
                     <Flex className="export-guide-section-title">
                         <h2>
-                            <FileZipOutlined /> nginx configuration files
+                            <FileZipOutlined /> nginx configuration
                         </h2>
                         <div className="export-guide-section-action">
                             <Button

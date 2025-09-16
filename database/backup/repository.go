@@ -73,7 +73,7 @@ func (r *repository) getPostgresBackup() (*backup.Backup, error) {
 	defer os.Remove(tempFile.Name())
 	defer tempFile.Close()
 
-	dumper := pgdump.NewDumper(r.db.ConnectionString(), 10)
+	dumper := pgdump.NewDumper(r.db.ConnectionString(), 1)
 	if err := dumper.DumpDatabase(tempFile.Name(), &pgdump.TableOptions{}); err != nil {
 		return nil, err
 	}

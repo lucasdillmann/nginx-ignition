@@ -17,7 +17,10 @@ linters:
     - revive
     - unconvert
     - unparam
+    - govet
   settings:
+    govet:
+      enable-all: true
     dupl:
       threshold: 100
     errcheck:

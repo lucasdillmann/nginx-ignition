@@ -15,8 +15,8 @@ import (
 )
 
 type Adapter struct {
-	cacheDuration int
 	client        *client.Client
+	cacheDuration int
 }
 
 func newAdapter(configuration *configuration.Configuration) (*Adapter, error) {
