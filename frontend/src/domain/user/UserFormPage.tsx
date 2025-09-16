@@ -203,7 +203,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     <UserPermissionToggle
                         value={permissions.exportData}
                         onChange={value => this.updatePermission("exportData", value)}
-                        label="Export settings and files"
+                        label="Export and backup"
                         disableReadWrite
                     />
                     <UserPermissionToggle

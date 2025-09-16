@@ -1,0 +1,41 @@
+.export-guide-header-container {
+    background: var(--nginxIgnition-colorBgLayout);
+    padding: 120px 40px;
+    margin-bottom: 50px;
+}
+
+.export-guide-container .export-guide-section-title {
+    margin-top: 20px;
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.export-guide-container h2 {
+    font-size: 28px;
+    display: flex;
+    flex-grow: 1;
+}
+
+.export-guide-container h2 span {
+    margin-right: 10px;
+}
+
+.export-guide-container p {
+    font-size: 16px;
+    margin: 10px 0;
+    padding: 0;
+}
+
+.export-guide-container .export-guide-section-action {
+    align-content: space-evenly;
+}
+
+.export-guide-section {
+    margin-bottom: 40px;
+    padding: 0 40px;
+}
+
+.export-guide-section-content {
+    flex-grow: 1;
+    width: 60%;
+}

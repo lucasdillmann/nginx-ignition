@@ -7,8 +7,8 @@ export default class ExportService {
         this.nginxGateway = new NginxGateway()
     }
 
-    downloadNginxConfigurationFiles() {
-        this.nginxGateway
+    async downloadNginxConfigurationFiles(): Promise<void> {
+        return this.nginxGateway
             .configFiles()
             .then(response => response.raw.blob())
             .then(blob => {
@@ -24,8 +24,9 @@ export default class ExportService {
                 document.body.removeChild(link)
                 window.URL.revokeObjectURL(downloadUrl)
             })
-            .catch(error => {
-                console.error("Download failed:", error)
-            })
+    }
+
+    async downloadDatabaseBackup(): Promise<void> {
+        return Promise.reject(new Error("Not implemented yet"))
     }
 }
