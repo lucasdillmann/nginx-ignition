@@ -50,7 +50,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     hosts: UserAccessLevel.READ_WRITE,
                     streams: UserAccessLevel.READ_WRITE,
                     certificates: UserAccessLevel.READ_WRITE,
-                    logs: UserAccessLevel.READ_WRITE,
+                    logs: UserAccessLevel.READ_ONLY,
                     integrations: UserAccessLevel.READ_WRITE,
                     accessLists: UserAccessLevel.READ_WRITE,
                     settings: UserAccessLevel.READ_WRITE,
