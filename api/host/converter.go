@@ -291,6 +291,7 @@ func getMapValue(value *map[string]string) map[string]string {
 	if value == nil {
 		return nil
 	}
+
 	return *value
 }
 

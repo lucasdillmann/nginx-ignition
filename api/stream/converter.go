@@ -69,6 +69,7 @@ func toBackend(backend *backendDto) *stream.Backend {
 	if backend == nil {
 		return nil
 	}
+
 	return &stream.Backend{
 		Weight:         backend.Weight,
 		Address:        *toAddress(backend.Target),
@@ -80,6 +81,7 @@ func toCircuitBreaker(input *circuitBreakerDto) *stream.CircuitBreaker {
 	if input == nil {
 		return nil
 	}
+
 	return &stream.CircuitBreaker{
 		MaxFailures: getIntValue(input.MaxFailures),
 		OpenSeconds: getIntValue(input.OpenSeconds),
@@ -90,6 +92,7 @@ func toCircuitBreakerDto(input *stream.CircuitBreaker) *circuitBreakerDto {
 	if input == nil {
 		return nil
 	}
+
 	return &circuitBreakerDto{
 		MaxFailures: &input.MaxFailures,
 		OpenSeconds: &input.OpenSeconds,
