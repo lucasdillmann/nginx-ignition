@@ -11,7 +11,6 @@ func toDto(input *stream.Stream) *streamResponseDto {
 		return nil
 	}
 
-	routes := toRouteDtos(input.Routes)
 	return &streamResponseDto{
 		ID:             &input.ID,
 		Enabled:        &input.Enabled,
@@ -20,7 +19,7 @@ func toDto(input *stream.Stream) *streamResponseDto {
 		FeatureSet:     toFeatureSetDto(&input.FeatureSet),
 		DefaultBackend: toBackendDto(&input.DefaultBackend),
 		Binding:        toAddressDto(&input.Binding),
-		Routes:         routes,
+		Routes:         toRouteDtos(input.Routes),
 	}
 }
 
@@ -212,5 +211,6 @@ func getIntValue(value *int) int {
 	if value == nil {
 		return 0
 	}
+
 	return *value
 }
