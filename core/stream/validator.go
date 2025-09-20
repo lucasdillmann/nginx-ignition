@@ -69,7 +69,7 @@ func (v *validator) validateRoutes(stream *Stream) {
 		return
 	}
 
-	if stream.Routes == nil || len(stream.Routes) == 0 {
+	if len(stream.Routes) == 0 {
 		v.delegate.Add("routes", "Must be informed and not be empty when type is SNI_ROUTER")
 		return
 	}
@@ -82,7 +82,7 @@ func (v *validator) validateRoutes(stream *Stream) {
 func (v *validator) validateRoute(route *Route, index int) {
 	prefix := "routes[" + strconv.Itoa(index) + "]"
 
-	if route.DomainNames == nil || len(route.DomainNames) == 0 {
+	if len(route.DomainNames) == 0 {
 		v.delegate.Add(prefix+".domainNames", "Route must have at least one domain")
 	} else {
 		for domainNameIndex, domainName := range route.DomainNames {
@@ -90,7 +90,7 @@ func (v *validator) validateRoute(route *Route, index int) {
 		}
 	}
 
-	if route.Backends == nil || len(route.Backends) == 0 {
+	if len(route.Backends) == 0 {
 		v.delegate.Add(prefix+".backends", "Route must have at least one backend")
 	} else {
 		for backendIndex, backend := range route.Backends {
@@ -161,7 +161,7 @@ func (v *validator) validateAddressValue(fieldPrefix string, address Address) {
 	path := fieldPrefix + ".target"
 
 	if strings.TrimSpace(address.Address) == "" {
-		v.delegate.Add(path, "target cannot be empty")
+		v.delegate.Add(path, "address cannot be empty")
 		return
 	}
 

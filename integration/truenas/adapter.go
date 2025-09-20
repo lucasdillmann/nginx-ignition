@@ -126,7 +126,7 @@ func (a *Adapter) GetOptionProxyUrl(
 		return nil, err
 	}
 
-	if port == nil || port.HostPorts == nil || len(port.HostPorts) == 0 {
+	if port == nil || len(port.HostPorts) == 0 {
 		return nil, fmt.Errorf("unable to resolve proxy URL for %s: service is probably offline/stopped", id)
 	}
 

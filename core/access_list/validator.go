@@ -67,7 +67,7 @@ func (v *validator) validateEntry(
 
 		v.delegate.Add(
 			path+".sourceAddress["+strconv.Itoa(addressIndex)+"]",
-			"target \""+*address+"\" is not a valid IPv4 or IPv6 address or range",
+			"Address \""+*address+"\" is not a valid IPv4 or IPv6 address or range",
 		)
 	}
 }

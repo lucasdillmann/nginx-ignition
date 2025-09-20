@@ -100,6 +100,7 @@ func toBackendDto(input *stream.Backend) *backendDto {
 	if input == nil {
 		return nil
 	}
+
 	return &backendDto{
 		Weight:         input.Weight,
 		Target:         toAddressDto(&input.Address),
