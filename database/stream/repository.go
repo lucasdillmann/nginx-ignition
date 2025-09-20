@@ -6,11 +6,19 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/uptrace/bun"
 
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/stream"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
+)
+
+const (
+	byStreamIdFilter           = "stream_id = ?"
+	byStreamRouteIdFilter      = "stream_route_id = ?"
+	byStreamRouteIdArrayFilter = "stream_route_id IN (?)"
+	byIdArrayFilter            = "id IN (?)"
 )
 
 type repository struct {
@@ -39,7 +47,13 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*stream.Stream
 		return nil, err
 	}
 
-	return toDomain(&model), nil
+	domain := toDomain(&model)
+	err = r.fillLinkedModels(ctx, domain)
+	if err != nil {
+		return nil, err
+	}
+
+	return domain, nil
 }
 
 func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
@@ -50,7 +64,13 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	defer transaction.Rollback()
 
-	_, err = transaction.NewDelete().
+	err = r.cleanupLinkedModels(ctx, transaction, id)
+	if err != nil {
+		return err
+	}
+
+	_, err = transaction.
+		NewDelete().
 		Model((*streamModel)(nil)).
 		Where(constants.ByIdFilter, id).
 		Exec(ctx)
@@ -63,6 +83,11 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 }
 
 func (r *repository) Save(ctx context.Context, stream *stream.Stream) error {
+	exists, err := r.ExistsByID(ctx, stream.ID)
+	if err != nil {
+		return err
+	}
+
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -72,17 +97,17 @@ func (r *repository) Save(ctx context.Context, stream *stream.Stream) error {
 
 	model := toModel(stream)
 
-	exists, err := transaction.NewSelect().Model((*streamModel)(nil)).Where(constants.ByIdFilter, stream.ID).Exists(ctx)
-	if err != nil {
-		return err
-	}
-
 	if exists {
 		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(model).Exec(ctx)
 	}
 
+	if err != nil {
+		return err
+	}
+
+	err = r.saveLinkedModels(ctx, transaction, stream)
 	if err != nil {
 		return err
 	}
@@ -119,7 +144,13 @@ func (r *repository) FindPage(
 
 	var result []*stream.Stream
 	for _, model := range models {
-		result = append(result, toDomain(&model))
+		domainValue := toDomain(&model)
+		err = r.fillLinkedModels(ctx, domainValue)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, domainValue)
 	}
 
 	return pagination.New(pageNumber, pageSize, count, result), nil
@@ -139,7 +170,13 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]*stream.Stream, erro
 
 	var result []*stream.Stream
 	for _, model := range models {
-		result = append(result, toDomain(&model))
+		domainValue := toDomain(&model)
+		err = r.fillLinkedModels(ctx, domainValue)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, domainValue)
 	}
 
 	return result, nil
@@ -156,4 +193,117 @@ func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error)
 	}
 
 	return count > 0, nil
+}
+
+func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx, id uuid.UUID) error {
+	_, err := transaction.
+		NewDelete().
+		Table("stream_backend").
+		Where(byStreamIdFilter, id).
+		Exec(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	var routeIDs []uuid.UUID
+	err = transaction.
+		NewSelect().
+		Table("stream_route").
+		Column("id").
+		Where(byStreamIdFilter, id).
+		Scan(ctx, &routeIDs)
+
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return err
+	}
+
+	_, err = transaction.
+		NewDelete().
+		Table("stream_backend").
+		Where(byStreamRouteIdArrayFilter, routeIDs).
+		Exec(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = transaction.
+		NewDelete().
+		Table("stream_route").
+		Where(byIdArrayFilter, routeIDs).
+		Exec(ctx)
+
+	return err
+}
+
+func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, stream *stream.Stream) error {
+	err := r.cleanupLinkedModels(ctx, transaction, stream.ID)
+	if err != nil {
+		return err
+	}
+
+	for _, route := range stream.Routes {
+		routeModel := toModelRoute(&route, stream.ID)
+
+		_, err = transaction.NewInsert().Model(routeModel).Exec(ctx)
+		if err != nil {
+			return err
+		}
+
+		for _, backend := range route.Backends {
+			backendModel := toModelBackend(&backend, nil, &routeModel.ID)
+
+			_, err = transaction.NewInsert().Model(backendModel).Exec(ctx)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	defaultBackendModel := toModelBackend(&stream.DefaultBackend, &stream.ID, nil)
+	_, err = transaction.NewInsert().Model(defaultBackendModel).Exec(ctx)
+
+	return err
+}
+
+func (r *repository) fillLinkedModels(ctx context.Context, stream *stream.Stream) error {
+	var routeModels []streamRouteModel
+	err := r.database.Select().
+		Model(&routeModels).
+		Where(byStreamIdFilter, stream.ID).
+		Scan(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	for _, routeModel := range routeModels {
+		var backendModels []streamBackendModel
+		err = r.database.
+			Select().
+			Model(&backendModels).
+			Where(byStreamRouteIdFilter, routeModel.ID).
+			Scan(ctx)
+
+		if err != nil {
+			return err
+		}
+
+		stream.Routes = append(stream.Routes, *toDomainRoute(&routeModel, backendModels))
+	}
+
+	var defaultBackendModel streamBackendModel
+	err = r.database.
+		Select().
+		Model(&defaultBackendModel).
+		Where(byStreamIdFilter, stream.ID).
+		Scan(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	stream.DefaultBackend = *toDomainBackend(&defaultBackendModel)
+	return nil
 }

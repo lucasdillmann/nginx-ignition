@@ -33,8 +33,10 @@ func (v *validator) validate(_ context.Context, stream *Stream) error {
 	}
 
 	v.validateName(stream)
+	v.validateType(stream)
 	v.validateBinding(stream)
-	v.validateBackend(stream)
+	v.validateDefaultBackend(stream)
+	v.validateRoutes(stream)
 	v.validateFeatureSet(stream)
 
 	return v.delegate.Result()
@@ -46,12 +48,77 @@ func (v *validator) validateName(stream *Stream) {
 	}
 }
 
+func (v *validator) validateType(stream *Stream) {
+	switch stream.Type {
+	case SimpleType, SNIRouterType:
+	default:
+		v.delegate.Add("type", invalidValue)
+	}
+}
+
 func (v *validator) validateBinding(stream *Stream) {
 	v.validateAddress("binding", stream.Binding)
 }
 
-func (v *validator) validateBackend(stream *Stream) {
-	v.validateAddress("backend", stream.Backend)
+func (v *validator) validateDefaultBackend(stream *Stream) {
+	v.validateAddress("defaultBackend", stream.DefaultBackend.Address)
+	v.validateCircuitBreaker("defaultBackend.circuitBreaker", stream.DefaultBackend.CircuitBreaker)
+}
+
+func (v *validator) validateRoutes(stream *Stream) {
+	if stream.Type != SNIRouterType {
+		return
+	}
+
+	if stream.Routes == nil || len(stream.Routes) == 0 {
+		v.delegate.Add("routes", "Must be informed and not be empty when type is SNI_ROUTER")
+		return
+	}
+
+	for index := range stream.Routes {
+		v.validateRoute(&stream.Routes[index], index)
+	}
+}
+
+func (v *validator) validateRoute(route *Route, index int) {
+	prefix := "routes[" + strconv.Itoa(index) + "]"
+	domain := strings.TrimSpace(route.DomainName)
+
+	if domain == "" {
+		v.delegate.Add(prefix+".domainName", "Domain name cannot be empty")
+	} else if !constants.TLDPattern.MatchString(domain) {
+		v.delegate.Add(prefix+".domainName", "Not a valid DNS domain name")
+	}
+
+	if route.Backends == nil || len(route.Backends) == 0 {
+		v.delegate.Add(prefix+".backends", "Route must have at least one backend")
+		return
+	}
+
+	for backendIndex := range route.Backends {
+		v.validateBackend(&route.Backends[backendIndex], prefix, backendIndex)
+	}
+}
+
+func (v *validator) validateBackend(backend *Backend, routePrefix string, index int) {
+	prefix := routePrefix + ".backends[" + strconv.Itoa(index) + "]"
+
+	v.validateAddress(prefix+".address", backend.Address)
+	v.validateCircuitBreaker(prefix+".circuitBreaker", backend.CircuitBreaker)
+}
+
+func (v *validator) validateCircuitBreaker(prefix string, circuitBreaker *CircuitBreaker) {
+	if circuitBreaker == nil {
+		return
+	}
+
+	if circuitBreaker.MaxFailures < 1 {
+		v.delegate.Add(prefix+".maxFailures", "Value must be greater than or equal to 1")
+	}
+
+	if circuitBreaker.OpenSeconds < 0 {
+		v.delegate.Add(prefix+".openSeconds", "Value must be greater than or equal to 0")
+	}
 }
 
 func (v *validator) validateAddress(fieldPrefix string, address Address) {

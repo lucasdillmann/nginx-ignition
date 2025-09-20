@@ -10,13 +10,38 @@ const (
 	SocketProtocol Protocol = "SOCKET"
 )
 
+type Type string
+
+const (
+	SimpleType    Type = "SIMPLE"
+	SNIRouterType Type = "SNI_ROUTER"
+)
+
 type Stream struct {
-	ID         uuid.UUID
-	Enabled    bool
-	Name       string
-	Binding    Address
-	Backend    Address
-	FeatureSet FeatureSet
+	ID             uuid.UUID
+	Enabled        bool
+	Name           string
+	Type           Type
+	Routes         []Route
+	Binding        Address
+	DefaultBackend Backend
+	FeatureSet     FeatureSet
+}
+
+type Route struct {
+	DomainName string
+	Backends   []Backend
+}
+
+type Backend struct {
+	Weight         *int
+	Address        Address
+	CircuitBreaker *CircuitBreaker
+}
+
+type CircuitBreaker struct {
+	MaxFailures int
+	OpenSeconds int
 }
 
 type Address struct {
