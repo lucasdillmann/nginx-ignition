@@ -27,25 +27,10 @@ create index stream_route_stream_id_idx on stream_route (stream_id);
 create index stream_backend_stream_id_idx on stream_backend (stream_id);
 create index stream_backend_stream_route_id_idx on stream_backend (stream_route_id);
 
+insert into stream_backend (id, stream_id, protocol, address, port)
+select id, id, backend_protocol, backend_address, backend_port from stream;
+
 alter table stream add column type varchar(64) not null default 'SIMPLE';
-
-do $$
-declare
-    row record;
-begin
-    for row in select * from stream
-    loop
-        insert into stream_backend (id, stream_id, protocol, address, port)
-        values (
-            row.id,
-            row.id,
-            row.backend_protocol,
-            row.backend_address,
-            row.backend_port
-        );
-    end loop;
-end $$;
-
 alter table stream drop column backend_protocol;
 alter table stream drop column backend_address;
 alter table stream drop column backend_port;
