@@ -139,7 +139,10 @@ func (p *streamFileProvider) buildRoutedStream(s *stream.Stream) (*string, error
 		}
 
 		upstreams.WriteString(*upstream + "\n")
-		mapping.WriteString(fmt.Sprintf("%s %s;\n", route.DomainName, routeId))
+
+		for _, domainName := range route.DomainNames {
+			mapping.WriteString(fmt.Sprintf("%s %s;\n", domainName, routeId))
+		}
 	}
 
 	defaultUpstreamId := fmt.Sprintf("stream_%s_default", s.ID)

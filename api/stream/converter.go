@@ -115,8 +115,8 @@ func toRouteDtos(input []stream.Route) *[]routeDto {
 	output := make([]routeDto, len(input))
 	for index := range input {
 		output[index] = routeDto{
-			DomainName: &input[index].DomainName,
-			Backends:   toBackendDtos(input[index].Backends),
+			DomainNames: &input[index].DomainNames,
+			Backends:    toBackendDtos(input[index].Backends),
 		}
 	}
 
@@ -144,8 +144,8 @@ func toRoutes(input *[]routeDto) []stream.Route {
 	output := make([]stream.Route, len(*input))
 	for index := range *input {
 		output[index] = stream.Route{
-			DomainName: getStringValue((*input)[index].DomainName),
-			Backends:   toBackends((*input)[index].Backends),
+			DomainNames: getStringArrayValue((*input)[index].DomainNames),
+			Backends:    toBackends((*input)[index].Backends),
 		}
 	}
 
@@ -202,6 +202,14 @@ func getBoolValue(value *bool) bool {
 func getStringValue(value *string) string {
 	if value == nil {
 		return ""
+	}
+
+	return *value
+}
+
+func getStringArrayValue(value *[]string) []string {
+	if value == nil {
+		return []string{}
 	}
 
 	return *value

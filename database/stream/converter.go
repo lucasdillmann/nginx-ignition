@@ -67,8 +67,8 @@ func toDomainRoute(model *streamRouteModel, backendModels []streamBackendModel) 
 	}
 
 	return &stream.Route{
-		DomainName: model.DomainName,
-		Backends:   backends,
+		DomainNames: model.DomainNames,
+		Backends:    backends,
 	}
 }
 
@@ -123,8 +123,8 @@ func toModelRoute(route *stream.Route, streamId uuid.UUID) *streamRouteModel {
 	}
 
 	return &streamRouteModel{
-		ID:         uuid.New(),
-		StreamID:   streamId,
-		DomainName: route.DomainName,
+		ID:          uuid.New(),
+		StreamID:    streamId,
+		DomainNames: route.DomainNames,
 	}
 }

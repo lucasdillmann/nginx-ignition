@@ -81,21 +81,31 @@ func (v *validator) validateRoutes(stream *Stream) {
 
 func (v *validator) validateRoute(route *Route, index int) {
 	prefix := "routes[" + strconv.Itoa(index) + "]"
-	domain := strings.TrimSpace(route.DomainName)
 
-	if domain == "" {
-		v.delegate.Add(prefix+".domainName", "Domain name cannot be empty")
-	} else if !constants.TLDPattern.MatchString(domain) {
-		v.delegate.Add(prefix+".domainName", "Not a valid DNS domain name")
+	if route.DomainNames == nil || len(route.DomainNames) == 0 {
+		v.delegate.Add(prefix+".domainNames", "Route must have at least one domain")
+	} else {
+		for domainNameIndex, domainName := range route.DomainNames {
+			v.validateDomainName(domainName, prefix, domainNameIndex)
+		}
 	}
 
 	if route.Backends == nil || len(route.Backends) == 0 {
 		v.delegate.Add(prefix+".backends", "Route must have at least one backend")
-		return
+	} else {
+		for backendIndex, backend := range route.Backends {
+			v.validateBackend(&backend, prefix, backendIndex)
+		}
 	}
+}
 
-	for backendIndex := range route.Backends {
-		v.validateBackend(&route.Backends[backendIndex], prefix, backendIndex)
+func (v *validator) validateDomainName(domain, prefix string, index int) {
+	domainPrefix := prefix + ".domainNames[" + strconv.Itoa(index) + "]"
+
+	if domain == "" {
+		v.delegate.Add(domainPrefix, "Domain cannot be empty")
+	} else if !constants.TLDPattern.MatchString(domain) {
+		v.delegate.Add(domainPrefix, "Not a valid DNS domain name")
 	}
 }
 

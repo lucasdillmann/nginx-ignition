@@ -29,8 +29,8 @@ type Stream struct {
 }
 
 type Route struct {
-	DomainName string
-	Backends   []Backend
+	DomainNames []string
+	Backends    []Backend
 }
 
 type Backend struct {

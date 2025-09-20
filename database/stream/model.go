@@ -25,9 +25,9 @@ type streamModel struct {
 type streamRouteModel struct {
 	bun.BaseModel `bun:"stream_route"`
 
-	ID         uuid.UUID `bun:"id,pk"`
-	StreamID   uuid.UUID `bun:"stream_id,notnull"`
-	DomainName string    `bun:"domain_name,notnull"`
+	ID          uuid.UUID `bun:"id,pk"`
+	StreamID    uuid.UUID `bun:"stream_id,notnull"`
+	DomainNames []string  `bun:"domain_names,array,notnull"`
 }
 
 type streamBackendModel struct {

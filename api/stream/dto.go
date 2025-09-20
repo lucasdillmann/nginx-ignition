@@ -42,8 +42,8 @@ type circuitBreakerDto struct {
 }
 
 type routeDto struct {
-	DomainName *string       `json:"domainName" validate:"required"`
-	Backends   *[]backendDto `json:"backends" validate:"required"`
+	DomainNames *[]string     `json:"domainNames" validate:"required"`
+	Backends    *[]backendDto `json:"backends" validate:"required"`
 }
 
 type streamResponseDto struct {

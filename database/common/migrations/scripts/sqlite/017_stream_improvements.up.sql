@@ -1,10 +1,10 @@
 create table stream_route (
     id uuid not null,
     stream_id uuid not null,
-    domain_name varchar(256) not null,
+    domain_names varchar array not null,
     constraint stream_route_pk primary key (id),
     constraint stream_route_stream_id_fk foreign key (stream_id) references stream (id),
-    constraint stream_domain_name_uk unique (stream_id, domain_name)
+    constraint stream_domain_name_uk unique (stream_id, domain_names)
 );
 
 create table stream_backend (
