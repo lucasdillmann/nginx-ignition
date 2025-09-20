@@ -2,7 +2,6 @@ package stream
 
 import (
 	"context"
-	"net"
 	"strconv"
 	"strings"
 
@@ -103,7 +102,7 @@ func (v *validator) validateRoute(route *Route, index int) {
 func (v *validator) validateBackend(backend *Backend, routePrefix string, index int) {
 	prefix := routePrefix + ".backends[" + strconv.Itoa(index) + "]"
 
-	v.validateAddress(prefix+".address", backend.Address)
+	v.validateAddress(prefix+".target", backend.Address)
 	v.validateCircuitBreaker(prefix+".circuitBreaker", backend.CircuitBreaker)
 }
 
@@ -145,27 +144,20 @@ func (v *validator) validateAddressProtocol(fieldPrefix string, address Address)
 		}
 	} else if address.Port != nil {
 		v.delegate.Add(fieldPrefix+".port", "Port should not be specified when using the Socket protocol")
-
 	}
 }
 
 func (v *validator) validateAddressValue(fieldPrefix string, address Address) {
-	path := fieldPrefix + ".address"
+	path := fieldPrefix + ".target"
 
 	if strings.TrimSpace(address.Address) == "" {
-		v.delegate.Add(path, "Address cannot be empty")
+		v.delegate.Add(path, "target cannot be empty")
 		return
 	}
 
 	if address.Protocol == SocketProtocol && !strings.HasPrefix(address.Address, "/") {
 		v.delegate.Add(path, "Unix socket path must start with a /")
 		return
-	}
-
-	if address.Protocol != SocketProtocol &&
-		net.ParseIP(address.Address) == nil &&
-		!constants.TLDPattern.MatchString(address.Address) {
-		v.delegate.Add(path, "Not a valid IP address or domain name")
 	}
 }
 

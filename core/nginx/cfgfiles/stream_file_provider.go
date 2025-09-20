@@ -34,42 +34,24 @@ func (p *streamFileProvider) provide(ctx *providerContext) ([]File, error) {
 }
 
 func (p *streamFileProvider) buildConfigFileContents(s *stream.Stream) (*string, error) {
-	binding, err := p.buildBinding(s)
+	switch s.Type {
+	case stream.SimpleType:
+		return p.buildSimpleStream(s)
+	case stream.SNIRouterType:
+		return p.buildRoutedStream(s)
+	default:
+		return nil, fmt.Errorf("unknown stream type: %s", s.Type)
+	}
+}
+
+func (p *streamFileProvider) buildSimpleStream(s *stream.Stream) (*string, error) {
+	upstreamId := fmt.Sprintf("stream_%s_default", s.ID)
+	upstream, err := p.buildUpstream([]stream.Backend{s.DefaultBackend}, upstreamId)
 	if err != nil {
 		return nil, err
 	}
 
-	backend, err := p.buildBackend(s)
-	if err != nil {
-		return nil, err
-	}
-
-	tcpNoDelay := ""
-	if s.Binding.Protocol == stream.TCPProtocol && s.FeatureSet.TCPNoDelay {
-		tcpNoDelay = "tcp_nodelay on;"
-	}
-
-	socketKeepAlive := ""
-	if s.FeatureSet.SocketKeepAlive {
-		socketKeepAlive = "proxy_socket_keepalive on;"
-	}
-
-	contents := fmt.Sprintf(
-		`
-		server {
-			%s
-			%s
-			%s
-			%s
-		}
-		`,
-		*binding,
-		*backend,
-		tcpNoDelay,
-		socketKeepAlive,
-	)
-
-	return &contents, nil
+	return p.buildStream(s, *upstream, fmt.Sprintf("proxy_pass %s;", upstreamId))
 }
 
 func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
@@ -107,22 +89,110 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 	return ptr.String(instruction.String()), nil
 }
 
-func (p *streamFileProvider) buildBackend(s *stream.Stream) (*string, error) {
-	instruction := strings.Builder{}
-	instruction.WriteString("proxy_pass ")
+func (p *streamFileProvider) buildUpstream(backends []stream.Backend, name string) (*string, error) {
+	instructions := strings.Builder{}
+	instructions.WriteString(fmt.Sprintf("upstream %s {\n", name))
 
-	switch s.Backend.Protocol {
-	case stream.SocketProtocol:
-		instruction.WriteString(fmt.Sprintf("unix:%s", s.Backend.Address))
+	for _, backend := range backends {
+		address := backend.Address
+		switch address.Protocol {
+		case stream.SocketProtocol:
+			instructions.WriteString(fmt.Sprintf("server unix:%s", address.Address))
 
-	case stream.TCPProtocol, stream.UDPProtocol:
-		instruction.WriteString(fmt.Sprintf("%s:%d", s.Backend.Address, *s.Backend.Port))
+		case stream.TCPProtocol, stream.UDPProtocol:
+			instructions.WriteString(fmt.Sprintf("server %s:%d", address.Address, *address.Port))
 
-	default:
-		return nil, fmt.Errorf("unknown backend protocol: %s", s.Backend.Protocol)
+		default:
+			return nil, fmt.Errorf("unknown backend protocol: %s", address.Protocol)
+		}
+
+		if backend.Weight != nil {
+			instructions.WriteString(fmt.Sprintf(" weight=%d", *backend.Weight))
+		}
+
+		if backend.CircuitBreaker != nil {
+			instructions.WriteString(fmt.Sprintf(
+				" max_fails=%d fail_timeout=%ds",
+				backend.CircuitBreaker.MaxFailures,
+				backend.CircuitBreaker.OpenSeconds,
+			))
+		}
+
+		instructions.WriteString(";\n")
 	}
 
-	instruction.WriteString(";")
+	instructions.WriteString("}\n")
+	return ptr.String(instructions.String()), nil
+}
 
-	return ptr.String(instruction.String()), nil
+func (p *streamFileProvider) buildRoutedStream(s *stream.Stream) (*string, error) {
+	mapping := strings.Builder{}
+	mappingId := fmt.Sprintf("$stream_%s_router", s.ID)
+	mapping.WriteString(fmt.Sprintf("map $ssl_preread_server_name %s {\n", mappingId))
+
+	upstreams := strings.Builder{}
+	for routeIndex, route := range s.Routes {
+		routeId := fmt.Sprintf("stream_%s_route_%d", s.ID, routeIndex)
+		upstream, err := p.buildUpstream(route.Backends, routeId)
+		if err != nil {
+			return nil, err
+		}
+
+		upstreams.WriteString(*upstream + "\n")
+		mapping.WriteString(fmt.Sprintf("%s %s;\n", route.DomainName, routeId))
+	}
+
+	defaultUpstreamId := fmt.Sprintf("stream_%s_default", s.ID)
+	defaultUpstream, err := p.buildUpstream([]stream.Backend{s.DefaultBackend}, defaultUpstreamId)
+	if err != nil {
+		return nil, err
+	}
+
+	upstreams.WriteString(*defaultUpstream + "\n")
+	mapping.WriteString(fmt.Sprintf("default %s;\n}", defaultUpstreamId))
+	instructions := fmt.Sprintf(
+		`
+			ssl_preread on;
+			proxy_pass %s;
+		`,
+		mappingId,
+	)
+	return p.buildStream(s, upstreams.String()+mapping.String(), instructions)
+}
+
+func (p *streamFileProvider) buildStream(s *stream.Stream, upstreams, instructions string) (*string, error) {
+	binding, err := p.buildBinding(s)
+	if err != nil {
+		return nil, err
+	}
+
+	tcpNoDelay := ""
+	if s.Binding.Protocol == stream.TCPProtocol && s.FeatureSet.TCPNoDelay {
+		tcpNoDelay = "tcp_nodelay on;"
+	}
+
+	socketKeepAlive := ""
+	if s.FeatureSet.SocketKeepAlive {
+		socketKeepAlive = "proxy_socket_keepalive on;"
+	}
+
+	contents := fmt.Sprintf(
+		`
+		%s 
+
+		server {
+			%s
+			%s
+			%s
+			%s
+		}
+		`,
+		upstreams,
+		*binding,
+		tcpNoDelay,
+		socketKeepAlive,
+		instructions,
+	)
+
+	return &contents, nil
 }

@@ -17,8 +17,8 @@ import (
 const (
 	byStreamIdFilter           = "stream_id = ?"
 	byStreamRouteIdFilter      = "stream_route_id = ?"
-	byStreamRouteIdArrayFilter = "stream_route_id IN (?)"
-	byIdArrayFilter            = "id IN (?)"
+	byStreamRouteIdArrayFilter = "stream_route_id in (?)"
+	byIdArrayFilter            = "id in (?)"
 )
 
 type repository struct {
@@ -218,21 +218,23 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 		return err
 	}
 
-	_, err = transaction.
-		NewDelete().
-		Table("stream_backend").
-		Where(byStreamRouteIdArrayFilter, routeIDs).
-		Exec(ctx)
+	if len(routeIDs) != 0 {
+		_, err = transaction.
+			NewDelete().
+			Table("stream_backend").
+			Where(byStreamRouteIdArrayFilter, bun.In(routeIDs)).
+			Exec(ctx)
 
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
+
+		_, err = transaction.
+			NewDelete().
+			Table("stream_route").
+			Where(byIdArrayFilter, bun.In(routeIDs)).
+			Exec(ctx)
 	}
-
-	_, err = transaction.
-		NewDelete().
-		Table("stream_route").
-		Where(byIdArrayFilter, routeIDs).
-		Exec(ctx)
 
 	return err
 }

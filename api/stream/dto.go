@@ -32,7 +32,7 @@ type addressDto struct {
 
 type backendDto struct {
 	Weight         *int               `json:"weight"`
-	Address        *addressDto        `json:"address" validate:"required"`
+	Target         *addressDto        `json:"Target" validate:"required"`
 	CircuitBreaker *circuitBreakerDto `json:"circuitBreaker"`
 }
 

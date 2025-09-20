@@ -71,7 +71,7 @@ func toBackend(backend *backendDto) *stream.Backend {
 	}
 	return &stream.Backend{
 		Weight:         backend.Weight,
-		Address:        *toAddress(backend.Address),
+		Address:        *toAddress(backend.Target),
 		CircuitBreaker: toCircuitBreaker(backend.CircuitBreaker),
 	}
 }
@@ -102,7 +102,7 @@ func toBackendDto(input *stream.Backend) *backendDto {
 	}
 	return &backendDto{
 		Weight:         input.Weight,
-		Address:        toAddressDto(&input.Address),
+		Target:         toAddressDto(&input.Address),
 		CircuitBreaker: toCircuitBreakerDto(input.CircuitBreaker),
 	}
 }
