@@ -1,6 +1,7 @@
 DOCKER_IMAGE ?= dillmann/nginx-ignition
 VERSION ?= 0.0.0
 PR_ID ?= 0
+SNAPSHOT_TAG_SUFFIX := $(if $(or $(filter 0,$(PR_ID)),$(filter ,$(PR_ID))),snapshot,pr-$(PR_ID)-snapshot)
 
 prerequisites:
 	go work sync
@@ -46,7 +47,7 @@ build-release-docker-image:
 
 build-snapshot-docker-image:
 	docker buildx build \
-		--tag $(DOCKER_IMAGE):pr-$(PR_ID)-snapshot \
+		--tag $(DOCKER_IMAGE):$(SNAPSHOT_TAG_SUFFIX) \
 		--platform linux/amd64,linux/arm64 \
 		--build-arg NGINX_IGNITION_VERSION="" \
 		--push .
