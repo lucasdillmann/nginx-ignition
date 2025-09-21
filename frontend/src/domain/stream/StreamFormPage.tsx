@@ -1,7 +1,7 @@
 import React from "react"
 import { navigateTo, routeParams } from "../../core/components/router/AppRouter"
 import StreamService from "./StreamService"
-import { Flex, Form, FormInstance, Input, Switch } from "antd"
+import { Flex, Form, FormInstance, Input, Segmented, Switch } from "antd"
 import Preloader from "../../core/components/preloader/Preloader"
 import FormLayout from "../../core/components/form/FormLayout"
 import ValidationResult from "../../core/validation/ValidationResult"
@@ -15,13 +15,15 @@ import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import DeleteStreamAction from "./actions/DeleteStreamAction"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
 import StreamFormDefaults from "./StreamFormDefaults"
-import StreamRequest, { StreamAddress, StreamProtocol } from "./model/StreamRequest"
+import StreamRequest, { StreamAddress, StreamProtocol, StreamType } from "./model/StreamRequest"
 import "./StreamFormPage.css"
 import StreamAddressInput from "./components/StreamAddressInput"
 import CompatibleStreamProtocolResolver from "./utils/CompatibleStreamProtocolResolver"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
+import { ArrowRightOutlined, QuestionCircleFilled, SwapOutlined } from "@ant-design/icons"
+import StreamTypeDescription from "./utils/StreamTypeDescription"
 
 interface StreamFormPageState {
     formValues: StreamRequest
@@ -102,11 +104,11 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
 
     private updateFormValues() {
         const { formValues } = this.state
-        const { backend, binding, featureSet } = formValues
+        const { defaultBackend, binding, featureSet } = formValues
 
-        this.syncAddressPort(backend)
+        this.syncAddressPort(defaultBackend.target)
         this.syncAddressPort(binding)
-        this.syncAddressProtocol(backend.protocol, binding)
+        this.syncAddressProtocol(defaultBackend.target.protocol, binding)
 
         if (binding.protocol !== StreamProtocol.TCP) {
             featureSet.tcpDeferred = false
@@ -145,6 +147,24 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
         })
     }
 
+    private buildTypeTooltipContents() {
+        return (
+            <>
+                <p>The type defines how the requests should be handled</p>
+                <p>
+                    <b>Simple:</b> Proxies requests to the backend server as-is, without any modifications or
+                    evaluations.
+                </p>
+                <p>
+                    <b>Domain-based router:</b> Uses the SNI (Server Name Indication) from the TLS protocol to detect
+                    the domain name requested by the client and routes the request to the corresponding backend server.
+                    Please note that this type of routing only works with TLS (like HTTPS) connections, all remaining
+                    connections will be forwarded to the default backend server.
+                </p>
+            </>
+        )
+    }
+
     private renderForm() {
         const { formValues, validationResult } = this.state
         const bindingTcp = formValues.binding.protocol === StreamProtocol.TCP
@@ -170,6 +190,33 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                             <Switch />
                         </Form.Item>
                         <Form.Item
+                            name="type"
+                            validateStatus={validationResult.getStatus("type")}
+                            help={validationResult.getMessage("type")}
+                            label="Type"
+                            tooltip={{
+                                title: this.buildTypeTooltipContents(),
+                                icon: <QuestionCircleFilled />,
+                            }}
+                            required
+                        >
+                            <Segmented
+                                options={[
+                                    {
+                                        label: StreamTypeDescription[StreamType.SIMPLE],
+                                        value: StreamType.SIMPLE,
+                                        icon: <ArrowRightOutlined />,
+                                    },
+                                    {
+                                        label: StreamTypeDescription[StreamType.SNI_ROUTER],
+                                        value: StreamType.SNI_ROUTER,
+                                        icon: <SwapOutlined />,
+                                    },
+                                ]}
+                                value={formValues.type}
+                            />
+                        </Form.Item>
+                        <Form.Item
                             name="name"
                             validateStatus={validationResult.getStatus("name")}
                             help={validationResult.getMessage("name")}
@@ -186,7 +233,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                         <StreamAddressInput
                             basePath="backend"
                             validationResult={validationResult}
-                            address={formValues.backend}
+                            address={formValues.defaultBackend.target}
                             onChange={value => this.handleChange("backend", value)}
                         />
 
@@ -199,7 +246,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                             validationResult={validationResult}
                             address={formValues.binding}
                             onChange={value => this.handleChange("binding", value)}
-                            parentProtocol={formValues.backend.protocol}
+                            parentProtocol={formValues.defaultBackend.target.protocol}
                         />
                     </Flex>
                     <Flex className="streams-form-inner-flex-container-column" style={{ maxWidth: "40%" }}>

@@ -19,6 +19,7 @@ WORKDIR /opt/nginx-ignition
 
 RUN mkdir data frontend migrations && \
     apk update && \
+    apk upgrade && \
     apk add nginx nginx-mod-http-js nginx-mod-http-lua nginx-mod-stream && \
     apk cache clean
 

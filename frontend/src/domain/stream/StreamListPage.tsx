@@ -15,6 +15,7 @@ import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
+import StreamTypeDescription from "./utils/StreamTypeDescription"
 
 export default class StreamListPage extends React.PureComponent {
     private readonly service: StreamService
@@ -59,16 +60,16 @@ export default class StreamListPage extends React.PureComponent {
                 renderer: item => item.name,
             },
             {
+                id: "binding.type",
+                description: "Type",
+                renderer: item => StreamTypeDescription[item.type],
+                width: 200,
+            },
+            {
                 id: "binding.address",
                 description: "Binding",
                 renderer: item => `${item.binding.address}:${item.binding.port}`,
-                width: 250,
-            },
-            {
-                id: "binding.protocol",
-                description: "Protocol",
-                renderer: item => item.binding.protocol,
-                width: 150,
+                width: 200,
             },
             {
                 id: "enabled",
