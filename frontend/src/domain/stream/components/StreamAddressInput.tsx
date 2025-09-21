@@ -63,7 +63,7 @@ export default class StreamAddressInput extends React.Component<StreamAddressInp
 
         return (
             <Form.Item validateStatus={validationStatus} noStyle>
-                <Space direction="vertical">
+                <Space direction="vertical" style={{ flexGrow: 1 }}>
                     <Space.Compact block>
                         <Select
                             value={address.protocol}

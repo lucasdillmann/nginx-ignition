@@ -3,7 +3,6 @@ import { navigateTo, routeParams } from "../../core/components/router/AppRouter"
 import StreamService from "./StreamService"
 import { Flex, Form, FormInstance, Input, Segmented, Switch } from "antd"
 import Preloader from "../../core/components/preloader/Preloader"
-import FormLayout from "../../core/components/form/FormLayout"
 import ValidationResult from "../../core/validation/ValidationResult"
 import ModalPreloader from "../../core/components/preloader/ModalPreloader"
 import Notification from "../../core/components/notification/Notification"
@@ -22,14 +21,19 @@ import CompatibleStreamProtocolResolver from "./utils/CompatibleStreamProtocolRe
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
-import { ArrowRightOutlined, QuestionCircleFilled, SwapOutlined } from "@ant-design/icons"
+import { ArrowRightOutlined, QuestionCircleFilled, SettingOutlined, SwapOutlined } from "@ant-design/icons"
 import StreamTypeDescription from "./utils/StreamTypeDescription"
+import If from "../../core/components/flowcontrol/If"
+import StreamBackendSettingsModal from "./components/StreamBackendSettingsModal"
+import FormLayout from "../../core/components/form/FormLayout"
 
 interface StreamFormPageState {
     formValues: StreamRequest
     validationResult: ValidationResult
     loading: boolean
     notFound: boolean
+    defaultBackendModalOpen: boolean
+    backendModalOpen?: { route: number; backend: number }
     error?: Error
 }
 
@@ -51,6 +55,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
             validationResult: new ValidationResult(),
             loading: true,
             notFound: false,
+            defaultBackendModalOpen: false,
         }
     }
 
@@ -90,13 +95,19 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
     }
 
     private handleChange(attribute: string, value: any) {
+        const newFormValues: any = { ...this.state.formValues }
+
+        if (attribute.includes(".")) {
+            const [path, subPath] = attribute.split(".")
+            newFormValues[path][subPath] = value
+        } else {
+            newFormValues[attribute] = value
+        }
+
         this.setState(
             current => ({
                 ...current,
-                formValues: {
-                    ...current.formValues,
-                    [attribute]: value,
-                },
+                formValues: newFormValues,
             }),
             () => this.updateFormValues(),
         )
@@ -165,6 +176,61 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
         )
     }
 
+    private changeDefaultBackendModalState(open: boolean) {
+        this.setState({ defaultBackendModalOpen: open })
+    }
+
+    private renderDefaultBackendForm(): React.ReactNode {
+        const { formValues, validationResult, defaultBackendModalOpen } = this.state
+        const { type } = formValues
+
+        const { title, subtitle } =
+            type == StreamType.SIMPLE
+                ? {
+                      title: "Backend",
+                      subtitle: "Address or socket file of the backing service that will reply to the requests",
+                  }
+                : {
+                      title: "Default backend",
+                      subtitle:
+                          "Address or socket file of the backing service that will reply to the requests when " +
+                          "either no SNI is available or no route matched the request",
+                  }
+
+        return (
+            <>
+                <h2 className="streams-form-section-name">{title}</h2>
+                <p className="streams-form-section-help-text">{subtitle}</p>
+                <Flex style={{ flexGrow: 1 }}>
+                    <Flex style={{ flexGrow: 1, alignContent: "center", flexShrink: 1 }}>
+                        <StreamAddressInput
+                            basePath="defaultBackend.target"
+                            validationResult={validationResult}
+                            address={formValues.defaultBackend.target}
+                            onChange={value => this.handleChange("defaultBackend.target", value)}
+                        />
+                    </Flex>
+                    <Flex style={{ marginLeft: "10px", flexShrink: 1 }}>
+                        <SettingOutlined onClick={() => this.changeDefaultBackendModalState(true)} size={10} />
+                    </Flex>
+                </Flex>
+                <StreamBackendSettingsModal
+                    backend={formValues.defaultBackend}
+                    open={defaultBackendModalOpen}
+                    validationBasePath="defaultBackend"
+                    validationResult={validationResult}
+                    onClose={() => this.changeDefaultBackendModalState(false)}
+                    onChange={value => this.handleChange("defaultBackend", value)}
+                    hideWeight
+                />
+            </>
+        )
+    }
+
+    private renderSniRouterForm(): React.ReactNode {
+        return <></>
+    }
+
     private renderForm() {
         const { formValues, validationResult } = this.state
         const bindingTcp = formValues.binding.protocol === StreamProtocol.TCP
@@ -226,16 +292,11 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                             <Input />
                         </Form.Item>
 
-                        <h2 className="streams-form-section-name">Backend</h2>
-                        <p className="streams-form-section-help-text">
-                            Address or socket file of the backing service that will reply to the requests
-                        </p>
-                        <StreamAddressInput
-                            basePath="backend"
-                            validationResult={validationResult}
-                            address={formValues.defaultBackend.target}
-                            onChange={value => this.handleChange("backend", value)}
-                        />
+                        <If condition={formValues.type === StreamType.SNI_ROUTER}>
+                            {() => this.renderSniRouterForm()}
+                        </If>
+
+                        {this.renderDefaultBackendForm()}
 
                         <h2 className="streams-form-section-name">Binding</h2>
                         <p className="streams-form-section-help-text">
