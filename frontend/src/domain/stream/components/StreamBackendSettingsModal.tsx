@@ -1,7 +1,8 @@
 import React from "react"
 import { Form, InputNumber, Modal, Switch } from "antd"
 import ValidationResult from "../../../core/validation/ValidationResult"
-import { StreamBackend, StreamCircuitBreaker } from "../model/StreamRequest"
+import { StreamBackend } from "../model/StreamRequest"
+import { StreamCircuitBreakerDefaults } from "../StreamFormDefaults"
 
 const FORM_INPUT_STYLE: React.CSSProperties = {
     paddingBottom: 20,
@@ -9,11 +10,6 @@ const FORM_INPUT_STYLE: React.CSSProperties = {
 
 const CIRCUIT_BREAKER_SPACING = {
     span: 7,
-}
-
-const DEFAULT_CIRCUIT_BREAKER: StreamCircuitBreaker = {
-    maxFailures: 5,
-    openSeconds: 30,
 }
 
 const HIDDEN_BUTTON_PROPS = {
@@ -65,7 +61,7 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
                     >
                         <Switch
                             onChange={value =>
-                                this.handleChange("circuitBreaker", value ? { ...DEFAULT_CIRCUIT_BREAKER } : null)
+                                this.handleChange("circuitBreaker", value ? { ...StreamCircuitBreakerDefaults } : null)
                             }
                             value={backend.circuitBreaker != null}
                         />

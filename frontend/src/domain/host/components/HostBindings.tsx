@@ -2,7 +2,7 @@ import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import { Button, Flex, Form, FormListFieldData, FormListOperation, Input, InputNumber, Select } from "antd"
 import If from "../../../core/components/flowcontrol/If"
-import { CloseOutlined, PlusOutlined } from "@ant-design/icons"
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons"
 import { HostFormBinding } from "../model/HostFormValues"
 import { HostBindingType } from "../model/HostRequest"
 import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
@@ -108,7 +108,7 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     />
                 </Form.Item>
                 <If condition={totalAmount > 1}>
-                    <CloseOutlined
+                    <DeleteOutlined
                         style={{
                             marginLeft: 15,
                             alignItems: "start",

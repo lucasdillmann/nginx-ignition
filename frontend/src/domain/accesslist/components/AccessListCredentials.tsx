@@ -1,7 +1,7 @@
 import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import { Button, Flex, Form, FormListFieldData, FormListOperation, Input } from "antd"
-import { CloseOutlined, PlusOutlined } from "@ant-design/icons"
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons"
 import FormLayout from "../../../core/components/form/FormLayout"
 import { AccessListFormCredentialsDefaults } from "../AccessListFormDefaults"
 import Password from "antd/es/input/Password"
@@ -49,7 +49,7 @@ export default class AccessListCredentials extends React.Component<AccessListCre
                     <Password />
                 </Form.Item>
 
-                <CloseOutlined onClick={() => operations.remove(index)} style={ACTION_ICON_STYLE} />
+                <DeleteOutlined onClick={() => operations.remove(index)} style={ACTION_ICON_STYLE} />
             </Flex>
         )
     }

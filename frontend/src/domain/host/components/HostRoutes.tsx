@@ -5,7 +5,7 @@ import If from "../../../core/components/flowcontrol/If"
 import {
     ArrowDownOutlined,
     ArrowUpOutlined,
-    CloseOutlined,
+    DeleteOutlined,
     PlusOutlined,
     QuestionCircleFilled,
     SettingOutlined,
@@ -522,7 +522,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 </Form.Item>
 
                 <If condition={routes.length > 1}>
-                    <CloseOutlined onClick={() => this.removeRoute(index)} style={ACTION_ICON_STYLE} />
+                    <DeleteOutlined onClick={() => this.removeRoute(index)} style={ACTION_ICON_STYLE} />
                 </If>
             </Flex>
         )

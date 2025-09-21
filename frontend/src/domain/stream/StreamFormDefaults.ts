@@ -1,6 +1,30 @@
-import StreamRequest, { StreamProtocol, StreamType } from "./model/StreamRequest"
+import StreamRequest, {
+    StreamBackend,
+    StreamCircuitBreaker,
+    StreamProtocol,
+    StreamRoute,
+    StreamType,
+} from "./model/StreamRequest"
 
-const StreamFormDefaults: StreamRequest = {
+export const StreamCircuitBreakerDefaults: StreamCircuitBreaker = Object.freeze({
+    maxFailures: 5,
+    openSeconds: 30,
+})
+
+export const StreamBackendDefault: StreamBackend = Object.freeze({
+    target: {
+        protocol: StreamProtocol.TCP,
+        address: "",
+        port: 8080,
+    },
+})
+
+export const StreamRouteDefaults: StreamRoute = Object.freeze({
+    domainNames: [""],
+    backends: [StreamBackendDefault],
+})
+
+const StreamFormDefaults: StreamRequest = Object.freeze({
     name: "",
     enabled: true,
     type: StreamType.SIMPLE,
@@ -16,13 +40,7 @@ const StreamFormDefaults: StreamRequest = {
         address: "0.0.0.0",
         port: 8080,
     },
-    defaultBackend: {
-        target: {
-            protocol: StreamProtocol.TCP,
-            address: "",
-            port: 8080,
-        },
-    },
-}
+    defaultBackend: StreamBackendDefault,
+})
 
 export default StreamFormDefaults

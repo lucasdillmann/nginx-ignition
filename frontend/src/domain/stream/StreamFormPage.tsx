@@ -13,7 +13,7 @@ import CommonNotifications from "../../core/components/notification/CommonNotifi
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import DeleteStreamAction from "./actions/DeleteStreamAction"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
-import StreamFormDefaults from "./StreamFormDefaults"
+import StreamFormDefaults, { StreamRouteDefaults } from "./StreamFormDefaults"
 import StreamRequest, { StreamAddress, StreamProtocol, StreamType } from "./model/StreamRequest"
 import "./StreamFormPage.css"
 import StreamAddressInput from "./components/StreamAddressInput"
@@ -26,14 +26,14 @@ import StreamTypeDescription from "./utils/StreamTypeDescription"
 import If from "../../core/components/flowcontrol/If"
 import StreamBackendSettingsModal from "./components/StreamBackendSettingsModal"
 import FormLayout from "../../core/components/form/FormLayout"
+import StreamRoutesForm from "./components/StreamRoutesForm"
 
 interface StreamFormPageState {
     formValues: StreamRequest
     validationResult: ValidationResult
     loading: boolean
     notFound: boolean
-    defaultBackendModalOpen: boolean
-    backendModalOpen?: { route: number; backend: number }
+    defaultBackendSettingsOpen: boolean
     error?: Error
 }
 
@@ -55,7 +55,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
             validationResult: new ValidationResult(),
             loading: true,
             notFound: false,
-            defaultBackendModalOpen: false,
+            defaultBackendSettingsOpen: false,
         }
     }
 
@@ -177,11 +177,11 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
     }
 
     private changeDefaultBackendModalState(open: boolean) {
-        this.setState({ defaultBackendModalOpen: open })
+        this.setState({ defaultBackendSettingsOpen: open })
     }
 
     private renderDefaultBackendForm(): React.ReactNode {
-        const { formValues, validationResult, defaultBackendModalOpen } = this.state
+        const { formValues, validationResult, defaultBackendSettingsOpen } = this.state
         const { type } = formValues
 
         const { title, subtitle } =
@@ -200,7 +200,9 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
         return (
             <>
                 <h2 className="streams-form-section-name">{title}</h2>
-                <p className="streams-form-section-help-text">{subtitle}</p>
+                <p className="streams-form-section-help-text" style={{ height: 50 }}>
+                    {subtitle}
+                </p>
                 <Flex style={{ flexGrow: 1 }}>
                     <Flex style={{ flexGrow: 1, alignContent: "center", flexShrink: 1 }}>
                         <StreamAddressInput
@@ -210,13 +212,13 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                             onChange={value => this.handleChange("defaultBackend.target", value)}
                         />
                     </Flex>
-                    <Flex style={{ marginLeft: "10px", flexShrink: 1 }}>
+                    <Flex style={{ marginLeft: "20px", flexShrink: 1 }}>
                         <SettingOutlined onClick={() => this.changeDefaultBackendModalState(true)} size={10} />
                     </Flex>
                 </Flex>
                 <StreamBackendSettingsModal
                     backend={formValues.defaultBackend}
-                    open={defaultBackendModalOpen}
+                    open={defaultBackendSettingsOpen}
                     validationBasePath="defaultBackend"
                     validationResult={validationResult}
                     onClose={() => this.changeDefaultBackendModalState(false)}
@@ -228,12 +230,161 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
     }
 
     private renderSniRouterForm(): React.ReactNode {
-        return <></>
+        const { formValues, validationResult } = this.state
+        if (formValues.routes === undefined) {
+            this.handleChange("routes", [{ ...StreamRouteDefaults }])
+            return <></>
+        }
+
+        return (
+            <StreamRoutesForm
+                routes={formValues.routes}
+                validationResult={validationResult}
+                onChange={routes => this.handleChange("routes", routes)}
+            />
+        )
+    }
+
+    private renderGeneralSettingsForm(): React.ReactNode {
+        const { formValues, validationResult } = this.state
+
+        return (
+            <>
+                <h2 className="streams-form-section-name">General</h2>
+                <p className="streams-form-section-help-text">Main definitions and properties of the stream.</p>
+                <Form.Item
+                    name="enabled"
+                    validateStatus={validationResult.getStatus("enabled")}
+                    help={validationResult.getMessage("enabled")}
+                    label="Enabled"
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                <Form.Item
+                    name="name"
+                    validateStatus={validationResult.getStatus("name")}
+                    help={validationResult.getMessage("name")}
+                    label="Name"
+                    required
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    name="type"
+                    validateStatus={validationResult.getStatus("type")}
+                    help={validationResult.getMessage("type")}
+                    label="Type"
+                    tooltip={{
+                        title: this.buildTypeTooltipContents(),
+                        icon: <QuestionCircleFilled />,
+                    }}
+                    required
+                >
+                    <Segmented
+                        options={[
+                            {
+                                label: StreamTypeDescription[StreamType.SIMPLE],
+                                value: StreamType.SIMPLE,
+                                icon: <ArrowRightOutlined />,
+                            },
+                            {
+                                label: StreamTypeDescription[StreamType.SNI_ROUTER],
+                                value: StreamType.SNI_ROUTER,
+                                icon: <SwapOutlined />,
+                            },
+                        ]}
+                        value={formValues.type}
+                    />
+                </Form.Item>
+            </>
+        )
+    }
+
+    private renderBindingForm(): React.ReactNode {
+        const { formValues, validationResult } = this.state
+
+        return (
+            <>
+                <h2 className="streams-form-section-name">Binding</h2>
+                <p className="streams-form-section-help-text" style={{ height: 50 }}>
+                    Address or socket file where the nginx's stream will listen for requests
+                </p>
+                <StreamAddressInput
+                    basePath="binding"
+                    validationResult={validationResult}
+                    address={formValues.binding}
+                    onChange={value => this.handleChange("binding", value)}
+                    parentProtocol={formValues.defaultBackend.target.protocol}
+                />
+            </>
+        )
+    }
+
+    private renderFeatureSetForm(): React.ReactNode {
+        const { formValues, validationResult } = this.state
+        const bindingTcp = formValues.binding.protocol === StreamProtocol.TCP
+
+        return (
+            <>
+                <h2 className="streams-form-section-name">Features</h2>
+                <p className="streams-form-section-help-text">Personalization of the behaviours of the stream.</p>
+                <Form.Item
+                    name={["featureSet", "useProxyProtocol"]}
+                    validateStatus={validationResult.getStatus("featureSet.useProxyProtocol")}
+                    help={validationResult.getMessage("featureSet.useProxyProtocol")}
+                    className="streams-form-expanded-label-size"
+                    label="Use the PROXY protocol"
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                <Form.Item
+                    name={["featureSet", "socketKeepAlive"]}
+                    validateStatus={validationResult.getStatus("featureSet.socketKeepAlive")}
+                    help={validationResult.getMessage("featureSet.socketKeepAlive")}
+                    className="streams-form-expanded-label-size"
+                    label="Socket keep alive"
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                <Form.Item
+                    name={["featureSet", "tcpKeepAlive"]}
+                    validateStatus={validationResult.getStatus("featureSet.tcpKeepAlive")}
+                    help={validationResult.getMessage("featureSet.tcpKeepAlive")}
+                    className="streams-form-expanded-label-size"
+                    label="TCP keep alive"
+                    required
+                >
+                    <Switch disabled={!bindingTcp} />
+                </Form.Item>
+                <Form.Item
+                    name={["featureSet", "tcpNoDelay"]}
+                    validateStatus={validationResult.getStatus("featureSet.tcpNoDelay")}
+                    help={validationResult.getMessage("featureSet.tcpNoDelay")}
+                    className="streams-form-expanded-label-size"
+                    label="TCP no delay"
+                    required
+                >
+                    <Switch disabled={!bindingTcp} />
+                </Form.Item>
+                <Form.Item
+                    name={["featureSet", "tcpDeferred"]}
+                    validateStatus={validationResult.getStatus("featureSet.tcpDeferred")}
+                    help={validationResult.getMessage("featureSet.tcpDeferred")}
+                    className="streams-form-expanded-label-size"
+                    label="TCP deferred"
+                    required
+                >
+                    <Switch disabled={!bindingTcp} />
+                </Form.Item>
+            </>
+        )
     }
 
     private renderForm() {
-        const { formValues, validationResult } = this.state
-        const bindingTcp = formValues.binding.protocol === StreamProtocol.TCP
+        const { formValues } = this.state
 
         return (
             <Form<StreamRequest>
@@ -243,128 +394,26 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                 onValuesChange={(_, values) => this.handleUpdate(values)}
             >
                 <Flex className="streams-form-inner-flex-container">
-                    <Flex className="streams-form-inner-flex-container-column" style={{ maxWidth: "60%" }}>
-                        <h2 className="streams-form-section-name">General</h2>
-                        <p className="streams-form-section-help-text">Main definitions and properties of the stream.</p>
-                        <Form.Item
-                            name="enabled"
-                            validateStatus={validationResult.getStatus("enabled")}
-                            help={validationResult.getMessage("enabled")}
-                            label="Enabled"
-                            required
-                        >
-                            <Switch />
-                        </Form.Item>
-                        <Form.Item
-                            name="type"
-                            validateStatus={validationResult.getStatus("type")}
-                            help={validationResult.getMessage("type")}
-                            label="Type"
-                            tooltip={{
-                                title: this.buildTypeTooltipContents(),
-                                icon: <QuestionCircleFilled />,
-                            }}
-                            required
-                        >
-                            <Segmented
-                                options={[
-                                    {
-                                        label: StreamTypeDescription[StreamType.SIMPLE],
-                                        value: StreamType.SIMPLE,
-                                        icon: <ArrowRightOutlined />,
-                                    },
-                                    {
-                                        label: StreamTypeDescription[StreamType.SNI_ROUTER],
-                                        value: StreamType.SNI_ROUTER,
-                                        icon: <SwapOutlined />,
-                                    },
-                                ]}
-                                value={formValues.type}
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            name="name"
-                            validateStatus={validationResult.getStatus("name")}
-                            help={validationResult.getMessage("name")}
-                            label="Name"
-                            required
-                        >
-                            <Input />
-                        </Form.Item>
-
+                    <Flex className="streams-form-inner-flex-container-column" style={{ width: "50%" }}>
+                        {this.renderGeneralSettingsForm()}
+                    </Flex>
+                    <Flex className="streams-form-inner-flex-container-column" style={{ width: "50%" }}>
+                        {this.renderFeatureSetForm()}
+                    </Flex>
+                </Flex>
+                <Flex className="streams-form-inner-flex-container" style={{ marginTop: 20 }}>
+                    <Flex className="streams-form-inner-flex-container-column" style={{ width: "100%" }}>
                         <If condition={formValues.type === StreamType.SNI_ROUTER}>
                             {() => this.renderSniRouterForm()}
                         </If>
-
-                        {this.renderDefaultBackendForm()}
-
-                        <h2 className="streams-form-section-name">Binding</h2>
-                        <p className="streams-form-section-help-text">
-                            Address or socket file where the nginx's stream will listen for requests
-                        </p>
-                        <StreamAddressInput
-                            basePath="binding"
-                            validationResult={validationResult}
-                            address={formValues.binding}
-                            onChange={value => this.handleChange("binding", value)}
-                            parentProtocol={formValues.defaultBackend.target.protocol}
-                        />
                     </Flex>
-                    <Flex className="streams-form-inner-flex-container-column" style={{ maxWidth: "40%" }}>
-                        <h2 className="streams-form-section-name">Features</h2>
-                        <p className="streams-form-section-help-text">
-                            Personalization of the behaviours of the stream.
-                        </p>
-                        <Form.Item
-                            name={["featureSet", "useProxyProtocol"]}
-                            validateStatus={validationResult.getStatus("featureSet.useProxyProtocol")}
-                            help={validationResult.getMessage("featureSet.useProxyProtocol")}
-                            className="streams-form-expanded-label-size"
-                            label="Use the PROXY protocol"
-                            required
-                        >
-                            <Switch />
-                        </Form.Item>
-                        <Form.Item
-                            name={["featureSet", "socketKeepAlive"]}
-                            validateStatus={validationResult.getStatus("featureSet.socketKeepAlive")}
-                            help={validationResult.getMessage("featureSet.socketKeepAlive")}
-                            className="streams-form-expanded-label-size"
-                            label="Socket keep alive"
-                            required
-                        >
-                            <Switch />
-                        </Form.Item>
-                        <Form.Item
-                            name={["featureSet", "tcpKeepAlive"]}
-                            validateStatus={validationResult.getStatus("featureSet.tcpKeepAlive")}
-                            help={validationResult.getMessage("featureSet.tcpKeepAlive")}
-                            className="streams-form-expanded-label-size"
-                            label="TCP keep alive"
-                            required
-                        >
-                            <Switch disabled={!bindingTcp} />
-                        </Form.Item>
-                        <Form.Item
-                            name={["featureSet", "tcpNoDelay"]}
-                            validateStatus={validationResult.getStatus("featureSet.tcpNoDelay")}
-                            help={validationResult.getMessage("featureSet.tcpNoDelay")}
-                            className="streams-form-expanded-label-size"
-                            label="TCP no delay"
-                            required
-                        >
-                            <Switch disabled={!bindingTcp} />
-                        </Form.Item>
-                        <Form.Item
-                            name={["featureSet", "tcpDeferred"]}
-                            validateStatus={validationResult.getStatus("featureSet.tcpDeferred")}
-                            help={validationResult.getMessage("featureSet.tcpDeferred")}
-                            className="streams-form-expanded-label-size"
-                            label="TCP deferred"
-                            required
-                        >
-                            <Switch disabled={!bindingTcp} />
-                        </Form.Item>
+                </Flex>
+                <Flex className="streams-form-inner-flex-container" style={{ marginTop: 20 }}>
+                    <Flex className="streams-form-inner-flex-container-column" style={{ width: "50%" }}>
+                        {this.renderDefaultBackendForm()}
+                    </Flex>
+                    <Flex className="streams-form-inner-flex-container-column" style={{ width: "50%" }}>
+                        {this.renderBindingForm()}
                     </Flex>
                 </Flex>
             </Form>
