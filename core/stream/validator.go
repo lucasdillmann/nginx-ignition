@@ -60,7 +60,7 @@ func (v *validator) validateBinding(stream *Stream) {
 }
 
 func (v *validator) validateDefaultBackend(stream *Stream) {
-	v.validateAddress("defaultBackend", stream.DefaultBackend.Address)
+	v.validateAddress("defaultBackend.target", stream.DefaultBackend.Address)
 	v.validateCircuitBreaker("defaultBackend.circuitBreaker", stream.DefaultBackend.CircuitBreaker)
 }
 
@@ -159,7 +159,7 @@ func (v *validator) validateAddressProtocol(fieldPrefix string, address Address)
 
 func (v *validator) validateAddressValue(fieldPrefix string, address Address) {
 	if strings.TrimSpace(address.Address) == "" {
-		v.delegate.Add(fieldPrefix+".address", "address cannot be empty")
+		v.delegate.Add(fieldPrefix+".address", "Address cannot be empty")
 		return
 	}
 

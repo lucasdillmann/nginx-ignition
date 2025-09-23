@@ -60,7 +60,7 @@ export default class StreamRoutesForm extends React.Component<StreamRoutesFormPr
                 <h2 className="streams-form-section-name">Routes</h2>
                 <p className="streams-form-section-help-text">
                     Routes to be configured in the stream. The nginx will lookup for the SNI (Server Name Indication) in
-                    TLS connections and route the request to the first backend that matches the domain name. When either
+                    TLS connections and route the request to the first group that matches the domain name. When either
                     no SNI value is available or no match is found, the request will be forwarded to the default
                     backend.
                 </p>
