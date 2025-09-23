@@ -13,7 +13,6 @@ import CommonNotifications from "../../core/components/notification/CommonNotifi
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import DeleteStreamAction from "./actions/DeleteStreamAction"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
-import StreamFormDefaults, { StreamRouteDefaults } from "./StreamFormDefaults"
 import StreamRequest, { StreamAddress, StreamProtocol, StreamType } from "./model/StreamRequest"
 import "./StreamFormPage.css"
 import StreamAddressInput from "./components/StreamAddressInput"
@@ -27,6 +26,7 @@ import If from "../../core/components/flowcontrol/If"
 import StreamBackendSettingsModal from "./components/StreamBackendSettingsModal"
 import FormLayout from "../../core/components/form/FormLayout"
 import StreamRoutesForm from "./components/StreamRoutesForm"
+import { streamFormDefaults, streamRouteDefaults } from "./StreamFormDefaults"
 
 interface StreamFormPageState {
     formValues: StreamRequest
@@ -51,7 +51,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
         this.service = new StreamService()
         this.saveModal = new ModalPreloader()
         this.state = {
-            formValues: StreamFormDefaults,
+            formValues: streamFormDefaults(),
             validationResult: new ValidationResult(),
             loading: true,
             notFound: false,
@@ -232,7 +232,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
     private renderSniRouterForm(): React.ReactNode {
         const { formValues, validationResult } = this.state
         if (formValues.routes === undefined) {
-            this.handleChange("routes", [{ ...StreamRouteDefaults }])
+            this.handleChange("routes", [streamRouteDefaults()])
             return <></>
         }
 

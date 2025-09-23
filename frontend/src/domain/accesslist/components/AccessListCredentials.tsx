@@ -3,9 +3,9 @@ import ValidationResult from "../../../core/validation/ValidationResult"
 import { Button, Flex, Form, FormListFieldData, FormListOperation, Input } from "antd"
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons"
 import FormLayout from "../../../core/components/form/FormLayout"
-import { AccessListFormCredentialsDefaults } from "../AccessListFormDefaults"
 import Password from "antd/es/input/Password"
 import "./AccessListCredentials.css"
+import { accessListFormCredentialsDefaults } from "../AccessListFormDefaults"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -61,7 +61,7 @@ export default class AccessListCredentials extends React.Component<AccessListCre
             <Form.Item>
                 <Button
                     type="dashed"
-                    onClick={() => operations.add({ ...AccessListFormCredentialsDefaults })}
+                    onClick={() => operations.add(accessListFormCredentialsDefaults())}
                     icon={<PlusOutlined />}
                 >
                     Add credentials

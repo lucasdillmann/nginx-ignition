@@ -20,11 +20,11 @@ import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
 import { IntegrationOptionResponse } from "../../integration/model/IntegrationOptionResponse"
 import PageResponse, { emptyPageResponse } from "../../../core/pagination/PageResponse"
 import IntegrationService from "../../integration/IntegrationService"
-import HostFormValuesDefaults from "../model/HostFormValuesDefaults"
 import HostRouteSettingsModal from "./HostRouteSettingsModal"
 import { Link } from "react-router-dom"
 import CodeEditorModal from "../../../core/components/codeeditor/CodeEditorModal"
 import { CodeEditorLanguage } from "../../../core/components/codeeditor/CodeEditor"
+import { hostFormValuesDefaults } from "../model/HostFormValuesDefaults"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -537,7 +537,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     type="dashed"
                     onClick={() =>
                         operations.add({
-                            ...HostFormValuesDefaults.routes[0],
+                            ...hostFormValuesDefaults().routes[0],
                             priority: fields.length,
                         })
                     }

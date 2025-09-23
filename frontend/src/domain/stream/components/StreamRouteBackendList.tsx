@@ -7,7 +7,7 @@ import { DeleteOutlined, PlusOutlined, SettingOutlined } from "@ant-design/icons
 import StreamBackendSettingsModal from "./StreamBackendSettingsModal"
 import FormLayout from "../../../core/components/form/FormLayout"
 import If from "../../../core/components/flowcontrol/If"
-import { StreamBackendDefault } from "../StreamFormDefaults"
+import { streamBackendDefaults } from "../StreamFormDefaults"
 
 interface StreamRouteBackendListState {
     openSettingsModalIndex?: number
@@ -94,7 +94,7 @@ export default class StreamRouteBackendList extends React.PureComponent<
             .filter(element => element !== undefined)
         const addButton = (
             <Form.Item {...FormLayout.ExpandedUnlabeledItem} style={{ marginTop: 25 }}>
-                <Button type="dashed" onClick={() => operations.add(StreamBackendDefault)} icon={<PlusOutlined />}>
+                <Button type="dashed" onClick={() => operations.add(streamBackendDefaults())} icon={<PlusOutlined />}>
                     Add backend
                 </Button>
             </Form.Item>

@@ -14,7 +14,6 @@ import CommonNotifications from "../../core/components/notification/CommonNotifi
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import DeleteAccessListAction from "./actions/DeleteAccessListAction"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
-import AccessListFormDefaults from "./AccessListFormDefaults"
 import AccessListFormValues from "./model/AccessListFormValues"
 import AccessListConverter from "./AccessListConverter"
 import AccessListEntrySets from "./components/AccessListEntrySets"
@@ -24,6 +23,7 @@ import "./AccessListFormPage.css"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import { accessListFormDefaults } from "./AccessListFormDefaults"
 
 interface AccessListFormState {
     formValues: AccessListFormValues
@@ -47,7 +47,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
         this.service = new AccessListService()
         this.saveModal = new ModalPreloader()
         this.state = {
-            formValues: AccessListFormDefaults,
+            formValues: accessListFormDefaults(),
             validationResult: new ValidationResult(),
             loading: true,
             notFound: false,

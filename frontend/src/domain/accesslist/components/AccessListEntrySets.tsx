@@ -5,9 +5,9 @@ import { ArrowDownOutlined, ArrowUpOutlined, DeleteOutlined, PlusOutlined } from
 import FormLayout from "../../../core/components/form/FormLayout"
 import TextArea from "antd/es/input/TextArea"
 import { AccessListOutcome } from "../model/AccessListRequest"
-import { AccessListFormEntryDefaults } from "../AccessListFormDefaults"
 import "./AccessListEntrySets.css"
 import { AccessListEntrySetFormValues } from "../model/AccessListFormValues"
+import { accessListFormEntryDefaults } from "../AccessListFormDefaults"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -113,7 +113,7 @@ export default class AccessListEntrySets extends React.Component<AccessListEntry
                     type="dashed"
                     onClick={() =>
                         operations.add({
-                            ...AccessListFormEntryDefaults,
+                            ...accessListFormEntryDefaults(),
                             priority: fields.length,
                         })
                     }

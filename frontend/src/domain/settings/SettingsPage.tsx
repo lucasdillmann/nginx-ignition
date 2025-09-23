@@ -17,10 +17,10 @@ import SettingsFormValues from "./model/SettingsFormValues"
 import SettingsConverter from "./SettingsConverter"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
-import SettingsDefaults from "./SettingsDefaults"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import { settingsDefaults } from "./SettingsDefaults"
 
 const INTEGER_MAX = 2147483647
 
@@ -48,7 +48,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
     }
 
     private resetToDefaultValues() {
-        const { nginx, logRotation, certificateAutoRenew } = SettingsDefaults
+        const { nginx, logRotation, certificateAutoRenew } = settingsDefaults()
         const newValues = { nginx, logRotation, certificateAutoRenew }
 
         this.formRef.current?.setFieldsValue(newValues)

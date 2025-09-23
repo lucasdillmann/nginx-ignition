@@ -1,11 +1,11 @@
 import { StreamRoute } from "../model/StreamRequest"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import React from "react"
-import { StreamRouteDefaults } from "../StreamFormDefaults"
 import StreamRouteForm from "./StreamRouteForm"
 import { PlusOutlined } from "@ant-design/icons"
 import { Button } from "antd"
 import If from "../../../core/components/flowcontrol/If"
+import { streamRouteDefaults } from "../StreamFormDefaults"
 
 export interface StreamRoutesFormProps {
     routes: StreamRoute[]
@@ -23,7 +23,7 @@ export default class StreamRoutesForm extends React.Component<StreamRoutesFormPr
 
     private addRoute() {
         const { routes, onChange } = this.props
-        onChange([...routes, { ...StreamRouteDefaults }])
+        onChange([...routes, streamRouteDefaults()])
     }
 
     private renderRoute(route: StreamRoute, index: number): React.ReactNode {
