@@ -16,13 +16,12 @@ export interface StreamRouteFormProps {
 export default class StreamRouteForm extends React.Component<StreamRouteFormProps> {
     private buildCardHeader(): { title?: string; extra?: React.ReactNode } {
         const { onRemove, index } = this.props
-        if (onRemove === undefined) return {}
 
         return {
-            title: `Routing group ${index + 1}`,
+            title: `Group ${index + 1}`,
             extra: (
-                <Button onClick={onRemove}>
-                    <DeleteOutlined /> Remove group
+                <Button onClick={onRemove} disabled={onRemove === undefined}>
+                    <DeleteOutlined />
                 </Button>
             ),
         }
@@ -36,6 +35,7 @@ export default class StreamRouteForm extends React.Component<StreamRouteFormProp
             <Card key={`route-${index}`} title={title} extra={extra}>
                 <Flex style={{ flexGrow: 1, flexShrink: 1 }}>
                     <Flex style={{ width: "45%" }} vertical>
+                        <p>Domains</p>
                         <DomainNamesList
                             pathPrefix={{
                                 merged: `routes[${index}]`,
@@ -47,6 +47,7 @@ export default class StreamRouteForm extends React.Component<StreamRouteFormProp
                         />
                     </Flex>
                     <Flex style={{ width: "55%" }} vertical>
+                        <p>Backends</p>
                         <StreamRouteBackendList
                             routeIndex={index}
                             backends={route.backends}

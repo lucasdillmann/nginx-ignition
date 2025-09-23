@@ -67,7 +67,7 @@ export default class StreamRoutesForm extends React.Component<StreamRoutesFormPr
                 {this.renderRoutes()}
                 <p>
                     <Button type="dashed" onClick={() => this.addRoute()} icon={<PlusOutlined />}>
-                        Add route
+                        Add routing group
                     </Button>
                 </p>
             </>
