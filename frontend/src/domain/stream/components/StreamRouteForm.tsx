@@ -1,7 +1,7 @@
 import { StreamRoute } from "../model/StreamRequest"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import React from "react"
-import { Card, Flex } from "antd"
+import { Button, Card, Flex } from "antd"
 import DomainNamesList from "../../../core/components/domainnames/DomainNamesList"
 import StreamRouteBackendList from "./StreamRouteBackendList"
 import { DeleteOutlined } from "@ant-design/icons"
@@ -23,37 +23,44 @@ export default class StreamRouteForm extends React.Component<StreamRouteFormProp
         })
     }
 
+    private buildCardHeader(): { title?: string; extra?: React.ReactNode } {
+        const { onRemove, index } = this.props
+        if (onRemove === undefined) return {}
+
+        return {
+            title: `Routing group ${index + 1}`,
+            extra: (
+                <Button onClick={onRemove}>
+                    <DeleteOutlined /> Remove group
+                </Button>
+            ),
+        }
+    }
+
     render() {
-        const { validationResult, index, route, onRemove } = this.props
-        const removeButton =
-            onRemove !== undefined
-                ? [
-                      <div key={0} style={{ textAlign: "right", width: "100%", paddingRight: 20 }}>
-                          <span onClick={onRemove}>
-                              <DeleteOutlined /> Remove route
-                          </span>
-                      </div>,
-                  ]
-                : undefined
+        const { validationResult, index, route } = this.props
+        const { title, extra } = this.buildCardHeader()
 
         return (
-            <Card actions={removeButton}>
+            <Card key={`route-${index}`} title={title} extra={extra}>
                 <Flex style={{ flexGrow: 1, flexShrink: 1 }}>
-                    <Flex style={{ width: "35%", paddingRight: 10 }} vertical>
+                    <Flex style={{ width: "45%" }} vertical>
                         <DomainNamesList
                             pathPrefix={{
                                 merged: `routes[${index}]`,
                                 name: ["routes", index],
                             }}
                             validationResult={validationResult}
+                            expandedLabelSize
+                            disableTitle
                         />
                     </Flex>
-                    <Flex style={{ width: "65%" }} vertical>
+                    <Flex style={{ width: "55%" }} vertical>
                         <StreamRouteBackendList
                             routeIndex={index}
                             backends={route.backends}
                             validationResult={validationResult}
-                            onChange={backends => this.handleChange("backends", backends)}
+                            path={["routes", index]}
                         />
                     </Flex>
                 </Flex>

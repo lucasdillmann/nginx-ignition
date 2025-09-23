@@ -10,18 +10,19 @@ export interface DomainNamesListProps {
     validationResult: ValidationResult
     expandedLabelSize?: boolean
     className?: string
+    disableTitle?: boolean
 }
 
 export default class DomainNamesList extends React.PureComponent<DomainNamesListProps> {
     private renderFields(fields: FormListFieldData[], operations: FormListOperation) {
-        const { validationResult, expandedLabelSize, className } = this.props
+        const { validationResult, expandedLabelSize, className, disableTitle } = this.props
         const layout = expandedLabelSize === true ? FormLayout.ExpandedUnlabeledItem : FormLayout.UnlabeledItem
-        const pathPrefix = this.props.pathPrefix === undefined ? "" : this.props.pathPrefix.merged + "."
+        const pathPrefix = this.props.pathPrefix === undefined ? "" : this.props.pathPrefix.merged
 
         const domainNameFields = fields.map((field, index) => (
             <Form.Item
-                {...(index > 0 ? layout : undefined)}
-                label={index === 0 ? "Domain names" : ""}
+                {...(index > 0 && !disableTitle ? layout : undefined)}
+                label={index === 0 && !disableTitle ? "Domain names" : ""}
                 key={field.key}
                 className={className}
                 required
@@ -29,8 +30,8 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
                 <Flex>
                     <Form.Item
                         {...field}
-                        validateStatus={validationResult.getStatus(`${pathPrefix}domainNames[${index}]`)}
-                        help={validationResult.getMessage(`${pathPrefix}domainNames[${index}]`)}
+                        validateStatus={validationResult.getStatus(`${pathPrefix}.domainNames[${index}]`)}
+                        help={validationResult.getMessage(`${pathPrefix}.domainNames[${index}]`)}
                         style={{ marginBottom: 0, width: "100%" }}
                     >
                         <Input placeholder="Domain name" />
@@ -46,7 +47,7 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
         ))
 
         const addAction = (
-            <Form.Item {...layout} className={className}>
+            <Form.Item {...layout} key="add-domain" className={className}>
                 <Button type="dashed" onClick={() => operations.add()} icon={<PlusOutlined />}>
                     Add domain
                 </Button>
