@@ -10,19 +10,10 @@ export interface StreamRouteFormProps {
     route: StreamRoute
     index: number
     validationResult: ValidationResult
-    onChange: (routes: StreamRoute) => void
     onRemove?: () => void
 }
 
 export default class StreamRouteForm extends React.Component<StreamRouteFormProps> {
-    private handleChange(attribute: string, value: any) {
-        const { route, onChange } = this.props
-        onChange({
-            ...route,
-            [attribute]: value,
-        })
-    }
-
     private buildCardHeader(): { title?: string; extra?: React.ReactNode } {
         const { onRemove, index } = this.props
         if (onRemove === undefined) return {}

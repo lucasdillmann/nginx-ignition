@@ -26,13 +26,6 @@ export default class StreamRoutesForm extends React.Component<StreamRoutesFormPr
         onChange([...routes, { ...StreamRouteDefaults }])
     }
 
-    private handleChange(index: number, route: StreamRoute) {
-        const { routes, onChange } = this.props
-        const newRoutes = [...routes]
-        newRoutes[index] = route
-        onChange(newRoutes)
-    }
-
     private renderRoute(route: StreamRoute, index: number): React.ReactNode {
         const { routes, validationResult } = this.props
         const disableDelete = routes.length <= 1
@@ -45,7 +38,6 @@ export default class StreamRoutesForm extends React.Component<StreamRoutesFormPr
                     route={route}
                     index={index}
                     validationResult={validationResult}
-                    onChange={route => this.handleChange(index, route)}
                     onRemove={disableDelete ? undefined : () => this.removeRoute(index)}
                 />
 

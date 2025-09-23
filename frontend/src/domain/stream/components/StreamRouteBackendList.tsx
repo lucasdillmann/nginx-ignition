@@ -75,7 +75,7 @@ export default class StreamRouteBackendList extends React.PureComponent<
                     open={openSettingsModalIndex === index}
                     validationBasePath={`routes[${routeIndex}].backends[${index}]`}
                     validationResult={validationResult}
-                    onClose={() => this.changeOpenModal(undefined)}
+                    onClose={() => this.changeOpenModal()}
                     onChange={value => this.updateBackend(value, index, operations)}
                 />
             </div>
@@ -83,7 +83,15 @@ export default class StreamRouteBackendList extends React.PureComponent<
     }
 
     private renderBackends(fields: FormListFieldData[], operations: FormListOperation) {
-        const backendElements = fields.map(field => this.renderBackend(field, operations))
+        const backendElements = fields
+            .map(field => {
+                try {
+                    return this.renderBackend(field, operations)
+                } catch {
+                    return undefined
+                }
+            })
+            .filter(element => element !== undefined)
         const addButton = (
             <Form.Item {...FormLayout.ExpandedUnlabeledItem} style={{ marginTop: 25 }}>
                 <Button type="dashed" onClick={() => operations.add(StreamBackendDefault)} icon={<PlusOutlined />}>

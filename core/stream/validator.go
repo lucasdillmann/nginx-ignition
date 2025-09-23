@@ -158,15 +158,13 @@ func (v *validator) validateAddressProtocol(fieldPrefix string, address Address)
 }
 
 func (v *validator) validateAddressValue(fieldPrefix string, address Address) {
-	path := fieldPrefix + ".target"
-
 	if strings.TrimSpace(address.Address) == "" {
-		v.delegate.Add(path, "address cannot be empty")
+		v.delegate.Add(fieldPrefix+".address", "address cannot be empty")
 		return
 	}
 
 	if address.Protocol == SocketProtocol && !strings.HasPrefix(address.Address, "/") {
-		v.delegate.Add(path, "Unix socket path must start with a /")
+		v.delegate.Add(fieldPrefix+".protocol", "Unix socket path must start with a /")
 		return
 	}
 }
