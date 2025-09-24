@@ -12,6 +12,10 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user/password_hash"
 )
 
+var (
+	invalidCredentialsError = core_error.New("Invalid username or password", true)
+)
+
 type service struct {
 	repository    Repository
 	configuration *configuration.Configuration
@@ -23,13 +27,17 @@ func (s *service) authenticate(ctx context.Context, username string, password st
 		return nil, err
 	}
 
+	if usr == nil {
+		return nil, invalidCredentialsError
+	}
+
 	passwordMatches, err := password_hash.New(s.configuration).Verify(password, usr.PasswordHash, usr.PasswordSalt)
 	if err != nil {
 		return nil, err
 	}
 
 	if !passwordMatches {
-		return nil, core_error.New("Invalid username or password", true)
+		return nil, invalidCredentialsError
 	}
 
 	return usr, nil

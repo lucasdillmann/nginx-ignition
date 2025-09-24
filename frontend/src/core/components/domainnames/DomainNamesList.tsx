@@ -1,25 +1,28 @@
 import React from "react"
 import { Button, Flex, Form, FormListFieldData, FormListOperation, Input } from "antd"
-import FormLayout from "../../../core/components/form/FormLayout"
-import If from "../../../core/components/flowcontrol/If"
-import { CloseOutlined, PlusOutlined } from "@ant-design/icons"
-import ValidationResult from "../../../core/validation/ValidationResult"
+import FormLayout from "../form/FormLayout"
+import If from "../flowcontrol/If"
+import { PlusOutlined, DeleteOutlined } from "@ant-design/icons"
+import ValidationResult from "../../validation/ValidationResult"
 
 export interface DomainNamesListProps {
+    pathPrefix?: { merged: string; name: any[] }
     validationResult: ValidationResult
     expandedLabelSize?: boolean
     className?: string
+    disableTitle?: boolean
 }
 
 export default class DomainNamesList extends React.PureComponent<DomainNamesListProps> {
     private renderFields(fields: FormListFieldData[], operations: FormListOperation) {
-        const { validationResult, expandedLabelSize, className } = this.props
+        const { validationResult, expandedLabelSize, className, disableTitle } = this.props
         const layout = expandedLabelSize === true ? FormLayout.ExpandedUnlabeledItem : FormLayout.UnlabeledItem
+        const pathPrefix = this.props.pathPrefix === undefined ? "" : this.props.pathPrefix.merged + "."
 
         const domainNameFields = fields.map((field, index) => (
             <Form.Item
-                {...(index > 0 ? layout : undefined)}
-                label={index === 0 ? "Domain names" : ""}
+                {...(index > 0 && !disableTitle ? layout : undefined)}
+                label={index === 0 && !disableTitle ? "Domain names" : ""}
                 key={field.key}
                 className={className}
                 required
@@ -27,14 +30,14 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
                 <Flex>
                     <Form.Item
                         {...field}
-                        validateStatus={validationResult.getStatus(`domainNames[${index}]`)}
-                        help={validationResult.getMessage(`domainNames[${index}]`)}
+                        validateStatus={validationResult.getStatus(`${pathPrefix}domainNames[${index}]`)}
+                        help={validationResult.getMessage(`${pathPrefix}domainNames[${index}]`)}
                         style={{ marginBottom: 0, width: "100%" }}
                     >
                         <Input placeholder="Domain name" />
                     </Form.Item>
                     <If condition={fields.length > 1}>
-                        <CloseOutlined
+                        <DeleteOutlined
                             style={{ marginLeft: 15, alignItems: "start", marginTop: 7 }}
                             onClick={() => operations.remove(field.name)}
                         />
@@ -44,7 +47,7 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
         ))
 
         const addAction = (
-            <Form.Item {...layout} className={className}>
+            <Form.Item {...layout} key="add-domain" className={className}>
                 <Button type="dashed" onClick={() => operations.add()} icon={<PlusOutlined />}>
                     Add domain
                 </Button>
@@ -55,6 +58,13 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
     }
 
     render() {
-        return <Form.List name="domainNames">{(fields, operations) => this.renderFields(fields, operations)}</Form.List>
+        const { pathPrefix } = this.props
+        const path = pathPrefix === undefined ? [] : pathPrefix.name
+
+        return (
+            <Form.List name={[...path, "domainNames"]}>
+                {(fields, operations) => this.renderFields(fields, operations)}
+            </Form.List>
+        )
     }
 }

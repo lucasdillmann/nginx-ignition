@@ -2,7 +2,6 @@ package stream
 
 import (
 	"context"
-	"net"
 	"strconv"
 	"strings"
 
@@ -33,8 +32,10 @@ func (v *validator) validate(_ context.Context, stream *Stream) error {
 	}
 
 	v.validateName(stream)
+	v.validateType(stream)
 	v.validateBinding(stream)
-	v.validateBackend(stream)
+	v.validateDefaultBackend(stream)
+	v.validateRoutes(stream)
 	v.validateFeatureSet(stream)
 
 	return v.delegate.Result()
@@ -46,12 +47,87 @@ func (v *validator) validateName(stream *Stream) {
 	}
 }
 
+func (v *validator) validateType(stream *Stream) {
+	switch stream.Type {
+	case SimpleType, SNIRouterType:
+	default:
+		v.delegate.Add("type", invalidValue)
+	}
+}
+
 func (v *validator) validateBinding(stream *Stream) {
 	v.validateAddress("binding", stream.Binding)
 }
 
-func (v *validator) validateBackend(stream *Stream) {
-	v.validateAddress("backend", stream.Backend)
+func (v *validator) validateDefaultBackend(stream *Stream) {
+	v.validateAddress("defaultBackend.target", stream.DefaultBackend.Address)
+	v.validateCircuitBreaker("defaultBackend.circuitBreaker", stream.DefaultBackend.CircuitBreaker)
+}
+
+func (v *validator) validateRoutes(stream *Stream) {
+	if stream.Type != SNIRouterType {
+		return
+	}
+
+	if len(stream.Routes) == 0 {
+		v.delegate.Add("routes", "Must be informed and not be empty when type is SNI_ROUTER")
+		return
+	}
+
+	for index := range stream.Routes {
+		v.validateRoute(&stream.Routes[index], index)
+	}
+}
+
+func (v *validator) validateRoute(route *Route, index int) {
+	prefix := "routes[" + strconv.Itoa(index) + "]"
+
+	if len(route.DomainNames) == 0 {
+		v.delegate.Add(prefix+".domainNames", "Route must have at least one domain")
+	} else {
+		for domainNameIndex, domainName := range route.DomainNames {
+			v.validateDomainName(domainName, prefix, domainNameIndex)
+		}
+	}
+
+	if len(route.Backends) == 0 {
+		v.delegate.Add(prefix+".backends", "Route must have at least one backend")
+	} else {
+		for backendIndex, backend := range route.Backends {
+			v.validateBackend(&backend, prefix, backendIndex)
+		}
+	}
+}
+
+func (v *validator) validateDomainName(domain, prefix string, index int) {
+	domainPrefix := prefix + ".domainNames[" + strconv.Itoa(index) + "]"
+
+	if domain == "" {
+		v.delegate.Add(domainPrefix, "Domain cannot be empty")
+	} else if !constants.TLDPattern.MatchString(domain) {
+		v.delegate.Add(domainPrefix, "Not a valid DNS domain name")
+	}
+}
+
+func (v *validator) validateBackend(backend *Backend, routePrefix string, index int) {
+	prefix := routePrefix + ".backends[" + strconv.Itoa(index) + "]"
+
+	v.validateAddress(prefix+".target", backend.Address)
+	v.validateCircuitBreaker(prefix+".circuitBreaker", backend.CircuitBreaker)
+}
+
+func (v *validator) validateCircuitBreaker(prefix string, circuitBreaker *CircuitBreaker) {
+	if circuitBreaker == nil {
+		return
+	}
+
+	if circuitBreaker.MaxFailures < 1 {
+		v.delegate.Add(prefix+".maxFailures", "Value must be greater than or equal to 1")
+	}
+
+	if circuitBreaker.OpenSeconds < 0 {
+		v.delegate.Add(prefix+".openSeconds", "Value must be greater than or equal to 0")
+	}
 }
 
 func (v *validator) validateAddress(fieldPrefix string, address Address) {
@@ -78,27 +154,18 @@ func (v *validator) validateAddressProtocol(fieldPrefix string, address Address)
 		}
 	} else if address.Port != nil {
 		v.delegate.Add(fieldPrefix+".port", "Port should not be specified when using the Socket protocol")
-
 	}
 }
 
 func (v *validator) validateAddressValue(fieldPrefix string, address Address) {
-	path := fieldPrefix + ".address"
-
 	if strings.TrimSpace(address.Address) == "" {
-		v.delegate.Add(path, "Address cannot be empty")
+		v.delegate.Add(fieldPrefix+".address", "Address cannot be empty")
 		return
 	}
 
 	if address.Protocol == SocketProtocol && !strings.HasPrefix(address.Address, "/") {
-		v.delegate.Add(path, "Unix socket path must start with a /")
+		v.delegate.Add(fieldPrefix+".protocol", "Unix socket path must start with a /")
 		return
-	}
-
-	if address.Protocol != SocketProtocol &&
-		net.ParseIP(address.Address) == nil &&
-		!constants.TLDPattern.MatchString(address.Address) {
-		v.delegate.Add(path, "Not a valid IP address or domain name")
 	}
 }
 

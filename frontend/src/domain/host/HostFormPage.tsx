@@ -2,7 +2,7 @@ import React from "react"
 import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
 import { Flex, Form, FormInstance, Switch } from "antd"
 import FormLayout from "../../core/components/form/FormLayout"
-import DomainNamesList from "../certificate/components/DomainNamesList"
+import DomainNamesList from "../../core/components/domainnames/DomainNamesList"
 import { navigateTo, queryParams, routeParams } from "../../core/components/router/AppRouter"
 import HostService from "./HostService"
 import ValidationResult from "../../core/validation/ValidationResult"
@@ -23,7 +23,6 @@ import IntegrationService from "../integration/IntegrationService"
 import If from "../../core/components/flowcontrol/If"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
-import HostFormValuesDefaults from "./model/HostFormValuesDefaults"
 import PaginatedSelect from "../../core/components/select/PaginatedSelect"
 import AccessListResponse from "../accesslist/model/AccessListResponse"
 import PageResponse from "../../core/pagination/PageResponse"
@@ -31,6 +30,7 @@ import AccessListService from "../accesslist/AccessListService"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
+import { hostFormValuesDefaults } from "./model/HostFormValuesDefaults"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -63,7 +63,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
             validationResult: new ValidationResult(),
             loading: true,
             notFound: false,
-            formValues: HostFormValuesDefaults,
+            formValues: hostFormValuesDefaults(),
             integrations: [],
         }
     }
@@ -151,13 +151,13 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
             newDomainNames = []
         } else if (!defaultServer && domainNames.length === 0) {
             injectDomainNeeded = true
-            newDomainNames = HostFormValuesDefaults.domainNames
+            newDomainNames = hostFormValuesDefaults().domainNames
         }
 
         const updatedData: HostFormValues = {
             ...host,
             routes: sortedRoutes,
-            bindings: injectBindingNeeded ? HostFormValuesDefaults.bindings : bindings,
+            bindings: injectBindingNeeded ? hostFormValuesDefaults().bindings : bindings,
             domainNames: newDomainNames,
         }
 

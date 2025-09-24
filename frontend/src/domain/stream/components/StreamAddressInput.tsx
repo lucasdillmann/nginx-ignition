@@ -1,5 +1,5 @@
 import { StreamAddress, StreamProtocol } from "../model/StreamRequest"
-import { Form, Input, InputNumber, Select, Space } from "antd"
+import { Flex, Form, Input, InputNumber, Select, Space } from "antd"
 import If from "../../../core/components/flowcontrol/If"
 import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
@@ -63,43 +63,45 @@ export default class StreamAddressInput extends React.Component<StreamAddressInp
 
         return (
             <Form.Item validateStatus={validationStatus} noStyle>
-                <Space direction="vertical">
-                    <Space.Compact block>
-                        <Select
-                            value={address.protocol}
-                            onChange={value => this.handleChange("protocol", value)}
-                            style={INPUT_STYLE}
-                            options={this.buildOptions()}
-                        />
-                        <Input
-                            value={address.address}
-                            onChange={event => this.handleChange("address", event.target.value)}
-                            placeholder={backendSocket ? "Unix socket path" : "Address"}
-                        />
-                        <If condition={!backendSocket}>
-                            <InputNumber
-                                placeholder="Port"
-                                addonBefore=":"
+                <Flex style={{ flexDirection: "column", flexGrow: 1, width: "100%" }}>
+                    <Space direction="vertical" style={{ flexGrow: 1 }}>
+                        <Space.Compact block>
+                            <Select
+                                value={address.protocol}
+                                onChange={value => this.handleChange("protocol", value)}
                                 style={INPUT_STYLE}
-                                value={address.port}
-                                onChange={value => this.handleChange("port", value)}
-                                min={1}
-                                max={65535}
+                                options={this.buildOptions()}
                             />
-                        </If>
-                    </Space.Compact>
-                </Space>
-                <If condition={validationMessage !== undefined}>
-                    <div className="ant-form-item-additional">
-                        <div
-                            id="description_help"
-                            className="ant-form-item-explain ant-form-item-explain-connected"
-                            style={{ color: "var(--nginxIgnition-colorError)" }}
-                        >
-                            <div className="ant-form-item-explain-error">{validationMessage}</div>
+                            <Input
+                                value={address.address}
+                                onChange={event => this.handleChange("address", event.target.value)}
+                                placeholder={backendSocket ? "Unix socket path" : "Address"}
+                            />
+                            <If condition={!backendSocket}>
+                                <InputNumber
+                                    placeholder="Port"
+                                    addonBefore=":"
+                                    style={INPUT_STYLE}
+                                    value={address.port}
+                                    onChange={value => this.handleChange("port", value)}
+                                    min={1}
+                                    max={65535}
+                                />
+                            </If>
+                        </Space.Compact>
+                    </Space>
+                    <If condition={validationMessage !== undefined}>
+                        <div className="ant-form-item-additional">
+                            <div
+                                id="description_help"
+                                className="ant-form-item-explain ant-form-item-explain-connected"
+                                style={{ color: "var(--nginxIgnition-colorError)" }}
+                            >
+                                <div className="ant-form-item-explain-error">{validationMessage}</div>
+                            </div>
                         </div>
-                    </div>
-                </If>
+                    </If>
+                </Flex>
             </Form.Item>
         )
     }

@@ -76,7 +76,7 @@ func (v *validator) validateDomainNames(host *Host) {
 	}
 
 	for index, domainName := range host.DomainNames {
-		if !constants.TLDPattern.MatchString(*domainName) {
+		if domainName == nil || !constants.TLDPattern.MatchString(*domainName) {
 			v.delegate.Add("domainNames["+strconv.Itoa(index)+"]", "Value is not a valid domain name")
 		}
 	}

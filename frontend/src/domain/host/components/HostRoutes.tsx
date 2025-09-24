@@ -5,7 +5,7 @@ import If from "../../../core/components/flowcontrol/If"
 import {
     ArrowDownOutlined,
     ArrowUpOutlined,
-    CloseOutlined,
+    DeleteOutlined,
     PlusOutlined,
     QuestionCircleFilled,
     SettingOutlined,
@@ -20,11 +20,11 @@ import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
 import { IntegrationOptionResponse } from "../../integration/model/IntegrationOptionResponse"
 import PageResponse, { emptyPageResponse } from "../../../core/pagination/PageResponse"
 import IntegrationService from "../../integration/IntegrationService"
-import HostFormValuesDefaults from "../model/HostFormValuesDefaults"
 import HostRouteSettingsModal from "./HostRouteSettingsModal"
 import { Link } from "react-router-dom"
 import CodeEditorModal from "../../../core/components/codeeditor/CodeEditorModal"
 import { CodeEditorLanguage } from "../../../core/components/codeeditor/CodeEditor"
+import { hostFormValuesDefaults } from "../model/HostFormValuesDefaults"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -207,7 +207,9 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
 
         const route = routes[index]
         if (!route?.response) {
-            return
+            route.response = {
+                statusCode: 200,
+            }
         }
 
         route.response.payload = payload
@@ -522,7 +524,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 </Form.Item>
 
                 <If condition={routes.length > 1}>
-                    <CloseOutlined onClick={() => this.removeRoute(index)} style={ACTION_ICON_STYLE} />
+                    <DeleteOutlined onClick={() => this.removeRoute(index)} style={ACTION_ICON_STYLE} />
                 </If>
             </Flex>
         )
@@ -537,7 +539,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     type="dashed"
                     onClick={() =>
                         operations.add({
-                            ...HostFormValuesDefaults.routes[0],
+                            ...hostFormValuesDefaults().routes[0],
                             priority: fields.length,
                         })
                     }

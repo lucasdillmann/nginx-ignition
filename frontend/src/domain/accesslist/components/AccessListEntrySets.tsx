@@ -1,13 +1,13 @@
 import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import { Button, Flex, Form, FormListFieldData, FormListOperation, Select } from "antd"
-import { ArrowDownOutlined, ArrowUpOutlined, CloseOutlined, PlusOutlined } from "@ant-design/icons"
+import { ArrowDownOutlined, ArrowUpOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons"
 import FormLayout from "../../../core/components/form/FormLayout"
 import TextArea from "antd/es/input/TextArea"
 import { AccessListOutcome } from "../model/AccessListRequest"
-import { AccessListFormEntryDefaults } from "../AccessListFormDefaults"
 import "./AccessListEntrySets.css"
 import { AccessListEntrySetFormValues } from "../model/AccessListFormValues"
+import { accessListFormEntryDefaults } from "../AccessListFormDefaults"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -99,7 +99,7 @@ export default class AccessListEntrySets extends React.Component<AccessListEntry
                     style={index === entrySets.length - 1 ? DISABLED_ACTION_ICON_STYLE : ENABLED_ACTION_ICON_STYLE}
                 />
 
-                <CloseOutlined onClick={() => this.removeEntry(index)} style={ACTION_ICON_STYLE} />
+                <DeleteOutlined onClick={() => this.removeEntry(index)} style={ACTION_ICON_STYLE} />
             </Flex>
         )
     }
@@ -113,7 +113,7 @@ export default class AccessListEntrySets extends React.Component<AccessListEntry
                     type="dashed"
                     onClick={() =>
                         operations.add({
-                            ...AccessListFormEntryDefaults,
+                            ...accessListFormEntryDefaults(),
                             priority: fields.length,
                         })
                     }
