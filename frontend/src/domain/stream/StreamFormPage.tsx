@@ -231,7 +231,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
 
     private renderSniRouterForm(): React.ReactNode {
         const { formValues, validationResult } = this.state
-        if (formValues.routes === undefined) {
+        if (!Array.isArray(formValues.routes)) {
             this.handleChange("routes", [streamRouteDefaults()])
             return <></>
         }
