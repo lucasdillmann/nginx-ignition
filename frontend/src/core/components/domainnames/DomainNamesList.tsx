@@ -17,7 +17,7 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
     private renderFields(fields: FormListFieldData[], operations: FormListOperation) {
         const { validationResult, expandedLabelSize, className, disableTitle } = this.props
         const layout = expandedLabelSize === true ? FormLayout.ExpandedUnlabeledItem : FormLayout.UnlabeledItem
-        const pathPrefix = this.props.pathPrefix === undefined ? "" : this.props.pathPrefix.merged
+        const pathPrefix = this.props.pathPrefix === undefined ? "" : this.props.pathPrefix.merged + "."
 
         const domainNameFields = fields.map((field, index) => (
             <Form.Item
@@ -30,8 +30,8 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
                 <Flex>
                     <Form.Item
                         {...field}
-                        validateStatus={validationResult.getStatus(`${pathPrefix}.domainNames[${index}]`)}
-                        help={validationResult.getMessage(`${pathPrefix}.domainNames[${index}]`)}
+                        validateStatus={validationResult.getStatus(`${pathPrefix}domainNames[${index}]`)}
+                        help={validationResult.getMessage(`${pathPrefix}domainNames[${index}]`)}
                         style={{ marginBottom: 0, width: "100%" }}
                     >
                         <Input placeholder="Domain name" />

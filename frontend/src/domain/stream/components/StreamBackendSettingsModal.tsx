@@ -71,7 +71,7 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
                         validateStatus={validationResult.getStatus(`${validationBasePath}.circuitBreaker.maxFailures`)}
                         help={
                             validationResult.getMessage(`${validationBasePath}.circuitBreaker.maxFailures`) ??
-                            "Defines the maximum number of consecutive failures before the circuit breaker is opened"
+                            "Maximum number of consecutive failures before the circuit breaker is opened"
                         }
                         labelCol={CIRCUIT_BREAKER_SPACING}
                         style={FORM_INPUT_STYLE}
@@ -91,7 +91,7 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
                         validateStatus={validationResult.getStatus(`${validationBasePath}.circuitBreaker.openSeconds`)}
                         help={
                             validationResult.getMessage(`${validationBasePath}.circuitBreaker.openSeconds`) ??
-                            "Defines amount of time in seconds that the circuit breaker will be open before it is closed again"
+                            "Amount of time in seconds that the circuit breaker will be open before it is closed again"
                         }
                         labelCol={CIRCUIT_BREAKER_SPACING}
                         style={hideWeight ? undefined : FORM_INPUT_STYLE}
