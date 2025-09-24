@@ -45,7 +45,7 @@ func (p *streamFileProvider) buildConfigFileContents(s *stream.Stream) (*string,
 }
 
 func (p *streamFileProvider) buildSimpleStream(s *stream.Stream) (*string, error) {
-	upstreamId := fmt.Sprintf("stream_%s_default", s.ID)
+	upstreamId := fmt.Sprintf("stream_%s_default", nginxId(s))
 	upstream, err := p.buildUpstream([]stream.Backend{s.DefaultBackend}, upstreamId)
 	if err != nil {
 		return nil, err
@@ -127,12 +127,12 @@ func (p *streamFileProvider) buildUpstream(backends []stream.Backend, name strin
 
 func (p *streamFileProvider) buildRoutedStream(s *stream.Stream) (*string, error) {
 	mapping := strings.Builder{}
-	mappingId := fmt.Sprintf("$stream_%s_router", s.ID)
+	mappingId := fmt.Sprintf("$stream_%s_router", nginxId(s))
 	mapping.WriteString(fmt.Sprintf("map $ssl_preread_server_name %s {\n", mappingId))
 
 	upstreams := strings.Builder{}
 	for routeIndex, route := range s.Routes {
-		routeId := fmt.Sprintf("stream_%s_route_%d", s.ID, routeIndex)
+		routeId := fmt.Sprintf("stream_%s_route_%d", nginxId(s), routeIndex)
 		upstream, err := p.buildUpstream(route.Backends, routeId)
 		if err != nil {
 			return nil, err
@@ -145,7 +145,7 @@ func (p *streamFileProvider) buildRoutedStream(s *stream.Stream) (*string, error
 		}
 	}
 
-	defaultUpstreamId := fmt.Sprintf("stream_%s_default", s.ID)
+	defaultUpstreamId := fmt.Sprintf("stream_%s_default", nginxId(s))
 	defaultUpstream, err := p.buildUpstream([]stream.Backend{s.DefaultBackend}, defaultUpstreamId)
 	if err != nil {
 		return nil, err
@@ -198,4 +198,8 @@ func (p *streamFileProvider) buildStream(s *stream.Stream, upstreams, instructio
 	)
 
 	return &contents, nil
+}
+
+func nginxId(s *stream.Stream) string {
+	return strings.ReplaceAll(s.ID.String(), "-", "")
 }

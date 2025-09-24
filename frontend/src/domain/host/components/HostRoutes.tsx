@@ -207,7 +207,9 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
 
         const route = routes[index]
         if (!route?.response) {
-            return
+            route.response = {
+                statusCode: 200,
+            }
         }
 
         route.response.payload = payload
