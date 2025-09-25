@@ -78,6 +78,13 @@ jobs:
           GOMODCACHE: ${{ github.workspace }}/.go/pkg/mod
           GOTOOLCHAIN: ""
         run: make build-snapshot PR_ID=${{ github.event.pull_request.number }}
+      - name: Archive distribution files
+        uses: actions/upload-artifact@v4
+        with:
+          name: distribution-files
+          retention-days: 1
+          path: |
+            build/nginx-ignition.*.zip
       - name: npm cache upload
         uses: actions/cache/save@v4
         with:
