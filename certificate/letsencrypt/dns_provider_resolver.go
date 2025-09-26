@@ -152,9 +152,9 @@ func buildPorkbunProvider(parameters map[string]any) (challenge.Provider, error)
 	cfg := &porkbun.Config{
 		APIKey:             apiKey,
 		SecretAPIKey:       secretApiKey,
+		TTL:                300,
 		PropagationTimeout: propagationTimeout,
 		PollingInterval:    poolingInterval,
-		TTL:                ttl,
 	}
 	return porkbun.NewDNSProviderConfig(cfg)
 }
