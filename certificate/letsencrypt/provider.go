@@ -56,6 +56,8 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 		&azureClientId,
 		&azureClientSecret,
 		&azureEnvironment,
+		&porkbunApiKey,
+		&porkbunSecretApiKey,
 	}
 }
 
