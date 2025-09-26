@@ -13,6 +13,7 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/azuredns"
 	"github.com/go-acme/lego/v4/providers/dns/cloudflare"
 	"github.com/go-acme/lego/v4/providers/dns/gcloud"
+	"github.com/go-acme/lego/v4/providers/dns/porkbun"
 	"github.com/go-acme/lego/v4/providers/dns/route53"
 
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
@@ -38,6 +39,8 @@ func resolveDnsProvider(ctx context.Context, domainNames []string, parameters ma
 		return buildGoogleCloudProvider(parameters)
 	case azureId:
 		return buildAzureProvider(parameters)
+	case porkbunId:
+		return buildPorkbunProvider(parameters)
 	default:
 		return nil, core_error.New("Unknown DNS provider", true)
 	}
@@ -140,4 +143,18 @@ func buildAzureProvider(parameters map[string]any) (challenge.Provider, error) {
 	}
 
 	return azuredns.NewDNSProviderConfig(cfg)
+}
+
+func buildPorkbunProvider(parameters map[string]any) (challenge.Provider, error) {
+	apiKey, _ := parameters[porkbunApiKey.ID].(string)
+	secretApiKey, _ := parameters[porkbunSecretApiKey.ID].(string)
+
+	cfg := &porkbun.Config{
+		APIKey:             apiKey,
+		SecretAPIKey:       secretApiKey,
+		PropagationTimeout: propagationTimeout,
+		PollingInterval:    poolingInterval,
+		TTL:                ttl,
+	}
+	return porkbun.NewDNSProviderConfig(cfg)
 }

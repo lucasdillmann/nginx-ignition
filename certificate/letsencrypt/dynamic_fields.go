@@ -7,6 +7,7 @@ var (
 	azureId       = "AZURE"
 	cloudflareId  = "CLOUDFLARE"
 	googleCloudId = "GOOGLE_CLOUD"
+	porkbunId     = "PORKBUN"
 
 	termsOfService = dynamic_fields.DynamicField{
 		ID:          "acceptTheTermsOfService",
@@ -36,6 +37,7 @@ var (
 			{ID: azureId, Description: "Azure DNS"},
 			{ID: cloudflareId, Description: "Cloudflare DNS"},
 			{ID: googleCloudId, Description: "Google Cloud DNS"},
+			{ID: porkbunId, Description: "Porkbun DNS"},
 		},
 	}
 
@@ -153,6 +155,31 @@ var (
 			{ID: "DEFAULT", Description: "Azure (default)"},
 			{ID: "CHINA", Description: "China"},
 			{ID: "US_GOVERNMENT", Description: "US Government"},
+		},
+	}
+
+	porkbunApiKey = dynamic_fields.DynamicField{
+		ID:          "porkbunApiKey",
+		Priority:    2,
+		Description: "Porkbun API key",
+		Required:    true,
+		Type:        dynamic_fields.SingleLineTextType,
+		Condition: &dynamic_fields.Condition{
+			ParentField: dnsProvider.ID,
+			Value:       porkbunId,
+		},
+	}
+
+	porkbunSecretApiKey = dynamic_fields.DynamicField{
+		ID:          "porkbunSecretApiKey",
+		Priority:    3,
+		Description: "Porkbun Secret API key",
+		Required:    true,
+		Sensitive:   true,
+		Type:        dynamic_fields.SingleLineTextType,
+		Condition: &dynamic_fields.Condition{
+			ParentField: dnsProvider.ID,
+			Value:       porkbunId,
 		},
 	}
 )
