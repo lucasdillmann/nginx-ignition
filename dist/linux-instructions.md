@@ -46,6 +46,11 @@ to interact with the nginx binary and alike.
 Open /opt/nginx-ignition/nginx-ignition.properties and adjust values as needed. Please check the documentation 
 available on GitHub for full details, default values and recommendations.
 
+nginx ignition can also be configured using only environment variables, removing the need for the configuration
+properties file entirely. The keys are the same as in the properties file, but with uppercase names and
+dots/dashes replaced by underscores. For example, the `nginx-ignition.nginx.binary-path` property can be set
+using the `NGINX_IGNITION_NGINX_BINARY_PATH` environment variable.
+
 ### Register and start the service (using systemd)
 Reload systemd, enable, and start:
 

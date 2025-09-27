@@ -52,6 +52,11 @@ available on GitHub for full details, default values and recommendations.
 Notable setting for macOS/Homebrew nginx:
 - nginx-ignition.nginx.binary-path=/opt/homebrew/bin/nginx
 
+nginx ignition can also be configured using only environment variables, removing the need for the configuration 
+properties file entirely. The keys are the same as in the properties file, but with uppercase names and
+dots/dashes replaced by underscores. For example, the `nginx-ignition.nginx.binary-path` property can be set 
+using the `NGINX_IGNITION_NGINX_BINARY_PATH` environment variable.
+
 ### Register and start the service (using launchd)
 Load the daemon so it starts at boot and immediately:
 

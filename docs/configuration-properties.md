@@ -58,6 +58,7 @@ nginx ignition to suit you better, if needed.
 | Environment variable                                     | Description                                                                                           | Example      | Default value             |
 |----------------------------------------------------------|-------------------------------------------------------------------------------------------------------|--------------|---------------------------|
 | NGINX_IGNITION_SERVER_PORT                               | Port number where the nginx ignition should listen for requests                                       | 1234         | 8090                      |
+| NGINX_IGNITION_SERVER_ADDRESS                            | Address/IP where the nginx ignition should listen for requests                                        | 192.168.0.1  | 0.0.0.0                   |
 | NGINX_IGNITION_NGINX_BINARY_PATH                         | Path to the nginx's binary that the nginx ignition should use                                         | /bin/nginx   | nginx                     |
 | NGINX_IGNITION_NGINX_CONFIG_PATH                         | Path on where the nginx ignition should store the generated nginx's configuration files               | /etc/nginx   | /tmp/nginx-ignition/nginx |
 | NGINX_IGNITION_DATABASE_DRIVER                           | The type of the database, being either `postgres` or `sqlite`                                         | postgres     | sqlite                    |

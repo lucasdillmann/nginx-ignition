@@ -25,12 +25,12 @@ func registerStartup(
 }
 
 func (s startup) Run(_ context.Context) error {
-	port, err := s.configuration.Get("nginx-ignition.server.binding-port")
+	port, err := s.configuration.Get("nginx-ignition.server.port")
 	if err != nil {
 		return err
 	}
 
-	address, err := s.configuration.Get("nginx-ignition.server.binding-address")
+	address, err := s.configuration.Get("nginx-ignition.server.address")
 	if err != nil {
 		return err
 	}
