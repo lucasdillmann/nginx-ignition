@@ -33,7 +33,7 @@ jobs:
       - name: Lint
         run: make check
       - name: Sonarqube
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           GOPATH: ${{ github.workspace }}/.go
           GOMODCACHE: ${{ github.workspace }}/.go/pkg/mod
