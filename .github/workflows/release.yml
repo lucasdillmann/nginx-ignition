@@ -62,7 +62,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ steps.tag.outputs.VERSION }}
-          tag_name: ${{ steps.tag.outputs.VERSION }}
           body: "Docker image: dillmann/nginx-ignition:${{ steps.tag.outputs.VERSION }}"
           files: |
             build/nginx-ignition.*.zip
