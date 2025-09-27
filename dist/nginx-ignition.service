@@ -1,0 +1,14 @@
+[Unit]
+Description=nginx ignition
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/opt/nginx-ignition/nginx-ignition --config /opt/nginx-ignition/nginx-ignition.properties
+
+[Install]
+WantedBy=multi-user.target

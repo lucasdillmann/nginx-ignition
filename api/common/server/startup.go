@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 
@@ -29,10 +30,15 @@ func (s startup) Run(_ context.Context) error {
 		return err
 	}
 
+	address, err := s.configuration.Get("nginx-ignition.server.address")
+	if err != nil {
+		return err
+	}
+
 	log.Infof("Starting HTTP server on port %s", port)
 	s.state.server = &http.Server{Handler: s.state.engine.Handler()}
 
-	listener, err := net.Listen("tcp", "0.0.0.0:"+port)
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", address, port))
 	if err != nil {
 		return err
 	}

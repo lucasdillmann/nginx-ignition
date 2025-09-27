@@ -6,14 +6,24 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
 type Configuration struct {
-	prefix string
+	configFileValues map[string]string
+	prefix           string
 }
 
 func New() *Configuration {
-	return &Configuration{}
+	configFileValues, err := loadConfigFileValues()
+	if err != nil {
+		log.Warnf("Unable to read configuration properties file: %s", err)
+	}
+
+	return &Configuration{
+		configFileValues: configFileValues,
+	}
 }
 
 func (c *Configuration) Get(key string) (string, error) {
@@ -35,6 +45,11 @@ func (c *Configuration) Get(key string) (string, error) {
 
 	value, exists = os.LookupEnv(formattedKey)
 	if exists {
+		return value, nil
+	}
+
+	value = c.configFileValues[fullKey]
+	if value != "" {
 		return value, nil
 	}
 
@@ -76,5 +91,8 @@ func (c *Configuration) WithPrefix(prefix string) *Configuration {
 		newPrefix = c.prefix + "." + prefix
 	}
 
-	return &Configuration{newPrefix}
+	return &Configuration{
+		configFileValues: c.configFileValues,
+		prefix:           newPrefix,
+	}
 }

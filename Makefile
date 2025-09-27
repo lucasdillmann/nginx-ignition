@@ -31,11 +31,10 @@ format: prerequisites
 build-frontend: prerequisites
 	cd frontend/ && npm run build
 
-build-backend-amd64: prerequisites
+build-backend: prerequisites
 	GOARCH=amd64 CGO_ENABLED="0" GOOS="linux" go build -o build/linux/amd64 application/main.go
-
-build-backend-arm64: prerequisites
 	GOARCH=arm64 CGO_ENABLED="0" GOOS="linux" go build -o build/linux/arm64 application/main.go
+	GOARCH=arm64 CGO_ENABLED="0" GOOS="darwin" go build -o build/macos/arm64 application/main.go
 
 build-release-docker-image:
 	docker buildx build \
@@ -52,8 +51,25 @@ build-snapshot-docker-image:
 		--build-arg NGINX_IGNITION_VERSION="" \
 		--push .
 
-build-prerequisites: prerequisites build-frontend build-backend-amd64 build-backend-arm64
+build-distribution-files:
+	$(MAKE) build-distribution-zip ARCH=amd64 OS=linux SERVICE_FILE_EXT=service
+	$(MAKE) build-distribution-zip ARCH=arm64 OS=linux SERVICE_FILE_EXT=service
+	$(MAKE) build-distribution-zip ARCH=arm64 OS=macos SERVICE_FILE_EXT=plist
 
-build-release: build-prerequisites build-release-docker-image
+build-distribution-zip:
+	rm -Rf build/nginx-ignition.$(OS)-$(ARCH).zip
+	mkdir -p build/zip
+	cp -Rf frontend/build build/zip/frontend
+	cp -Rf database/common/migrations/scripts build/zip/migrations
+	cp -Rf dist/$(OS)-instructions.md build/zip/
+	cp -Rf dist/nginx-ignition.properties build/zip/
+	cp dist/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/
+	cp build/$(OS)/$(ARCH) build/zip/nginx-ignition
+	cd build/zip && zip -q -r ../nginx-ignition.$(OS)-$(ARCH).zip .
+	rm -Rf build/zip
 
-build-snapshot: build-prerequisites build-snapshot-docker-image
+build-prerequisites: prerequisites build-frontend build-backend
+
+build-release: build-prerequisites build-release-docker-image build-distribution-files
+
+build-snapshot: build-prerequisites build-snapshot-docker-image build-distribution-files

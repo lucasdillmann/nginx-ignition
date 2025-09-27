@@ -28,8 +28,11 @@ Some of the available features include:
 
 ## Getting started
 
-To run nginx ignition, run the following in your terminal. If you don't have Docker already, you will need to install 
-it first (follow [this link](https://www.docker.com/get-started/) for instructions).
+nginx ignition is available as a Docker image and can be run locally on a Linux or macOS machine. 
+
+### Docker
+Run the following in your terminal to start nginx ignition using Docker. If you don't have Docker already, you will 
+need to install it first (follow [this link](https://www.docker.com/get-started/) for instructions).
 
 ```shell
 docker run -p8090:8090 -p80:80 dillmann/nginx-ignition
@@ -41,6 +44,15 @@ default username or password, the nginx ignition will guide you to create your u
 Please note that in its default configuration the app will start using an embedded SQLite database. While this is fine
 for testing and some experiments, is not recommended for a long-term scenario. For that, please refer to the 
 configuration section below to use PostgreSQL instead.
+
+### Installing or running locally on a Linux or macOS machine
+
+To install nginx ignition locally on your machine, download the ZIP file for your OS and arch (amd64/arm64) 
+from the [releases page](https://github.com/lucasdillmann/nginx-ignition/releases). An instructions file is available 
+inside the zip that will guide you through the installation process for your OS.
+
+More distribution packages, such as .deb (Debian, Ubuntu, etc), .rpm (Red Hat, Rocky Linux, etc) and more are in the 
+works.
 
 ## Migrating from 1.x to 2.0.0
 
