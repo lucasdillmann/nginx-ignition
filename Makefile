@@ -52,18 +52,21 @@ build-snapshot-docker-image:
 		--push .
 
 build-distribution-files:
-	$(MAKE) build-distribution-zip ARCH=amd64 OS=linux
-	$(MAKE) build-distribution-zip ARCH=arm64 OS=linux
-	$(MAKE) build-distribution-zip ARCH=arm64 OS=macos
+	$(MAKE) build-distribution-zip ARCH=amd64 OS=linux SERVICE_FILE_EXT=service
+	$(MAKE) build-distribution-zip ARCH=arm64 OS=linux SERVICE_FILE_EXT=service
+	$(MAKE) build-distribution-zip ARCH=arm64 OS=macos SERVICE_FILE_EXT=plist
 
 build-distribution-zip:
-	rm -Rf build/zip build/nginx-ignition.$(OS)-$(ARCH).zip
+	rm -Rf build/nginx-ignition.$(OS)-$(ARCH).zip
 	mkdir -p build/zip
 	cp -Rf frontend/build build/zip/frontend
 	cp -Rf database/common/migrations/scripts build/zip/migrations
+	cp -Rf dist/$(OS)-instructions.md build/zip/
+	cp -Rf dist/nginx-ignition.properties build/zip/
+	cp dist/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/
 	cp build/$(OS)/$(ARCH) build/zip/nginx-ignition
-	cp nginx-ignition.properties build/zip/
 	cd build/zip && zip -q -r ../nginx-ignition.$(OS)-$(ARCH).zip .
+	rm -Rf build/zip
 
 build-prerequisites: prerequisites build-frontend build-backend
 

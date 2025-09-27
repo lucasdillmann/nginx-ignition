@@ -1,17 +1,14 @@
 package configuration
 
 import (
+	"flag"
 	"os"
 	"strings"
 )
 
 func loadConfigFileValues() (map[string]string, error) {
-	customPath := os.Getenv("NGINX_IGNITION_CONFIG_FILE_PATH")
-	if customPath == "" {
-		customPath = "nginx-ignition.properties"
-	}
-
-	file, err := os.ReadFile(customPath)
+	filePath := resolveConfigFilePath()
+	file, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -31,4 +28,19 @@ func loadConfigFileValues() (map[string]string, error) {
 	}
 
 	return output, nil
+}
+
+func resolveConfigFilePath() string {
+	customPathPtr := flag.String("config", "", "Path to the configuration properties file")
+	flag.Parse()
+
+	if customPathPtr != nil && *customPathPtr != "" {
+		return *customPathPtr
+	}
+
+	if customPath := os.Getenv("NGINX_IGNITION_CONFIG_FILE_PATH"); customPath != "" {
+		return customPath
+	}
+
+	return "nginx-ignition.properties"
 }
