@@ -1,7 +1,7 @@
 # Linux installation and upgrade instructions
 
-These instructions explain how to install and run nginx-ignition on a Linux host using systemd. The distribution .zip 
-you downloaded already includes:
+These instructions explain how to install and run nginx-ignition on a Linux host. The distribution .zip you downloaded 
+already includes:
 
 - nginx-ignition binary
 - frontend assets (UI)
