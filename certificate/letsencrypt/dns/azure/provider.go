@@ -18,6 +18,10 @@ const (
 	clientID       = "azureClientId"
 	clientSecretID = "azureClientSecret"
 	environmentID  = "azureEnvironment"
+
+	defaultRegion = "DEFAULT"
+	chinaRegion   = "CHINA"
+	usGovRegion   = "US_GOVERNMENT"
 )
 
 type Provider struct{}
@@ -63,9 +67,9 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			Required:    true,
 			Type:        dynamic_fields.EnumType,
 			EnumOptions: &[]*dynamic_fields.EnumOption{
-				{ID: "DEFAULT", Description: "Azure (default)"},
-				{ID: "CHINA", Description: "China"},
-				{ID: "US_GOVERNMENT", Description: "US Government"},
+				{ID: defaultRegion, Description: "Azure (default)"},
+				{ID: chinaRegion, Description: "China"},
+				{ID: usGovRegion, Description: "US Government"},
 			},
 		},
 	})
@@ -84,11 +88,11 @@ func (p *Provider) ChallengeProvider(
 
 	var env cloud.Configuration
 	switch environment {
-	case "CHINA":
+	case chinaRegion:
 		env = cloud.AzureChina
-	case "DEFAULT":
+	case defaultRegion:
 		env = cloud.AzurePublic
-	case "US_GOVERNMENT":
+	case usGovRegion:
 		env = cloud.AzureGovernment
 	default:
 		return nil, core_error.New("Unknown Azure environment", true)
