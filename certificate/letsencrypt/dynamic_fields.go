@@ -1,19 +1,19 @@
 package letsencrypt
 
-import "dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+import (
+	"sort"
+
+	"github.com/aws/smithy-go/ptr"
+
+	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+)
 
 var (
-	awsRoute53Id  = "AWS_ROUTE53"
-	azureId       = "AZURE"
-	cloudflareId  = "CLOUDFLARE"
-	googleCloudId = "GOOGLE_CLOUD"
-	porkbunId     = "PORKBUN"
-
 	termsOfService = dynamic_fields.DynamicField{
 		ID:          "acceptTheTermsOfService",
 		Priority:    99,
 		Description: "Terms of service",
-		HelpText:    stringPtr("I agree to the Let's Encrypt terms of service available at theirs website"),
+		HelpText:    ptr.String("I agree to the Let's Encrypt terms of service available at theirs website"),
 		Required:    true,
 		Type:        dynamic_fields.BooleanType,
 	}
@@ -32,158 +32,29 @@ var (
 		Description: "DNS provider (for the DNS challenge)",
 		Required:    true,
 		Type:        dynamic_fields.EnumType,
-		EnumOptions: &[]*dynamic_fields.EnumOption{
-			{ID: awsRoute53Id, Description: "AWS Route53"},
-			{ID: azureId, Description: "Azure DNS"},
-			{ID: cloudflareId, Description: "Cloudflare DNS"},
-			{ID: googleCloudId, Description: "Google Cloud DNS"},
-			{ID: porkbunId, Description: "Porkbun DNS"},
-		},
-	}
-
-	awsAccessKey = dynamic_fields.DynamicField{
-		ID:          "awsAccessKey",
-		Priority:    2,
-		Description: "AWS access key (for the DNS challenge)",
-		Required:    true,
-		Type:        dynamic_fields.SingleLineTextType,
-		Condition: &dynamic_fields.Condition{
-			ParentField: dnsProvider.ID,
-			Value:       awsRoute53Id,
-		},
-	}
-
-	awsSecretKey = dynamic_fields.DynamicField{
-		ID:          "awsSecretKey",
-		Priority:    3,
-		Description: "AWS secret key",
-		Required:    true,
-		Sensitive:   true,
-		Type:        dynamic_fields.SingleLineTextType,
-		Condition: &dynamic_fields.Condition{
-			ParentField: dnsProvider.ID,
-			Value:       awsRoute53Id,
-		},
-	}
-
-	cloudflareApiToken = dynamic_fields.DynamicField{
-		ID:          "cloudflareApiToken",
-		Priority:    2,
-		Description: "Cloudflare API token (for the DNS challenge)",
-		Required:    true,
-		Sensitive:   true,
-		Type:        dynamic_fields.SingleLineTextType,
-		Condition: &dynamic_fields.Condition{
-			ParentField: dnsProvider.ID,
-			Value:       cloudflareId,
-		},
-	}
-
-	googleCloudPrivateKey = dynamic_fields.DynamicField{
-		ID:          "googleCloudPrivateKey",
-		Priority:    2,
-		Description: "Service account private key JSON",
-		Required:    true,
-		Sensitive:   true,
-		Type:        dynamic_fields.MultiLineTextType,
-		Condition: &dynamic_fields.Condition{
-			ParentField: dnsProvider.ID,
-			Value:       googleCloudId,
-		},
-	}
-
-	azureTenantId = dynamic_fields.DynamicField{
-		ID:          "azureTenantId",
-		Priority:    2,
-		Description: "Azure tenant ID (for the DNS challenge)",
-		Required:    true,
-		Type:        dynamic_fields.SingleLineTextType,
-		Condition: &dynamic_fields.Condition{
-			ParentField: dnsProvider.ID,
-			Value:       azureId,
-		},
-	}
-
-	azureSubscriptionId = dynamic_fields.DynamicField{
-		ID:          "azureSubscriptionId",
-		Priority:    3,
-		Description: "Azure subscription ID",
-		Required:    true,
-		Type:        dynamic_fields.SingleLineTextType,
-		Condition: &dynamic_fields.Condition{
-			ParentField: dnsProvider.ID,
-			Value:       azureId,
-		},
-	}
-
-	azureClientId = dynamic_fields.DynamicField{
-		ID:          "azureClientId",
-		Priority:    4,
-		Description: "Azure client ID",
-		Required:    true,
-		Type:        dynamic_fields.SingleLineTextType,
-		Condition: &dynamic_fields.Condition{
-			ParentField: dnsProvider.ID,
-			Value:       azureId,
-		},
-	}
-
-	azureClientSecret = dynamic_fields.DynamicField{
-		ID:          "azureClientSecret",
-		Priority:    5,
-		Description: "Azure client secret",
-		Required:    true,
-		Sensitive:   true,
-		Type:        dynamic_fields.SingleLineTextType,
-		Condition: &dynamic_fields.Condition{
-			ParentField: dnsProvider.ID,
-			Value:       azureId,
-		},
-	}
-
-	azureEnvironment = dynamic_fields.DynamicField{
-		ID:          "azureEnvironment",
-		Priority:    6,
-		Description: "Azure environment",
-		Required:    true,
-		Type:        dynamic_fields.EnumType,
-		Condition: &dynamic_fields.Condition{
-			ParentField: dnsProvider.ID,
-			Value:       azureId,
-		},
-		EnumOptions: &[]*dynamic_fields.EnumOption{
-			{ID: "DEFAULT", Description: "Azure (default)"},
-			{ID: "CHINA", Description: "China"},
-			{ID: "US_GOVERNMENT", Description: "US Government"},
-		},
-	}
-
-	porkbunApiKey = dynamic_fields.DynamicField{
-		ID:          "porkbunApiKey",
-		Priority:    2,
-		Description: "Porkbun API key",
-		Required:    true,
-		Type:        dynamic_fields.SingleLineTextType,
-		Condition: &dynamic_fields.Condition{
-			ParentField: dnsProvider.ID,
-			Value:       porkbunId,
-		},
-	}
-
-	porkbunSecretApiKey = dynamic_fields.DynamicField{
-		ID:          "porkbunSecretApiKey",
-		Priority:    3,
-		Description: "Porkbun Secret API key",
-		Required:    true,
-		Sensitive:   true,
-		Type:        dynamic_fields.SingleLineTextType,
-		Condition: &dynamic_fields.Condition{
-			ParentField: dnsProvider.ID,
-			Value:       porkbunId,
-		},
 	}
 )
 
-func stringPtr(s string) *string {
-	return &s
+func resolveDynamicFields() []*dynamic_fields.DynamicField {
+	output := make([]*dynamic_fields.DynamicField, 0, len(providers))
+
+	output = append(output, &termsOfService, &emailAddress, &dnsProvider)
+	providerOptions := make([]*dynamic_fields.EnumOption, 0, len(providers))
+
+	for _, provider := range providers {
+		output = append(output, provider.DynamicFields()...)
+
+		providerOptions = append(providerOptions, &dynamic_fields.EnumOption{
+			ID:          provider.ID(),
+			Description: provider.Name(),
+		})
+	}
+
+	sort.Slice(providerOptions, func(leftIndex, rightIndex int) bool {
+		return providerOptions[leftIndex].Description < providerOptions[rightIndex].Description
+	})
+
+	dnsProvider.EnumOptions = &providerOptions
+
+	return output
 }

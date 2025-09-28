@@ -43,22 +43,7 @@ func (p *Provider) Name() string {
 }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return []*dynamic_fields.DynamicField{
-		&termsOfService,
-		&emailAddress,
-		&dnsProvider,
-		&awsAccessKey,
-		&awsSecretKey,
-		&cloudflareApiToken,
-		&googleCloudPrivateKey,
-		&azureTenantId,
-		&azureSubscriptionId,
-		&azureClientId,
-		&azureClientSecret,
-		&azureEnvironment,
-		&porkbunApiKey,
-		&porkbunSecretApiKey,
-	}
+	return resolveDynamicFields()
 }
 
 func (p *Provider) Priority() int {
