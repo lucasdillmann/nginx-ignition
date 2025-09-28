@@ -13,11 +13,11 @@ import (
 )
 
 const (
-	tenantID       = "azureTenantId"
-	subscriptionID = "azureSubscriptionId"
-	clientID       = "azureClientId"
-	clientSecretID = "azureClientSecret"
-	environmentID  = "azureEnvironment"
+	tenantFieldID       = "azureTenantId"
+	subscriptionFieldID = "azureSubscriptionId"
+	clientFieldID       = "azureClientId"
+	clientSecretFieldID = "azureClientSecret"
+	environmentFieldID  = "azureEnvironment"
 
 	defaultRegion = "DEFAULT"
 	chinaRegion   = "CHINA"
@@ -31,45 +31,54 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name() string {
-	return "Azure DNS"
+	return "Azure"
 }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
-			ID:          tenantID,
-			Description: "Azure tenant ID (for the DNS challenge)",
+			ID:          tenantFieldID,
+			Description: "Azure tenant ID",
 			Required:    true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
-			ID:          subscriptionID,
+			ID:          subscriptionFieldID,
 			Description: "Azure subscription ID",
 			Required:    true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
-			ID:          clientID,
+			ID:          clientFieldID,
 			Description: "Azure client ID",
 			Required:    true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
-			ID:          clientSecretID,
+			ID:          clientSecretFieldID,
 			Description: "Azure client secret",
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
-			ID:          environmentID,
+			ID:          environmentFieldID,
 			Description: "Azure environment",
 			Required:    true,
 			Type:        dynamic_fields.EnumType,
 			EnumOptions: &[]*dynamic_fields.EnumOption{
-				{ID: defaultRegion, Description: "Azure (default)"},
-				{ID: chinaRegion, Description: "China"},
-				{ID: usGovRegion, Description: "US Government"},
+				{
+					ID:          defaultRegion,
+					Description: "Azure (default)",
+				},
+				{
+					ID:          chinaRegion,
+					Description: "China",
+				},
+				{
+					ID:          usGovRegion,
+					Description: "US Government",
+				},
 			},
 		},
 	})
@@ -80,11 +89,11 @@ func (p *Provider) ChallengeProvider(
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
-	tenantId, _ := parameters[tenantID].(string)
-	subscriptionId, _ := parameters[subscriptionID].(string)
-	clientId, _ := parameters[clientID].(string)
-	clientSecret, _ := parameters[clientSecretID].(string)
-	environment, _ := parameters[environmentID].(string)
+	tenantId, _ := parameters[tenantFieldID].(string)
+	subscriptionId, _ := parameters[subscriptionFieldID].(string)
+	clientId, _ := parameters[clientFieldID].(string)
+	clientSecret, _ := parameters[clientSecretFieldID].(string)
+	environment, _ := parameters[environmentFieldID].(string)
 
 	var env cloud.Configuration
 	switch environment {

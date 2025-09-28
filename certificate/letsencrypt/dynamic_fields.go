@@ -2,6 +2,7 @@ package letsencrypt
 
 import (
 	"sort"
+	"strings"
 
 	"github.com/aws/smithy-go/ptr"
 
@@ -29,7 +30,7 @@ var (
 	dnsProvider = dynamic_fields.DynamicField{
 		ID:          "challengeDnsProvider",
 		Priority:    1,
-		Description: "DNS provider (for the DNS challenge)",
+		Description: "DNS provider",
 		Required:    true,
 		Type:        dynamic_fields.EnumType,
 	}
@@ -51,7 +52,10 @@ func resolveDynamicFields() []*dynamic_fields.DynamicField {
 	}
 
 	sort.Slice(providerOptions, func(leftIndex, rightIndex int) bool {
-		return providerOptions[leftIndex].Description < providerOptions[rightIndex].Description
+		leftValue := strings.ToUpper(providerOptions[leftIndex].Description)
+		rightValue := strings.ToUpper(providerOptions[rightIndex].Description)
+
+		return leftValue < rightValue
 	})
 
 	dnsProvider.EnumOptions = &providerOptions

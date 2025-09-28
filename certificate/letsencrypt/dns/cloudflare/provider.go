@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	apiTokenID = "cloudflareApiToken"
+	apiTokenFieldID = "cloudflareApiToken"
 )
 
 type Provider struct{}
@@ -21,14 +21,14 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name() string {
-	return "Cloudflare DNS"
+	return "Cloudflare"
 }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
-			ID:          apiTokenID,
-			Description: "Cloudflare API token (for the DNS challenge)",
+			ID:          apiTokenFieldID,
+			Description: "Cloudflare API token",
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
@@ -41,7 +41,7 @@ func (p *Provider) ChallengeProvider(
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
-	apiToken, _ := parameters[apiTokenID].(string)
+	apiToken, _ := parameters[apiTokenFieldID].(string)
 
 	cfg := &cloudflare.Config{
 		AuthToken:          apiToken,

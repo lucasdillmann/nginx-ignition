@@ -17,9 +17,9 @@ import (
 )
 
 const (
-	accessKeyID = "awsAccessKey"
-	secretKeyID = "awsSecretKey"
-	regionID    = "awsRegion"
+	accessKeyFieldID = "awsAccessKey"
+	secretKeyFieldID = "awsSecretKey"
+	regionFieldID    = "awsRegion"
 )
 
 type Provider struct{}
@@ -35,20 +35,20 @@ func (p *Provider) Name() string {
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
-			ID:          accessKeyID,
-			Description: "AWS access key (for the DNS challenge)",
+			ID:          accessKeyFieldID,
+			Description: "AWS access key",
 			Required:    true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
-			ID:          secretKeyID,
+			ID:          secretKeyFieldID,
 			Description: "AWS secret key",
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
-			ID:          regionID,
+			ID:          regionFieldID,
 			Description: "AWS region",
 			HelpText:    ptr.String("Defaults to us-east-1 when left empty"),
 			Type:        dynamic_fields.SingleLineTextType,
@@ -61,9 +61,9 @@ func (p *Provider) ChallengeProvider(
 	domainNames []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
-	accessKey, _ := parameters[accessKeyID].(string)
-	secretKey, _ := parameters[secretKeyID].(string)
-	region, _ := parameters[regionID].(string)
+	accessKey, _ := parameters[accessKeyFieldID].(string)
+	secretKey, _ := parameters[secretKeyFieldID].(string)
+	region, _ := parameters[regionFieldID].(string)
 
 	if region == "" {
 		region = "us-east-1"

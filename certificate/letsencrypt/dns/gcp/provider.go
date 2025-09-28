@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	privateKeyID = "googleCloudPrivateKey"
+	privateKeyFieldID = "googleCloudPrivateKey"
 )
 
 type Provider struct{}
@@ -21,13 +21,13 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name() string {
-	return "Google Cloud DNS"
+	return "Google Cloud"
 }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
-			ID:          privateKeyID,
+			ID:          privateKeyFieldID,
 			Description: "Service account private key JSON",
 			Required:    true,
 			Sensitive:   true,
@@ -41,7 +41,7 @@ func (p *Provider) ChallengeProvider(
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
-	privateKey, _ := parameters[privateKeyID].(string)
+	privateKey, _ := parameters[privateKeyFieldID].(string)
 	privateKeyBytes := []byte(privateKey)
 
 	return gcloud.NewDNSProviderServiceAccountKey(privateKeyBytes)

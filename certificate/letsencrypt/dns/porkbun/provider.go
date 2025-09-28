@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	apiKeyID       = "porkbunApiKey"
-	secretApiKeyID = "porkbunSecretApiKey"
+	apiKeyFieldID       = "porkbunApiKey"
+	secretApiKeyFieldID = "porkbunSecretApiKey"
 )
 
 type Provider struct{}
@@ -22,20 +22,20 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name() string {
-	return "Porkbun DNS"
+	return "Porkbun"
 }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
-			ID:          apiKeyID,
+			ID:          apiKeyFieldID,
 			Description: "Porkbun API key",
 			Required:    true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
-			ID:          secretApiKeyID,
-			Description: "Porkbun Secret API key",
+			ID:          secretApiKeyFieldID,
+			Description: "Porkbun secret API key",
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
@@ -48,8 +48,8 @@ func (p *Provider) ChallengeProvider(
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
-	apiKey, _ := parameters[apiKeyID].(string)
-	secretApiKey, _ := parameters[secretApiKeyID].(string)
+	apiKey, _ := parameters[apiKeyFieldID].(string)
+	secretApiKey, _ := parameters[secretApiKeyFieldID].(string)
 
 	cfg := &porkbun.Config{
 		APIKey:             apiKey,
