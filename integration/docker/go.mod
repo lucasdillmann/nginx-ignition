@@ -3,7 +3,7 @@ module dillmann.com.br/nginx-ignition/integration/docker
 go 1.25.1
 
 require (
-	github.com/docker/docker v28.4.0+incompatible
+	github.com/docker/docker v28.5.0+incompatible
 	go.uber.org/dig v1.19.0
 )
 

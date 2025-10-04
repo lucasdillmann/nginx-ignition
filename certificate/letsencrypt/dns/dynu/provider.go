@@ -24,7 +24,7 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
 			ID:          apiKeyFieldID,
-			Description: "Dynu API mey",
+			Description: "Dynu API key",
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
