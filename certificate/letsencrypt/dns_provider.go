@@ -6,6 +6,7 @@ import (
 	"github.com/go-acme/lego/v4/challenge"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/acmedns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/alibaba"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/aws"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/azion"
@@ -23,17 +24,22 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/directadmin"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dnsimple"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dnsmadeeasy"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dnspod"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dreamhost"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/duckdns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dyn"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dyndnsfree"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dynu"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/easydns"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/exec"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/exoscale"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/freemyip"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/gandi"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/gandiv5"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/gcp"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/godaddy"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/hetzner"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/httpreq"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/huaweicloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/hurricane"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ibmcloud"
@@ -41,6 +47,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/internetbs" //nolint:misspell
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/inwx"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ionos"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/lightsail"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/linode"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/loopia"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/namecheap"
@@ -55,6 +62,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/plesk"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/porkbun"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/rackspace"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/rfc2136"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/sakuracloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/scaleway"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/tencentcloud"
@@ -68,6 +76,7 @@ import (
 var (
 	providers = []dns.Provider{
 		&alibaba.Provider{},
+		&acmedns.Provider{},
 		&azion.Provider{},
 		&aws.Provider{},
 		&azure.Provider{},
@@ -84,16 +93,21 @@ var (
 		&directadmin.Provider{},
 		&dnsmadeeasy.Provider{},
 		&dnsimple.Provider{},
+		&dnspod.Provider{},
 		&dreamhost.Provider{},
 		&duckdns.Provider{},
 		&dyn.Provider{},
 		&dyndnsfree.Provider{},
+		&dynu.Provider{},
 		&easydns.Provider{},
+		&exec.Provider{},
 		&exoscale.Provider{},
 		&freemyip.Provider{},
 		&gandi.Provider{},
+		&gandiv5.Provider{},
 		&gcp.Provider{},
 		&godaddy.Provider{},
+		&httpreq.Provider{},
 		&hetzner.Provider{},
 		&huaweicloud.Provider{},
 		&hurricane.Provider{},
@@ -102,6 +116,7 @@ var (
 		&inwx.Provider{},
 		&ionos.Provider{},
 		&internetbs.Provider{}, //nolint:misspell
+		&lightsail.Provider{},
 		&linode.Provider{},
 		&loopia.Provider{},
 		&namecheap.Provider{},
@@ -116,6 +131,7 @@ var (
 		&plesk.Provider{},
 		&porkbun.Provider{},
 		&rackspace.Provider{},
+		&rfc2136.Provider{},
 		&sakuracloud.Provider{},
 		&scaleway.Provider{},
 		&tencentcloud.Provider{},
