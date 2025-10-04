@@ -24,9 +24,11 @@ func LinkedToProvider(id string, fields []dynamic_fields.DynamicField) []*dynami
 
 	for index, field := range fields {
 		field.Priority = index + 2
-		field.Condition = &dynamic_fields.Condition{
-			ParentField: "challengeDnsProvider",
-			Value:       id,
+		if field.Condition == nil {
+			field.Condition = &dynamic_fields.Condition{
+				ParentField: "challengeDnsProvider",
+				Value:       id,
+			}
 		}
 
 		output = append(output, &field)
