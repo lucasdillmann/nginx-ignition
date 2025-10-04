@@ -41,14 +41,14 @@ func issueCertificate(
 		return nil, err
 	}
 
-	dnsChallengeProvider, err := resolveDnsProvider(ctx, domainNames, parameters)
+	dnsChallenge, err := resolveProviderChallenge(ctx, domainNames, parameters)
 	if err != nil {
 		return nil, err
 	}
 
 	client.Challenge.Remove(challenge.TLSALPN01)
 	client.Challenge.Remove(challenge.HTTP01)
-	err = client.Challenge.SetDNS01Provider(dnsChallengeProvider)
+	err = client.Challenge.SetDNS01Provider(dnsChallenge)
 	if err != nil {
 		return nil, err
 	}
