@@ -48,7 +48,7 @@ func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters m
 		Credentials:        credentials,
 		PropagationTimeout: dns.PropagationTimeout,
 		PollingInterval:    dns.PoolingInterval,
-		SequenceInterval:   dns.PropagationTimeout,
+		SequenceInterval:   dns.SequenceInterval,
 	}
 
 	return hurricane.NewDNSProviderConfig(cfg)

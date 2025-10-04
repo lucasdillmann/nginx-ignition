@@ -26,11 +26,16 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/bunny"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/checkdomain"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/civo"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/clouddns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudflare"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudns"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudru"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudxns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/conoha"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/constellix"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/corenetworks"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cpanel"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/derak"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/desec"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/digitalocean"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/directadmin"
@@ -53,6 +58,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/gcp"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/godaddy"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/hetzner"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/hostingde"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/hosttech"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/httpreq"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/huaweicloud"
@@ -66,15 +72,19 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/joker"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/lightsail"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/linode"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/liquidweb"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/loopia"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/luadns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/mythicbeasts"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/namecheap"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/namedotcom"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/namesilo"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/netcup"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/netlify"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/njalla"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ns1"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/oraclecloud"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/otc"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ovh"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/pdns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/plesk"
@@ -116,11 +126,16 @@ var (
 		&bunny.Provider{},
 		&checkdomain.Provider{},
 		&civo.Provider{},
+		&clouddns.Provider{},
 		&cloudflare.Provider{},
 		&cloudns.Provider{},
+		&cloudru.Provider{},
+		&cloudxns.Provider{},
 		&conoha.Provider{},
 		&constellix.Provider{},
+		&corenetworks.Provider{},
 		&cpanel.Provider{},
+		&derak.Provider{},
 		&desec.Provider{},
 		&digitalocean.Provider{},
 		&directadmin.Provider{},
@@ -143,6 +158,7 @@ var (
 		&gcp.Provider{},
 		&godaddy.Provider{},
 		&hetzner.Provider{},
+		&hostingde.Provider{},
 		&hosttech.Provider{},
 		&httpreq.Provider{},
 		&huaweicloud.Provider{},
@@ -156,15 +172,19 @@ var (
 		&joker.Provider{},
 		&lightsail.Provider{},
 		&linode.Provider{},
+		&liquidweb.Provider{},
 		&loopia.Provider{},
+		&luadns.Provider{},
 		&mythicbeasts.Provider{},
 		&namecheap.Provider{},
 		&namedotcom.Provider{},
 		&namesilo.Provider{},
 		&netcup.Provider{},
 		&netlify.Provider{},
+		&njalla.Provider{},
 		&ns1.Provider{},
 		&oraclecloud.Provider{},
+		&otc.Provider{},
 		&ovh.Provider{},
 		&pdns.Provider{},
 		&plesk.Provider{},

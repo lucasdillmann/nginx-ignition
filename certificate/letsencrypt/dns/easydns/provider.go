@@ -56,7 +56,7 @@ func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters m
 		Key:                apiKey,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		SequenceInterval:   dns.PropagationTimeout,
+		SequenceInterval:   dns.SequenceInterval,
 		PollingInterval:    dns.PoolingInterval,
 	}
 

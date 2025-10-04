@@ -39,7 +39,7 @@ func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters m
 		Token:              token,
 		PropagationTimeout: dns.PropagationTimeout,
 		PollingInterval:    dns.PoolingInterval,
-		SequenceInterval:   dns.PropagationTimeout,
+		SequenceInterval:   dns.SequenceInterval,
 	}
 
 	return freemyip.NewDNSProviderConfig(cfg)
