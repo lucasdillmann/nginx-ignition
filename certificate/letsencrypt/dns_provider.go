@@ -7,11 +7,22 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/acmedns"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/active24"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/alibaba"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/allinkl"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/arvancloud"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/auroradns"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/autodns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/aws"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/axelname"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/azion"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/azure"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/baiducloud"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/binarylane"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/bindman"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/bluecat"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/bookmyname"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/brandit"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/bunny"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/checkdomain"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/civo"
@@ -86,11 +97,22 @@ import (
 var (
 	providers = []dns.Provider{
 		&acmedns.Provider{},
+		&active24.Provider{},
 		&alibaba.Provider{},
+		&allinkl.Provider{},
+		&arvancloud.Provider{},
+		&auroradns.Provider{},
+		&autodns.Provider{},
 		&aws.Provider{},
+		&axelname.Provider{},
 		&azion.Provider{},
 		&azure.Provider{},
 		&baiducloud.Provider{},
+		&binarylane.Provider{},
+		&bindman.Provider{},
+		&bluecat.Provider{},
+		&bookmyname.Provider{},
+		&brandit.Provider{},
 		&bunny.Provider{},
 		&checkdomain.Provider{},
 		&civo.Provider{},
