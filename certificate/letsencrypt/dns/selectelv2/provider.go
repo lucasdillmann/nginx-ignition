@@ -89,7 +89,7 @@ func (p *Provider) ChallengeProvider(
 		AuthRegion:         region,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return selectelv2.NewDNSProviderConfig(cfg)

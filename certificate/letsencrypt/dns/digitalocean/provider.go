@@ -43,7 +43,7 @@ func (p *Provider) ChallengeProvider(
 		AuthToken:          token,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return digitalocean.NewDNSProviderConfig(cfg)

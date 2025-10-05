@@ -52,7 +52,7 @@ func (p *Provider) ChallengeProvider(
 		SecretAccessKey:    secretKey,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return baiducloud.NewDNSProviderConfig(cfg)

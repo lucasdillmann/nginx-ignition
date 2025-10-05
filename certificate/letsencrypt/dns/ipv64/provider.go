@@ -42,7 +42,7 @@ func (p *Provider) ChallengeProvider(
 	cfg := &ipv64.Config{
 		APIKey:             apiKey,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return ipv64.NewDNSProviderConfig(cfg)

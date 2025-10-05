@@ -42,7 +42,7 @@ func (p *Provider) ChallengeProvider(
 	cfg := &netlify.Config{
 		Token:              apiKey,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		TTL:                dns.TTL,
 	}
 

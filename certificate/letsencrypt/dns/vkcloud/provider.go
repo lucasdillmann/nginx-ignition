@@ -89,7 +89,7 @@ func (p *Provider) ChallengeProvider(
 		DomainName:         domainName,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return vkcloud.NewDNSProviderConfig(cfg)

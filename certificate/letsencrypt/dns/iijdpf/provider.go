@@ -60,7 +60,7 @@ func (p *Provider) ChallengeProvider(
 		Endpoint:           endpoint,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return iijdpf.NewDNSProviderConfig(cfg)

@@ -46,7 +46,7 @@ func (p *Provider) ChallengeProvider(
 	cfg := &webnames.Config{
 		APIKey:             apiKey,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return webnames.NewDNSProviderConfig(cfg)

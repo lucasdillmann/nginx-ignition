@@ -56,7 +56,7 @@ func (p *Provider) ChallengeProvider(
 		FolderID:           folderID,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return yandexcloud.NewDNSProviderConfig(cfg)

@@ -69,7 +69,7 @@ func (p *Provider) ChallengeProvider(
 		ApplicationSecret:  appSecret,
 		ConsumerKey:        consumerKey,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		TTL:                dns.TTL,
 	}
 

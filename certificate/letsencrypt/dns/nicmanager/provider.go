@@ -84,7 +84,7 @@ func (p *Provider) ChallengeProvider(
 		Mode:               mode,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return nicmanager.NewDNSProviderConfig(cfg)

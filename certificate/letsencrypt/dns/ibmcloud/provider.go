@@ -52,7 +52,7 @@ func (p *Provider) ChallengeProvider(
 		APIKey:             key,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return ibmcloud.NewDNSProviderConfig(cfg)

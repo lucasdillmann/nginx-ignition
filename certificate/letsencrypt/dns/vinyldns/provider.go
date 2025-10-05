@@ -65,7 +65,7 @@ func (p *Provider) ChallengeProvider(
 		Host:               host,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return vinyldns.NewDNSProviderConfig(cfg)

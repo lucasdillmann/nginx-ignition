@@ -51,7 +51,7 @@ func (p *Provider) ChallengeProvider(
 		PrivateKeyPath:     privateKeyPath,
 		TTL:                int64(dns.TTL),
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return transip.NewDNSProviderConfig(cfg)

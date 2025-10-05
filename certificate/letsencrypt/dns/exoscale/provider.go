@@ -52,7 +52,7 @@ func (p *Provider) ChallengeProvider(
 		APIKey:             apiKey,
 		APISecret:          apiSecret,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		TTL:                dns.TTL,
 	}
 

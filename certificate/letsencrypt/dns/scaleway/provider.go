@@ -60,7 +60,7 @@ func (p *Provider) ChallengeProvider(
 		Token:              secretKey,
 		ProjectID:          projectID,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		TTL:                dns.TTL,
 	}
 

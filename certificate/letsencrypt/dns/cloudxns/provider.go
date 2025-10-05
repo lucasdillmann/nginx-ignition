@@ -52,7 +52,7 @@ func (p *Provider) ChallengeProvider(
 		SecretKey:          secretKey,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return cloudxns.NewDNSProviderConfig(cfg)

@@ -101,7 +101,7 @@ func (p *Provider) ChallengeProvider(
 			ptr.String(privateKeyPassword),
 		),
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		TTL:                dns.TTL,
 	}
 

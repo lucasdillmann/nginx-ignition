@@ -85,7 +85,7 @@ func (p *Provider) ChallengeProvider(
 		ViewName:           viewName,
 		InsecureSkipVerify: insecureSkipVerify,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return efficientip.NewDNSProviderConfig(cfg)

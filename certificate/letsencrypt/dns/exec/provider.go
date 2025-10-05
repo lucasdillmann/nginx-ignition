@@ -54,7 +54,7 @@ func (p *Provider) ChallengeProvider(
 		Program:            program,
 		Mode:               mode,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return exec.NewDNSProviderConfig(cfg)

@@ -47,7 +47,7 @@ func (p *Provider) ChallengeProvider(
 		APIKey:             apiKey,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return zonomi.NewDNSProviderConfig(cfg)

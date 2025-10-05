@@ -76,7 +76,7 @@ func (p *Provider) ChallengeProvider(
 		SecurityToken:      securityToken,
 		RegionID:           region,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		TTL:                dns.TTL,
 	}
 

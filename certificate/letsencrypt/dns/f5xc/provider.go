@@ -61,7 +61,7 @@ func (p *Provider) ChallengeProvider(
 		GroupName:          groupName,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return f5xc.NewDNSProviderConfig(cfg)

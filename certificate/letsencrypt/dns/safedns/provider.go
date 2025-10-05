@@ -47,7 +47,7 @@ func (p *Provider) ChallengeProvider(
 		AuthToken:          authToken,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return safedns.NewDNSProviderConfig(cfg)

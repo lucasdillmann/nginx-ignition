@@ -55,7 +55,7 @@ func (p *Provider) ChallengeProvider(
 		DNSZone:            dnsZone,
 		Region:             region,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return lightsail.NewDNSProviderConfig(cfg)

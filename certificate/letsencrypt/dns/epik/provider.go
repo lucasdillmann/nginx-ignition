@@ -43,7 +43,7 @@ func (p *Provider) ChallengeProvider(
 		Signature:          signature,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return epik.NewDNSProviderConfig(cfg)

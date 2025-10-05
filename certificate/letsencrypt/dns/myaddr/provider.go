@@ -52,7 +52,7 @@ func (p *Provider) ChallengeProvider(
 		Credentials:        credentials,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		SequenceInterval:   dns.SequenceInterval,
 	}
 

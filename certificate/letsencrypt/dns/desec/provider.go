@@ -42,7 +42,7 @@ func (p *Provider) ChallengeProvider(
 	cfg := &desec.Config{
 		Token:              token,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		TTL:                dns.TTL,
 	}
 

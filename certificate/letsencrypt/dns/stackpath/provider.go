@@ -65,7 +65,7 @@ func (p *Provider) ChallengeProvider(
 		StackID:            stackID,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return stackpath.NewDNSProviderConfig(cfg)

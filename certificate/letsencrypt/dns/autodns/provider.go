@@ -70,7 +70,7 @@ func (p *Provider) ChallengeProvider(
 		Context:            contextInt,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return autodns.NewDNSProviderConfig(cfg)

@@ -3,6 +3,7 @@ package joker
 import (
 	"context"
 
+	"github.com/aws/smithy-go/ptr"
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/joker"
 
@@ -11,6 +12,8 @@ import (
 )
 
 const (
+	dmapi           = "DMAPI"
+	svc             = "SVC"
 	apiKeyFieldID   = "jokerApiKey"
 	usernameFieldID = "jokerUsername"
 	passwordFieldID = "jokerPassword"
@@ -26,18 +29,19 @@ func (p *Provider) Name() string { return "Joker" }
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
-			ID:          apiModeFieldID,
-			Description: "Joker API mode",
-			Type:        dynamic_fields.EnumType,
-			Required:    true,
+			ID:           apiModeFieldID,
+			Description:  "Joker API mode",
+			Type:         dynamic_fields.EnumType,
+			Required:     true,
+			DefaultValue: ptr.String(dmapi),
 			EnumOptions: &[]*dynamic_fields.EnumOption{
 				{
-					ID:          "DMAPI",
-					Description: "DMAPI",
+					ID:          dmapi,
+					Description: dmapi,
 				},
 				{
-					ID:          "SVC",
-					Description: "SVC",
+					ID:          svc,
+					Description: svc,
 				},
 			},
 		},
@@ -49,7 +53,7 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			Type:        dynamic_fields.SingleLineTextType,
 			Condition: &dynamic_fields.Condition{
 				ParentField: apiModeFieldID,
-				Value:       "DMAPI",
+				Value:       dmapi,
 			},
 		},
 		{
@@ -59,7 +63,7 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			Type:        dynamic_fields.SingleLineTextType,
 			Condition: &dynamic_fields.Condition{
 				ParentField: apiModeFieldID,
-				Value:       "SVC",
+				Value:       svc,
 			},
 		},
 		{
@@ -70,7 +74,7 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			Type:        dynamic_fields.SingleLineTextType,
 			Condition: &dynamic_fields.Condition{
 				ParentField: apiModeFieldID,
-				Value:       "SVC",
+				Value:       svc,
 			},
 		},
 	})
@@ -93,7 +97,7 @@ func (p *Provider) ChallengeProvider(
 		APIMode:            apiMode,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return joker.NewDNSProviderConfig(cfg)

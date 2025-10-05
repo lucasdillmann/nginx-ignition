@@ -52,7 +52,7 @@ func (p *Provider) ChallengeProvider(
 		APIToken:           apiToken,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return luadns.NewDNSProviderConfig(cfg)

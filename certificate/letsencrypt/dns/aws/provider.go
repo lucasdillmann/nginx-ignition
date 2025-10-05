@@ -7,7 +7,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	route53client "github.com/aws/aws-sdk-go-v2/service/route53"
-	"github.com/aws/smithy-go/ptr"
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/route53"
 
@@ -17,9 +16,9 @@ import (
 )
 
 const (
+	region           = "us-east-1"
 	accessKeyFieldID = "awsAccessKey"
 	secretKeyFieldID = "awsSecretKey"
-	regionFieldID    = "awsRegion"
 )
 
 type Provider struct{}
@@ -47,12 +46,6 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
-		{
-			ID:          regionFieldID,
-			Description: "AWS region",
-			HelpText:    ptr.String("Defaults to us-east-1 when left empty"),
-			Type:        dynamic_fields.SingleLineTextType,
-		},
 	})
 }
 
@@ -63,13 +56,8 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	accessKey, _ := parameters[accessKeyFieldID].(string)
 	secretKey, _ := parameters[secretKeyFieldID].(string)
-	region, _ := parameters[regionFieldID].(string)
 
-	if region == "" {
-		region = "us-east-1"
-	}
-
-	hostedZoneId, err := resolveHostedZoneID(ctx, accessKey, secretKey, region, domainNames)
+	hostedZoneId, err := resolveHostedZoneID(ctx, accessKey, secretKey, domainNames)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +70,7 @@ func (p *Provider) ChallengeProvider(
 		MaxRetries:         dns.MaxRetries,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return route53.NewDNSProviderConfig(cfg)
@@ -90,7 +78,7 @@ func (p *Provider) ChallengeProvider(
 
 func resolveHostedZoneID(
 	ctx context.Context,
-	accessKey, secretKey, region string,
+	accessKey, secretKey string,
 	domainNames []string,
 ) (*string, error) {
 	cfg := aws.Config{
@@ -105,11 +93,22 @@ func resolveHostedZoneID(
 	}
 
 	for _, domainName := range domainNames {
+		var bestMatch *string
+		var bestMatchLength int
+
 		for _, hostedZone := range hostedZones.HostedZones {
 			hostedZoneName := strings.TrimSuffix(*hostedZone.Name, ".")
-			if strings.HasSuffix(domainName, hostedZoneName) {
-				return hostedZone.Id, nil
+
+			if domainName == hostedZoneName || strings.HasSuffix(domainName, "."+hostedZoneName) {
+				if len(hostedZoneName) > bestMatchLength {
+					bestMatch = hostedZone.Id
+					bestMatchLength = len(hostedZoneName)
+				}
 			}
+		}
+
+		if bestMatch != nil {
+			return bestMatch, nil
 		}
 	}
 

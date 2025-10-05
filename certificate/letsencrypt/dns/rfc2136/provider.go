@@ -71,7 +71,7 @@ func (p *Provider) ChallengeProvider(
 		TSIGSecret:         tsigSecret,
 		TSIGAlgorithm:      tsigAlgorithm,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		TTL:                dns.TTL,
 	}
 

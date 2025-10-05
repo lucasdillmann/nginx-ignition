@@ -60,7 +60,7 @@ func (p *Provider) ChallengeProvider(
 		PassportLocation:   passportLocation,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return hyperone.NewDNSProviderConfig(cfg)

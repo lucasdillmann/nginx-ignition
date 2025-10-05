@@ -42,7 +42,7 @@ func (p *Provider) ChallengeProvider(
 	cfg := &duckdns.Config{
 		Token:              token,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		SequenceInterval:   dns.SequenceInterval,
 	}
 

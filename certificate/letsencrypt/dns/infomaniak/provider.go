@@ -43,7 +43,7 @@ func (p *Provider) ChallengeProvider(
 		AccessToken:        accessToken,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return infomaniak.NewDNSProviderConfig(cfg)

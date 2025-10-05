@@ -70,7 +70,7 @@ func (p *Provider) ChallengeProvider(
 		Region:             region,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return conohav3.NewDNSProviderConfig(cfg)

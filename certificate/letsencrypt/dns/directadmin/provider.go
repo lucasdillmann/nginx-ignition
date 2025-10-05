@@ -69,7 +69,7 @@ func (p *Provider) ChallengeProvider(
 		ZoneName:           zoneName,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		HTTPClient:         nil,
 	}
 

@@ -51,7 +51,7 @@ func (p *Provider) ChallengeProvider(
 		APIToken:           apiToken,
 		APISecret:          apiSecret,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return domeneshop.NewDNSProviderConfig(cfg)

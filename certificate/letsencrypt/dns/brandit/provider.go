@@ -52,7 +52,7 @@ func (p *Provider) ChallengeProvider(
 		APIUsername:        apiUsername,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return brandit.NewDNSProviderConfig(cfg)

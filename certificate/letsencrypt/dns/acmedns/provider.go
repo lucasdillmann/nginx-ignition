@@ -68,14 +68,16 @@ func (p *Provider) ChallengeProvider(
 		StoragePath:    storagePath,
 		StorageBaseURL: storageBaseURL,
 	}
+
 	if allowListStr != "" {
 		var list []string
 		for _, raw := range strings.Split(allowListStr, ",") {
-			s := strings.TrimSpace(raw)
-			if s != "" {
-				list = append(list, s)
+			trimmedValue := strings.TrimSpace(raw)
+			if trimmedValue != "" {
+				list = append(list, trimmedValue)
 			}
 		}
+
 		cfg.AllowList = list
 	}
 

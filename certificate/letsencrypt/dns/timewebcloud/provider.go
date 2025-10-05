@@ -46,7 +46,7 @@ func (p *Provider) ChallengeProvider(
 	cfg := &timewebcloud.Config{
 		AuthToken:          authToken,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return timewebcloud.NewDNSProviderConfig(cfg)

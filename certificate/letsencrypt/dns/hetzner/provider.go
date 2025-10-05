@@ -43,7 +43,7 @@ func (p *Provider) ChallengeProvider(
 		APIKey:             token,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return hetzner.NewDNSProviderConfig(cfg)

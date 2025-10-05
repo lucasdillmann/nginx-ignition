@@ -42,7 +42,7 @@ func (p *Provider) ChallengeProvider(
 	cfg := &dreamhost.Config{
 		APIKey:             apiKey,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return dreamhost.NewDNSProviderConfig(cfg)

@@ -43,7 +43,7 @@ func (p *Provider) ChallengeProvider(
 		Token:              token,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return linode.NewDNSProviderConfig(cfg)

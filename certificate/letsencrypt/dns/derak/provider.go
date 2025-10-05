@@ -52,7 +52,7 @@ func (p *Provider) ChallengeProvider(
 		WebsiteID:          websiteID,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return derak.NewDNSProviderConfig(cfg)

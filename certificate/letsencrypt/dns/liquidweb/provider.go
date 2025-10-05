@@ -60,7 +60,7 @@ func (p *Provider) ChallengeProvider(
 		Zone:               zone,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return liquidweb.NewDNSProviderConfig(cfg)

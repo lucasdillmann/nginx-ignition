@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
+	"github.com/aws/smithy-go/ptr"
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/azuredns"
 
@@ -62,10 +63,11 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
-			ID:          environmentFieldID,
-			Description: "Azure environment",
-			Required:    true,
-			Type:        dynamic_fields.EnumType,
+			ID:           environmentFieldID,
+			Description:  "Azure environment",
+			Required:     true,
+			DefaultValue: ptr.String(defaultRegion),
+			Type:         dynamic_fields.EnumType,
 			EnumOptions: &[]*dynamic_fields.EnumOption{
 				{
 					ID:          defaultRegion,
@@ -115,7 +117,7 @@ func (p *Provider) ChallengeProvider(
 		Environment:        env,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return azuredns.NewDNSProviderConfig(cfg)

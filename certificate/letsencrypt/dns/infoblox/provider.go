@@ -101,7 +101,7 @@ func (p *Provider) ChallengeProvider(
 		CACertificate:      caCertificate,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return infoblox.NewDNSProviderConfig(cfg)

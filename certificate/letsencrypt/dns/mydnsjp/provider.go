@@ -51,7 +51,7 @@ func (p *Provider) ChallengeProvider(
 		MasterID:           masterID,
 		Password:           password,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return mydnsjp.NewDNSProviderConfig(cfg)

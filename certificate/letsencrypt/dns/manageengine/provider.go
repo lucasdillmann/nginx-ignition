@@ -52,7 +52,7 @@ func (p *Provider) ChallengeProvider(
 		ClientSecret:       clientSecret,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return manageengine.NewDNSProviderConfig(cfg)

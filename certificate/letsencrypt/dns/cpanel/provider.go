@@ -74,7 +74,7 @@ func (p *Provider) ChallengeProvider(
 		Token:              token,
 		Mode:               mode,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return cpanel.NewDNSProviderConfig(cfg)

@@ -78,7 +78,7 @@ func (p *Provider) ChallengeProvider(
 		Password:           password,
 		IdentityEndpoint:   identityEndpoint,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		SequenceInterval:   dns.SequenceInterval,
 	}
 

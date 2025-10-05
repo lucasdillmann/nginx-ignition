@@ -41,7 +41,7 @@ func (p *Provider) ChallengeProvider(
 	cfg := &bindman.Config{
 		BaseURL:            baseURL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return bindman.NewDNSProviderConfig(cfg)

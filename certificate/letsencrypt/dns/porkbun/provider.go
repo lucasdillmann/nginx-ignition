@@ -56,7 +56,7 @@ func (p *Provider) ChallengeProvider(
 		SecretAPIKey:       secretApiKey,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return porkbun.NewDNSProviderConfig(cfg)

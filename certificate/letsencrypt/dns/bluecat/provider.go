@@ -79,7 +79,7 @@ func (p *Provider) ChallengeProvider(
 		DNSView:            dnsView,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return bluecat.NewDNSProviderConfig(cfg)

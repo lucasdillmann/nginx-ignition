@@ -55,7 +55,7 @@ func (p *Provider) ChallengeProvider(
 		User:               user,
 		AuthToken:          authToken,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return zoneedit.NewDNSProviderConfig(cfg)

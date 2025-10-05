@@ -55,7 +55,7 @@ func (p *Provider) ChallengeProvider(
 		Username:           username,
 		APIKey:             apiKey,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return zoneee.NewDNSProviderConfig(cfg)

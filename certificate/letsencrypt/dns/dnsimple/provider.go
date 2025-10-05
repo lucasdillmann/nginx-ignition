@@ -42,7 +42,7 @@ func (p *Provider) ChallengeProvider(
 	cfg := &dnsimple.Config{
 		AccessToken:        accessToken,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		TTL:                dns.TTL,
 	}
 

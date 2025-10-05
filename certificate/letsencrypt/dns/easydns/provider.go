@@ -61,7 +61,7 @@ func (p *Provider) ChallengeProvider(
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
 		SequenceInterval:   dns.SequenceInterval,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	if endpoint != "" {

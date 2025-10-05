@@ -42,7 +42,7 @@ func (p *Provider) ChallengeProvider(
 	cfg := &gandiv5.Config{
 		PersonalAccessToken: token,
 		PropagationTimeout:  dns.PropagationTimeout,
-		PollingInterval:     dns.PoolingInterval,
+		PollingInterval:     dns.PollingInterval,
 		TTL:                 dns.TTL,
 	}
 

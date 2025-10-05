@@ -52,7 +52,7 @@ func (p *Provider) ChallengeProvider(
 		APISecret:          secret,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return godaddy.NewDNSProviderConfig(cfg)

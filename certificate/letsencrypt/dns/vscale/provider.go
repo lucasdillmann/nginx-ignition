@@ -55,7 +55,7 @@ func (p *Provider) ChallengeProvider(
 		BaseURL:            baseURL,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return vscale.NewDNSProviderConfig(cfg)

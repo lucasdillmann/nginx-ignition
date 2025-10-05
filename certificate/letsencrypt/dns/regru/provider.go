@@ -73,7 +73,7 @@ func (p *Provider) ChallengeProvider(
 		TLSCert:            tlsCert,
 		TLSKey:             tlsKey,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 		TTL:                dns.TTL,
 	}
 

@@ -62,7 +62,7 @@ func (p *Provider) ChallengeProvider(
 		OrgID:              orgID,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return yandex360.NewDNSProviderConfig(cfg)

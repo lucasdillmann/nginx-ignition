@@ -60,7 +60,7 @@ func (p *Provider) ChallengeProvider(
 		Email:              email,
 		Password:           password,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return mailinabox.NewDNSProviderConfig(cfg)

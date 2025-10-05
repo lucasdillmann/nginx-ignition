@@ -51,7 +51,7 @@ func (p *Provider) ChallengeProvider(
 		Username:           user,
 		Password:           pass,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return dyndnsfree.NewDNSProviderConfig(cfg)

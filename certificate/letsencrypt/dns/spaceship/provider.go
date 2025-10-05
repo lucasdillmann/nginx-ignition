@@ -56,7 +56,7 @@ func (p *Provider) ChallengeProvider(
 		APISecret:          apiSecret,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PoolingInterval,
+		PollingInterval:    dns.PollingInterval,
 	}
 
 	return spaceship.NewDNSProviderConfig(cfg)
