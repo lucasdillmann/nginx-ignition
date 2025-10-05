@@ -1,38 +1,38 @@
-package hostingde
+package httpnet
 
 import (
 	"context"
 
 	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/providers/dns/hostingde"
+	"github.com/go-acme/lego/v4/providers/dns/httpnet"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 )
 
 const (
-	apiKeyFieldID   = "hostingDeApiKey"
-	zoneNameFieldID = "hostingDeZoneName"
+	apiKeyFieldID   = "httpNetApiKey"
+	zoneNameFieldID = "httpNetZoneName"
 )
 
 type Provider struct{}
 
-func (p *Provider) ID() string { return "HOSTINGDE" }
+func (p *Provider) ID() string { return "HTTPNET" }
 
-func (p *Provider) Name() string { return "Hosting.de" }
+func (p *Provider) Name() string { return "HTTP.net" }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
 			ID:          apiKeyFieldID,
-			Description: "Hosting.de API key",
+			Description: "HTTP.net API key",
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
 			ID:          zoneNameFieldID,
-			Description: "Hosting.de zone name",
+			Description: "HTTP.net zone name",
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 	})
@@ -42,7 +42,7 @@ func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters m
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	zoneName, _ := parameters[zoneNameFieldID].(string)
 
-	cfg := &hostingde.Config{
+	cfg := &httpnet.Config{
 		APIKey:             apiKey,
 		ZoneName:           zoneName,
 		TTL:                dns.TTL,
@@ -50,5 +50,5 @@ func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters m
 		PollingInterval:    dns.PoolingInterval,
 	}
 
-	return hostingde.NewDNSProviderConfig(cfg)
+	return httpnet.NewDNSProviderConfig(cfg)
 }

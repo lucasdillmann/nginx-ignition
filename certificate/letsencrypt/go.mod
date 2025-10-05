@@ -13,6 +13,7 @@ require (
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12
 	github.com/nrdcg/oci-go-sdk/common/v1065 v1065.101.1
 	go.uber.org/dig v1.19.0
+	github.com/akamai/AkamaiOPEN-edgegrid-golang/v11 v11.1.0
 )
 
 require (

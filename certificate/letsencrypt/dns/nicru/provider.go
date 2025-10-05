@@ -1,45 +1,54 @@
-package liquidweb
+package nicru
 
 import (
 	"context"
 
 	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/providers/dns/liquidweb"
+	"github.com/go-acme/lego/v4/providers/dns/nicru"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 )
 
 const (
-	usernameFieldID = "liquidWebUsername"
-	passwordFieldID = "liquidWebPassword"
-	zoneFieldID     = "liquidWebZone"
+	usernameFieldID  = "nicRuUsername"
+	passwordFieldID  = "nicRuPassword"
+	serviceIDFieldID = "nicRuServiceId"
+	secretFieldID    = "nicRuSecret"
 )
 
 type Provider struct{}
 
-func (p *Provider) ID() string { return "LIQUIDWEB" }
+func (p *Provider) ID() string { return "NICRU" }
 
-func (p *Provider) Name() string { return "LiquidWeb" }
+func (p *Provider) Name() string { return "RU-CENTER" }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: "LiquidWeb username",
+			Description: "RU-CENTER username",
 			Required:    true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "LiquidWeb password",
+			Description: "RU-CENTER password",
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
-			ID:          zoneFieldID,
-			Description: "LiquidWeb zone",
+			ID:          serviceIDFieldID,
+			Description: "RU-CENTER OAuth2 service ID",
+			Required:    true,
+			Type:        dynamic_fields.SingleLineTextType,
+		},
+		{
+			ID:          secretFieldID,
+			Description: "RU-CENTER OAuth2 secret",
+			Required:    true,
+			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 	})
@@ -48,16 +57,18 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters map[string]any) (challenge.Provider, error) {
 	username, _ := parameters[usernameFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
-	zone, _ := parameters[zoneFieldID].(string)
+	serviceID, _ := parameters[serviceIDFieldID].(string)
+	secret, _ := parameters[secretFieldID].(string)
 
-	cfg := &liquidweb.Config{
+	cfg := &nicru.Config{
 		Username:           username,
 		Password:           password,
-		Zone:               zone,
+		ServiceID:          serviceID,
+		Secret:             secret,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
 		PollingInterval:    dns.PoolingInterval,
 	}
 
-	return liquidweb.NewDNSProviderConfig(cfg)
+	return nicru.NewDNSProviderConfig(cfg)
 }

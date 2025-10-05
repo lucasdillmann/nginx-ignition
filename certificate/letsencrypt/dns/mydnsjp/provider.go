@@ -1,54 +1,54 @@
-package hostingde
+package mydnsjp
 
 import (
 	"context"
 
 	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/providers/dns/hostingde"
+	"github.com/go-acme/lego/v4/providers/dns/mydnsjp"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 )
 
 const (
-	apiKeyFieldID   = "hostingDeApiKey"
-	zoneNameFieldID = "hostingDeZoneName"
+	masterIDFieldID = "myDnsJpMasterId"
+	passwordFieldID = "myDnsJpPassword"
 )
 
 type Provider struct{}
 
-func (p *Provider) ID() string { return "HOSTINGDE" }
+func (p *Provider) ID() string { return "MYDNS_JP" }
 
-func (p *Provider) Name() string { return "Hosting.de" }
+func (p *Provider) Name() string { return "MyDNS.jp" }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
-			ID:          apiKeyFieldID,
-			Description: "Hosting.de API key",
+			ID:          masterIDFieldID,
+			Description: "MyDNS.jp master ID",
 			Required:    true,
-			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
-			ID:          zoneNameFieldID,
-			Description: "Hosting.de zone name",
+			ID:          passwordFieldID,
+			Description: "MyDNS.jp password",
+			Required:    true,
+			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 	})
 }
 
 func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters map[string]any) (challenge.Provider, error) {
-	apiKey, _ := parameters[apiKeyFieldID].(string)
-	zoneName, _ := parameters[zoneNameFieldID].(string)
+	masterID, _ := parameters[masterIDFieldID].(string)
+	password, _ := parameters[passwordFieldID].(string)
 
-	cfg := &hostingde.Config{
-		APIKey:             apiKey,
-		ZoneName:           zoneName,
-		TTL:                dns.TTL,
+	cfg := &mydnsjp.Config{
+		MasterID:           masterID,
+		Password:           password,
 		PropagationTimeout: dns.PropagationTimeout,
 		PollingInterval:    dns.PoolingInterval,
 	}
 
-	return hostingde.NewDNSProviderConfig(cfg)
+	return mydnsjp.NewDNSProviderConfig(cfg)
 }

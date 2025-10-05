@@ -1,54 +1,55 @@
-package hostingde
+package iwantmyname
 
 import (
 	"context"
 
 	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/providers/dns/hostingde"
+	"github.com/go-acme/lego/v4/providers/dns/iwantmyname"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 )
 
 const (
-	apiKeyFieldID   = "hostingDeApiKey"
-	zoneNameFieldID = "hostingDeZoneName"
+	usernameFieldID = "iWantMyNameUsername"
+	passwordFieldID = "iWantMyNamePassword"
 )
 
 type Provider struct{}
 
-func (p *Provider) ID() string { return "HOSTINGDE" }
+func (p *Provider) ID() string { return "IWANTMYNAME" }
 
-func (p *Provider) Name() string { return "Hosting.de" }
+func (p *Provider) Name() string { return "iwantmyname" }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
-			ID:          apiKeyFieldID,
-			Description: "Hosting.de API key",
+			ID:          usernameFieldID,
+			Description: "iwantmyname username",
 			Required:    true,
-			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
-			ID:          zoneNameFieldID,
-			Description: "Hosting.de zone name",
+			ID:          passwordFieldID,
+			Description: "iwantmyname password",
+			Required:    true,
+			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 	})
 }
 
 func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters map[string]any) (challenge.Provider, error) {
-	apiKey, _ := parameters[apiKeyFieldID].(string)
-	zoneName, _ := parameters[zoneNameFieldID].(string)
+	username, _ := parameters[usernameFieldID].(string)
+	password, _ := parameters[passwordFieldID].(string)
 
-	cfg := &hostingde.Config{
-		APIKey:             apiKey,
-		ZoneName:           zoneName,
+	cfg := &iwantmyname.Config{
+		Username:           username,
+		Password:           password,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
 		PollingInterval:    dns.PoolingInterval,
 	}
 
-	return hostingde.NewDNSProviderConfig(cfg)
+	return iwantmyname.NewDNSProviderConfig(cfg)
 }
