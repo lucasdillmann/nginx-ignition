@@ -2,6 +2,7 @@ import NginxGateway from "./NginxGateway"
 import { requireSuccessPayload, requireSuccessResponse } from "../../core/apiclient/ApiResponse"
 import NginxEventDispatcher from "./listener/NginxEventDispatcher"
 import { NginxOperation } from "./listener/NginxEventListener"
+import NginxMetadata from "./model/NginxMetadata"
 
 export default class NginxService {
     private readonly gateway: NginxGateway
@@ -15,6 +16,10 @@ export default class NginxService {
             .getStatus()
             .then(requireSuccessPayload)
             .then(response => response.running)
+    }
+
+    async getMetadata(): Promise<NginxMetadata> {
+        return this.gateway.getMetadata().then(requireSuccessPayload)
     }
 
     async start(): Promise<void> {

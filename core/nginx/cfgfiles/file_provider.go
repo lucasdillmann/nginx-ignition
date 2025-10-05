@@ -8,11 +8,26 @@ import (
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
+type SupportType string
+
+const (
+	DynamicSupportType SupportType = "DYNAMIC"
+	StaticSupportType  SupportType = "STATIC"
+	NoneSupportType    SupportType = "NONE"
+)
+
+type SupportedFeatures struct {
+	TLSSNI      SupportType //nolint:misspell
+	StreamType  SupportType
+	RunCodeType SupportType
+}
+
 type providerContext struct {
-	context context.Context
-	paths   *Paths
-	hosts   []*host.Host
-	streams []*stream.Stream
+	context           context.Context
+	paths             *Paths
+	hosts             []*host.Host
+	streams           []*stream.Stream
+	supportedFeatures *SupportedFeatures
 }
 
 type Paths struct {

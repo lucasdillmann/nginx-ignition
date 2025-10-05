@@ -47,12 +47,22 @@ configuration section below to use PostgreSQL instead.
 
 ### Installing or running locally on a Linux or macOS machine
 
-To install nginx ignition locally on your machine, download the ZIP file for your OS and arch (amd64/arm64) 
-from the [releases page](https://github.com/lucasdillmann/nginx-ignition/releases). An instructions file is available 
-inside the zip that will guide you through the installation process for your OS.
+To install nginx ignition locally on your machine, you have several options:
 
-More distribution packages, such as .deb (Debian, Ubuntu, etc), .rpm (Red Hat, Rocky Linux, etc) and more are in the 
-works.
+#### Linux Package Managers (Recommended for Linux)
+Download the appropriate package for your distribution and architecture (amd64/arm64) from the 
+[releases page](https://github.com/lucasdillmann/nginx-ignition/releases):
+
+- **Debian/Ubuntu**: `.deb` packages
+- **RedHat/Fedora/CentOS**: `.rpm` packages
+- **Alpine Linux**: `.apk` packages
+- **Arch Linux**: `.pkg.tar.zst` packages
+- **Embedded Linux (OpenWrt)**: `.ipk` packages
+
+#### ZIP Archive
+Download the ZIP file for your OS and arch (amd64/arm64) from the 
+[releases page](https://github.com/lucasdillmann/nginx-ignition/releases). An instructions file is available 
+inside the zip that will guide you through the installation process for your OS.
 
 ## Migrating from 1.x to 2.0.0
 

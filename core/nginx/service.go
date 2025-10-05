@@ -51,8 +51,13 @@ func (s *service) reload(ctx context.Context, failIfNotRunning bool) error {
 		return core_error.New("nginx is not running", false)
 	}
 
+	supportedFeatures, err := s.resolveSupportedFeatures(ctx)
+	if err != nil {
+		return err
+	}
+
 	return s.semaphore.changeState(runningState, func() error {
-		if err := s.configFilesManager.ReplaceConfigurationFiles(ctx); err != nil {
+		if err := s.configFilesManager.ReplaceConfigurationFiles(ctx, supportedFeatures); err != nil {
 			return err
 		}
 
@@ -75,8 +80,13 @@ func (s *service) start(ctx context.Context) error {
 		return s.reload(ctx, false)
 	}
 
+	supportedFeatures, err := s.resolveSupportedFeatures(ctx)
+	if err != nil {
+		return err
+	}
+
 	return s.semaphore.changeState(runningState, func() error {
-		if err := s.configFilesManager.ReplaceConfigurationFiles(ctx); err != nil {
+		if err := s.configFilesManager.ReplaceConfigurationFiles(ctx, supportedFeatures); err != nil {
 			return err
 		}
 
@@ -120,14 +130,22 @@ func (s *service) attachListeners() {
 	}
 }
 
-func (s *service) getConfigFilesZipFile(ctx context.Context, basePath, configPath, logPath string) ([]byte, error) {
+func (s *service) getConfigFilesZipFile(
+	ctx context.Context,
+	basePath, configPath, logPath string,
+) ([]byte, error) {
 	paths := &cfgfiles.Paths{
 		Base:   basePath,
 		Config: configPath,
 		Logs:   logPath,
 	}
 
-	configFiles, _, _, err := s.configFilesManager.GetConfigurationFiles(ctx, paths)
+	supportedFeatures, err := s.resolveSupportedFeatures(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	configFiles, _, _, err := s.configFilesManager.GetConfigurationFiles(ctx, paths, supportedFeatures)
 	if err != nil {
 		return nil, err
 	}
@@ -152,4 +170,17 @@ func (s *service) getConfigFilesZipFile(ctx context.Context, basePath, configPat
 	}
 
 	return buffer.Bytes(), nil
+}
+
+func (s *service) resolveSupportedFeatures(ctx context.Context) (*cfgfiles.SupportedFeatures, error) {
+	metadata, err := s.getMetadata(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &cfgfiles.SupportedFeatures{
+		TLSSNI:      cfgfiles.SupportType(metadata.SNISupportType()),
+		RunCodeType: cfgfiles.SupportType(metadata.RunCodeSupportType()),
+		StreamType:  cfgfiles.SupportType(metadata.StreamSupportType()),
+	}, nil
 }

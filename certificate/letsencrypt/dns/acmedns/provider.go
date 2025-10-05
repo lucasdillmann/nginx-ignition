@@ -29,13 +29,14 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
 			ID:          apiBaseFieldID,
-			Description: "ACME-DNS API base (e.g., https://acmedns.example.com)",
+			Description: "ACME-DNS API base",
 			Required:    true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
 			ID:          allowListFieldID,
-			Description: "Comma-separated list of CIDR sources allowed to update (optional)",
+			Description: "CIDR sources allowed to update",
+			HelpText:    ptr.String("Comma-separated key=value pairs"),
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{

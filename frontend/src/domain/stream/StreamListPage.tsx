@@ -16,6 +16,7 @@ import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
 import StreamTypeDescription from "./utils/StreamTypeDescription"
+import StreamSupportWarning from "./components/StreamSupportWarning"
 
 export default class StreamListPage extends React.PureComponent {
     private readonly service: StreamService
@@ -136,6 +137,8 @@ export default class StreamListPage extends React.PureComponent {
                 requiredAccessLevel={UserAccessLevel.READ_ONLY}
                 permissionResolver={permissions => permissions.streams}
             >
+                <StreamSupportWarning />
+
                 <DataTable
                     ref={this.table}
                     columns={this.buildColumns()}

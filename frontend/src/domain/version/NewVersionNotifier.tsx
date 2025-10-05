@@ -19,7 +19,7 @@ class NewVersionNotifier {
             const modalInstance = themedModal().info({
                 type: "info",
                 title: "New version available",
-                content: `nginx ignition ${latest} is available with (probably) new features. You can check the project release page for the changelog and more.`,
+                content: `nginx ignition ${latest} is now available. You can check the project release page for the changelog and more details.`,
                 okText: "Open release page",
                 closable: true,
                 width: 600,

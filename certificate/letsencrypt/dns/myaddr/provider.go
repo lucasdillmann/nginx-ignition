@@ -28,7 +28,7 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 		{
 			ID:          credentialsFieldID,
 			Description: "myaddr private keys mapping",
-			HelpText:    ptr.String("Comma-separated key=value pairs for authentication"),
+			HelpText:    ptr.String("Comma-separated key=value pairs"),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,

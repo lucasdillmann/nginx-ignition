@@ -28,7 +28,7 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 		{
 			ID:          tokensFieldID,
 			Description: "Hurricane Electric tokens",
-			HelpText:    ptr.String("comma-separated key=value pairs, e.g.: username=YOUR_USERNAME,password=YOUR_PASSWORD"),
+			HelpText:    ptr.String("Comma-separated key=value pairs"),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,

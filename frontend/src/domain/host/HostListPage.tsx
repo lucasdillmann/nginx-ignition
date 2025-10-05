@@ -19,6 +19,7 @@ import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
 import { navigateTo } from "../../core/components/router/AppRouter"
 import { Button } from "antd"
+import HostSupportWarning from "./components/HostSupportWarning"
 
 const BUTTON_STYLE = {
     height: "auto",
@@ -157,6 +158,8 @@ export default class HostListPage extends React.PureComponent {
                 requiredAccessLevel={UserAccessLevel.READ_ONLY}
                 permissionResolver={permissions => permissions.hosts}
             >
+                <HostSupportWarning />
+
                 <DataTable
                     ref={this.table}
                     columns={this.buildColumns()}

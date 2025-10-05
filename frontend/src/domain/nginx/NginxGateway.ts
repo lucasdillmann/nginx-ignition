@@ -1,6 +1,7 @@
 import ApiClient from "../../core/apiclient/ApiClient"
 import ApiResponse from "../../core/apiclient/ApiResponse"
 import { NginxStatusResponse } from "./model/NginxStatusResponse"
+import NginxMetadata from "./model/NginxMetadata"
 
 export default class NginxGateway {
     private readonly client: ApiClient
@@ -23,6 +24,10 @@ export default class NginxGateway {
 
     async getStatus(): Promise<ApiResponse<NginxStatusResponse>> {
         return this.client.get("/status")
+    }
+
+    async getMetadata(): Promise<ApiResponse<NginxMetadata>> {
+        return this.client.get("/metadata")
     }
 
     async getLogs(lines: number): Promise<ApiResponse<string[]>> {
