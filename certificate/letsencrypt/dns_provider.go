@@ -122,17 +122,47 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/porkbun"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/rackspace"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/rainyun"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/rcodezero"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/regfish"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/regru"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/rfc2136"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/rimuhosting"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/safedns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/sakuracloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/scaleway"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/selectel"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/selectelv2"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/selfhostde"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/servercow"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/shellrent"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/simply"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/sonic"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/spaceship"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/stackpath"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/technitium"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/tencentcloud"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/timewebcloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/transip"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ultradns"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/variomedia"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/vegadns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/vercel"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/versio"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/vinyldns"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/vkcloud"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/volcengine"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/vscale"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/vultr"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/webnames"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/websupport"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/wedos"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/westcn"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/yandex"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/yandex360"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/yandexcloud"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zoneedit"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zoneee"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zonomi"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 )
 
@@ -254,17 +284,47 @@ var (
 		&porkbun.Provider{},
 		&rainyun.Provider{},
 		&rackspace.Provider{},
+		&rcodezero.Provider{},
+		&regfish.Provider{},
+		&regru.Provider{},
 		&rfc2136.Provider{},
+		&rimuhosting.Provider{},
+		&safedns.Provider{},
 		&sakuracloud.Provider{},
 		&scaleway.Provider{},
+		&selectel.Provider{},
+		&selectelv2.Provider{},
+		&selfhostde.Provider{},
+		&servercow.Provider{},
+		&shellrent.Provider{},
+		&simply.Provider{},
+		&sonic.Provider{},
+		&spaceship.Provider{},
+		&stackpath.Provider{},
+		&technitium.Provider{},
 		&tencentcloud.Provider{},
+		&timewebcloud.Provider{},
 		&transip.Provider{},
 		&ultradns.Provider{},
+		&variomedia.Provider{},
+		&vegadns.Provider{},
 		&vercel.Provider{},
+		&versio.Provider{},
+		&vinyldns.Provider{},
+		&vkcloud.Provider{},
+		&volcengine.Provider{},
+		&vscale.Provider{},
 		&vultr.Provider{},
+		&webnames.Provider{},
 		&websupport.Provider{},
 		&wedos.Provider{},
+		&westcn.Provider{},
 		&yandex.Provider{},
+		&yandex360.Provider{},
+		&yandexcloud.Provider{},
+		&zoneedit.Provider{},
+		&zoneee.Provider{},
+		&zonomi.Provider{},
 	}
 )
 
