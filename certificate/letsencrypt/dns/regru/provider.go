@@ -13,6 +13,8 @@ import (
 const (
 	usernameFieldID = "regruUsername"
 	passwordFieldID = "regruPassword"
+	tlsCertFieldID  = "regruTlsCert"
+	tlsKeyFieldID   = "regruTlsKey"
 )
 
 type Provider struct{}
@@ -40,6 +42,18 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
+		{
+			ID:          tlsCertFieldID,
+			Description: "Reg.ru TLS certificate (for mTLS)",
+			Sensitive:   true,
+			Type:        dynamic_fields.MultiLineTextType,
+		},
+		{
+			ID:          tlsKeyFieldID,
+			Description: "Reg.ru TLS key (for mTLS)",
+			Sensitive:   true,
+			Type:        dynamic_fields.MultiLineTextType,
+		},
 	})
 }
 
@@ -50,10 +64,14 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	username, _ := parameters[usernameFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
+	tlsCert, _ := parameters[tlsCertFieldID].(string)
+	tlsKey, _ := parameters[tlsKeyFieldID].(string)
 
 	cfg := &regru.Config{
 		Username:           username,
 		Password:           password,
+		TLSCert:            tlsCert,
+		TLSKey:             tlsKey,
 		PropagationTimeout: dns.PropagationTimeout,
 		PollingInterval:    dns.PoolingInterval,
 		TTL:                dns.TTL,

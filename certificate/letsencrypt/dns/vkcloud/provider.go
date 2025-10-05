@@ -11,9 +11,12 @@ import (
 )
 
 const (
-	usernameFieldID  = "vkCloudUsername"
-	passwordFieldID  = "vkCloudPassword"
-	projectIDFieldID = "vkCloudProjectId"
+	usernameFieldID         = "vkCloudUsername"
+	passwordFieldID         = "vkCloudPassword"
+	projectIDFieldID        = "vkCloudProjectId"
+	dnsEndpointFieldID      = "vkCloudDnsEndpoint"
+	identityEndpointFieldID = "vkCloudIdentityEndpoint"
+	domainNameFieldID       = "vkCloudDomainName"
 )
 
 type Provider struct{}
@@ -47,6 +50,21 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			Required:    true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
+		{
+			ID:          dnsEndpointFieldID,
+			Description: "VK Cloud DNS endpoint",
+			Type:        dynamic_fields.SingleLineTextType,
+		},
+		{
+			ID:          identityEndpointFieldID,
+			Description: "VK Cloud identity endpoint",
+			Type:        dynamic_fields.SingleLineTextType,
+		},
+		{
+			ID:          domainNameFieldID,
+			Description: "VK Cloud domain name",
+			Type:        dynamic_fields.SingleLineTextType,
+		},
 	})
 }
 
@@ -58,11 +76,17 @@ func (p *Provider) ChallengeProvider(
 	username, _ := parameters[usernameFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
 	projectID, _ := parameters[projectIDFieldID].(string)
+	dnsEndpoint, _ := parameters[dnsEndpointFieldID].(string)
+	identityEndpoint, _ := parameters[identityEndpointFieldID].(string)
+	domainName, _ := parameters[domainNameFieldID].(string)
 
 	cfg := &vkcloud.Config{
 		Username:           username,
 		Password:           password,
 		ProjectID:          projectID,
+		DNSEndpoint:        dnsEndpoint,
+		IdentityEndpoint:   identityEndpoint,
+		DomainName:         domainName,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
 		PollingInterval:    dns.PoolingInterval,

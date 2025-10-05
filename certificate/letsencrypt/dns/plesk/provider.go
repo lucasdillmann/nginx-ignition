@@ -11,9 +11,8 @@ import (
 )
 
 const (
-	serverBaseURLFieldID = "pleskServerBaseUrl"
-	usernameFieldID      = "pleskUsername"
-	passwordFieldID      = "pleskPassword"
+	usernameFieldID = "pleskUsername"
+	passwordFieldID = "pleskPassword"
 )
 
 type Provider struct{}
@@ -24,12 +23,6 @@ func (p *Provider) Name() string { return "Plesk" }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
-		{
-			ID:          serverBaseURLFieldID,
-			Description: "Plesk server base URL",
-			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
-		},
 		{
 			ID:          usernameFieldID,
 			Description: "Plesk username",
@@ -46,7 +39,11 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	})
 }
 
-func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters map[string]any) (challenge.Provider, error) {
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
 	username, _ := parameters[usernameFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
 

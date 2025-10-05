@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	baseURLFieldID   = "selectelv2BaseUrl"
 	usernameFieldID  = "selectelv2Username"
 	passwordFieldID  = "selectelv2Password"
 	projectIDFieldID = "selectelv2ProjectId"
@@ -50,6 +51,11 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
+			ID:          baseURLFieldID,
+			Description: "Selectel v2 base URL",
+			Type:        dynamic_fields.SingleLineTextType,
+		},
+		{
 			ID:          accountFieldID,
 			Description: "Selectel v2 account name",
 			Type:        dynamic_fields.SingleLineTextType,
@@ -70,6 +76,7 @@ func (p *Provider) ChallengeProvider(
 	username, _ := parameters[usernameFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
 	projectID, _ := parameters[projectIDFieldID].(string)
+	baseURL, _ := parameters[baseURLFieldID].(string)
 	account, _ := parameters[accountFieldID].(string)
 	region, _ := parameters[regionFieldID].(string)
 
@@ -77,6 +84,7 @@ func (p *Provider) ChallengeProvider(
 		Username:           username,
 		Password:           password,
 		ProjectID:          projectID,
+		BaseURL:            baseURL,
 		DomainName:         account,
 		AuthRegion:         region,
 		TTL:                dns.TTL,

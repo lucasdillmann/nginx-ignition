@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	tokenFieldID = "selectelToken"
+	baseURLFieldID = "selectelBaseUrl"
+	tokenFieldID   = "selectelToken"
 )
 
 type Provider struct{}
@@ -33,6 +34,11 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
+		{
+			ID:          baseURLFieldID,
+			Description: "Selectel base URL",
+			Type:        dynamic_fields.SingleLineTextType,
+		},
 	})
 }
 
@@ -42,9 +48,11 @@ func (p *Provider) ChallengeProvider(
 	parameters map[string]any,
 ) (challenge.Provider, error) {
 	token, _ := parameters[tokenFieldID].(string)
+	baseURL, _ := parameters[baseURLFieldID].(string)
 
 	cfg := &selectel.Config{
 		Token:              token,
+		BaseURL:            baseURL,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
 		PollingInterval:    dns.PoolingInterval,
