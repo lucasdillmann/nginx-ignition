@@ -45,7 +45,11 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	})
 }
 
-func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters map[string]any) (challenge.Provider, error) {
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
 	apiEndpoint, _ := parameters[apiEndpointFieldID].(string)
 	locationID, _ := parameters[locationIDFieldID].(string)
 	passportLocation, _ := parameters[passportLocationFieldID].(string)

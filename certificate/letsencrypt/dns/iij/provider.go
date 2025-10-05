@@ -47,7 +47,11 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	})
 }
 
-func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters map[string]any) (challenge.Provider, error) {
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
 	accessKey, _ := parameters[accessKeyFieldID].(string)
 	secretKey, _ := parameters[secretKeyFieldID].(string)
 	doServiceCode, _ := parameters[doServiceCodeFieldID].(string)

@@ -53,7 +53,11 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	})
 }
 
-func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters map[string]any) (challenge.Provider, error) {
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
 	endpoint, _ := parameters[endpointFieldID].(string)
 	appKey, _ := parameters[applicationKeyFieldID].(string)
 	appSecret, _ := parameters[applicationSecFieldID].(string)

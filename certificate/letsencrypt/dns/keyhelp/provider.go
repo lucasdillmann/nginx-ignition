@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	apiKeyFieldID = "keyHelpApiKey"
+	baseURLFieldID = "keyHelpBaseUrl"
+	apiKeyFieldID  = "keyHelpApiKey"
 )
 
 type Provider struct{}
@@ -23,6 +24,12 @@ func (p *Provider) Name() string { return "KeyHelp" }
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
+			ID:          baseURLFieldID,
+			Description: "KeyHelp base URL",
+			Required:    true,
+			Type:        dynamic_fields.SingleLineTextType,
+		},
+		{
 			ID:          apiKeyFieldID,
 			Description: "KeyHelp API key",
 			Required:    true,
@@ -32,10 +39,16 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	})
 }
 
-func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters map[string]any) (challenge.Provider, error) {
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
+	baseURL, _ := parameters[baseURLFieldID].(string)
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
 	cfg := &keyhelp.Config{
+		BaseURL:            baseURL,
 		APIKey:             apiKey,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,

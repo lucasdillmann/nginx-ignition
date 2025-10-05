@@ -50,7 +50,11 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	})
 }
 
-func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters map[string]any) (challenge.Provider, error) {
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
 	apiBase, _ := parameters[apiBaseFieldID].(string)
 	allowListStr, _ := parameters[allowListFieldID].(string)
 	storagePath, _ := parameters[storagePathFieldID].(string)

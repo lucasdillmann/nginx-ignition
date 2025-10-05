@@ -76,7 +76,11 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	})
 }
 
-func (p *Provider) ChallengeProvider(_ context.Context, _ []string, parameters map[string]any) (challenge.Provider, error) {
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
 	host, _ := parameters[hostFieldID].(string)
 	port, _ := parameters[portFieldID].(string)
 	username, _ := parameters[usernameFieldID].(string)
