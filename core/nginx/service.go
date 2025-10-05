@@ -179,8 +179,8 @@ func (s *service) resolveSupportedFeatures(ctx context.Context) (*cfgfiles.Suppo
 	}
 
 	return &cfgfiles.SupportedFeatures{
-		TLSSNI:     metadata.TLSSNIEnabled,
-		RunCode:    metadata.RunCodeSupportAvailable(),
-		StreamType: metadata.StreamSupportType(),
+		TLSSNI:      cfgfiles.SupportType(metadata.SNISupportType()),
+		RunCodeType: cfgfiles.SupportType(metadata.RunCodeSupportType()),
+		StreamType:  cfgfiles.SupportType(metadata.StreamSupportType()),
 	}, nil
 }

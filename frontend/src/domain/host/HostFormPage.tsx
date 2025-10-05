@@ -31,6 +31,7 @@ import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGra
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import { hostFormValuesDefaults } from "./model/HostFormValuesDefaults"
+import HostSupportWarning from "./components/HostSupportWarning"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -205,6 +206,8 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                 onValuesChange={(_, formValues) => this.handleChange(formValues)}
                 initialValues={formValues}
             >
+                <HostSupportWarning />
+
                 <h2 className="hosts-form-section-name">General</h2>
                 <p className="hosts-form-section-help-text">
                     General configurations properties of the nginx's virtual host

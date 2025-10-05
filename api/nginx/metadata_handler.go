@@ -19,13 +19,11 @@ func (h metadataHandler) handle(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"version":      metadata.Version,
-		"buildDetails": metadata.BuildDetails,
-		"modules":      metadata.Modules,
+		"version": metadata.Version,
 		"availableSupport": gin.H{
 			"streams": metadata.StreamSupportType(),
-			"runCode": metadata.RunCodeSupportAvailable(),
-			"tlsSni":  metadata.TLSSNIEnabled,
+			"runCode": metadata.RunCodeSupportType(),
+			"tlsSni":  metadata.SNISupportType(),
 		},
 	})
 }

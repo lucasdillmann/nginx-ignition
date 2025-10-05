@@ -33,8 +33,8 @@ func (s *service) getMetadata(ctx context.Context) (*Metadata, error) {
 	return &Metadata{
 		Version:       version,
 		BuildDetails:  buildDetails,
-		TLSSNIEnabled: tlsSniEnabled,
 		Modules:       modules,
+		tlsSniEnabled: tlsSniEnabled,
 	}, nil
 }
 

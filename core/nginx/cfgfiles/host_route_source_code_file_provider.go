@@ -41,9 +41,10 @@ func (p *hostRouteSourceCodeFileProvider) buildSourceCodeFiles(
 			continue
 		}
 
-		if !ctx.supportedFeatures.RunCode {
+		if ctx.supportedFeatures.RunCodeType == NoneSupportType {
 			return nil, core_error.New(
-				"Unable to generate the host route source code files: Run code support is not enabled in the nginx server.",
+				"Unable to generate the host route source code files: Support for JavaScript and/or Lua "+
+					"code is not enabled in the nginx server and at least one code execution host route is enabled.",
 				false,
 			)
 		}

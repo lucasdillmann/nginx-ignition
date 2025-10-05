@@ -27,6 +27,7 @@ import StreamBackendSettingsModal from "./components/StreamBackendSettingsModal"
 import FormLayout from "../../core/components/form/FormLayout"
 import StreamRoutesForm from "./components/StreamRoutesForm"
 import { streamFormDefaults, streamRouteDefaults } from "./StreamFormDefaults"
+import StreamSupportWarning from "./components/StreamSupportWarning"
 
 interface StreamFormPageState {
     formValues: StreamRequest
@@ -393,6 +394,8 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                 initialValues={formValues}
                 onValuesChange={(_, values) => this.handleUpdate(values)}
             >
+                <StreamSupportWarning />
+
                 <Flex className="streams-form-inner-flex-container">
                     <Flex className="streams-form-inner-flex-container-column" style={{ width: "50%" }}>
                         {this.renderGeneralSettingsForm()}

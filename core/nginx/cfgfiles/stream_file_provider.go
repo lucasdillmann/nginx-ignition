@@ -17,14 +17,15 @@ func newStreamFileProvider() *streamFileProvider {
 }
 
 func (p *streamFileProvider) provide(ctx *providerContext) ([]File, error) {
-	files := make([]File, 0, len(ctx.streams))
-
-	if ctx.supportedFeatures.StreamType == "none" && len(ctx.streams) > 0 {
+	if len(ctx.streams) > 0 && ctx.supportedFeatures.StreamType == NoneSupportType {
 		return nil, core_error.New(
-			"Unable to generate the stream configuration file: Stream support is not enabled in the nginx server.",
+			"Unable to generate the stream configuration file: Support for streams is not enabled in the "+
+				"nginx server and at least one stream is enabled.",
 			false,
 		)
 	}
+
+	files := make([]File, 0, len(ctx.streams))
 
 	for _, s := range ctx.streams {
 		contents, err := p.buildConfigFileContents(ctx, s)
@@ -134,9 +135,10 @@ func (p *streamFileProvider) buildUpstream(backends []stream.Backend, name strin
 }
 
 func (p *streamFileProvider) buildRoutedStream(ctx *providerContext, s *stream.Stream) (*string, error) {
-	if !ctx.supportedFeatures.TLSSNI {
+	if ctx.supportedFeatures.TLSSNI == NoneSupportType {
 		return nil, core_error.New(
-			"Unable to generate the stream configuration file: TLS SNI support is not enabled in the nginx server.",
+			"Unable to generate the stream configuration file: Support for TLS SNI is not enabled in the "+
+				"nginx server and at lease one stream is enabled with SNI routing.",
 			false,
 		)
 	}
