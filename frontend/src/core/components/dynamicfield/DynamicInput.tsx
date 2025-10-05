@@ -57,7 +57,7 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
             label: option.description,
         }))
 
-        return <Select value={this.initialValue()} options={options} />
+        return <Select value={this.initialValue()} options={options} showSearch />
     }
 
     private renderFileUpload() {

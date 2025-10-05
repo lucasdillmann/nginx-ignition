@@ -6,7 +6,6 @@
 *.dylib
 *.test
 *.out
-build/*
 
 # Dependency directories and files
 vendor/
@@ -19,3 +18,4 @@ vendor/
 *.iml
 .idea/
 .qodo
+build/
