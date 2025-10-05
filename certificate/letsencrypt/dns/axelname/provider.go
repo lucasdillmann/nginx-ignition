@@ -25,13 +25,13 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
 			ID:          nicknameFieldID,
-			Description: "Axel Name nickname",
+			Description: "Axel name nickname",
 			Required:    true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
 			ID:          tokenFieldID,
-			Description: "Axel Name token",
+			Description: "Axel name token",
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,

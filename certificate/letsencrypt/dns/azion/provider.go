@@ -24,7 +24,7 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
 			ID:          personalTokenFieldID,
-			Description: "Azion Personal Token",
+			Description: "Azion Personal token",
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,

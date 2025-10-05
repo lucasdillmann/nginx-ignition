@@ -24,7 +24,7 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
 			ID:          personalAccessTokenFieldID,
-			Description: "Gandi Personal Access Token (PAT)",
+			Description: "Gandi Personal access token (PAT)",
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,

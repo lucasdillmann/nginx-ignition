@@ -26,19 +26,19 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
 		{
 			ID:          serviceInstanceIDFieldID,
-			Description: "Cloud.ru Service Instance ID",
+			Description: "Cloud.ru service instance ID",
 			Required:    true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
 			ID:          keyIDFieldID,
-			Description: "Cloud.ru Key ID",
+			Description: "Cloud.ru key ID",
 			Required:    true,
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
 			ID:          secretFieldID,
-			Description: "Cloud.ru Secret",
+			Description: "Cloud.ru secret",
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,

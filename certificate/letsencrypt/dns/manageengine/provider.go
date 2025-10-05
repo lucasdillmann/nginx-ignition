@@ -31,7 +31,7 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 		},
 		{
 			ID:          clientSecretFieldID,
-			Description: "ManageEngine CloudDNS Client Secret",
+			Description: "ManageEngine CloudDNS Client secret",
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamic_fields.SingleLineTextType,

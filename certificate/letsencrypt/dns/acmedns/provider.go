@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/aws/smithy-go/ptr"
 	"github.com/go-acme/lego/v4/challenge"
 	legoacmedns "github.com/go-acme/lego/v4/providers/dns/acmedns"
 
@@ -39,12 +40,14 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 		},
 		{
 			ID:          storagePathFieldID,
-			Description: "Local storage file path for ACME-DNS accounts (mutually exclusive with Storage Base URL)",
+			Description: "Local storage file path for ACME-DNS accounts",
+			HelpText:    ptr.String("Mutually exclusive with storage base URL"),
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 		{
 			ID:          storageBaseURLFieldID,
-			Description: "Remote storage base URL for ACME-DNS accounts (mutually exclusive with Storage Path)",
+			Description: "Remote storage base URL for ACME-DNS accounts",
+			HelpText:    ptr.String("Mutually exclusive with storage path"),
 			Type:        dynamic_fields.SingleLineTextType,
 		},
 	})
