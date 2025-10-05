@@ -61,27 +61,31 @@ overrides:
   deb:
     depends:
       - nginx
-      - nginx-module-stream
     recommends:
-      - nginx-module-njs
-      - nginx-module-lua
+      - libnginx-mod-stream
+      - libnginx-mod-http-js
+      - libnginx-mod-http-lua
   rpm:
     depends:
       - nginx
-      - nginx-mod-stream
     recommends:
-      - nginx-mod-http-js
+      - nginx-mod-stream
+      - nginx-mod-http-njs
       - nginx-mod-http-lua
   apk:
     depends:
       - nginx
-      - nginx-mod-stream
     recommends:
+      - nginx-mod-stream
       - nginx-mod-http-js
       - nginx-mod-http-lua
   archlinux:
     depends:
-      - nginx
+      - nginx-mainline
+    recommends:
+      - nginx-mainline-mod-stream
+      - nginx-mainline-mod-njs
+      - nginx-mainline-mod-lua
   ipk:
     depends:
       - nginx
