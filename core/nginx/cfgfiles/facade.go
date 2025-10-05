@@ -51,7 +51,7 @@ func newFacade(
 	}
 }
 
-func (f *Facade) GetConfigurationFiles(ctx context.Context, paths *Paths) (
+func (f *Facade) GetConfigurationFiles(ctx context.Context, paths *Paths, supportedFeatures *SupportedFeatures) (
 	configFiles []File,
 	hostCount int,
 	streamCount int,
@@ -68,10 +68,11 @@ func (f *Facade) GetConfigurationFiles(ctx context.Context, paths *Paths) (
 	}
 
 	providerCtx := &providerContext{
-		context: ctx,
-		paths:   paths,
-		hosts:   hosts,
-		streams: streams,
+		context:           ctx,
+		paths:             paths,
+		hosts:             hosts,
+		streams:           streams,
+		supportedFeatures: supportedFeatures,
 	}
 
 	configFiles = make([]File, 0)
@@ -87,7 +88,7 @@ func (f *Facade) GetConfigurationFiles(ctx context.Context, paths *Paths) (
 	return configFiles, len(hosts), len(streams), nil
 }
 
-func (f *Facade) ReplaceConfigurationFiles(ctx context.Context) error {
+func (f *Facade) ReplaceConfigurationFiles(ctx context.Context, supportedFeatures *SupportedFeatures) error {
 	configDir, err := f.configuration.Get("nginx-ignition.nginx.config-path")
 	if err != nil {
 		return err
@@ -104,7 +105,7 @@ func (f *Facade) ReplaceConfigurationFiles(ctx context.Context) error {
 		return err
 	}
 
-	configFiles, hostCount, streamCount, err := f.GetConfigurationFiles(ctx, paths)
+	configFiles, hostCount, streamCount, err := f.GetConfigurationFiles(ctx, paths, supportedFeatures)
 	if err != nil {
 		return err
 	}

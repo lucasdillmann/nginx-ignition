@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/smithy-go/ptr"
 
+	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
@@ -18,8 +19,15 @@ func newStreamFileProvider() *streamFileProvider {
 func (p *streamFileProvider) provide(ctx *providerContext) ([]File, error) {
 	files := make([]File, 0, len(ctx.streams))
 
+	if ctx.supportedFeatures.StreamType == "none" && len(ctx.streams) > 0 {
+		return nil, core_error.New(
+			"Unable to generate the stream configuration file: Stream support is not enabled in the nginx server.",
+			false,
+		)
+	}
+
 	for _, s := range ctx.streams {
-		contents, err := p.buildConfigFileContents(s)
+		contents, err := p.buildConfigFileContents(ctx, s)
 		if err != nil {
 			return nil, err
 		}
@@ -33,12 +41,12 @@ func (p *streamFileProvider) provide(ctx *providerContext) ([]File, error) {
 	return files, nil
 }
 
-func (p *streamFileProvider) buildConfigFileContents(s *stream.Stream) (*string, error) {
+func (p *streamFileProvider) buildConfigFileContents(ctx *providerContext, s *stream.Stream) (*string, error) {
 	switch s.Type {
 	case stream.SimpleType:
 		return p.buildSimpleStream(s)
 	case stream.SNIRouterType:
-		return p.buildRoutedStream(s)
+		return p.buildRoutedStream(ctx, s)
 	default:
 		return nil, fmt.Errorf("unknown stream type: %s", s.Type)
 	}
@@ -125,7 +133,14 @@ func (p *streamFileProvider) buildUpstream(backends []stream.Backend, name strin
 	return ptr.String(instructions.String()), nil
 }
 
-func (p *streamFileProvider) buildRoutedStream(s *stream.Stream) (*string, error) {
+func (p *streamFileProvider) buildRoutedStream(ctx *providerContext, s *stream.Stream) (*string, error) {
+	if !ctx.supportedFeatures.TLSSNI {
+		return nil, core_error.New(
+			"Unable to generate the stream configuration file: TLS SNI support is not enabled in the nginx server.",
+			false,
+		)
+	}
+
 	mapping := strings.Builder{}
 	mappingId := fmt.Sprintf("$stream_%s_router", nginxId(s))
 	mapping.WriteString(fmt.Sprintf("map $ssl_preread_server_name %s {\n", mappingId))

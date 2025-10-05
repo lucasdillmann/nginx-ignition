@@ -51,8 +51,7 @@ func (s startup) handleRetryCallback(err error, attempt int, completed bool) {
 		msg = fmt.Sprintf("Unable to start the nginx server (no new retries will be made): %v", err)
 	} else {
 		msg = fmt.Sprintf(
-			"Unable to start the nginx server, which can happen when using an integration that isn't "+
-				"ready yet (retrying in %.0f seconds; attempt %d of %d): %v",
+			"Unable to start the nginx server (retrying in %.0f seconds; attempt %d of %d): %v",
 			s.retryDelay.Seconds(),
 			attempt+1,
 			s.retryAttempts,

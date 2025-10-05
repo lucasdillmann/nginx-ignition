@@ -18,6 +18,7 @@ func Install(router *gin.Engine, commands *nginx.Commands, authorizer *authoriza
 	basePath.POST("/stop", stopHandler{commands}.handle)
 	basePath.POST("/reload", reloadHandler{commands}.handle)
 	basePath.GET("/status", statusHandler{commands}.handle)
+	basePath.GET("/metadata", metadataHandler{commands}.handle)
 
 	logsPath := authorizer.ConfigureGroup(
 		router,

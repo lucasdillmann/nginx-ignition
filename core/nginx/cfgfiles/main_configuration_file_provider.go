@@ -24,13 +24,29 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 	}
 	logs := cfg.Nginx.Logs
 
+	moduleLines := strings.Builder{}
+	streamLines := strings.Builder{}
+
+	if ctx.supportedFeatures.StreamType != "none" {
+		if ctx.supportedFeatures.StreamType == "dynamic" {
+			moduleLines.WriteString("load_module modules/ngx_stream_module.so;\n")
+		}
+
+		streamLines.WriteString("stream {\n")
+		streamLines.WriteString(p.getStreamIncludes(ctx.paths, ctx.streams))
+		streamLines.WriteString("}\n")
+	}
+
+	if ctx.supportedFeatures.RunCode {
+		moduleLines.WriteString("load_module modules/ndk_http_module.so;\n")
+		moduleLines.WriteString("load_module modules/ngx_http_js_module.so;\n")
+		moduleLines.WriteString("load_module modules/ngx_http_lua_module.so;\n")
+	}
+
 	contents := fmt.Sprintf(
 		`
 			user %s %s;
-			load_module modules/ndk_http_module.so;
-			load_module modules/ngx_http_js_module.so;
-			load_module modules/ngx_http_lua_module.so;
-			load_module modules/ngx_stream_module.so;
+			%s
 			worker_processes %d;
 			pid %snginx.pid;
 			error_log %s;
@@ -55,12 +71,11 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				%s
 			}
 			
-			stream {
-				%s
-			}
+			%s
 		`,
 		cfg.Nginx.RuntimeUser,
 		cfg.Nginx.RuntimeUser,
+		moduleLines.String(),
 		cfg.Nginx.WorkerProcesses,
 		ctx.paths.Base,
 		p.getErrorLogPath(ctx.paths, logs),
@@ -76,7 +91,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		cfg.Nginx.Timeouts.Send,
 		ctx.paths.Config,
 		p.getHostIncludes(ctx.paths, ctx.hosts),
-		p.getStreamIncludes(ctx.paths, ctx.streams),
+		streamLines.String(),
 	)
 
 	return []File{

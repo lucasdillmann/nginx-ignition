@@ -8,11 +8,18 @@ import (
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
+type SupportedFeatures struct {
+	TLSSNI     bool //nolint:misspell
+	StreamType string
+	RunCode    bool
+}
+
 type providerContext struct {
-	context context.Context
-	paths   *Paths
-	hosts   []*host.Host
-	streams []*stream.Stream
+	context           context.Context
+	paths             *Paths
+	hosts             []*host.Host
+	streams           []*stream.Stream
+	supportedFeatures *SupportedFeatures
 }
 
 type Paths struct {

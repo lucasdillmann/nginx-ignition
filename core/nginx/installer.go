@@ -45,6 +45,7 @@ func buildCommands(
 		GetMainLogs:    serviceInstance.getMainLogs,
 		GetStatus:      serviceInstance.isRunning,
 		GetConfigFiles: serviceInstance.getConfigFilesZipFile,
+		GetMetadata:    serviceInstance.getMetadata,
 		Reload:         serviceInstance.reload,
 		Stop:           serviceInstance.stop,
 		Start:          serviceInstance.start,
