@@ -91,7 +91,7 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
                         validateStatus={validationResult.getStatus(`${validationBasePath}.circuitBreaker.openSeconds`)}
                         help={
                             validationResult.getMessage(`${validationBasePath}.circuitBreaker.openSeconds`) ??
-                            "Amount of time in seconds that the circuit breaker will be open before it is closed again"
+                            "Amount of time in seconds that the circuit breaker will be kept open (amount of time that the backend will not receive requests)"
                         }
                         labelCol={CIRCUIT_BREAKER_SPACING}
                         style={hideWeight ? undefined : FORM_INPUT_STYLE}
