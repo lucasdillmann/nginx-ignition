@@ -44,7 +44,7 @@ export default abstract class NginxSupportWarning extends React.Component<any, N
             <>
                 {messages.map(({ title, message }, index) => (
                     <Alert
-                        key={index}
+                        key={`nginx-support-alert-${index}`}
                         message={title}
                         description={message}
                         type="warning"
