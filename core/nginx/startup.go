@@ -31,6 +31,19 @@ func (s startup) Run(ctx context.Context) error {
 		s.service.attachListeners()
 	}()
 
+	metadata, err := s.service.getMetadata(ctx)
+	if err != nil || metadata == nil {
+		log.Warnf("Unable to detect nginx binary details: %v", err)
+	} else {
+		log.Infof(
+			"nginx detected with version %s, %s stream support, %s TLS SNI support, and %s code execution support",
+			metadata.Version,
+			metadata.StreamSupportType(),
+			metadata.SNISupportType(),
+			metadata.RunCodeSupportType(),
+		)
+	}
+
 	autoRetry := &retry.Retry{
 		Action:               func() error { return s.service.start(ctx) },
 		Callback:             s.handleRetryCallback,
