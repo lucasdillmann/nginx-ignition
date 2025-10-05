@@ -203,7 +203,7 @@ func (p *hostConfigurationFileProvider) buildRoute(
 ) (string, error) {
 	switch r.Type {
 	case host.StaticResponseRouteType:
-		return p.buildStaticResponseRoute(r, h.FeatureSet, paths), nil
+		return p.buildStaticResponseRoute(h, r, paths), nil
 	case host.ProxyRouteType:
 		return p.buildProxyRoute(r, h.FeatureSet, paths), nil
 	case host.RedirectRouteType:
@@ -246,33 +246,43 @@ func (p *hostConfigurationFileProvider) buildStaticFilesRoute(r *host.Route, pat
 }
 
 func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
+	h *host.Host,
 	r *host.Route,
-	features host.FeatureSet,
 	paths *Paths,
 ) string {
-	var headers []string
-	for key, value := range r.Response.Headers {
-		headers = append(headers, fmt.Sprintf(`add_header "%s" "%s";`, key, value))
-	}
+	headers := ""
+	payloadFilePath := fmt.Sprintf("/host-%s-route-%d.payload", h.ID, r.Priority)
 
-	payload := ""
-	if r.Response.Payload != nil && strings.TrimSpace(*r.Response.Payload) != "" {
-		payload = strings.ReplaceAll(*r.Response.Payload, "\"", "\\\"")
-		payload = fmt.Sprintf("\"%s\"", payload)
+	for key, value := range r.Response.Headers {
+		headers += fmt.Sprintf(`add_header "%s" "%s" always;`, key, value) + "\n"
 	}
 
 	return fmt.Sprintf(
-		`location %s {
+		`
+		location @route_%d/static_payload {
+			internal;
 			%s
-			return %d %s;
+			root %s;
+			try_files %s =%d;
+		}
+
+		location %s {
+			%s
+			error_page 599 =%d @route_%d/static_payload;
 			%s
 			%s
+			return 599;
 		}`,
-		r.SourcePath,
-		strings.Join(headers, "\n"),
+		r.Priority,
+		headers,
+		paths.Config,
+		payloadFilePath,
 		r.Response.StatusCode,
-		payload,
-		p.buildRouteFeatures(features),
+		r.SourcePath,
+		headers,
+		r.Response.StatusCode,
+		r.Priority,
+		p.buildRouteFeatures(h.FeatureSet),
 		p.buildRouteSettings(r, paths),
 	)
 }

@@ -37,6 +37,7 @@ func newFacade(
 		newAccessListFileProvider(accessListRepository),
 		newHostCertificateFileProvider(certificateRepository, settingsRepository),
 		newHostConfigurationFileProvider(settingsRepository, integrationCommands),
+		newHostRouteStaticResponseFileProvider(),
 		newHostRouteSourceCodeFileProvider(),
 		newMainConfigurationFileProvider(settingsRepository),
 		newMimeTypesFileProvider(),

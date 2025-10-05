@@ -17,14 +17,12 @@ func (p *hostRouteSourceCodeFileProvider) provide(ctx *providerContext) ([]File,
 	var outputs []File
 
 	for _, h := range ctx.hosts {
-		if h.Enabled {
-			files, err := p.buildSourceCodeFiles(ctx, h)
-			if err != nil {
-				return nil, err
-			}
-
-			outputs = append(outputs, *files...)
+		files, err := p.buildSourceCodeFiles(ctx, h)
+		if err != nil {
+			return nil, err
 		}
+
+		outputs = append(outputs, *files...)
 	}
 
 	return outputs, nil
