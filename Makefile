@@ -55,6 +55,8 @@ build-distribution-files:
 	$(MAKE) build-distribution-zip ARCH=amd64 OS=linux SERVICE_FILE_EXT=service
 	$(MAKE) build-distribution-zip ARCH=arm64 OS=linux SERVICE_FILE_EXT=service
 	$(MAKE) build-distribution-zip ARCH=arm64 OS=macos SERVICE_FILE_EXT=plist
+	$(MAKE) build-distribution-packages ARCH=amd64 OS=linux
+	$(MAKE) build-distribution-packages ARCH=arm64 OS=linux
 
 build-distribution-zip:
 	rm -Rf build/nginx-ignition.$(OS)-$(ARCH).zip
@@ -65,8 +67,21 @@ build-distribution-zip:
 	cp -Rf dist/nginx-ignition.properties build/zip/
 	cp dist/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/
 	cp build/$(OS)/$(ARCH) build/zip/nginx-ignition
-	cd build/zip && zip -q -r ../nginx-ignition.$(OS)-$(ARCH).zip .
+	cd build/zip && zip -q -r ../nginx-ignition-$(VERSION).$(OS)-$(ARCH).zip .
 	rm -Rf build/zip
+
+build-distribution-packages:
+	export VERSION=$(VERSION); \
+	export OS=$(OS); \
+	export ARCH=$(ARCH); \
+	export PACKAGE_ARCH=$(ARCH); \
+	envsubst < dist/nfpm.yaml > build/nfpm.yaml
+	nfpm package --config build/nfpm.yaml --packager deb --target build/nginx-ignition-$(VERSION).$(ARCH).deb
+	nfpm package --config build/nfpm.yaml --packager rpm --target build/nginx-ignition-$(VERSION).$(ARCH).rpm
+	nfpm package --config build/nfpm.yaml --packager apk --target build/nginx-ignition-$(VERSION).$(ARCH).apk
+	nfpm package --config build/nfpm.yaml --packager archlinux --target build/nginx-ignition-$(VERSION).$(ARCH).pkg.tar.zst
+	nfpm package --config build/nfpm.yaml --packager ipk --target build/nginx-ignition-$(VERSION).$(ARCH).ipk
+	rm -Rf build/nfpm.yaml
 
 build-prerequisites: prerequisites build-frontend build-backend
 

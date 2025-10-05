@@ -1,0 +1,84 @@
+name: "nginx-ignition"
+arch: "${PACKAGE_ARCH}"
+platform: "linux"
+version: "${VERSION}"
+section: "default"
+priority: "extra"
+maintainer: "nginx-ignition <https://github.com/dillmann/nginx-ignition>"
+vendor: "nginx-ignition"
+homepage: "https://github.com/dillmann/nginx-ignition"
+license: "MIT"
+description: |
+  An user interface for the nginx web server, aimed at developers and enthusiasts that don't want to manage 
+  configuration files manually
+
+contents:
+  - src: "build/${OS}/${ARCH}"
+    dst: "/opt/nginx-ignition/nginx-ignition"
+    file_info:
+      mode: 0755
+      owner: root
+      group: root
+  - src: "frontend/build/"
+    dst: "/opt/nginx-ignition/frontend/"
+    type: tree
+    file_info:
+      mode: 0644
+      owner: root
+      group: root
+  - src: "database/common/migrations/scripts/"
+    dst: "/opt/nginx-ignition/migrations/"
+    type: tree
+    file_info:
+      mode: 0644
+      owner: root
+      group: root
+  - src: "dist/nginx-ignition.properties"
+    dst: "/opt/nginx-ignition/nginx-ignition.properties"
+    type: config|noreplace
+    file_info:
+      mode: 0644
+      owner: root
+      group: root
+  - src: "dist/nginx-ignition.service"
+    dst: "/etc/systemd/system/nginx-ignition.service"
+    file_info:
+      mode: 0644
+      owner: root
+      group: root
+  - dst: "/opt/nginx-ignition/data"
+    type: dir
+    file_info:
+      mode: 0755
+      owner: root
+      group: root
+
+scripts:
+  postinstall: "dist/postinstall.sh"
+  preremove: "dist/preremove.sh"
+
+overrides:
+  deb:
+    depends:
+      - nginx
+      - nginx-module-njs
+      - nginx-module-lua
+      - nginx-module-stream
+  rpm:
+    depends:
+      - nginx
+      - nginx-mod-http-js
+      - nginx-mod-http-lua
+      - nginx-mod-stream
+  apk:
+    depends:
+      - nginx
+      - nginx-mod-http-js
+      - nginx-mod-http-lua
+      - nginx-mod-stream
+  archlinux:
+    depends:
+      - nginx
+  ipk:
+    depends:
+      - nginx
