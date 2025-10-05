@@ -4,9 +4,9 @@ platform: "linux"
 version: "${VERSION}"
 section: "default"
 priority: "extra"
-maintainer: "nginx-ignition <https://github.com/dillmann/nginx-ignition>"
+maintainer: "nginx-ignition <https://github.com/lucasdillmann/nginx-ignition>"
 vendor: "nginx-ignition"
-homepage: "https://github.com/dillmann/nginx-ignition"
+homepage: "https://github.com/lucasdillmann/nginx-ignition"
 license: "MIT"
 description: |
   An user interface for the nginx web server, aimed at developers and enthusiasts that don't want to manage 
