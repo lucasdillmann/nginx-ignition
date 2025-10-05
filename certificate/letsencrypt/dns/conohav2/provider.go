@@ -1,4 +1,4 @@
-package conoha
+package conohav2
 
 import (
 	"context"
@@ -11,17 +11,17 @@ import (
 )
 
 const (
-	regionFieldID   = "conoHaRegion"
-	tenantIDFieldID = "conoHaTenantID"
-	usernameFieldID = "conoHaUsername"
-	passwordFieldID = "conoHaPassword"
+	regionFieldID   = "conoHaV2Region"
+	tenantIDFieldID = "conoHaV2TenantID"
+	usernameFieldID = "conoHaV2Username"
+	passwordFieldID = "conoHaV2Password"
 )
 
 type Provider struct{}
 
-func (p *Provider) ID() string { return "CONOHA" }
+func (p *Provider) ID() string { return "CONOHA_V2" }
 
-func (p *Provider) Name() string { return "ConoHa" }
+func (p *Provider) Name() string { return "ConoHa v2" }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{

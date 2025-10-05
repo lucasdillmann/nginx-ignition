@@ -31,7 +31,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudru"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudxns"
-	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/conoha"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/conohav2"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/conohav3"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/constellix"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/corenetworks"
@@ -193,7 +193,7 @@ var (
 		&cloudns.Provider{},
 		&cloudru.Provider{},
 		&cloudxns.Provider{},
-		&conoha.Provider{},
+		&conohav2.Provider{},
 		&conohav3.Provider{},
 		&constellix.Provider{},
 		&corenetworks.Provider{},

@@ -11,17 +11,17 @@ import (
 )
 
 const (
-	userIDFieldID   = "conohaUserId"
-	passwordFieldID = "conohaPassword"
-	tenantIDFieldID = "conohaTenantId"
-	regionFieldID   = "conohaRegion"
+	userIDFieldID   = "conohaV3UserId"
+	passwordFieldID = "conohaV3Password"
+	tenantIDFieldID = "conohaV3TenantId"
+	regionFieldID   = "conohaV3Region"
 )
 
 type Provider struct{}
 
-func (p *Provider) ID() string { return "CONOHA" }
+func (p *Provider) ID() string { return "CONOHA_V3" }
 
-func (p *Provider) Name() string { return "ConoHa" }
+func (p *Provider) Name() string { return "ConoHa v3" }
 
 func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
