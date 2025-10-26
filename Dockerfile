@@ -32,7 +32,9 @@ RUN apk update && \
       nginx \
       nginx-mod-http-js \
       nginx-mod-http-lua \
-      nginx-mod-stream && \
-    apk cache clean
+      nginx-mod-stream \
+      ca-certificates && \
+    apk cache clean && \
+    update-ca-certificates
 
 COPY --from=workspace /workspace /opt/nginx-ignition
