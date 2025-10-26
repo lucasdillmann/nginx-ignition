@@ -6,8 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
-type validationRules struct {
-}
+type validationRules struct{}
 
 func (r validationRules) DynamicFields() []*dynamic_fields.DynamicField {
 	return make([]*dynamic_fields.DynamicField, 0)

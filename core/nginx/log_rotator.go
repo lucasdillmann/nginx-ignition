@@ -89,7 +89,7 @@ func (r *logRotator) rotateFile(_ context.Context, basePath, fileName string, ma
 	}
 
 	trimmedContent := strings.Join(lines, "\n") + "\n"
-	return os.WriteFile(filePath, []byte(trimmedContent), 0777)
+	return os.WriteFile(filePath, []byte(trimmedContent), 0o777)
 }
 
 func (r *logRotator) readTail(file *os.File, size int) ([]string, error) {

@@ -167,7 +167,6 @@ func (s *service) listModuleFiles(modulesPath string) []string {
 
 	files := make([]string, 0)
 	entries, err := os.ReadDir(modulesPath)
-
 	if err != nil {
 		log.Warnf("Failed to read modules directory %s: %v", modulesPath, err)
 		return files

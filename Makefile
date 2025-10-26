@@ -81,6 +81,7 @@ SNAPSHOT_TAG_SUFFIX := $(if $(or $(filter 0,$(PR_ID)),$(filter ,$(PR_ID))),snaps
 check: .prerequisites .frontend-check .backend-check
 
 format: .prerequisites
+	go tool gofumpt -w .
 	cd frontend/ && npx prettier --write .
 
 .build-prerequisites: .prerequisites .build-frontend .build-backend

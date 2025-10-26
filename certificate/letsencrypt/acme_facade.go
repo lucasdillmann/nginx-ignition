@@ -58,7 +58,6 @@ func issueCertificate(
 		user.registration, err = client.Registration.Register(registerOptions)
 	} else {
 		user.registration, err = client.Registration.ResolveAccountByKey()
-
 		if err != nil {
 			user.registration, err = client.Registration.Register(registerOptions)
 		}
@@ -177,17 +176,18 @@ func fetchCertDates(pemBlock pem.Block, client *lego.Client) (
 ) {
 	certDetails, err := x509.ParseCertificate(pemBlock.Bytes)
 	if err != nil {
-		return
+		return nil, nil, nil, err
 	}
 
 	infoRequest := acmecertificate.RenewalInfoRequest{Cert: certDetails}
 	renewalInfo, err := client.Certificate.GetRenewalInfo(infoRequest)
 	if err != nil {
-		return
+		return nil, nil, nil, err
 	}
 
 	notAfter = &certDetails.NotAfter
 	notBefore = &certDetails.NotBefore
 	renewAt = &renewalInfo.SuggestedWindow.Start
-	return
+
+	return notAfter, notBefore, renewAt, nil
 }

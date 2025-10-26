@@ -66,7 +66,6 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		Model((*accessListModel)(nil)).
 		Where(constants.ByIdFilter, id).
 		Exec(ctx)
-
 	if err != nil {
 		return err
 	}
@@ -119,7 +118,6 @@ func (r *repository) FindPage(
 		Offset(pageSize * pageNumber).
 		Order("name").
 		Scan(ctx)
-
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +138,6 @@ func (r *repository) FindAll(ctx context.Context) ([]*access_list.AccessList, er
 		Relation("Credentials").
 		Relation("EntrySets").
 		Scan(ctx)
-
 	if err != nil {
 		return nil, err
 	}
@@ -229,7 +226,6 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 		Table("access_list_credentials").
 		Where(byAccessListIdFilter, id).
 		Exec(ctx)
-
 	if err != nil {
 		return err
 	}

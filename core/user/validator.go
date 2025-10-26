@@ -10,9 +10,11 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
-const minimumUsernameLength = 3
-const minimumNameLength = 3
-const minimumPasswordLength = 8
+const (
+	minimumUsernameLength = 3
+	minimumNameLength     = 3
+	minimumPasswordLength = 8
+)
 
 type validator struct {
 	delegate   *validation.ConsistencyValidator

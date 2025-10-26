@@ -13,7 +13,6 @@ func Convert[I any, O any](
 	page *pagination.Page[I],
 	converter func(I) O,
 ) PageDTO[O] {
-
 	var contents []O
 	if page.Contents != nil {
 		contents = make([]O, len(page.Contents))

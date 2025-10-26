@@ -45,7 +45,6 @@ func (m *migrations) runScripts(db *sql.DB, driverName string) error {
 		driverName,
 		driverInstance,
 	)
-
 	if err != nil {
 		return err
 	}

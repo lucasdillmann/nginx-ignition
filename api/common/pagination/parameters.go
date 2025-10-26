@@ -11,9 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/value_range"
 )
 
-var (
-	pageSizeRange = value_range.New(1, 1000)
-)
+var pageSizeRange = value_range.New(1, 1000)
 
 func ExtractPaginationParameters(ctx *gin.Context) (int, int, *string, error) {
 	pageSize := ctx.DefaultQuery("pageSize", "25")

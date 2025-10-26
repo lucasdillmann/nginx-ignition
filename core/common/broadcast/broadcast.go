@@ -6,9 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
-var (
-	channels = make(map[string]chan context.Context)
-)
+var channels = make(map[string]chan context.Context)
 
 func SendSignal(ctx context.Context, qualifier string) {
 	if channels[qualifier] != nil {
