@@ -61,7 +61,7 @@ func (a *Adapter) GetAvailableOptions(
 	_, _ int,
 	searchTerms *string,
 	tcpOnly bool,
-) (*pagination.Page[*integration.AdapterOption], error) {
+) (*pagination.Page[*integration.DriverOption], error) {
 	apps, err := a.getAvailableApps(parameters)
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (a *Adapter) GetAvailableOptions(
 	options := a.buildOptions(apps, tcpOnly)
 
 	if searchTerms != nil {
-		var filteredOptions []*integration.AdapterOption
+		var filteredOptions []*integration.DriverOption
 		for _, option := range options {
 			if strings.Contains(strings.ToLower(option.Name), strings.ToLower(*searchTerms)) {
 				filteredOptions = append(filteredOptions, option)
@@ -88,7 +88,7 @@ func (a *Adapter) GetAvailableOptionById(
 	_ context.Context,
 	parameters map[string]any,
 	id string,
-) (*integration.AdapterOption, error) {
+) (*integration.DriverOption, error) {
 	parts := strings.Split(id, ":")
 	appId := parts[0]
 	containerPort := parts[1]
@@ -102,7 +102,7 @@ func (a *Adapter) GetAvailableOptionById(
 		return nil, nil
 	}
 
-	return &integration.AdapterOption{
+	return &integration.DriverOption{
 		ID:       id,
 		Name:     app.Name,
 		Port:     port.HostPorts[0].HostPort,
@@ -110,7 +110,7 @@ func (a *Adapter) GetAvailableOptionById(
 	}, nil
 }
 
-func (a *Adapter) GetOptionProxyUrl(
+func (a *Adapter) GetOptionProxyURL(
 	_ context.Context,
 	parameters map[string]any,
 	id string,
@@ -181,8 +181,8 @@ func (a *Adapter) getWorkloadPort(
 	return nil, nil, nil
 }
 
-func (a *Adapter) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []*integration.AdapterOption {
-	var options []*integration.AdapterOption
+func (a *Adapter) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []*integration.DriverOption {
+	var options []*integration.DriverOption
 
 	for _, app := range apps {
 		for _, port := range app.ActiveWorkloads.UsedPorts {
@@ -196,7 +196,7 @@ func (a *Adapter) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []*i
 					continue
 				}
 
-				options = append(options, &integration.AdapterOption{
+				options = append(options, &integration.DriverOption{
 					ID:       fmt.Sprintf("%s:%d", app.ID, port.ContainerPort),
 					Name:     app.Name,
 					Port:     hostPort.HostPort,

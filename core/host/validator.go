@@ -9,17 +9,20 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
+	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
 type validator struct {
-	hostRepository Repository
-	delegate       *validation.ConsistencyValidator
+	hostRepository      Repository
+	integrationCommands *integration.Commands
+	delegate            *validation.ConsistencyValidator
 }
 
-func newValidator(hostRepository Repository) *validator {
+func newValidator(hostRepository Repository, integrationCommands *integration.Commands) *validator {
 	return &validator{
-		hostRepository: hostRepository,
-		delegate:       validation.NewValidator(),
+		hostRepository:      hostRepository,
+		integrationCommands: integrationCommands,
+		delegate:            validation.NewValidator(),
 	}
 }
 
@@ -44,7 +47,9 @@ func (v *validator) validate(ctx context.Context, host *Host) error {
 	}
 
 	v.validateDomainNames(host)
-	v.validateRoutes(host)
+	if err := v.validateRoutes(ctx, host); err != nil {
+		return err
+	}
 
 	return v.delegate.Result()
 }
@@ -139,7 +144,7 @@ func (v *validator) validateBinding(ctx context.Context, pathPrefix string, bind
 	return nil
 }
 
-func (v *validator) validateRoutes(host *Host) {
+func (v *validator) validateRoutes(ctx context.Context, host *Host) error {
 	if len(host.Routes) == 0 {
 		v.delegate.Add("routes", "At least one route must be informed")
 	}
@@ -160,11 +165,15 @@ func (v *validator) validateRoutes(host *Host) {
 
 	distinctPaths := make(map[string]bool)
 	for index, route := range host.Routes {
-		v.validateRoute(route, index, &distinctPaths)
+		if err := v.validateRoute(ctx, route, index, &distinctPaths); err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
-func (v *validator) validateRoute(route *Route, index int, distinctPaths *map[string]bool) {
+func (v *validator) validateRoute(ctx context.Context, route *Route, index int, distinctPaths *map[string]bool) error {
 	if (*distinctPaths)[route.SourcePath] {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "sourcePath"),
@@ -182,7 +191,7 @@ func (v *validator) validateRoute(route *Route, index int, distinctPaths *map[st
 	case StaticResponseRouteType:
 		v.validateStaticResponseRoute(route, index)
 	case IntegrationRouteType:
-		v.validateIntegrationRoute(route, index)
+		return v.validateIntegrationRoute(ctx, route, index)
 	case ExecuteCodeRouteType:
 		v.validateExecuteCodeRoute(route, index)
 	case StaticFilesRouteType:
@@ -190,6 +199,8 @@ func (v *validator) validateRoute(route *Route, index int, distinctPaths *map[st
 	default:
 		v.delegate.Add(buildIndexedRoutePath(index, "type"), invalidValue)
 	}
+
+	return nil
 }
 
 func (v *validator) validateStaticFilesRoute(route *Route, index int) {
@@ -252,21 +263,28 @@ func (v *validator) validateStaticResponseRoute(route *Route, index int) {
 	}
 }
 
-func (v *validator) validateIntegrationRoute(route *Route, index int) {
+func (v *validator) validateIntegrationRoute(ctx context.Context, route *Route, index int) error {
 	requiredMessage := "Value is required when the type of the route is integration"
 
 	if route.Integration == nil {
 		v.delegate.Add(buildIndexedRoutePath(index, "integration"), requiredMessage)
-		return
+		return nil
 	}
 
-	if strings.TrimSpace(route.Integration.IntegrationID) == "" {
+	exists, err := v.integrationCommands.Exists(ctx, route.Integration.IntegrationID)
+	if err != nil {
+		return err
+	}
+
+	if !*exists {
 		v.delegate.Add(buildIndexedRoutePath(index, "integration.integrationId"), requiredMessage)
 	}
 
 	if strings.TrimSpace(route.Integration.OptionID) == "" {
 		v.delegate.Add(buildIndexedRoutePath(index, "integration.optionId"), requiredMessage)
 	}
+
+	return nil
 }
 
 func (v *validator) validateExecuteCodeRoute(route *Route, index int) {

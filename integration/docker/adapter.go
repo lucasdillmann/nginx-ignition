@@ -60,14 +60,14 @@ func (a *Adapter) GetAvailableOptions(
 	_, _ int,
 	searchTerms *string,
 	tcpOnly bool,
-) (*pagination.Page[*integration.AdapterOption], error) {
+) (*pagination.Page[*integration.DriverOption], error) {
 	options, err := a.resolveAvailableOptions(ctx, parameters, searchTerms, tcpOnly)
 	if err != nil {
 		return nil, err
 	}
 
 	totalItems := len(options)
-	adapterOptions := make([]*integration.AdapterOption, totalItems)
+	adapterOptions := make([]*integration.DriverOption, totalItems)
 	for i, option := range options {
 		adapterOptions[i] = toAdapterOption(option)
 	}
@@ -79,7 +79,7 @@ func (a *Adapter) GetAvailableOptionById(
 	ctx context.Context,
 	parameters map[string]any,
 	id string,
-) (*integration.AdapterOption, error) {
+) (*integration.DriverOption, error) {
 	option, err := a.resolveAvailableOptionById(ctx, parameters, id)
 	if err != nil || option == nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (a *Adapter) GetAvailableOptionById(
 	return toAdapterOption(option), nil
 }
 
-func (a *Adapter) GetOptionProxyUrl(
+func (a *Adapter) GetOptionProxyURL(
 	ctx context.Context,
 	parameters map[string]any,
 	id string,
@@ -215,11 +215,11 @@ func (a *Adapter) buildOptions(containers []container.Summary, tcpOnly bool) []*
 	return options
 }
 
-func toAdapterOption(option *containerMetadata) *integration.AdapterOption {
+func toAdapterOption(option *containerMetadata) *integration.DriverOption {
 	port := option.port
 	protocol := strings.ToUpper(port.Type)
 
-	return &integration.AdapterOption{
+	return &integration.DriverOption{
 		ID:       fmt.Sprintf("%s:%d", option.container.ID, port.PublicPort),
 		Name:     option.name,
 		Port:     int(port.PublicPort),

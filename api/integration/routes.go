@@ -18,14 +18,16 @@ func Install(
 		"/api/integrations",
 		func(permissions user.Permissions) user.AccessLevel { return permissions.Integrations },
 	)
-	basePath.GET("", listIntegrationsHandler{commands}.handle)
+	basePath.GET("", listHandler{commands}.handle)
+
+	basePath.GET("/available-drivers", availableDriversHandler{commands}.handle)
 
 	byIdPath := basePath.Group("/:id")
+	byIdPath.GET("", getHandler{commands}.handle)
+	byIdPath.PUT("", putHandler{commands}.handle)
+	byIdPath.DELETE("", deleteHandler{commands}.handle)
+
 	optionsPath := byIdPath.Group("/options")
 	optionsPath.GET("", listOptionsHandler{commands}.handle)
 	optionsPath.GET("/:optionId", getOptionHandler{commands}.handle)
-
-	configurationPath := byIdPath.Group("/configuration")
-	configurationPath.GET("", getConfigurationHandler{commands}.handle)
-	configurationPath.PUT("", putConfigurationHandler{commands}.handle)
 }

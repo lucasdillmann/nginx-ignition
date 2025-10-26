@@ -1,20 +1,33 @@
 package integration
 
 import (
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
-func toDto(integration *integration.ListOutput) *integrationResponse {
+func toDto(data *integration.Integration) *integrationResponse {
 	return &integrationResponse{
-		ID:          integration.ID,
-		Name:        integration.Name,
-		Description: integration.Description,
-		Enabled:     integration.Enabled,
+		ID:         data.ID,
+		Driver:     data.Driver,
+		Name:       data.Name,
+		Enabled:    data.Enabled,
+		Parameters: data.Parameters,
 	}
 }
 
-func toOptionDto(option *integration.AdapterOption) *integrationOptionResponse {
+func fromDto(id uuid.UUID, data *integrationRequest) *integration.Integration {
+	return &integration.Integration{
+		ID:         id,
+		Driver:     data.Driver,
+		Name:       data.Name,
+		Enabled:    data.Enabled,
+		Parameters: data.Parameters,
+	}
+}
+
+func toOptionDto(option *integration.DriverOption) *integrationOptionResponse {
 	return &integrationOptionResponse{
 		ID:       option.ID,
 		Name:     option.Name,
@@ -23,13 +36,11 @@ func toOptionDto(option *integration.AdapterOption) *integrationOptionResponse {
 	}
 }
 
-func toConfigurationDto(configuration *integration.GetByIdOutput) *integrationConfigurationResponse {
-	return &integrationConfigurationResponse{
-		ID:                  configuration.ID,
-		Name:                configuration.Name,
-		Description:         configuration.Description,
-		Enabled:             configuration.Enabled,
-		ConfigurationFields: dynamic_field.ToResponse(configuration.ConfigurationFields),
-		Parameters:          configuration.Parameters,
+func toAvailableDriverDto(data *integration.AvailableDriver) *integrationDriverResponse {
+	return &integrationDriverResponse{
+		ID:                  data.ID,
+		Name:                data.Name,
+		Description:         data.Description,
+		ConfigurationFields: dynamic_field.ToResponse(data.ConfigurationFields),
 	}
 }

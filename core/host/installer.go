@@ -2,6 +2,8 @@ package host
 
 import (
 	"go.uber.org/dig"
+
+	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
 func Install(container *dig.Container) error {
@@ -10,8 +12,9 @@ func Install(container *dig.Container) error {
 
 func buildCommands(
 	hostRepository Repository,
+	integrationCommands *integration.Commands,
 ) *Commands {
-	serviceInstance := newService(hostRepository)
+	serviceInstance := newService(hostRepository, integrationCommands)
 	return &Commands{
 		Save:            serviceInstance.save,
 		Delete:          serviceInstance.deleteByID,

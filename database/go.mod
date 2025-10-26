@@ -4,6 +4,7 @@ go 1.25.3
 
 require (
 	github.com/JCoupalK/go-pgdump v1.1.0
+	github.com/aws/smithy-go v1.23.1
 	github.com/golang-migrate/migrate/v4 v4.19.0
 	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9

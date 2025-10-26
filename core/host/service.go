@@ -7,18 +7,20 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
+	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
 type service struct {
-	hostRepository Repository
+	hostRepository      Repository
+	integrationCommands *integration.Commands
 }
 
-func newService(hostRepository Repository) *service {
-	return &service{hostRepository}
+func newService(hostRepository Repository, integrationCommands *integration.Commands) *service {
+	return &service{hostRepository, integrationCommands}
 }
 
 func (s *service) save(ctx context.Context, input *Host) error {
-	if err := newValidator(s.hostRepository).validate(ctx, input); err != nil {
+	if err := newValidator(s.hostRepository, s.integrationCommands).validate(ctx, input); err != nil {
 		return err
 	}
 
@@ -52,6 +54,6 @@ func (s *service) validateBinding(
 	binding *Binding,
 	context *validation.ConsistencyValidator,
 ) error {
-	validatorInstance := &validator{s.hostRepository, context}
+	validatorInstance := &validator{s.hostRepository, s.integrationCommands, context}
 	return validatorInstance.validateBinding(ctx, path, binding, index)
 }

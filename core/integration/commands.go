@@ -3,42 +3,38 @@ package integration
 import (
 	"context"
 
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
-type GetByIdOutput struct {
+type AvailableDriver struct {
 	ID                  string
 	Name                string
 	Description         string
-	Enabled             bool
 	ConfigurationFields []*dynamic_fields.DynamicField
-	Parameters          map[string]any
-}
-
-type ListOutput struct {
-	ID          string
-	Name        string
-	Description string
-	Enabled     bool
 }
 
 type Commands struct {
-	GetById          func(ctx context.Context, id string) (*GetByIdOutput, error)
-	GetOptionById    func(ctx context.Context, integrationId, optionId string) (*AdapterOption, error)
-	GetOptionUrlById func(ctx context.Context, integrationId, optionId string) (*string, error)
-	List             func(ctx context.Context) ([]*ListOutput, error)
-	ConfigureById    func(
+	Get                 func(ctx context.Context, id uuid.UUID) (*Integration, error)
+	Delete              func(ctx context.Context, id uuid.UUID) error
+	Save                func(ctx context.Context, data *Integration) error
+	Exists              func(ctx context.Context, id uuid.UUID) (*bool, error)
+	GetOption           func(ctx context.Context, integrationId uuid.UUID, optionId string) (*DriverOption, error)
+	GetOptionUrl        func(ctx context.Context, integrationId uuid.UUID, optionId string) (*string, error)
+	GetAvailableDrivers func(ctx context.Context) (*[]*AvailableDriver, error)
+	List                func(
 		ctx context.Context,
-		id string,
-		enabled bool,
-		parameters map[string]any,
-	) error
+		pageSize, pageNumber int,
+		searchTerms *string,
+		enabledOnly bool,
+	) (*pagination.Page[*Integration], error)
 	ListOptions func(
 		ctx context.Context,
-		integrationId string,
+		integrationId uuid.UUID,
 		pageNumber, pageSize int,
 		searchTerms *string,
 		tcpOnly bool,
-	) (*pagination.Page[*AdapterOption], error)
+	) (*pagination.Page[*DriverOption], error)
 }

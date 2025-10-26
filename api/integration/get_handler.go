@@ -4,22 +4,29 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
-type getConfigurationHandler struct {
+type getHandler struct {
 	commands *integration.Commands
 }
 
-func (h getConfigurationHandler) handle(ctx *gin.Context) {
+func (h getHandler) handle(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
 		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	data, err := h.commands.GetById(ctx.Request.Context(), id)
+	uuidValue, err := uuid.Parse(id)
+	if err != nil {
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+
+	data, err := h.commands.Get(ctx.Request.Context(), uuidValue)
 	if err != nil {
 		panic(err)
 	}
@@ -29,5 +36,5 @@ func (h getConfigurationHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, toConfigurationDto(data))
+	ctx.JSON(http.StatusOK, toDto(data))
 }

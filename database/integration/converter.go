@@ -15,6 +15,8 @@ func toDomain(model *integrationModel) (*integration.Integration, error) {
 
 	return &integration.Integration{
 		ID:         model.ID,
+		Driver:     model.Driver,
+		Name:       model.Name,
 		Enabled:    model.Enabled,
 		Parameters: parameters,
 	}, nil
@@ -28,6 +30,8 @@ func toModel(domain *integration.Integration) (*integrationModel, error) {
 
 	return &integrationModel{
 		ID:         domain.ID,
+		Driver:     domain.Driver,
+		Name:       domain.Name,
 		Enabled:    domain.Enabled,
 		Parameters: string(parameters),
 	}, nil

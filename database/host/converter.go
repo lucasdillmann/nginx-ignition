@@ -3,6 +3,8 @@ package host
 import (
 	"encoding/json"
 
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/common/pointers"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
@@ -120,7 +122,8 @@ func toModel(domain *host.Host) (*hostModel, error) {
 			responseStatusCode = &route.Response.StatusCode
 		}
 
-		var integrationID, integrationOptionID *string
+		var integrationID *uuid.UUID
+		var integrationOptionID *string
 		if route.Integration != nil {
 			integrationID = &route.Integration.IntegrationID
 			integrationOptionID = &route.Integration.OptionID

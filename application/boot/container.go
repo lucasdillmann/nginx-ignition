@@ -104,8 +104,8 @@ func installIntegrationAdapterAggregation(
 	dockerAdapter *docker.Adapter,
 	trueNasAdapter *truenas.Adapter,
 ) error {
-	return container.Provide(func() []integration.Adapter {
-		return []integration.Adapter{
+	return container.Provide(func() []integration.Driver {
+		return []integration.Driver{
 			dockerAdapter,
 			trueNasAdapter,
 		}

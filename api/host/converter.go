@@ -1,6 +1,8 @@
 package host
 
 import (
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
@@ -244,7 +246,7 @@ func toRouteIntegrationConfig(input *integrationConfigDto) *host.RouteIntegratio
 	}
 
 	return &host.RouteIntegrationConfig{
-		IntegrationID: getStringValue(input.IntegrationId),
+		IntegrationID: getUuidValue(input.IntegrationId),
 		OptionID:      getStringValue(input.OptionId),
 	}
 }
@@ -284,6 +286,14 @@ func getStringValue(value *string) string {
 	if value == nil {
 		return ""
 	}
+	return *value
+}
+
+func getUuidValue(value *uuid.UUID) uuid.UUID {
+	if value == nil {
+		return uuid.Nil
+	}
+
 	return *value
 }
 
