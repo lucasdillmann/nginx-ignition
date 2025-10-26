@@ -53,11 +53,11 @@ To install nginx ignition locally on your machine, you have several options:
 Download the appropriate package for your distribution and architecture (amd64/arm64) from the 
 [releases page](https://github.com/lucasdillmann/nginx-ignition/releases):
 
-- **Debian/Ubuntu**: `.deb` packages
-- **RedHat/Fedora/CentOS**: `.rpm` packages
-- **Alpine Linux**: `.apk` packages
-- **Arch Linux**: `.pkg.tar.zst` packages
-- **Embedded Linux (OpenWrt)**: `.ipk` packages
+- Debian/Ubuntu: `.deb` packages
+- RedHat/Fedora/CentOS: `.rpm` packages
+- Alpine Linux: `.apk` packages
+- Arch Linux: `.pkg.tar.zst` packages
+- Embedded Linux (OpenWrt): `.ipk` packages
 
 #### ZIP Archive
 Download the ZIP file for your OS and arch (amd64/arm64) from the 
