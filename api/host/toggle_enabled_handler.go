@@ -32,7 +32,6 @@ func (h toggleEnabledHandler) handle(ctx *gin.Context) {
 
 	data.Enabled = !data.Enabled
 	err = h.commands.Save(ctx.Request.Context(), data)
-
 	if err != nil {
 		panic(err)
 	}

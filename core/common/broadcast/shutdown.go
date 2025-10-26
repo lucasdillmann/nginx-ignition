@@ -6,8 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 )
 
-type shutdown struct {
-}
+type shutdown struct{}
 
 func registerShutdown(lifecycle *lifecycle.Lifecycle) {
 	lifecycle.RegisterShutdown(shutdown{})

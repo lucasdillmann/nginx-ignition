@@ -1,9 +1,9 @@
 module dillmann.com.br/nginx-ignition/core
 
-go 1.25.1
+go 1.25.3
 
 require (
-	github.com/aws/smithy-go v1.23.0
+	github.com/aws/smithy-go v1.23.1
 	github.com/google/uuid v1.6.0
 	github.com/ncw/pwhash v0.0.0-20160129162812-b2a8830c6a99
 	go.uber.org/dig v1.19.0

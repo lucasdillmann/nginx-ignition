@@ -22,8 +22,7 @@ type containerMetadata struct {
 	name      string
 }
 
-type Adapter struct {
-}
+type Adapter struct{}
 
 func newAdapter() *Adapter {
 	return &Adapter{}

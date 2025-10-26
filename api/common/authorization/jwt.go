@@ -23,9 +23,7 @@ const (
 	expectedJwtSecretSizeBytes = 512
 )
 
-var (
-	errInvalidToken = api_error.New(http.StatusUnauthorized, "Invalid access token")
-)
+var errInvalidToken = api_error.New(http.StatusUnauthorized, "Invalid access token")
 
 type Jwt struct {
 	configuration *configuration.Configuration
@@ -92,7 +90,6 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 
 		return j.secretKey, nil
 	})
-
 	if err != nil {
 		return nil, err
 	}

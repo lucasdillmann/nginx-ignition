@@ -60,7 +60,6 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		Model((*hostBindingModel)(nil)).
 		Where(buHostIdFilter, id).
 		Exec(ctx)
-
 	if err != nil {
 		return err
 	}
@@ -69,7 +68,6 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		Model((*hostRouteModel)(nil)).
 		Where(buHostIdFilter, id).
 		Exec(ctx)
-
 	if err != nil {
 		return err
 	}
@@ -78,7 +76,6 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		Model((*hostModel)(nil)).
 		Where(constants.ByIdFilter, id).
 		Exec(ctx)
-
 	if err != nil {
 		return err
 	}
@@ -193,7 +190,6 @@ func (r *repository) FindPage(
 		Offset(pageSize * pageNumber).
 		Order("domain_names").
 		Scan(ctx)
-
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +216,6 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]*host.Host, error) {
 		Relation("Routes").
 		Where("enabled = ?", true).
 		Scan(ctx)
-
 	if err != nil {
 		return nil, err
 	}
@@ -263,7 +258,6 @@ func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error)
 		Model((*hostModel)(nil)).
 		Where(constants.ByIdFilter, id).
 		Count(ctx)
-
 	if err != nil {
 		return false, err
 	}
@@ -281,7 +275,6 @@ func (r *repository) ExistsByCertificateID(ctx context.Context, certificateId uu
 		Model((*hostBindingModel)(nil)).
 		Where("certificate_id = ?", certificateId).
 		Count(ctx)
-
 	if err != nil {
 		return false, err
 	}
@@ -294,7 +287,6 @@ func (r *repository) ExistsByAccessListID(ctx context.Context, accessListId uuid
 		Model((*hostModel)(nil)).
 		Where("access_list_id = ?", accessListId).
 		Count(ctx)
-
 	if err != nil {
 		return false, err
 	}
@@ -307,7 +299,6 @@ func (r *repository) ExistsByAccessListID(ctx context.Context, accessListId uuid
 		Model((*hostRouteModel)(nil)).
 		Where("access_list_id = ?", accessListId).
 		Count(ctx)
-
 	if err != nil {
 		return false, err
 	}

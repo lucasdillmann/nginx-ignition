@@ -12,9 +12,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user/password_hash"
 )
 
-var (
-	invalidCredentialsError = core_error.New("Invalid username or password", true)
-)
+var invalidCredentialsError = core_error.New("Invalid username or password", true)
 
 type service struct {
 	repository    Repository
@@ -117,7 +115,6 @@ func (s *service) save(ctx context.Context, request *SaveRequest, currentUserId 
 		passwordSalt = databaseState.PasswordSalt
 	} else if request.Password != nil {
 		passwordHash, passwordSalt, err = password_hash.New(s.configuration).Hash(*request.Password)
-
 		if err != nil {
 			return err
 		}

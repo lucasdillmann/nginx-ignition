@@ -51,7 +51,6 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		Model((*userModel)(nil)).
 		Where(constants.ByIdFilter, id).
 		Exec(ctx)
-
 	if err != nil {
 		return err
 	}
@@ -105,7 +104,6 @@ func (r *repository) FindPage(
 		Offset(pageSize * pageNumber).
 		Order("name").
 		Scan(ctx)
-
 	if err != nil {
 		return nil, err
 	}

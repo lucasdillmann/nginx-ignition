@@ -6,9 +6,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var (
-	logger *zap.Logger
-)
+var logger *zap.Logger
 
 func Init() error {
 	config := zap.Config{

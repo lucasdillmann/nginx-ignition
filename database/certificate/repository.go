@@ -52,7 +52,6 @@ func (r repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) 
 		Model((*certificateModel)(nil)).
 		Where(constants.ByIdFilter, id).
 		Count(ctx)
-
 	if err != nil {
 		return false, err
 	}
@@ -72,7 +71,6 @@ func (r repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		Model((*certificateModel)(nil)).
 		Where(constants.ByIdFilter, id).
 		Exec(ctx)
-
 	if err != nil {
 		return err
 	}
@@ -124,7 +122,6 @@ func (r repository) FindPage(
 	}
 
 	count, err := query.Count(ctx)
-
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +136,6 @@ func (r repository) FindPage(
 		Offset(pageSize * pageNumber).
 		Order("domain_names").
 		Scan(ctx)
-
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +159,6 @@ func (r repository) FindAllDueToRenew(ctx context.Context) ([]*certificate.Certi
 		Model(&certificates).
 		Where("renew_after IS NOT NULL AND renew_after <= ?", time.Now()).
 		Scan(ctx)
-
 	if err != nil {
 		return nil, err
 	}

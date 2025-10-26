@@ -19,9 +19,7 @@ const (
 	defaultLineCount = 50
 )
 
-var (
-	lineCountRange = value_range.New(1, 10_000)
-)
+var lineCountRange = value_range.New(1, 10_000)
 
 func (h logsHandler) handle(ctx *gin.Context) {
 	lineCount := defaultLineCount

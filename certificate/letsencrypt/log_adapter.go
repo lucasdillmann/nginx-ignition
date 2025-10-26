@@ -8,12 +8,9 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
-var (
-	logAdapterInstance acmelog.StdLogger = &logAdapter{}
-)
+var logAdapterInstance acmelog.StdLogger = &logAdapter{}
 
-type logAdapter struct {
-}
+type logAdapter struct{}
 
 func (l *logAdapter) Fatal(args ...interface{}) {
 	l.Fatalln(args...)

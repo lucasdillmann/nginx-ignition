@@ -74,7 +74,6 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		Model((*streamModel)(nil)).
 		Where(constants.ByIdFilter, id).
 		Exec(ctx)
-
 	if err != nil {
 		return err
 	}
@@ -137,7 +136,6 @@ func (r *repository) FindPage(
 		Offset(pageSize * pageNumber).
 		Order("name").
 		Scan(ctx)
-
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +161,6 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]*stream.Stream, erro
 		Model(&models).
 		Where("enabled = ?", true).
 		Scan(ctx)
-
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +184,6 @@ func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error)
 		Model((*streamModel)(nil)).
 		Where(constants.ByIdFilter, id).
 		Count(ctx)
-
 	if err != nil {
 		return false, err
 	}
@@ -201,7 +197,6 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 		Table("stream_backend").
 		Where(byStreamIdFilter, id).
 		Exec(ctx)
-
 	if err != nil {
 		return err
 	}
@@ -224,7 +219,6 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 			Table("stream_backend").
 			Where(byStreamRouteIdArrayFilter, bun.In(routeIDs)).
 			Exec(ctx)
-
 		if err != nil {
 			return err
 		}
@@ -275,7 +269,6 @@ func (r *repository) fillLinkedModels(ctx context.Context, stream *stream.Stream
 		Model(&routeModels).
 		Where(byStreamIdFilter, stream.ID).
 		Scan(ctx)
-
 	if err != nil {
 		return err
 	}
@@ -287,7 +280,6 @@ func (r *repository) fillLinkedModels(ctx context.Context, stream *stream.Stream
 			Model(&backendModels).
 			Where(byStreamRouteIdFilter, routeModel.ID).
 			Scan(ctx)
-
 		if err != nil {
 			return err
 		}
@@ -301,7 +293,6 @@ func (r *repository) fillLinkedModels(ctx context.Context, stream *stream.Stream
 		Model(&defaultBackendModel).
 		Where(byStreamIdFilter, stream.ID).
 		Scan(ctx)
-
 	if err != nil {
 		return err
 	}

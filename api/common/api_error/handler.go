@@ -91,7 +91,7 @@ func handleCoreError(ctx *gin.Context, err *core_error.CoreError) {
 }
 
 func handleConsistencyError(ctx *gin.Context, err *validation.ConsistencyError) {
-	var details = make([]*problemDetail, len(err.Violations))
+	details := make([]*problemDetail, len(err.Violations))
 	for index, detail := range err.Violations {
 		details[index] = &problemDetail{
 			FieldPath: detail.Path,

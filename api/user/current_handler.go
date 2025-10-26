@@ -8,8 +8,7 @@ import (
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
 )
 
-type currentHandler struct {
-}
+type currentHandler struct{}
 
 func (h currentHandler) handle(ctx *gin.Context) {
 	currentUser := authorization.CurrentSubject(ctx).User

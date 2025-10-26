@@ -8,9 +8,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
-var (
-	placeholderDuration = time.Hour * 99999
-)
+var placeholderDuration = time.Hour * 99999
 
 type Scheduler struct {
 	tickers map[Task]*time.Ticker
