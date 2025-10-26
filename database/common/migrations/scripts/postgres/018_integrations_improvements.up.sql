@@ -44,3 +44,5 @@ where integration_id_old is not null;
 alter table host_route drop column integration_id_old;
 alter table host_route add constraint fk_host_route_integration foreign key (integration_id) references integration (id);
 create index idx_host_route_integration_id on host_route (integration_id);
+
+-- TODO: Validate with data

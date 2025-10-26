@@ -19,8 +19,8 @@ func (h availableDriversHandler) handle(ctx *gin.Context) {
 	}
 
 	payload := make([]*integrationDriverResponse, len(*data))
-	for i, driver := range *data {
-		payload[i] = toAvailableDriverDto(driver)
+	for index, driver := range *data {
+		payload[index] = toAvailableDriverDto(driver)
 	}
 
 	ctx.JSON(http.StatusOK, payload)

@@ -14,39 +14,35 @@ import (
 	"dillmann.com.br/nginx-ignition/integration/truenas/client"
 )
 
-type Adapter struct {
+type Driver struct {
 	client        *client.Client
 	cacheDuration int
 }
 
-func newAdapter(configuration *configuration.Configuration) (*Adapter, error) {
+func newDriver(configuration *configuration.Configuration) (*Driver, error) {
 	cacheDuration, err := configuration.GetInt("nginx-ignition.integration.truenas.api-cache-timeout-seconds")
 	if err != nil {
 		return nil, err
 	}
 
-	return &Adapter{cacheDuration: cacheDuration}, nil
+	return &Driver{cacheDuration: cacheDuration}, nil
 }
 
-func (a *Adapter) ID() string {
-	return "TRUENAS_SCALE"
+func (a *Driver) ID() string {
+	return "TRUENAS"
 }
 
-func (a *Adapter) Name() string {
-	return "TrueNAS Scale"
+func (a *Driver) Name() string {
+	return "TrueNAS"
 }
 
-func (a *Adapter) Priority() int {
-	return 2
-}
-
-func (a *Adapter) Description() string {
+func (a *Driver) Description() string {
 	return "TrueNAS allows, alongside many other things, to run your favorite apps under Docker containers. With this " +
 		"integration enabled, you will be able to easily pick any app exposing a service in your TrueNAS as a " +
 		"target for your nginx ignition's host routes."
 }
 
-func (a *Adapter) ConfigurationFields() []*dynamic_fields.DynamicField {
+func (a *Driver) ConfigurationFields() []*dynamic_fields.DynamicField {
 	return []*dynamic_fields.DynamicField{
 		&urlField,
 		&proxyUrlField,
@@ -55,7 +51,7 @@ func (a *Adapter) ConfigurationFields() []*dynamic_fields.DynamicField {
 	}
 }
 
-func (a *Adapter) GetAvailableOptions(
+func (a *Driver) GetAvailableOptions(
 	_ context.Context,
 	parameters map[string]any,
 	_, _ int,
@@ -84,7 +80,7 @@ func (a *Adapter) GetAvailableOptions(
 	return pagination.New(0, resultSize, resultSize, options), nil
 }
 
-func (a *Adapter) GetAvailableOptionById(
+func (a *Driver) GetAvailableOptionById(
 	_ context.Context,
 	parameters map[string]any,
 	id string,
@@ -110,7 +106,7 @@ func (a *Adapter) GetAvailableOptionById(
 	}, nil
 }
 
-func (a *Adapter) GetOptionProxyURL(
+func (a *Driver) GetOptionProxyURL(
 	_ context.Context,
 	parameters map[string]any,
 	id string,
@@ -159,7 +155,7 @@ func (a *Adapter) GetOptionProxyURL(
 	return &output, nil
 }
 
-func (a *Adapter) getWorkloadPort(
+func (a *Driver) getWorkloadPort(
 	parameters map[string]any,
 	appId, containerPort string,
 ) (*client.AvailableAppDTO, *client.WorkloadPortDTO, error) {
@@ -181,7 +177,7 @@ func (a *Adapter) getWorkloadPort(
 	return nil, nil, nil
 }
 
-func (a *Adapter) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []*integration.DriverOption {
+func (a *Driver) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []*integration.DriverOption {
 	var options []*integration.DriverOption
 
 	for _, app := range apps {
@@ -209,7 +205,7 @@ func (a *Adapter) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []*i
 	return options
 }
 
-func (a *Adapter) getAvailableApps(parameters map[string]any) ([]client.AvailableAppDTO, error) {
+func (a *Driver) getAvailableApps(parameters map[string]any) ([]client.AvailableAppDTO, error) {
 	baseUrl := parameters[urlField.ID].(string)
 	username := parameters[usernameField.ID].(string)
 	password := parameters[passwordField.ID].(string)

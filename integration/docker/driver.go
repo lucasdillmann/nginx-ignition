@@ -22,30 +22,26 @@ type containerMetadata struct {
 	name      string
 }
 
-type Adapter struct{}
+type Driver struct{}
 
-func newAdapter() *Adapter {
-	return &Adapter{}
+func newDriver() *Driver {
+	return &Driver{}
 }
 
-func (a *Adapter) ID() string {
+func (a *Driver) ID() string {
 	return "DOCKER"
 }
 
-func (a *Adapter) Name() string {
+func (a *Driver) Name() string {
 	return "Docker"
 }
 
-func (a *Adapter) Priority() int {
-	return 1
-}
-
-func (a *Adapter) Description() string {
+func (a *Driver) Description() string {
 	return "Enables easy pick of a Docker container with ports exposing a service as a target for your nginx " +
 		"ignition's host routes."
 }
 
-func (a *Adapter) ConfigurationFields() []*dynamic_fields.DynamicField {
+func (a *Driver) ConfigurationFields() []*dynamic_fields.DynamicField {
 	return []*dynamic_fields.DynamicField{
 		&connectionModeField,
 		&socketPathField,
@@ -54,7 +50,7 @@ func (a *Adapter) ConfigurationFields() []*dynamic_fields.DynamicField {
 	}
 }
 
-func (a *Adapter) GetAvailableOptions(
+func (a *Driver) GetAvailableOptions(
 	ctx context.Context,
 	parameters map[string]any,
 	_, _ int,
@@ -75,7 +71,7 @@ func (a *Adapter) GetAvailableOptions(
 	return pagination.New(0, totalItems, totalItems, adapterOptions), nil
 }
 
-func (a *Adapter) GetAvailableOptionById(
+func (a *Driver) GetAvailableOptionById(
 	ctx context.Context,
 	parameters map[string]any,
 	id string,
@@ -88,7 +84,7 @@ func (a *Adapter) GetAvailableOptionById(
 	return toAdapterOption(option), nil
 }
 
-func (a *Adapter) GetOptionProxyURL(
+func (a *Driver) GetOptionProxyURL(
 	ctx context.Context,
 	parameters map[string]any,
 	id string,
@@ -129,7 +125,7 @@ func (a *Adapter) GetOptionProxyURL(
 	return &result, nil
 }
 
-func (a *Adapter) resolveAvailableOptionById(
+func (a *Driver) resolveAvailableOptionById(
 	ctx context.Context,
 	parameters map[string]any,
 	id string,
@@ -156,7 +152,7 @@ func (a *Adapter) resolveAvailableOptionById(
 	return nil, nil
 }
 
-func (a *Adapter) resolveAvailableOptions(
+func (a *Driver) resolveAvailableOptions(
 	ctx context.Context,
 	parameters map[string]any,
 	searchTerms *string,
@@ -194,7 +190,7 @@ func (a *Adapter) resolveAvailableOptions(
 	return options, nil
 }
 
-func (a *Adapter) buildOptions(containers []container.Summary, tcpOnly bool) []*containerMetadata {
+func (a *Driver) buildOptions(containers []container.Summary, tcpOnly bool) []*containerMetadata {
 	var options []*containerMetadata
 	for _, item := range containers {
 		for _, port := range item.Ports {

@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -62,12 +61,12 @@ func (s *service) listOptions(
 	}
 
 	if data == nil {
-		return nil, integrationNotFoundError()
+		return nil, ErrIntegrationNotFound
 	}
 
 	adapter := s.findDriver(data)
 	if adapter == nil {
-		return nil, integrationNotFoundError()
+		return nil, ErrIntegrationNotFound
 	}
 
 	options, err := adapter.GetAvailableOptions(ctx, data.Parameters, pageNumber, pageSize, searchTerms, tcpOnly)
@@ -89,16 +88,16 @@ func (s *service) getOptionById(ctx context.Context, integrationId uuid.UUID, op
 	}
 
 	if data == nil {
-		return nil, integrationNotFoundError()
+		return nil, ErrIntegrationNotFound
 	}
 
 	adapter := s.findDriver(data)
 	if adapter == nil {
-		return nil, integrationNotFoundError()
+		return nil, ErrIntegrationNotFound
 	}
 
 	if !data.Enabled {
-		return nil, integrationDisabledError()
+		return nil, ErrIntegrationDisabled
 	}
 
 	return adapter.GetAvailableOptionById(ctx, data.Parameters, optionId)
@@ -111,16 +110,16 @@ func (s *service) getOptionUrl(ctx context.Context, integrationId uuid.UUID, opt
 	}
 
 	if data == nil {
-		return nil, integrationNotFoundError()
+		return nil, ErrIntegrationNotFound
 	}
 
 	adapter := s.findDriver(data)
 	if adapter == nil {
-		return nil, integrationNotFoundError()
+		return nil, ErrIntegrationNotFound
 	}
 
 	if !data.Enabled {
-		return nil, integrationDisabledError()
+		return nil, ErrIntegrationDisabled
 	}
 
 	url, err := adapter.GetOptionProxyURL(ctx, data.Parameters, optionId)
@@ -167,12 +166,4 @@ func (s *service) findDriver(data *Integration) Driver {
 	}
 
 	return nil
-}
-
-func integrationDisabledError() error {
-	return core_error.New("Integration is disabled", true)
-}
-
-func integrationNotFoundError() error {
-	return core_error.New("Integration not found with provided ID", true)
 }
