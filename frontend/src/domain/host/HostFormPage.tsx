@@ -18,7 +18,6 @@ import "./HostFormPage.css"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
 import HostFormValues from "./model/HostFormValues"
 import HostConverter from "./HostConverter"
-import { IntegrationResponse } from "../integration/model/IntegrationResponse"
 import IntegrationService from "../integration/IntegrationService"
 import If from "../../core/components/flowcontrol/If"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
@@ -36,7 +35,6 @@ import HostSupportWarning from "./components/HostSupportWarning"
 interface HostFormPageState {
     formValues: HostFormValues
     validationResult: ValidationResult
-    integrations: IntegrationResponse[]
     loading: boolean
     notFound: boolean
     error?: Error
@@ -65,7 +63,6 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
             loading: true,
             notFound: false,
             formValues: hostFormValuesDefaults(),
-            integrations: [],
         }
     }
 
@@ -197,7 +194,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     private renderForm() {
-        const { validationResult, formValues, integrations } = this.state
+        const { validationResult, formValues } = this.state
 
         return (
             <Form<HostFormValues>
@@ -299,7 +296,6 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                 <HostRoutes
                     routes={formValues.routes}
                     validationResult={validationResult}
-                    integrations={integrations}
                     onRouteRemove={index => this.removeRoute(index)}
                     onChange={() => this.formRef.current?.resetFields()}
                 />
@@ -331,38 +327,27 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
     componentDidMount() {
         const copyFrom = queryParams().copyFrom as string | undefined
-        const integrations = this.integrationService.getAll(true)
-
         if (this.hostId === undefined && copyFrom === undefined) {
-            integrations
-                .then(response => {
-                    this.setState({ loading: false, integrations: response })
-                    this.updateShellConfig(true)
-                })
-                .catch(() => {
-                    this.setState({ loading: false })
-                    CommonNotifications.failedToFetch()
-                })
             return
         }
 
-        const formValues = this.hostService
+        this.hostService
             .getById((this.hostId ?? copyFrom)!!)
             .then(response => (response === undefined ? undefined : HostConverter.responseToFormValues(response)))
-
-        Promise.all([formValues, integrations])
-            .then(([formValues, integrations]) => {
-                if (formValues === undefined) this.setState({ loading: false, notFound: true })
-                else {
-                    if (copyFrom !== undefined)
-                        Notification.success(
-                            "Host values copied",
-                            "The values from the selected host where successfully copied as a new host",
-                        )
-
-                    this.setState({ loading: false, formValues, integrations })
-                    this.updateShellConfig(true)
+            .then(formValues => {
+                if (formValues === undefined) {
+                    this.setState({ loading: false, notFound: true })
+                    return
                 }
+
+                if (copyFrom !== undefined)
+                    Notification.success(
+                        "Host values copied",
+                        "The values from the selected host where successfully copied as a new host",
+                    )
+
+                this.setState({ loading: false, formValues })
+                this.updateShellConfig(true)
             })
             .catch(error => {
                 CommonNotifications.failedToFetch()

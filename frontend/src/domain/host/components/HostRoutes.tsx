@@ -15,9 +15,9 @@ import { HostRouteSourceCodeLanguage, HostRouteType } from "../model/HostRequest
 import FormLayout from "../../../core/components/form/FormLayout"
 import "./HostRoutes.css"
 import TextArea from "antd/es/input/TextArea"
-import { IntegrationResponse } from "../../integration/model/IntegrationResponse"
+import IntegrationResponse from "../../integration/model/IntegrationResponse"
 import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
-import { IntegrationOptionResponse } from "../../integration/model/IntegrationOptionResponse"
+import IntegrationOptionResponse from "../../integration/model/IntegrationOptionResponse"
 import PageResponse, { emptyPageResponse } from "../../../core/pagination/PageResponse"
 import IntegrationService from "../../integration/IntegrationService"
 import HostRouteSettingsModal from "./HostRouteSettingsModal"
@@ -45,7 +45,6 @@ const ENABLED_ACTION_ICON_STYLE = {
 export interface HostRoutesProps {
     routes: HostFormRoute[]
     validationResult: ValidationResult
-    integrations: IntegrationResponse[]
     onRouteRemove: (index: number) => void
     onChange: () => void
 }
@@ -156,27 +155,30 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
     }
 
     private renderIntegrationRoute(field: FormListFieldData, index: number): React.ReactNode {
-        const { validationResult, integrations, routes } = this.props
+        const { validationResult, routes } = this.props
         const { name } = field
-        const integrationOptions = integrations.map(({ id, name }) => ({
-            label: name,
-            value: id,
-        }))
 
-        const currentIntegrationId = routes[index].integration?.integrationId
+        const currentIntegrationId = routes[index].integration?.integration?.id
         return (
             <>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
                     className="host-form-route-integration-app"
                     layout="vertical"
-                    name={[name, "integration", "integrationId"]}
+                    name={[name, "integration", "integration"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].integration.integrationId`)}
                     help={validationResult.getMessage(`routes[${index}].integration.integrationId`)}
                     label="Integration"
                     required
                 >
-                    <Select options={integrationOptions} onChange={() => this.handleIntegrationChange()} />
+                    <PaginatedSelect<IntegrationResponse>
+                        itemDescription={item => item?.name}
+                        itemKey={item => item?.id}
+                        pageProvider={(pageSize, pageNumber, searchTerms) =>
+                            this.integrationService.list(pageSize, pageNumber, searchTerms, true)
+                        }
+                        onChange={() => this.handleIntegrationChange()}
+                    />
                 </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
