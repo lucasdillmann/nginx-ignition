@@ -323,8 +323,12 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     componentDidMount() {
+        this.updateShellConfig(false)
+
         const copyFrom = queryParams().copyFrom as string | undefined
         if (this.hostId === undefined && copyFrom === undefined) {
+            this.setState({ loading: false })
+            this.updateShellConfig(true)
             return
         }
 
@@ -350,8 +354,6 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                 CommonNotifications.failedToFetch()
                 this.setState({ loading: false, error })
             })
-
-        this.updateShellConfig(false)
     }
 
     render() {
