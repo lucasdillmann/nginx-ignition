@@ -9,16 +9,16 @@ import (
 )
 
 type validator struct {
-	integration Repository
-	driver      Driver
-	delegate    *validation.ConsistencyValidator
+	repository Repository
+	driver     Driver
+	delegate   *validation.ConsistencyValidator
 }
 
 func newValidator(repository Repository, driver Driver) *validator {
 	return &validator{
-		integration: repository,
-		driver:      driver,
-		delegate:    validation.NewValidator(),
+		repository: repository,
+		driver:     driver,
+		delegate:   validation.NewValidator(),
 	}
 }
 
@@ -26,7 +26,16 @@ const (
 	invalidValue = "Invalid value"
 )
 
-func (v *validator) validate(ctx context.Context, data *Integration) error { //nolint:revive,unused
+func (v *validator) validate(ctx context.Context, data *Integration) error {
+	inUse, err := v.repository.InUseByID(ctx, data.ID)
+	if err != nil {
+		return err
+	}
+
+	if *inUse && !data.Enabled {
+		v.delegate.Add("enabled", "Integration is in use by one or more hosts. It cannot be disabled.")
+	}
+
 	if strings.TrimSpace(data.Name) == "" {
 		v.delegate.Add("name", validation.ValueMissingMessage)
 	}

@@ -158,13 +158,13 @@ func (s *service) getAvailableDrivers(_ context.Context) (*[]*AvailableDriver, e
 	})
 
 	output := make([]*AvailableDriver, len(drivers))
-	for _, driver := range drivers {
-		output = append(output, &AvailableDriver{
+	for index, driver := range drivers {
+		output[index] = &AvailableDriver{
 			ID:                  driver.ID(),
 			Name:                driver.Name(),
 			Description:         driver.Description(),
 			ConfigurationFields: driver.ConfigurationFields(),
-		})
+		}
 	}
 
 	return &output, nil
