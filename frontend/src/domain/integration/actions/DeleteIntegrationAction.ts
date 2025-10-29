@@ -19,7 +19,7 @@ class DeleteIntegrationAction {
             })
             .catch(error => {
                 let message = `An unexpected error was found while trying to delete the integration. Please try again later.`
-                if (error && error.response?.body?.message) message = error.response.body.message
+                if (error?.response?.body?.message) message = error.response.body.message
 
                 Notification.error(`Unable to delete the integration`, message)
             })
