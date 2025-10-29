@@ -63,12 +63,12 @@ func (a *Driver) GetAvailableOptions(
 	}
 
 	totalItems := len(options)
-	adapterOptions := make([]*integration.DriverOption, totalItems)
+	driverOptions := make([]*integration.DriverOption, totalItems)
 	for i, option := range options {
-		adapterOptions[i] = toAdapterOption(option)
+		driverOptions[i] = toDriverOption(option)
 	}
 
-	return pagination.New(0, totalItems, totalItems, adapterOptions), nil
+	return pagination.New(0, totalItems, totalItems, driverOptions), nil
 }
 
 func (a *Driver) GetAvailableOptionById(
@@ -81,7 +81,7 @@ func (a *Driver) GetAvailableOptionById(
 		return nil, err
 	}
 
-	return toAdapterOption(option), nil
+	return toDriverOption(option), nil
 }
 
 func (a *Driver) GetOptionProxyURL(
@@ -211,7 +211,7 @@ func (a *Driver) buildOptions(containers []container.Summary, tcpOnly bool) []*c
 	return options
 }
 
-func toAdapterOption(option *containerMetadata) *integration.DriverOption {
+func toDriverOption(option *containerMetadata) *integration.DriverOption {
 	port := option.port
 	protocol := strings.ToUpper(port.Type)
 

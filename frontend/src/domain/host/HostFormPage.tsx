@@ -18,7 +18,6 @@ import "./HostFormPage.css"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
 import HostFormValues from "./model/HostFormValues"
 import HostConverter from "./HostConverter"
-import IntegrationService from "../integration/IntegrationService"
 import If from "../../core/components/flowcontrol/If"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
@@ -42,7 +41,6 @@ interface HostFormPageState {
 
 export default class HostFormPage extends React.Component<any, HostFormPageState> {
     private readonly hostService: HostService
-    private readonly integrationService: IntegrationService
     private readonly accessListService: AccessListService
     private readonly saveModal: ModalPreloader
     private readonly formRef: React.RefObject<FormInstance | null>
@@ -54,7 +52,6 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         const hostId = routeParams().id
         this.hostId = hostId === "new" ? undefined : hostId
         this.hostService = new HostService()
-        this.integrationService = new IntegrationService()
         this.accessListService = new AccessListService()
         this.saveModal = new ModalPreloader()
         this.formRef = React.createRef()

@@ -22,10 +22,6 @@ func newValidator(repository Repository, driver Driver) *validator {
 	}
 }
 
-const (
-	invalidValue = "Invalid value"
-)
-
 func (v *validator) validate(ctx context.Context, data *Integration) error {
 	inUse, err := v.repository.InUseByID(ctx, data.ID)
 	if err != nil {
@@ -43,7 +39,7 @@ func (v *validator) validate(ctx context.Context, data *Integration) error {
 	if strings.TrimSpace(data.Driver) == "" {
 		v.delegate.Add("driver", validation.ValueMissingMessage)
 	} else if v.driver == nil {
-		v.delegate.Add("driver", invalidValue)
+		v.delegate.Add("driver", "Invalid value")
 	}
 
 	params := data.Parameters

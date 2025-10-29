@@ -15,10 +15,10 @@ type service struct {
 	driversResolver func() ([]Driver, error)
 }
 
-func newService(repository Repository, adaptersResolver func() ([]Driver, error)) *service {
+func newService(repository Repository, driverResolver func() ([]Driver, error)) *service {
 	return &service{
 		repository:      repository,
-		driversResolver: adaptersResolver,
+		driversResolver: driverResolver,
 	}
 }
 
@@ -32,7 +32,7 @@ func (s *service) list(
 }
 
 func (s *service) getById(ctx context.Context, id uuid.UUID) (*Integration, error) {
-	return s.repository.FindById(ctx, id)
+	return s.repository.FindByID(ctx, id)
 }
 
 func (s *service) save(ctx context.Context, data *Integration) error {
@@ -54,7 +54,7 @@ func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
 		return core_error.New("Integration is in use by one or more hosts", true)
 	}
 
-	return s.repository.DeleteById(ctx, id)
+	return s.repository.DeleteByID(ctx, id)
 }
 
 func (s *service) existsById(ctx context.Context, id uuid.UUID) (*bool, error) {
@@ -68,7 +68,7 @@ func (s *service) listOptions(
 	searchTerms *string,
 	tcpOnly bool,
 ) (*pagination.Page[*DriverOption], error) {
-	data, err := s.repository.FindById(ctx, integrationId)
+	data, err := s.repository.FindByID(ctx, integrationId)
 	if err != nil {
 		return nil, err
 	}
@@ -81,12 +81,12 @@ func (s *service) listOptions(
 		return nil, ErrIntegrationDisabled
 	}
 
-	adapter := s.findDriver(data)
-	if adapter == nil {
+	driver := s.findDriver(data)
+	if driver == nil {
 		return nil, ErrIntegrationNotFound
 	}
 
-	options, err := adapter.GetAvailableOptions(ctx, data.Parameters, pageNumber, pageSize, searchTerms, tcpOnly)
+	options, err := driver.GetAvailableOptions(ctx, data.Parameters, pageNumber, pageSize, searchTerms, tcpOnly)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func (s *service) listOptions(
 }
 
 func (s *service) getOptionById(ctx context.Context, integrationId uuid.UUID, optionId string) (*DriverOption, error) {
-	data, err := s.repository.FindById(ctx, integrationId)
+	data, err := s.repository.FindByID(ctx, integrationId)
 	if err != nil {
 		return nil, err
 	}
@@ -108,8 +108,8 @@ func (s *service) getOptionById(ctx context.Context, integrationId uuid.UUID, op
 		return nil, ErrIntegrationNotFound
 	}
 
-	adapter := s.findDriver(data)
-	if adapter == nil {
+	driver := s.findDriver(data)
+	if driver == nil {
 		return nil, ErrIntegrationNotFound
 	}
 
@@ -117,11 +117,11 @@ func (s *service) getOptionById(ctx context.Context, integrationId uuid.UUID, op
 		return nil, ErrIntegrationDisabled
 	}
 
-	return adapter.GetAvailableOptionById(ctx, data.Parameters, optionId)
+	return driver.GetAvailableOptionById(ctx, data.Parameters, optionId)
 }
 
 func (s *service) getOptionUrl(ctx context.Context, integrationId uuid.UUID, optionId string) (*string, error) {
-	data, err := s.repository.FindById(ctx, integrationId)
+	data, err := s.repository.FindByID(ctx, integrationId)
 	if err != nil {
 		return nil, err
 	}
@@ -130,8 +130,8 @@ func (s *service) getOptionUrl(ctx context.Context, integrationId uuid.UUID, opt
 		return nil, ErrIntegrationNotFound
 	}
 
-	adapter := s.findDriver(data)
-	if adapter == nil {
+	driver := s.findDriver(data)
+	if driver == nil {
 		return nil, ErrIntegrationNotFound
 	}
 
@@ -139,7 +139,7 @@ func (s *service) getOptionUrl(ctx context.Context, integrationId uuid.UUID, opt
 		return nil, ErrIntegrationDisabled
 	}
 
-	url, err := adapter.GetOptionProxyURL(ctx, data.Parameters, optionId)
+	url, err := driver.GetOptionProxyURL(ctx, data.Parameters, optionId)
 	if err != nil {
 		return nil, err
 	}

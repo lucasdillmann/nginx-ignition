@@ -24,7 +24,7 @@ func New(database *database.Database) integration.Repository {
 	}
 }
 
-func (r *repository) FindById(ctx context.Context, id uuid.UUID) (*integration.Integration, error) {
+func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*integration.Integration, error) {
 	var model integrationModel
 
 	err := r.database.Select().
@@ -94,7 +94,7 @@ func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (*bool, error)
 	return ptr.Bool(count > 0), nil
 }
 
-func (r *repository) DeleteById(ctx context.Context, id uuid.UUID) error {
+func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	tx, err := r.database.Begin()
 	if err != nil {
 		return err
