@@ -19,6 +19,7 @@ func Install(
 		func(permissions user.Permissions) user.AccessLevel { return permissions.Integrations },
 	)
 	basePath.GET("", listHandler{commands}.handle)
+	basePath.POST("", createHandler{commands}.handle)
 
 	basePath.GET("/available-drivers", availableDriversHandler{commands}.handle)
 

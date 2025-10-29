@@ -17,6 +17,15 @@ func toDto(data *integration.Integration) *integrationResponse {
 	}
 }
 
+func toDomain(data *integrationRequest) *integration.Integration {
+	return &integration.Integration{
+		Driver:     data.Driver,
+		Name:       data.Name,
+		Enabled:    data.Enabled,
+		Parameters: data.Parameters,
+	}
+}
+
 func fromDto(id uuid.UUID, data *integrationRequest) *integration.Integration {
 	return &integration.Integration{
 		ID:         id,

@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -35,12 +36,24 @@ func (s *service) getById(ctx context.Context, id uuid.UUID) (*Integration, erro
 }
 
 func (s *service) save(ctx context.Context, data *Integration) error {
-	// TODO: Validate before saving
+	driver := s.findDriver(data)
+	if err := newValidator(s.repository, driver).validate(ctx, data); err != nil {
+		return err
+	}
+
 	return s.repository.Save(ctx, data)
 }
 
 func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
-	// TODO: Validate before deleting
+	inUse, err := s.repository.ExistsByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if *inUse {
+		return core_error.New("Integration is in use by one or more hosts", true)
+	}
+
 	return s.repository.DeleteById(ctx, id)
 }
 
@@ -62,6 +75,10 @@ func (s *service) listOptions(
 
 	if data == nil {
 		return nil, ErrIntegrationNotFound
+	}
+
+	if !data.Enabled {
+		return nil, ErrIntegrationDisabled
 	}
 
 	adapter := s.findDriver(data)
