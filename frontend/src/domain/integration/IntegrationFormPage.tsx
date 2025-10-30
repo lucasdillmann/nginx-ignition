@@ -191,7 +191,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
         )
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         this.updateShellConfig(false)
         const availableDriversPromise = this.service.availableDrivers()
 
