@@ -80,7 +80,7 @@ func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (*bool, error
 func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (*bool, error) {
 	count, err := r.database.Select().
 		Table("host_route").
-		Where("integration_id = ?", id).
+		Where("integration_id = ? and type = ?", id, "INTEGRATION").
 		Count(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {

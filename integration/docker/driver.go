@@ -191,10 +191,17 @@ func (a *Driver) resolveAvailableOptions(
 }
 
 func (a *Driver) buildOptions(containers []container.Summary, tcpOnly bool) []*containerMetadata {
-	var options []*containerMetadata
+	optionIDs := make(map[string]bool)
+	options := make([]*containerMetadata, 0, len(containers))
+
 	for _, item := range containers {
 		for _, port := range item.Ports {
 			if tcpOnly && strings.ToUpper(port.Type) != "TCP" {
+				continue
+			}
+
+			optionID := fmt.Sprintf("%s:%d", item.ID, port.PublicPort)
+			if optionIDs[optionID] {
 				continue
 			}
 
@@ -205,6 +212,7 @@ func (a *Driver) buildOptions(containers []container.Summary, tcpOnly bool) []*c
 					port:      &port,
 				}
 				options = append(options, option)
+				optionIDs[optionID] = true
 			}
 		}
 	}

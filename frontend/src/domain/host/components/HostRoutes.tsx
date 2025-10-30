@@ -194,7 +194,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         ref={this.optionsRef}
                         disabled={currentIntegrationId === undefined}
                         itemKey={item => item.id}
-                        itemDescription={item => `${item.name} (${item.port} HTTP)`}
+                        itemDescription={item => `${item.name} (${item.port} TCP)`}
                         pageProvider={(pageSize, pageNumber, searchTerms) =>
                             this.fetchIntegrationOptions(pageSize, pageNumber, searchTerms, currentIntegrationId)
                         }
