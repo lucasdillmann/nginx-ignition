@@ -7,10 +7,10 @@ import (
 )
 
 type integrationRequest struct {
-	Name       string         `json:"name" validation:"required"`
-	Driver     string         `json:"driver" validation:"required"`
-	Enabled    bool           `json:"enabled" validation:"required"`
-	Parameters map[string]any `json:"parameters" validation:"required"`
+	Name       string         `json:"name" validate:"required"`
+	Driver     string         `json:"driver" validate:"required"`
+	Enabled    bool           `json:"enabled" validate:"required"`
+	Parameters map[string]any `json:"parameters" validate:"required"`
 }
 
 type integrationResponse struct {
