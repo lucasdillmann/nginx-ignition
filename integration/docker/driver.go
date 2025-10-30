@@ -22,30 +22,26 @@ type containerMetadata struct {
 	name      string
 }
 
-type Adapter struct{}
+type Driver struct{}
 
-func newAdapter() *Adapter {
-	return &Adapter{}
+func newDriver() *Driver {
+	return &Driver{}
 }
 
-func (a *Adapter) ID() string {
+func (a *Driver) ID() string {
 	return "DOCKER"
 }
 
-func (a *Adapter) Name() string {
+func (a *Driver) Name() string {
 	return "Docker"
 }
 
-func (a *Adapter) Priority() int {
-	return 1
-}
-
-func (a *Adapter) Description() string {
+func (a *Driver) Description() string {
 	return "Enables easy pick of a Docker container with ports exposing a service as a target for your nginx " +
 		"ignition's host routes."
 }
 
-func (a *Adapter) ConfigurationFields() []*dynamic_fields.DynamicField {
+func (a *Driver) ConfigurationFields() []*dynamic_fields.DynamicField {
 	return []*dynamic_fields.DynamicField{
 		&connectionModeField,
 		&socketPathField,
@@ -54,41 +50,41 @@ func (a *Adapter) ConfigurationFields() []*dynamic_fields.DynamicField {
 	}
 }
 
-func (a *Adapter) GetAvailableOptions(
+func (a *Driver) GetAvailableOptions(
 	ctx context.Context,
 	parameters map[string]any,
 	_, _ int,
 	searchTerms *string,
 	tcpOnly bool,
-) (*pagination.Page[*integration.AdapterOption], error) {
+) (*pagination.Page[*integration.DriverOption], error) {
 	options, err := a.resolveAvailableOptions(ctx, parameters, searchTerms, tcpOnly)
 	if err != nil {
 		return nil, err
 	}
 
 	totalItems := len(options)
-	adapterOptions := make([]*integration.AdapterOption, totalItems)
+	driverOptions := make([]*integration.DriverOption, totalItems)
 	for i, option := range options {
-		adapterOptions[i] = toAdapterOption(option)
+		driverOptions[i] = toDriverOption(option)
 	}
 
-	return pagination.New(0, totalItems, totalItems, adapterOptions), nil
+	return pagination.New(0, totalItems, totalItems, driverOptions), nil
 }
 
-func (a *Adapter) GetAvailableOptionById(
+func (a *Driver) GetAvailableOptionById(
 	ctx context.Context,
 	parameters map[string]any,
 	id string,
-) (*integration.AdapterOption, error) {
+) (*integration.DriverOption, error) {
 	option, err := a.resolveAvailableOptionById(ctx, parameters, id)
 	if err != nil || option == nil {
 		return nil, err
 	}
 
-	return toAdapterOption(option), nil
+	return toDriverOption(option), nil
 }
 
-func (a *Adapter) GetOptionProxyUrl(
+func (a *Driver) GetOptionProxyURL(
 	ctx context.Context,
 	parameters map[string]any,
 	id string,
@@ -129,7 +125,7 @@ func (a *Adapter) GetOptionProxyUrl(
 	return &result, nil
 }
 
-func (a *Adapter) resolveAvailableOptionById(
+func (a *Driver) resolveAvailableOptionById(
 	ctx context.Context,
 	parameters map[string]any,
 	id string,
@@ -156,7 +152,7 @@ func (a *Adapter) resolveAvailableOptionById(
 	return nil, nil
 }
 
-func (a *Adapter) resolveAvailableOptions(
+func (a *Driver) resolveAvailableOptions(
 	ctx context.Context,
 	parameters map[string]any,
 	searchTerms *string,
@@ -194,11 +190,18 @@ func (a *Adapter) resolveAvailableOptions(
 	return options, nil
 }
 
-func (a *Adapter) buildOptions(containers []container.Summary, tcpOnly bool) []*containerMetadata {
-	var options []*containerMetadata
+func (a *Driver) buildOptions(containers []container.Summary, tcpOnly bool) []*containerMetadata {
+	optionIDs := make(map[string]bool)
+	options := make([]*containerMetadata, 0, len(containers))
+
 	for _, item := range containers {
 		for _, port := range item.Ports {
 			if tcpOnly && strings.ToUpper(port.Type) != "TCP" {
+				continue
+			}
+
+			optionID := fmt.Sprintf("%s:%d", item.ID, port.PublicPort)
+			if optionIDs[optionID] {
 				continue
 			}
 
@@ -209,17 +212,18 @@ func (a *Adapter) buildOptions(containers []container.Summary, tcpOnly bool) []*
 					port:      &port,
 				}
 				options = append(options, option)
+				optionIDs[optionID] = true
 			}
 		}
 	}
 	return options
 }
 
-func toAdapterOption(option *containerMetadata) *integration.AdapterOption {
+func toDriverOption(option *containerMetadata) *integration.DriverOption {
 	port := option.port
 	protocol := strings.ToUpper(port.Type)
 
-	return &integration.AdapterOption{
+	return &integration.DriverOption{
 		ID:       fmt.Sprintf("%s:%d", option.container.ID, port.PublicPort),
 		Name:     option.name,
 		Port:     int(port.PublicPort),

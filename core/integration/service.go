@@ -4,111 +4,89 @@ import (
 	"context"
 	"sort"
 
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
 type service struct {
-	repository       Repository
-	adaptersResolver func() ([]Adapter, error)
+	repository      Repository
+	driversResolver func() ([]Driver, error)
 }
 
-var defaultSettings = &Integration{
-	ID:         "",
-	Enabled:    false,
-	Parameters: make(map[string]any),
-}
-
-func newService(repository Repository, adaptersResolver func() ([]Adapter, error)) *service {
+func newService(repository Repository, driverResolver func() ([]Driver, error)) *service {
 	return &service{
-		repository:       repository,
-		adaptersResolver: adaptersResolver,
+		repository:      repository,
+		driversResolver: driverResolver,
 	}
 }
 
-func (s *service) list(ctx context.Context) ([]*ListOutput, error) {
-	adapters, err := s.adaptersResolver()
-	if err != nil {
-		return nil, err
-	}
-
-	sort.Slice(adapters, func(i, j int) bool {
-		return (adapters)[i].Priority() < (adapters)[j].Priority()
-	})
-
-	var outputs []*ListOutput
-	for _, adapter := range adapters {
-		settings, err := s.repository.FindByID(ctx, adapter.ID())
-		if err != nil {
-			return nil, err
-		}
-
-		if settings == nil {
-			settings = defaultSettings
-		}
-
-		outputs = append(outputs, &ListOutput{
-			ID:          adapter.ID(),
-			Name:        adapter.Name(),
-			Description: adapter.Description(),
-			Enabled:     settings.Enabled,
-		})
-	}
-
-	return outputs, nil
+func (s *service) list(
+	ctx context.Context,
+	pageSize, pageNumber int,
+	searchTerms *string,
+	enabledOnly bool,
+) (*pagination.Page[*Integration], error) {
+	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms, enabledOnly)
 }
 
-func (s *service) getById(ctx context.Context, id string) (*GetByIdOutput, error) {
-	adapter := s.findAdapter(id)
-	if adapter == nil {
-		return nil, nil
+func (s *service) getById(ctx context.Context, id uuid.UUID) (*Integration, error) {
+	return s.repository.FindByID(ctx, id)
+}
+
+func (s *service) save(ctx context.Context, data *Integration) error {
+	driver := s.findDriver(data)
+	if err := newValidator(s.repository, driver).validate(ctx, data); err != nil {
+		return err
 	}
 
-	settings, err := s.repository.FindByID(ctx, id)
+	return s.repository.Save(ctx, data)
+}
+
+func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
+	inUse, err := s.repository.InUseByID(ctx, id)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if settings == nil {
-		settings = defaultSettings
+	if *inUse {
+		return core_error.New("Integration is in use by one or more hosts", true)
 	}
 
-	dynamicFields := adapter.ConfigurationFields()
-	dynamic_fields.RemoveSensitiveFields(&settings.Parameters, dynamicFields)
+	return s.repository.DeleteByID(ctx, id)
+}
 
-	return &GetByIdOutput{
-		ID:                  id,
-		Name:                adapter.Name(),
-		Description:         adapter.Description(),
-		Enabled:             settings.Enabled,
-		Parameters:          settings.Parameters,
-		ConfigurationFields: dynamicFields,
-	}, nil
+func (s *service) existsById(ctx context.Context, id uuid.UUID) (*bool, error) {
+	return s.repository.ExistsByID(ctx, id)
 }
 
 func (s *service) listOptions(
 	ctx context.Context,
-	integrationId string,
+	integrationId uuid.UUID,
 	pageNumber, pageSize int,
 	searchTerms *string,
 	tcpOnly bool,
-) (*pagination.Page[*AdapterOption], error) {
-	adapter := s.findAdapter(integrationId)
-	if adapter == nil {
-		return nil, nil
-	}
-
-	settings, err := s.findSettings(ctx, integrationId)
+) (*pagination.Page[*DriverOption], error) {
+	data, err := s.repository.FindByID(ctx, integrationId)
 	if err != nil {
 		return nil, err
 	}
 
-	if !settings.Enabled {
-		return nil, integrationDisabledError()
+	if data == nil {
+		return nil, ErrIntegrationNotFound
 	}
 
-	options, err := adapter.GetAvailableOptions(ctx, settings.Parameters, pageNumber, pageSize, searchTerms, tcpOnly)
+	if !data.Enabled {
+		return nil, ErrIntegrationDisabled
+	}
+
+	driver := s.findDriver(data)
+	if driver == nil {
+		return nil, ErrIntegrationNotFound
+	}
+
+	options, err := driver.GetAvailableOptions(ctx, data.Parameters, pageNumber, pageSize, searchTerms, tcpOnly)
 	if err != nil {
 		return nil, err
 	}
@@ -120,61 +98,48 @@ func (s *service) listOptions(
 	return options, nil
 }
 
-func (s *service) getOptionById(ctx context.Context, integrationId, optionId string) (*AdapterOption, error) {
-	adapter := s.findAdapter(integrationId)
-	if adapter == nil {
-		return nil, nil
-	}
-
-	settings, err := s.findSettings(ctx, integrationId)
+func (s *service) getOptionById(ctx context.Context, integrationId uuid.UUID, optionId string) (*DriverOption, error) {
+	data, err := s.repository.FindByID(ctx, integrationId)
 	if err != nil {
 		return nil, err
 	}
 
-	if !settings.Enabled {
-		return nil, integrationDisabledError()
+	if data == nil {
+		return nil, ErrIntegrationNotFound
 	}
 
-	return adapter.GetAvailableOptionById(ctx, settings.Parameters, optionId)
+	driver := s.findDriver(data)
+	if driver == nil {
+		return nil, ErrIntegrationNotFound
+	}
+
+	if !data.Enabled {
+		return nil, ErrIntegrationDisabled
+	}
+
+	return driver.GetAvailableOptionById(ctx, data.Parameters, optionId)
 }
 
-func (s *service) configureById(ctx context.Context, id string, enabled bool, parameters map[string]any) error {
-	adapter := s.findAdapter(id)
-	if adapter == nil {
-		return integrationNotFoundError()
-	}
-
-	if enabled {
-		if err := dynamic_fields.Validate(adapter.ConfigurationFields(), parameters); err != nil {
-			return err
-		}
-	}
-
-	configuration := &Integration{
-		ID:         id,
-		Enabled:    enabled,
-		Parameters: parameters,
-	}
-
-	return s.repository.Save(ctx, configuration)
-}
-
-func (s *service) getOptionUrl(ctx context.Context, integrationId, optionId string) (*string, error) {
-	adapter := s.findAdapter(integrationId)
-	if adapter == nil {
-		return nil, integrationNotFoundError()
-	}
-
-	settings, err := s.findSettings(ctx, integrationId)
+func (s *service) getOptionUrl(ctx context.Context, integrationId uuid.UUID, optionId string) (*string, error) {
+	data, err := s.repository.FindByID(ctx, integrationId)
 	if err != nil {
 		return nil, err
 	}
 
-	if !settings.Enabled {
-		return nil, integrationDisabledError()
+	if data == nil {
+		return nil, ErrIntegrationNotFound
 	}
 
-	url, err := adapter.GetOptionProxyUrl(ctx, settings.Parameters, optionId)
+	driver := s.findDriver(data)
+	if driver == nil {
+		return nil, ErrIntegrationNotFound
+	}
+
+	if !data.Enabled {
+		return nil, ErrIntegrationDisabled
+	}
+
+	url, err := driver.GetOptionProxyURL(ctx, data.Parameters, optionId)
 	if err != nil {
 		return nil, err
 	}
@@ -182,42 +147,40 @@ func (s *service) getOptionUrl(ctx context.Context, integrationId, optionId stri
 	return url, nil
 }
 
-func (s *service) findAdapter(id string) Adapter {
-	adapters, err := s.adaptersResolver()
-	if err != nil {
-		return nil
-	}
-
-	for _, adapter := range adapters {
-		if adapter.ID() == id {
-			return adapter
-		}
-	}
-
-	return nil
-}
-
-func (s *service) findSettings(ctx context.Context, id string) (*Integration, error) {
-	settings, err := s.repository.FindByID(ctx, id)
+func (s *service) getAvailableDrivers(_ context.Context) (*[]*AvailableDriver, error) {
+	drivers, err := s.driversResolver()
 	if err != nil {
 		return nil, err
 	}
 
-	if settings == nil {
-		return nil, integrationNotConfiguredError()
+	sort.Slice(drivers, func(left, right int) bool {
+		return drivers[left].Name() < drivers[right].Name()
+	})
+
+	output := make([]*AvailableDriver, len(drivers))
+	for index, driver := range drivers {
+		output[index] = &AvailableDriver{
+			ID:                  driver.ID(),
+			Name:                driver.Name(),
+			Description:         driver.Description(),
+			ConfigurationFields: driver.ConfigurationFields(),
+		}
 	}
 
-	return settings, nil
+	return &output, nil
 }
 
-func integrationDisabledError() error {
-	return core_error.New("Integration is disabled", true)
-}
+func (s *service) findDriver(data *Integration) Driver {
+	drivers, err := s.driversResolver()
+	if err != nil {
+		return nil
+	}
 
-func integrationNotConfiguredError() error {
-	return core_error.New("Integration is not configured", true)
-}
+	for _, driver := range drivers {
+		if driver.ID() == data.Driver {
+			return driver
+		}
+	}
 
-func integrationNotFoundError() error {
-	return core_error.New("Integration not found with provided ID", true)
+	return nil
 }

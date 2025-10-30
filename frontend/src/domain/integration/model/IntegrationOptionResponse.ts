@@ -3,7 +3,7 @@ export enum IntegrationOptionProtocol {
     UDP = "UDP",
 }
 
-export interface IntegrationOptionResponse {
+export default interface IntegrationOptionResponse {
     id: string
     name: string
     port: number

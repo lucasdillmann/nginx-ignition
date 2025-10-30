@@ -5,22 +5,29 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
-type putConfigurationHandler struct {
+type putHandler struct {
 	commands *integration.Commands
 }
 
-func (h putConfigurationHandler) handle(ctx *gin.Context) {
+func (h putHandler) handle(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
 		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	payload := &integrationConfigurationRequest{}
+	uuidValue, err := uuid.Parse(id)
+	if err != nil {
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+
+	payload := &integrationRequest{}
 	if err := ctx.BindJSON(payload); err != nil {
 		panic(err)
 	}
@@ -29,7 +36,9 @@ func (h putConfigurationHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	if err := h.commands.ConfigureById(ctx.Request.Context(), id, *payload.Enabled, *payload.Parameters); err != nil {
+	data := fromDto(uuidValue, payload)
+
+	if err := h.commands.Save(ctx.Request.Context(), data); err != nil {
 		panic(err)
 	}
 

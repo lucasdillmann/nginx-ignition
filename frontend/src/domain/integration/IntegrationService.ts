@@ -1,10 +1,11 @@
 import IntegrationGateway from "./IntegrationGateway"
 import PageResponse from "../../core/pagination/PageResponse"
 import { requireNullablePayload, requireSuccessPayload, requireSuccessResponse } from "../../core/apiclient/ApiResponse"
-import { IntegrationResponse } from "./model/IntegrationResponse"
-import { IntegrationConfigurationResponse } from "./model/IntegrationConfigurationResponse"
-import { IntegrationConfigurationRequest } from "./model/IntegrationConfigurationRequest"
-import { IntegrationOptionResponse } from "./model/IntegrationOptionResponse"
+import GenericCreateResponse from "../../core/common/GenericCreateResponse"
+import IntegrationRequest from "./model/IntegrationRequest"
+import IntegrationResponse from "./model/IntegrationResponse"
+import IntegrationOptionResponse from "./model/IntegrationOptionResponse"
+import AvailableDriverResponse from "./model/AvailableDriverResponse"
 
 export default class IntegrationService {
     private readonly gateway: IntegrationGateway
@@ -13,19 +14,33 @@ export default class IntegrationService {
         this.gateway = new IntegrationGateway()
     }
 
-    async getAll(enabledOnly: boolean = false): Promise<IntegrationResponse[]> {
-        return this.gateway
-            .getIntegrations()
-            .then(requireSuccessPayload)
-            .then(items => (enabledOnly ? items.filter(item => item.enabled) : items))
+    async getById(id: string): Promise<IntegrationResponse | undefined> {
+        return this.gateway.getById(id).then(requireNullablePayload)
     }
 
-    async getConfiguration(id: string): Promise<IntegrationConfigurationResponse> {
-        return this.gateway.getIntegrationConfiguration(id).then(requireSuccessPayload)
+    async list(
+        pageSize?: number,
+        pageNumber?: number,
+        searchTerms?: string,
+        enabledOnly?: boolean,
+    ): Promise<PageResponse<IntegrationResponse>> {
+        return this.gateway.getPage(pageSize, pageNumber, searchTerms, enabledOnly).then(requireSuccessPayload)
     }
 
-    async setConfiguration(id: string, configuration: IntegrationConfigurationRequest): Promise<void> {
-        return this.gateway.putIntegrationConfiguration(id, configuration).then(requireSuccessResponse)
+    async delete(id: string): Promise<void> {
+        return this.gateway.delete(id).then(requireSuccessResponse)
+    }
+
+    async updateById(id: string, integration: IntegrationRequest): Promise<void> {
+        return this.gateway.putById(id, integration).then(requireSuccessResponse)
+    }
+
+    async create(integration: IntegrationRequest): Promise<GenericCreateResponse> {
+        return this.gateway.post(integration).then(requireSuccessPayload)
+    }
+
+    async availableDrivers(): Promise<AvailableDriverResponse[]> {
+        return this.gateway.getAvailableDrivers().then(requireSuccessPayload)
     }
 
     async getOptions(

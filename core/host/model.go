@@ -81,7 +81,7 @@ type RouteStaticResponse struct {
 }
 
 type RouteIntegrationConfig struct {
-	IntegrationID string
+	IntegrationID uuid.UUID
 	OptionID      string
 }
 

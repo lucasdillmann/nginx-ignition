@@ -14,10 +14,9 @@ const (
 	UDPProtocol Protocol = "UDP"
 )
 
-type Adapter interface {
+type Driver interface {
 	ID() string
 	Name() string
-	Priority() int
 	Description() string
 	ConfigurationFields() []*dynamic_fields.DynamicField
 	GetAvailableOptions(
@@ -26,20 +25,20 @@ type Adapter interface {
 		pageNumber, pageSize int,
 		searchTerms *string,
 		tcpOnly bool,
-	) (*pagination.Page[*AdapterOption], error)
+	) (*pagination.Page[*DriverOption], error)
 	GetAvailableOptionById(
 		ctx context.Context,
 		parameters map[string]any,
 		id string,
-	) (*AdapterOption, error)
-	GetOptionProxyUrl(
+	) (*DriverOption, error)
+	GetOptionProxyURL(
 		ctx context.Context,
 		parameters map[string]any,
 		id string,
 	) (*string, error)
 }
 
-type AdapterOption struct {
+type DriverOption struct {
 	ID       string
 	Name     string
 	Port     int

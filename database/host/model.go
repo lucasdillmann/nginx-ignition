@@ -46,7 +46,7 @@ type hostRouteModel struct {
 	StaticResponsePayload   *string    `bun:"static_response_payload"`
 	StaticResponseHeaders   *string    `bun:"static_response_headers"`
 	RedirectCode            *int       `bun:"redirect_code"`
-	IntegrationID           *string    `bun:"integration_id"`
+	IntegrationID           *uuid.UUID `bun:"integration_id"`
 	IntegrationOptionID     *string    `bun:"integration_option_id"`
 	IncludeForwardHeaders   bool       `bun:"include_forward_headers,notnull"`
 	ProxySSLServerName      bool       `bun:"proxy_ssl_server_name,notnull"`

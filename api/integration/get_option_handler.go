@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
@@ -19,13 +20,19 @@ func (h getOptionHandler) handle(ctx *gin.Context) {
 		return
 	}
 
+	integrationUuid, err := uuid.Parse(integrationId)
+	if err != nil {
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+
 	optionId := ctx.Param("optionId")
 	if optionId == "" {
 		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	data, err := h.commands.GetOptionById(ctx.Request.Context(), integrationId, optionId)
+	data, err := h.commands.GetOption(ctx.Request.Context(), integrationUuid, optionId)
 	if err != nil {
 		panic(err)
 	}

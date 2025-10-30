@@ -311,7 +311,7 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	features host.FeatureSet,
 	paths *Paths,
 ) (string, error) {
-	proxyUrl, err := p.integrationCommands.GetOptionUrlById(ctx, r.Integration.IntegrationID, r.Integration.OptionID)
+	proxyUrl, err := p.integrationCommands.GetOptionUrl(ctx, r.Integration.IntegrationID, r.Integration.OptionID)
 	if err != nil {
 		return "", err
 	}

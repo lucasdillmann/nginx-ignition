@@ -22,7 +22,6 @@ import CertificateDetailsPage from "./certificate/CertificateDetailsPage"
 import LogsPage from "./logs/LogsPage"
 import UserListPage from "./user/UserListPage"
 import UserFormPage from "./user/UserFormPage"
-import IntegrationsPage from "./integration/IntegrationsPage"
 import SettingsPage from "./settings/SettingsPage"
 import NotFoundPage from "./notfound/NotFoundPage"
 import AccessListFormPage from "./accesslist/AccessListFormPage"
@@ -30,6 +29,8 @@ import AccessListListPage from "./accesslist/AccessListListPage"
 import StreamFormPage from "./stream/StreamFormPage"
 import StreamListPage from "./stream/StreamListPage"
 import ExportPage from "./export/ExportPage"
+import IntegrationListPage from "./integration/IntegrationListPage"
+import IntegrationFormPage from "./integration/IntegrationFormPage"
 
 const Routes: AppRoute[] = [
     {
@@ -113,10 +114,17 @@ const Routes: AppRoute[] = [
         },
     },
     {
+        path: "/integrations/:id",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <IntegrationFormPage />,
+        activeMenuItemPath: "/integrations",
+    },
+    {
         path: "/integrations",
         requiresAuthentication: true,
         fullPage: false,
-        component: <IntegrationsPage />,
+        component: <IntegrationListPage />,
         menuItem: {
             description: "Integrations",
             icon: <BlockOutlined />,

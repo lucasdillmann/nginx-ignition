@@ -12,10 +12,10 @@ func buildCommands(
 	container *dig.Container,
 	repository Repository,
 ) *Commands {
-	adapterResolver := func() ([]Adapter, error) {
-		var output []Adapter
-		if err := container.Invoke(func(adapters []Adapter) {
-			output = adapters
+	driverResolver := func() ([]Driver, error) {
+		var output []Driver
+		if err := container.Invoke(func(drivers []Driver) {
+			output = drivers
 		}); err != nil {
 			return nil, err
 		}
@@ -23,14 +23,17 @@ func buildCommands(
 		return output, nil
 	}
 
-	serviceInstance := newService(repository, adapterResolver)
+	serviceInstance := newService(repository, driverResolver)
 
 	return &Commands{
-		ConfigureById:    serviceInstance.configureById,
-		GetById:          serviceInstance.getById,
-		GetOptionById:    serviceInstance.getOptionById,
-		GetOptionUrlById: serviceInstance.getOptionUrl,
-		ListOptions:      serviceInstance.listOptions,
-		List:             serviceInstance.list,
+		Get:                 serviceInstance.getById,
+		Save:                serviceInstance.save,
+		Delete:              serviceInstance.deleteById,
+		Exists:              serviceInstance.existsById,
+		List:                serviceInstance.list,
+		GetAvailableDrivers: serviceInstance.getAvailableDrivers,
+		GetOption:           serviceInstance.getOptionById,
+		GetOptionUrl:        serviceInstance.getOptionUrl,
+		ListOptions:         serviceInstance.listOptions,
 	}
 }

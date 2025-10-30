@@ -1,6 +1,5 @@
-export interface IntegrationResponse {
+import IntegrationRequest from "./IntegrationRequest"
+
+export default interface IntegrationResponse extends IntegrationRequest {
     id: string
-    name: string
-    description: string
-    enabled: boolean
 }

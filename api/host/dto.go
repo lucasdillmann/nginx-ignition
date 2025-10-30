@@ -46,8 +46,8 @@ type routeSettingsDto struct {
 }
 
 type integrationConfigDto struct {
-	IntegrationId *string `json:"integrationId" validate:"required"`
-	OptionId      *string `json:"optionId" validate:"required"`
+	IntegrationId *uuid.UUID `json:"integrationId" validate:"required"`
+	OptionId      *string    `json:"optionId" validate:"required"`
 }
 
 type staticResponseDto struct {

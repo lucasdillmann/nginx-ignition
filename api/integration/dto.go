@@ -1,19 +1,24 @@
 package integration
 
-import "dillmann.com.br/nginx-ignition/api/common/dynamic_field"
+import (
+	"github.com/google/uuid"
 
-type integrationConfigurationRequest struct {
-	Enabled    *bool           `json:"enabled" validation:"required"`
-	Parameters *map[string]any `json:"parameters" validation:"required"`
+	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
+)
+
+type integrationRequest struct {
+	Name       string         `json:"name" validate:"required"`
+	Driver     string         `json:"driver" validate:"required"`
+	Enabled    bool           `json:"enabled" validate:"required"`
+	Parameters map[string]any `json:"parameters" validate:"required"`
 }
 
-type integrationConfigurationResponse struct {
-	ID                  string                                `json:"id"`
-	Name                string                                `json:"name"`
-	Description         string                                `json:"description"`
-	Enabled             bool                                  `json:"enabled"`
-	ConfigurationFields []*dynamic_field.DynamicFieldResponse `json:"configurationFields"`
-	Parameters          map[string]any                        `json:"parameters"`
+type integrationResponse struct {
+	ID         uuid.UUID      `json:"id"`
+	Name       string         `json:"name"`
+	Driver     string         `json:"driver"`
+	Enabled    bool           `json:"enabled"`
+	Parameters map[string]any `json:"parameters"`
 }
 
 type integrationOptionResponse struct {
@@ -23,9 +28,9 @@ type integrationOptionResponse struct {
 	Protocol string `json:"protocol"`
 }
 
-type integrationResponse struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Enabled     bool   `json:"enabled"`
+type integrationDriverResponse struct {
+	ID                  string                                `json:"id"`
+	Name                string                                `json:"name"`
+	Description         string                                `json:"description"`
+	ConfigurationFields []*dynamic_field.DynamicFieldResponse `json:"configurationFields"`
 }
