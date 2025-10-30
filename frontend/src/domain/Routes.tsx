@@ -30,6 +30,7 @@ import StreamFormPage from "./stream/StreamFormPage"
 import StreamListPage from "./stream/StreamListPage"
 import ExportPage from "./export/ExportPage"
 import IntegrationListPage from "./integration/IntegrationListPage"
+import IntegrationFormPage from "./integration/IntegrationFormPage"
 
 const Routes: AppRoute[] = [
     {
@@ -111,6 +112,13 @@ const Routes: AppRoute[] = [
             description: "Logs",
             icon: <FileSearchOutlined />,
         },
+    },
+    {
+        path: "/integrations/:id",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <IntegrationFormPage />,
+        activeMenuItemPath: "/integrations",
     },
     {
         path: "/integrations",

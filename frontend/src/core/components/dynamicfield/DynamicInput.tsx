@@ -7,6 +7,7 @@ import Password from "antd/es/input/Password"
 import DynamicField, { DynamicFieldType } from "../../dynamicfield/DynamicField"
 
 export interface DynamicFieldProps {
+    dataField?: string
     formValues: Record<string, any>
     validationResult: ValidationResult
     field: DynamicField
@@ -14,15 +15,17 @@ export interface DynamicFieldProps {
 
 export default class DynamicInput extends React.Component<DynamicFieldProps> {
     private readonly qualifiedId: string
+    private readonly dataField: string
 
     constructor(props: DynamicFieldProps) {
         super(props)
-        this.qualifiedId = `parameters.${props.field.id}`
+        this.dataField = props.dataField ?? "parameters"
+        this.qualifiedId = `${this.dataField}.${props.field.id}`
     }
 
     private initialValue() {
         const { formValues, field } = this.props
-        return formValues.parameters?.[field.id]
+        return formValues[this.dataField]?.[field.id]
     }
 
     private evaluateConditions() {
@@ -31,7 +34,7 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
         if (condition === undefined || condition === null) return true
 
         const { parentField, value } = condition
-        return formValues.parameters !== undefined && formValues.parameters[parentField] === value
+        return formValues[this.dataField] !== undefined && formValues[this.dataField][parentField] === value
     }
 
     private renderBoolean() {
@@ -99,7 +102,7 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
 
         return (
             <Form.Item
-                name={["parameters", field.id]}
+                name={[this.dataField, field.id]}
                 validateStatus={validationResult.getStatus(this.qualifiedId)}
                 help={validationResult.getMessage(this.qualifiedId) ?? field.helpText}
                 label={field.description}

@@ -45,7 +45,7 @@ func (s *service) save(ctx context.Context, data *Integration) error {
 }
 
 func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
-	inUse, err := s.repository.ExistsByID(ctx, id)
+	inUse, err := s.repository.InUseByID(ctx, id)
 	if err != nil {
 		return err
 	}

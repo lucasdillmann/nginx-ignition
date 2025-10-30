@@ -83,7 +83,7 @@ export default class IntegrationListPage extends React.Component<any, Integratio
             return AccessDeniedModal.show()
         }
 
-        return DeleteIntegrationAction.execute(integration.id)
+        return DeleteIntegrationAction.execute(integration.id).then(() => this.table.current?.refresh())
     }
 
     private fetchData(

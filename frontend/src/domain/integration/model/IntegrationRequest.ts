@@ -1,12 +1,6 @@
-export enum IntegrationDriver {
-    DOCKER = "DOCKER",
-    TRUENAS = "TRUENAS",
-}
-
 export default interface IntegrationRequest {
-    id: string
     name: string
-    driver: IntegrationDriver
+    driver: string
     enabled: boolean
     parameters: object
 }
