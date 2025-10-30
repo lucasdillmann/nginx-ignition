@@ -1,7 +1,4 @@
-create extension if not exists "uuid-ossp";
-
 alter table integration rename to integration_old;
-alter table integration_old drop constraint pk_integration;
 
 create table integration (
     id         uuid         not null,
@@ -15,7 +12,10 @@ create table integration (
 
 insert into integration (id, driver, name, enabled, parameters)
 select
-    uuid_generate_v4() as id,
+    case id
+        when 'DOCKER' then '83fa2c8c-8f53-495f-9d38-5b1c619e4c17'
+        when 'TRUENAS_SCALE' then '6a14e7c9-88ee-4025-8554-de368071b0a9'
+        end as id,
     case id
         when 'DOCKER' then 'DOCKER'
         when 'TRUENAS_SCALE' then 'TRUENAS'
@@ -36,13 +36,11 @@ alter table host_route rename column integration_id to integration_id_old;
 alter table host_route add column integration_id uuid;
 update host_route
     set integration_id = case integration_id_old
-        when 'DOCKER' then (select id from integration where driver = 'DOCKER')
-        when 'TRUENAS_SCALE' then (select id from integration where driver = 'TRUENAS')
+        when 'DOCKER' then '83fa2c8c-8f53-495f-9d38-5b1c619e4c17'
+        when 'TRUENAS_SCALE' then '6a14e7c9-88ee-4025-8554-de368071b0a9'
     end
 where integration_id_old is not null;
 
 alter table host_route drop column integration_id_old;
 alter table host_route add constraint fk_host_route_integration foreign key (integration_id) references integration (id);
 create index idx_host_route_integration_id on host_route (integration_id);
-
--- TODO: Validate with data

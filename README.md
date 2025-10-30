@@ -22,7 +22,7 @@ Some of the available features include:
 - SSL certificates (Let's Encrypt, self-signed or bring your custom one) with automatic renew (when applicable)
 - Server and virtual hosts access and error logs with automatic log rotation
 - Multiple users with attribute-based access control (ABAC)
-- Native integration with TrueNAS Scale, allowing to easily configure to proxy to an app hosted in your NAS
+- Native integration with TrueNAS, allowing to easily configure to proxy to an app hosted in your NAS
 - Native integration with Docker for easy pick of a container as the proxy target
 - Access lists for easy control of who can access what using basic authentication and/or source IP address checks 
 
