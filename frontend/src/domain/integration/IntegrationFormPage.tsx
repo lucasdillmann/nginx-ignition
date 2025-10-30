@@ -203,7 +203,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
         }
 
         const dataPromise = this.service.getById(this.integrationId!!)
-        return Promise.all([dataPromise, availableDriversPromise])
+        Promise.all([dataPromise, availableDriversPromise])
             .then(([formValues, availableDrivers]) => {
                 const notFound = formValues === undefined
 
