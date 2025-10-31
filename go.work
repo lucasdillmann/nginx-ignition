@@ -12,4 +12,5 @@ use (
 	integration/docker
 	integration/truenas
 	tools
+	vpn/tailscale
 )

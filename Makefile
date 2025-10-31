@@ -20,8 +20,9 @@ SNAPSHOT_TAG_SUFFIX := $(if $(or $(filter 0,$(PR_ID)),$(filter ,$(PR_ID))),snaps
     		./certificate/selfsigned \
     		./core \
     		./database \
+    		./integration/docker \
     		./integration/truenas \
-    		./integration/docker
+    		./vpn/tailscale
 
 .build-frontend:
 	cd frontend/ && npm run build
