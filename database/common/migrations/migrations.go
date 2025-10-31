@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
 
@@ -35,17 +36,14 @@ func (m *migrations) migrate() error {
 		return err
 	}
 
-	if err := m.unsetDirtyStatus(db); err != nil {
-		return err
-	}
-
+	m.unsetDirtyStatus(db)
 	return m.runScripts(db, driverName)
 }
 
-func (m *migrations) unsetDirtyStatus(db *sql.DB) error {
+func (m *migrations) unsetDirtyStatus(db *sql.DB) {
 	rows, err := db.Query("select version, dirty from schema_version limit 1")
 	if err != nil {
-		return err
+		return
 	}
 
 	defer rows.Close()
@@ -55,16 +53,15 @@ func (m *migrations) unsetDirtyStatus(db *sql.DB) error {
 		var dirty bool
 
 		if err = rows.Scan(&version, &dirty); err != nil {
-			return err
+			return
 		}
 
 		if dirty {
 			_, err = db.Exec("update schema_version set dirty = false, version = $1", version-1)
 			if err != nil {
-				return err
+				log.Warnf("Unable to unset database dirty status: %s", err.Error())
+				return
 			}
 		}
 	}
-
-	return nil
 }
