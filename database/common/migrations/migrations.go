@@ -1,6 +1,8 @@
 package migrations
 
 import (
+	"database/sql"
+
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
@@ -33,5 +35,36 @@ func (m *migrations) migrate() error {
 		return err
 	}
 
+	if err := m.unsetDirtyStatus(db); err != nil {
+		return err
+	}
+
 	return m.runScripts(db, driverName)
+}
+
+func (m *migrations) unsetDirtyStatus(db *sql.DB) error {
+	rows, err := db.Query("select version, dirty from schema_version limit 1")
+	if err != nil {
+		return err
+	}
+
+	defer rows.Close()
+
+	if rows.Next() {
+		var version int
+		var dirty bool
+
+		if err = rows.Scan(&version, &dirty); err != nil {
+			return err
+		}
+
+		if dirty {
+			_, err = db.Exec("update schema_version set dirty = false, version = $1", version-1)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
