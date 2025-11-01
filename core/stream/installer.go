@@ -1,10 +1,10 @@
 package stream
 
 import (
-	"go.uber.org/dig"
+	"dillmann.com.br/nginx-ignition/core/common/container"
 )
 
-func Install(container *dig.Container) error {
+func Install() error {
 	return container.Provide(buildCommands)
 }
 

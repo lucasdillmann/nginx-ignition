@@ -1,38 +1,29 @@
 package certificate
 
 import (
-	"go.uber.org/dig"
-
+	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func Install(container *dig.Container) error {
+func Install() error {
 	if err := container.Provide(buildCommands); err != nil {
 		return err
 	}
 
-	return container.Invoke(registerScheduledTask)
+	return container.Run(registerScheduledTask)
 }
 
 func buildCommands(
-	container *dig.Container,
 	hostRepository host.Repository,
 	certificateRepository Repository,
 	settingsRepository settings.Repository,
 ) (*Commands, *service) {
-	providerResolver := func() ([]Provider, error) {
-		var output []Provider
-		if err := container.Invoke(func(providers []Provider) {
-			output = providers
-		}); err != nil {
-			return nil, err
-		}
-
-		return output, nil
+	providers := func() []Provider {
+		return container.Get[[]Provider]()
 	}
 
-	serviceInstance := newService(certificateRepository, hostRepository, settingsRepository, providerResolver)
+	serviceInstance := newService(certificateRepository, hostRepository, settingsRepository, providers)
 	commands := &Commands{
 		AvailableProviders: serviceInstance.availableProviders,
 		Delete:             serviceInstance.deleteById,

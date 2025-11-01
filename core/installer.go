@@ -1,12 +1,11 @@
 package core
 
 import (
-	"go.uber.org/dig"
-
 	"dillmann.com.br/nginx-ignition/core/access_list"
 	"dillmann.com.br/nginx-ignition/core/backup"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/broadcast"
+	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
@@ -14,10 +13,11 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/stream"
 	"dillmann.com.br/nginx-ignition/core/user"
+	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
-func Install(container *dig.Container) error {
-	installers := []func(*dig.Container) error{
+func Install() error {
+	return container.Run(
 		broadcast.Install,
 		scheduler.Install,
 		settings.Install,
@@ -29,13 +29,6 @@ func Install(container *dig.Container) error {
 		stream.Install,
 		nginx.Install,
 		backup.Install,
-	}
-
-	for _, installer := range installers {
-		if err := installer(container); err != nil {
-			return err
-		}
-	}
-
-	return nil
+		vpn.Install,
+	)
 }

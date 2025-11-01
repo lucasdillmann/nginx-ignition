@@ -3,19 +3,15 @@ package scheduler
 import (
 	"time"
 
-	"go.uber.org/dig"
+	"dillmann.com.br/nginx-ignition/core/common/container"
 )
 
-func Install(container *dig.Container) error {
+func Install() error {
 	if err := container.Provide(buildScheduler); err != nil {
 		return err
 	}
 
-	if err := container.Invoke(registerStartup); err != nil {
-		return err
-	}
-
-	return container.Invoke(registerShutdown)
+	return container.Run(registerStartup, registerShutdown)
 }
 
 func buildScheduler() *Scheduler {

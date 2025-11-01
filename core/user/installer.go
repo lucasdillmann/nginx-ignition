@@ -1,18 +1,17 @@
 package user
 
 import (
-	"go.uber.org/dig"
-
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/core/common/container"
 )
 
-func Install(container *dig.Container) error {
+func Install() error {
 	err := container.Provide(buildCommands)
 	if err != nil {
 		return err
 	}
 
-	return container.Invoke(registerStartup)
+	return container.Run(registerStartup)
 }
 
 func buildCommands(

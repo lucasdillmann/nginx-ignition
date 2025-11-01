@@ -1,8 +1,6 @@
 package api
 
 import (
-	"go.uber.org/dig"
-
 	"dillmann.com.br/nginx-ignition/api/access_list"
 	"dillmann.com.br/nginx-ignition/api/backup"
 	"dillmann.com.br/nginx-ignition/api/certificate"
@@ -14,14 +12,13 @@ import (
 	"dillmann.com.br/nginx-ignition/api/settings"
 	"dillmann.com.br/nginx-ignition/api/stream"
 	"dillmann.com.br/nginx-ignition/api/user"
+	"dillmann.com.br/nginx-ignition/api/vpn"
+	"dillmann.com.br/nginx-ignition/core/common/container"
 )
 
-func Install(container *dig.Container) error {
-	if err := server.Install(container); err != nil {
-		return err
-	}
-
-	installFunctions := []interface{}{
+func Install() error {
+	return container.Run(
+		server.Install,
 		settings.Install,
 		access_list.Install,
 		certificate.Install,
@@ -31,14 +28,7 @@ func Install(container *dig.Container) error {
 		nginx.Install,
 		stream.Install,
 		backup.Install,
+		vpn.Install,
 		frontend.Install,
-	}
-
-	for _, installFunc := range installFunctions {
-		if err := container.Invoke(installFunc); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	)
 }
