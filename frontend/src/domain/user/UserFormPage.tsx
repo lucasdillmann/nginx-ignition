@@ -57,6 +57,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     users: UserAccessLevel.READ_WRITE,
                     nginxServer: UserAccessLevel.READ_WRITE,
                     exportData: UserAccessLevel.READ_ONLY,
+                    vpns: UserAccessLevel.READ_WRITE,
                 },
             },
             validationResult: new ValidationResult(),
@@ -154,6 +155,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     <UserPermissionToggle id="streams" label="Streams" />
                     <UserPermissionToggle id="certificates" label="SSL certificates" />
                     <UserPermissionToggle id="integrations" label="Integrations" />
+                    <UserPermissionToggle id="vpns" label="VPNs" />
                     <UserPermissionToggle id="accessLists" label="Access lists" />
                     <UserPermissionToggle id="settings" label="Settings" />
                     <UserPermissionToggle id="users" label="Users" />

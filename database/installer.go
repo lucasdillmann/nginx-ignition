@@ -12,6 +12,7 @@ import (
 	"dillmann.com.br/nginx-ignition/database/settings"
 	"dillmann.com.br/nginx-ignition/database/stream"
 	"dillmann.com.br/nginx-ignition/database/user"
+	"dillmann.com.br/nginx-ignition/database/vpn"
 )
 
 func Install() error {
@@ -31,5 +32,6 @@ func Install() error {
 		integration.New,
 		stream.New,
 		backup.New,
+		vpn.New,
 	)
 }

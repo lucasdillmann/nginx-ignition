@@ -13,6 +13,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/stream"
 	"dillmann.com.br/nginx-ignition/core/user"
+	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
 func Install() error {
@@ -28,5 +29,6 @@ func Install() error {
 		stream.Install,
 		nginx.Install,
 		backup.Install,
+		vpn.Install,
 	)
 }
