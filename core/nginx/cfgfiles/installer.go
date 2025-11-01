@@ -1,7 +1,9 @@
 package cfgfiles
 
-import "go.uber.org/dig"
+import (
+	"dillmann.com.br/nginx-ignition/core/common/container"
+)
 
-func Install(container *dig.Container) error {
+func Install() error {
 	return container.Provide(newFacade)
 }

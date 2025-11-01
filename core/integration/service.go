@@ -11,14 +11,14 @@ import (
 )
 
 type service struct {
-	repository      Repository
-	driversResolver func() ([]Driver, error)
+	repository Repository
+	drivers    func() []Driver
 }
 
-func newService(repository Repository, driverResolver func() ([]Driver, error)) *service {
+func newService(repository Repository, drivers func() []Driver) *service {
 	return &service{
-		repository:      repository,
-		driversResolver: driverResolver,
+		repository: repository,
+		drivers:    drivers,
 	}
 }
 
@@ -148,11 +148,7 @@ func (s *service) getOptionUrl(ctx context.Context, integrationId uuid.UUID, opt
 }
 
 func (s *service) getAvailableDrivers(_ context.Context) (*[]*AvailableDriver, error) {
-	drivers, err := s.driversResolver()
-	if err != nil {
-		return nil, err
-	}
-
+	drivers := s.drivers()
 	sort.Slice(drivers, func(left, right int) bool {
 		return drivers[left].Name() < drivers[right].Name()
 	})
@@ -171,12 +167,7 @@ func (s *service) getAvailableDrivers(_ context.Context) (*[]*AvailableDriver, e
 }
 
 func (s *service) findDriver(data *Integration) Driver {
-	drivers, err := s.driversResolver()
-	if err != nil {
-		return nil
-	}
-
-	for _, driver := range drivers {
+	for _, driver := range s.drivers() {
 		if driver.ID() == data.Driver {
 			return driver
 		}

@@ -1,16 +1,15 @@
 package nginx
 
 import (
-	"go.uber.org/dig"
-
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/nginx/cfgfiles"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func Install(container *dig.Container) error {
-	if err := cfgfiles.Install(container); err != nil {
+func Install() error {
+	if err := container.Run(cfgfiles.Install); err != nil {
 		return err
 	}
 
@@ -18,15 +17,7 @@ func Install(container *dig.Container) error {
 		return err
 	}
 
-	if err := container.Invoke(registerStartup); err != nil {
-		return err
-	}
-
-	if err := container.Invoke(registerScheduledTask); err != nil {
-		return err
-	}
-
-	return container.Invoke(registerShutdown)
+	return container.Run(registerStartup, registerScheduledTask, registerShutdown)
 }
 
 func buildCommands(

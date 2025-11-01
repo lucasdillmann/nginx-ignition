@@ -18,20 +18,20 @@ type service struct {
 	certificateRepository Repository
 	hostRepository        host.Repository
 	settingsRepository    settings.Repository
-	providerResolver      func() ([]Provider, error)
+	providers             func() []Provider
 }
 
 func newService(
 	certificateRepository Repository,
 	hostRepository host.Repository,
 	settingsRepository settings.Repository,
-	providerResolver func() ([]Provider, error),
+	providers func() []Provider,
 ) *service {
 	return &service{
 		certificateRepository: certificateRepository,
 		hostRepository:        hostRepository,
 		settingsRepository:    settingsRepository,
-		providerResolver:      providerResolver,
+		providers:             providers,
 	}
 }
 
@@ -109,17 +109,8 @@ func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerm
 }
 
 func (s *service) availableProviders(_ context.Context) ([]*AvailableProvider, error) {
-	providers, err := s.providerResolver()
-	if err != nil {
-		return nil, err
-	}
-
-	if providers == nil {
-		return nil, core_error.New("No providers found", false)
-	}
-
 	var availableProviders []*AvailableProvider
-	for _, provider := range providers {
+	for _, provider := range s.providers() {
 		availableProviders = append(availableProviders, &AvailableProvider{
 			provider: provider,
 		})

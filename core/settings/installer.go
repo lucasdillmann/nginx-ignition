@@ -1,13 +1,12 @@
 package settings
 
 import (
-	"go.uber.org/dig"
-
+	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
-func Install(container *dig.Container) error {
+func Install() error {
 	return container.Provide(buildCommands)
 }
 

@@ -4,14 +4,19 @@ import (
 	"context"
 
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
-	"dillmann.com.br/nginx-ignition/core/host"
 )
+
+type Destination struct {
+	DomainName string
+	IP         string
+	Port       int
+	HTTPS      bool
+}
 
 type Driver interface {
 	ID() string
 	Name() string
-	Description() string
 	ConfigurationFields() []*dynamic_fields.DynamicField
-	Start(ctx context.Context, h *host.Host, parameters map[string]any) error
-	Stop(ctx context.Context, h *host.Host, parameters map[string]any) error
+	Start(ctx context.Context, name, configDir string, destination *Destination, parameters map[string]any) error
+	Stop(ctx context.Context, name string) error
 }

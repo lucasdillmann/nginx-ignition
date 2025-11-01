@@ -11,7 +11,6 @@ require (
 	github.com/uptrace/bun v1.2.15
 	github.com/uptrace/bun/dialect/pgdialect v1.2.15
 	github.com/uptrace/bun/dialect/sqlitedialect v1.2.15
-	go.uber.org/dig v1.19.0
 	modernc.org/sqlite v1.39.1
 )
 

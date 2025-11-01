@@ -1,9 +1,9 @@
-package broadcast
+package letsencrypt
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/container"
 )
 
 func Install() error {
-	return container.Run(registerShutdown)
+	return container.Provide(New)
 }

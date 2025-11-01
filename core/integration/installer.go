@@ -1,29 +1,21 @@
 package integration
 
 import (
-	"go.uber.org/dig"
+	"dillmann.com.br/nginx-ignition/core/common/container"
 )
 
-func Install(container *dig.Container) error {
+func Install() error {
 	return container.Provide(buildCommands)
 }
 
 func buildCommands(
-	container *dig.Container,
 	repository Repository,
 ) *Commands {
-	driverResolver := func() ([]Driver, error) {
-		var output []Driver
-		if err := container.Invoke(func(drivers []Driver) {
-			output = drivers
-		}); err != nil {
-			return nil, err
-		}
-
-		return output, nil
+	drivers := func() []Driver {
+		return container.Get[[]Driver]()
 	}
 
-	serviceInstance := newService(repository, driverResolver)
+	serviceInstance := newService(repository, drivers)
 
 	return &Commands{
 		Get:                 serviceInstance.getById,

@@ -1,8 +1,7 @@
 package database
 
 import (
-	"go.uber.org/dig"
-
+	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/database/access_list"
 	"dillmann.com.br/nginx-ignition/database/backup"
 	"dillmann.com.br/nginx-ignition/database/certificate"
@@ -15,19 +14,15 @@ import (
 	"dillmann.com.br/nginx-ignition/database/user"
 )
 
-func Install(container *dig.Container) error {
-	installers := []func(*dig.Container) error{
+func Install() error {
+	if err := container.Run(
 		database.Install,
 		migrations.Install,
+	); err != nil {
+		return err
 	}
 
-	for _, installer := range installers {
-		if err := installer(container); err != nil {
-			return err
-		}
-	}
-
-	providers := []interface{}{
+	return container.Provide(
 		access_list.New,
 		host.New,
 		user.New,
@@ -36,13 +31,5 @@ func Install(container *dig.Container) error {
 		integration.New,
 		stream.New,
 		backup.New,
-	}
-
-	for _, provider := range providers {
-		if err := container.Provide(provider); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	)
 }

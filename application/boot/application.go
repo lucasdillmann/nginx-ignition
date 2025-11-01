@@ -7,6 +7,7 @@ import (
 	"syscall"
 	"time"
 
+	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
@@ -15,12 +16,11 @@ func StartApplication() error {
 	startTime := time.Now().UnixNano() / int64(time.Millisecond)
 	ctx := context.Background()
 
-	container, err := startContainer(ctx)
-	if err != nil {
+	if err := startContainer(ctx); err != nil {
 		return err
 	}
 
-	return container.Invoke(func(lifecycle *lifecycle.Lifecycle) error {
+	return container.Run(func(lifecycle *lifecycle.Lifecycle) error {
 		return runLifecycle(ctx, lifecycle, startTime)
 	})
 }
