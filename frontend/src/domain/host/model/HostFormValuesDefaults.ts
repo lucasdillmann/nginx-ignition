@@ -7,6 +7,7 @@ export function hostFormValuesDefaults(): HostFormValues {
         defaultServer: false,
         useGlobalBindings: true,
         domainNames: [""],
+        vpns: [],
         bindings: [
             {
                 ip: "0.0.0.0",
