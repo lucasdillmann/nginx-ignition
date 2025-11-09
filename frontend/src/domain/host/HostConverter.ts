@@ -198,7 +198,7 @@ class HostConverter {
 
         const routes = formValues.routes.map(route => this.formValuesToRoute(route))
         const bindings = useGlobalBindings ? [] : formValues.bindings.map(binding => this.formValuesToBinding(binding))
-        const vpns = formValues.vpns.map(vpn => this.formValuesToVpn(vpn))
+        const vpns = formValues.vpns?.map(vpn => this.formValuesToVpn(vpn)) ?? []
 
         return {
             enabled,

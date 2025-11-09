@@ -30,6 +30,7 @@ import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import { hostFormValuesDefaults } from "./model/HostFormValuesDefaults"
 import HostSupportWarning from "./components/HostSupportWarning"
+import HostVpns from "./components/HostVpns"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -329,6 +330,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                 <p className="hosts-form-section-help-text">
                     Relation of VPN connections on where this host should be exposed to
                 </p>
+                <HostVpns vpns={formValues.vpns} validationResult={validationResult} />
             </Form>
         )
     }

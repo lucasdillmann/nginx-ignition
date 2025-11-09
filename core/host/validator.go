@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/integration"
@@ -333,18 +335,23 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 			v.delegate.Add(basePath+".name", "Value is required")
 		}
 
+		if value.VPNID == uuid.Nil {
+			v.delegate.Add(basePath+".vpnId", "Value is required")
+			continue
+		}
+
 		vpnData, err := v.vpnCommands.Get(ctx, value.VPNID)
 		if err != nil {
 			return err
 		}
 
 		if vpnData == nil {
-			v.delegate.Add(basePath+".vpnId", "VPN not found")
+			v.delegate.Add(basePath+".vpnId", "No VPN connection was found using the provided ID")
 			continue
 		}
 
 		if !vpnData.Enabled {
-			v.delegate.Add(basePath+".vpnId", "VPN is disabled")
+			v.delegate.Add(basePath+".vpnId", "Selected VPN is disabled")
 		}
 	}
 
