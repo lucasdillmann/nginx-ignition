@@ -21,6 +21,14 @@ func toDomain(model *hostModel) (*host.Host, error) {
 		}
 	}
 
+	vpns := make([]*host.VPN, len(model.VPNs))
+	for index, vpn := range model.VPNs {
+		vpns[index] = &host.VPN{
+			VPNID: vpn.VPNID,
+			Name:  vpn.Name,
+		}
+	}
+
 	routes := make([]*host.Route, len(model.Routes))
 	for index, route := range model.Routes {
 		headers, err := parseHeaders(route.StaticResponseHeaders)
@@ -84,6 +92,7 @@ func toDomain(model *hostModel) (*host.Host, error) {
 		DomainNames:       pointers.Reference(model.DomainNames),
 		Routes:            routes,
 		Bindings:          bindings,
+		VPNs:              vpns,
 		FeatureSet: host.FeatureSet{
 			WebsocketSupport:    model.WebsocketSupport,
 			HTTP2Support:        model.HTTP2Support,
@@ -103,6 +112,15 @@ func toModel(domain *host.Host) (*hostModel, error) {
 			IP:            binding.IP,
 			Port:          binding.Port,
 			CertificateID: binding.CertificateID,
+		}
+	}
+
+	vpns := make([]*hostVpnModel, len(domain.VPNs))
+	for index, vpn := range domain.VPNs {
+		vpns[index] = &hostVpnModel{
+			HostID: domain.ID,
+			VPNID:  vpn.VPNID,
+			Name:   vpn.Name,
 		}
 	}
 
@@ -174,6 +192,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 		AccessListID:        domain.AccessListID,
 		Bindings:            bindings,
 		Routes:              routes,
+		VPNs:                vpns,
 	}, nil
 }
 

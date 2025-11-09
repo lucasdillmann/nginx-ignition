@@ -19,6 +19,7 @@ func toDto(input *host.Host) *hostResponseDto {
 		DomainNames:       input.DomainNames,
 		Routes:            toRouteDtoSlice(input.Routes),
 		Bindings:          toBindingDtoSlice(input.Bindings),
+		VPNs:              toVpnDtoSlice(input.VPNs),
 		FeatureSet:        toFeatureSetDto(&input.FeatureSet),
 		AccessListId:      input.AccessListID,
 	}
@@ -36,6 +37,7 @@ func toDomain(input *hostRequestDto) *host.Host {
 		DomainNames:       input.DomainNames,
 		Routes:            toRouteSlice(input.Routes),
 		Bindings:          toBindingSlice(input.Bindings),
+		VPNs:              toVpnsSlice(input.VPNs),
 		FeatureSet:        *toFeatureSet(input.FeatureSet),
 		AccessListID:      input.AccessListId,
 	}
@@ -47,8 +49,8 @@ func toRouteDtoSlice(routes []*host.Route) []*routeDto {
 	}
 
 	result := make([]*routeDto, len(routes))
-	for i, route := range routes {
-		result[i] = toRouteDto(route)
+	for index, route := range routes {
+		result[index] = toRouteDto(route)
 	}
 
 	return result
@@ -80,8 +82,8 @@ func toBindingDtoSlice(bindings []*host.Binding) []*bindingDto {
 	}
 
 	result := make([]*bindingDto, len(bindings))
-	for i, binding := range bindings {
-		result[i] = toBindingDto(binding)
+	for index, binding := range bindings {
+		result[index] = toBindingDto(binding)
 	}
 
 	return result
@@ -97,6 +99,30 @@ func toBindingDto(binding *host.Binding) *bindingDto {
 		Ip:            &binding.IP,
 		Port:          &binding.Port,
 		CertificateId: binding.CertificateID,
+	}
+}
+
+func toVpnDtoSlice(vpns []*host.VPN) []*vpnDto {
+	if vpns == nil {
+		return nil
+	}
+
+	result := make([]*vpnDto, len(vpns))
+	for index, vpn := range vpns {
+		result[index] = toVpnDto(vpn)
+	}
+
+	return result
+}
+
+func toVpnDto(vpn *host.VPN) *vpnDto {
+	if vpn == nil {
+		return nil
+	}
+
+	return &vpnDto{
+		VPNID: &vpn.VPNID,
+		Name:  &vpn.Name,
 	}
 }
 
@@ -174,8 +200,8 @@ func toRouteSlice(routes []*routeDto) []*host.Route {
 	}
 
 	result := make([]*host.Route, len(routes))
-	for i, route := range routes {
-		result[i] = toDomainModelRoute(route)
+	for index, route := range routes {
+		result[index] = toDomainModelRoute(route)
 	}
 
 	return result
@@ -187,8 +213,21 @@ func toBindingSlice(bindings []*bindingDto) []*host.Binding {
 	}
 
 	result := make([]*host.Binding, len(bindings))
-	for i, binding := range bindings {
-		result[i] = toDomainModelBinding(binding)
+	for index, binding := range bindings {
+		result[index] = toDomainModelBinding(binding)
+	}
+
+	return result
+}
+
+func toVpnsSlice(vpns []*vpnDto) []*host.VPN {
+	if vpns == nil {
+		return nil
+	}
+
+	result := make([]*host.VPN, len(vpns))
+	for index, vpn := range vpns {
+		result[index] = toDomainModelVPN(vpn)
 	}
 
 	return result
@@ -315,5 +354,16 @@ func toDomainModelBinding(input *bindingDto) *host.Binding {
 		IP:            getStringValue(input.Ip),
 		Port:          getIntValue(input.Port),
 		CertificateID: input.CertificateId,
+	}
+}
+
+func toDomainModelVPN(input *vpnDto) *host.VPN {
+	if input == nil {
+		return nil
+	}
+
+	return &host.VPN{
+		VPNID: getUuidValue(input.VPNID),
+		Name:  getStringValue(input.Name),
 	}
 }

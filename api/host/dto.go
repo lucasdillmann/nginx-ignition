@@ -13,6 +13,7 @@ type hostRequestDto struct {
 	DomainNames       []*string      `json:"domainNames"`
 	Routes            []*routeDto    `json:"routes"`
 	Bindings          []*bindingDto  `json:"bindings"`
+	VPNs              []*vpnDto      `json:"vpns"`
 	FeatureSet        *featureSetDto `json:"featureSet"`
 	AccessListId      *uuid.UUID     `json:"accessListId"`
 }
@@ -69,6 +70,11 @@ type bindingDto struct {
 	CertificateId *uuid.UUID        `json:"certificateId"`
 }
 
+type vpnDto struct {
+	VPNID *uuid.UUID `json:"vpnId"`
+	Name  *string    `json:"name"`
+}
+
 type hostResponseDto struct {
 	ID                *uuid.UUID     `json:"id"`
 	Enabled           *bool          `json:"enabled"`
@@ -77,6 +83,7 @@ type hostResponseDto struct {
 	DomainNames       []*string      `json:"domainNames"`
 	Routes            []*routeDto    `json:"routes"`
 	Bindings          []*bindingDto  `json:"bindings"`
+	VPNs              []*vpnDto      `json:"vpns"`
 	FeatureSet        *featureSetDto `json:"featureSet"`
 	AccessListId      *uuid.UUID     `json:"accessListId"`
 }

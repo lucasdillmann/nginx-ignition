@@ -15,7 +15,7 @@ import (
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
 
-const buHostIdFilter = "host_id = ?"
+const byHostIdFilter = "host_id = ?"
 
 type repository struct {
 	database *database.Database
@@ -34,6 +34,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*host.Host, er
 		Model(&model).
 		Relation("Bindings").
 		Relation("Routes").
+		Relation("VPNs").
 		Where(constants.ByIdFilter, id).
 		Scan(ctx)
 
@@ -58,7 +59,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*hostBindingModel)(nil)).
-		Where(buHostIdFilter, id).
+		Where(byHostIdFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -66,7 +67,15 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*hostRouteModel)(nil)).
-		Where(buHostIdFilter, id).
+		Where(byHostIdFilter, id).
+		Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = transaction.NewDelete().
+		Model((*hostVpnModel)(nil)).
+		Where(byHostIdFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -129,12 +138,17 @@ func (r *repository) performUpdate(ctx context.Context, model *hostModel, transa
 		return err
 	}
 
-	_, err = transaction.NewDelete().Table("host_binding").Where(buHostIdFilter, model.ID).Exec(ctx)
+	_, err = transaction.NewDelete().Table("host_binding").Where(byHostIdFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
 	}
 
-	_, err = transaction.NewDelete().Table("host_route").Where(buHostIdFilter, model.ID).Exec(ctx)
+	_, err = transaction.NewDelete().Table("host_route").Where(byHostIdFilter, model.ID).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = transaction.NewDelete().Table("host_vpn").Where(byHostIdFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -163,6 +177,15 @@ func (r *repository) saveLinkedModels(ctx context.Context, model *hostModel, tra
 		}
 	}
 
+	for _, vpn := range model.VPNs {
+		vpn.HostID = model.ID
+
+		_, err := transaction.NewInsert().Model(vpn).Exec(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -186,6 +209,7 @@ func (r *repository) FindPage(
 	err = query.
 		Relation("Bindings").
 		Relation("Routes").
+		Relation("VPNs").
 		Limit(pageSize).
 		Offset(pageSize * pageNumber).
 		Order("domain_names").
@@ -214,6 +238,7 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]*host.Host, error) {
 		Model(&models).
 		Relation("Bindings").
 		Relation("Routes").
+		Relation("VPNs").
 		Where("enabled = ?", true).
 		Scan(ctx)
 	if err != nil {
@@ -239,6 +264,7 @@ func (r *repository) FindDefault(ctx context.Context) (*host.Host, error) {
 		Model(&model).
 		Relation("Bindings").
 		Relation("Routes").
+		Relation("VPNs").
 		Where("default_server = ?", true).
 		Scan(ctx)
 

@@ -19,6 +19,7 @@ type hostModel struct {
 	AccessListID        *uuid.UUID          `bun:"access_list_id"`
 	Bindings            []*hostBindingModel `bun:"rel:has-many,join:id=host_id"`
 	Routes              []*hostRouteModel   `bun:"rel:has-many,join:id=host_id"`
+	VPNs                []*hostVpnModel     `bun:"rel:has-many,join:id=host_id"`
 }
 
 type hostBindingModel struct {
@@ -30,6 +31,14 @@ type hostBindingModel struct {
 	IP            string     `bun:"ip,notnull"`
 	Port          int        `bun:"port,notnull"`
 	CertificateID *uuid.UUID `bun:"certificate_id"`
+}
+
+type hostVpnModel struct {
+	bun.BaseModel `bun:"host_vpn"`
+
+	HostID uuid.UUID `bun:"host_id,notnull"`
+	VPNID  uuid.UUID `bun:"vpn_id"`
+	Name   string    `bun:"name,notnull"`
 }
 
 type hostRouteModel struct {
