@@ -24,11 +24,11 @@ func Install() error {
 		user.Install,
 		access_list.Install,
 		certificate.Install,
+		vpn.Install,
 		host.Install,
 		integration.Install,
 		stream.Install,
 		nginx.Install,
 		backup.Install,
-		vpn.Install,
 	)
 }

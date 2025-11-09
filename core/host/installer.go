@@ -3,6 +3,7 @@ package host
 import (
 	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/core/integration"
+	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
 func Install() error {
@@ -12,8 +13,9 @@ func Install() error {
 func buildCommands(
 	hostRepository Repository,
 	integrationCommands *integration.Commands,
+	vpnCommands *vpn.Commands,
 ) *Commands {
-	serviceInstance := newService(hostRepository, integrationCommands)
+	serviceInstance := newService(hostRepository, integrationCommands, vpnCommands)
 	return &Commands{
 		Save:            serviceInstance.save,
 		Delete:          serviceInstance.deleteByID,

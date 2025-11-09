@@ -10,18 +10,25 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/integration"
+	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
 type validator struct {
 	hostRepository      Repository
 	integrationCommands *integration.Commands
+	vpnCommands         *vpn.Commands
 	delegate            *validation.ConsistencyValidator
 }
 
-func newValidator(hostRepository Repository, integrationCommands *integration.Commands) *validator {
+func newValidator(
+	hostRepository Repository,
+	integrationCommands *integration.Commands,
+	vpnCommands *vpn.Commands,
+) *validator {
 	return &validator{
 		hostRepository:      hostRepository,
 		integrationCommands: integrationCommands,
+		vpnCommands:         vpnCommands,
 		delegate:            validation.NewValidator(),
 	}
 }
@@ -48,6 +55,10 @@ func (v *validator) validate(ctx context.Context, host *Host) error {
 
 	v.validateDomainNames(host)
 	if err := v.validateRoutes(ctx, host); err != nil {
+		return err
+	}
+
+	if err := v.validateVPNs(ctx, host); err != nil {
 		return err
 	}
 
@@ -313,6 +324,31 @@ func (v *validator) validateExecuteCodeRoute(route *Route, index int) {
 			"Value is required when the language is JavaScript",
 		)
 	}
+}
+
+func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
+	for index, value := range host.VPNs {
+		basePath := "vpns[" + strconv.Itoa(index) + "]"
+		if strings.TrimSpace(value.Name) == "" {
+			v.delegate.Add(basePath+".name", "Value is required")
+		}
+
+		vpnData, err := v.vpnCommands.Get(ctx, value.VPNID)
+		if err != nil {
+			return err
+		}
+
+		if vpnData == nil {
+			v.delegate.Add(basePath+".vpnId", "VPN not found")
+			continue
+		}
+
+		if !vpnData.Enabled {
+			v.delegate.Add(basePath+".vpnId", "VPN is disabled")
+		}
+	}
+
+	return nil
 }
 
 func buildOutOfRangeMessage(minimum, maximum int) string {
