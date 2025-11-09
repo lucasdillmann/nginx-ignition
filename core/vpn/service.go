@@ -6,17 +6,20 @@ import (
 
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/core_error"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
 type service struct {
 	repository Repository
+	cfg        *configuration.Configuration
 	drivers    func() []Driver
 }
 
-func newService(repository Repository, drivers func() []Driver) *service {
+func newService(cfg *configuration.Configuration, repository Repository, drivers func() []Driver) *service {
 	return &service{
+		cfg:        cfg,
 		repository: repository,
 		drivers:    drivers,
 	}
@@ -78,6 +81,52 @@ func (s *service) getAvailableDrivers(_ context.Context) (*[]*AvailableDriver, e
 	}
 
 	return &output, nil
+}
+
+func (s *service) start(ctx context.Context, destination Destination) error {
+	data, driver, configDir, err := s.resolveValues(ctx, destination.VPNID())
+	if err != nil {
+		return err
+	}
+
+	return driver.Start(ctx, *configDir, destination, data.Parameters)
+}
+
+func (s *service) reload(ctx context.Context, destination Destination) error {
+	data, driver, configDir, err := s.resolveValues(ctx, destination.VPNID())
+	if err != nil {
+		return err
+	}
+
+	return driver.Reload(ctx, *configDir, destination, data.Parameters)
+}
+
+func (s *service) stop(ctx context.Context, destination Destination) error {
+	_, driver, _, err := s.resolveValues(ctx, destination.VPNID())
+	if err != nil {
+		return err
+	}
+
+	return driver.Stop(ctx, destination)
+}
+
+func (s *service) resolveValues(ctx context.Context, id uuid.UUID) (*VPN, Driver, *string, error) {
+	data, err := s.getById(ctx, id)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	driver := s.findDriver(data)
+	if driver == nil {
+		return nil, nil, nil, core_error.New("VPN driver not found", false)
+	}
+
+	configDir, err := s.cfg.Get("nginx-ignition.vpn.config-path")
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return data, driver, &configDir, nil
 }
 
 func (s *service) findDriver(data *VPN) Driver {

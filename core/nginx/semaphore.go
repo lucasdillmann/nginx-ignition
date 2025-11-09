@@ -7,8 +7,8 @@ import (
 type nginxState int
 
 const (
-	stoppedState = nginxState(0)
-	runningState = nginxState(1)
+	stoppedState nginxState = 0
+	runningState nginxState = 1
 )
 
 type semaphore struct {

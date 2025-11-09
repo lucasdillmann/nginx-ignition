@@ -6,6 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/nginx/cfgfiles"
 	"dillmann.com.br/nginx-ignition/core/settings"
+	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
 func Install() error {
@@ -25,8 +26,9 @@ func buildCommands(
 	hostRepository host.Repository,
 	settingsRepository settings.Repository,
 	configFilesManager *cfgfiles.Facade,
+	vpnCommands *vpn.Commands,
 ) (*service, *Commands, error) {
-	serviceInstance, err := newService(configuration, settingsRepository, hostRepository, configFilesManager)
+	serviceInstance, err := newService(configuration, settingsRepository, hostRepository, configFilesManager, vpnCommands)
 	if err != nil {
 		return nil, nil, err
 	}

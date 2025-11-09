@@ -19,8 +19,7 @@ import (
 type tailnetEndpoint struct {
 	client      *local.Client
 	server      *tsnet.Server
-	destination *vpn.Destination
-	name        string
+	destination vpn.Destination
 	serverURL   string
 	authKey     string
 	listener    net.Listener
@@ -28,7 +27,7 @@ type tailnetEndpoint struct {
 }
 
 func (e *tailnetEndpoint) Stop(ctx context.Context) {
-	log.Infof("Stopping Tailscale endpoint %s...", e.name)
+	log.Infof("Stopping Tailscale endpoint %s...", e.destination.Name())
 
 	_ = e.listener.Close()
 	_ = e.client.Logout(ctx)
@@ -38,18 +37,18 @@ func (e *tailnetEndpoint) Stop(ctx context.Context) {
 func (e *tailnetEndpoint) Start(ctx context.Context) error {
 	log.Infof(
 		"Starting tailscale %s endpoint for domain %s...",
-		e.name,
-		e.destination.DomainName,
+		e.destination.Name(),
+		e.destination.DomainName(),
 	)
 
 	server := new(tsnet.Server)
 	server.AuthKey = e.authKey
 	server.ControlURL = e.serverURL
-	server.Hostname = e.name
+	server.Hostname = e.destination.Name()
 	server.Ephemeral = true
 	server.UserLogf = noOpLogger
 	server.Logf = noOpLogger
-	server.Dir = fmt.Sprintf("%s/tsnet/%s", e.configDir, e.name)
+	server.Dir = fmt.Sprintf("%s/tsnet/%s", e.configDir, e.destination.Name())
 
 	if _, err := server.Up(ctx); err != nil {
 		return err
@@ -58,7 +57,7 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 	ipv4, ipv6 := server.TailscaleIPs()
 	log.Infof(
 		"Tailscale endpoint %s started on hostname %s, IPv4 %v and IPv6 %v. Starting reverse proxy...",
-		e.name,
+		e.destination.Name(),
 		server.Hostname,
 		ipv4,
 		ipv6,
@@ -70,25 +69,25 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 	}
 
 	scheme := "http"
-	if e.destination.HTTPS {
+	if e.destination.HTTPS() {
 		scheme = "https"
 	}
 
 	proxy := new(httputil.ReverseProxy)
 	proxy.Director = func(req *http.Request) {
-		req.Host = e.destination.DomainName
-		req.URL.Host = e.destination.DomainName
+		req.Host = e.destination.DomainName()
+		req.URL.Host = e.destination.DomainName()
 		req.URL.Scheme = scheme
 		req.Header.Del("Host")
 		req.Header.Set("Host", req.URL.Host)
 	}
 
-	port := fmt.Sprintf(":%d", e.destination.Port)
+	port := fmt.Sprintf(":%d", e.destination.Port())
 	if e.listener, err = server.Listen("tcp", port); err != nil {
 		return err
 	}
 
-	if e.destination.HTTPS {
+	if e.destination.HTTPS() {
 		e.listener = tls.NewListener(
 			e.listener,
 			&tls.Config{
@@ -106,7 +105,7 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 		_ = svr.Serve(e.listener)
 	}()
 
-	log.Infof("Tailscale endpoint %s started successfully", e.name)
+	log.Infof("Tailscale endpoint %s started successfully", e.destination.Name())
 
 	return nil
 }

@@ -31,46 +31,46 @@ func (d Driver) ConfigurationFields() []*dynamic_fields.DynamicField {
 
 func (d Driver) Start(
 	ctx context.Context,
-	name, configDir string,
-	destination *vpn.Destination,
+	configDir string,
+	destination vpn.Destination,
 	parameters map[string]any,
 ) error {
-	if state[name] != nil {
+	if state[destination.Name()] != nil {
 		return nil
 	}
 
-	return d.doStart(ctx, name, configDir, destination, parameters)
+	return d.doStart(ctx, configDir, destination, parameters)
 }
 
 func (d Driver) Reload(
 	ctx context.Context,
-	name, configDir string,
-	destination *vpn.Destination,
+	configDir string,
+	destination vpn.Destination,
 	parameters map[string]any,
 ) error {
-	if state[name] != nil {
-		_ = d.Stop(ctx, name)
+	if state[destination.Name()] != nil {
+		_ = d.Stop(ctx, destination)
 	}
 
-	return d.doStart(ctx, name, configDir, destination, parameters)
+	return d.doStart(ctx, configDir, destination, parameters)
 }
 
-func (d Driver) Stop(ctx context.Context, name string) error {
-	endpoint := state[name]
+func (d Driver) Stop(ctx context.Context, destination vpn.Destination) error {
+	endpoint := state[destination.Name()]
 	if endpoint == nil {
 		return nil
 	}
 
 	endpoint.Stop(ctx)
-	delete(state, name)
+	delete(state, destination.Name())
 
 	return nil
 }
 
 func (d Driver) doStart(
 	ctx context.Context,
-	name, configDir string,
-	destination *vpn.Destination,
+	configDir string,
+	destination vpn.Destination,
 	parameters map[string]any,
 ) error {
 	authKey := parameters[authKeyFieldName].(string)
@@ -80,13 +80,12 @@ func (d Driver) doStart(
 		serverURL = value
 	}
 
-	state[name] = &tailnetEndpoint{
-		name:        name,
+	state[destination.Name()] = &tailnetEndpoint{
 		authKey:     authKey,
 		configDir:   configDir,
 		destination: destination,
 		serverURL:   serverURL,
 	}
 
-	return state[name].Start(ctx)
+	return state[destination.Name()].Start(ctx)
 }

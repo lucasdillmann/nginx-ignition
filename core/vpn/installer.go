@@ -1,6 +1,7 @@
 package vpn
 
 import (
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/container"
 )
 
@@ -8,14 +9,10 @@ func Install() error {
 	return container.Provide(buildCommands)
 }
 
-func buildCommands(
-	repository Repository,
-) *Commands {
-	drivers := func() []Driver {
+func buildCommands(cfg *configuration.Configuration, repository Repository) *Commands {
+	serviceInstance := newService(cfg, repository, func() []Driver {
 		return container.Get[[]Driver]()
-	}
-
-	serviceInstance := newService(repository, drivers)
+	})
 
 	return &Commands{
 		Get:                 serviceInstance.getById,
@@ -24,5 +21,8 @@ func buildCommands(
 		Exists:              serviceInstance.existsById,
 		List:                serviceInstance.list,
 		GetAvailableDrivers: serviceInstance.getAvailableDrivers,
+		Start:               serviceInstance.start,
+		Reload:              serviceInstance.reload,
+		Stop:                serviceInstance.stop,
 	}
 }
