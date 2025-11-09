@@ -30,17 +30,17 @@ type service struct {
 
 func newService(
 	configuration *configuration.Configuration,
-	settingsRepository settings.Repository,
 	hostRepository host.Repository,
 	configFilesManager *cfgfiles.Facade,
 	vpnCommands *vpn.Commands,
+	settingsCommands *settings.Commands,
 ) (*service, error) {
 	pManager, err := newProcessManager(configuration)
 	if err != nil {
 		return nil, err
 	}
 
-	vManager := newVpnManager(vpnCommands)
+	vManager := newVpnManager(vpnCommands, settingsCommands)
 
 	return &service{
 		configFilesManager: configFilesManager,
@@ -48,7 +48,7 @@ func newService(
 		vpnManager:         vManager,
 		semaphore:          newSemaphore(),
 		logReader:          newLogReader(configuration),
-		logRotator:         newLogRotator(configuration, settingsRepository, hostRepository, pManager),
+		logRotator:         newLogRotator(configuration, settingsCommands, hostRepository, pManager),
 	}, nil
 }
 

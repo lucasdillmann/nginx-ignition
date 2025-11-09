@@ -54,15 +54,6 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 		return err
 	}
 
-	ipv4, ipv6 := server.TailscaleIPs()
-	log.Infof(
-		"Tailscale endpoint %s started on hostname %s, IPv4 %v and IPv6 %v. Starting reverse proxy...",
-		e.destination.Name(),
-		server.Hostname,
-		ipv4,
-		ipv6,
-	)
-
 	var err error
 	if e.client, err = server.LocalClient(); err != nil {
 		return err
@@ -105,7 +96,14 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 		_ = svr.Serve(e.listener)
 	}()
 
-	log.Infof("Tailscale endpoint %s started successfully", e.destination.Name())
+	ipv4, ipv6 := server.TailscaleIPs()
+	log.Infof(
+		"Tailscale endpoint %s started on hostname %s, IPv4 %v and IPv6 %v",
+		e.destination.Name(),
+		server.Hostname,
+		ipv4,
+		ipv6,
+	)
 
 	return nil
 }

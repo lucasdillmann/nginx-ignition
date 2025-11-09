@@ -331,12 +331,15 @@ func (v *validator) validateExecuteCodeRoute(route *Route, index int) {
 func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 	for index, value := range host.VPNs {
 		basePath := "vpns[" + strconv.Itoa(index) + "]"
+		vpnIdPath := basePath + ".vpnId"
+		namePath := basePath + ".name"
+
 		if strings.TrimSpace(value.Name) == "" {
-			v.delegate.Add(basePath+".name", "Value is required")
+			v.delegate.Add(namePath, "Value is required")
 		}
 
 		if value.VPNID == uuid.Nil {
-			v.delegate.Add(basePath+".vpnId", "Value is required")
+			v.delegate.Add(vpnIdPath, "Value is required")
 			continue
 		}
 
@@ -346,12 +349,12 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 		}
 
 		if vpnData == nil {
-			v.delegate.Add(basePath+".vpnId", "No VPN connection was found using the provided ID")
+			v.delegate.Add(vpnIdPath, "No VPN connection was found using the provided ID")
 			continue
 		}
 
 		if !vpnData.Enabled {
-			v.delegate.Add(basePath+".vpnId", "Selected VPN is disabled")
+			v.delegate.Add(vpnIdPath, "Selected VPN is disabled")
 		}
 	}
 
