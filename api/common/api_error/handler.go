@@ -27,7 +27,6 @@ func Handler(ctx *gin.Context, outcome any) {
 
 	httpError := &ApiError{}
 	consistencyError := &validation.ConsistencyError{}
-	validationError := &validator.ValidationErrors{}
 	coreError := &core_error.CoreError{}
 
 	switch {
@@ -35,8 +34,6 @@ func Handler(ctx *gin.Context, outcome any) {
 		handleHttpError(ctx, httpError)
 	case errors.As(err, &consistencyError):
 		handleConsistencyError(ctx, consistencyError)
-	case errors.As(err, validationError):
-		handleValidationError(ctx, validationError)
 	case errors.As(err, &coreError):
 		handleCoreError(ctx, coreError)
 	case errors.Is(err, jwt.ErrSignatureInvalid):
@@ -100,10 +97,6 @@ func handleConsistencyError(ctx *gin.Context, err *validation.ConsistencyError) 
 	}
 
 	sendError(ctx, details)
-}
-
-func handleValidationError(ctx *gin.Context, _ *validator.ValidationErrors) {
-	ctx.Status(http.StatusBadRequest)
 }
 
 func sendError(ctx *gin.Context, details []*problemDetail) {

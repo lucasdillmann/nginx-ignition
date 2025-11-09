@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/user"
@@ -18,10 +17,6 @@ type loginHandler struct {
 func (h loginHandler) handle(ctx *gin.Context) {
 	requestPayload := &userLoginRequestDto{}
 	if err := ctx.BindJSON(&requestPayload); err != nil {
-		panic(err)
-	}
-
-	if err := validator.New().Struct(requestPayload); err != nil {
 		panic(err)
 	}
 

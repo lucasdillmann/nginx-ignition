@@ -10,9 +10,10 @@ import (
 )
 
 type AvailableDriver struct {
-	ID                  string
-	Name                string
-	ConfigurationFields []*dynamic_fields.DynamicField
+	ID                    string
+	Name                  string
+	ImportantInstructions []string
+	ConfigurationFields   []*dynamic_fields.DynamicField
 }
 
 type Commands struct {

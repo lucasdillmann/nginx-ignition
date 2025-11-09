@@ -30,3 +30,9 @@ var configurationFields = []*dynamic_fields.DynamicField{
 		HelpText:    ptr.String("Custom coordinator server URL. Leave empty to use the default (tailscale.com)."),
 	},
 }
+
+var importantInstructions = []string{
+	"An auth key can be generated in the Tailscale Admin console under Settings > Personal settings page.",
+	"When generating the key, please make sure to generate a Reusable, Ephemeral and Pre-approved key. " +
+		"Otherwise, nginx ignition will not be able to property manage and register virtual devices in the network.",
+}

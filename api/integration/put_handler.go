@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/integration"
@@ -29,10 +28,6 @@ func (h putHandler) handle(ctx *gin.Context) {
 
 	payload := &integrationRequest{}
 	if err := ctx.BindJSON(payload); err != nil {
-		panic(err)
-	}
-
-	if err := validator.New().Struct(payload); err != nil {
 		panic(err)
 	}
 

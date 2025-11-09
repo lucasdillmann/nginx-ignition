@@ -70,9 +70,10 @@ func (s *service) getAvailableDrivers(_ context.Context) (*[]*AvailableDriver, e
 	output := make([]*AvailableDriver, len(drivers))
 	for index, driver := range drivers {
 		output[index] = &AvailableDriver{
-			ID:                  driver.ID(),
-			Name:                driver.Name(),
-			ConfigurationFields: driver.ConfigurationFields(),
+			ID:                    driver.ID(),
+			Name:                  driver.Name(),
+			ImportantInstructions: driver.ImportantInstructions(),
+			ConfigurationFields:   driver.ConfigurationFields(),
 		}
 	}
 

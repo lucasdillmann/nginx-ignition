@@ -13,6 +13,7 @@ import {
     SettingOutlined,
     TeamOutlined,
     DownloadOutlined,
+    ApartmentOutlined,
 } from "@ant-design/icons"
 import HostListPage from "./host/HostListPage"
 import HostFormPage from "./host/HostFormPage"
@@ -31,6 +32,8 @@ import StreamListPage from "./stream/StreamListPage"
 import ExportPage from "./export/ExportPage"
 import IntegrationListPage from "./integration/IntegrationListPage"
 import IntegrationFormPage from "./integration/IntegrationFormPage"
+import VpnListPage from "./vpn/VpnListPage"
+import VpnFormPage from "./vpn/VpnFormPage"
 
 const Routes: AppRoute[] = [
     {
@@ -128,6 +131,23 @@ const Routes: AppRoute[] = [
         menuItem: {
             description: "Integrations",
             icon: <BlockOutlined />,
+        },
+    },
+    {
+        path: "/vpns/:id",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <VpnFormPage />,
+        activeMenuItemPath: "/vpns",
+    },
+    {
+        path: "/vpns",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <VpnListPage />,
+        menuItem: {
+            description: "VPNs",
+            icon: <ApartmentOutlined />,
         },
     },
     {

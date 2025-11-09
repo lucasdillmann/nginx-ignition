@@ -7,12 +7,12 @@ import (
 )
 
 type streamRequestDto struct {
-	Enabled        *bool          `json:"enabled" validate:"required"`
-	Name           *string        `json:"name" validate:"required"`
-	Type           *string        `json:"type" validate:"required"`
-	FeatureSet     *featureSetDto `json:"featureSet" validate:"required"`
-	DefaultBackend *backendDto    `json:"defaultBackend" validate:"required"`
-	Binding        *addressDto    `json:"binding" validate:"required"`
+	Enabled        *bool          `json:"enabled"`
+	Name           *string        `json:"name"`
+	Type           *string        `json:"type"`
+	FeatureSet     *featureSetDto `json:"featureSet"`
+	DefaultBackend *backendDto    `json:"defaultBackend"`
+	Binding        *addressDto    `json:"binding"`
 	Routes         *[]routeDto    `json:"routes"`
 }
 
@@ -32,27 +32,27 @@ type addressDto struct {
 
 type backendDto struct {
 	Weight         *int               `json:"weight"`
-	Target         *addressDto        `json:"target" validate:"required"`
+	Target         *addressDto        `json:"target"`
 	CircuitBreaker *circuitBreakerDto `json:"circuitBreaker"`
 }
 
 type circuitBreakerDto struct {
-	MaxFailures *int `json:"maxFailures" validate:"required"`
-	OpenSeconds *int `json:"openSeconds" validate:"required"`
+	MaxFailures *int `json:"maxFailures"`
+	OpenSeconds *int `json:"openSeconds"`
 }
 
 type routeDto struct {
-	DomainNames *[]string     `json:"domainNames" validate:"required"`
-	Backends    *[]backendDto `json:"backends" validate:"required"`
+	DomainNames *[]string     `json:"domainNames"`
+	Backends    *[]backendDto `json:"backends"`
 }
 
 type streamResponseDto struct {
-	ID             *uuid.UUID     `json:"id" validate:"required"`
-	Enabled        *bool          `json:"enabled" validate:"required"`
-	Name           *string        `json:"name" validate:"required"`
-	Type           *string        `json:"type" validate:"required"`
-	FeatureSet     *featureSetDto `json:"featureSet" validate:"required"`
-	DefaultBackend *backendDto    `json:"defaultBackend" validate:"required"`
-	Binding        *addressDto    `json:"binding" validate:"required"`
+	ID             *uuid.UUID     `json:"id"`
+	Enabled        *bool          `json:"enabled"`
+	Name           *string        `json:"name"`
+	Type           *string        `json:"type"`
+	FeatureSet     *featureSetDto `json:"featureSet"`
+	DefaultBackend *backendDto    `json:"defaultBackend"`
+	Binding        *addressDto    `json:"binding"`
 	Routes         *[]routeDto    `json:"routes"`
 }

@@ -39,8 +39,9 @@ func fromDto(id uuid.UUID, data *vpnRequest) *vpn.VPN {
 
 func toAvailableDriverDto(data *vpn.AvailableDriver) *vpnDriverResponse {
 	return &vpnDriverResponse{
-		ID:                  data.ID,
-		Name:                data.Name,
-		ConfigurationFields: dynamic_field.ToResponse(data.ConfigurationFields),
+		ID:                    data.ID,
+		Name:                  data.Name,
+		ImportantInstructions: data.ImportantInstructions,
+		ConfigurationFields:   dynamic_field.ToResponse(data.ConfigurationFields),
 	}
 }

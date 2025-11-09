@@ -7,10 +7,10 @@ import (
 )
 
 type vpnRequest struct {
-	Name       string         `json:"name" validate:"required"`
-	Driver     string         `json:"driver" validate:"required"`
-	Enabled    bool           `json:"enabled" validate:"required"`
-	Parameters map[string]any `json:"parameters" validate:"required"`
+	Name       string         `json:"name"`
+	Driver     string         `json:"driver"`
+	Enabled    bool           `json:"enabled"`
+	Parameters map[string]any `json:"parameters"`
 }
 
 type vpnResponse struct {
@@ -22,7 +22,8 @@ type vpnResponse struct {
 }
 
 type vpnDriverResponse struct {
-	ID                  string                                `json:"id"`
-	Name                string                                `json:"name"`
-	ConfigurationFields []*dynamic_field.DynamicFieldResponse `json:"configurationFields"`
+	ID                    string                                `json:"id"`
+	Name                  string                                `json:"name"`
+	ImportantInstructions []string                              `json:"importantInstructions"`
+	ConfigurationFields   []*dynamic_field.DynamicFieldResponse `json:"configurationFields"`
 }

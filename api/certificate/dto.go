@@ -27,8 +27,8 @@ type certificateResponse struct {
 }
 
 type issueCertificateRequest struct {
-	ProviderID  string         `json:"providerId" validate:"required"`
-	DomainNames []*string      `json:"domainNames" validate:"required,nonempty"`
+	ProviderID  string         `json:"providerId"`
+	DomainNames []*string      `json:"domainNames"`
 	Parameters  map[string]any `json:"parameters"`
 }
 

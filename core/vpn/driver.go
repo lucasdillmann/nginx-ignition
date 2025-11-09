@@ -16,7 +16,9 @@ type Destination struct {
 type Driver interface {
 	ID() string
 	Name() string
+	ImportantInstructions() []string
 	ConfigurationFields() []*dynamic_fields.DynamicField
+	Reload(ctx context.Context, name, configDir string, destination *Destination, parameters map[string]any) error
 	Start(ctx context.Context, name, configDir string, destination *Destination, parameters map[string]any) error
 	Stop(ctx context.Context, name string) error
 }

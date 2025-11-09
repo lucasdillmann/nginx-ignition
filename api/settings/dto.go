@@ -8,56 +8,56 @@ import (
 )
 
 type settingsDto struct {
-	Nginx                *nginxSettingsDto                `json:"nginx" validate:"required"`
-	LogRotation          *logRotationSettingsDto          `json:"logRotation" validate:"required"`
-	CertificateAutoRenew *certificateAutoRenewSettingsDto `json:"certificateAutoRenew" validate:"required"`
-	GlobalBindings       []*bindingDto                    `json:"globalBindings" validate:"required"`
+	Nginx                *nginxSettingsDto                `json:"nginx"`
+	LogRotation          *logRotationSettingsDto          `json:"logRotation"`
+	CertificateAutoRenew *certificateAutoRenewSettingsDto `json:"certificateAutoRenew"`
+	GlobalBindings       []*bindingDto                    `json:"globalBindings"`
 }
 
 type nginxSettingsDto struct {
-	Logs                *nginxLogsSettingsDto     `json:"logs" validate:"required"`
-	Timeouts            *nginxTimeoutsSettingsDto `json:"timeouts" validate:"required"`
-	WorkerProcesses     *int                      `json:"workerProcesses" validate:"required"`
-	WorkerConnections   *int                      `json:"workerConnections" validate:"required"`
-	DefaultContentType  *string                   `json:"defaultContentType" validate:"required"`
-	ServerTokensEnabled *bool                     `json:"serverTokensEnabled" validate:"required"`
-	MaximumBodySizeMb   *int                      `json:"maximumBodySizeMb" validate:"required"`
-	SendfileEnabled     *bool                     `json:"sendfileEnabled" validate:"required"`
-	GzipEnabled         *bool                     `json:"gzipEnabled" validate:"required"`
-	RuntimeUser         *string                   `json:"runtimeUser" validate:"required"`
+	Logs                *nginxLogsSettingsDto     `json:"logs"`
+	Timeouts            *nginxTimeoutsSettingsDto `json:"timeouts"`
+	WorkerProcesses     *int                      `json:"workerProcesses"`
+	WorkerConnections   *int                      `json:"workerConnections"`
+	DefaultContentType  *string                   `json:"defaultContentType"`
+	ServerTokensEnabled *bool                     `json:"serverTokensEnabled"`
+	MaximumBodySizeMb   *int                      `json:"maximumBodySizeMb"`
+	SendfileEnabled     *bool                     `json:"sendfileEnabled"`
+	GzipEnabled         *bool                     `json:"gzipEnabled"`
+	RuntimeUser         *string                   `json:"runtimeUser"`
 }
 
 type logRotationSettingsDto struct {
-	Enabled           *bool              `json:"enabled" validate:"required"`
-	MaximumLines      *int               `json:"maximumLines" validate:"required"`
-	IntervalUnit      *settings.TimeUnit `json:"intervalUnit" validate:"required"`
-	IntervalUnitCount *int               `json:"intervalUnitCount" validate:"required"`
+	Enabled           *bool              `json:"enabled"`
+	MaximumLines      *int               `json:"maximumLines"`
+	IntervalUnit      *settings.TimeUnit `json:"intervalUnit"`
+	IntervalUnitCount *int               `json:"intervalUnitCount"`
 }
 
 type certificateAutoRenewSettingsDto struct {
-	Enabled           *bool              `json:"enabled" validate:"required"`
-	IntervalUnit      *settings.TimeUnit `json:"intervalUnit" validate:"required"`
-	IntervalUnitCount *int               `json:"intervalUnitCount" validate:"required"`
+	Enabled           *bool              `json:"enabled"`
+	IntervalUnit      *settings.TimeUnit `json:"intervalUnit"`
+	IntervalUnitCount *int               `json:"intervalUnitCount"`
 }
 
 type nginxTimeoutsSettingsDto struct {
-	Read      *int `json:"read" validate:"required"`
-	Connect   *int `json:"connect" validate:"required"`
-	Send      *int `json:"send" validate:"required"`
-	Keepalive *int `json:"keepalive" validate:"required"`
+	Read      *int `json:"read"`
+	Connect   *int `json:"connect"`
+	Send      *int `json:"send"`
+	Keepalive *int `json:"keepalive"`
 }
 
 type nginxLogsSettingsDto struct {
-	ServerLogsEnabled *bool              `json:"serverLogsEnabled" validate:"required"`
-	ServerLogsLevel   *settings.LogLevel `json:"serverLogsLevel" validate:"required"`
-	AccessLogsEnabled *bool              `json:"accessLogsEnabled" validate:"required"`
-	ErrorLogsEnabled  *bool              `json:"errorLogsEnabled" validate:"required"`
-	ErrorLogsLevel    *settings.LogLevel `json:"errorLogsLevel" validate:"required"`
+	ServerLogsEnabled *bool              `json:"serverLogsEnabled"`
+	ServerLogsLevel   *settings.LogLevel `json:"serverLogsLevel"`
+	AccessLogsEnabled *bool              `json:"accessLogsEnabled"`
+	ErrorLogsEnabled  *bool              `json:"errorLogsEnabled"`
+	ErrorLogsLevel    *settings.LogLevel `json:"errorLogsLevel"`
 }
 
 type bindingDto struct {
-	Type          *host.BindingType `json:"type" validate:"required"`
-	IP            *string           `json:"ip" validate:"required"`
-	Port          *int              `json:"port" validate:"required"`
+	Type          *host.BindingType `json:"type"`
+	IP            *string           `json:"ip"`
+	Port          *int              `json:"port"`
 	CertificateID *uuid.UUID        `json:"certificateId"`
 }
