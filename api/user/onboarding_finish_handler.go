@@ -45,6 +45,7 @@ func (h onboardingFinishHandler) handle(ctx *gin.Context) {
 		Users:        user.ReadWriteAccessLevel,
 		NginxServer:  user.ReadWriteAccessLevel,
 		ExportData:   user.ReadOnlyAccessLevel,
+		VPNs:         user.ReadWriteAccessLevel,
 	}
 
 	if err = h.commands.Save(ctx.Request.Context(), domainModel, nil); err != nil {

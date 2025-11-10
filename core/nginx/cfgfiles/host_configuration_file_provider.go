@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -105,7 +105,7 @@ func (p *hostConfigurationFileProvider) buildServerNames(h *host.Host) (*string,
 		domainNames := make([]string, len(h.DomainNames))
 		for index, domainName := range h.DomainNames {
 			if domainName == nil {
-				return nil, core_error.New("Unexpected null domain Name", false)
+				return nil, coreerror.New("Unexpected null domain Name", false)
 			}
 
 			domainNames[index] = *domainName
@@ -317,7 +317,7 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	}
 
 	if proxyUrl == nil {
-		return "", core_error.New("Integration option not found", false)
+		return "", coreerror.New("Integration option not found", false)
 	}
 
 	return fmt.Sprintf(

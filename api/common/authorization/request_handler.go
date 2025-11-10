@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"dillmann.com.br/nginx-ignition/api/common/api_error"
+	"dillmann.com.br/nginx-ignition/api/common/apierror"
 )
 
 const (
@@ -34,7 +34,7 @@ func (m *ABAC) HandleRequest(ctx *gin.Context) {
 	subject, err := m.jwt.ValidateToken(ctx.Request.Context(), accessToken)
 	if err != nil {
 		ctx.Abort()
-		panic(api_error.New(
+		panic(apierror.New(
 			http.StatusUnauthorized,
 			"Invalid or expired access token",
 		))
@@ -44,7 +44,7 @@ func (m *ABAC) HandleRequest(ctx *gin.Context) {
 		accessGranted := m.isAccessGranted(ctx.Request.Method, path, &subject.User.Permissions)
 		if !accessGranted {
 			ctx.Abort()
-			panic(api_error.New(
+			panic(apierror.New(
 				http.StatusForbidden,
 				"User does not have the required permission to access this resource",
 			))

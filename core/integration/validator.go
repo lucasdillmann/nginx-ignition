@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
@@ -48,7 +48,7 @@ func (v *validator) validate(ctx context.Context, data *Integration) error {
 	}
 
 	if v.driver != nil {
-		if err := dynamic_fields.Validate(v.driver.ConfigurationFields(), params); err != nil {
+		if err := dynamicfields.Validate(v.driver.ConfigurationFields(), params); err != nil {
 			for _, violation := range err.Violations {
 				v.delegate.Add(violation.Path, violation.Message)
 			}

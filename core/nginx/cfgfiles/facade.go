@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/core/access_list"
+	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
@@ -29,7 +29,7 @@ func newFacade(
 	streamCommands *stream.Commands,
 	integrationCommands *integration.Commands,
 	configuration *configuration.Configuration,
-	accessListRepository access_list.Repository,
+	accessListRepository accesslist.Repository,
 	certificateRepository certificate.Repository,
 	settingsRepository settings.Repository,
 ) *Facade {
@@ -54,25 +54,25 @@ func newFacade(
 
 func (f *Facade) GetConfigurationFiles(ctx context.Context, paths *Paths, supportedFeatures *SupportedFeatures) (
 	configFiles []File,
-	hostCount int,
-	streamCount int,
+	hosts []*host.Host,
+	streams []*stream.Stream,
 	err error,
 ) {
-	hosts, err := f.hostCommands.GetAllEnabled(ctx)
+	enabledHosts, err := f.hostCommands.GetAllEnabled(ctx)
 	if err != nil {
-		return nil, 0, 0, err
+		return nil, nil, nil, err
 	}
 
-	streams, err := f.streamCommands.GetAllEnabled(ctx)
+	enabledStreams, err := f.streamCommands.GetAllEnabled(ctx)
 	if err != nil {
-		return nil, 0, 0, err
+		return nil, nil, nil, err
 	}
 
 	providerCtx := &providerContext{
 		context:           ctx,
 		paths:             paths,
-		hosts:             hosts,
-		streams:           streams,
+		hosts:             enabledHosts,
+		streams:           enabledStreams,
 		supportedFeatures: supportedFeatures,
 	}
 
@@ -80,19 +80,22 @@ func (f *Facade) GetConfigurationFiles(ctx context.Context, paths *Paths, suppor
 	for _, provider := range f.providers {
 		files, err := provider.provide(providerCtx)
 		if err != nil {
-			return nil, 0, 0, err
+			return nil, nil, nil, err
 		}
 
 		configFiles = append(configFiles, files...)
 	}
 
-	return configFiles, len(hosts), len(streams), nil
+	return configFiles, enabledHosts, enabledStreams, nil
 }
 
-func (f *Facade) ReplaceConfigurationFiles(ctx context.Context, supportedFeatures *SupportedFeatures) error {
+func (f *Facade) ReplaceConfigurationFiles(
+	ctx context.Context,
+	supportedFeatures *SupportedFeatures,
+) ([]*host.Host, []*stream.Stream, error) {
 	configDir, err := f.configuration.Get("nginx-ignition.nginx.config-path")
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	normalizedPath := strings.TrimRight(configDir, "/")
@@ -103,26 +106,26 @@ func (f *Facade) ReplaceConfigurationFiles(ctx context.Context, supportedFeature
 	}
 
 	if err := f.createMissingFolders(paths); err != nil {
-		return err
+		return nil, nil, err
 	}
 
-	configFiles, hostCount, streamCount, err := f.GetConfigurationFiles(ctx, paths, supportedFeatures)
+	configFiles, hosts, streams, err := f.GetConfigurationFiles(ctx, paths, supportedFeatures)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
-	log.Infof("Rebuilding nginx configuration files for %d hosts and %d streams", hostCount, streamCount)
+	log.Infof("Rebuilding nginx configuration files for %d hosts and %d streams", len(hosts), len(streams))
 	if err := f.emptyConfigFolder(paths); err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	for _, file := range configFiles {
 		if err := f.writeConfigFile(paths, file); err != nil {
-			return err
+			return nil, nil, err
 		}
 	}
 
-	return nil
+	return hosts, streams, nil
 }
 
 func (f *Facade) createMissingFolders(paths *Paths) error {

@@ -3,12 +3,12 @@ package cpanel
 import (
 	"context"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/cpanel"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 const (
@@ -24,32 +24,32 @@ func (p *Provider) ID() string { return "CPANEL" }
 
 func (p *Provider) Name() string { return "cPanel" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          hostFieldID,
 			Description: "cPanel base URL",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          userFieldID,
 			Description: "cPanel username",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tokenFieldID,
 			Description: "cPanel API token",
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          modeFieldID,
 			Description: "cPanel mode",
-			HelpText:    ptr.String("Defaults to cpanel when left empty"),
-			Type:        dynamic_fields.SingleLineTextType,
+			HelpText:    ptr.Of("Defaults to cpanel when left empty"),
+			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
 }

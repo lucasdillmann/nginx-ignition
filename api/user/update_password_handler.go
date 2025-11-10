@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/user"
@@ -17,10 +16,6 @@ type updatePasswordHandler struct {
 func (h updatePasswordHandler) handle(ctx *gin.Context) {
 	payload := &userPasswordUpdateRequestDto{}
 	if err := ctx.BindJSON(payload); err != nil {
-		panic(err)
-	}
-
-	if err := validator.New().Struct(payload); err != nil {
 		panic(err)
 	}
 

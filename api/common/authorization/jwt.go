@@ -11,7 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/api/common/api_error"
+	"dillmann.com.br/nginx-ignition/api/common/apierror"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/user"
@@ -23,7 +23,7 @@ const (
 	expectedJwtSecretSizeBytes = 512
 )
 
-var errInvalidToken = api_error.New(http.StatusUnauthorized, "Invalid access token")
+var errInvalidToken = apierror.New(http.StatusUnauthorized, "Invalid access token")
 
 type Jwt struct {
 	configuration *configuration.Configuration

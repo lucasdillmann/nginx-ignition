@@ -4,12 +4,12 @@ import (
 	"context"
 	"strings"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/go-acme/lego/v4/challenge"
 	legoacmedns "github.com/go-acme/lego/v4/providers/dns/acmedns"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 const (
@@ -25,31 +25,31 @@ func (p *Provider) ID() string { return "ACME_DNS" }
 
 func (p *Provider) Name() string { return "ACME-DNS" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiBaseFieldID,
 			Description: "ACME-DNS API base",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          allowListFieldID,
 			Description: "CIDR sources allowed to update",
-			HelpText:    ptr.String("Comma-separated key=value pairs"),
-			Type:        dynamic_fields.SingleLineTextType,
+			HelpText:    ptr.Of("Comma-separated key=value pairs"),
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          storagePathFieldID,
 			Description: "Local storage file path for ACME-DNS accounts",
-			HelpText:    ptr.String("Mutually exclusive with storage base URL"),
-			Type:        dynamic_fields.SingleLineTextType,
+			HelpText:    ptr.Of("Mutually exclusive with storage base URL"),
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          storageBaseURLFieldID,
 			Description: "Remote storage base URL for ACME-DNS accounts",
-			HelpText:    ptr.String("Mutually exclusive with storage path"),
-			Type:        dynamic_fields.SingleLineTextType,
+			HelpText:    ptr.Of("Mutually exclusive with storage path"),
+			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
 }

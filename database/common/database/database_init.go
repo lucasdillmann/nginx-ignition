@@ -10,7 +10,7 @@ import (
 	"github.com/uptrace/bun/dialect/sqlitedialect"
 	"github.com/uptrace/bun/schema"
 
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 
 	_ "github.com/lib/pq"
@@ -31,7 +31,7 @@ func (d *Database) init() error {
 	case "sqlite":
 		return d.initSqlite()
 	default:
-		return core_error.New(fmt.Sprintf("unsupported database driver: %s", driver), true)
+		return coreerror.New(fmt.Sprintf("unsupported database driver: %s", driver), true)
 	}
 }
 

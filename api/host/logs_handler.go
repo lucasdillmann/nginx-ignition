@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/common/value_range"
+	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 	"dillmann.com.br/nginx-ignition/core/nginx"
 )
 
@@ -21,7 +21,7 @@ const (
 )
 
 var (
-	lineCountRange    = value_range.New(1, 10_000)
+	lineCountRange    = valuerange.New(1, 10_000)
 	allowedQualifiers = map[string]bool{
 		"access": true,
 		"error":  true,

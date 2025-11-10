@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -46,7 +46,7 @@ func (t logRotationTask) Schedule(ctx context.Context) (*scheduler.Schedule, err
 	case settings.DaysTimeUnit:
 		interval = time.Hour * 24 * time.Duration(certCfg.IntervalUnitCount)
 	default:
-		return nil, core_error.New("invalid interval unit", false)
+		return nil, coreerror.New("invalid interval unit", false)
 	}
 
 	return &scheduler.Schedule{

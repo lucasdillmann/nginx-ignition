@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -13,7 +13,7 @@ type AvailableDriver struct {
 	ID                  string
 	Name                string
 	Description         string
-	ConfigurationFields []*dynamic_fields.DynamicField
+	ConfigurationFields []*dynamicfields.DynamicField
 }
 
 type Commands struct {

@@ -1,6 +1,8 @@
 package host
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type BindingType string
 
@@ -35,6 +37,7 @@ type Host struct {
 	DomainNames       []*string
 	Routes            []*Route
 	Bindings          []*Binding
+	VPNs              []*VPN
 	FeatureSet        FeatureSet
 	AccessListID      *uuid.UUID
 }
@@ -91,4 +94,10 @@ type Binding struct {
 	IP            string
 	Port          int
 	CertificateID *uuid.UUID
+}
+
+type VPN struct {
+	VPNID uuid.UUID
+	Name  string
+	Host  *string
 }

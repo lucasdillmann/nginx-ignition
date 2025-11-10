@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"dillmann.com.br/nginx-ignition/core/common/validation"
-	"dillmann.com.br/nginx-ignition/core/common/value_range"
+	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
@@ -14,12 +14,12 @@ const (
 )
 
 var (
-	timeoutRange           = value_range.New(1, int(^uint(0)>>1))
-	intervalRange          = value_range.New(1, int(^uint(0)>>1))
-	logLinesRange          = value_range.New(0, 10000)
-	workerProcessesRange   = value_range.New(1, 100)
-	workerConnectionsRange = value_range.New(32, 4096)
-	maximumBodySizeRange   = value_range.New(1, int(^uint(0)>>1))
+	timeoutRange           = valuerange.New(1, int(^uint(0)>>1))
+	intervalRange          = valuerange.New(1, int(^uint(0)>>1))
+	logLinesRange          = valuerange.New(0, 10000)
+	workerProcessesRange   = valuerange.New(1, 100)
+	workerConnectionsRange = valuerange.New(32, 4096)
+	maximumBodySizeRange   = valuerange.New(1, int(^uint(0)>>1))
 )
 
 type validator struct {
@@ -90,7 +90,7 @@ func (v *validator) validateGlobalBindings(ctx context.Context, settings []*host
 	return nil
 }
 
-func (v *validator) checkRange(value int, r *value_range.ValueRange, path string) {
+func (v *validator) checkRange(value int, r *valuerange.ValueRange, path string) {
 	if !r.Contains(value) {
 		v.delegate.Add(path, "Must be between "+strconv.Itoa(r.Min)+" and "+strconv.Itoa(r.Max))
 	}

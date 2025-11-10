@@ -1,0 +1,29 @@
+.host-form-vpn-container {
+    width: 100%;
+    height: fit-content;
+    margin-bottom: 20px;
+}
+
+.host-form-vpn-container .ant-form-item {
+    height: auto;
+    margin-bottom: 0;
+    margin-right: 20px;
+}
+
+.host-form-vpn-container .ant-form-item:last-of-type {
+    margin-right: 0;
+}
+
+.host-form-vpn-connection {
+    min-width: 250px;
+}
+
+.host-form-vpn-name {
+    flex: 1 1 0;
+    min-width: 250px;
+}
+
+.host-form-vpn-host {
+    flex: 1 1 0;
+    min-width: 250px;
+}

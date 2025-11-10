@@ -1,8 +1,7 @@
 package stream
 
 import (
-	"github.com/aws/smithy-go/ptr"
-
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
@@ -15,7 +14,7 @@ func toDto(input *stream.Stream) *streamResponseDto {
 		ID:             &input.ID,
 		Enabled:        &input.Enabled,
 		Name:           &input.Name,
-		Type:           ptr.String(string(input.Type)),
+		Type:           ptr.Of(string(input.Type)),
 		FeatureSet:     toFeatureSetDto(&input.FeatureSet),
 		DefaultBackend: toBackendDto(&input.DefaultBackend),
 		Binding:        toAddressDto(&input.Binding),

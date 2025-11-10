@@ -2,6 +2,7 @@ package log
 
 import (
 	"fmt"
+	"log"
 
 	"go.uber.org/zap"
 )
@@ -39,4 +40,8 @@ func Errorf(message string, values ...any) {
 
 func Fatalf(message string, values ...any) {
 	logger.Fatal(fmt.Sprintf(message, values...))
+}
+
+func Std() *log.Logger {
+	return zap.NewStdLog(logger)
 }

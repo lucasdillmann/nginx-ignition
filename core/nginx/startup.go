@@ -27,9 +27,7 @@ func registerStartup(lifecycle *lifecycle.Lifecycle, service *service) {
 }
 
 func (s startup) Run(ctx context.Context) error {
-	go func() {
-		s.service.attachListeners()
-	}()
+	go s.service.attachListeners()
 
 	metadata, err := s.service.getMetadata(ctx)
 	if err != nil || metadata == nil {

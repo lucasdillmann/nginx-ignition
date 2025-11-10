@@ -30,6 +30,7 @@ import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import { hostFormValuesDefaults } from "./model/HostFormValuesDefaults"
 import HostSupportWarning from "./components/HostSupportWarning"
+import HostVpns from "./components/HostVpns"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -297,27 +298,39 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                     onChange={() => this.formRef.current?.resetFields()}
                 />
 
-                <h2 className="hosts-form-section-name">Bindings</h2>
-                <p className="hosts-form-section-help-text">
-                    Relation of IPs and ports where the host will listen for requests
-                </p>
-                <Form.Item
-                    name="useGlobalBindings"
-                    validateStatus={validationResult.getStatus("useGlobalBindings")}
-                    help={validationResult.getMessage("useGlobalBindings")}
-                    label="Use global bindings"
-                    wrapperCol={{ style: { flexGrow: 0, minWidth: 65 } }}
-                    labelCol={{ style: { order: 2, flexGrow: 1 } }}
-                    required
-                >
-                    <Switch />
-                </Form.Item>
+                <Flex style={{ marginTop: 50 }}>
+                    <Flex style={{ flexGrow: 1 }} vertical>
+                        <h2 className="hosts-form-section-name">Standard bindings</h2>
+                        <p className="hosts-form-section-help-text">
+                            Relation of IPs and ports where the host will listen for requests
+                        </p>
+                    </Flex>
+                    <Flex>
+                        <Form.Item
+                            name="useGlobalBindings"
+                            validateStatus={validationResult.getStatus("useGlobalBindings")}
+                            help={validationResult.getMessage("useGlobalBindings")}
+                            label="Use global bindings"
+                            wrapperCol={{ style: { flexGrow: 0, minWidth: 65 } }}
+                            labelCol={{ style: { order: 2, flexGrow: 1 } }}
+                            required
+                        >
+                            <Switch />
+                        </Form.Item>
+                    </Flex>
+                </Flex>
                 <HostBindings
                     className={formValues.useGlobalBindings ? "hosts-form-invisible-input" : undefined}
                     pathPrefix="bindings"
                     bindings={formValues.bindings}
                     validationResult={validationResult}
                 />
+
+                <h2 className="hosts-form-section-name">VPN bindings</h2>
+                <p className="hosts-form-section-help-text">
+                    Relation of VPN connections on where this host should be exposed to
+                </p>
+                <HostVpns vpns={formValues.vpns} validationResult={validationResult} />
             </Form>
         )
     }

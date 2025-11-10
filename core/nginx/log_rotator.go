@@ -14,23 +14,23 @@ import (
 )
 
 type logRotator struct {
-	configProvider     *configuration.Configuration
-	settingsRepository settings.Repository
-	hostRepository     host.Repository
-	processManager     *processManager
+	configProvider   *configuration.Configuration
+	settingsCommands *settings.Commands
+	hostRepository   host.Repository
+	processManager   *processManager
 }
 
 func newLogRotator(
 	configProvider *configuration.Configuration,
-	settingsRepository settings.Repository,
+	settingsCommands *settings.Commands,
 	hostRepository host.Repository,
 	processManager *processManager,
 ) *logRotator {
 	return &logRotator{
-		configProvider:     configProvider,
-		settingsRepository: settingsRepository,
-		hostRepository:     hostRepository,
-		processManager:     processManager,
+		configProvider:   configProvider,
+		settingsCommands: settingsCommands,
+		hostRepository:   hostRepository,
+		processManager:   processManager,
 	}
 }
 
@@ -44,7 +44,7 @@ func (r *logRotator) rotate(ctx context.Context) error {
 
 	normalizedPath := strings.TrimRight(basePath, "/") + "/logs"
 
-	cfg, err := r.settingsRepository.Get(ctx)
+	cfg, err := r.settingsCommands.Get(ctx)
 	if err != nil {
 		return err
 	}

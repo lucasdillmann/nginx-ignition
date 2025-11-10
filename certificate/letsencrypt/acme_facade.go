@@ -17,7 +17,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 )
 
 func issueCertificate(
@@ -100,7 +100,7 @@ func parseResult(
 	mainCert := strings.Replace(string(result.Certificate), string(result.IssuerCertificate), "", 1)
 	pemBlock, _ := pem.Decode([]byte(mainCert))
 	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
-		return nil, core_error.New("failed to decode PEM block containing certificate", false)
+		return nil, coreerror.New("failed to decode PEM block containing certificate", false)
 	}
 
 	metadata := certificateMetadata{
@@ -117,7 +117,7 @@ func parseResult(
 
 	privateKeyBlock, _ := pem.Decode(result.PrivateKey)
 	if privateKeyBlock == nil || privateKeyBlock.Type != "RSA PRIVATE KEY" {
-		return nil, core_error.New("failed to decode PEM block with the private key", false)
+		return nil, coreerror.New("failed to decode PEM block with the private key", false)
 	}
 
 	privateKey, err := x509.ParsePKCS1PrivateKey(privateKeyBlock.Bytes)
@@ -161,7 +161,7 @@ func parseResult(
 func encodeIssuerCertificate(issuer []byte) (*string, error) {
 	pemBlock, _ := pem.Decode(issuer)
 	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
-		return nil, core_error.New("Failed to decode issuer PEM block", false)
+		return nil, coreerror.New("Failed to decode issuer PEM block", false)
 	}
 
 	encodedValue := base64.StdEncoding.EncodeToString(pemBlock.Bytes)

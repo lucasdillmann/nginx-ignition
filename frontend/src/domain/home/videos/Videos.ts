@@ -5,6 +5,7 @@ import Logs from "./logs.mp4"
 import Settings from "./settings.mp4"
 import SslCertificates from "./ssl-certificates.mp4"
 import Streams from "./streams.mp4"
+import VPNs from "./vpns.mp4"
 
 export default {
     AccessLists,
@@ -14,4 +15,5 @@ export default {
     Settings,
     SslCertificates,
     Streams,
+    VPNs,
 }

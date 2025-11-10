@@ -6,14 +6,14 @@ import (
 
 	"github.com/ncw/pwhash/apr1_crypt"
 
-	"dillmann.com.br/nginx-ignition/core/access_list"
+	"dillmann.com.br/nginx-ignition/core/accesslist"
 )
 
 type accessListFileProvider struct {
-	accessListRepository access_list.Repository
+	accessListRepository accesslist.Repository
 }
 
-func newAccessListFileProvider(accessListRepository access_list.Repository) *accessListFileProvider {
+func newAccessListFileProvider(accessListRepository accesslist.Repository) *accessListFileProvider {
 	return &accessListFileProvider{accessListRepository: accessListRepository}
 }
 
@@ -31,7 +31,7 @@ func (p *accessListFileProvider) provide(ctx *providerContext) ([]File, error) {
 	return outputs, nil
 }
 
-func (p *accessListFileProvider) build(accessList *access_list.AccessList, paths *Paths) []File {
+func (p *accessListFileProvider) build(accessList *accesslist.AccessList, paths *Paths) []File {
 	var outputs []File
 
 	if confFile := p.buildConfFile(accessList, paths); confFile != nil {
@@ -45,7 +45,7 @@ func (p *accessListFileProvider) build(accessList *access_list.AccessList, paths
 	return outputs
 }
 
-func (p *accessListFileProvider) buildConfFile(accessList *access_list.AccessList, paths *Paths) *File {
+func (p *accessListFileProvider) buildConfFile(accessList *accesslist.AccessList, paths *Paths) *File {
 	var entriesContents []string
 	for _, entry := range accessList.Entries {
 		for _, sourceAddress := range entry.SourceAddress {
@@ -100,7 +100,7 @@ func (p *accessListFileProvider) buildConfFile(accessList *access_list.AccessLis
 	}
 }
 
-func (p *accessListFileProvider) buildHtpasswdFile(accessList *access_list.AccessList) *File {
+func (p *accessListFileProvider) buildHtpasswdFile(accessList *accesslist.AccessList) *File {
 	if len(accessList.Credentials) == 0 {
 		return nil
 	}
@@ -117,11 +117,11 @@ func (p *accessListFileProvider) buildHtpasswdFile(accessList *access_list.Acces
 	}
 }
 
-func toNginxOperation(outcome access_list.Outcome) string {
+func toNginxOperation(outcome accesslist.Outcome) string {
 	switch outcome {
-	case access_list.AllowOutcome:
+	case accesslist.AllowOutcome:
 		return "allow"
-	case access_list.DenyOutcome:
+	case accesslist.DenyOutcome:
 		return "deny"
 	default:
 		return ""

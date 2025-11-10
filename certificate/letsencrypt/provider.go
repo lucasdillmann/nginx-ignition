@@ -13,8 +13,8 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
 const (
@@ -42,7 +42,7 @@ func (p *Provider) Name() string {
 	return "Let's encrypt"
 }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 	return resolveDynamicFields()
 }
 
@@ -64,7 +64,7 @@ func (p *Provider) Issue(ctx context.Context, request *certificate.IssueRequest)
 
 	usrKey, err := rsa.GenerateKey(rand.Reader, privateKeySize)
 	if err != nil {
-		return nil, core_error.New("Failed to generate private key", false)
+		return nil, coreerror.New("Failed to generate private key", false)
 	}
 
 	user := userDetails{
@@ -85,17 +85,17 @@ func (p *Provider) Issue(ctx context.Context, request *certificate.IssueRequest)
 func (p *Provider) Renew(ctx context.Context, cert *certificate.Certificate) (*certificate.Certificate, error) {
 	var metadata *certificateMetadata
 	if err := json.Unmarshal([]byte(*cert.Metadata), &metadata); err != nil {
-		return nil, core_error.New("Failed to parse metadata", false)
+		return nil, coreerror.New("Failed to parse metadata", false)
 	}
 
 	encodedPrivKey, err := base64.StdEncoding.DecodeString(metadata.UserPrivateKey)
 	if err != nil {
-		return nil, core_error.New("Failed to decode private key", false)
+		return nil, coreerror.New("Failed to decode private key", false)
 	}
 
 	privKey, err := x509.ParsePKCS1PrivateKey(encodedPrivKey)
 	if err != nil {
-		return nil, core_error.New("Failed to parse private key", false)
+		return nil, coreerror.New("Failed to parse private key", false)
 	}
 
 	user := userDetails{

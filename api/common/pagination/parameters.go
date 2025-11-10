@@ -7,11 +7,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"dillmann.com.br/nginx-ignition/api/common/api_error"
-	"dillmann.com.br/nginx-ignition/core/common/value_range"
+	"dillmann.com.br/nginx-ignition/api/common/apierror"
+	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 )
 
-var pageSizeRange = value_range.New(1, 1000)
+var pageSizeRange = valuerange.New(1, 1000)
 
 func ExtractPaginationParameters(ctx *gin.Context) (int, int, *string, error) {
 	pageSize := ctx.DefaultQuery("pageSize", "25")
@@ -20,14 +20,14 @@ func ExtractPaginationParameters(ctx *gin.Context) (int, int, *string, error) {
 
 	pageSizeInt, err := strconv.Atoi(pageSize)
 	if err != nil {
-		return 0, 0, nil, api_error.New(
+		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
 			"Page size must be an integer",
 		)
 	}
 
 	if !pageSizeRange.Contains(pageSizeInt) {
-		return 0, 0, nil, api_error.New(
+		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
 			"Page size must be between "+strconv.Itoa(pageSizeRange.Min)+" and "+strconv.Itoa(pageSizeRange.Max),
 		)
@@ -35,14 +35,14 @@ func ExtractPaginationParameters(ctx *gin.Context) (int, int, *string, error) {
 
 	pageNumberInt, err := strconv.Atoi(pageNumber)
 	if err != nil {
-		return 0, 0, nil, api_error.New(
+		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
 			"Page number must be an integer",
 		)
 	}
 
 	if pageNumberInt < 0 {
-		return 0, 0, nil, api_error.New(
+		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
 			"Page number must be greater than or equal to 0",
 		)

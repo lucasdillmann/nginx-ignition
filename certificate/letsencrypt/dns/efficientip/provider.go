@@ -7,7 +7,7 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/efficientip"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
 const (
@@ -25,42 +25,42 @@ func (p *Provider) ID() string { return "EFFICIENTIP" }
 
 func (p *Provider) Name() string { return "EfficientIP" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
 			Description: "EfficientIP username",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
 			Description: "EfficientIP password",
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          hostnameFieldID,
 			Description: "EfficientIP hostname",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          dnsNameFieldID,
 			Description: "DNS server name",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          viewNameFieldID,
 			Description: "DNS view name",
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          insecureSkipVerifyFieldID,
 			Description: "Skip TLS certificate verification",
-			Type:        dynamic_fields.BooleanType,
+			Type:        dynamicfields.BooleanType,
 		},
 	})
 }

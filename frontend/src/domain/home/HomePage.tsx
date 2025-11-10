@@ -9,6 +9,7 @@ import {
     HddOutlined,
     MergeCellsOutlined,
     SettingOutlined,
+    ApartmentOutlined,
 } from "@ant-design/icons"
 import { Flex } from "antd"
 import Videos from "./videos/Videos"
@@ -151,9 +152,22 @@ export default class HomePage extends React.PureComponent {
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-left-side-video">
                         <div className="home-guide-video-mask">
-                            <video src={Videos.AccessLists} autoPlay loop controls />
+                            <video src={Videos.VPNs} autoPlay loop controls />
                         </div>
                     </Flex>
+                    <Flex className="home-guide-section-content" vertical>
+                        <h2>
+                            <ApartmentOutlined /> VPNs
+                        </h2>
+                        <p>
+                            Easily expose your hosts in your VPNs. If you're using Tailscale, nginx ignition can
+                            automatically create a virtual machine in your network and forward the requests to the host
+                            whenever the machine IP or hostname is accessed.
+                        </p>
+                    </Flex>
+                </Flex>
+
+                <Flex className="home-guide-section">
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
                             <FileProtectOutlined /> Access lists
@@ -164,9 +178,19 @@ export default class HomePage extends React.PureComponent {
                             password (or even both, IP and credentials)
                         </p>
                     </Flex>
+                    <Flex className="home-guide-right-side-video">
+                        <div className="home-guide-video-mask">
+                            <video src={Videos.AccessLists} autoPlay loop controls />
+                        </div>
+                    </Flex>
                 </Flex>
 
                 <Flex className="home-guide-section">
+                    <Flex className="home-guide-left-side-video">
+                        <div className="home-guide-video-mask">
+                            <video src={Videos.Settings} autoPlay loop controls />
+                        </div>
+                    </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
                             <SettingOutlined /> Settings
@@ -184,11 +208,6 @@ export default class HomePage extends React.PureComponent {
                             Beyond that, you can also configure some of the nginx ignition's features there, like the
                             automatic renewal of SSL certificates and log rotation.
                         </p>
-                    </Flex>
-                    <Flex className="home-guide-right-side-video">
-                        <div className="home-guide-video-mask">
-                            <video src={Videos.Settings} autoPlay loop controls />
-                        </div>
                     </Flex>
                 </Flex>
 

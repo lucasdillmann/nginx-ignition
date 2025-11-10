@@ -69,6 +69,12 @@ export interface HostRouteIntegration {
     optionId: string
 }
 
+export interface HostVpn {
+    vpnId: string
+    name: string
+    host?: string
+}
+
 export default interface HostRequest {
     enabled: boolean
     defaultServer: boolean
@@ -76,6 +82,7 @@ export default interface HostRequest {
     domainNames?: string[]
     routes: HostRoute[]
     bindings: HostBinding[]
+    vpns: HostVpn[]
     featureSet: HostFeatureSet
     accessListId?: string
 }

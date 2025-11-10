@@ -7,21 +7,30 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/google/uuid"
+
 	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/integration"
+	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
 type validator struct {
 	hostRepository      Repository
 	integrationCommands *integration.Commands
+	vpnCommands         *vpn.Commands
 	delegate            *validation.ConsistencyValidator
 }
 
-func newValidator(hostRepository Repository, integrationCommands *integration.Commands) *validator {
+func newValidator(
+	hostRepository Repository,
+	integrationCommands *integration.Commands,
+	vpnCommands *vpn.Commands,
+) *validator {
 	return &validator{
 		hostRepository:      hostRepository,
 		integrationCommands: integrationCommands,
+		vpnCommands:         vpnCommands,
 		delegate:            validation.NewValidator(),
 	}
 }
@@ -48,6 +57,10 @@ func (v *validator) validate(ctx context.Context, host *Host) error {
 
 	v.validateDomainNames(host)
 	if err := v.validateRoutes(ctx, host); err != nil {
+		return err
+	}
+
+	if err := v.validateVPNs(ctx, host); err != nil {
 		return err
 	}
 
@@ -313,6 +326,39 @@ func (v *validator) validateExecuteCodeRoute(route *Route, index int) {
 			"Value is required when the language is JavaScript",
 		)
 	}
+}
+
+func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
+	for index, value := range host.VPNs {
+		basePath := "vpns[" + strconv.Itoa(index) + "]"
+		vpnIdPath := basePath + ".vpnId"
+		namePath := basePath + ".name"
+
+		if strings.TrimSpace(value.Name) == "" {
+			v.delegate.Add(namePath, validation.ValueMissingMessage)
+		}
+
+		if value.VPNID == uuid.Nil {
+			v.delegate.Add(vpnIdPath, validation.ValueMissingMessage)
+			continue
+		}
+
+		vpnData, err := v.vpnCommands.Get(ctx, value.VPNID)
+		if err != nil {
+			return err
+		}
+
+		if vpnData == nil {
+			v.delegate.Add(vpnIdPath, "No VPN connection was found using the provided ID")
+			continue
+		}
+
+		if !vpnData.Enabled {
+			v.delegate.Add(vpnIdPath, "Selected VPN is disabled")
+		}
+	}
+
+	return nil
 }
 
 func buildOutOfRangeMessage(minimum, maximum int) string {

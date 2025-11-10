@@ -8,19 +8,25 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/integration"
+	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
 type service struct {
 	hostRepository      Repository
 	integrationCommands *integration.Commands
+	vpnCommands         *vpn.Commands
 }
 
-func newService(hostRepository Repository, integrationCommands *integration.Commands) *service {
-	return &service{hostRepository, integrationCommands}
+func newService(
+	hostRepository Repository,
+	integrationCommands *integration.Commands,
+	vpnCommands *vpn.Commands,
+) *service {
+	return &service{hostRepository, integrationCommands, vpnCommands}
 }
 
 func (s *service) save(ctx context.Context, input *Host) error {
-	if err := newValidator(s.hostRepository, s.integrationCommands).validate(ctx, input); err != nil {
+	if err := newValidator(s.hostRepository, s.integrationCommands, s.vpnCommands).validate(ctx, input); err != nil {
 		return err
 	}
 
@@ -54,6 +60,11 @@ func (s *service) validateBinding(
 	binding *Binding,
 	context *validation.ConsistencyValidator,
 ) error {
-	validatorInstance := &validator{s.hostRepository, s.integrationCommands, context}
+	validatorInstance := &validator{
+		s.hostRepository,
+		s.integrationCommands,
+		s.vpnCommands,
+		context,
+	}
 	return validatorInstance.validateBinding(ctx, path, binding, index)
 }

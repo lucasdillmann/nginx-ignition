@@ -4,15 +4,15 @@ import (
 	"fmt"
 
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
 type validationRules struct {
-	dynamicFields []*dynamic_fields.DynamicField
+	dynamicFields []*dynamicfields.DynamicField
 }
 
-func (r validationRules) DynamicFields() []*dynamic_fields.DynamicField {
+func (r validationRules) DynamicFields() []*dynamicfields.DynamicField {
 	return r.dynamicFields
 }
 

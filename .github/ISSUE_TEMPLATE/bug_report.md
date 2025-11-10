@@ -27,7 +27,7 @@ If applicable, add screenshots and/or the application's log to help explain your
 **Environment**
  - OS (e.g. Linux, macOS)
  - Execution mode (e.g. Docker, local installation)
- - Version (e.g. 2.10.0)
+ - nginx ignition version (e.g. 2.10.0)
 
 **Additional context and information**
 Add any other context about the problem here.

@@ -7,22 +7,23 @@ import (
 )
 
 type hostRequestDto struct {
-	Enabled           *bool          `json:"enabled" validate:"required"`
-	DefaultServer     *bool          `json:"defaultServer" validate:"required"`
-	UseGlobalBindings *bool          `json:"useGlobalBindings" validate:"required"`
+	Enabled           *bool          `json:"enabled"`
+	DefaultServer     *bool          `json:"defaultServer"`
+	UseGlobalBindings *bool          `json:"useGlobalBindings"`
 	DomainNames       []*string      `json:"domainNames"`
 	Routes            []*routeDto    `json:"routes"`
 	Bindings          []*bindingDto  `json:"bindings"`
-	FeatureSet        *featureSetDto `json:"featureSet" validate:"required"`
+	VPNs              []*vpnDto      `json:"vpns"`
+	FeatureSet        *featureSetDto `json:"featureSet"`
 	AccessListId      *uuid.UUID     `json:"accessListId"`
 }
 
 type routeDto struct {
-	Priority     *int                  `json:"priority" validate:"required"`
-	Enabled      *bool                 `json:"enabled" validate:"required"`
-	Type         *host.RouteType       `json:"type" validate:"required"`
-	SourcePath   *string               `json:"sourcePath" validate:"required"`
-	Settings     *routeSettingsDto     `json:"settings" validate:"required"`
+	Priority     *int                  `json:"priority"`
+	Enabled      *bool                 `json:"enabled"`
+	Type         *host.RouteType       `json:"type"`
+	SourcePath   *string               `json:"sourcePath"`
+	Settings     *routeSettingsDto     `json:"settings"`
 	TargetUri    *string               `json:"targetUri"`
 	RedirectCode *int                  `json:"redirectCode"`
 	Response     *staticResponseDto    `json:"response"`
@@ -32,51 +33,58 @@ type routeDto struct {
 }
 
 type routeSourceCodeDto struct {
-	Language     *host.CodeLanguage `json:"language" validate:"required"`
-	Code         *string            `json:"code" validate:"required"`
+	Language     *host.CodeLanguage `json:"language"`
+	Code         *string            `json:"code"`
 	MainFunction *string            `json:"mainFunction"`
 }
 
 type routeSettingsDto struct {
-	IncludeForwardHeaders   *bool   `json:"includeForwardHeaders" validate:"required"`
-	ProxySslServerName      *bool   `json:"proxySslServerName" validate:"required"`
-	KeepOriginalDomainName  *bool   `json:"keepOriginalDomainName" validate:"required"`
-	DirectoryListingEnabled *bool   `json:"directoryListingEnabled" validate:"required"`
+	IncludeForwardHeaders   *bool   `json:"includeForwardHeaders"`
+	ProxySslServerName      *bool   `json:"proxySslServerName"`
+	KeepOriginalDomainName  *bool   `json:"keepOriginalDomainName"`
+	DirectoryListingEnabled *bool   `json:"directoryListingEnabled"`
 	Custom                  *string `json:"custom"`
 }
 
 type integrationConfigDto struct {
-	IntegrationId *uuid.UUID `json:"integrationId" validate:"required"`
-	OptionId      *string    `json:"optionId" validate:"required"`
+	IntegrationId *uuid.UUID `json:"integrationId"`
+	OptionId      *string    `json:"optionId"`
 }
 
 type staticResponseDto struct {
-	StatusCode *int               `json:"statusCode" validate:"required"`
+	StatusCode *int               `json:"statusCode"`
 	Payload    *string            `json:"payload"`
 	Headers    *map[string]string `json:"headers"`
 }
 
 type featureSetDto struct {
-	WebsocketsSupport   *bool `json:"websocketsSupport" validate:"required"`
-	Http2Support        *bool `json:"http2Support" validate:"required"`
-	RedirectHttpToHttps *bool `json:"redirectHttpToHttps" validate:"required"`
+	WebsocketsSupport   *bool `json:"websocketsSupport"`
+	Http2Support        *bool `json:"http2Support"`
+	RedirectHttpToHttps *bool `json:"redirectHttpToHttps"`
 }
 
 type bindingDto struct {
-	Type          *host.BindingType `json:"type" validate:"required"`
-	Ip            *string           `json:"ip" validate:"required"`
-	Port          *int              `json:"port" validate:"required"`
+	Type          *host.BindingType `json:"type"`
+	Ip            *string           `json:"ip"`
+	Port          *int              `json:"port"`
 	CertificateId *uuid.UUID        `json:"certificateId"`
 }
 
+type vpnDto struct {
+	VPNID *uuid.UUID `json:"vpnId"`
+	Name  *string    `json:"name"`
+	Host  *string    `json:"host"`
+}
+
 type hostResponseDto struct {
-	ID                *uuid.UUID     `json:"id" validate:"required"`
-	Enabled           *bool          `json:"enabled" validate:"required"`
-	DefaultServer     *bool          `json:"defaultServer" validate:"required"`
-	UseGlobalBindings *bool          `json:"useGlobalBindings" validate:"required"`
+	ID                *uuid.UUID     `json:"id"`
+	Enabled           *bool          `json:"enabled"`
+	DefaultServer     *bool          `json:"defaultServer"`
+	UseGlobalBindings *bool          `json:"useGlobalBindings"`
 	DomainNames       []*string      `json:"domainNames"`
-	Routes            []*routeDto    `json:"routes" validate:"required"`
-	Bindings          []*bindingDto  `json:"bindings" validate:"required"`
-	FeatureSet        *featureSetDto `json:"featureSet" validate:"required"`
+	Routes            []*routeDto    `json:"routes"`
+	Bindings          []*bindingDto  `json:"bindings"`
+	VPNs              []*vpnDto      `json:"vpns"`
+	FeatureSet        *featureSetDto `json:"featureSet"`
 	AccessListId      *uuid.UUID     `json:"accessListId"`
 }

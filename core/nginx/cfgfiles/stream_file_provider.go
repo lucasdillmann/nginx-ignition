@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aws/smithy-go/ptr"
-
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
@@ -18,7 +17,7 @@ func newStreamFileProvider() *streamFileProvider {
 
 func (p *streamFileProvider) provide(ctx *providerContext) ([]File, error) {
 	if len(ctx.streams) > 0 && ctx.supportedFeatures.StreamType == NoneSupportType {
-		return nil, core_error.New(
+		return nil, coreerror.New(
 			"Unable to generate the stream configuration file: Support for streams is not enabled in the "+
 				"nginx server and at least one stream is enabled.",
 			false,
@@ -95,7 +94,7 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 
 	instruction.WriteString(" reuseport;")
 
-	return ptr.String(instruction.String()), nil
+	return ptr.Of(instruction.String()), nil
 }
 
 func (p *streamFileProvider) buildUpstream(backends []stream.Backend, name string) (*string, error) {
@@ -131,12 +130,12 @@ func (p *streamFileProvider) buildUpstream(backends []stream.Backend, name strin
 	}
 
 	instructions.WriteString("}\n")
-	return ptr.String(instructions.String()), nil
+	return ptr.Of(instructions.String()), nil
 }
 
 func (p *streamFileProvider) buildRoutedStream(ctx *providerContext, s *stream.Stream) (*string, error) {
 	if ctx.supportedFeatures.TLSSNI == NoneSupportType {
-		return nil, core_error.New(
+		return nil, coreerror.New(
 			"Unable to generate the stream configuration file: Support for TLS SNI is not enabled in the "+
 				"nginx server and at lease one stream is enabled with SNI routing.",
 			false,

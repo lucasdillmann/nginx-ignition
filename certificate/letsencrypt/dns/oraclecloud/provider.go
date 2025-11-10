@@ -3,13 +3,13 @@ package oraclecloud
 import (
 	"context"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/oraclecloud"
 	"github.com/nrdcg/oci-go-sdk/common/v1065"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 const (
@@ -28,51 +28,51 @@ func (p *Provider) ID() string { return "ORACLE_CLOUD" }
 
 func (p *Provider) Name() string { return "Oracle Cloud (OCI)" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          compartmentOCIDFieldID,
 			Description: "OCI compartment OCID",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionFieldID,
 			Description: "OCI region",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tenancyOCIDFieldID,
 			Description: "OCI tenancy OCID",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          userOCIDFieldID,
 			Description: "OCI user OCID",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          pubKeyFingerprintFieldID,
 			Description: "OCI public key fingerprint",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          privateKeyFieldID,
 			Description: "OCI private key",
-			HelpText:    ptr.String("PEM contents"),
+			HelpText:    ptr.Of("PEM contents"),
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.MultiLineTextType,
+			Type:        dynamicfields.MultiLineTextType,
 		},
 		{
 			ID:          privateKeyPassFieldID,
 			Description: "OCI private key passphrase",
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
 }
@@ -98,7 +98,7 @@ func (p *Provider) ChallengeProvider(
 			region,
 			finger,
 			privateKey,
-			ptr.String(privateKeyPassword),
+			ptr.Of(privateKeyPassword),
 		),
 		PropagationTimeout: dns.PropagationTimeout,
 		PollingInterval:    dns.PollingInterval,

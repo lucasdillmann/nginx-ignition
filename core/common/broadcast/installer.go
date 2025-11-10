@@ -1,9 +1,9 @@
 package broadcast
 
 import (
-	"go.uber.org/dig"
+	"dillmann.com.br/nginx-ignition/core/common/container"
 )
 
-func Install(container *dig.Container) error {
-	return container.Invoke(registerShutdown)
+func Install() error {
+	return container.Run(registerShutdown)
 }

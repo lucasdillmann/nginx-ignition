@@ -10,11 +10,12 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/broadcast"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/nginx/cfgfiles"
 	"dillmann.com.br/nginx-ignition/core/settings"
+	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
 type service struct {
@@ -23,32 +24,37 @@ type service struct {
 	semaphore          *semaphore
 	logReader          *logReader
 	logRotator         *logRotator
+	vpnManager         *vpnManager
 	mu                 sync.Mutex
 }
 
 func newService(
 	configuration *configuration.Configuration,
-	settingsRepository settings.Repository,
 	hostRepository host.Repository,
 	configFilesManager *cfgfiles.Facade,
+	vpnCommands *vpn.Commands,
+	settingsCommands *settings.Commands,
 ) (*service, error) {
 	pManager, err := newProcessManager(configuration)
 	if err != nil {
 		return nil, err
 	}
 
+	vManager := newVpnManager(vpnCommands, settingsCommands)
+
 	return &service{
 		configFilesManager: configFilesManager,
 		processManager:     pManager,
+		vpnManager:         vManager,
 		semaphore:          newSemaphore(),
 		logReader:          newLogReader(configuration),
-		logRotator:         newLogRotator(configuration, settingsRepository, hostRepository, pManager),
+		logRotator:         newLogRotator(configuration, settingsCommands, hostRepository, pManager),
 	}, nil
 }
 
 func (s *service) reload(ctx context.Context, failIfNotRunning bool) error {
 	if failIfNotRunning && s.semaphore.currentState() != runningState {
-		return core_error.New("nginx is not running", false)
+		return coreerror.New("nginx is not running", false)
 	}
 
 	supportedFeatures, err := s.resolveSupportedFeatures(ctx)
@@ -57,11 +63,17 @@ func (s *service) reload(ctx context.Context, failIfNotRunning bool) error {
 	}
 
 	return s.semaphore.changeState(runningState, func() error {
-		if err := s.configFilesManager.ReplaceConfigurationFiles(ctx, supportedFeatures); err != nil {
+		hosts, _, err := s.configFilesManager.ReplaceConfigurationFiles(ctx, supportedFeatures)
+		if err != nil {
 			return err
 		}
 
-		return s.processManager.sendReloadSignal()
+		err = s.processManager.sendReloadSignal()
+		if err != nil {
+			return err
+		}
+
+		return s.vpnManager.reload(ctx, hosts)
 	})
 }
 
@@ -86,20 +98,30 @@ func (s *service) start(ctx context.Context) error {
 	}
 
 	return s.semaphore.changeState(runningState, func() error {
-		if err := s.configFilesManager.ReplaceConfigurationFiles(ctx, supportedFeatures); err != nil {
+		hosts, _, err := s.configFilesManager.ReplaceConfigurationFiles(ctx, supportedFeatures)
+		if err != nil {
 			return err
 		}
 
-		return s.processManager.start()
+		err = s.processManager.start()
+		if err != nil {
+			return err
+		}
+
+		return s.vpnManager.start(ctx, hosts)
 	})
 }
 
-func (s *service) stop(_ context.Context) error {
+func (s *service) stop(ctx context.Context) error {
 	if s.semaphore.currentState() == stoppedState {
 		return nil
 	}
 
 	return s.semaphore.changeState(stoppedState, func() error {
+		if err := s.vpnManager.stop(ctx); err != nil {
+			return err
+		}
+
 		return s.processManager.sendStopSignal()
 	})
 }

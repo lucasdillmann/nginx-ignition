@@ -4,6 +4,7 @@ import HostFormValues, {
     HostFormRoute,
     HostFormRouteIntegration,
     HostFormStaticResponse,
+    HostFormVpn,
 } from "./model/HostFormValues"
 import HostRequest, {
     HostBinding,
@@ -11,20 +12,24 @@ import HostRequest, {
     HostRouteIntegration,
     HostRouteStaticResponse,
     HostRouteType,
+    HostVpn,
 } from "./model/HostRequest"
 import CertificateService from "../certificate/CertificateService"
 import IntegrationService from "../integration/IntegrationService"
 import AccessListService from "../accesslist/AccessListService"
+import VpnService from "../vpn/VpnService"
 
 class HostConverter {
     private readonly certificateService: CertificateService
     private readonly integrationService: IntegrationService
     private readonly accessListService: AccessListService
+    private readonly vpnService: VpnService
 
     constructor() {
         this.certificateService = new CertificateService()
         this.integrationService = new IntegrationService()
         this.accessListService = new AccessListService()
+        this.vpnService = new VpnService()
     }
 
     private notNull(value?: any) {
@@ -84,6 +89,15 @@ class HostConverter {
         return {
             ...binding,
             certificate,
+        }
+    }
+
+    private async vpnToFormValues(data: HostVpn): Promise<HostFormVpn> {
+        const vpn = await this.vpnService.getById(data.vpnId!!)
+
+        return {
+            ...data,
+            vpn: vpn!!,
         }
     }
 
@@ -151,16 +165,32 @@ class HostConverter {
         return output
     }
 
+    private formValuesToVpn(vpn: HostFormVpn): HostVpn {
+        const data = {
+            vpnId: vpn.vpn?.id,
+            name: vpn.name,
+            host: vpn.host,
+        }
+
+        if (!vpn.host || vpn.host.trim() === "") {
+            data.host = undefined
+        }
+
+        return data
+    }
+
     async responseToFormValues(response: HostResponse): Promise<HostFormValues> {
         const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessListId } = response
 
         const routes = response.routes.map(route => this.routeToFormValues(route))
         const bindings = await Promise.all(response.bindings.map(binding => this.bindingToFormValues(binding)))
+        const vpns = await Promise.all(response.vpns.map(vpn => this.vpnToFormValues(vpn)))
         const accessList = this.notNull(accessListId) ? await this.accessListService.getById(accessListId!!) : undefined
 
         return {
             enabled,
             bindings,
+            vpns,
             featureSet,
             defaultServer,
             useGlobalBindings,
@@ -175,6 +205,7 @@ class HostConverter {
 
         const routes = formValues.routes.map(route => this.formValuesToRoute(route))
         const bindings = useGlobalBindings ? [] : formValues.bindings.map(binding => this.formValuesToBinding(binding))
+        const vpns = formValues.vpns?.map(vpn => this.formValuesToVpn(vpn)) ?? []
 
         return {
             enabled,
@@ -183,6 +214,7 @@ class HostConverter {
             useGlobalBindings,
             bindings,
             routes,
+            vpns,
             accessListId: accessList?.id,
             domainNames: defaultServer ? [] : domainNames,
         }

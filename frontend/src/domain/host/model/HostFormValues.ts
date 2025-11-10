@@ -3,6 +3,7 @@ import { HostBindingType, HostFeatureSet, HostRouteSettings, HostRouteSourceCode
 import IntegrationOptionResponse from "../../integration/model/IntegrationOptionResponse"
 import AccessListResponse from "../../accesslist/model/AccessListResponse"
 import IntegrationResponse from "../../integration/model/IntegrationResponse"
+import VpnResponse from "../../vpn/model/VpnResponse"
 
 export interface HostFormBinding {
     type: HostBindingType
@@ -36,6 +37,12 @@ export interface HostFormRouteIntegration {
     option: IntegrationOptionResponse
 }
 
+export interface HostFormVpn {
+    vpn: VpnResponse
+    name: string
+    host?: string
+}
+
 export default interface HostFormValues {
     enabled: boolean
     defaultServer: boolean
@@ -43,6 +50,7 @@ export default interface HostFormValues {
     domainNames: string[]
     routes: HostFormRoute[]
     bindings: HostFormBinding[]
+    vpns: HostFormVpn[]
     featureSet: HostFeatureSet
     accessList?: AccessListResponse
 }

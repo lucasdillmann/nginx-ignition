@@ -4,9 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 
-	"dillmann.com.br/nginx-ignition/api/common/api_error"
+	"dillmann.com.br/nginx-ignition/api/common/apierror"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
@@ -20,14 +19,10 @@ func (h issueHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	if err := validator.New().Struct(payload); err != nil {
-		panic(err)
-	}
-
 	domainModel := toIssueCertificateRequest(payload)
 
 	cert, err := h.commands.Issue(ctx.Request.Context(), domainModel)
-	if api_error.CanHandle(err) {
+	if apierror.CanHandle(err) {
 		panic(err)
 	}
 

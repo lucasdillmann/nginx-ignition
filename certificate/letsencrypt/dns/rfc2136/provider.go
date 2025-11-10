@@ -3,12 +3,12 @@ package rfc2136
 import (
 	"context"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/rfc2136"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 const (
@@ -24,33 +24,33 @@ func (p *Provider) ID() string { return "RFC2136" }
 
 func (p *Provider) Name() string { return "RFC2136" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          nameserverFieldID,
 			Description: "DNS nameserver address",
-			HelpText:    ptr.String("host:port or host, defaults to port 53"),
+			HelpText:    ptr.Of("host:port or host, defaults to port 53"),
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tsigKeyFieldID,
 			Description: "TSIG key name",
-			HelpText:    ptr.String("Leave empty to disable TSIG authentication"),
-			Type:        dynamic_fields.SingleLineTextType,
+			HelpText:    ptr.Of("Leave empty to disable TSIG authentication"),
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tsigSecretFieldID,
 			Description: "TSIG secret key",
-			HelpText:    ptr.String("Leave empty to disable TSIG authentication"),
+			HelpText:    ptr.Of("Leave empty to disable TSIG authentication"),
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tsigAlgorithmFieldID,
 			Description: "TSIG algorithm",
-			HelpText:    ptr.String("e.g., hmac-sha256., defaults to hmac-sha1. Leave empty to disable TSIG authentication."),
-			Type:        dynamic_fields.SingleLineTextType,
+			HelpText:    ptr.Of("e.g., hmac-sha256., defaults to hmac-sha1. Leave empty to disable TSIG authentication."),
+			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
 }
