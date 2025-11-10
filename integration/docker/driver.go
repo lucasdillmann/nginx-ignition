@@ -64,8 +64,8 @@ func (a *Driver) GetAvailableOptions(
 
 	totalItems := len(options)
 	driverOptions := make([]*integration.DriverOption, totalItems)
-	for i, option := range options {
-		driverOptions[i] = toDriverOption(option)
+	for index, option := range options {
+		driverOptions[index] = toDriverOption(option)
 	}
 
 	return pagination.New(0, totalItems, totalItems, driverOptions), nil

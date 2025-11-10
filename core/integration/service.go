@@ -91,8 +91,8 @@ func (s *service) listOptions(
 		return nil, err
 	}
 
-	sort.Slice(options.Contents, func(i, j int) bool {
-		return options.Contents[i].Name < options.Contents[j].Name
+	sort.Slice(options.Contents, func(left, right int) bool {
+		return options.Contents[left].Name < options.Contents[right].Name
 	})
 
 	return options, nil

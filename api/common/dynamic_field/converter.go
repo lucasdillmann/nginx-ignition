@@ -4,8 +4,8 @@ import "dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 
 func ToResponse(fields []*dynamic_fields.DynamicField) []*DynamicFieldResponse {
 	response := make([]*DynamicFieldResponse, len(fields))
-	for i, field := range fields {
-		response[i] = &DynamicFieldResponse{
+	for index, field := range fields {
+		response[index] = &DynamicFieldResponse{
 			ID:           field.ID,
 			Priority:     field.Priority,
 			Description:  field.Description,
@@ -27,8 +27,8 @@ func toEnumOptions(options *[]*dynamic_fields.EnumOption) []EnumOption {
 	}
 
 	enumOptions := make([]EnumOption, len(*options))
-	for i, option := range *options {
-		enumOptions[i] = EnumOption{
+	for index, option := range *options {
+		enumOptions[index] = EnumOption{
 			ID:          option.ID,
 			Description: option.Description,
 		}

@@ -141,8 +141,8 @@ func resolveTextBasedFieldErrorMessage(field *DynamicField, value interface{}) *
 
 func resolveEnumFieldErrorMessage(field *DynamicField, value interface{}) *string {
 	enumOptions := make([]string, len(*field.EnumOptions))
-	for i, option := range *field.EnumOptions {
-		enumOptions[i] = option.ID
+	for index, option := range *field.EnumOptions {
+		enumOptions[index] = option.ID
 	}
 
 	valid := false

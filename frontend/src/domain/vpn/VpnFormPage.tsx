@@ -99,7 +99,7 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
     }
 
     private updateShellConfig(enableActions: boolean) {
-        if (!isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.hosts)) {
+        if (!isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.vpns)) {
             enableActions = false
         }
 
