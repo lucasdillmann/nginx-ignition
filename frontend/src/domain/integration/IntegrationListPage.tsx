@@ -55,16 +55,16 @@ export default class IntegrationListPage extends React.Component<any, Integratio
                 renderer: item => item.name,
             },
             {
-                id: "enabled",
-                description: "Enabled",
-                renderer: item => DataTableRenderers.yesNo(item.enabled),
-                width: 150,
-            },
-            {
                 id: "driver",
                 description: "Driver",
                 renderer: item => this.translateDriverName(item.driver),
                 width: 250,
+            },
+            {
+                id: "enabled",
+                description: "Enabled",
+                renderer: item => DataTableRenderers.yesNo(item.enabled),
+                width: 100,
             },
             {
                 id: "actions",
