@@ -3,8 +3,6 @@ package tailscale
 import (
 	"context"
 
-	tailscaleroot "tailscale.com"
-
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
@@ -12,7 +10,6 @@ import (
 type Driver struct{}
 
 func newDriver() *Driver {
-	tailscaleroot.GoToolchainRev = "nginx-ignition"
 	return &Driver{}
 }
 

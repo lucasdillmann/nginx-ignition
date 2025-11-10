@@ -2,7 +2,6 @@ package tailscale
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"net"
 	"net/http"
@@ -22,24 +21,23 @@ type tailnetEndpoint struct {
 	destination vpn.Destination
 	serverURL   string
 	authKey     string
-	listener    net.Listener
 	configDir   string
+	listeners   []net.Listener
 }
 
 func (e *tailnetEndpoint) Stop(ctx context.Context) {
 	log.Infof("Stopping Tailscale endpoint %s...", e.destination.SourceName())
 
-	_ = e.listener.Close()
+	for _, listener := range e.listeners {
+		_ = listener.Close()
+	}
+
 	_ = e.client.Logout(ctx)
 	_ = e.server.Close()
 }
 
 func (e *tailnetEndpoint) Start(ctx context.Context) error {
-	log.Infof(
-		"Starting tailscale %s endpoint for domain %s...",
-		e.destination.SourceName(),
-		e.destination.TargetHost(),
-	)
+	log.Infof("Starting tailscale %s endpoint...", e.destination.SourceName())
 
 	e.server = new(tsnet.Server)
 	e.server.AuthKey = e.authKey
@@ -59,58 +57,64 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 		return err
 	}
 
-	scheme := "http"
-	if e.destination.HTTPS() {
-		scheme = "https"
+	for _, target := range e.destination.Targets() {
+		if err := e.startListener(target); err != nil {
+			return err
+		}
 	}
 
+	ipv4, ipv6 := e.server.TailscaleIPs()
+	log.Infof(
+		"Tailscale endpoint %s started (IPv4 %v; IPv6 %v)",
+		e.destination.SourceName(),
+		ipv4,
+		ipv6,
+	)
+
+	return nil
+}
+
+func (e *tailnetEndpoint) startListener(target vpn.DestinationTarget) error {
 	proxy := new(httputil.ReverseProxy)
 	proxy.ErrorLog = log.Std()
 	proxy.Director = func(req *http.Request) {
-		ipAddr := e.destination.IP()
+		ipAddr := target.IP
 		if ipAddr == "0.0.0.0" {
 			ipAddr = "127.0.0.1"
 		}
 
-		req.URL.Host = fmt.Sprintf("%s:%d", ipAddr, e.destination.Port())
-		req.URL.Scheme = scheme
+		req.URL.Host = fmt.Sprintf("%s:%d", ipAddr, target.Port)
+		req.URL.Scheme = "http"
+		if target.HTTPS {
+			req.URL.Scheme = "https"
+		}
 
 		req.Header.Del("Host")
-		req.Header.Set("Host", e.destination.TargetHost())
-		req.Host = e.destination.TargetHost()
+		req.Header.Set("Host", target.Host)
+		req.Host = target.Host
 	}
 
-	port := fmt.Sprintf(":%d", e.destination.Port())
-	if e.listener, err = e.server.Listen("tcp", port); err != nil {
+	startListener := e.server.Listen
+	if target.HTTPS {
+		startListener = e.server.ListenTLS
+	}
+
+	var listener net.Listener
+	var err error
+
+	if listener, err = startListener("tcp", fmt.Sprintf(":%d", target.Port)); err != nil {
 		return err
 	}
 
-	if e.destination.HTTPS() {
-		e.listener = tls.NewListener(
-			e.listener,
-			&tls.Config{
-				MinVersion:     tls.VersionTLS12,
-				GetCertificate: e.client.GetCertificate,
-			},
-		)
-	}
+	e.listeners = append(e.listeners, listener)
 
 	go func() {
 		svr := &http.Server{
 			ReadHeaderTimeout: 10 * time.Second,
 			Handler:           http.HandlerFunc(proxy.ServeHTTP),
 		}
-		_ = svr.Serve(e.listener)
+		_ = svr.Serve(listener)
 	}()
-
-	ipv4, ipv6 := e.server.TailscaleIPs()
-	log.Infof(
-		"Tailscale endpoint %s started on hostname %s, IPv4 %v and IPv6 %v",
-		e.destination.SourceName(),
-		e.server.Hostname,
-		ipv4,
-		ipv6,
-	)
 
 	return nil
 }

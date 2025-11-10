@@ -14,7 +14,7 @@ type destinationAdapter struct {
 	vpnID      uuid.UUID
 	name       string
 	domainName *string
-	binding    *host.Binding
+	bindings   []*host.Binding
 }
 
 type vpnManager struct {
@@ -110,14 +110,12 @@ func (m *vpnManager) buildDestinations(ctx context.Context, hosts []*host.Host) 
 				domainName = h.DomainNames[0]
 			}
 
-			for _, binding := range bindings {
-				destinations = append(destinations, &destinationAdapter{
-					vpnID:      vpnEntry.VPNID,
-					name:       vpnEntry.Name,
-					domainName: domainName,
-					binding:    binding,
-				})
-			}
+			destinations = append(destinations, &destinationAdapter{
+				vpnID:      vpnEntry.VPNID,
+				name:       vpnEntry.Name,
+				domainName: domainName,
+				bindings:   bindings,
+			})
 		}
 	}
 
@@ -151,22 +149,19 @@ func (a *destinationAdapter) SourceName() string {
 	return a.name
 }
 
-func (a *destinationAdapter) TargetHost() string {
-	if a.domainName == nil {
-		return ""
+func (a *destinationAdapter) Targets() []vpn.DestinationTarget {
+	var targetHost string
+	if a.domainName != nil {
+		targetHost = *a.domainName
 	}
 
-	return *a.domainName
-}
+	output := make([]vpn.DestinationTarget, len(a.bindings))
+	for index, binding := range a.bindings {
+		output[index].Host = targetHost
+		output[index].IP = binding.IP
+		output[index].Port = binding.Port
+		output[index].HTTPS = binding.Type == host.HttpsBindingType
+	}
 
-func (a *destinationAdapter) IP() string {
-	return a.binding.IP
-}
-
-func (a *destinationAdapter) Port() int {
-	return a.binding.Port
-}
-
-func (a *destinationAdapter) HTTPS() bool {
-	return a.binding.Type == host.HttpsBindingType
+	return output
 }

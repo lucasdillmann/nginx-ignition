@@ -16,8 +16,12 @@ type Destination interface {
 	Hash() string
 	VPNID() uuid.UUID
 	SourceName() string
-	TargetHost() string
-	IP() string
-	Port() int
-	HTTPS() bool
+	Targets() []DestinationTarget
+}
+
+type DestinationTarget struct {
+	Host  string
+	IP    string
+	Port  int
+	HTTPS bool
 }
