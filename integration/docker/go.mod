@@ -1,8 +1,8 @@
 module dillmann.com.br/nginx-ignition/integration/docker
 
-go 1.25.3
+go 1.25.4
 
-require github.com/docker/docker v28.5.1+incompatible
+require github.com/docker/docker v28.5.2+incompatible
 
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
@@ -28,7 +28,7 @@ require (
 	go.opentelemetry.io/otel v1.38.0 // indirect
 	go.opentelemetry.io/otel/metric v1.38.0 // indirect
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
-	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
-	gotest.tools/v3 v3.4.0 // indirect
+	gotest.tools/v3 v3.5.2 // indirect
 )
