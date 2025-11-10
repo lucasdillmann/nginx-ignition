@@ -11,3 +11,13 @@ type VPN struct {
 	Enabled    bool
 	Parameters map[string]any
 }
+
+type Destination interface {
+	Hash() string
+	VPNID() uuid.UUID
+	SourceName() string
+	TargetHost() string
+	IP() string
+	Port() int
+	HTTPS() bool
+}

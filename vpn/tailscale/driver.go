@@ -3,6 +3,8 @@ package tailscale
 import (
 	"context"
 
+	tailscaleroot "tailscale.com"
+
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
@@ -10,6 +12,7 @@ import (
 type Driver struct{}
 
 func newDriver() *Driver {
+	tailscaleroot.GoToolchainRev = "nginx-ignition"
 	return &Driver{}
 }
 
@@ -35,7 +38,7 @@ func (d Driver) Start(
 	destination vpn.Destination,
 	parameters map[string]any,
 ) error {
-	if state[destination.Name()] != nil {
+	if state[destination.Hash()] != nil {
 		return nil
 	}
 
@@ -48,7 +51,7 @@ func (d Driver) Reload(
 	destination vpn.Destination,
 	parameters map[string]any,
 ) error {
-	if state[destination.Name()] != nil {
+	if state[destination.Hash()] != nil {
 		_ = d.Stop(ctx, destination)
 	}
 
@@ -56,13 +59,13 @@ func (d Driver) Reload(
 }
 
 func (d Driver) Stop(ctx context.Context, destination vpn.Destination) error {
-	endpoint := state[destination.Name()]
+	endpoint := state[destination.Hash()]
 	if endpoint == nil {
 		return nil
 	}
 
 	endpoint.Stop(ctx)
-	delete(state, destination.Name())
+	delete(state, destination.Hash())
 
 	return nil
 }
@@ -80,12 +83,12 @@ func (d Driver) doStart(
 		serverURL = value
 	}
 
-	state[destination.Name()] = &tailnetEndpoint{
+	state[destination.Hash()] = &tailnetEndpoint{
 		authKey:     authKey,
 		configDir:   configDir,
 		destination: destination,
 		serverURL:   serverURL,
 	}
 
-	return state[destination.Name()].Start(ctx)
+	return state[destination.Hash()].Start(ctx)
 }

@@ -37,8 +37,9 @@ type hostVpnModel struct {
 	bun.BaseModel `bun:"host_vpn"`
 
 	HostID uuid.UUID `bun:"host_id,notnull"`
-	VPNID  uuid.UUID `bun:"vpn_id"`
+	VPNID  uuid.UUID `bun:"vpn_id,notnull"`
 	Name   string    `bun:"name,notnull"`
+	Host   *string   `bun:"host"`
 }
 
 type hostRouteModel struct {

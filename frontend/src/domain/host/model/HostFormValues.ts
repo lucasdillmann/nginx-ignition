@@ -40,6 +40,7 @@ export interface HostFormRouteIntegration {
 export interface HostFormVpn {
     vpn: VpnResponse
     name: string
+    host?: string
 }
 
 export default interface HostFormValues {

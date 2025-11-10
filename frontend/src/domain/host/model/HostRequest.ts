@@ -72,6 +72,7 @@ export interface HostRouteIntegration {
 export interface HostVpn {
     vpnId: string
     name: string
+    host?: string
 }
 
 export default interface HostRequest {

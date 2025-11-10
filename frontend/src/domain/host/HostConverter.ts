@@ -166,10 +166,17 @@ class HostConverter {
     }
 
     private formValuesToVpn(vpn: HostFormVpn): HostVpn {
-        return {
+        const data = {
             vpnId: vpn.vpn?.id,
             name: vpn.name,
+            host: vpn.host,
         }
+
+        if (!vpn.host || vpn.host.trim() === "") {
+            data.host = undefined
+        }
+
+        return data
     }
 
     async responseToFormValues(response: HostResponse): Promise<HostFormValues> {

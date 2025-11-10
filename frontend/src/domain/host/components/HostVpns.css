@@ -21,3 +21,7 @@
 .host-form-vpn-name {
     flex-grow: 1;
 }
+
+.host-form-vpn-host {
+    flex-grow: 1;
+}

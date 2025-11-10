@@ -26,6 +26,7 @@ func toDomain(model *hostModel) (*host.Host, error) {
 		vpns[index] = &host.VPN{
 			VPNID: vpn.VPNID,
 			Name:  vpn.Name,
+			Host:  vpn.Host,
 		}
 	}
 
@@ -121,6 +122,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 			HostID: domain.ID,
 			VPNID:  vpn.VPNID,
 			Name:   vpn.Name,
+			Host:   vpn.Host,
 		}
 	}
 

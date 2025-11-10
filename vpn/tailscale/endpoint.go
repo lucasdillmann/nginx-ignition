@@ -27,7 +27,7 @@ type tailnetEndpoint struct {
 }
 
 func (e *tailnetEndpoint) Stop(ctx context.Context) {
-	log.Infof("Stopping Tailscale endpoint %s...", e.destination.Name())
+	log.Infof("Stopping Tailscale endpoint %s...", e.destination.SourceName())
 
 	_ = e.listener.Close()
 	_ = e.client.Logout(ctx)
@@ -37,18 +37,18 @@ func (e *tailnetEndpoint) Stop(ctx context.Context) {
 func (e *tailnetEndpoint) Start(ctx context.Context) error {
 	log.Infof(
 		"Starting tailscale %s endpoint for domain %s...",
-		e.destination.Name(),
-		e.destination.DomainName(),
+		e.destination.SourceName(),
+		e.destination.TargetHost(),
 	)
 
 	e.server = new(tsnet.Server)
 	e.server.AuthKey = e.authKey
 	e.server.ControlURL = e.serverURL
-	e.server.Hostname = e.destination.Name()
+	e.server.Hostname = e.destination.SourceName()
 	e.server.Ephemeral = true
 	e.server.UserLogf = noOpLogger
 	e.server.Logf = noOpLogger
-	e.server.Dir = fmt.Sprintf("%s/tsnet/%s", e.configDir, e.destination.Name())
+	e.server.Dir = fmt.Sprintf("%s/tsnet/%s", e.configDir, e.destination.SourceName())
 
 	if _, err := e.server.Up(ctx); err != nil {
 		return err
@@ -76,8 +76,8 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 		req.URL.Scheme = scheme
 
 		req.Header.Del("Host")
-		req.Header.Set("Host", e.destination.DomainName())
-		req.Host = e.destination.DomainName()
+		req.Header.Set("Host", e.destination.TargetHost())
+		req.Host = e.destination.TargetHost()
 	}
 
 	port := fmt.Sprintf(":%d", e.destination.Port())
@@ -106,7 +106,7 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 	ipv4, ipv6 := e.server.TailscaleIPs()
 	log.Infof(
 		"Tailscale endpoint %s started on hostname %s, IPv4 %v and IPv6 %v",
-		e.destination.Name(),
+		e.destination.SourceName(),
 		e.server.Hostname,
 		ipv4,
 		ipv6,

@@ -13,7 +13,7 @@ import (
 type destinationAdapter struct {
 	vpnID      uuid.UUID
 	name       string
-	domainName string
+	domainName *string
 	binding    *host.Binding
 }
 
@@ -56,7 +56,7 @@ func (m *vpnManager) reload(ctx context.Context, hosts []*host.Host) error {
 	for _, oldDest := range m.currentData {
 		found := false
 		for _, newDest := range newDestinations {
-			if oldDest.VPNID() == newDest.VPNID() && oldDest.Name() == newDest.Name() {
+			if oldDest.Hash() == newDest.Hash() {
 				found = true
 				break
 			}
@@ -72,7 +72,7 @@ func (m *vpnManager) reload(ctx context.Context, hosts []*host.Host) error {
 	for _, newDest := range newDestinations {
 		found := false
 		for _, oldDest := range m.currentData {
-			if oldDest.VPNID() == newDest.VPNID() && oldDest.Name() == newDest.Name() {
+			if oldDest.Hash() == newDest.Hash() {
 				found = true
 				break
 			}
@@ -105,9 +105,9 @@ func (m *vpnManager) buildDestinations(ctx context.Context, hosts []*host.Host) 
 				bindings = globalBindings
 			}
 
-			var domainName string
-			if len(h.DomainNames) > 0 && h.DomainNames[0] != nil {
-				domainName = *h.DomainNames[0]
+			domainName := vpnEntry.Host
+			if (domainName == nil || *domainName == "") && len(h.DomainNames) > 0 && h.DomainNames[0] != nil {
+				domainName = h.DomainNames[0]
 			}
 
 			for _, binding := range bindings {
@@ -134,16 +134,29 @@ func (m *vpnManager) stop(ctx context.Context) error {
 	return nil
 }
 
+func (a *destinationAdapter) Hash() string {
+	var domainNameStr string
+	if a.domainName != nil {
+		domainNameStr = *a.domainName
+	}
+
+	return a.vpnID.String() + a.name + domainNameStr
+}
+
 func (a *destinationAdapter) VPNID() uuid.UUID {
 	return a.vpnID
 }
 
-func (a *destinationAdapter) Name() string {
+func (a *destinationAdapter) SourceName() string {
 	return a.name
 }
 
-func (a *destinationAdapter) DomainName() string {
-	return a.domainName
+func (a *destinationAdapter) TargetHost() string {
+	if a.domainName == nil {
+		return ""
+	}
+
+	return *a.domainName
 }
 
 func (a *destinationAdapter) IP() string {

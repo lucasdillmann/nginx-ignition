@@ -54,8 +54,28 @@ export default class HostVpns extends React.Component<HostVpnsProps> {
                     layout="vertical"
                     name={[name, "name"]}
                     validateStatus={validationResult.getStatus(`vpns[${index}].name`)}
-                    help={validationResult.getMessage(`vpns[${index}].name`)}
-                    label={index === 0 ? "Name" : undefined}
+                    help={
+                        validationResult.getMessage(`vpns[${index}].name`) ??
+                        "The unique name to be used in the VPN connection. In Tailscale, this will be used as the " +
+                            "subdomain name on your ts.net domain."
+                    }
+                    label={index === 0 ? "Source name" : undefined}
+                    required
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    {...FormLayout.ExpandedLabeledItem}
+                    className="host-form-vpn-host"
+                    layout="vertical"
+                    name={[name, "host"]}
+                    validateStatus={validationResult.getStatus(`vpns[${index}].host`)}
+                    help={
+                        validationResult.getMessage(`vpns[${index}].host`) ??
+                        "The hostname to be used when proxying requests to the target host. If left empty, ignition " +
+                            "will use the first option from the domain names above."
+                    }
+                    label={index === 0 ? "Target host" : undefined}
                     required
                 >
                     <Input />

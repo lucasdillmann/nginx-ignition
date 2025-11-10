@@ -99,4 +99,5 @@ type Binding struct {
 type VPN struct {
 	VPNID uuid.UUID
 	Name  string
+	Host  *string
 }

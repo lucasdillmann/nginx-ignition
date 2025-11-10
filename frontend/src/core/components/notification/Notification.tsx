@@ -21,7 +21,7 @@ function showNotification(
     if (props?.duration) {
         duration = props.duration
     } else {
-        duration = role === "status" ? undefined : 5
+        duration = role === "status" ? 0 : 5
     }
 
     themedNotification().open({

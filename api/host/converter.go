@@ -123,6 +123,7 @@ func toVpnDto(vpn *host.VPN) *vpnDto {
 	return &vpnDto{
 		VPNID: &vpn.VPNID,
 		Name:  &vpn.Name,
+		Host:  vpn.Host,
 	}
 }
 
@@ -365,5 +366,6 @@ func toDomainModelVPN(input *vpnDto) *host.VPN {
 	return &host.VPN{
 		VPNID: getUuidValue(input.VPNID),
 		Name:  getStringValue(input.Name),
+		Host:  input.Host,
 	}
 }

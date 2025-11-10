@@ -73,6 +73,7 @@ type bindingDto struct {
 type vpnDto struct {
 	VPNID *uuid.UUID `json:"vpnId"`
 	Name  *string    `json:"name"`
+	Host  *string    `json:"host"`
 }
 
 type hostResponseDto struct {

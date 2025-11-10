@@ -12,6 +12,7 @@ create table host_vpn (
     host_id uuid not null,
     vpn_id  uuid not null,
     name varchar(256) not null,
+    host varchar(256),
     constraint pk_host_vpn primary key (host_id, vpn_id),
     constraint fk_host_vpn_host foreign key (host_id) references host (id),
     constraint fk_host_vpn_vpn foreign key (vpn_id) references vpn (id)
