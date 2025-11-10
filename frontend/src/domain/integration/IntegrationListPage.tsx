@@ -16,6 +16,7 @@ import IntegrationResponse from "./model/IntegrationResponse"
 import IntegrationService from "./IntegrationService"
 import AvailableDriverResponse from "./model/AvailableDriverResponse"
 import DeleteIntegrationAction from "./actions/DeleteIntegrationAction"
+import DataTableRenderers from "../../core/components/datatable/DataTableRenderers"
 
 interface IntegrationListPageState {
     loading: boolean
@@ -52,6 +53,12 @@ export default class IntegrationListPage extends React.Component<any, Integratio
                 id: "name",
                 description: "Name",
                 renderer: item => item.name,
+            },
+            {
+                id: "enabled",
+                description: "Enabled",
+                renderer: item => DataTableRenderers.yesNo(item.enabled),
+                width: 150,
             },
             {
                 id: "driver",
