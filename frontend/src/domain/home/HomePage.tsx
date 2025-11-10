@@ -160,9 +160,9 @@ export default class HomePage extends React.PureComponent {
                             <ApartmentOutlined /> VPNs
                         </h2>
                         <p>
-                            Easily expose your hosts in your VPNs. If you're using Tailscale, nginx ignition
-                            can automatically create a virtual machine in your network and forward the requests to the
-                            host whenever the machine IP or hostname is accessed.
+                            Easily expose your hosts in your VPNs. If you're using Tailscale, nginx ignition can
+                            automatically create a virtual machine in your network and forward the requests to the host
+                            whenever the machine IP or hostname is accessed.
                         </p>
                     </Flex>
                 </Flex>
