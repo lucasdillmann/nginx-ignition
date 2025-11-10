@@ -123,9 +123,7 @@ func (e *tailnetEndpoint) startListener(target vpn.DestinationTarget) error {
 			Handler:           http.HandlerFunc(proxy.ServeHTTP),
 		}
 
-		if err := svr.Serve(listener); err != nil {
-			log.Errorf("Tailscale listener failed: %v", err)
-		}
+		_ = svr.Serve(listener)
 	}()
 
 	return nil
