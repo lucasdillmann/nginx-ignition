@@ -63,7 +63,7 @@ func (s *service) reload(ctx context.Context, failIfNotRunning bool) error {
 	}
 
 	return s.semaphore.changeState(runningState, func() error {
-		hosts, streams, err := s.configFilesManager.ReplaceConfigurationFiles(ctx, supportedFeatures)
+		hosts, _, err := s.configFilesManager.ReplaceConfigurationFiles(ctx, supportedFeatures)
 		if err != nil {
 			return err
 		}
@@ -73,7 +73,7 @@ func (s *service) reload(ctx context.Context, failIfNotRunning bool) error {
 			return err
 		}
 
-		return s.vpnManager.reload(ctx, hosts, streams)
+		return s.vpnManager.reload(ctx, hosts)
 	})
 }
 
@@ -98,7 +98,7 @@ func (s *service) start(ctx context.Context) error {
 	}
 
 	return s.semaphore.changeState(runningState, func() error {
-		hosts, streams, err := s.configFilesManager.ReplaceConfigurationFiles(ctx, supportedFeatures)
+		hosts, _, err := s.configFilesManager.ReplaceConfigurationFiles(ctx, supportedFeatures)
 		if err != nil {
 			return err
 		}
@@ -108,7 +108,7 @@ func (s *service) start(ctx context.Context) error {
 			return err
 		}
 
-		return s.vpnManager.start(ctx, hosts, streams)
+		return s.vpnManager.start(ctx, hosts)
 	})
 }
 

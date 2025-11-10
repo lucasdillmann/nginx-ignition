@@ -7,16 +7,14 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
-	"dillmann.com.br/nginx-ignition/core/stream"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
 type destinationAdapter struct {
-	vpnID         uuid.UUID
-	name          string
-	domainName    string
-	streamBinding *stream.Address
-	hostBinding   *host.Binding
+	vpnID      uuid.UUID
+	name       string
+	domainName string
+	binding    *host.Binding
 }
 
 type vpnManager struct {
@@ -33,8 +31,8 @@ func newVpnManager(vpnCommands *vpn.Commands, settingsCommands *settings.Command
 	}
 }
 
-func (m *vpnManager) start(ctx context.Context, hosts []*host.Host, streams []*stream.Stream) error {
-	destinations, err := m.buildDestinations(ctx, hosts, streams)
+func (m *vpnManager) start(ctx context.Context, hosts []*host.Host) error {
+	destinations, err := m.buildDestinations(ctx, hosts)
 	if err != nil {
 		return err
 	}
@@ -49,8 +47,8 @@ func (m *vpnManager) start(ctx context.Context, hosts []*host.Host, streams []*s
 	return nil
 }
 
-func (m *vpnManager) reload(ctx context.Context, hosts []*host.Host, streams []*stream.Stream) error {
-	newDestinations, err := m.buildDestinations(ctx, hosts, streams)
+func (m *vpnManager) reload(ctx context.Context, hosts []*host.Host) error {
+	newDestinations, err := m.buildDestinations(ctx, hosts)
 	if err != nil {
 		return err
 	}
@@ -91,7 +89,7 @@ func (m *vpnManager) reload(ctx context.Context, hosts []*host.Host, streams []*
 	return nil
 }
 
-func (m *vpnManager) buildDestinations(ctx context.Context, hosts []*host.Host, streams []*stream.Stream) ([]vpn.Destination, error) {
+func (m *vpnManager) buildDestinations(ctx context.Context, hosts []*host.Host) ([]vpn.Destination, error) {
 	setts, err := m.settingsCommands.Get(ctx)
 	if err != nil {
 		return nil, err
@@ -107,37 +105,20 @@ func (m *vpnManager) buildDestinations(ctx context.Context, hosts []*host.Host, 
 				bindings = globalBindings
 			}
 
-			var selectedBinding *host.Binding
+			var domainName string
+			if len(h.DomainNames) > 0 && h.DomainNames[0] != nil {
+				domainName = *h.DomainNames[0]
+			}
+
 			for _, binding := range bindings {
-				if binding.Type == host.HttpsBindingType {
-					selectedBinding = binding
-					break
-				}
-			}
-			if selectedBinding == nil && len(bindings) > 0 {
-				selectedBinding = bindings[0]
-			}
-
-			if selectedBinding != nil {
-				var domainName string
-				if len(h.DomainNames) > 0 && h.DomainNames[0] != nil {
-					domainName = *h.DomainNames[0]
-				}
-
 				destinations = append(destinations, &destinationAdapter{
-					vpnID:       vpnEntry.VPNID,
-					name:        vpnEntry.Name,
-					domainName:  domainName,
-					hostBinding: selectedBinding,
+					vpnID:      vpnEntry.VPNID,
+					name:       vpnEntry.Name,
+					domainName: domainName,
+					binding:    binding,
 				})
 			}
 		}
-	}
-
-	for _, s := range streams {
-		destinations = append(destinations, &destinationAdapter{
-			streamBinding: &s.Binding,
-		})
 	}
 
 	return destinations, nil
@@ -166,21 +147,13 @@ func (a *destinationAdapter) DomainName() string {
 }
 
 func (a *destinationAdapter) IP() string {
-	if a.streamBinding != nil {
-		return a.streamBinding.Address
-	}
-
-	return a.hostBinding.IP
+	return a.binding.IP
 }
 
 func (a *destinationAdapter) Port() int {
-	if a.streamBinding != nil {
-		return *a.streamBinding.Port
-	}
-
-	return a.hostBinding.Port
+	return a.binding.Port
 }
 
 func (a *destinationAdapter) HTTPS() bool {
-	return a.hostBinding != nil && a.hostBinding.Type == host.HttpsBindingType
+	return a.binding.Type == host.HttpsBindingType
 }
