@@ -41,21 +41,21 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 		e.destination.DomainName(),
 	)
 
-	server := new(tsnet.Server)
-	server.AuthKey = e.authKey
-	server.ControlURL = e.serverURL
-	server.Hostname = e.destination.Name()
-	server.Ephemeral = true
-	server.UserLogf = noOpLogger
-	server.Logf = noOpLogger
-	server.Dir = fmt.Sprintf("%s/tsnet/%s", e.configDir, e.destination.Name())
+	e.server = new(tsnet.Server)
+	e.server.AuthKey = e.authKey
+	e.server.ControlURL = e.serverURL
+	e.server.Hostname = e.destination.Name()
+	e.server.Ephemeral = true
+	e.server.UserLogf = noOpLogger
+	e.server.Logf = noOpLogger
+	e.server.Dir = fmt.Sprintf("%s/tsnet/%s", e.configDir, e.destination.Name())
 
-	if _, err := server.Up(ctx); err != nil {
+	if _, err := e.server.Up(ctx); err != nil {
 		return err
 	}
 
 	var err error
-	if e.client, err = server.LocalClient(); err != nil {
+	if e.client, err = e.server.LocalClient(); err != nil {
 		return err
 	}
 
@@ -65,16 +65,23 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 	}
 
 	proxy := new(httputil.ReverseProxy)
+	proxy.ErrorLog = log.Std()
 	proxy.Director = func(req *http.Request) {
-		req.Host = e.destination.DomainName()
-		req.URL.Host = e.destination.DomainName()
+		ipAddr := e.destination.IP()
+		if ipAddr == "0.0.0.0" {
+			ipAddr = "127.0.0.1"
+		}
+
+		req.URL.Host = fmt.Sprintf("%s:%d", ipAddr, e.destination.Port())
 		req.URL.Scheme = scheme
+
 		req.Header.Del("Host")
-		req.Header.Set("Host", req.URL.Host)
+		req.Header.Set("Host", e.destination.DomainName())
+		req.Host = e.destination.DomainName()
 	}
 
 	port := fmt.Sprintf(":%d", e.destination.Port())
-	if e.listener, err = server.Listen("tcp", port); err != nil {
+	if e.listener, err = e.server.Listen("tcp", port); err != nil {
 		return err
 	}
 
@@ -96,11 +103,11 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 		_ = svr.Serve(e.listener)
 	}()
 
-	ipv4, ipv6 := server.TailscaleIPs()
+	ipv4, ipv6 := e.server.TailscaleIPs()
 	log.Infof(
 		"Tailscale endpoint %s started on hostname %s, IPv4 %v and IPv6 %v",
 		e.destination.Name(),
-		server.Hostname,
+		e.server.Hostname,
 		ipv4,
 		ipv6,
 	)
