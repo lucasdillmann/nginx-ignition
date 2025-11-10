@@ -4,48 +4,47 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/aws/smithy-go/ptr"
-
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 var (
-	termsOfService = dynamic_fields.DynamicField{
+	termsOfService = dynamicfields.DynamicField{
 		ID:          "acceptTheTermsOfService",
 		Priority:    99,
 		Description: "Terms of service",
-		HelpText:    ptr.String("I agree to the Let's Encrypt terms of service available at theirs website"),
+		HelpText:    ptr.Of("I agree to the Let's Encrypt terms of service available at theirs website"),
 		Required:    true,
-		Type:        dynamic_fields.BooleanType,
+		Type:        dynamicfields.BooleanType,
 	}
 
-	emailAddress = dynamic_fields.DynamicField{
+	emailAddress = dynamicfields.DynamicField{
 		ID:          "emailAddress",
 		Priority:    0,
 		Description: "E-mail address",
 		Required:    true,
-		Type:        dynamic_fields.EmailType,
+		Type:        dynamicfields.EmailType,
 	}
 
-	dnsProvider = dynamic_fields.DynamicField{
+	dnsProvider = dynamicfields.DynamicField{
 		ID:          "challengeDnsProvider",
 		Priority:    1,
 		Description: "DNS provider",
 		Required:    true,
-		Type:        dynamic_fields.EnumType,
+		Type:        dynamicfields.EnumType,
 	}
 )
 
-func resolveDynamicFields() []*dynamic_fields.DynamicField {
-	output := make([]*dynamic_fields.DynamicField, 0, len(providers))
+func resolveDynamicFields() []*dynamicfields.DynamicField {
+	output := make([]*dynamicfields.DynamicField, 0, len(providers))
 
 	output = append(output, &termsOfService, &emailAddress, &dnsProvider)
-	providerOptions := make([]*dynamic_fields.EnumOption, 0, len(providers))
+	providerOptions := make([]*dynamicfields.EnumOption, 0, len(providers))
 
 	for _, provider := range providers {
 		output = append(output, provider.DynamicFields()...)
 
-		providerOptions = append(providerOptions, &dynamic_fields.EnumOption{
+		providerOptions = append(providerOptions, &dynamicfields.EnumOption{
 			ID:          provider.ID(),
 			Description: provider.Name(),
 		})

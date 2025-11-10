@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/common/broadcast"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
@@ -42,7 +42,7 @@ func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if inUse {
-		return core_error.New(
+		return coreerror.New(
 			"Certificate is being used by at least one host. Please update them and try again.",
 			true,
 		)
@@ -61,7 +61,7 @@ func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if inUse {
-		return core_error.New(
+		return coreerror.New(
 			"Certificate is being used by a global binding. Please update the settings and try again.",
 			true,
 		)
@@ -83,7 +83,7 @@ func (s *service) getById(ctx context.Context, id uuid.UUID) (*Certificate, erro
 		}
 
 		provider := providerById(availableProviders, cert.ProviderID)
-		dynamic_fields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields())
+		dynamicfields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields())
 	}
 
 	return cert, nil
@@ -102,7 +102,7 @@ func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerm
 
 	for _, cert := range certs.Contents {
 		provider := providerById(availableProviders, cert.ProviderID)
-		dynamic_fields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields())
+		dynamicfields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields())
 	}
 
 	return certs, nil
@@ -159,7 +159,7 @@ func (s *service) renew(ctx context.Context, certificateId uuid.UUID) error {
 
 	provider := providerById(providers, certificate.ProviderID)
 	if provider == nil {
-		return core_error.New("Provider not found", true)
+		return coreerror.New("Provider not found", true)
 	}
 
 	certificate, err = provider.Renew(ctx, certificate)
@@ -179,7 +179,7 @@ func (s *service) issue(ctx context.Context, request *IssueRequest) (*Certificat
 
 	provider := providerById(providers, request.ProviderID)
 	if provider == nil {
-		return nil, core_error.New("Provider not found", true)
+		return nil, coreerror.New("Provider not found", true)
 	}
 
 	certificate, err := provider.Issue(ctx, request)

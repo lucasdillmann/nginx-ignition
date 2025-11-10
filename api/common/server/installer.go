@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 
-	"dillmann.com.br/nginx-ignition/api/common/api_error"
+	"dillmann.com.br/nginx-ignition/api/common/apierror"
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/container"
@@ -30,7 +30,7 @@ func build(
 	gin.SetMode(gin.ReleaseMode)
 
 	engine := gin.New()
-	engine.Use(gin.CustomRecoveryWithWriter(nil, api_error.Handler))
+	engine.Use(gin.CustomRecoveryWithWriter(nil, apierror.Handler))
 
 	authorizer, err := authorization.New(configuration, repository)
 	if err != nil {

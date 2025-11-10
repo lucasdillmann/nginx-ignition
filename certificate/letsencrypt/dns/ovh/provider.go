@@ -7,7 +7,7 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/ovh"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
 const (
@@ -23,32 +23,32 @@ func (p *Provider) ID() string { return "OVH" }
 
 func (p *Provider) Name() string { return "OVH" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          endpointFieldID,
 			Description: "OVH API endpoint",
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          applicationKeyFieldID,
 			Description: "OVH application key",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          applicationSecFieldID,
 			Description: "OVH application secret",
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          consumerKeyFieldID,
 			Description: "OVH consumer key",
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
 }

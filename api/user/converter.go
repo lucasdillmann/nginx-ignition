@@ -1,9 +1,9 @@
 package user
 
 import (
-	"github.com/aws/smithy-go/ptr"
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
@@ -37,17 +37,17 @@ func toDto(domain *user.User) *userResponseDto {
 		Name:     domain.Name,
 		Username: domain.Username,
 		Permissions: userPermissionsDto{
-			Hosts:        ptr.String(string(domain.Permissions.Hosts)),
-			Streams:      ptr.String(string(domain.Permissions.Streams)),
-			Certificates: ptr.String(string(domain.Permissions.Certificates)),
-			Logs:         ptr.String(string(domain.Permissions.Logs)),
-			Integrations: ptr.String(string(domain.Permissions.Integrations)),
-			AccessLists:  ptr.String(string(domain.Permissions.AccessLists)),
-			Settings:     ptr.String(string(domain.Permissions.Settings)),
-			Users:        ptr.String(string(domain.Permissions.Users)),
-			NginxServer:  ptr.String(string(domain.Permissions.NginxServer)),
-			ExportData:   ptr.String(string(domain.Permissions.ExportData)),
-			VPNs:         ptr.String(string(domain.Permissions.VPNs)),
+			Hosts:        ptr.Of(string(domain.Permissions.Hosts)),
+			Streams:      ptr.Of(string(domain.Permissions.Streams)),
+			Certificates: ptr.Of(string(domain.Permissions.Certificates)),
+			Logs:         ptr.Of(string(domain.Permissions.Logs)),
+			Integrations: ptr.Of(string(domain.Permissions.Integrations)),
+			AccessLists:  ptr.Of(string(domain.Permissions.AccessLists)),
+			Settings:     ptr.Of(string(domain.Permissions.Settings)),
+			Users:        ptr.Of(string(domain.Permissions.Users)),
+			NginxServer:  ptr.Of(string(domain.Permissions.NginxServer)),
+			ExportData:   ptr.Of(string(domain.Permissions.ExportData)),
+			VPNs:         ptr.Of(string(domain.Permissions.VPNs)),
 		},
 	}
 }

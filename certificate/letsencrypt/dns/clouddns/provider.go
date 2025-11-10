@@ -7,7 +7,7 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/clouddns"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
 const (
@@ -22,26 +22,26 @@ func (p *Provider) ID() string { return "CLOUDDNS" }
 
 func (p *Provider) Name() string { return "CloudDNS" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          clientIDFieldID,
 			Description: "CloudDNS client ID",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          emailFieldID,
 			Description: "CloudDNS email",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
 			Description: "CloudDNS password",
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
 }

@@ -1,32 +1,32 @@
 package custom
 
-import "dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+import "dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 
 var (
-	publicKeyField = dynamic_fields.DynamicField{
+	publicKeyField = dynamicfields.DynamicField{
 		ID:          "publicKey",
 		Priority:    0,
 		Description: "Certificate file (PEM encoded) with the public key",
 		Required:    true,
 		Sensitive:   true,
-		Type:        dynamic_fields.FileType,
+		Type:        dynamicfields.FileType,
 	}
 
-	privateKeyField = dynamic_fields.DynamicField{
+	privateKeyField = dynamicfields.DynamicField{
 		ID:          "privateKey",
 		Priority:    1,
 		Description: "Certificate file (PEM encoded) with the private key",
 		Required:    true,
 		Sensitive:   true,
-		Type:        dynamic_fields.FileType,
+		Type:        dynamicfields.FileType,
 	}
 
-	certificationChainField = dynamic_fields.DynamicField{
+	certificationChainField = dynamicfields.DynamicField{
 		ID:          "certificationChain",
 		Priority:    2,
 		Description: "Certification chain file (PEM encoded)",
 		Required:    false,
 		Sensitive:   true,
-		Type:        dynamic_fields.FileType,
+		Type:        dynamicfields.FileType,
 	}
 )

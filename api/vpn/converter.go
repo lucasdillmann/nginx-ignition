@@ -3,7 +3,7 @@ package vpn
 import (
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
+	"dillmann.com.br/nginx-ignition/api/common/dynamicfield"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
@@ -42,6 +42,6 @@ func toAvailableDriverDto(data *vpn.AvailableDriver) *vpnDriverResponse {
 		ID:                    data.ID,
 		Name:                  data.Name,
 		ImportantInstructions: data.ImportantInstructions,
-		ConfigurationFields:   dynamic_field.ToResponse(data.ConfigurationFields),
+		ConfigurationFields:   dynamicfield.ToResponse(data.ConfigurationFields),
 	}
 }

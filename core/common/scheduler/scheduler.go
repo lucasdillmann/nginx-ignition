@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
@@ -32,11 +32,11 @@ func (s *Scheduler) Register(ctx context.Context, task Task) error {
 
 func (s *Scheduler) start(ctx context.Context) error {
 	if s.started {
-		return core_error.New("Scheduler already started", false)
+		return coreerror.New("Scheduler already started", false)
 	}
 
 	if s.stopped {
-		return core_error.New("Scheduler is shutting-down or was already stopped", false)
+		return coreerror.New("Scheduler is shutting-down or was already stopped", false)
 	}
 
 	s.started = true
@@ -110,5 +110,5 @@ func (s *Scheduler) Reload(ctx context.Context) error {
 }
 
 func schedulerStoppedError() error {
-	return core_error.New("Scheduler is shutting-down or was already stopped", false)
+	return coreerror.New("Scheduler is shutting-down or was already stopped", false)
 }

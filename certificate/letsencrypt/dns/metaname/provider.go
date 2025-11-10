@@ -7,7 +7,7 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/metaname"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
 const (
@@ -21,20 +21,20 @@ func (p *Provider) ID() string { return "METANAME" }
 
 func (p *Provider) Name() string { return "Metaname" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accountReferenceFieldID,
 			Description: "Metaname account reference",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiKeyFieldID,
 			Description: "Metaname API key",
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
 }

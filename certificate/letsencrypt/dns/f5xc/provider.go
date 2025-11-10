@@ -7,7 +7,7 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/f5xc"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
 const (
@@ -22,26 +22,26 @@ func (p *Provider) ID() string { return "F5_XC" }
 
 func (p *Provider) Name() string { return "F5 XC" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiTokenFieldID,
 			Description: "F5 XC API token",
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tenantNameFieldID,
 			Description: "F5 XC tenant name",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          groupNameFieldID,
 			Description: "F5 XC group name",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
 }

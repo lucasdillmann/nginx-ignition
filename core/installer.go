@@ -1,7 +1,7 @@
 package core
 
 import (
-	"dillmann.com.br/nginx-ignition/core/access_list"
+	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/backup"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/broadcast"
@@ -22,7 +22,7 @@ func Install() error {
 		scheduler.Install,
 		settings.Install,
 		user.Install,
-		access_list.Install,
+		accesslist.Install,
 		certificate.Install,
 		vpn.Install,
 		host.Install,

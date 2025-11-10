@@ -7,7 +7,7 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/mittwald"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
 const (
@@ -20,14 +20,14 @@ func (p *Provider) ID() string { return "MITTWALD" }
 
 func (p *Provider) Name() string { return "Mittwald" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokenFieldID,
 			Description: "Mittwald API token",
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
 }

@@ -1,9 +1,8 @@
 package tailscale
 
 import (
-	"github.com/aws/smithy-go/ptr"
-
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 const (
@@ -11,14 +10,14 @@ const (
 	coordinatorUrlFieldName = "coordinatorUrl"
 )
 
-var configurationFields = []*dynamic_fields.DynamicField{
+var configurationFields = []*dynamicfields.DynamicField{
 	{
 		ID:          authKeyFieldName,
 		Priority:    0,
 		Description: "Tailscale auth key",
 		Required:    true,
 		Sensitive:   true,
-		Type:        dynamic_fields.SingleLineTextType,
+		Type:        dynamicfields.SingleLineTextType,
 	},
 	{
 		ID:          coordinatorUrlFieldName,
@@ -26,8 +25,8 @@ var configurationFields = []*dynamic_fields.DynamicField{
 		Description: "Tailnet coordinator URL",
 		Required:    false,
 		Sensitive:   false,
-		Type:        dynamic_fields.URLType,
-		HelpText:    ptr.String("Custom coordinator server URL. Leave empty to use the default (tailscale.com)."),
+		Type:        dynamicfields.URLType,
+		HelpText:    ptr.Of("Custom coordinator server URL. Leave empty to use the default (tailscale.com)."),
 	},
 }
 

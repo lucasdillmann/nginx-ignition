@@ -12,8 +12,8 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
 type Provider struct{}
@@ -30,8 +30,8 @@ func (p *Provider) Name() string {
 	return "Custom certificate"
 }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return []*dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return []*dynamicfields.DynamicField{
 		&publicKeyField,
 		&privateKeyField,
 		&certificationChainField,
@@ -55,19 +55,19 @@ func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (
 
 	privateKey, err := parsePrivateKey(privateKeyStr)
 	if err != nil {
-		return nil, core_error.New("Invalid private key", true)
+		return nil, coreerror.New("Invalid private key", true)
 	}
 
 	publicKey, err := parseCertificate(publicKeyStr)
 	if err != nil {
-		return nil, core_error.New("Invalid public key", true)
+		return nil, coreerror.New("Invalid public key", true)
 	}
 
 	var chain []*x509.Certificate
 	if chainPresent && chainStr != "" {
 		chain, err = parseCertificateChain(chainStr)
 		if err != nil {
-			return nil, core_error.New("Invalid certification chain", true)
+			return nil, coreerror.New("Invalid certification chain", true)
 		}
 	}
 
@@ -94,12 +94,12 @@ func (p *Provider) Renew(_ context.Context, cert *certificate.Certificate) (*cer
 func parsePrivateKey(key string) ([]byte, error) {
 	decodedKey, err := base64.StdEncoding.DecodeString(key)
 	if err != nil {
-		return nil, core_error.New("Failed to decode key", true)
+		return nil, coreerror.New("Failed to decode key", true)
 	}
 
 	block, _ := pem.Decode(decodedKey)
 	if block == nil {
-		return nil, core_error.New("Failed to parse PEM block containing the key", true)
+		return nil, coreerror.New("Failed to parse PEM block containing the key", true)
 	}
 
 	return block.Bytes, nil
@@ -108,12 +108,12 @@ func parsePrivateKey(key string) ([]byte, error) {
 func parseCertificate(cert string) (*x509.Certificate, error) {
 	decodedCert, err := base64.StdEncoding.DecodeString(cert)
 	if err != nil {
-		return nil, core_error.New("Failed to decode certificate", true)
+		return nil, coreerror.New("Failed to decode certificate", true)
 	}
 
 	block, _ := pem.Decode(decodedCert)
 	if block == nil {
-		return nil, core_error.New("Failed to parse PEM block containing the certificate", true)
+		return nil, coreerror.New("Failed to parse PEM block containing the certificate", true)
 	}
 
 	return x509.ParseCertificate(block.Bytes)
@@ -122,7 +122,7 @@ func parseCertificate(cert string) (*x509.Certificate, error) {
 func parseCertificateChain(chain string) ([]*x509.Certificate, error) {
 	decodedChain, err := base64.StdEncoding.DecodeString(chain)
 	if err != nil {
-		return nil, core_error.New("Failed to decode chain", true)
+		return nil, coreerror.New("Failed to decode chain", true)
 	}
 
 	certs := make([]*x509.Certificate, 0)

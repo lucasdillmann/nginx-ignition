@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"dillmann.com.br/nginx-ignition/core/common/value_range"
+	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 	"dillmann.com.br/nginx-ignition/core/nginx"
 )
 
@@ -19,7 +19,7 @@ const (
 	defaultLineCount = 50
 )
 
-var lineCountRange = value_range.New(1, 10_000)
+var lineCountRange = valuerange.New(1, 10_000)
 
 func (h logsHandler) handle(ctx *gin.Context) {
 	lineCount := defaultLineCount

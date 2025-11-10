@@ -16,6 +16,7 @@ import VpnResponse from "./model/VpnResponse"
 import VpnService from "./VpnService"
 import AvailableDriverResponse from "./model/AvailableDriverResponse"
 import DeleteVpnAction from "./actions/DeleteVpnAction"
+import DataTableRenderers from "../../core/components/datatable/DataTableRenderers"
 
 interface VpnListPageState {
     loading: boolean
@@ -52,6 +53,12 @@ export default class VpnListPage extends React.Component<any, VpnListPageState> 
                 id: "name",
                 description: "Name",
                 renderer: item => item.name,
+            },
+            {
+                id: "enabled",
+                description: "Enabled",
+                renderer: item => DataTableRenderers.yesNo(item.enabled),
+                width: 150,
             },
             {
                 id: "driver",

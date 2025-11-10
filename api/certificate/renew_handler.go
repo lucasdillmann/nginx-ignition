@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/api/common/api_error"
+	"dillmann.com.br/nginx-ignition/api/common/apierror"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
@@ -22,7 +22,7 @@ func (h renewHandler) handle(ctx *gin.Context) {
 	}
 
 	err = h.commands.Renew(ctx.Request.Context(), id)
-	if api_error.CanHandle(err) {
+	if apierror.CanHandle(err) {
 		panic(err)
 	}
 

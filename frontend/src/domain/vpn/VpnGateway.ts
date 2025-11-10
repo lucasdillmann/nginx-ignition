@@ -39,6 +39,6 @@ export default class VpnGateway {
     }
 
     async getAvailableDrivers(): Promise<ApiResponse<AvailableDriverResponse[]>> {
-        return this.client.get(`/available-drivers`)
+        return this.client.get("/available-drivers")
     }
 }

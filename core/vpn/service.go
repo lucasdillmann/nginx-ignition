@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -54,7 +54,7 @@ func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if *inUse {
-		return core_error.New("VPN is in use by one or more hosts", true)
+		return coreerror.New("VPN is in use by one or more hosts", true)
 	}
 
 	return s.repository.DeleteByID(ctx, id)
@@ -83,31 +83,31 @@ func (s *service) getAvailableDrivers(_ context.Context) (*[]*AvailableDriver, e
 	return &output, nil
 }
 
-func (s *service) start(ctx context.Context, destination Destination) error {
-	data, driver, configDir, err := s.resolveValues(ctx, destination.VPNID())
+func (s *service) start(ctx context.Context, endpoint Endpoint) error {
+	data, driver, configDir, err := s.resolveValues(ctx, endpoint.VPNID())
 	if err != nil {
 		return err
 	}
 
-	return driver.Start(ctx, *configDir, destination, data.Parameters)
+	return driver.Start(ctx, *configDir, endpoint, data.Parameters)
 }
 
-func (s *service) reload(ctx context.Context, destination Destination) error {
-	data, driver, configDir, err := s.resolveValues(ctx, destination.VPNID())
+func (s *service) reload(ctx context.Context, endpoint Endpoint) error {
+	data, driver, configDir, err := s.resolveValues(ctx, endpoint.VPNID())
 	if err != nil {
 		return err
 	}
 
-	return driver.Reload(ctx, *configDir, destination, data.Parameters)
+	return driver.Reload(ctx, *configDir, endpoint, data.Parameters)
 }
 
-func (s *service) stop(ctx context.Context, destination Destination) error {
-	_, driver, _, err := s.resolveValues(ctx, destination.VPNID())
+func (s *service) stop(ctx context.Context, endpoint Endpoint) error {
+	_, driver, _, err := s.resolveValues(ctx, endpoint.VPNID())
 	if err != nil {
 		return err
 	}
 
-	return driver.Stop(ctx, destination)
+	return driver.Stop(ctx, endpoint)
 }
 
 func (s *service) resolveValues(ctx context.Context, id uuid.UUID) (*VPN, Driver, *string, error) {
@@ -118,7 +118,7 @@ func (s *service) resolveValues(ctx context.Context, id uuid.UUID) (*VPN, Driver
 
 	driver := s.findDriver(data)
 	if driver == nil {
-		return nil, nil, nil, core_error.New("VPN driver not found", false)
+		return nil, nil, nil, coreerror.New("VPN driver not found", false)
 	}
 
 	configDir, err := s.cfg.Get("nginx-ignition.vpn.config-path")

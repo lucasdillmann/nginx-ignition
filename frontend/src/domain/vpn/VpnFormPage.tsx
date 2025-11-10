@@ -42,8 +42,8 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
     constructor(props: any) {
         super(props)
 
-        const hostId = routeParams().id
-        this.vpnId = hostId === "new" ? undefined : hostId
+        const vpnId = routeParams().id
+        this.vpnId = vpnId === "new" ? undefined : vpnId
         this.service = new VpnService()
         this.saveModal = new ModalPreloader()
         this.formRef = React.createRef()
@@ -64,7 +64,7 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
 
     private submit() {
         const { formValues } = this.state
-        this.saveModal.show("Hang on tight", "We're saving the VPN connections")
+        this.saveModal.show("Hang on tight", "We're saving the VPN connection")
         this.setState({ validationResult: new ValidationResult() })
 
         const action =

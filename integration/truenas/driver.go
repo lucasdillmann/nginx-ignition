@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/integration/truenas/client"
@@ -42,8 +42,8 @@ func (a *Driver) Description() string {
 		"target for your nginx ignition's host routes."
 }
 
-func (a *Driver) ConfigurationFields() []*dynamic_fields.DynamicField {
-	return []*dynamic_fields.DynamicField{
+func (a *Driver) ConfigurationFields() []*dynamicfields.DynamicField {
+	return []*dynamicfields.DynamicField{
 		&urlField,
 		&proxyUrlField,
 		&usernameField,

@@ -335,11 +335,11 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 		namePath := basePath + ".name"
 
 		if strings.TrimSpace(value.Name) == "" {
-			v.delegate.Add(namePath, "Value is required")
+			v.delegate.Add(namePath, validation.ValueMissingMessage)
 		}
 
 		if value.VPNID == uuid.Nil {
-			v.delegate.Add(vpnIdPath, "Value is required")
+			v.delegate.Add(vpnIdPath, validation.ValueMissingMessage)
 			continue
 		}
 

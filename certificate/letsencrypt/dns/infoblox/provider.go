@@ -7,7 +7,7 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/infoblox"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
 const (
@@ -27,51 +27,51 @@ func (p *Provider) ID() string { return "INFOBLOX" }
 
 func (p *Provider) Name() string { return "Infoblox" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          hostFieldID,
 			Description: "Infoblox grid manager host",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          portFieldID,
 			Description: "Infoblox grid manager port",
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          usernameFieldID,
 			Description: "Infoblox username",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
 			Description: "Infoblox password",
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          dnsViewFieldID,
 			Description: "Infoblox DNS view",
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          wapiVersionFieldID,
 			Description: "Infoblox WAPI version",
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          sslVerifyFieldID,
 			Description: "Verify SSL certificate",
-			Type:        dynamic_fields.BooleanType,
+			Type:        dynamicfields.BooleanType,
 		},
 		{
 			ID:          caCertificateFieldID,
 			Description: "CA certificate path (PEM encoded)",
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
 }

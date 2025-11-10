@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
@@ -32,7 +32,7 @@ func (s startup) Run(ctx context.Context) error {
 	}
 
 	log.Infof("Password reset completed successfully for the user %s. New password: %s", username, newPassword)
-	return core_error.New(
+	return coreerror.New(
 		"Application was started using the password reset procedure. Please disable it in order to continue.",
 		true,
 	)

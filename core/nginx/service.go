@@ -10,7 +10,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/broadcast"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/nginx/cfgfiles"
@@ -54,7 +54,7 @@ func newService(
 
 func (s *service) reload(ctx context.Context, failIfNotRunning bool) error {
 	if failIfNotRunning && s.semaphore.currentState() != runningState {
-		return core_error.New("nginx is not running", false)
+		return coreerror.New("nginx is not running", false)
 	}
 
 	supportedFeatures, err := s.resolveSupportedFeatures(ctx)

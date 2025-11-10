@@ -1,10 +1,10 @@
 package integration
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 )
 
 var (
-	ErrIntegrationNotFound = core_error.New("Integration not found", true)
-	ErrIntegrationDisabled = core_error.New("Integration is disabled", true)
+	ErrIntegrationNotFound = coreerror.New("Integration not found", true)
+	ErrIntegrationDisabled = coreerror.New("Integration is disabled", true)
 )

@@ -11,9 +11,7 @@ var delegate *dig.Container
 func Init(ctx context.Context) {
 	delegate = dig.New()
 
-	_ = Provide(
-		func() context.Context { return ctx },
-	)
+	_ = Singleton(ctx)
 }
 
 func Provide(providers ...interface{}) error {

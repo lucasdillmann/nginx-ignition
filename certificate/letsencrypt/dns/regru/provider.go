@@ -7,7 +7,7 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/regru"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
 const (
@@ -27,32 +27,32 @@ func (p *Provider) Name() string {
 	return "Reg.ru"
 }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
 			Description: "Reg.ru username",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
 			Description: "Reg.ru password",
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tlsCertFieldID,
 			Description: "Reg.ru TLS certificate (for mTLS)",
 			Sensitive:   true,
-			Type:        dynamic_fields.MultiLineTextType,
+			Type:        dynamicfields.MultiLineTextType,
 		},
 		{
 			ID:          tlsKeyFieldID,
 			Description: "Reg.ru TLS key (for mTLS)",
 			Sensitive:   true,
-			Type:        dynamic_fields.MultiLineTextType,
+			Type:        dynamicfields.MultiLineTextType,
 		},
 	})
 }

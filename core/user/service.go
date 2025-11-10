@@ -6,13 +6,13 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
-	"dillmann.com.br/nginx-ignition/core/user/password_hash"
+	"dillmann.com.br/nginx-ignition/core/user/passwordhash"
 )
 
-var invalidCredentialsError = core_error.New("Invalid username or password", true)
+var invalidCredentialsError = coreerror.New("Invalid username or password", true)
 
 type service struct {
 	repository    Repository
@@ -29,7 +29,7 @@ func (s *service) authenticate(ctx context.Context, username string, password st
 		return nil, invalidCredentialsError
 	}
 
-	passwordMatches, err := password_hash.New(s.configuration).Verify(password, usr.PasswordHash, usr.PasswordSalt)
+	passwordMatches, err := passwordhash.New(s.configuration).Verify(password, usr.PasswordHash, usr.PasswordSalt)
 	if err != nil {
 		return nil, err
 	}
@@ -42,14 +42,14 @@ func (s *service) authenticate(ctx context.Context, username string, password st
 }
 
 func (s *service) changePassword(ctx context.Context, id uuid.UUID, currentPassword string, newPassword string) error {
-	hash := password_hash.New(s.configuration)
+	hash := passwordhash.New(s.configuration)
 	databaseState, err := s.repository.FindByID(ctx, id)
 	if err != nil {
 		return err
 	}
 
 	if databaseState == nil {
-		return core_error.New("No user found with provided ID", true)
+		return coreerror.New("No user found with provided ID", true)
 	}
 
 	passwordMatches, err := hash.Verify(
@@ -114,7 +114,7 @@ func (s *service) save(ctx context.Context, request *SaveRequest, currentUserId 
 		passwordHash = databaseState.PasswordHash
 		passwordSalt = databaseState.PasswordSalt
 	} else if request.Password != nil {
-		passwordHash, passwordSalt, err = password_hash.New(s.configuration).Hash(*request.Password)
+		passwordHash, passwordSalt, err = passwordhash.New(s.configuration).Hash(*request.Password)
 		if err != nil {
 			return err
 		}
@@ -152,11 +152,11 @@ func (s *service) resetPassword(ctx context.Context, username string) (string, e
 	}
 
 	if user == nil {
-		return "", core_error.New("User not found", true)
+		return "", coreerror.New("User not found", true)
 	}
 
 	newPassword := uuid.NewString()[:8]
-	updatedHash, updatedSalt, err := password_hash.New(s.configuration).Hash(newPassword)
+	updatedHash, updatedSalt, err := passwordhash.New(s.configuration).Hash(newPassword)
 	if err != nil {
 		return "", err
 	}

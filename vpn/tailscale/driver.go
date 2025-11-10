@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
@@ -26,48 +26,48 @@ func (d Driver) ImportantInstructions() []string {
 	return importantInstructions
 }
 
-func (d Driver) ConfigurationFields() []*dynamic_fields.DynamicField {
+func (d Driver) ConfigurationFields() []*dynamicfields.DynamicField {
 	return configurationFields
 }
 
 func (d Driver) Start(
 	ctx context.Context,
 	configDir string,
-	destination vpn.Destination,
+	endpoint vpn.Endpoint,
 	parameters map[string]any,
 ) error {
-	if _, exists := state.Load(destination.Hash()); exists {
+	if _, exists := state.Load(endpoint.Hash()); exists {
 		return nil
 	}
 
-	return d.doStart(ctx, configDir, destination, parameters)
+	return d.doStart(ctx, configDir, endpoint, parameters)
 }
 
 func (d Driver) Reload(
 	ctx context.Context,
 	configDir string,
-	destination vpn.Destination,
+	endpoint vpn.Endpoint,
 	parameters map[string]any,
 ) error {
-	if _, exists := state.Load(destination.Hash()); exists {
-		_ = d.Stop(ctx, destination)
+	if _, exists := state.Load(endpoint.Hash()); exists {
+		_ = d.Stop(ctx, endpoint)
 	}
 
-	return d.doStart(ctx, configDir, destination, parameters)
+	return d.doStart(ctx, configDir, endpoint, parameters)
 }
 
-func (d Driver) Stop(ctx context.Context, destination vpn.Destination) error {
-	value, exists := state.LoadAndDelete(destination.Hash())
+func (d Driver) Stop(ctx context.Context, endpoint vpn.Endpoint) error {
+	value, exists := state.LoadAndDelete(endpoint.Hash())
 	if !exists {
 		return nil
 	}
 
-	endpoint, ok := value.(*tailnetEndpoint)
+	tEndpoint, ok := value.(*tailnetEndpoint)
 	if !ok {
 		return fmt.Errorf("invalid endpoint type in state")
 	}
 
-	endpoint.Stop(ctx)
+	tEndpoint.stop(ctx)
 
 	return nil
 }
@@ -75,7 +75,7 @@ func (d Driver) Stop(ctx context.Context, destination vpn.Destination) error {
 func (d Driver) doStart(
 	ctx context.Context,
 	configDir string,
-	destination vpn.Destination,
+	endpoint vpn.Endpoint,
 	parameters map[string]any,
 ) error {
 	authKey, ok := parameters[authKeyFieldName].(string)
@@ -88,18 +88,18 @@ func (d Driver) doStart(
 		serverURL = value
 	}
 
-	endpoint := &tailnetEndpoint{
-		authKey:     authKey,
-		configDir:   configDir,
-		destination: destination,
-		serverURL:   serverURL,
+	tEndpoint := &tailnetEndpoint{
+		authKey:   authKey,
+		configDir: configDir,
+		endpoint:  endpoint,
+		serverURL: serverURL,
 	}
 
-	if err := endpoint.Start(ctx); err != nil {
+	if err := tEndpoint.start(ctx); err != nil {
 		return err
 	}
 
-	state.Store(destination.Hash(), endpoint)
+	state.Store(endpoint.Hash(), tEndpoint)
 
 	return nil
 }

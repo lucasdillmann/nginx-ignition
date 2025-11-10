@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -51,7 +51,7 @@ func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if *inUse {
-		return core_error.New("Integration is in use by one or more hosts", true)
+		return coreerror.New("Integration is in use by one or more hosts", true)
 	}
 
 	return s.repository.DeleteByID(ctx, id)

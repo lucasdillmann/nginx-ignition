@@ -3,7 +3,7 @@ package vpn
 import (
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
+	"dillmann.com.br/nginx-ignition/api/common/dynamicfield"
 )
 
 type vpnRequest struct {
@@ -22,8 +22,8 @@ type vpnResponse struct {
 }
 
 type vpnDriverResponse struct {
-	ID                    string                                `json:"id"`
-	Name                  string                                `json:"name"`
-	ImportantInstructions []string                              `json:"importantInstructions"`
-	ConfigurationFields   []*dynamic_field.DynamicFieldResponse `json:"configurationFields"`
+	ID                    string                               `json:"id"`
+	Name                  string                               `json:"name"`
+	ImportantInstructions []string                             `json:"importantInstructions"`
+	ConfigurationFields   []*dynamicfield.DynamicFieldResponse `json:"configurationFields"`
 }

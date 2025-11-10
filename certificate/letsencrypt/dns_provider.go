@@ -163,7 +163,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zoneedit"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zoneee"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zonomi"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 )
 
 var providers = []dns.Provider{
@@ -335,5 +335,5 @@ func resolveProviderChallenge(ctx context.Context, domainNames []string, paramet
 		}
 	}
 
-	return nil, core_error.New("Unknown DNS provider", true)
+	return nil, coreerror.New("Unknown DNS provider", true)
 }

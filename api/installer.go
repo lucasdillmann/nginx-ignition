@@ -1,7 +1,7 @@
 package api
 
 import (
-	"dillmann.com.br/nginx-ignition/api/access_list"
+	"dillmann.com.br/nginx-ignition/api/accesslist"
 	"dillmann.com.br/nginx-ignition/api/backup"
 	"dillmann.com.br/nginx-ignition/api/certificate"
 	"dillmann.com.br/nginx-ignition/api/common/server"
@@ -20,7 +20,7 @@ func Install() error {
 	return container.Run(
 		server.Install,
 		settings.Install,
-		access_list.Install,
+		accesslist.Install,
 		certificate.Install,
 		user.Install,
 		host.Install,

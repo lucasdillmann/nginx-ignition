@@ -10,8 +10,8 @@ import (
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
@@ -41,8 +41,8 @@ func (a *Driver) Description() string {
 		"ignition's host routes."
 }
 
-func (a *Driver) ConfigurationFields() []*dynamic_fields.DynamicField {
-	return []*dynamic_fields.DynamicField{
+func (a *Driver) ConfigurationFields() []*dynamicfields.DynamicField {
+	return []*dynamicfields.DynamicField{
 		&connectionModeField,
 		&socketPathField,
 		&hostUrlField,
@@ -137,7 +137,7 @@ func (a *Driver) resolveAvailableOptionById(
 
 	idParts := strings.Split(id, ":")
 	if len(idParts) != 2 {
-		return nil, core_error.New("Invalid option ID", true)
+		return nil, coreerror.New("Invalid option ID", true)
 	}
 
 	containerId := idParts[0]
@@ -243,7 +243,7 @@ func startClient(parameters map[string]any) (*client.Client, error) {
 		hostUrl := parameters[hostUrlField.ID].(string)
 		connectionString = hostUrl
 	default:
-		return nil, core_error.New("Invalid connection mode", false)
+		return nil, coreerror.New("Invalid connection mode", false)
 	}
 
 	return client.NewClientWithOpts(

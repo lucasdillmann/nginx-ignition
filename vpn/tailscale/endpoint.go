@@ -17,17 +17,17 @@ import (
 )
 
 type tailnetEndpoint struct {
-	client      *local.Client
-	server      *tsnet.Server
-	destination vpn.Destination
-	serverURL   string
-	authKey     string
-	configDir   string
-	listeners   []net.Listener
+	client    *local.Client
+	server    *tsnet.Server
+	endpoint  vpn.Endpoint
+	serverURL string
+	authKey   string
+	configDir string
+	listeners []net.Listener
 }
 
-func (e *tailnetEndpoint) Stop(ctx context.Context) {
-	log.Infof("Stopping Tailscale endpoint %s...", e.destination.SourceName())
+func (e *tailnetEndpoint) stop(ctx context.Context) {
+	log.Infof("Stopping Tailscale endpoint %s...", e.endpoint.SourceName())
 
 	for _, listener := range e.listeners {
 		_ = listener.Close()
@@ -37,17 +37,17 @@ func (e *tailnetEndpoint) Stop(ctx context.Context) {
 	_ = e.server.Close()
 }
 
-func (e *tailnetEndpoint) Start(ctx context.Context) error {
-	log.Infof("Starting tailscale %s endpoint...", e.destination.SourceName())
+func (e *tailnetEndpoint) start(ctx context.Context) error {
+	log.Infof("Starting tailscale %s endpoint...", e.endpoint.SourceName())
 
 	e.server = new(tsnet.Server)
 	e.server.AuthKey = e.authKey
 	e.server.ControlURL = e.serverURL
-	e.server.Hostname = e.destination.SourceName()
+	e.server.Hostname = e.endpoint.SourceName()
 	e.server.Ephemeral = true
 	e.server.UserLogf = noOpLogger
 	e.server.Logf = noOpLogger
-	e.server.Dir = fmt.Sprintf("%s/tsnet/%s", e.configDir, e.destination.SourceName())
+	e.server.Dir = fmt.Sprintf("%s/tsnet/%s", e.configDir, e.endpoint.SourceName())
 
 	if _, err := e.server.Up(ctx); err != nil {
 		return err
@@ -58,7 +58,7 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 		return err
 	}
 
-	for _, target := range e.destination.Targets() {
+	for _, target := range e.endpoint.Targets() {
 		if err := e.startListener(target); err != nil {
 			return err
 		}
@@ -67,7 +67,7 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 	ipv4, ipv6 := e.server.TailscaleIPs()
 	log.Infof(
 		"Tailscale endpoint %s started (IPv4 %v; IPv6 %v)",
-		e.destination.SourceName(),
+		e.endpoint.SourceName(),
 		ipv4,
 		ipv6,
 	)
@@ -75,7 +75,7 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 	return nil
 }
 
-func (e *tailnetEndpoint) startListener(target vpn.DestinationTarget) error {
+func (e *tailnetEndpoint) startListener(target vpn.EndpointTarget) error {
 	proxy := new(httputil.ReverseProxy)
 	proxy.ErrorLog = log.Std()
 

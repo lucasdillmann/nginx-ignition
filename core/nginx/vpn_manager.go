@@ -10,7 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
-type destinationAdapter struct {
+type endpointAdapter struct {
 	vpnID      uuid.UUID
 	name       string
 	domainName *string
@@ -20,83 +20,83 @@ type destinationAdapter struct {
 type vpnManager struct {
 	vpnCommands      *vpn.Commands
 	settingsCommands *settings.Commands
-	currentData      []vpn.Destination
+	currentEndpoints []vpn.Endpoint
 }
 
 func newVpnManager(vpnCommands *vpn.Commands, settingsCommands *settings.Commands) *vpnManager {
 	return &vpnManager{
 		vpnCommands:      vpnCommands,
 		settingsCommands: settingsCommands,
-		currentData:      make([]vpn.Destination, 0),
+		currentEndpoints: make([]vpn.Endpoint, 0),
 	}
 }
 
 func (m *vpnManager) start(ctx context.Context, hosts []*host.Host) error {
-	destinations, err := m.buildDestinations(ctx, hosts)
+	endpoints, err := m.buildEndpoints(ctx, hosts)
 	if err != nil {
 		return err
 	}
 
-	for _, destination := range destinations {
-		if err := m.vpnCommands.Start(ctx, destination); err != nil {
+	for _, endpoint := range endpoints {
+		if err := m.vpnCommands.Start(ctx, endpoint); err != nil {
 			return err
 		}
 	}
 
-	m.currentData = destinations
+	m.currentEndpoints = endpoints
 	return nil
 }
 
 func (m *vpnManager) reload(ctx context.Context, hosts []*host.Host) error {
-	newDestinations, err := m.buildDestinations(ctx, hosts)
+	newEndpoints, err := m.buildEndpoints(ctx, hosts)
 	if err != nil {
 		return err
 	}
 
-	for _, oldDest := range m.currentData {
+	for _, oldEndpoint := range m.currentEndpoints {
 		found := false
-		for _, newDest := range newDestinations {
-			if oldDest.Hash() == newDest.Hash() {
+		for _, newEndpoint := range newEndpoints {
+			if oldEndpoint.Hash() == newEndpoint.Hash() {
 				found = true
 				break
 			}
 		}
 
 		if !found {
-			if err := m.vpnCommands.Stop(ctx, oldDest); err != nil {
+			if err := m.vpnCommands.Stop(ctx, oldEndpoint); err != nil {
 				return err
 			}
 		}
 	}
 
-	for _, newDest := range newDestinations {
+	for _, newEndpoint := range newEndpoints {
 		found := false
-		for _, oldDest := range m.currentData {
-			if oldDest.Hash() == newDest.Hash() {
+		for _, oldDest := range m.currentEndpoints {
+			if oldDest.Hash() == newEndpoint.Hash() {
 				found = true
 				break
 			}
 		}
 
 		if !found {
-			if err := m.vpnCommands.Start(ctx, newDest); err != nil {
+			if err := m.vpnCommands.Start(ctx, newEndpoint); err != nil {
 				return err
 			}
 		}
 	}
 
-	m.currentData = newDestinations
+	m.currentEndpoints = newEndpoints
 	return nil
 }
 
-func (m *vpnManager) buildDestinations(ctx context.Context, hosts []*host.Host) ([]vpn.Destination, error) {
+func (m *vpnManager) buildEndpoints(ctx context.Context, hosts []*host.Host) ([]vpn.Endpoint, error) {
 	setts, err := m.settingsCommands.Get(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	globalBindings := setts.GlobalBindings
-	destinations := make([]vpn.Destination, 0)
+	endpoints := make([]vpn.Endpoint, 0)
 
 	for _, h := range hosts {
 		for _, vpnEntry := range h.VPNs {
@@ -110,7 +110,7 @@ func (m *vpnManager) buildDestinations(ctx context.Context, hosts []*host.Host) 
 				domainName = h.DomainNames[0]
 			}
 
-			destinations = append(destinations, &destinationAdapter{
+			endpoints = append(endpoints, &endpointAdapter{
 				vpnID:      vpnEntry.VPNID,
 				name:       vpnEntry.Name,
 				domainName: domainName,
@@ -119,12 +119,12 @@ func (m *vpnManager) buildDestinations(ctx context.Context, hosts []*host.Host) 
 		}
 	}
 
-	return destinations, nil
+	return endpoints, nil
 }
 
 func (m *vpnManager) stop(ctx context.Context) error {
-	for _, destination := range m.currentData {
-		if err := m.vpnCommands.Stop(ctx, destination); err != nil {
+	for _, endpoint := range m.currentEndpoints {
+		if err := m.vpnCommands.Stop(ctx, endpoint); err != nil {
 			return err
 		}
 	}
@@ -132,7 +132,7 @@ func (m *vpnManager) stop(ctx context.Context) error {
 	return nil
 }
 
-func (a *destinationAdapter) Hash() string {
+func (a *endpointAdapter) Hash() string {
 	var domainNameStr string
 	if a.domainName != nil {
 		domainNameStr = *a.domainName
@@ -141,21 +141,21 @@ func (a *destinationAdapter) Hash() string {
 	return a.vpnID.String() + a.name + domainNameStr
 }
 
-func (a *destinationAdapter) VPNID() uuid.UUID {
+func (a *endpointAdapter) VPNID() uuid.UUID {
 	return a.vpnID
 }
 
-func (a *destinationAdapter) SourceName() string {
+func (a *endpointAdapter) SourceName() string {
 	return a.name
 }
 
-func (a *destinationAdapter) Targets() []vpn.DestinationTarget {
+func (a *endpointAdapter) Targets() []vpn.EndpointTarget {
 	var targetHost string
 	if a.domainName != nil {
 		targetHost = *a.domainName
 	}
 
-	output := make([]vpn.DestinationTarget, len(a.bindings))
+	output := make([]vpn.EndpointTarget, len(a.bindings))
 	for index, binding := range a.bindings {
 		output[index].Host = targetHost
 		output[index].IP = binding.IP

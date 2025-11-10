@@ -5,14 +5,14 @@ import (
 
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
+	"dillmann.com.br/nginx-ignition/api/common/dynamicfield"
 )
 
 type availableProviderResponse struct {
-	ID            string                                `json:"id"`
-	Name          string                                `json:"name"`
-	Priority      int                                   `json:"priority"`
-	DynamicFields []*dynamic_field.DynamicFieldResponse `json:"dynamicFields"`
+	ID            string                               `json:"id"`
+	Name          string                               `json:"name"`
+	Priority      int                                  `json:"priority"`
+	DynamicFields []*dynamicfield.DynamicFieldResponse `json:"dynamicFields"`
 }
 
 type certificateResponse struct {

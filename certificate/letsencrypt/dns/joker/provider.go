@@ -3,12 +3,12 @@ package joker
 import (
 	"context"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/joker"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 const (
@@ -26,15 +26,15 @@ func (p *Provider) ID() string { return "JOKER" }
 
 func (p *Provider) Name() string { return "Joker" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:           apiModeFieldID,
 			Description:  "Joker API mode",
-			Type:         dynamic_fields.EnumType,
+			Type:         dynamicfields.EnumType,
 			Required:     true,
-			DefaultValue: ptr.String(dmapi),
-			EnumOptions: &[]*dynamic_fields.EnumOption{
+			DefaultValue: ptr.Of(dmapi),
+			EnumOptions: &[]*dynamicfields.EnumOption{
 				{
 					ID:          dmapi,
 					Description: dmapi,
@@ -50,8 +50,8 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			Description: "Joker API key",
 			Sensitive:   true,
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
-			Condition: &dynamic_fields.Condition{
+			Type:        dynamicfields.SingleLineTextType,
+			Condition: &dynamicfields.Condition{
 				ParentField: apiModeFieldID,
 				Value:       dmapi,
 			},
@@ -60,8 +60,8 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			ID:          usernameFieldID,
 			Description: "Joker username",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
-			Condition: &dynamic_fields.Condition{
+			Type:        dynamicfields.SingleLineTextType,
+			Condition: &dynamicfields.Condition{
 				ParentField: apiModeFieldID,
 				Value:       svc,
 			},
@@ -71,8 +71,8 @@ func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
 			Description: "Joker password",
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
-			Condition: &dynamic_fields.Condition{
+			Type:        dynamicfields.SingleLineTextType,
+			Condition: &dynamicfields.Condition{
 				ParentField: apiModeFieldID,
 				Value:       svc,
 			},

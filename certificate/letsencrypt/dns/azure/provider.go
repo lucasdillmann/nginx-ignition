@@ -4,13 +4,13 @@ import (
 	"context"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
-	"github.com/aws/smithy-go/ptr"
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/azuredns"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/core_error"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 const (
@@ -35,40 +35,40 @@ func (p *Provider) Name() string {
 	return "Azure"
 }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tenantFieldID,
 			Description: "Azure tenant ID",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          subscriptionFieldID,
 			Description: "Azure subscription ID",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          clientFieldID,
 			Description: "Azure client ID",
 			Required:    true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          clientSecretFieldID,
 			Description: "Azure client secret",
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:           environmentFieldID,
 			Description:  "Azure environment",
 			Required:     true,
-			DefaultValue: ptr.String(defaultRegion),
-			Type:         dynamic_fields.EnumType,
-			EnumOptions: &[]*dynamic_fields.EnumOption{
+			DefaultValue: ptr.Of(defaultRegion),
+			Type:         dynamicfields.EnumType,
+			EnumOptions: &[]*dynamicfields.EnumOption{
 				{
 					ID:          defaultRegion,
 					Description: "Azure (default)",
@@ -106,7 +106,7 @@ func (p *Provider) ChallengeProvider(
 	case usGovRegion:
 		env = cloud.AzureGovernment
 	default:
-		return nil, core_error.New("Unknown Azure environment", true)
+		return nil, coreerror.New("Unknown Azure environment", true)
 	}
 
 	cfg := &azuredns.Config{

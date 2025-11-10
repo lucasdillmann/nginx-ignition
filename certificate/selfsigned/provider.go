@@ -10,7 +10,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
 type Provider struct{}
@@ -27,8 +27,8 @@ func (p *Provider) Name() string {
 	return "Self-signed certificate"
 }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return []*dynamic_fields.DynamicField{}
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return []*dynamicfields.DynamicField{}
 }
 
 func (p *Provider) Priority() int {

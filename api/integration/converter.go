@@ -3,7 +3,7 @@ package integration
 import (
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
+	"dillmann.com.br/nginx-ignition/api/common/dynamicfield"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
@@ -51,6 +51,6 @@ func toAvailableDriverDto(data *integration.AvailableDriver) *integrationDriverR
 		ID:                  data.ID,
 		Name:                data.Name,
 		Description:         data.Description,
-		ConfigurationFields: dynamic_field.ToResponse(data.ConfigurationFields),
+		ConfigurationFields: dynamicfield.ToResponse(data.ConfigurationFields),
 	}
 }

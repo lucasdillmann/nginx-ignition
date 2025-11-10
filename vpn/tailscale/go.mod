@@ -2,10 +2,7 @@ module dillmann.com.br/nginx-ignition/vpn/tailscale
 
 go 1.25.4
 
-require (
-	github.com/aws/smithy-go v1.23.2
-	tailscale.com v1.90.6
-)
+require tailscale.com v1.90.6
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect

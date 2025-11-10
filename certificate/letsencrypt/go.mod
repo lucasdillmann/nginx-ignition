@@ -8,7 +8,6 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.39.6
 	github.com/aws/aws-sdk-go-v2/credentials v1.18.21
 	github.com/aws/aws-sdk-go-v2/service/route53 v1.59.3
-	github.com/aws/smithy-go v1.23.1
 	github.com/go-acme/lego/v4 v4.28.1
 	github.com/google/uuid v1.6.0
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12

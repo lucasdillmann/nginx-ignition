@@ -3,7 +3,7 @@ package integration
 import (
 	"context"
 
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -18,7 +18,7 @@ type Driver interface {
 	ID() string
 	Name() string
 	Description() string
-	ConfigurationFields() []*dynamic_fields.DynamicField
+	ConfigurationFields() []*dynamicfields.DynamicField
 	GetAvailableOptions(
 		ctx context.Context,
 		parameters map[string]any,

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/core/access_list"
+	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
@@ -29,7 +29,7 @@ func newFacade(
 	streamCommands *stream.Commands,
 	integrationCommands *integration.Commands,
 	configuration *configuration.Configuration,
-	accessListRepository access_list.Repository,
+	accessListRepository accesslist.Repository,
 	certificateRepository certificate.Repository,
 	settingsRepository settings.Repository,
 ) *Facade {

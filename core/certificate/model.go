@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
 type Certificate struct {
@@ -41,7 +41,7 @@ func (a *AvailableProvider) Name() string {
 	return a.provider.Name()
 }
 
-func (a *AvailableProvider) DynamicFields() []*dynamic_fields.DynamicField {
+func (a *AvailableProvider) DynamicFields() []*dynamicfields.DynamicField {
 	return a.provider.DynamicFields()
 }
 

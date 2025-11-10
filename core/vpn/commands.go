@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -13,7 +13,7 @@ type AvailableDriver struct {
 	ID                    string
 	Name                  string
 	ImportantInstructions []string
-	ConfigurationFields   []*dynamic_fields.DynamicField
+	ConfigurationFields   []*dynamicfields.DynamicField
 }
 
 type Commands struct {
@@ -22,9 +22,9 @@ type Commands struct {
 	Save                func(ctx context.Context, data *VPN) error
 	Exists              func(ctx context.Context, id uuid.UUID) (*bool, error)
 	GetAvailableDrivers func(ctx context.Context) (*[]*AvailableDriver, error)
-	Start               func(ctx context.Context, destination Destination) error
-	Reload              func(ctx context.Context, destination Destination) error
-	Stop                func(ctx context.Context, destination Destination) error
+	Start               func(ctx context.Context, endpoint Endpoint) error
+	Reload              func(ctx context.Context, endpoint Endpoint) error
+	Stop                func(ctx context.Context, endpoint Endpoint) error
 	List                func(
 		ctx context.Context,
 		pageSize, pageNumber int,

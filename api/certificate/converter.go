@@ -3,7 +3,7 @@ package certificate
 import (
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/api/common/dynamic_field"
+	"dillmann.com.br/nginx-ignition/api/common/dynamicfield"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
@@ -14,7 +14,7 @@ func toAvailableProviderResponse(input []*certificate.AvailableProvider) []*avai
 			ID:            provider.ID(),
 			Name:          provider.Name(),
 			Priority:      provider.Priority(),
-			DynamicFields: dynamic_field.ToResponse(provider.DynamicFields()),
+			DynamicFields: dynamicfield.ToResponse(provider.DynamicFields()),
 		})
 	}
 	return responses

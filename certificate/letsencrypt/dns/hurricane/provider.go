@@ -5,12 +5,12 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/hurricane"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
-	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 const (
@@ -23,15 +23,15 @@ func (p *Provider) ID() string { return "HURRICANE" }
 
 func (p *Provider) Name() string { return "Hurricane Electric" }
 
-func (p *Provider) DynamicFields() []*dynamic_fields.DynamicField {
-	return dns.LinkedToProvider(p.ID(), []dynamic_fields.DynamicField{
+func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokensFieldID,
 			Description: "Hurricane Electric tokens",
-			HelpText:    ptr.String("Comma-separated key=value pairs"),
+			HelpText:    ptr.Of("Comma-separated key=value pairs"),
 			Required:    true,
 			Sensitive:   true,
-			Type:        dynamic_fields.SingleLineTextType,
+			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
 }

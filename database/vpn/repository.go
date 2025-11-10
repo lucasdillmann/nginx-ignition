@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
@@ -50,14 +50,14 @@ func (r *repository) ExistsByName(ctx context.Context, name string) (*bool, erro
 		Count(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return ptr.Bool(false), nil
+		return ptr.Of(false), nil
 	}
 
 	if err != nil {
 		return nil, err
 	}
 
-	return ptr.Bool(count > 0), nil
+	return ptr.Of(count > 0), nil
 }
 
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (*bool, error) {
@@ -67,14 +67,14 @@ func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (*bool, error
 		Count(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return ptr.Bool(false), nil
+		return ptr.Of(false), nil
 	}
 
 	if err != nil {
 		return nil, err
 	}
 
-	return ptr.Bool(count > 0), nil
+	return ptr.Of(count > 0), nil
 }
 
 func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (*bool, error) {
@@ -84,14 +84,14 @@ func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (*bool, error)
 		Count(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return ptr.Bool(false), nil
+		return ptr.Of(false), nil
 	}
 
 	if err != nil {
 		return nil, err
 	}
 
-	return ptr.Bool(count > 0), nil
+	return ptr.Of(count > 0), nil
 }
 
 func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {

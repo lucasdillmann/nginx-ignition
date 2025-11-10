@@ -12,14 +12,14 @@ type VPN struct {
 	Parameters map[string]any
 }
 
-type Destination interface {
+type Endpoint interface {
 	Hash() string
 	VPNID() uuid.UUID
 	SourceName() string
-	Targets() []DestinationTarget
+	Targets() []EndpointTarget
 }
 
-type DestinationTarget struct {
+type EndpointTarget struct {
 	Host  string
 	IP    string
 	Port  int
