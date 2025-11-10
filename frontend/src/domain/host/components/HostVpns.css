@@ -19,11 +19,11 @@
 }
 
 .host-form-vpn-name {
-    flex: 0 0 50%;
-    max-width: 50%;
+    flex: 1 1 0;
+    min-width: 250px;
 }
 
 .host-form-vpn-host {
-    flex: 0 0 50%;
-    max-width: 50%;
+    flex: 1 1 0;
+    min-width: 250px;
 }
