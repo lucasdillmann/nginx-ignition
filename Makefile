@@ -1,7 +1,7 @@
 DOCKER_IMAGE ?= dillmann/nginx-ignition
 VERSION ?= 0.0.0
 PR_ID ?= 0
-SNAPSHOT_TAG_SUFFIX := $(if $(or $(filter 0,$(PR_ID)),$(filter ,$(PR_ID))),snapshot,pr-$(PR_ID)-snapshot)
+SNAPSHOT_TAG_SUFFIX := $(if $(filter-out ,$(PR_ID)),$(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,snapshot),snapshot)
 
 .prerequisites:
 	go work sync
