@@ -1,3 +1,5 @@
 package tailscale
 
-var state = make(map[string]*tailnetEndpoint)
+import "sync"
+
+var state sync.Map

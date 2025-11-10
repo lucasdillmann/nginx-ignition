@@ -2,6 +2,7 @@ package tailscale
 
 import (
 	"context"
+	"fmt"
 
 	"dillmann.com.br/nginx-ignition/core/common/dynamic_fields"
 	"dillmann.com.br/nginx-ignition/core/vpn"
@@ -35,7 +36,7 @@ func (d Driver) Start(
 	destination vpn.Destination,
 	parameters map[string]any,
 ) error {
-	if state[destination.Hash()] != nil {
+	if _, exists := state.Load(destination.Hash()); exists {
 		return nil
 	}
 
@@ -48,7 +49,7 @@ func (d Driver) Reload(
 	destination vpn.Destination,
 	parameters map[string]any,
 ) error {
-	if state[destination.Hash()] != nil {
+	if _, exists := state.Load(destination.Hash()); exists {
 		_ = d.Stop(ctx, destination)
 	}
 
@@ -56,13 +57,17 @@ func (d Driver) Reload(
 }
 
 func (d Driver) Stop(ctx context.Context, destination vpn.Destination) error {
-	endpoint := state[destination.Hash()]
-	if endpoint == nil {
+	value, exists := state.LoadAndDelete(destination.Hash())
+	if !exists {
 		return nil
 	}
 
+	endpoint, ok := value.(*tailnetEndpoint)
+	if !ok {
+		return fmt.Errorf("invalid endpoint type in state")
+	}
+
 	endpoint.Stop(ctx)
-	delete(state, destination.Hash())
 
 	return nil
 }
@@ -73,19 +78,28 @@ func (d Driver) doStart(
 	destination vpn.Destination,
 	parameters map[string]any,
 ) error {
-	authKey := parameters[authKeyFieldName].(string)
+	authKey, ok := parameters[authKeyFieldName].(string)
+	if !ok || authKey == "" {
+		return fmt.Errorf("authKey parameter is required and must be a non-empty string")
+	}
 
 	var serverURL string
 	if value, casted := parameters[coordinatorUrlFieldName].(string); casted {
 		serverURL = value
 	}
 
-	state[destination.Hash()] = &tailnetEndpoint{
+	endpoint := &tailnetEndpoint{
 		authKey:     authKey,
 		configDir:   configDir,
 		destination: destination,
 		serverURL:   serverURL,
 	}
 
-	return state[destination.Hash()].Start(ctx)
+	if err := endpoint.Start(ctx); err != nil {
+		return err
+	}
+
+	state.Store(destination.Hash(), endpoint)
+
+	return nil
 }
