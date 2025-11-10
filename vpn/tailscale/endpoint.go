@@ -2,6 +2,7 @@ package tailscale
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net"
 	"net/http"
@@ -77,6 +78,18 @@ func (e *tailnetEndpoint) Start(ctx context.Context) error {
 func (e *tailnetEndpoint) startListener(target vpn.DestinationTarget) error {
 	proxy := new(httputil.ReverseProxy)
 	proxy.ErrorLog = log.Std()
+
+	scheme := "http"
+	if target.HTTPS {
+		scheme = "https"
+		proxy.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{
+				ServerName: target.Host,
+				MinVersion: tls.VersionTLS12,
+			},
+		}
+	}
+
 	proxy.Director = func(req *http.Request) {
 		ipAddr := target.IP
 		if ipAddr == "0.0.0.0" {
@@ -84,11 +97,7 @@ func (e *tailnetEndpoint) startListener(target vpn.DestinationTarget) error {
 		}
 
 		req.URL.Host = fmt.Sprintf("%s:%d", ipAddr, target.Port)
-		req.URL.Scheme = "http"
-		if target.HTTPS {
-			req.URL.Scheme = "https"
-		}
-
+		req.URL.Scheme = scheme
 		req.Header.Del("Host")
 		req.Header.Set("Host", target.Host)
 		req.Host = target.Host
