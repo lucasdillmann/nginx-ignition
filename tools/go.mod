@@ -206,13 +206,13 @@ require (
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
+	golang.org/x/exp v0.0.0-20251113190631-e25ba8c21ef6 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20251023183803-a4bb9ffd2546 // indirect
-	golang.org/x/mod v0.29.0 // indirect
+	golang.org/x/mod v0.30.0 // indirect
 	golang.org/x/sync v0.18.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
-	golang.org/x/text v0.30.0 // indirect
-	golang.org/x/tools v0.38.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
+	golang.org/x/tools v0.39.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

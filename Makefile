@@ -5,7 +5,7 @@ SNAPSHOT_TAG_SUFFIX := $(if $(filter-out ,$(PR_ID)),$(if $(filter-out 0,$(PR_ID)
 
 .prerequisites:
 	go work sync
-	cd frontend/ && npm i
+	cd frontend/ && npm ci
 
 .frontend-check:
 	cd frontend/ && npm run check
@@ -84,6 +84,22 @@ check: .prerequisites .frontend-check .backend-check
 format: .prerequisites
 	go tool gofumpt -w .
 	cd frontend/ && npx prettier --write .
+
+update-dependencies:
+	cd api && go get -u all
+	cd application && go get -u all
+	cd certificate/commons && go get -u all
+	cd certificate/custom && go get -u all
+	cd certificate/letsencrypt && go get -u all
+	cd certificate/selfsigned && go get -u all
+	cd core && go get -u all
+	cd database && go get -u all
+	cd integration/docker && go get -u all
+	cd integration/truenas && go get -u all
+	cd vpn/tailscale && go get -u all
+	go work sync
+	cd frontend && npm update
+
 
 .build-prerequisites: .prerequisites .build-frontend .build-backend
 
