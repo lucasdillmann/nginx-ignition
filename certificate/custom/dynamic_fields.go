@@ -13,7 +13,7 @@ var (
 		Priority:    0,
 		Description: "Upload mode",
 		Required:    true,
-		Sensitive:   false,
+		Sensitive:   true,
 		Type:        dynamicfields.EnumType,
 		EnumOptions: &[]*dynamicfields.EnumOption{
 			{
