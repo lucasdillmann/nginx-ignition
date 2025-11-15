@@ -32,9 +32,13 @@ func (p *Provider) Name() string {
 
 func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 	return []*dynamicfields.DynamicField{
-		&publicKeyField,
-		&privateKeyField,
-		&certificationChainField,
+		&uploadModeField,
+		&publicKeyTextField,
+		&privateKeyTextField,
+		&certificationChainTextField,
+		&publicKeyFileField,
+		&privateKeyFileField,
+		&certificationChainFileField,
 	}
 }
 
@@ -48,24 +52,34 @@ func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (
 	}
 
 	params := request.Parameters
-	privateKeyStr, _ := params[privateKeyField.ID].(string)
-	publicKeyStr, _ := request.Parameters[publicKeyField.ID].(string)
+	fileUploadMode := params[uploadModeField.ID] == fileUploadModeID
 
-	chainStr, chainPresent := request.Parameters[certificationChainField.ID].(string)
+	var privateKeyStr, publicKeyStr, chainStr string
+	var chainPresent bool
 
-	privateKey, err := parsePrivateKey(privateKeyStr)
+	if fileUploadMode {
+		privateKeyStr, _ = params[privateKeyFileField.ID].(string)
+		publicKeyStr, _ = params[publicKeyFileField.ID].(string)
+		chainStr, chainPresent = params[certificationChainFileField.ID].(string)
+	} else {
+		privateKeyStr, _ = params[privateKeyTextField.ID].(string)
+		publicKeyStr, _ = params[publicKeyTextField.ID].(string)
+		chainStr, chainPresent = params[certificationChainTextField.ID].(string)
+	}
+
+	privateKey, err := parsePrivateKey(privateKeyStr, fileUploadMode)
 	if err != nil {
 		return nil, coreerror.New("Invalid private key", true)
 	}
 
-	publicKey, err := parseCertificate(publicKeyStr)
+	publicKey, err := parseCertificate(publicKeyStr, fileUploadMode)
 	if err != nil {
 		return nil, coreerror.New("Invalid public key", true)
 	}
 
 	var chain []*x509.Certificate
 	if chainPresent && chainStr != "" {
-		chain, err = parseCertificateChain(chainStr)
+		chain, err = parseCertificateChain(chainStr, fileUploadMode)
 		if err != nil {
 			return nil, coreerror.New("Invalid certification chain", true)
 		}
@@ -91,8 +105,8 @@ func (p *Provider) Renew(_ context.Context, cert *certificate.Certificate) (*cer
 	return cert, nil
 }
 
-func parsePrivateKey(key string) ([]byte, error) {
-	decodedKey, err := base64.StdEncoding.DecodeString(key)
+func parsePrivateKey(key string, base64Encoded bool) ([]byte, error) {
+	decodedKey, err := stringToByteArray(key, base64Encoded)
 	if err != nil {
 		return nil, coreerror.New("Failed to decode key", true)
 	}
@@ -105,8 +119,8 @@ func parsePrivateKey(key string) ([]byte, error) {
 	return block.Bytes, nil
 }
 
-func parseCertificate(cert string) (*x509.Certificate, error) {
-	decodedCert, err := base64.StdEncoding.DecodeString(cert)
+func parseCertificate(cert string, base64Encoded bool) (*x509.Certificate, error) {
+	decodedCert, err := stringToByteArray(cert, base64Encoded)
 	if err != nil {
 		return nil, coreerror.New("Failed to decode certificate", true)
 	}
@@ -119,8 +133,8 @@ func parseCertificate(cert string) (*x509.Certificate, error) {
 	return x509.ParseCertificate(block.Bytes)
 }
 
-func parseCertificateChain(chain string) ([]*x509.Certificate, error) {
-	decodedChain, err := base64.StdEncoding.DecodeString(chain)
+func parseCertificateChain(chain string, base64Encoded bool) ([]*x509.Certificate, error) {
+	decodedChain, err := stringToByteArray(chain, base64Encoded)
 	if err != nil {
 		return nil, coreerror.New("Failed to decode chain", true)
 	}
@@ -132,7 +146,7 @@ func parseCertificateChain(chain string) ([]*x509.Certificate, error) {
 		}
 
 		cert += "-----END CERTIFICATE-----"
-		parsedCert, err := parseCertificate(cert)
+		parsedCert, err := parseCertificate(cert, false)
 		if err != nil {
 			return nil, err
 		}
@@ -150,4 +164,12 @@ func encodeChain(chain []*x509.Certificate) []string {
 	}
 
 	return encodedChain
+}
+
+func stringToByteArray(value string, base64Encoded bool) ([]byte, error) {
+	if base64Encoded {
+		return base64.StdEncoding.DecodeString(value)
+	}
+
+	return []byte(value), nil
 }
