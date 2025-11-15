@@ -350,7 +350,7 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 		}
 
 		if vpnNameUsage[value.VPNID][value.Name] > 0 {
-			v.delegate.Add(namePath, "Name was already used in another entry for this VPN")
+			v.delegate.Add(namePath, "Name was already used before")
 		}
 
 		vpnNameUsage[value.VPNID][value.Name]++

@@ -100,7 +100,6 @@ update-dependencies:
 	go work sync
 	cd frontend && npm update
 
-
 .build-prerequisites: .prerequisites .build-frontend .build-backend
 
 build-release: .build-prerequisites .build-release-docker-image .build-distribution-files
