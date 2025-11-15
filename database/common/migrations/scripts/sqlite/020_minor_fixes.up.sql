@@ -1,14 +1,21 @@
-create table host_vpn_new (
-    host_id integer not null,
-    vpn_id integer not null,
-    name varchar(255) not null,
-    primary key (host_id, vpn_id, name),
-    foreign key (host_id) references host (id) on delete cascade,
-    foreign key (vpn_id) references integration (id) on delete cascade
+drop index idx_host_vpn_host_id;
+drop index idx_host_vpn_vpn_id;
+alter table host_vpn rename to host_vpn_old;
+
+create table host_vpn (
+    host_id uuid not null,
+    vpn_id  uuid not null,
+    name varchar(256) not null,
+    host varchar(256),
+    constraint pk_host_vpn primary key (host_id, vpn_id, name),
+    constraint fk_host_vpn_host foreign key (host_id) references host (id),
+    constraint fk_host_vpn_vpn foreign key (vpn_id) references vpn (id)
 );
 
-insert into host_vpn_new (host_id, vpn_id, name)
-select host_id, vpn_id, name from host_vpn;
+create index idx_host_vpn_host_id on host_vpn (host_id);
+create index idx_host_vpn_vpn_id on host_vpn (vpn_id);
 
-drop table host_vpn;
-alter table host_vpn_new rename to host_vpn;
+insert into host_vpn (host_id, vpn_id, name, host)
+    select host_id, vpn_id, name, host from host_vpn_old;
+
+drop table host_vpn_old;
