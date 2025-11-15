@@ -2,31 +2,106 @@ package custom
 
 import "dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 
+const (
+	textFieldUploadModeID = "textField"
+	fileUploadModeID      = "fileUpload"
+)
+
 var (
-	publicKeyField = dynamicfields.DynamicField{
-		ID:          "publicKey",
+	uploadModeField = dynamicfields.DynamicField{
+		ID:          "uploadMode",
 		Priority:    0,
-		Description: "Certificate file (PEM encoded) with the public key",
+		Description: "Upload mode",
 		Required:    true,
 		Sensitive:   true,
-		Type:        dynamicfields.FileType,
+		Type:        dynamicfields.EnumType,
+		EnumOptions: &[]*dynamicfields.EnumOption{
+			{
+				ID:          textFieldUploadModeID,
+				Description: "PEM-encoded text",
+			},
+			{
+				ID:          fileUploadModeID,
+				Description: "PEM-encoded file",
+			},
+		},
 	}
 
-	privateKeyField = dynamicfields.DynamicField{
-		ID:          "privateKey",
+	publicKeyTextField = dynamicfields.DynamicField{
+		ID:          "publicKeyPem",
 		Priority:    1,
-		Description: "Certificate file (PEM encoded) with the private key",
+		Description: "Public key",
+		Required:    true,
+		Sensitive:   true,
+		Type:        dynamicfields.MultiLineTextType,
+		Condition: &dynamicfields.Condition{
+			ParentField: uploadModeField.ID,
+			Value:       textFieldUploadModeID,
+		},
+	}
+
+	privateKeyTextField = dynamicfields.DynamicField{
+		ID:          "privateKeyPem",
+		Priority:    2,
+		Description: "Private key",
+		Required:    true,
+		Sensitive:   true,
+		Type:        dynamicfields.MultiLineTextType,
+		Condition: &dynamicfields.Condition{
+			ParentField: uploadModeField.ID,
+			Value:       textFieldUploadModeID,
+		},
+	}
+
+	certificationChainTextField = dynamicfields.DynamicField{
+		ID:          "certificationChainPem",
+		Priority:    3,
+		Description: "Certification chain",
+		Required:    false,
+		Sensitive:   true,
+		Type:        dynamicfields.MultiLineTextType,
+		Condition: &dynamicfields.Condition{
+			ParentField: uploadModeField.ID,
+			Value:       textFieldUploadModeID,
+		},
+	}
+
+	publicKeyFileField = dynamicfields.DynamicField{
+		ID:          "publicKeyFile",
+		Priority:    1,
+		Description: "Public key",
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
+		Condition: &dynamicfields.Condition{
+			ParentField: uploadModeField.ID,
+			Value:       fileUploadModeID,
+		},
 	}
 
-	certificationChainField = dynamicfields.DynamicField{
-		ID:          "certificationChain",
+	privateKeyFileField = dynamicfields.DynamicField{
+		ID:          "privateKeyFile",
 		Priority:    2,
-		Description: "Certification chain file (PEM encoded)",
+		Description: "Private key",
+		Required:    true,
+		Sensitive:   true,
+		Type:        dynamicfields.FileType,
+		Condition: &dynamicfields.Condition{
+			ParentField: uploadModeField.ID,
+			Value:       fileUploadModeID,
+		},
+	}
+
+	certificationChainFileField = dynamicfields.DynamicField{
+		ID:          "certificationChainFile",
+		Priority:    3,
+		Description: "Certification chain",
 		Required:    false,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
+		Condition: &dynamicfields.Condition{
+			ParentField: uploadModeField.ID,
+			Value:       fileUploadModeID,
+		},
 	}
 )

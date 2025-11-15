@@ -66,9 +66,9 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
     private renderFileUpload() {
         return (
             <Upload type="drag" maxCount={1} beforeUpload={() => false}>
-                <button style={{ border: 0, background: "none" }} type="button">
-                    <PlusOutlined />
-                    <div style={{ marginTop: 8 }}>Select file</div>
+                <button style={{ border: 0, background: "none", color: "inherit" }} type="button">
+                    <PlusOutlined style={{ color: "inherit" }} />
+                    <div style={{ marginTop: 8, color: "inherit" }}>Select or drop the file</div>
                 </button>
             </Upload>
         )
