@@ -329,6 +329,8 @@ func (v *validator) validateExecuteCodeRoute(route *Route, index int) {
 }
 
 func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
+	vpnNameUsage := make(map[uuid.UUID]map[string]int)
+
 	for index, value := range host.VPNs {
 		basePath := "vpns[" + strconv.Itoa(index) + "]"
 		vpnIdPath := basePath + ".vpnId"
@@ -342,6 +344,16 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 			v.delegate.Add(vpnIdPath, validation.ValueMissingMessage)
 			continue
 		}
+
+		if vpnNameUsage[value.VPNID] == nil {
+			vpnNameUsage[value.VPNID] = make(map[string]int)
+		}
+
+		if vpnNameUsage[value.VPNID][value.Name] > 0 {
+			v.delegate.Add(namePath, "Name was already used in another entry for this VPN")
+		}
+
+		vpnNameUsage[value.VPNID][value.Name]++
 
 		vpnData, err := v.vpnCommands.Get(ctx, value.VPNID)
 		if err != nil {
