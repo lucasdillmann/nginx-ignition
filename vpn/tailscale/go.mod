@@ -54,7 +54,7 @@ require (
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
-	gvisor.dev/gvisor v0.0.0-20251117231235-e2c42ec307c0 // indirect
+	gvisor.dev/gvisor v0.0.0-20250205023644-9414b50a5633 // indirect
 	honnef.co/go/tools v0.6.1 // indirect
 	software.sslmate.com/src/go-pkcs12 v0.6.0 // indirect
 )
