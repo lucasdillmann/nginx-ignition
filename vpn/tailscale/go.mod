@@ -10,7 +10,7 @@ require (
 	github.com/akutz/memconn v0.1.0 // indirect
 	github.com/alexbrainman/sspi v0.0.0-20250919150558-7d374ff0d59e // indirect
 	github.com/aws/aws-sdk-go-v2 v1.39.6 // indirect
-	github.com/aws/aws-sdk-go-v2/config v1.31.17 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.31.20 // indirect
 	github.com/coder/websocket v1.8.14 // indirect
 	github.com/dblohm7/wingoes v0.0.0-20250822163801-6d8e6105c62d // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
@@ -54,7 +54,7 @@ require (
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
-	gvisor.dev/gvisor v0.0.0-20250205023644-9414b50a5633 // indirect
+	gvisor.dev/gvisor v0.0.0-20251117231235-e2c42ec307c0 // indirect
 	honnef.co/go/tools v0.6.1 // indirect
 	software.sslmate.com/src/go-pkcs12 v0.6.0 // indirect
 )
