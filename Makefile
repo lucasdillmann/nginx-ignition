@@ -2,6 +2,7 @@ DOCKER_IMAGE ?= dillmann/nginx-ignition
 VERSION ?= 0.0.0
 PR_ID ?= 0
 SNAPSHOT_TAG_SUFFIX := $(if $(filter-out ,$(PR_ID)),$(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,snapshot),snapshot)
+LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSION)'
 
 .prerequisites:
 	go work sync
@@ -28,23 +29,21 @@ SNAPSHOT_TAG_SUFFIX := $(if $(filter-out ,$(PR_ID)),$(if $(filter-out 0,$(PR_ID)
 	cd frontend/ && npm run build
 
 .build-backend:
-	GOARCH=amd64 CGO_ENABLED="0" GOOS="linux" go build -o build/linux/amd64 application/main.go
-	GOARCH=arm64 CGO_ENABLED="0" GOOS="linux" go build -o build/linux/arm64 application/main.go
-	GOARCH=arm64 CGO_ENABLED="0" GOOS="darwin" go build -o build/macos/arm64 application/main.go
+	GOARCH=amd64 CGO_ENABLED="0" GOOS="linux" go build -ldflags "$(LDFLAGS)" -o build/linux/amd64 application/main.go
+	GOARCH=arm64 CGO_ENABLED="0" GOOS="linux" go build -ldflags "$(LDFLAGS)" -o build/linux/arm64 application/main.go
+	GOARCH=arm64 CGO_ENABLED="0" GOOS="darwin" go build -ldflags "$(LDFLAGS)" -o build/macos/arm64 application/main.go
 
 .build-release-docker-image:
 	docker buildx build \
 		--tag $(DOCKER_IMAGE):$(VERSION) \
 		--tag $(DOCKER_IMAGE):latest \
 		--platform linux/amd64,linux/arm64 \
-		--build-arg NGINX_IGNITION_VERSION="$(VERSION)" \
 		--push .
 
 .build-snapshot-docker-image:
 	docker buildx build \
 		--tag $(DOCKER_IMAGE):$(SNAPSHOT_TAG_SUFFIX) \
 		--platform linux/amd64,linux/arm64 \
-		--build-arg NGINX_IGNITION_VERSION="" \
 		--push .
 
 .build-distribution-files:

@@ -11,8 +11,6 @@ COPY build/${TARGETPLATFORM} /workspace/nginx-ignition
 
 FROM alpine:3
 
-ARG NGINX_IGNITION_VERSION
-
 EXPOSE 8090
 
 HEALTHCHECK \
@@ -26,7 +24,6 @@ ENV NGINX_IGNITION_NGINX_BINARY_PATH="/usr/sbin/nginx" \
     NGINX_IGNITION_DATABASE_DRIVER="sqlite" \
     NGINX_IGNITION_DATABASE_MIGRATIONS_PATH="/opt/nginx-ignition/migrations" \
     NGINX_IGNITION_DATABASE_DATA_PATH="/opt/nginx-ignition/data" \
-    NGINX_IGNITION_VERSION="${NGINX_IGNITION_VERSION}" \
     GOMEMLIMIT="96MiB"
 
 ENTRYPOINT ["/opt/nginx-ignition/nginx-ignition"]
