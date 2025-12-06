@@ -39,7 +39,8 @@ RUN apk update && \
       nginx-mod-http-js \
       nginx-mod-http-lua \
       nginx-mod-stream \
-      ca-certificates && \
+      ca-certificates \
+      curl && \
     apk cache clean && \
     update-ca-certificates
 
