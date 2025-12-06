@@ -3,6 +3,10 @@
 nginx ignition provides health check endpoints that can be used by container orchestration platforms (like Docker)
 and monitoring systems to verify the application's status and availability.
 
+If needed, you can disable the health check endpoints by setting the `NGINX_IGNITION_HEALTH_CHECK_ENABLED` environment
+variable with the `false` value (check the [configuration properties](configuration-properties.md) documentation 
+for more details).
+
 ## Available endpoints
 
 ### Liveness endpoint
@@ -16,7 +20,7 @@ components are working as expected (like the connection with the database).
 - `200 OK`: Application is healthy and all components are functioning correctly
 - `503 Service Unavailable`: Application is running but one or more critical components are unhealthy
 
-**Example response (healthy):**
+**Example response:**
 ```json
 {
   "healthy": true,
@@ -24,20 +28,6 @@ components are working as expected (like the connection with the database).
     {
       "name": "database",
       "healthy": true
-    }
-  ]
-}
-```
-
-**Example response (unhealthy):**
-```json
-{
-  "healthy": false,
-  "components": [
-    {
-      "name": "database",
-      "healthy": false,
-      "reason": "lorem ipsum dolor sit amet"
     }
   ]
 }

@@ -87,6 +87,10 @@ properties and some common use-case examples.
 Check [this documentation file](docs/health-checks.md) for more details about the available health checks endpoints
 that you can use on your Docker Compose file, Kubernetes cluster or monitoring platform.
 
+If needed, you can disable the health check endpoints by setting the `NGINX_IGNITION_HEALTH_CHECK_ENABLED` environment
+variable with the `false` value (check the [configuration properties](docs/configuration-properties.md) documentation
+for more details).
+
 ## Troubleshooting
 
 Check [this documentation file](docs/troubleshooting.md) for more details about how to troubleshoot the application

@@ -8,6 +8,12 @@ type HealthCheck struct {
 	providers []Provider
 }
 
+func New() *HealthCheck {
+	return &HealthCheck{
+		providers: make([]Provider, 0),
+	}
+}
+
 func (h *HealthCheck) Register(provider Provider) {
 	h.providers = append(h.providers, provider)
 }
@@ -19,14 +25,13 @@ func (h *HealthCheck) Status(ctx context.Context) *Status {
 	}
 
 	for index, provider := range h.providers {
-		err := provider.Check(ctx)
-		if err != nil {
-			status.Healthy = false
-		}
-
 		status.Details[index] = &Detail{
 			ID:    provider.ID(),
-			Error: err,
+			Error: provider.Check(ctx),
+		}
+
+		if status.Details[index].Error != nil {
+			status.Healthy = false
 		}
 	}
 

@@ -6,7 +6,6 @@ type Status struct {
 }
 
 type Detail struct {
-	ID      string
-	Healthy bool
-	Error   error
+	ID    string
+	Error error
 }

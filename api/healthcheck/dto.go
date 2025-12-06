@@ -6,7 +6,6 @@ type statusDto struct {
 }
 
 type detailDto struct {
-	Component string  `json:"component"`
-	Healthy   bool    `json:"healthy"`
-	Reason    *string `json:"reason,omitempty"`
+	Component string `json:"component"`
+	Healthy   bool   `json:"healthy"`
 }

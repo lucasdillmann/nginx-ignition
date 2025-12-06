@@ -11,6 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/container"
+	"dillmann.com.br/nginx-ignition/core/common/healthcheck"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/vpn"
@@ -26,6 +27,7 @@ func startContainer(ctx context.Context) error {
 	if err := container.Provide(
 		configuration.New,
 		lifecycle.New,
+		healthcheck.New,
 	); err != nil {
 		return err
 	}
