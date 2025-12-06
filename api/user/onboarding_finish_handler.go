@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
+	"dillmann.com.br/nginx-ignition/api/common/converter"
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
@@ -31,7 +32,7 @@ func (h onboardingFinishHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	domainModel := toDomain(requestPayload)
+	domainModel := converter.Wrap(toDomain, requestPayload)
 	domainModel.ID = uuid.New()
 	domainModel.Enabled = true
 	domainModel.Permissions = user.Permissions{

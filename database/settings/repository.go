@@ -40,17 +40,22 @@ func (r repository) Get(ctx context.Context) (*settings.Settings, error) {
 		return nil, err
 	}
 
+	buffers := buffersModel{}
+	if err := r.database.Select().Model(&buffers).Scan(ctx); err != nil {
+		return nil, err
+	}
+
 	for _, binding := range bindings {
 		if binding.CertificateID != nil && *binding.CertificateID == uuid.Nil {
 			binding.CertificateID = nil
 		}
 	}
 
-	return toDomain(&nginx, &logRotation, &certificate, bindings), nil
+	return toDomain(&nginx, &logRotation, &certificate, bindings, &buffers), nil
 }
 
 func (r repository) Save(ctx context.Context, settings *settings.Settings) error {
-	nginx, certificate, logRotation, bindings := toModel(settings)
+	nginx, certificate, logRotation, bindings, buffers := toModel(settings)
 
 	transaction, err := r.database.Begin()
 	if err != nil {
@@ -75,6 +80,10 @@ func (r repository) Save(ctx context.Context, settings *settings.Settings) error
 		return err
 	}
 
+	if _, err = transaction.NewTruncateTable().Model(buffers).Exec(ctx); err != nil {
+		return err
+	}
+
 	if _, err = transaction.NewInsert().Model(nginx).Exec(ctx); err != nil {
 		return err
 	}
@@ -88,6 +97,10 @@ func (r repository) Save(ctx context.Context, settings *settings.Settings) error
 	}
 
 	if _, err = transaction.NewInsert().Model(&bindings).Exec(ctx); err != nil {
+		return err
+	}
+
+	if _, err = transaction.NewInsert().Model(buffers).Exec(ctx); err != nil {
 		return err
 	}
 

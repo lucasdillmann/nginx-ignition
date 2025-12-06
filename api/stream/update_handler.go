@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/api/common/converter"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
@@ -25,7 +26,7 @@ func (h updateHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	domainModel := toDomain(payload)
+	domainModel := converter.Wrap(toDomain, payload)
 	domainModel.ID = id
 
 	if err = h.commands.Save(ctx.Request.Context(), domainModel); err != nil {

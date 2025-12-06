@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"dillmann.com.br/nginx-ignition/api/common/converter"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
@@ -18,7 +19,7 @@ func (h putHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	domain := toDomain(payload)
+	domain := converter.Wrap(toDomain, payload)
 	if err := h.commands.Save(ctx.Request.Context(), domain); err != nil {
 		panic(err)
 	}

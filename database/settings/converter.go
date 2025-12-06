@@ -10,6 +10,7 @@ func toDomain(
 	logRotation *logRotationModel,
 	certificate *certificateModel,
 	bindings []*bindingModel,
+	buffers *buffersModel,
 ) *settings.Settings {
 	return &settings.Settings{
 		Nginx: &settings.NginxSettings{
@@ -21,10 +22,23 @@ func toDomain(
 				ErrorLogsLevel:    settings.LogLevel(nginx.ErrorLogsLevel),
 			},
 			Timeouts: &settings.NginxTimeoutsSettings{
-				Read:      nginx.ReadTimeout,
-				Connect:   nginx.ConnectTimeout,
-				Send:      nginx.SendTimeout,
-				Keepalive: nginx.KeepaliveTimeout,
+				Read:       nginx.ReadTimeout,
+				Connect:    nginx.ConnectTimeout,
+				Send:       nginx.SendTimeout,
+				Keepalive:  nginx.KeepaliveTimeout,
+				ClientBody: nginx.ClientBodyTimeout,
+			},
+			Buffers: &settings.NginxBuffersSettings{
+				ClientBodyKb:   buffers.ClientBodyKb,
+				ClientHeaderKb: buffers.ClientHeaderKb,
+				LargeClientHeader: &settings.NginxBufferSize{
+					SizeKb: buffers.LargeClientHeaderSizeKb,
+					Amount: buffers.LargeClientHeaderAmount,
+				},
+				Output: &settings.NginxBufferSize{
+					SizeKb: buffers.OutputSizeKb,
+					Amount: buffers.OutputAmount,
+				},
 			},
 			WorkerProcesses:     nginx.WorkerProcesses,
 			WorkerConnections:   nginx.WorkerConnections,
@@ -33,6 +47,7 @@ func toDomain(
 			MaximumBodySizeMb:   nginx.MaximumBodySizeMb,
 			SendfileEnabled:     nginx.SendfileEnabled,
 			GzipEnabled:         nginx.GzipEnabled,
+			TcpNoDelayEnabled:   nginx.TcpNoDelayEnabled,
 			RuntimeUser:         settings.RuntimeUser(nginx.RuntimeUser),
 		},
 		LogRotation: &settings.LogRotationSettings{
@@ -66,7 +81,13 @@ func toBindingDomain(bindings []*bindingModel) []*host.Binding {
 	return result
 }
 
-func toModel(settings *settings.Settings) (*nginxModel, *logRotationModel, *certificateModel, []*bindingModel) {
+func toModel(settings *settings.Settings) (
+	*nginxModel,
+	*logRotationModel,
+	*certificateModel,
+	[]*bindingModel,
+	*buffersModel,
+) {
 	nginx := &nginxModel{
 		ServerLogsEnabled:   settings.Nginx.Logs.ServerLogsEnabled,
 		ServerLogsLevel:     string(settings.Nginx.Logs.ServerLogsLevel),
@@ -77,6 +98,7 @@ func toModel(settings *settings.Settings) (*nginxModel, *logRotationModel, *cert
 		ConnectTimeout:      settings.Nginx.Timeouts.Connect,
 		SendTimeout:         settings.Nginx.Timeouts.Send,
 		KeepaliveTimeout:    settings.Nginx.Timeouts.Keepalive,
+		ClientBodyTimeout:   settings.Nginx.Timeouts.ClientBody,
 		WorkerProcesses:     settings.Nginx.WorkerProcesses,
 		WorkerConnections:   settings.Nginx.WorkerConnections,
 		DefaultContentType:  settings.Nginx.DefaultContentType,
@@ -84,6 +106,7 @@ func toModel(settings *settings.Settings) (*nginxModel, *logRotationModel, *cert
 		MaximumBodySizeMb:   settings.Nginx.MaximumBodySizeMb,
 		SendfileEnabled:     settings.Nginx.SendfileEnabled,
 		GzipEnabled:         settings.Nginx.GzipEnabled,
+		TcpNoDelayEnabled:   settings.Nginx.TcpNoDelayEnabled,
 		RuntimeUser:         string(settings.Nginx.RuntimeUser),
 	}
 
@@ -102,7 +125,16 @@ func toModel(settings *settings.Settings) (*nginxModel, *logRotationModel, *cert
 
 	bindings := toBindingModel(settings.GlobalBindings)
 
-	return nginx, logRotation, certificate, bindings
+	buffers := &buffersModel{
+		ClientBodyKb:            settings.Nginx.Buffers.ClientBodyKb,
+		ClientHeaderKb:          settings.Nginx.Buffers.ClientHeaderKb,
+		LargeClientHeaderSizeKb: settings.Nginx.Buffers.LargeClientHeader.SizeKb,
+		LargeClientHeaderAmount: settings.Nginx.Buffers.LargeClientHeader.Amount,
+		OutputSizeKb:            settings.Nginx.Buffers.Output.SizeKb,
+		OutputAmount:            settings.Nginx.Buffers.Output.Amount,
+	}
+
+	return nginx, logRotation, certificate, bindings, buffers
 }
 
 func toBindingModel(bindings []*host.Binding) []*bindingModel {

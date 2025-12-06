@@ -12,6 +12,7 @@ type Settings struct {
 type NginxSettings struct {
 	Logs                *NginxLogsSettings
 	Timeouts            *NginxTimeoutsSettings
+	Buffers             *NginxBuffersSettings
 	WorkerProcesses     int
 	WorkerConnections   int
 	DefaultContentType  string
@@ -19,6 +20,7 @@ type NginxSettings struct {
 	MaximumBodySizeMb   int
 	SendfileEnabled     bool
 	GzipEnabled         bool
+	TcpNoDelayEnabled   bool
 	RuntimeUser         RuntimeUser
 }
 
@@ -36,10 +38,23 @@ type CertificateAutoRenewSettings struct {
 }
 
 type NginxTimeoutsSettings struct {
-	Read      int
-	Connect   int
-	Send      int
-	Keepalive int
+	Read       int
+	Connect    int
+	Send       int
+	Keepalive  int
+	ClientBody int
+}
+
+type NginxBuffersSettings struct {
+	ClientBodyKb      int
+	ClientHeaderKb    int
+	LargeClientHeader *NginxBufferSize
+	Output            *NginxBufferSize
+}
+
+type NginxBufferSize struct {
+	SizeKb int
+	Amount int
 }
 
 type NginxLogsSettings struct {

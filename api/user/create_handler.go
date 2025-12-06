@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
+	"dillmann.com.br/nginx-ignition/api/common/converter"
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
@@ -20,7 +21,7 @@ func (h createHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	domainModel := toDomain(payload)
+	domainModel := converter.Wrap(toDomain, payload)
 	domainModel.ID = uuid.New()
 	currentUserId := authorization.CurrentSubject(ctx).User.ID
 

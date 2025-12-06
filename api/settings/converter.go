@@ -22,10 +22,23 @@ func toDto(settings *settings.Settings) *settingsDto {
 			ErrorLogsLevel:    &settings.Nginx.Logs.ErrorLogsLevel,
 		},
 		Timeouts: &nginxTimeoutsSettingsDto{
-			Read:      &settings.Nginx.Timeouts.Read,
-			Connect:   &settings.Nginx.Timeouts.Connect,
-			Send:      &settings.Nginx.Timeouts.Send,
-			Keepalive: &settings.Nginx.Timeouts.Keepalive,
+			Read:       &settings.Nginx.Timeouts.Read,
+			Connect:    &settings.Nginx.Timeouts.Connect,
+			Send:       &settings.Nginx.Timeouts.Send,
+			Keepalive:  &settings.Nginx.Timeouts.Keepalive,
+			ClientBody: &settings.Nginx.Timeouts.ClientBody,
+		},
+		Buffers: &nginxBuffersSettingsDto{
+			ClientBodyKb:   &settings.Nginx.Buffers.ClientBodyKb,
+			ClientHeaderKb: &settings.Nginx.Buffers.ClientHeaderKb,
+			LargeClientHeader: &nginxBufferSizeDto{
+				SizeKb: &settings.Nginx.Buffers.LargeClientHeader.SizeKb,
+				Amount: &settings.Nginx.Buffers.LargeClientHeader.Amount,
+			},
+			Output: &nginxBufferSizeDto{
+				SizeKb: &settings.Nginx.Buffers.Output.SizeKb,
+				Amount: &settings.Nginx.Buffers.Output.Amount,
+			},
 		},
 		WorkerProcesses:     &settings.Nginx.WorkerProcesses,
 		WorkerConnections:   &settings.Nginx.WorkerConnections,
@@ -34,6 +47,7 @@ func toDto(settings *settings.Settings) *settingsDto {
 		MaximumBodySizeMb:   &settings.Nginx.MaximumBodySizeMb,
 		SendfileEnabled:     &settings.Nginx.SendfileEnabled,
 		GzipEnabled:         &settings.Nginx.GzipEnabled,
+		TcpNoDelayEnabled:   &settings.Nginx.TcpNoDelayEnabled,
 		RuntimeUser:         ptr.Of(string(settings.Nginx.RuntimeUser)),
 	}
 
@@ -89,10 +103,23 @@ func toDomain(input *settingsDto) *settings.Settings {
 			ErrorLogsLevel:    *nginx.Logs.ErrorLogsLevel,
 		},
 		Timeouts: &settings.NginxTimeoutsSettings{
-			Read:      *nginx.Timeouts.Read,
-			Connect:   *nginx.Timeouts.Connect,
-			Send:      *nginx.Timeouts.Send,
-			Keepalive: *nginx.Timeouts.Keepalive,
+			Read:       *nginx.Timeouts.Read,
+			Connect:    *nginx.Timeouts.Connect,
+			Send:       *nginx.Timeouts.Send,
+			Keepalive:  *nginx.Timeouts.Keepalive,
+			ClientBody: *nginx.Timeouts.ClientBody,
+		},
+		Buffers: &settings.NginxBuffersSettings{
+			ClientBodyKb:   *nginx.Buffers.ClientBodyKb,
+			ClientHeaderKb: *nginx.Buffers.ClientHeaderKb,
+			LargeClientHeader: &settings.NginxBufferSize{
+				SizeKb: *nginx.Buffers.LargeClientHeader.SizeKb,
+				Amount: *nginx.Buffers.LargeClientHeader.Amount,
+			},
+			Output: &settings.NginxBufferSize{
+				SizeKb: *nginx.Buffers.Output.SizeKb,
+				Amount: *nginx.Buffers.Output.Amount,
+			},
 		},
 		WorkerProcesses:     *nginx.WorkerProcesses,
 		WorkerConnections:   *nginx.WorkerConnections,
@@ -101,6 +128,7 @@ func toDomain(input *settingsDto) *settings.Settings {
 		MaximumBodySizeMb:   *nginx.MaximumBodySizeMb,
 		SendfileEnabled:     *nginx.SendfileEnabled,
 		GzipEnabled:         *nginx.GzipEnabled,
+		TcpNoDelayEnabled:   *nginx.TcpNoDelayEnabled,
 		RuntimeUser:         settings.RuntimeUser(*nginx.RuntimeUser),
 	}
 

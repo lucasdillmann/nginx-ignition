@@ -60,12 +60,19 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				sendfile %s;
 				server_tokens %s;
 				client_max_body_size %dM;
+				tcp_nodelay %s;
 				
-				keepalive_timeout %d;
-				proxy_connect_timeout %d;
-				proxy_read_timeout %d;
-				proxy_send_timeout %d;
-				send_timeout %d;
+				keepalive_timeout %ds;
+				proxy_connect_timeout %ds;
+				proxy_read_timeout %ds;
+				proxy_send_timeout %ds;
+				send_timeout %ds;
+				client_body_timeout %ds;
+
+				client_body_buffer_size %dk;
+				client_header_buffer_size %dk;
+				large_client_header_buffers %d %dk;
+				output_buffers %d %dk;
 				
 				include %smime.types;
 				%s
@@ -84,11 +91,19 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		p.enabledFlag(cfg.Nginx.SendfileEnabled),
 		p.enabledFlag(cfg.Nginx.ServerTokensEnabled),
 		cfg.Nginx.MaximumBodySizeMb,
+		p.enabledFlag(cfg.Nginx.TcpNoDelayEnabled),
 		cfg.Nginx.Timeouts.Keepalive,
 		cfg.Nginx.Timeouts.Connect,
 		cfg.Nginx.Timeouts.Read,
 		cfg.Nginx.Timeouts.Send,
 		cfg.Nginx.Timeouts.Send,
+		cfg.Nginx.Timeouts.ClientBody,
+		cfg.Nginx.Buffers.ClientBodyKb,
+		cfg.Nginx.Buffers.ClientHeaderKb,
+		cfg.Nginx.Buffers.LargeClientHeader.Amount,
+		cfg.Nginx.Buffers.LargeClientHeader.SizeKb,
+		cfg.Nginx.Buffers.Output.Amount,
+		cfg.Nginx.Buffers.Output.SizeKb,
 		ctx.paths.Config,
 		p.getHostIncludes(ctx.paths, ctx.hosts),
 		streamLines.String(),
