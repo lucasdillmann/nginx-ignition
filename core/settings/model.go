@@ -22,6 +22,7 @@ type NginxSettings struct {
 	GzipEnabled         bool
 	TcpNoDelayEnabled   bool
 	RuntimeUser         RuntimeUser
+	Custom              *string
 }
 
 type LogRotationSettings struct {

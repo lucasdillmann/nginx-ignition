@@ -27,6 +27,7 @@ type nginxSettingsDto struct {
 	GzipEnabled         *bool                     `json:"gzipEnabled"`
 	TcpNoDelayEnabled   *bool                     `json:"tcpNoDelayEnabled"`
 	RuntimeUser         *string                   `json:"runtimeUser"`
+	Custom              *string                   `json:"custom"`
 }
 
 type logRotationSettingsDto struct {

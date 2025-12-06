@@ -21,3 +21,4 @@ insert into nginx_settings_buffers values (
 
 alter table settings_nginx add column client_body_timeout integer not null default 60;
 alter table settings_nginx add column tcp_nodelay_enabled boolean not null default true;
+alter table settings_nginx add column custom text;

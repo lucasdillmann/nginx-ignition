@@ -49,6 +49,7 @@ func toDto(settings *settings.Settings) *settingsDto {
 		GzipEnabled:         &settings.Nginx.GzipEnabled,
 		TcpNoDelayEnabled:   &settings.Nginx.TcpNoDelayEnabled,
 		RuntimeUser:         ptr.Of(string(settings.Nginx.RuntimeUser)),
+		Custom:              settings.Nginx.Custom,
 	}
 
 	logRotationModel := &logRotationSettingsDto{
@@ -130,6 +131,7 @@ func toDomain(input *settingsDto) *settings.Settings {
 		GzipEnabled:         *nginx.GzipEnabled,
 		TcpNoDelayEnabled:   *nginx.TcpNoDelayEnabled,
 		RuntimeUser:         settings.RuntimeUser(*nginx.RuntimeUser),
+		Custom:              nginx.Custom,
 	}
 
 	logRotationSettings := &settings.LogRotationSettings{

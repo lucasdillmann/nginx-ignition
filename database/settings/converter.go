@@ -49,6 +49,7 @@ func toDomain(
 			GzipEnabled:         nginx.GzipEnabled,
 			TcpNoDelayEnabled:   nginx.TcpNoDelayEnabled,
 			RuntimeUser:         settings.RuntimeUser(nginx.RuntimeUser),
+			Custom:              nginx.Custom,
 		},
 		LogRotation: &settings.LogRotationSettings{
 			Enabled:           logRotation.Enabled,
@@ -108,6 +109,7 @@ func toModel(settings *settings.Settings) (
 		GzipEnabled:         settings.Nginx.GzipEnabled,
 		TcpNoDelayEnabled:   settings.Nginx.TcpNoDelayEnabled,
 		RuntimeUser:         string(settings.Nginx.RuntimeUser),
+		Custom:              settings.Nginx.Custom,
 	}
 
 	logRotation := &logRotationModel{
