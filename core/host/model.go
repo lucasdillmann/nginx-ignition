@@ -27,6 +27,7 @@ const (
 	IntegrationRouteType    RouteType = "INTEGRATION"
 	ExecuteCodeRouteType    RouteType = "EXECUTE_CODE"
 	StaticFilesRouteType    RouteType = "STATIC_FILES"
+	LoadBalancerRouteType   RouteType = "LOAD_BALANCER"
 )
 
 type Host struct {
