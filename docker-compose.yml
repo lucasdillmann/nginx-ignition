@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: nginx-ignition-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nginx_ignition
+      POSTGRES_USER: nginx_ignition
+      POSTGRES_PASSWORD: PlaceYourSuperSecretDatabasePasswordHere
+    volumes:
+      - nginx_ignition_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nginx_ignition"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    networks:
+      - nginx-ignition-network
+
+  nginx-ignition:
+    image: dillmann/nginx-ignition:latest
+    container_name: nginx-ignition-app
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+      - "80:80"
+      - "443:443"
+    environment:
+      NGINX_IGNITION_DATABASE_DRIVER: postgres
+      NGINX_IGNITION_DATABASE_HOST: postgres
+      NGINX_IGNITION_DATABASE_PORT: 5432
+      NGINX_IGNITION_DATABASE_NAME: nginx_ignition
+      NGINX_IGNITION_DATABASE_SSL_MODE: disable
+      NGINX_IGNITION_DATABASE_USERNAME: nginx_ignition
+      NGINX_IGNITION_DATABASE_PASSWORD: PlaceYourSuperSecretDatabasePasswordHere
+      NGINX_IGNITION_SECURITY_JWT_SECRET: PlaceYourSecretJwtPrivateKeyHereButRememberThatShouldHave64Chars
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/api/health/liveness"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    networks:
+      - nginx-ignition-network
+
+networks:
+  nginx-ignition-network:
+    driver: bridge
+
+volumes:
+  nginx_ignition_postgres_data:
+    driver: local

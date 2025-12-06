@@ -78,6 +78,7 @@ nginx ignition to suit you better, if needed.
 | NGINX_IGNITION_SECURITY_USER_PASSWORD_HASHING_SALT_SIZE  | The amount of random bytes that should be appended to the user's passwords (improves security)        | 64           | 64                        |
 | NGINX_IGNITION_SECURITY_USER_PASSWORD_HASHING_ITERATIONS | How many times the passwords should be hashed (improves security)                                     | 1024         | 1024                      |
 | NGINX_IGNITION_FRONTEND_CODE_EDITOR_API_KEY              | Custom Codeium API key for the frontend's code editors (optional)                                     |              |                           |
+| NGINX_IGNITION_HEALTH_CHECK_ENABLED                      | Defines if the health check endpoints should be enabled or not                                        | false        | true                      |
 
 Optionally, nginx ignition can be configured using a configuration properties file. The app will try to read the
 configuration from the file specified by the `NGINX_IGNITION_CONFIG_FILE_PATH` environment variable, from the 

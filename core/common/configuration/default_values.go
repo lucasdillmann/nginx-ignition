@@ -4,6 +4,7 @@ func defaultValues() map[string]string {
 	return map[string]string{
 		"nginx-ignition.server.port":                                   "8090",
 		"nginx-ignition.server.address":                                "0.0.0.0",
+		"nginx-ignition.health-check.enabled":                          "true",
 		"nginx-ignition.nginx.binary-path":                             "nginx",
 		"nginx-ignition.nginx.config-path":                             "/tmp/nginx-ignition/nginx",
 		"nginx-ignition.vpn.config-path":                               "/tmp/nginx-ignition/vpn",

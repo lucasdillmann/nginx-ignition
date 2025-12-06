@@ -10,6 +10,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
+	"dillmann.com.br/nginx-ignition/core/common/version"
 )
 
 type configurationHandler struct {
@@ -18,7 +19,6 @@ type configurationHandler struct {
 
 func (h *configurationHandler) handle(ctx *gin.Context) {
 	codeEditorApiKey, _ := h.configuration.Get("nginx-ignition.frontend.code-editor-api-key")
-	version, _ := h.configuration.Get("nginx-ignition.version")
 
 	var apiKey *string
 	if codeEditorApiKey != "" {
@@ -26,8 +26,8 @@ func (h *configurationHandler) handle(ctx *gin.Context) {
 	}
 
 	var versionString *string
-	if version != "" {
-		versionString = &version
+	if version.Number != "" && version.Number != "0.0.0" {
+		versionString = &version.Number
 	}
 
 	output := &configurationDto{

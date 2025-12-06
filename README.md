@@ -46,6 +46,13 @@ Please note that in its default configuration the app will start using an embedd
 for testing and some experiments, is not recommended for a long-term scenario. For that, please refer to the 
 configuration section below to use PostgreSQL instead.
 
+### Docker compose
+
+The [docker-compose.yml](docker-compose.yml) file is also available as a recommended way of starting the nginx ignition
+using Docker alongside a production-ready PostgreSQL database and health checks enabled. Make sure to change the
+`POSTGRES_PASSWORD`, `NGINX_IGNITION_DATABASE_PASSWORD` and `NGINX_IGNITION_SECURITY_JWT_SECRET` values in the compose 
+file before deploying.
+
 ### Installing or running locally on a Linux or macOS machine
 
 To install nginx ignition locally on your machine, you have several options:
@@ -74,6 +81,15 @@ If you're using any 1.x version of the nginx ignition and plans to upgrade to 2.
 
 Check [this documentation file](docs/configuration-properties.md) for more details about the available configuration 
 properties and some common use-case examples.
+
+## Health checks
+
+Check [this documentation file](docs/health-checks.md) for more details about the available health checks endpoints
+that you can use on your Docker Compose file, Kubernetes cluster or monitoring platform.
+
+If needed, you can disable the health check endpoints by setting the `NGINX_IGNITION_HEALTH_CHECK_ENABLED` environment
+variable with the `false` value (check the [configuration properties](docs/configuration-properties.md) documentation
+for more details).
 
 ## Troubleshooting
 

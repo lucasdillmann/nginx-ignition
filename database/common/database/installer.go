@@ -9,5 +9,5 @@ func Install() error {
 		return err
 	}
 
-	return container.Run(registerStartup, registerShutdown)
+	return container.Run(registerStartup, registerShutdown, registerHealthCheck)
 }
