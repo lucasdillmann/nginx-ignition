@@ -50,7 +50,7 @@ configuration section below to use PostgreSQL instead.
 
 The [docker-compose.yml](docker-compose.yml) file is also available as a recommended way of starting the nginx ignition
 using Docker alongside a production-ready PostgreSQL database and health checks enabled. Make sure to change the
-`POSTGRES_PASSWORD`,`NGINX_IGNITION_DATABASE_PASSWORD` and `NGINX_IGNITION_SECURITY_JWT_SECRET` values in the compose 
+`POSTGRES_PASSWORD`, `NGINX_IGNITION_DATABASE_PASSWORD` and `NGINX_IGNITION_SECURITY_JWT_SECRET` values in the compose 
 file before deploying.
 
 ### Installing or running locally on a Linux or macOS machine

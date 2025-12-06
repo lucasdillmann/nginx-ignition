@@ -16,9 +16,8 @@ ARG NGINX_IGNITION_VERSION
 EXPOSE 8090
 
 HEALTHCHECK \
-    --interval=30s \
-    --timeout=3s \
-    --start-period=5s \
+    --interval=5s \
+    --timeout=5s \
     --retries=3 \
     CMD curl -f http://localhost:8090/api/health/liveness || exit 1
 

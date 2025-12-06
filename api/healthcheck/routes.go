@@ -23,7 +23,10 @@ func Install(
 ) {
 	enabled, err := cfg.GetBoolean("nginx-ignition.health-check.enabled")
 	if err != nil {
-		log.Warnf("Unable to check if health check endpoints should be enabled or not (error was %v). Keeping them disabled for now.", err)
+		log.Warnf(
+			"Unable to check if health check endpoints should be enabled (%v). Keeping them disabled as a fallback.",
+			err,
+		)
 		return
 	}
 
