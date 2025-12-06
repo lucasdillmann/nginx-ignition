@@ -19,7 +19,7 @@ jobs:
           node-version: 22
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.25.4
+          go-version: 1.25.5
       - name: npm cache download
         uses: actions/cache/restore@v4
         with:
@@ -49,7 +49,7 @@ jobs:
           node-version: 22
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.25.4
+          go-version: 1.25.5
       - name: Install nfpm
         run: |
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
