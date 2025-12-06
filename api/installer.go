@@ -6,6 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/api/certificate"
 	"dillmann.com.br/nginx-ignition/api/common/server"
 	"dillmann.com.br/nginx-ignition/api/frontend"
+	"dillmann.com.br/nginx-ignition/api/healthcheck"
 	"dillmann.com.br/nginx-ignition/api/host"
 	"dillmann.com.br/nginx-ignition/api/integration"
 	"dillmann.com.br/nginx-ignition/api/nginx"
@@ -19,6 +20,7 @@ import (
 func Install() error {
 	return container.Run(
 		server.Install,
+		healthcheck.Install,
 		settings.Install,
 		accesslist.Install,
 		certificate.Install,

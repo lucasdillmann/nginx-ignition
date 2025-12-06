@@ -6,6 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/broadcast"
 	"dillmann.com.br/nginx-ignition/core/common/container"
+	"dillmann.com.br/nginx-ignition/core/common/healthcheck"
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
@@ -20,6 +21,7 @@ func Install() error {
 	return container.Run(
 		broadcast.Install,
 		scheduler.Install,
+		healthcheck.Install,
 		settings.Install,
 		user.Install,
 		accesslist.Install,
