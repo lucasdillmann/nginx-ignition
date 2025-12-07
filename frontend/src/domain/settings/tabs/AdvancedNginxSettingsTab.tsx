@@ -128,7 +128,7 @@ export default class AdvancedNginxSettingsTab extends React.Component<AdvancedSe
         return (
             <>
                 <Alert
-                    message="Proceed with caution"
+                    title="Proceed with caution"
                     description={`
                         These settings can break your nginx server or make it misbehave. Using the default values will 
                         work just fine for almost all use cases. 
