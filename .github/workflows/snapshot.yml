@@ -23,7 +23,7 @@ jobs:
         with:
           go-version: 1.25.5
           cache: true
-          cache-dependency-path: go.work.sum
+          cache-dependency-path: "**/go.sum"
       - name: Lint
         run: make check
       - name: Sonarqube
@@ -47,7 +47,7 @@ jobs:
         with:
           go-version: 1.25.5
           cache: true
-          cache-dependency-path: go.work.sum
+          cache-dependency-path: "**/go.sum"
       - name: Install nfpm
         run: |
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
