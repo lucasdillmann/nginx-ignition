@@ -1,12 +1,10 @@
 import React from "react"
-import SettingsFormValues from "../model/SettingsFormValues"
 import { Flex, Form, InputNumber, Select, Space, Switch } from "antd"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import { INTEGER_MAX } from "../SettingsConstants"
 import { TimeUnit } from "../model/SettingsDto"
 
 export interface NginxIgnitionSettingsTabProps {
-    formValues: SettingsFormValues
     validationResult: ValidationResult
 }
 
