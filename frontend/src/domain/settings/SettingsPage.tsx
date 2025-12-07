@@ -115,7 +115,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
                 key: "nginx-ignition-settings",
                 label: "nginx ignition",
                 forceRender: true,
-                children: <NginxIgnitionSettingsTab formValues={formValues!!} validationResult={validationResult} />,
+                children: <NginxIgnitionSettingsTab validationResult={validationResult} />,
             },
         ]
     }
