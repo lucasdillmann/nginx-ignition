@@ -80,9 +80,7 @@ export default class AdvancedNginxSettingsTab extends React.Component<AdvancedSe
         const { validationResult } = this.props
         return (
             <>
-                <h2 className="settings-form-section-name" style={{ marginTop: 0 }}>
-                    Buffers
-                </h2>
+                <h2 className="settings-form-section-name">Buffers</h2>
                 <p className="settings-form-section-help-text">
                     Configuration of the nginx's buffering of the input/output traffic
                 </p>

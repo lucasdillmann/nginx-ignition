@@ -43,9 +43,7 @@ export default class NginxIgnitionSettingsTab extends React.Component<NginxIgnit
         const { validationResult } = this.props
         return (
             <>
-                <h2 className="settings-form-section-name" style={{ marginTop: 0 }}>
-                    Scheduled tasks
-                </h2>
+                <h2 className="settings-form-section-name">Scheduled tasks</h2>
                 <p className="settings-form-section-help-text">Definition of the nginx ignition's housekeeping tasks</p>
 
                 <Flex className="settings-form-inner-flex-container">

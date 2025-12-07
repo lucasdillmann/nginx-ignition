@@ -249,9 +249,7 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
     private renderGeneralFormPortion() {
         return (
             <>
-                <h2 className="settings-form-section-name" style={{ marginTop: 0 }}>
-                    General
-                </h2>
+                <h2 className="settings-form-section-name">General</h2>
                 <p className="settings-form-section-help-text">General configurations properties of the nginx server</p>
                 <Flex className="settings-form-inner-flex-container">
                     {this.renderGeneralFirstColumn()}

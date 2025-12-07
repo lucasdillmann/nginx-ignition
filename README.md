@@ -9,7 +9,8 @@ The nginx ignition is a user interface for the nginx web server, aimed at develo
 want to manage configuration files manually for their use-cases. 
 
 Although it isn't the goal to be feature-complete (if your use-case is quite advanced or complex, you probably will not 
-use a UI anyway), the project does aim to provide an intuitive and powerful way to configure and run nginx.
+use a UI anyway) or to be enterprise-ready, the project does aim to provide an intuitive and powerful way to configure 
+and run nginx.
 
 Some of the available features include:
 - Multiple nginx virtual hosts, each one with its customized set of domains, routes and bindings (port listeners)

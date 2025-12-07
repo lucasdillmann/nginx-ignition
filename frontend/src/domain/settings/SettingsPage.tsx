@@ -130,7 +130,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
                 onValuesChange={(_, formValues) => this.handleChange(formValues)}
                 initialValues={formValues}
             >
-                <Tabs items={this.buildTabs()} destroyOnHidden={false} animated />
+                <Tabs items={this.buildTabs()} destroyOnHidden={false} />
             </Form>
         )
     }
