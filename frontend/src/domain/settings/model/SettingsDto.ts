@@ -37,6 +37,7 @@ export interface NginxTimeoutsSettingsDto {
     connect: number
     send: number
     keepalive: number
+    clientBody: number
 }
 
 export interface NginxLogsSettingsDto {
@@ -47,17 +48,32 @@ export interface NginxLogsSettingsDto {
     errorLogsLevel: LogLevel
 }
 
+export interface NginxBufferSizeDto {
+    sizeKb: number
+    amount: number
+}
+
+export interface NginxBuffersSettingsDto {
+    clientBodyKb: number
+    clientHeaderKb: number
+    largeClientHeader: NginxBufferSizeDto
+    output: NginxBufferSizeDto
+}
+
 export interface NginxSettingsDto {
     logs: NginxLogsSettingsDto
     timeouts: NginxTimeoutsSettingsDto
+    buffers: NginxBuffersSettingsDto
     workerProcesses: number
     workerConnections: number
     serverTokensEnabled: boolean
     sendfileEnabled: boolean
     gzipEnabled: boolean
+    tcpNoDelayEnabled: boolean
     maximumBodySizeMb: number
     defaultContentType: string
     runtimeUser: RuntimeUser
+    custom: string | null
 }
 
 export default interface SettingsDto {

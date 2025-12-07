@@ -37,3 +37,7 @@
     padding: 0;
     font-size: 14px;
 }
+
+.settings-form-input-wide {
+    width: 100%;
+}
