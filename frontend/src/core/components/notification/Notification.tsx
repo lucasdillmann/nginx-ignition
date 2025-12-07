@@ -32,7 +32,7 @@ function showNotification(
         description: message,
         key: props?.key,
         actions: props?.actions,
-        title,
+        message: title,
         duration,
         type,
         role,

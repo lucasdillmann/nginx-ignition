@@ -63,7 +63,7 @@ export default class StreamAddressInput extends React.Component<StreamAddressInp
         return (
             <Form.Item validateStatus={validationStatus} noStyle>
                 <Flex style={{ flexDirection: "column", flexGrow: 1, width: "100%" }}>
-                    <Space orientation="vertical" style={{ flexGrow: 1 }}>
+                    <Space direction="vertical" style={{ flexGrow: 1 }}>
                         <Space.Compact block>
                             <Select
                                 value={address.protocol}
