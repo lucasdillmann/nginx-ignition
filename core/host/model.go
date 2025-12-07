@@ -59,12 +59,12 @@ type Route struct {
 	RedirectCode *int
 	AccessListID *uuid.UUID
 	Settings     RouteSettings
-	Response     *RouteStaticResponse
-	Integration  *RouteIntegrationConfig
-	SourceCode   *RouteSourceCode
+	Response     *StaticResponse
+	Integration  *Integration
+	SourceCode   *SourceCode
 }
 
-type RouteSourceCode struct {
+type SourceCode struct {
 	Language     CodeLanguage
 	Contents     string
 	MainFunction *string
@@ -78,13 +78,13 @@ type RouteSettings struct {
 	Custom                  *string
 }
 
-type RouteStaticResponse struct {
+type StaticResponse struct {
 	StatusCode int
 	Headers    map[string]string
 	Payload    *string
 }
 
-type RouteIntegrationConfig struct {
+type Integration struct {
 	IntegrationID uuid.UUID
 	OptionID      string
 }
@@ -101,4 +101,19 @@ type VPN struct {
 	VPNID uuid.UUID
 	Name  string
 	Host  *string
+}
+
+type LoadBalancer struct {
+	Backends []LoadBalancerBackend
+}
+
+type LoadBalancerBackend struct {
+	Weight         *int
+	Address        string
+	CircuitBreaker *CircuitBreaker
+}
+
+type CircuitBreaker struct {
+	MaxFailures int
+	OpenSeconds int
 }

@@ -37,26 +37,26 @@ func toDomain(model *hostModel) (*host.Host, error) {
 			return nil, err
 		}
 
-		var response *host.RouteStaticResponse
+		var response *host.StaticResponse
 		if route.StaticResponseCode != nil {
-			response = &host.RouteStaticResponse{
+			response = &host.StaticResponse{
 				StatusCode: *route.StaticResponseCode,
 				Headers:    headers,
 				Payload:    route.StaticResponsePayload,
 			}
 		}
 
-		var integration *host.RouteIntegrationConfig
+		var integration *host.Integration
 		if route.IntegrationOptionID != nil {
-			integration = &host.RouteIntegrationConfig{
+			integration = &host.Integration{
 				IntegrationID: *route.IntegrationID,
 				OptionID:      *route.IntegrationOptionID,
 			}
 		}
 
-		var sourceCode *host.RouteSourceCode
+		var sourceCode *host.SourceCode
 		if route.CodeLanguage != nil {
-			sourceCode = &host.RouteSourceCode{
+			sourceCode = &host.SourceCode{
 				Language:     host.CodeLanguage(*route.CodeLanguage),
 				Contents:     *route.CodeContents,
 				MainFunction: route.CodeMainFunction,

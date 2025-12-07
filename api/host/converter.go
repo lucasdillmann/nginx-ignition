@@ -153,7 +153,7 @@ func toRouteSettingsDto(settings *host.RouteSettings) *routeSettingsDto {
 	}
 }
 
-func toStaticResponseDto(response *host.RouteStaticResponse) *staticResponseDto {
+func toStaticResponseDto(response *host.StaticResponse) *staticResponseDto {
 	if response == nil {
 		return nil
 	}
@@ -165,7 +165,7 @@ func toStaticResponseDto(response *host.RouteStaticResponse) *staticResponseDto 
 	}
 }
 
-func toIntegrationConfigDto(config *host.RouteIntegrationConfig) *integrationConfigDto {
+func toIntegrationConfigDto(config *host.Integration) *integrationConfigDto {
 	if config == nil {
 		return nil
 	}
@@ -176,7 +176,7 @@ func toIntegrationConfigDto(config *host.RouteIntegrationConfig) *integrationCon
 	}
 }
 
-func toRouteSourceCodeDto(sourceCode *host.RouteSourceCode) *routeSourceCodeDto {
+func toRouteSourceCodeDto(sourceCode *host.SourceCode) *routeSourceCodeDto {
 	if sourceCode == nil {
 		return nil
 	}
@@ -268,35 +268,35 @@ func toRouteSettings(input *routeSettingsDto) *host.RouteSettings {
 	}
 }
 
-func toRouteStaticResponse(input *staticResponseDto) *host.RouteStaticResponse {
+func toRouteStaticResponse(input *staticResponseDto) *host.StaticResponse {
 	if input == nil {
 		return nil
 	}
 
-	return &host.RouteStaticResponse{
+	return &host.StaticResponse{
 		StatusCode: getIntValue(input.StatusCode),
 		Payload:    input.Payload,
 		Headers:    getMapValue(input.Headers),
 	}
 }
 
-func toRouteIntegrationConfig(input *integrationConfigDto) *host.RouteIntegrationConfig {
+func toRouteIntegrationConfig(input *integrationConfigDto) *host.Integration {
 	if input == nil {
 		return nil
 	}
 
-	return &host.RouteIntegrationConfig{
+	return &host.Integration{
 		IntegrationID: getUuidValue(input.IntegrationId),
 		OptionID:      getStringValue(input.OptionId),
 	}
 }
 
-func toRouteSourceCode(input *routeSourceCodeDto) *host.RouteSourceCode {
+func toRouteSourceCode(input *routeSourceCodeDto) *host.SourceCode {
 	if input == nil {
 		return nil
 	}
 
-	return &host.RouteSourceCode{
+	return &host.SourceCode{
 		Language:     *input.Language,
 		Contents:     getStringValue(input.Code),
 		MainFunction: input.MainFunction,
