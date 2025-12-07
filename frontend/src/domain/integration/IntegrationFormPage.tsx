@@ -20,7 +20,6 @@ import IntegrationRequest from "./model/IntegrationRequest"
 import DeleteIntegrationAction from "./actions/DeleteIntegrationAction"
 import { integrationRequestDefaults } from "./model/IntegrationRequestDefaults"
 import AvailableDriverResponse from "./model/AvailableDriverResponse"
-import { BaseOptionType } from "rc-select/lib/Select"
 import DynamicInput from "../../core/components/dynamicfield/DynamicInput"
 
 interface IntegrationFormPageState {
@@ -125,7 +124,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
         })
     }
 
-    private buildDriverOptions(): BaseOptionType[] {
+    private buildDriverOptions(): any[] {
         const { availableDrivers } = this.state
         return availableDrivers.map(driver => ({
             value: driver.id,

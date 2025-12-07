@@ -4,14 +4,14 @@
     "version": "0.0.0",
     "private": true,
     "dependencies": {
-        "@ant-design/pro-components": "^2.8.10",
+        "@ant-design/pro-components": "^3.0.2-0",
         "@babel/runtime": "^7.28.4",
         "@codeium/react-code-editor": "^1.0.12",
         "@types/qs": "^6.14.0",
         "@types/react": "^19.2.2",
         "@types/react-dom": "^19.2.2",
         "@vitejs/plugin-react": "^5.1.0",
-        "antd": "^5.28.0",
+        "antd": "^6.0.1",
         "debounce": "^3.0.0",
         "qs": "^6.14.0",
         "react": "^19.2.0",
@@ -23,7 +23,6 @@
         "vite-tsconfig-paths": "^5.1.4"
     },
     "devDependencies": {
-        "@ant-design/v5-patch-for-react-19": "^1.0.3",
         "@babel/plugin-transform-nullish-coalescing-operator": "^7.27.1",
         "@eslint/js": "^9.39.1",
         "eslint": "^9.39.1",
@@ -33,6 +32,9 @@
         "globals": "^16.5.0",
         "prettier": "^3.6.2",
         "typescript-eslint": "^8.46.3"
+    },
+    "overrides": {
+        "prismjs": "^1.30.0"
     },
     "scripts": {
         "start": "vite",
