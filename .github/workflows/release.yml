@@ -13,10 +13,14 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.25.4
+          go-version: 1.25.5
+          cache: true
+          cache-dependency-path: "**/go.sum"
       - name: Install nfpm
         run: |
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
@@ -34,16 +38,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: npm cache download
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ github.workspace }}/frontend/node_modules
-          key: npm-cache
-      - name: go cache download
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ github.workspace }}/.go
-          key: go-cache
       - name: Resolve version number from tag
         id: tag
         run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
@@ -53,16 +47,6 @@ jobs:
           GOMODCACHE: ${{ github.workspace }}/.go/pkg/mod
           GOTOOLCHAIN: ""
         run: make build-release VERSION=${{ steps.tag.outputs.VERSION }}
-      - name: npm cache upload
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ github.workspace }}/frontend/node_modules
-          key: npm-cache
-      - name: go cache upload
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ github.workspace }}/.go
-          key: go-cache
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:

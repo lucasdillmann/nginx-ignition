@@ -20,7 +20,6 @@ import VpnRequest from "./model/VpnRequest"
 import DeleteVpnAction from "./actions/DeleteVpnAction"
 import { vpnRequestDefaults } from "./model/VpnRequestDefaults"
 import AvailableDriverResponse from "./model/AvailableDriverResponse"
-import { BaseOptionType } from "rc-select/lib/Select"
 import DynamicInput from "../../core/components/dynamicfield/DynamicInput"
 import If from "../../core/components/flowcontrol/If"
 
@@ -126,7 +125,7 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
         })
     }
 
-    private buildDriverOptions(): BaseOptionType[] {
+    private buildDriverOptions(): any[] {
         const { availableDrivers } = this.state
         return availableDrivers.map(driver => ({
             value: driver.id,

@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"dillmann.com.br/nginx-ignition/api/common/apierror"
+	"dillmann.com.br/nginx-ignition/api/common/converter"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
@@ -19,7 +20,7 @@ func (h issueHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	domainModel := toIssueCertificateRequest(payload)
+	domainModel := converter.Wrap(toIssueCertificateRequest, payload)
 
 	cert, err := h.commands.Issue(ctx.Request.Context(), domainModel)
 	if apierror.CanHandle(err) {

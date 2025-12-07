@@ -3,7 +3,6 @@ import { Flex, Form, Input, InputNumber, Select, Space } from "antd"
 import If from "../../../core/components/flowcontrol/If"
 import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
-import { DefaultOptionType } from "rc-select/lib/Select"
 import CompatibleStreamProtocolResolver from "../utils/CompatibleStreamProtocolResolver"
 
 const PROTOCOL_NAMES: Record<StreamProtocol, string> = {
@@ -36,7 +35,7 @@ export default class StreamAddressInput extends React.Component<StreamAddressInp
         })
     }
 
-    private buildOptions(): DefaultOptionType[] {
+    private buildOptions(): any[] {
         const { parentProtocol } = this.props
         const possibleProtocols = parentProtocol
             ? CompatibleStreamProtocolResolver.resolve(parentProtocol)

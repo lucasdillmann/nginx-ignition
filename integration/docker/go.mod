@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/integration/docker
 
-go 1.25.4
+go 1.25.5
 
 require github.com/docker/docker v28.5.2+incompatible
 

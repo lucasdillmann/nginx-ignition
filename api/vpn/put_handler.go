@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/api/common/converter"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
@@ -31,7 +32,7 @@ func (h putHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	data := fromDto(uuidValue, payload)
+	data := converter.Wrap2(fromDto, uuidValue, payload)
 
 	if err := h.commands.Save(ctx.Request.Context(), data); err != nil {
 		panic(err)

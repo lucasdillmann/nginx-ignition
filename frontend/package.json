@@ -11,7 +11,7 @@
         "@types/react": "^19.2.2",
         "@types/react-dom": "^19.2.2",
         "@vitejs/plugin-react": "^5.1.0",
-        "antd": "^5.28.0",
+        "antd": "^5.29.1",
         "debounce": "^3.0.0",
         "qs": "^6.14.0",
         "react": "^19.2.0",

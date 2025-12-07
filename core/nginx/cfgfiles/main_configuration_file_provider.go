@@ -22,8 +22,8 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 	if err != nil {
 		return nil, err
 	}
-	logs := cfg.Nginx.Logs
 
+	logs := cfg.Nginx.Logs
 	moduleLines := strings.Builder{}
 	streamLines := strings.Builder{}
 
@@ -43,6 +43,11 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		moduleLines.WriteString("load_module modules/ngx_http_lua_module.so;\n")
 	}
 
+	var customCfg string
+	if cfg.Nginx.Custom != nil {
+		customCfg = fmt.Sprintf("\n%s\n", *cfg.Nginx.Custom)
+	}
+
 	contents := fmt.Sprintf(
 		`
 			user %s %s;
@@ -56,18 +61,26 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 			}
 			
 			http {
-				default_type %s;
 				sendfile %s;
 				server_tokens %s;
+				tcp_nodelay %s;
+				
+				keepalive_timeout %ds;
+				proxy_connect_timeout %ds;
+				proxy_read_timeout %ds;
+				proxy_send_timeout %ds;
+				send_timeout %ds;
+				client_body_timeout %ds;
+
 				client_max_body_size %dM;
-				
-				keepalive_timeout %d;
-				proxy_connect_timeout %d;
-				proxy_read_timeout %d;
-				proxy_send_timeout %d;
-				send_timeout %d;
-				
+				client_body_buffer_size %dk;
+				client_header_buffer_size %dk;
+				large_client_header_buffers %d %dk;
+				output_buffers %d %dk;
+
+				default_type %s;
 				include %smime.types;
+				%s
 				%s
 			}
 			
@@ -80,16 +93,25 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		ctx.paths.Base,
 		p.getErrorLogPath(ctx.paths, logs),
 		cfg.Nginx.WorkerConnections,
-		cfg.Nginx.DefaultContentType,
 		p.enabledFlag(cfg.Nginx.SendfileEnabled),
 		p.enabledFlag(cfg.Nginx.ServerTokensEnabled),
-		cfg.Nginx.MaximumBodySizeMb,
+		p.enabledFlag(cfg.Nginx.TcpNoDelayEnabled),
 		cfg.Nginx.Timeouts.Keepalive,
 		cfg.Nginx.Timeouts.Connect,
 		cfg.Nginx.Timeouts.Read,
 		cfg.Nginx.Timeouts.Send,
 		cfg.Nginx.Timeouts.Send,
+		cfg.Nginx.Timeouts.ClientBody,
+		cfg.Nginx.MaximumBodySizeMb,
+		cfg.Nginx.Buffers.ClientBodyKb,
+		cfg.Nginx.Buffers.ClientHeaderKb,
+		cfg.Nginx.Buffers.LargeClientHeader.Amount,
+		cfg.Nginx.Buffers.LargeClientHeader.SizeKb,
+		cfg.Nginx.Buffers.Output.Amount,
+		cfg.Nginx.Buffers.Output.SizeKb,
+		cfg.Nginx.DefaultContentType,
 		ctx.paths.Config,
+		customCfg,
 		p.getHostIncludes(ctx.paths, ctx.hosts),
 		streamLines.String(),
 	)
