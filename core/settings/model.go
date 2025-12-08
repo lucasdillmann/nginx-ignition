@@ -21,7 +21,7 @@ type NginxSettings struct {
 	SendfileEnabled     bool
 	GzipEnabled         bool
 	TcpNoDelayEnabled   bool
-	RuntimeUser         RuntimeUser
+	RuntimeUser         string
 	Custom              *string
 }
 
@@ -82,11 +82,4 @@ const (
 	MinutesTimeUnit TimeUnit = "MINUTES"
 	HoursTimeUnit   TimeUnit = "HOURS"
 	DaysTimeUnit    TimeUnit = "DAYS"
-)
-
-type RuntimeUser string
-
-const (
-	RootRuntimeUser  RuntimeUser = "root"
-	NginxRuntimeUser RuntimeUser = "nginx"
 )

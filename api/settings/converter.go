@@ -3,7 +3,6 @@ package settings
 import (
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
@@ -48,7 +47,7 @@ func toDto(settings *settings.Settings) *settingsDto {
 		SendfileEnabled:     &settings.Nginx.SendfileEnabled,
 		GzipEnabled:         &settings.Nginx.GzipEnabled,
 		TcpNoDelayEnabled:   &settings.Nginx.TcpNoDelayEnabled,
-		RuntimeUser:         ptr.Of(string(settings.Nginx.RuntimeUser)),
+		RuntimeUser:         &settings.Nginx.RuntimeUser,
 		Custom:              settings.Nginx.Custom,
 	}
 
@@ -130,7 +129,7 @@ func toDomain(input *settingsDto) *settings.Settings {
 		SendfileEnabled:     *nginx.SendfileEnabled,
 		GzipEnabled:         *nginx.GzipEnabled,
 		TcpNoDelayEnabled:   *nginx.TcpNoDelayEnabled,
-		RuntimeUser:         settings.RuntimeUser(*nginx.RuntimeUser),
+		RuntimeUser:         *nginx.RuntimeUser,
 		Custom:              nginx.Custom,
 	}
 

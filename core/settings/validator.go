@@ -3,6 +3,7 @@ package settings
 import (
 	"context"
 	"strconv"
+	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
@@ -11,6 +12,7 @@ import (
 
 const (
 	maximumDefaultContentTypeLength = 128
+	maximumRuntimeUserLength        = 32
 )
 
 var (
@@ -63,11 +65,12 @@ func (v *validator) validateNginx(settings *NginxSettings) {
 		v.delegate.Add("nginx.defaultContentType", "Cannot have more than 128 characters")
 	}
 
-	switch settings.RuntimeUser {
-	case RootRuntimeUser, NginxRuntimeUser:
-		break
-	default:
-		v.delegate.Add("nginx.runtimeUser", "Must be either root or nginx")
+	if strings.TrimSpace(settings.RuntimeUser) == "" {
+		v.delegate.Add("nginx.runtimeUser", validation.ValueMissingMessage)
+	}
+
+	if len(settings.RuntimeUser) > maximumRuntimeUserLength {
+		v.delegate.Add("nginx.defaultContentType", "Cannot have more than 32 characters")
 	}
 }
 

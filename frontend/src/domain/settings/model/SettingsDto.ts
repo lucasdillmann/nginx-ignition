@@ -14,11 +14,6 @@ export enum LogLevel {
     EMERG = "EMERG",
 }
 
-export enum RuntimeUser {
-    NGINX = "nginx",
-    ROOT = "root",
-}
-
 export interface CertificateAutoRenewSettingsDto {
     enabled: boolean
     intervalUnit: TimeUnit
@@ -72,7 +67,7 @@ export interface NginxSettingsDto {
     tcpNoDelayEnabled: boolean
     maximumBodySizeMb: number
     defaultContentType: string
-    runtimeUser: RuntimeUser
+    runtimeUser: string
     custom: string | null
 }
 
