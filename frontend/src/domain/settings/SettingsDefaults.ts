@@ -1,5 +1,5 @@
 import SettingsFormValues from "./model/SettingsFormValues"
-import { LogLevel, RuntimeUser, TimeUnit } from "./model/SettingsDto"
+import { LogLevel, TimeUnit } from "./model/SettingsDto"
 
 export function settingsDefaults(): SettingsFormValues {
     return {
@@ -38,7 +38,7 @@ export function settingsDefaults(): SettingsFormValues {
             serverTokensEnabled: false,
             workerConnections: 1024,
             workerProcesses: 2,
-            runtimeUser: RuntimeUser.ROOT,
+            runtimeUser: "root",
             custom: null,
         },
         logRotation: {

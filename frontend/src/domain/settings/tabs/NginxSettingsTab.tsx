@@ -3,7 +3,7 @@ import { Flex, Form, Input, InputNumber, Select, Space, Switch } from "antd"
 import HostBindings from "../../host/components/HostBindings"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import SettingsFormValues from "../model/SettingsFormValues"
-import { LogLevel, RuntimeUser } from "../model/SettingsDto"
+import { LogLevel } from "../model/SettingsDto"
 import { INTEGER_MAX } from "../SettingsConstants"
 
 export interface NginxSettingsTabProps {
@@ -228,10 +228,7 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     label="Runtime user"
                     required
                 >
-                    <Select>
-                        <Select.Option value={RuntimeUser.ROOT}>root</Select.Option>
-                        <Select.Option value={RuntimeUser.NGINX}>nginx</Select.Option>
-                    </Select>
+                    <Input maxLength={32} minLength={1} />
                 </Form.Item>
                 <Form.Item
                     name={["nginx", "workerProcesses"]}
