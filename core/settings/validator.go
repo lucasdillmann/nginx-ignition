@@ -13,6 +13,7 @@ import (
 const (
 	maximumDefaultContentTypeLength = 128
 	maximumRuntimeUserLength        = 32
+	defaultContentTypePath          = "nginx.defaultContentType"
 )
 
 var (
@@ -58,11 +59,11 @@ func (v *validator) validateNginx(settings *NginxSettings) {
 	v.checkRange(settings.MaximumBodySizeMb, maximumBodySizeRange, "nginx.maximumBodySizeMb")
 
 	if settings.DefaultContentType == "" {
-		v.delegate.Add("nginx.defaultContentType", "A value is required")
+		v.delegate.Add(defaultContentTypePath, "A value is required")
 	}
 
 	if len(settings.DefaultContentType) > maximumDefaultContentTypeLength {
-		v.delegate.Add("nginx.defaultContentType", "Cannot have more than 128 characters")
+		v.delegate.Add(defaultContentTypePath, "Cannot have more than 128 characters")
 	}
 
 	if strings.TrimSpace(settings.RuntimeUser) == "" {
@@ -70,7 +71,7 @@ func (v *validator) validateNginx(settings *NginxSettings) {
 	}
 
 	if len(settings.RuntimeUser) > maximumRuntimeUserLength {
-		v.delegate.Add("nginx.defaultContentType", "Cannot have more than 32 characters")
+		v.delegate.Add(defaultContentTypePath, "Cannot have more than 32 characters")
 	}
 }
 
