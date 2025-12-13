@@ -47,12 +47,32 @@ export default class AppRouter extends React.Component<AppRouterProps, AppRouter
 
     private buildMenuItemsAdapter(): AppShellMenuItem[] {
         const { routes } = this.props
-        return routes
-            .filter(route => route.menuItem !== undefined)
-            .map(route => ({
-                icon: route.menuItem!!.icon,
-                description: route.menuItem!!.description,
-                path: route.path,
+        const menuItems = routes.filter(item => item.menuItem !== undefined)
+
+        const childByParentId = menuItems
+            .filter(item => item.menuItem!!.parentId !== undefined)
+            .reduce((accumulator, item) => {
+                const parentId = item.menuItem!!.parentId!!
+                if (!accumulator.has(parentId)) {
+                    accumulator.set(parentId, [])
+                }
+
+                accumulator.get(parentId)?.push({
+                    icon: item.menuItem!!.icon,
+                    description: item.menuItem!!.description,
+                    path: item.path,
+                })
+
+                return accumulator
+            }, new Map<string, AppShellMenuItem[]>())
+
+        return menuItems
+            .filter(item => item.menuItem!!.parentId === undefined)
+            .map(item => ({
+                icon: item.menuItem!!.icon,
+                description: item.menuItem!!.description,
+                path: item.path,
+                children: childByParentId.get(item.menuItem!!.id),
             }))
     }
 

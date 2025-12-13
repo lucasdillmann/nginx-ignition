@@ -33,11 +33,24 @@
     flex-grow: 1;
 }
 
-.shell-sider-menu-item {
+.shell-sider-menu-item,
+.shell-sider-submenu-child-item {
     margin: 5px 10px !important;
     padding: 10px 10px 10px 15px !important;
     width: 225px !important;
     border-radius: 4px !important;
+}
+
+.shell-sider-submenu-main-item div[role="menuitem"] {
+    margin: 5px 10px !important;
+    padding: 10px 0 10px 15px !important;
+    width: 235px !important;
+    border-radius: 4px !important;
+}
+
+.shell-sider-submenu-child-item {
+    margin-left: 25px !important;
+    width: 210px !important;
 }
 
 .shell-sider-bottom-credits {

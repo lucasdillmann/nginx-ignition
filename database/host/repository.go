@@ -10,7 +10,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
-	"dillmann.com.br/nginx-ignition/database/certificate"
+	"dillmann.com.br/nginx-ignition/database/certificate/server"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
@@ -292,7 +292,7 @@ func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error)
 }
 
 func (r *repository) ExistsCertificateByID(ctx context.Context, certificateId uuid.UUID) (bool, error) {
-	return certificate.New(r.database).ExistsByID(ctx, certificateId)
+	return server.New(r.database).ExistsByID(ctx, certificateId)
 }
 
 func (r *repository) ExistsByCertificateID(ctx context.Context, certificateId uuid.UUID) (bool, error) {

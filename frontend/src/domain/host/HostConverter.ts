@@ -14,19 +14,19 @@ import HostRequest, {
     HostRouteType,
     HostVpn,
 } from "./model/HostRequest"
-import CertificateService from "../certificate/CertificateService"
+import ServerCertificateService from "../certificate/server/ServerCertificateService"
 import IntegrationService from "../integration/IntegrationService"
 import AccessListService from "../accesslist/AccessListService"
 import VpnService from "../vpn/VpnService"
 
 class HostConverter {
-    private readonly certificateService: CertificateService
+    private readonly certificateService: ServerCertificateService
     private readonly integrationService: IntegrationService
     private readonly accessListService: AccessListService
     private readonly vpnService: VpnService
 
     constructor() {
-        this.certificateService = new CertificateService()
+        this.certificateService = new ServerCertificateService()
         this.integrationService = new IntegrationService()
         this.accessListService = new AccessListService()
         this.vpnService = new VpnService()

@@ -30,15 +30,16 @@ type User struct {
 }
 
 type Permissions struct {
-	Hosts        AccessLevel
-	Streams      AccessLevel
-	Certificates AccessLevel
-	Logs         AccessLevel
-	Integrations AccessLevel
-	AccessLists  AccessLevel
-	Settings     AccessLevel
-	Users        AccessLevel
-	NginxServer  AccessLevel
-	ExportData   AccessLevel
-	VPNs         AccessLevel
+	Hosts              AccessLevel
+	Streams            AccessLevel
+	ServerCertificates AccessLevel
+	ClientCertificates AccessLevel
+	Logs               AccessLevel
+	Integrations       AccessLevel
+	AccessLists        AccessLevel
+	Settings           AccessLevel
+	Users              AccessLevel
+	NginxServer        AccessLevel
+	ExportData         AccessLevel
+	VPNs               AccessLevel
 }

@@ -143,8 +143,8 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                     </Flex>
                     <p>
                         Whenever you make a change using nginx ignition and reload the server, the nginx configuration
-                        files are generated or updated with all the hosts, streams, SSL certificates and more that
-                        you've enabled.
+                        files are generated or updated with all the hosts, streams, certificates and more that you've
+                        enabled.
                     </p>
                     <p>
                         By downloading the nginx configuration files, you can analyze/review its contents or even deploy

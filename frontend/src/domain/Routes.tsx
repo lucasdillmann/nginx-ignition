@@ -14,12 +14,13 @@ import {
     TeamOutlined,
     DownloadOutlined,
     ApartmentOutlined,
+    UserOutlined,
 } from "@ant-design/icons"
 import HostListPage from "./host/HostListPage"
 import HostFormPage from "./host/HostFormPage"
-import CertificateListPage from "./certificate/CertificateListPage"
-import CertificateIssuePage from "./certificate/CertificateIssuePage"
-import CertificateDetailsPage from "./certificate/CertificateDetailsPage"
+import ServerCertificateListPage from "./certificate/server/ServerCertificateListPage"
+import ServerCertificateIssuePage from "./certificate/server/ServerCertificateIssuePage"
+import ServerCertificateDetailsPage from "./certificate/server/ServerCertificateDetailsPage"
 import LogsPage from "./logs/LogsPage"
 import UserListPage from "./user/UserListPage"
 import UserFormPage from "./user/UserFormPage"
@@ -34,6 +35,8 @@ import IntegrationListPage from "./integration/IntegrationListPage"
 import IntegrationFormPage from "./integration/IntegrationFormPage"
 import VpnListPage from "./vpn/VpnListPage"
 import VpnFormPage from "./vpn/VpnFormPage"
+import CertificatesPage from "./certificate/CertificatesPage"
+import ClientCertificateListPage from "./certificate/client/ClientCertificateListPage"
 
 const Routes: AppRoute[] = [
     {
@@ -61,6 +64,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <HostListPage />,
         menuItem: {
+            id: "HOSTS",
             description: "Hosts",
             icon: <HddOutlined />,
         },
@@ -78,32 +82,58 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <StreamListPage />,
         menuItem: {
+            id: "STREAMS",
             description: "Streams",
             icon: <MergeCellsOutlined />,
         },
     },
     {
-        path: "/certificates/new",
-        requiresAuthentication: true,
-        fullPage: false,
-        component: <CertificateIssuePage />,
-        activeMenuItemPath: "/certificates",
-    },
-    {
-        path: "/certificates/:id",
-        requiresAuthentication: true,
-        fullPage: false,
-        component: <CertificateDetailsPage />,
-        activeMenuItemPath: "/certificates",
-    },
-    {
         path: "/certificates",
         requiresAuthentication: true,
         fullPage: false,
-        component: <CertificateListPage />,
+        component: <CertificatesPage />,
         menuItem: {
-            description: "SSL certificates",
+            id: "CERTIFICATES",
+            description: "Certificates",
             icon: <AuditOutlined />,
+        },
+    },
+    {
+        path: "/certificates/server/new",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <ServerCertificateIssuePage />,
+        activeMenuItemPath: "/certificates/server",
+    },
+    {
+        path: "/certificates/server/:id",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <ServerCertificateDetailsPage />,
+        activeMenuItemPath: "/certificates/server",
+    },
+    {
+        path: "/certificates/server",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <ServerCertificateListPage />,
+        menuItem: {
+            id: "SERVER_CERTIFICATES",
+            parentId: "CERTIFICATES",
+            description: "Server",
+            icon: <HddOutlined />,
+        },
+    },
+    {
+        path: "/certificates/client",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <ClientCertificateListPage />,
+        menuItem: {
+            id: "CLIENT_CERTIFICATES",
+            parentId: "CERTIFICATES",
+            description: "Client",
+            icon: <UserOutlined />,
         },
     },
     {
@@ -112,6 +142,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <LogsPage />,
         menuItem: {
+            id: "LOGS",
             description: "Logs",
             icon: <FileSearchOutlined />,
         },
@@ -129,6 +160,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <IntegrationListPage />,
         menuItem: {
+            id: "INTEGRATIONS",
             description: "Integrations",
             icon: <BlockOutlined />,
         },
@@ -146,6 +178,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <VpnListPage />,
         menuItem: {
+            id: "VPNS",
             description: "VPNs",
             icon: <ApartmentOutlined />,
         },
@@ -163,6 +196,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <AccessListListPage />,
         menuItem: {
+            id: "ACCESS_LISTS",
             description: "Access lists",
             icon: <FileProtectOutlined />,
         },
@@ -173,6 +207,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <ExportPage />,
         menuItem: {
+            id: "EXPORT_AND_BACKUP",
             description: "Export and backup",
             icon: <DownloadOutlined />,
         },
@@ -183,6 +218,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <SettingsPage />,
         menuItem: {
+            id: "SETTINGS",
             description: "Settings",
             icon: <SettingOutlined />,
         },
@@ -200,6 +236,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <UserListPage />,
         menuItem: {
+            id: "USERS",
             description: "Users",
             icon: <TeamOutlined />,
         },

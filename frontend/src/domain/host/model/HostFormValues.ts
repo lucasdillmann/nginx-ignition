@@ -1,4 +1,4 @@
-import { CertificateResponse } from "../../certificate/model/CertificateResponse"
+import { ServerCertificateResponse } from "../../certificate/server/model/ServerCertificateResponse"
 import { HostBindingType, HostFeatureSet, HostRouteSettings, HostRouteSourceCode, HostRouteType } from "./HostRequest"
 import IntegrationOptionResponse from "../../integration/model/IntegrationOptionResponse"
 import AccessListResponse from "../../accesslist/model/AccessListResponse"
@@ -9,7 +9,7 @@ export interface HostFormBinding {
     type: HostBindingType
     ip: string
     port: number
-    certificate?: CertificateResponse
+    certificate?: ServerCertificateResponse
 }
 
 export interface HostFormStaticResponse {

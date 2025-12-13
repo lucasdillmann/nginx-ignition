@@ -16,7 +16,7 @@ import (
 	"github.com/google/uuid"
 	jsoniter "github.com/json-iterator/go"
 
-	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/certificate/server"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 )
 
@@ -26,7 +26,7 @@ func issueCertificate(
 	domainNames []string,
 	parameters map[string]any,
 	productionEnvironment bool,
-) (*certificate.Certificate, error) {
+) (*server.Certificate, error) {
 	caURL := lego.LEDirectoryProduction
 	if !productionEnvironment {
 		caURL = lego.LEDirectoryStaging
@@ -96,7 +96,7 @@ func parseResult(
 	usr userDetails,
 	productionEnvironment bool,
 	client *lego.Client,
-) (*certificate.Certificate, error) {
+) (*server.Certificate, error) {
 	mainCert := strings.Replace(string(result.Certificate), string(result.IssuerCertificate), "", 1)
 	pemBlock, _ := pem.Decode([]byte(mainCert))
 	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
@@ -140,7 +140,7 @@ func parseResult(
 		return nil, err
 	}
 
-	output := certificate.Certificate{
+	output := server.Certificate{
 		ID:                 id,
 		ProviderID:         certificateProviderId,
 		DomainNames:        domainNames,

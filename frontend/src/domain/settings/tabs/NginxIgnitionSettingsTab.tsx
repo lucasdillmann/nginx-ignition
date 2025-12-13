@@ -70,7 +70,7 @@ export default class NginxIgnitionSettingsTab extends React.Component<NginxIgnit
                         {this.renderExecutionIntervalFieldset("logRotation")}
                     </Flex>
                     <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
-                        <h3 className="settings-form-subsection-name">SSL certificates auto renew</h3>
+                        <h3 className="settings-form-subsection-name">Server certificates auto renew</h3>
                         <Form.Item
                             name={["certificateAutoRenew", "enabled"]}
                             validateStatus={validationResult.getStatus("certificateAutoRenew.enabled")}

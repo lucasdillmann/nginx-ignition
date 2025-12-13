@@ -3,7 +3,8 @@ import { UserAccessLevel } from "./UserAccessLevel"
 export default interface UserPermissions {
     hosts: UserAccessLevel
     streams: UserAccessLevel
-    certificates: UserAccessLevel
+    serverCertificates: UserAccessLevel
+    clientCertificates: UserAccessLevel
     logs: UserAccessLevel
     integrations: UserAccessLevel
     accessLists: UserAccessLevel

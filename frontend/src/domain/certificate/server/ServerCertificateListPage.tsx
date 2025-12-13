@@ -1,0 +1,161 @@
+import React from "react"
+import DataTable, { DataTableColumn } from "../../../core/components/datatable/DataTable"
+import { Flex } from "antd"
+import { Link } from "react-router-dom"
+import { DeleteOutlined, EyeOutlined, ReloadOutlined } from "@ant-design/icons"
+import PageResponse from "../../../core/pagination/PageResponse"
+import ServerCertificateService from "./ServerCertificateService"
+import { ServerCertificateResponse } from "./model/ServerCertificateResponse"
+import AvailableProviderResponse from "./model/AvailableProviderResponse"
+import Preloader from "../../../core/components/preloader/Preloader"
+import TagGroup from "../../../core/components/taggroup/TagGroup"
+import RenewCertificateAction from "./actions/RenewServerCertificateAction"
+import DeleteCertificateAction from "./actions/DeleteServerCertificateAction"
+import AppShellContext from "../../../core/components/shell/AppShellContext"
+import CommonNotifications from "../../../core/components/notification/CommonNotifications"
+import EmptyStates from "../../../core/components/emptystate/EmptyStates"
+import { isAccessGranted } from "../../../core/components/accesscontrol/IsAccessGranted"
+import { UserAccessLevel } from "../../user/model/UserAccessLevel"
+import AccessDeniedPage from "../../../core/components/accesscontrol/AccessDeniedPage"
+import AccessDeniedModal from "../../../core/components/accesscontrol/AccessDeniedModal"
+
+interface CertificateListPageState {
+    loading: boolean
+    providers: AvailableProviderResponse[]
+    error?: Error
+}
+
+export default class ServerCertificateListPage extends React.Component<any, CertificateListPageState> {
+    private readonly service: ServerCertificateService
+    private readonly table: React.RefObject<DataTable<ServerCertificateResponse> | null>
+
+    constructor(props: any) {
+        super(props)
+        this.service = new ServerCertificateService()
+        this.table = React.createRef()
+        this.state = {
+            loading: true,
+            providers: [],
+        }
+    }
+
+    private isReadOnlyMode() {
+        return !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.serverCertificates)
+    }
+
+    private translateProviderName(providerId: string): string {
+        const { providers } = this.state
+        return providers.find(provider => provider.id === providerId)?.name ?? providerId
+    }
+
+    private buildColumns(): DataTableColumn<ServerCertificateResponse>[] {
+        return [
+            {
+                id: "domainNames",
+                description: "Domain names",
+                renderer: item => <TagGroup values={item.domainNames} />,
+            },
+            {
+                id: "provider",
+                description: "Provider",
+                renderer: item => this.translateProviderName(item.providerId),
+                width: 250,
+            },
+            {
+                id: "actions",
+                description: "",
+                renderer: item => (
+                    <>
+                        <Link to={`/certificates/server/${item.id}`}>
+                            <EyeOutlined className="action-icon" />
+                        </Link>
+                        <Link to="" onClick={() => this.renewCertificate(item)}>
+                            <ReloadOutlined className="action-icon" />
+                        </Link>
+
+                        <Link to="" onClick={() => this.deleteCertificate(item)}>
+                            <DeleteOutlined className="action-icon" />
+                        </Link>
+                    </>
+                ),
+                width: 120,
+            },
+        ]
+    }
+
+    private async renewCertificate(certificate: ServerCertificateResponse) {
+        if (this.isReadOnlyMode()) {
+            return AccessDeniedModal.show()
+        }
+
+        return RenewCertificateAction.execute(certificate.id).then(() => this.table.current?.refresh())
+    }
+
+    private async deleteCertificate(certificate: ServerCertificateResponse) {
+        if (this.isReadOnlyMode()) {
+            return AccessDeniedModal.show()
+        }
+
+        return DeleteCertificateAction.execute(certificate.id).then(() => this.table.current?.refresh())
+    }
+
+    private fetchData(
+        pageSize: number,
+        pageNumber: number,
+        searchTerms?: string,
+    ): Promise<PageResponse<ServerCertificateResponse>> {
+        return this.service.list(pageSize, pageNumber, searchTerms)
+    }
+
+    componentDidMount() {
+        this.service
+            .availableProviders()
+            .then(providers =>
+                this.setState({
+                    loading: false,
+                    providers,
+                }),
+            )
+            .catch(error => {
+                CommonNotifications.failedToFetch()
+                this.setState({ loading: false, error })
+            })
+
+        AppShellContext.get().updateConfig({
+            title: "Server certificates",
+            subtitle: "Relation of server certificates for use in the nginx's virtual hosts",
+            actions: [
+                {
+                    description: "Issue certificate",
+                    onClick: "/certificates/server/new",
+                    disabled: this.isReadOnlyMode(),
+                },
+            ],
+        })
+    }
+
+    render() {
+        if (!isAccessGranted(UserAccessLevel.READ_ONLY, permissions => permissions.serverCertificates)) {
+            return <AccessDeniedPage />
+        }
+
+        const { loading, error } = this.state
+        if (loading)
+            return (
+                <Flex justify="center" align="center">
+                    <Preloader loading />
+                </Flex>
+            )
+
+        if (error !== undefined) return EmptyStates.FailedToFetch
+
+        return (
+            <DataTable
+                ref={this.table}
+                columns={this.buildColumns()}
+                dataProvider={(pageSize, pageNumber, searchTerms) => this.fetchData(pageSize, pageNumber, searchTerms)}
+                rowKey={item => item.id}
+            />
+        )
+    }
+}

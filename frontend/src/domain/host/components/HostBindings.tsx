@@ -6,9 +6,9 @@ import { DeleteOutlined, PlusOutlined } from "@ant-design/icons"
 import { HostFormBinding } from "../model/HostFormValues"
 import { HostBindingType } from "../model/HostRequest"
 import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
-import CertificateService from "../../certificate/CertificateService"
+import ServerCertificateService from "../../certificate/server/ServerCertificateService"
 import PageResponse from "../../../core/pagination/PageResponse"
-import { CertificateResponse } from "../../certificate/model/CertificateResponse"
+import { ServerCertificateResponse } from "../../certificate/server/model/ServerCertificateResponse"
 import "./HostBindings.css"
 import FormLayout from "../../../core/components/form/FormLayout"
 import TagGroup from "../../../core/components/taggroup/TagGroup"
@@ -27,18 +27,18 @@ export interface HostBindingsProps {
 }
 
 export default class HostBindings extends React.Component<HostBindingsProps> {
-    private readonly service: CertificateService
+    private readonly service: ServerCertificateService
 
     constructor(props: HostBindingsProps) {
         super(props)
-        this.service = new CertificateService()
+        this.service = new ServerCertificateService()
     }
 
     private async fetchCertificates(
         pageSize: number,
         pageNumber: number,
         searchTerms?: string,
-    ): Promise<PageResponse<CertificateResponse>> {
+    ): Promise<PageResponse<ServerCertificateResponse>> {
         return this.service.list(pageSize, pageNumber, searchTerms)
     }
 
@@ -98,7 +98,7 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     label={index === 0 ? "SSL certificate" : undefined}
                     required
                 >
-                    <PaginatedSelect<CertificateResponse>
+                    <PaginatedSelect<ServerCertificateResponse>
                         disabled={bindings[index].type === HostBindingType.HTTP}
                         pageProvider={(pageSize, pageNumber, searchTerms) =>
                             this.fetchCertificates(pageSize, pageNumber, searchTerms)

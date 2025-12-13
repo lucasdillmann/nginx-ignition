@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/certificate/commons"
-	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/certificate/server"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
@@ -46,7 +46,7 @@ func (p *Provider) Priority() int {
 	return 2
 }
 
-func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (*certificate.Certificate, error) {
+func (p *Provider) Issue(_ context.Context, request *server.IssueRequest) (*server.Certificate, error) {
 	if err := commons.Validate(request, validationRules{p.DynamicFields()}); err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (
 		}
 	}
 
-	return &certificate.Certificate{
+	return &server.Certificate{
 		ID:                 uuid.New(),
 		DomainNames:        request.DomainNames,
 		ProviderID:         p.ID(),
@@ -101,7 +101,7 @@ func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (
 	}, nil
 }
 
-func (p *Provider) Renew(_ context.Context, cert *certificate.Certificate) (*certificate.Certificate, error) {
+func (p *Provider) Renew(_ context.Context, cert *server.Certificate) (*server.Certificate, error) {
 	return cert, nil
 }
 

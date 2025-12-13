@@ -34,6 +34,6 @@ var importantInstructions = []string{
 	"An auth key can be generated in the Tailscale Admin console under Settings > Personal settings.",
 	"When generating the key, make sure to generate a Reusable, Ephemeral and Pre-approved key. " +
 		"Otherwise, nginx ignition will not be able to property manage and register virtual devices in the network.",
-	"nginx ignition will use Tailscale to automatically provision SSL certificates for your ts.net domain. Make sure " +
+	"nginx ignition will use Tailscale to automatically provision server certificates for your ts.net domain. Make sure " +
 		"that such possibility is enabled under Admin console > DNS > HTTP certificates.",
 }

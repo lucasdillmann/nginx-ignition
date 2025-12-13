@@ -39,15 +39,16 @@ type userResponseDto struct {
 }
 
 type userPermissionsDto struct {
-	Hosts        *string `json:"hosts"`
-	Streams      *string `json:"streams"`
-	Certificates *string `json:"certificates"`
-	Logs         *string `json:"logs"`
-	Integrations *string `json:"integrations"`
-	AccessLists  *string `json:"accessLists"`
-	Settings     *string `json:"settings"`
-	Users        *string `json:"users"`
-	NginxServer  *string `json:"nginxServer"`
-	ExportData   *string `json:"exportData"`
-	VPNs         *string `json:"vpns"`
+	Hosts              *string `json:"hosts"`
+	Streams            *string `json:"streams"`
+	ServerCertificates *string `json:"serverCertificates"`
+	ClientCertificates *string `json:"clientCertificates"`
+	Logs               *string `json:"logs"`
+	Integrations       *string `json:"integrations"`
+	AccessLists        *string `json:"accessLists"`
+	Settings           *string `json:"settings"`
+	Users              *string `json:"users"`
+	NginxServer        *string `json:"nginxServer"`
+	ExportData         *string `json:"exportData"`
+	VPNs               *string `json:"vpns"`
 }

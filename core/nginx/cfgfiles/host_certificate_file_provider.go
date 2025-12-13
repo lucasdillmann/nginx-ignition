@@ -9,17 +9,17 @@ import (
 
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/certificate/server"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 type hostCertificateFileProvider struct {
-	certificateRepository certificate.Repository
+	certificateRepository server.Repository
 	settingsRepository    settings.Repository
 }
 
-func newHostCertificateFileProvider(certificateRepository certificate.Repository, settingsRepository settings.Repository) *hostCertificateFileProvider {
+func newHostCertificateFileProvider(certificateRepository server.Repository, settingsRepository settings.Repository) *hostCertificateFileProvider {
 	return &hostCertificateFileProvider{
 		certificateRepository: certificateRepository,
 		settingsRepository:    settingsRepository,

@@ -1,14 +1,14 @@
-import CertificateService from "../certificate/CertificateService"
+import ServerCertificateService from "../certificate/server/ServerCertificateService"
 import SettingsDto from "./model/SettingsDto"
 import SettingsFormValues from "./model/SettingsFormValues"
 import { HostBinding } from "../host/model/HostRequest"
 import { HostFormBinding } from "../host/model/HostFormValues"
 
 class SettingsConverter {
-    private readonly certificateService: CertificateService
+    private readonly certificateService: ServerCertificateService
 
     constructor() {
-        this.certificateService = new CertificateService()
+        this.certificateService = new ServerCertificateService()
     }
 
     private notNull(value?: any) {

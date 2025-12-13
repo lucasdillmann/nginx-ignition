@@ -1,6 +1,6 @@
 import React from "react"
 import { Button, Flex, Layout, Menu, Tooltip } from "antd"
-import { MenuItemType } from "antd/es/menu/interface"
+import { ItemType } from "antd/es/menu/interface"
 import { Link } from "react-router-dom"
 import AppRoute from "../router/AppRoute"
 import "./AppShell.css"
@@ -15,6 +15,7 @@ export interface AppShellMenuItem {
     icon: React.ReactNode
     description: string
     path: string
+    children?: Omit<AppShellMenuItem, "children">[]
 }
 
 export interface AppShellProps {
@@ -37,14 +38,30 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         }
     }
 
-    private buildMenuItemsAdapters(): MenuItemType[] {
+    private buildMenuItemsAdapters(): ItemType[] {
         const { menuItems } = this.props
-        return menuItems.map(item => ({
-            key: item.path,
-            icon: item.icon,
-            label: <Link to={item.path}>{item.description}</Link>,
-            className: "shell-sider-menu-item",
-        }))
+        return menuItems.map(item => {
+            const menuItem = {
+                key: item.path,
+                icon: item.icon,
+                label: <Link to={item.path}>{item.description}</Link>,
+                className: "shell-sider-menu-item",
+            }
+
+            if (item.children === undefined || item.children.length == 0) return menuItem
+
+            return {
+                ...menuItem,
+                label: item.description,
+                className: "shell-sider-submenu-main-item",
+                children: item.children!!.map(child => ({
+                    key: child.path,
+                    icon: child.icon,
+                    label: <Link to={child.path}>{child.description}</Link>,
+                    className: "shell-sider-submenu-child-item",
+                })),
+            }
+        })
     }
 
     private renderActionButton(action: ShellAction): React.ReactNode {

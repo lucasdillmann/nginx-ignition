@@ -1,6 +1,8 @@
 import React from "react"
 
 export interface AppRouteMenuItem {
+    id: string
+    parentId?: string
     icon: React.ReactNode
     description: string
 }

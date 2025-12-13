@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/accesslist"
-	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/certificate/server"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/host"
@@ -30,7 +30,7 @@ func newFacade(
 	integrationCommands *integration.Commands,
 	configuration *configuration.Configuration,
 	accessListRepository accesslist.Repository,
-	certificateRepository certificate.Repository,
+	certificateRepository server.Repository,
 	settingsRepository settings.Repository,
 ) *Facade {
 	providers := []fileProvider{

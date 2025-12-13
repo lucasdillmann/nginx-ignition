@@ -1,12 +1,12 @@
 go 1.25.5
 
 use (
+	./certificate/commons
+	./certificate/custom
+	./certificate/letsencrypt
+	./certificate/selfsigned
 	api
 	application
-	certificate/commons
-	certificate/custom
-	certificate/letsencrypt
-	certificate/selfsigned
 	core
 	database
 	integration/docker

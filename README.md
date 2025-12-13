@@ -20,7 +20,8 @@ Some of the available features include:
 - Each host route can act as a proxy, redirection, execute custom code (JavaScript or Lua), reply with a static 
   response or serve static files (directory listing can be optionally enabled)
 - Easy configuration of the nginx server (maximum body/upload size, server tokens, timeouts, log level, etc)
-- SSL certificates (Let's Encrypt, self-signed or bring your custom one) with automatic renew (when applicable)
+- Server certificates (Let's Encrypt, self-signed or bring your custom one) with automatic renew (when applicable)
+- Client certificates (self-signed or bring your custom one) for mTLS (Mutual Transport Layer Security) 
 - Server and virtual hosts access and error logs with automatic log rotation
 - Multiple users with attribute-based access control (ABAC)
 - Support for TrueNAS, allowing to easily configure to proxy to an app hosted in your NAS

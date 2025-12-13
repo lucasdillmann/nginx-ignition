@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/certificate/commons"
-	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/certificate/server"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
@@ -35,7 +35,7 @@ func (p *Provider) Priority() int {
 	return 3
 }
 
-func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (*certificate.Certificate, error) {
+func (p *Provider) Issue(_ context.Context, request *server.IssueRequest) (*server.Certificate, error) {
 	if err := commons.Validate(request, validationRules{}); err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (
 	}
 
 	renewAfter := time.Now().Add(335 * 24 * time.Hour)
-	cert := &certificate.Certificate{
+	cert := &server.Certificate{
 		ID:                 uuid.New(),
 		DomainNames:        request.DomainNames,
 		ProviderID:         p.ID(),
@@ -64,14 +64,14 @@ func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (
 	return cert, nil
 }
 
-func (p *Provider) Renew(_ context.Context, current *certificate.Certificate) (*certificate.Certificate, error) {
+func (p *Provider) Renew(_ context.Context, current *server.Certificate) (*server.Certificate, error) {
 	certPEM, keyPEM, err := buildPEMs(current.DomainNames)
 	if err != nil {
 		return nil, err
 	}
 
 	renewAfter := time.Now().Add(335 * 24 * time.Hour)
-	cert := &certificate.Certificate{
+	cert := &server.Certificate{
 		ID:                 current.ID,
 		DomainNames:        current.DomainNames,
 		ProviderID:         p.ID(),

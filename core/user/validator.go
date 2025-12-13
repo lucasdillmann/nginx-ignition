@@ -61,7 +61,8 @@ func (v *validator) validate(
 func (v *validator) validatePermissions(permissions Permissions) {
 	v.validatePermission("hosts", permissions.Hosts)
 	v.validatePermission("streams", permissions.Streams)
-	v.validatePermission("certificates", permissions.Certificates)
+	v.validatePermission("serverCertificates", permissions.ServerCertificates)
+	v.validatePermission("clientCertificates", permissions.ClientCertificates)
 	v.validatePermission("logs", permissions.Logs)
 	v.validatePermission("integrations", permissions.Integrations)
 	v.validatePermission("accessLists", permissions.AccessLists)

@@ -3,13 +3,13 @@ package commons
 import (
 	"fmt"
 
-	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/certificate/server"
 	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
-func Validate(request *certificate.IssueRequest, domainRules DomainRules) error {
+func Validate(request *server.IssueRequest, domainRules DomainRules) error {
 	violations := append(validateBaseFields(request), domainRules.Validate(request)...)
 
 	dynamicFieldsResult := dynamicfields.Validate(domainRules.DynamicFields(), request.Parameters)
@@ -24,7 +24,7 @@ func Validate(request *certificate.IssueRequest, domainRules DomainRules) error 
 	return nil
 }
 
-func validateBaseFields(request *certificate.IssueRequest) []validation.ConsistencyViolation {
+func validateBaseFields(request *server.IssueRequest) []validation.ConsistencyViolation {
 	violations := make([]validation.ConsistencyViolation, 0)
 	if len(request.DomainNames) == 0 {
 		violations = append(violations, validation.ConsistencyViolation{

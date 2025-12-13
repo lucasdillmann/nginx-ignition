@@ -49,7 +49,8 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                 permissions: {
                     hosts: UserAccessLevel.READ_WRITE,
                     streams: UserAccessLevel.READ_WRITE,
-                    certificates: UserAccessLevel.READ_WRITE,
+                    serverCertificates: UserAccessLevel.READ_WRITE,
+                    clientCertificates: UserAccessLevel.READ_WRITE,
                     logs: UserAccessLevel.READ_ONLY,
                     integrations: UserAccessLevel.READ_WRITE,
                     accessLists: UserAccessLevel.READ_WRITE,
@@ -153,7 +154,8 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                 <Form.Item label="Permissions" required>
                     <UserPermissionToggle id="hosts" label="Hosts" />
                     <UserPermissionToggle id="streams" label="Streams" />
-                    <UserPermissionToggle id="certificates" label="SSL certificates" />
+                    <UserPermissionToggle id="serverCertificates" label="Server certificates" />
+                    <UserPermissionToggle id="clientCertificates" label="Client certificates" />
                     <UserPermissionToggle id="integrations" label="Integrations" />
                     <UserPermissionToggle id="vpns" label="VPNs" />
                     <UserPermissionToggle id="accessLists" label="Access lists" />

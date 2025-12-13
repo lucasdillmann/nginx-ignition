@@ -20,7 +20,8 @@ export default class OnboardingService {
             permissions: {
                 hosts: UserAccessLevel.READ_WRITE,
                 streams: UserAccessLevel.READ_WRITE,
-                certificates: UserAccessLevel.READ_WRITE,
+                serverCertificates: UserAccessLevel.READ_WRITE,
+                clientCertificates: UserAccessLevel.READ_WRITE,
                 logs: UserAccessLevel.READ_ONLY,
                 integrations: UserAccessLevel.READ_WRITE,
                 accessLists: UserAccessLevel.READ_WRITE,

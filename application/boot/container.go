@@ -8,7 +8,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt"
 	"dillmann.com.br/nginx-ignition/certificate/selfsigned"
 	"dillmann.com.br/nginx-ignition/core"
-	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/certificate/server"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/core/common/healthcheck"
@@ -53,7 +53,7 @@ func installCertificateDriverAggregation(
 	customCertificateProvider *custom.Provider,
 	selfSignedCertificateProvider *selfsigned.Provider,
 ) error {
-	return container.Singleton([]certificate.Provider{
+	return container.Singleton([]server.Provider{
 		acmeCertificateProvider,
 		customCertificateProvider,
 		selfSignedCertificateProvider,

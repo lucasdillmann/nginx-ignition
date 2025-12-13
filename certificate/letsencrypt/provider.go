@@ -11,7 +11,7 @@ import (
 	acmelog "github.com/go-acme/lego/v4/log"
 
 	"dillmann.com.br/nginx-ignition/certificate/commons"
-	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/certificate/server"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
@@ -50,7 +50,7 @@ func (p *Provider) Priority() int {
 	return 1
 }
 
-func (p *Provider) Issue(ctx context.Context, request *certificate.IssueRequest) (*certificate.Certificate, error) {
+func (p *Provider) Issue(ctx context.Context, request *server.IssueRequest) (*server.Certificate, error) {
 	if err := commons.Validate(request, validationRules{p.DynamicFields()}); err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (p *Provider) Issue(ctx context.Context, request *certificate.IssueRequest)
 	)
 }
 
-func (p *Provider) Renew(ctx context.Context, cert *certificate.Certificate) (*certificate.Certificate, error) {
+func (p *Provider) Renew(ctx context.Context, cert *server.Certificate) (*server.Certificate, error) {
 	var metadata *certificateMetadata
 	if err := json.Unmarshal([]byte(*cert.Metadata), &metadata); err != nil {
 		return nil, coreerror.New("Failed to parse metadata", false)

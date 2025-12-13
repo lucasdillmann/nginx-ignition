@@ -148,7 +148,7 @@ func (v *validator) validateBinding(ctx context.Context, pathPrefix string, bind
 		}
 
 		if !exists {
-			v.delegate.Add(certificateIdField, "No SSL certificate found with provided ID")
+			v.delegate.Add(certificateIdField, "No server certificate found with provided ID")
 		}
 	default:
 		v.delegate.Add(pathPrefix+"["+strconv.Itoa(index)+"].type", invalidValue)

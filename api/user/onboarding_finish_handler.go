@@ -36,17 +36,18 @@ func (h onboardingFinishHandler) handle(ctx *gin.Context) {
 	domainModel.ID = uuid.New()
 	domainModel.Enabled = true
 	domainModel.Permissions = user.Permissions{
-		Hosts:        user.ReadWriteAccessLevel,
-		Streams:      user.ReadWriteAccessLevel,
-		Certificates: user.ReadWriteAccessLevel,
-		Logs:         user.ReadOnlyAccessLevel,
-		Integrations: user.ReadWriteAccessLevel,
-		AccessLists:  user.ReadWriteAccessLevel,
-		Settings:     user.ReadWriteAccessLevel,
-		Users:        user.ReadWriteAccessLevel,
-		NginxServer:  user.ReadWriteAccessLevel,
-		ExportData:   user.ReadOnlyAccessLevel,
-		VPNs:         user.ReadWriteAccessLevel,
+		Hosts:              user.ReadWriteAccessLevel,
+		Streams:            user.ReadWriteAccessLevel,
+		ServerCertificates: user.ReadWriteAccessLevel,
+		ClientCertificates: user.ReadWriteAccessLevel,
+		Logs:               user.ReadOnlyAccessLevel,
+		Integrations:       user.ReadWriteAccessLevel,
+		AccessLists:        user.ReadWriteAccessLevel,
+		Settings:           user.ReadWriteAccessLevel,
+		Users:              user.ReadWriteAccessLevel,
+		NginxServer:        user.ReadWriteAccessLevel,
+		ExportData:         user.ReadOnlyAccessLevel,
+		VPNs:               user.ReadWriteAccessLevel,
 	}
 
 	if err = h.commands.Save(ctx.Request.Context(), domainModel, nil); err != nil {
