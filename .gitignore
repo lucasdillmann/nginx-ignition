@@ -9,8 +9,6 @@
 
 # Dependency directories and files
 vendor/
-**/go.sum
-**/go.work.sum
 
 # others
 .env

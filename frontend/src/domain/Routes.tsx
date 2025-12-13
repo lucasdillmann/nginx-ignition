@@ -35,7 +35,6 @@ import IntegrationListPage from "./integration/IntegrationListPage"
 import IntegrationFormPage from "./integration/IntegrationFormPage"
 import VpnListPage from "./vpn/VpnListPage"
 import VpnFormPage from "./vpn/VpnFormPage"
-import CertificatesPage from "./certificate/CertificatesPage"
 import ClientCertificateListPage from "./certificate/client/ClientCertificateListPage"
 
 const Routes: AppRoute[] = [
@@ -90,8 +89,8 @@ const Routes: AppRoute[] = [
     {
         path: "/certificates",
         requiresAuthentication: true,
-        fullPage: false,
-        component: <CertificatesPage />,
+        fullPage: true,
+        component: <NotFoundPage />,
         menuItem: {
             id: "CERTIFICATES",
             description: "Certificates",

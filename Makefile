@@ -85,17 +85,18 @@ format: .prerequisites
 	cd frontend/ && npx prettier --write .
 
 update-dependencies:
-	cd api && go get -u all
-	cd application && go get -u all
-	cd certificate/commons && go get -u all
-	cd certificate/custom && go get -u all
-	cd certificate/letsencrypt && go get -u all
-	cd certificate/selfsigned && go get -u all
-	cd core && go get -u all
-	cd database && go get -u all
-	cd integration/docker && go get -u all
-	cd integration/truenas && go get -u all
-	cd vpn/tailscale && go get -u all
+	cd api && go get -u
+	cd application && go get -u
+	cd certificate/commons && go get -u
+	cd certificate/custom && go get -u
+	cd certificate/letsencrypt && go get -u
+	cd certificate/selfsigned && go get -u
+	cd core && go get -u
+	cd database && go get -u
+	cd integration/docker && go get -u
+	cd integration/truenas && go get -u
+	cd tools && go get -u
+	cd vpn/tailscale && go get -u
 	go work sync
 	cd frontend && npm update
 

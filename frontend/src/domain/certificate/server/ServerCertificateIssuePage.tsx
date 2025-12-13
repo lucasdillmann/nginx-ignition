@@ -189,7 +189,7 @@ export default class ServerCertificateIssuePage extends React.Component<unknown,
         this.service
             .availableProviders()
             .then(providers => {
-                const sortedProviders = providers.sort((left, right) => (left.priority > right.priority ? 1 : -1))
+                const sortedProviders = providers.toSorted((left, right) => (left.priority > right.priority ? 1 : -1))
                 this.setState({
                     availableProviders: sortedProviders,
                     loading: false,

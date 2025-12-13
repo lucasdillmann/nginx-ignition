@@ -5,10 +5,6 @@ import { UserAccessLevel } from "../../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../../core/components/accesscontrol/AccessDeniedPage"
 
 export default class ClientCertificateListPage extends React.Component {
-    constructor(props: any) {
-        super(props)
-    }
-
     componentDidMount() {
         AppShellContext.get().updateConfig({
             title: "Client certificates",
