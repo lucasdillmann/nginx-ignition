@@ -12,9 +12,9 @@ class RenewServerCertificateAction {
         this.service = new ServerCertificateService()
     }
 
-    private async invokeCertificateRenew(certificateId: string): Promise<void> {
+    private async invokeCertificateRenew(serverCertificateId: string): Promise<void> {
         return this.service
-            .renew(certificateId)
+            .renew(serverCertificateId)
             .then(() => {
                 Notification.success(`Server certificate renewed`, `The server certificate was renewed successfully`)
                 ReloadNginxAction.execute()
@@ -28,11 +28,11 @@ class RenewServerCertificateAction {
             )
     }
 
-    async execute(certificateId: string): Promise<void> {
+    async execute(serverCertificateId: string): Promise<void> {
         return UserConfirmation.askWithCallback(
             `Renewing the server certificate can take several seconds, and is recommended only when something is wrong with it
              (nginx ignition will renew it automatically when it's close to expiring). Continue anyway?`,
-            () => this.invokeCertificateRenew(certificateId),
+            () => this.invokeCertificateRenew(serverCertificateId),
         )
     }
 }

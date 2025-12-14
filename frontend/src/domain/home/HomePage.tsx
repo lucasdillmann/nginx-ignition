@@ -84,11 +84,11 @@ export default class HomePage extends React.PureComponent {
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
-                            <AuditOutlined /> SSL certificates
+                            <AuditOutlined /> Server certificates
                         </h2>
                         <p>
                             If you want to or need to protect your domains with HTTPS encryption, the app comes with an
-                            easy way to manage such SSL certificates too.
+                            easy way to manage such server certificates too.
                         </p>
                         <p>
                             Either if you need a valid certificate backed by Let's Encrypt, a self-signed, or bring your
@@ -96,7 +96,7 @@ export default class HomePage extends React.PureComponent {
                             certificate is about to expire, the app will automatically renew it for you.
                         </p>
                         <p>
-                            Once an SSL certificate is created or imported, you can use it on the hosts by simply
+                            Once an server certificate is created or imported, you can use it on the hosts by simply
                             selecting an option in the form.
                         </p>
                     </Flex>
@@ -206,7 +206,7 @@ export default class HomePage extends React.PureComponent {
                         </p>
                         <p>
                             Beyond that, you can also configure some of the nginx ignition's features there, like the
-                            automatic renewal of SSL certificates and log rotation.
+                            automatic renewal of server certificates and log rotation.
                         </p>
                     </Flex>
                 </Flex>

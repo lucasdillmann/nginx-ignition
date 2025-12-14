@@ -182,6 +182,28 @@ func (r *repository) Save(ctx context.Context, accessList *accesslist.AccessList
 	return transaction.Commit()
 }
 
+func (r repository) IsInUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
+	count, err := r.database.
+		Select().
+		Table("host").
+		Where(byAccessListIdFilter, id).
+		Count(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	if count > 0 {
+		return true, nil
+	}
+
+	count, err = r.database.
+		Select().
+		Table("host_route").
+		Where(byAccessListIdFilter, id).
+		Count(ctx)
+	return count > 0, err
+}
+
 func (r *repository) performUpdate(ctx context.Context, model *accessListModel, transaction bun.Tx) error {
 	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
 	if err != nil {

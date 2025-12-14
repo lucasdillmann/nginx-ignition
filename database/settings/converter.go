@@ -71,11 +71,11 @@ func toBindingDomain(bindings []*bindingModel) []*host.Binding {
 
 	for _, binding := range bindings {
 		result = append(result, &host.Binding{
-			ID:            binding.ID,
-			Type:          host.BindingType(binding.Type),
-			IP:            binding.IP,
-			Port:          binding.Port,
-			CertificateID: binding.CertificateID,
+			ID:                  binding.ID,
+			Type:                host.BindingType(binding.Type),
+			IP:                  binding.IP,
+			Port:                binding.Port,
+			ServerCertificateID: binding.ServerCertificateID,
 		})
 	}
 
@@ -144,11 +144,11 @@ func toBindingModel(bindings []*host.Binding) []*bindingModel {
 
 	for _, binding := range bindings {
 		result = append(result, &bindingModel{
-			ID:            binding.ID,
-			Type:          string(binding.Type), // Assuming host.BindingType has a String method
-			IP:            binding.IP,
-			Port:          binding.Port,
-			CertificateID: binding.CertificateID,
+			ID:                  binding.ID,
+			Type:                string(binding.Type), // Assuming host.BindingType has a String method
+			IP:                  binding.IP,
+			Port:                binding.Port,
+			ServerCertificateID: binding.ServerCertificateID,
 		})
 	}
 

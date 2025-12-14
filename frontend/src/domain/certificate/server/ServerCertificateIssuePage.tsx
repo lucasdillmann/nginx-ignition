@@ -100,13 +100,13 @@ export default class ServerCertificateIssuePage extends React.Component<unknown,
     }
 
     private handleResponse(response: IssueServerCertificateResponse) {
-        const { success, errorReason, certificateId } = response
+        const { success, errorReason, serverCertificateId } = response
         if (success) {
             Notification.success(
                 "Server certificate issued",
                 "The server certificate was issued and is now ready to be used",
             )
-            navigateTo(`/certificates/server/${certificateId}`)
+            navigateTo(`/certificates/server/${serverCertificateId}`)
         } else {
             Notification.error(
                 "Issue failed",

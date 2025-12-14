@@ -72,8 +72,8 @@ type nginxLogsSettingsDto struct {
 }
 
 type bindingDto struct {
-	Type          *host.BindingType `json:"type"`
-	IP            *string           `json:"ip"`
-	Port          *int              `json:"port"`
-	CertificateID *uuid.UUID        `json:"certificateId"`
+	Type                *host.BindingType `json:"type"`
+	IP                  *string           `json:"ip"`
+	Port                *int              `json:"port"`
+	ServerCertificateID *uuid.UUID        `json:"serverCertificateId"`
 }

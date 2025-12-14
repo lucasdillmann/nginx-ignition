@@ -15,4 +15,5 @@ type Repository interface {
 	FindPage(ctx context.Context, pageNumber, pageSize int, searchTerms *string) (*pagination.Page[*AccessList], error)
 	FindAll(ctx context.Context) ([]*AccessList, error)
 	Save(ctx context.Context, accessList *AccessList) error
+	IsInUseByID(ctx context.Context, id uuid.UUID) (bool, error)
 }

@@ -33,9 +33,9 @@ type issueCertificateRequest struct {
 }
 
 type issueCertificateResponse struct {
-	Success       bool       `json:"success"`
-	ErrorReason   *string    `json:"errorReason"`
-	CertificateID *uuid.UUID `json:"certificateId"`
+	Success             bool       `json:"success"`
+	ErrorReason         *string    `json:"errorReason"`
+	ServerCertificateID *uuid.UUID `json:"serverCertificateId"`
 }
 
 type renewCertificateResponse struct {

@@ -27,15 +27,15 @@ func toIssueCertificateResponse(certificate *server.Certificate, err error) *iss
 		errorReason = &errorStr
 	}
 
-	var certificateId *uuid.UUID
+	var serverCertificateId *uuid.UUID
 	if certificate != nil {
-		certificateId = &certificate.ID
+		serverCertificateId = &certificate.ID
 	}
 
 	return &issueCertificateResponse{
-		Success:       err == nil,
-		ErrorReason:   errorReason,
-		CertificateID: certificateId,
+		Success:             err == nil,
+		ErrorReason:         errorReason,
+		ServerCertificateID: serverCertificateId,
 	}
 }
 

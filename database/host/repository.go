@@ -291,21 +291,8 @@ func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error)
 	return count > 0, nil
 }
 
-func (r *repository) ExistsCertificateByID(ctx context.Context, certificateId uuid.UUID) (bool, error) {
-	return server.New(r.database).ExistsByID(ctx, certificateId)
-}
-
-func (r *repository) ExistsByCertificateID(ctx context.Context, certificateId uuid.UUID) (bool, error) {
-	count, err := r.database.
-		Select().
-		Model((*hostBindingModel)(nil)).
-		Where("certificate_id = ?", certificateId).
-		Count(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
+func (r *repository) ExistsServerCertificateByID(ctx context.Context, id uuid.UUID) (bool, error) {
+	return server.New(r.database).ExistsByID(ctx, id)
 }
 
 func (r *repository) ExistsByAccessListID(ctx context.Context, accessListId uuid.UUID) (bool, error) {

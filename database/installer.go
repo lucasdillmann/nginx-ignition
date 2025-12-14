@@ -4,6 +4,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/database/accesslist"
 	"dillmann.com.br/nginx-ignition/database/backup"
+	"dillmann.com.br/nginx-ignition/database/certificate/client"
 	"dillmann.com.br/nginx-ignition/database/certificate/server"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 	"dillmann.com.br/nginx-ignition/database/common/migrations"
@@ -29,6 +30,7 @@ func Install() error {
 		user.New,
 		settings.New,
 		server.New,
+		client.New,
 		integration.New,
 		stream.New,
 		backup.New,

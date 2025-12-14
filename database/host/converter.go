@@ -13,11 +13,11 @@ func toDomain(model *hostModel) (*host.Host, error) {
 	bindings := make([]*host.Binding, len(model.Bindings))
 	for index, binding := range model.Bindings {
 		bindings[index] = &host.Binding{
-			ID:            binding.ID,
-			Type:          host.BindingType(binding.Type),
-			IP:            binding.IP,
-			Port:          binding.Port,
-			CertificateID: binding.CertificateID,
+			ID:                  binding.ID,
+			Type:                host.BindingType(binding.Type),
+			IP:                  binding.IP,
+			Port:                binding.Port,
+			ServerCertificateID: binding.ServerCertificateID,
 		}
 	}
 
@@ -64,14 +64,15 @@ func toDomain(model *hostModel) (*host.Host, error) {
 		}
 
 		routes[index] = &host.Route{
-			ID:           route.ID,
-			Priority:     route.Priority,
-			Enabled:      route.Enabled,
-			Type:         host.RouteType(route.Type),
-			SourcePath:   route.SourcePath,
-			TargetURI:    route.TargetURI,
-			RedirectCode: route.RedirectCode,
-			AccessListID: route.AccessListID,
+			ID:                  route.ID,
+			Priority:            route.Priority,
+			Enabled:             route.Enabled,
+			Type:                host.RouteType(route.Type),
+			SourcePath:          route.SourcePath,
+			TargetURI:           route.TargetURI,
+			RedirectCode:        route.RedirectCode,
+			AccessListID:        route.AccessListID,
+			ClientCertificateID: route.ClientCertificateID,
 			Settings: host.RouteSettings{
 				IncludeForwardHeaders:   route.IncludeForwardHeaders,
 				ProxySSLServerName:      route.ProxySSLServerName,
@@ -99,7 +100,8 @@ func toDomain(model *hostModel) (*host.Host, error) {
 			HTTP2Support:        model.HTTP2Support,
 			RedirectHTTPToHTTPS: model.RedirectHTTPToHTTPS,
 		},
-		AccessListID: model.AccessListID,
+		AccessListID:        model.AccessListID,
+		ClientCertificateID: model.ClientCertificateID,
 	}, nil
 }
 
@@ -107,12 +109,12 @@ func toModel(domain *host.Host) (*hostModel, error) {
 	bindings := make([]*hostBindingModel, len(domain.Bindings))
 	for index, binding := range domain.Bindings {
 		bindings[index] = &hostBindingModel{
-			ID:            binding.ID,
-			HostID:        domain.ID,
-			Type:          string(binding.Type),
-			IP:            binding.IP,
-			Port:          binding.Port,
-			CertificateID: binding.CertificateID,
+			ID:                  binding.ID,
+			HostID:              domain.ID,
+			Type:                string(binding.Type),
+			IP:                  binding.IP,
+			Port:                binding.Port,
+			ServerCertificateID: binding.ServerCertificateID,
 		}
 	}
 
@@ -175,6 +177,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 			KeepOriginalDomainName:  route.Settings.KeepOriginalDomainName,
 			DirectoryListingEnabled: route.Settings.DirectoryListingEnabled,
 			AccessListID:            route.AccessListID,
+			ClientCertificateID:     route.ClientCertificateID,
 			CodeLanguage:            codeLanguage,
 			CodeContents:            codeContents,
 			CodeMainFunction:        codeMainFunction,
@@ -192,6 +195,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 		RedirectHTTPToHTTPS: domain.FeatureSet.RedirectHTTPToHTTPS,
 		UseGlobalBindings:   domain.UseGlobalBindings,
 		AccessListID:        domain.AccessListID,
+		ClientCertificateID: domain.ClientCertificateID,
 		Bindings:            bindings,
 		Routes:              routes,
 		VPNs:                vpns,

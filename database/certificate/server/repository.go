@@ -174,3 +174,25 @@ func (r repository) FindAllDueToRenew(ctx context.Context) ([]*server.Certificat
 
 	return result, nil
 }
+
+func (r repository) IsInUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
+	count, err := r.database.
+		Select().
+		Table("host_binding").
+		Where("server_certificate_id = ?", id).
+		Count(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	if count > 0 {
+		return true, nil
+	}
+
+	count, err = r.database.
+		Select().
+		Table("settings_global_binding").
+		Where("server_certificate_id = ?", id).
+		Count(ctx)
+	return count > 0, err
+}

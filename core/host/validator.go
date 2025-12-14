@@ -132,23 +132,23 @@ func (v *validator) validateBinding(ctx context.Context, pathPrefix string, bind
 		)
 	}
 
-	certificateIdField := pathPrefix + "[" + strconv.Itoa(index) + "].certificateId"
+	serverCertificateIdField := pathPrefix + "[" + strconv.Itoa(index) + "].serverCertificateId"
 
 	switch {
-	case binding.Type == HttpBindingType && binding.CertificateID != nil:
-		v.delegate.Add(certificateIdField, "Value cannot be informed for a HTTP binding")
-	case binding.Type == HttpBindingType && binding.CertificateID == nil:
+	case binding.Type == HttpBindingType && binding.ServerCertificateID != nil:
+		v.delegate.Add(serverCertificateIdField, "Value cannot be informed for a HTTP binding")
+	case binding.Type == HttpBindingType && binding.ServerCertificateID == nil:
 		return nil
-	case binding.Type == HttpsBindingType && binding.CertificateID == nil:
-		v.delegate.Add(certificateIdField, "Value must be informed for a HTTPS binding")
+	case binding.Type == HttpsBindingType && binding.ServerCertificateID == nil:
+		v.delegate.Add(serverCertificateIdField, "Value must be informed for a HTTPS binding")
 	case binding.Type == HttpsBindingType:
-		exists, err := v.hostRepository.ExistsCertificateByID(ctx, *binding.CertificateID)
+		exists, err := v.hostRepository.ExistsServerCertificateByID(ctx, *binding.ServerCertificateID)
 		if err != nil {
 			return err
 		}
 
 		if !exists {
-			v.delegate.Add(certificateIdField, "No server certificate found with provided ID")
+			v.delegate.Add(serverCertificateIdField, "No server certificate found with provided ID")
 		}
 	default:
 		v.delegate.Add(pathPrefix+"["+strconv.Itoa(index)+"].type", invalidValue)

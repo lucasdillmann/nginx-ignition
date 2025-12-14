@@ -25,9 +25,9 @@ class DeleteServerCertificateAction {
         )
     }
 
-    async execute(certificateId: string): Promise<void> {
+    async execute(serverCertificateId: string): Promise<void> {
         return UserConfirmation.ask("Do you really want to delete the server certificate?")
-            .then(() => this.service.delete(certificateId))
+            .then(() => this.service.delete(serverCertificateId))
             .then(() =>
                 Notification.success(`Server certificate deleted`, `The server certificate was deleted successfully`),
             )

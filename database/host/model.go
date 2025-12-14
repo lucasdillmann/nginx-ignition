@@ -17,6 +17,7 @@ type hostModel struct {
 	RedirectHTTPToHTTPS bool                `bun:"redirect_http_to_https,notnull"`
 	UseGlobalBindings   bool                `bun:"use_global_bindings,notnull"`
 	AccessListID        *uuid.UUID          `bun:"access_list_id"`
+	ClientCertificateID *uuid.UUID          `bun:"client_certificate_id"`
 	Bindings            []*hostBindingModel `bun:"rel:has-many,join:id=host_id"`
 	Routes              []*hostRouteModel   `bun:"rel:has-many,join:id=host_id"`
 	VPNs                []*hostVpnModel     `bun:"rel:has-many,join:id=host_id"`
@@ -25,12 +26,12 @@ type hostModel struct {
 type hostBindingModel struct {
 	bun.BaseModel `bun:"host_binding"`
 
-	ID            uuid.UUID  `bun:"id,pk"`
-	HostID        uuid.UUID  `bun:"host_id,notnull"`
-	Type          string     `bun:"type,notnull"`
-	IP            string     `bun:"ip,notnull"`
-	Port          int        `bun:"port,notnull"`
-	CertificateID *uuid.UUID `bun:"certificate_id"`
+	ID                  uuid.UUID  `bun:"id,pk"`
+	HostID              uuid.UUID  `bun:"host_id,notnull"`
+	Type                string     `bun:"type,notnull"`
+	IP                  string     `bun:"ip,notnull"`
+	Port                int        `bun:"port,notnull"`
+	ServerCertificateID *uuid.UUID `bun:"server_certificate_id"`
 }
 
 type hostVpnModel struct {
@@ -63,6 +64,7 @@ type hostRouteModel struct {
 	KeepOriginalDomainName  bool       `bun:"keep_original_domain_name,notnull"`
 	DirectoryListingEnabled bool       `bun:"directory_listing_enabled,notnull"`
 	AccessListID            *uuid.UUID `bun:"access_list_id"`
+	ClientCertificateID     *uuid.UUID `bun:"client_certificate_id"`
 	CodeLanguage            *string    `bun:"code_language"`
 	CodeContents            *string    `bun:"code_contents"`
 	CodeMainFunction        *string    `bun:"code_main_function"`

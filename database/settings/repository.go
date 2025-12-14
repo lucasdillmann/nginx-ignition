@@ -46,8 +46,8 @@ func (r repository) Get(ctx context.Context) (*settings.Settings, error) {
 	}
 
 	for _, binding := range bindings {
-		if binding.CertificateID != nil && *binding.CertificateID == uuid.Nil {
-			binding.CertificateID = nil
+		if binding.ServerCertificateID != nil && *binding.ServerCertificateID == uuid.Nil {
+			binding.ServerCertificateID = nil
 		}
 	}
 

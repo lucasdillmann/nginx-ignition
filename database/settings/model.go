@@ -53,11 +53,11 @@ type certificateModel struct {
 type bindingModel struct {
 	bun.BaseModel `bun:"settings_global_binding"`
 
-	ID            uuid.UUID  `bun:"id,pk"`
-	Type          string     `bun:"type"`
-	IP            string     `bun:"ip"`
-	Port          int        `bun:"port"`
-	CertificateID *uuid.UUID `bun:"certificate_id"`
+	ID                  uuid.UUID  `bun:"id,pk"`
+	Type                string     `bun:"type"`
+	IP                  string     `bun:"ip"`
+	Port                int        `bun:"port"`
+	ServerCertificateID *uuid.UUID `bun:"server_certificate_id"`
 }
 
 type buffersModel struct {

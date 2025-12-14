@@ -92,10 +92,10 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     {...FormLayout.ExpandedLabeledItem}
                     className="host-form-binding-certificate"
                     layout="vertical"
-                    name={[name, "certificate"]}
-                    validateStatus={validationResult.getStatus(`${pathPrefix}[${index}].certificateId`)}
-                    help={validationResult.getMessage(`${pathPrefix}[${index}].certificateId`)}
-                    label={index === 0 ? "SSL certificate" : undefined}
+                    name={[name, "serverCertificate"]}
+                    validateStatus={validationResult.getStatus(`${pathPrefix}[${index}].serverCertificateId`)}
+                    help={validationResult.getMessage(`${pathPrefix}[${index}].serverCertificateId`)}
+                    label={index === 0 ? "Server certificate" : undefined}
                     required
                 >
                     <PaginatedSelect<ServerCertificateResponse>

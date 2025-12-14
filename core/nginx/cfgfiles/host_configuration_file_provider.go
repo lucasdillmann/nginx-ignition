@@ -133,8 +133,8 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		listen = fmt.Sprintf(
 			`
 				listen %s:%d ssl %s;
-				ssl_certificate %scertificate-%s.pem;
-				ssl_certificate_key %scertificate-%s.pem;
+				ssl_certificate %sserver-certificate-%s.pem;
+				ssl_certificate_key %sserver-certificate-%s.pem;
 				ssl_protocols TLSv1.2 TLSv1.3;
 				ssl_ciphers HIGH:!aNULL:!MD5;
 			`,
@@ -142,9 +142,9 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			b.Port,
 			p.buildBindingAdditionalParams(h),
 			paths.Config,
-			b.CertificateID,
+			b.ServerCertificateID,
 			paths.Config,
-			b.CertificateID,
+			b.ServerCertificateID,
 		)
 	}
 

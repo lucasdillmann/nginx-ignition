@@ -15,14 +15,17 @@ import (
 )
 
 type hostCertificateFileProvider struct {
-	certificateRepository server.Repository
-	settingsRepository    settings.Repository
+	serverCertificateRepository server.Repository
+	settingsRepository          settings.Repository
 }
 
-func newHostCertificateFileProvider(certificateRepository server.Repository, settingsRepository settings.Repository) *hostCertificateFileProvider {
+func newHostCertificateFileProvider(
+	serverCertificateRepository server.Repository,
+	settingsRepository settings.Repository,
+) *hostCertificateFileProvider {
 	return &hostCertificateFileProvider{
-		certificateRepository: certificateRepository,
-		settingsRepository:    settingsRepository,
+		serverCertificateRepository: serverCertificateRepository,
+		settingsRepository:          settingsRepository,
 	}
 }
 
@@ -43,12 +46,12 @@ func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, err
 	uniqueCertIds := map[string]bool{}
 
 	for _, binding := range bindings {
-		if binding.Type == host.HttpsBindingType && binding.CertificateID != nil {
-			certId := binding.CertificateID.String()
-			if !uniqueCertIds[certId] {
-				uniqueCertIds[certId] = true
+		if binding.Type == host.HttpsBindingType && binding.ServerCertificateID != nil {
+			serverCertId := binding.ServerCertificateID.String()
+			if !uniqueCertIds[serverCertId] {
+				uniqueCertIds[serverCertId] = true
 
-				output, err := p.buildCertificateFile(ctx.context, *binding.CertificateID)
+				output, err := p.buildCertificateFile(ctx.context, *binding.ServerCertificateID)
 				if err != nil {
 					return nil, err
 				}
@@ -63,9 +66,9 @@ func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, err
 
 func (p *hostCertificateFileProvider) buildCertificateFile(
 	ctx context.Context,
-	certificateId uuid.UUID,
+	serverCertificateId uuid.UUID,
 ) (*File, error) {
-	cert, err := p.certificateRepository.FindByID(ctx, certificateId)
+	cert, err := p.serverCertificateRepository.FindByID(ctx, serverCertificateId)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +93,7 @@ func (p *hostCertificateFileProvider) buildCertificateFile(
 	}
 
 	return &File{
-		Name:     fmt.Sprintf("certificate-%s.pem", certificateId),
+		Name:     fmt.Sprintf("server-certificate-%s.pem", serverCertificateId),
 		Contents: contents,
 	}, nil
 }

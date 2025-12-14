@@ -30,16 +30,17 @@ const (
 )
 
 type Host struct {
-	ID                uuid.UUID
-	Enabled           bool
-	DefaultServer     bool
-	UseGlobalBindings bool
-	DomainNames       []*string
-	Routes            []*Route
-	Bindings          []*Binding
-	VPNs              []*VPN
-	FeatureSet        FeatureSet
-	AccessListID      *uuid.UUID
+	ID                  uuid.UUID
+	Enabled             bool
+	DefaultServer       bool
+	UseGlobalBindings   bool
+	DomainNames         []*string
+	Routes              []*Route
+	Bindings            []*Binding
+	VPNs                []*VPN
+	FeatureSet          FeatureSet
+	AccessListID        *uuid.UUID
+	ClientCertificateID *uuid.UUID
 }
 
 type FeatureSet struct {
@@ -49,18 +50,19 @@ type FeatureSet struct {
 }
 
 type Route struct {
-	ID           uuid.UUID
-	Priority     int
-	Enabled      bool
-	Type         RouteType
-	SourcePath   string
-	TargetURI    *string
-	RedirectCode *int
-	AccessListID *uuid.UUID
-	Settings     RouteSettings
-	Response     *RouteStaticResponse
-	Integration  *RouteIntegrationConfig
-	SourceCode   *RouteSourceCode
+	ID                  uuid.UUID
+	Priority            int
+	Enabled             bool
+	Type                RouteType
+	SourcePath          string
+	TargetURI           *string
+	RedirectCode        *int
+	AccessListID        *uuid.UUID
+	ClientCertificateID *uuid.UUID
+	Settings            RouteSettings
+	Response            *RouteStaticResponse
+	Integration         *RouteIntegrationConfig
+	SourceCode          *RouteSourceCode
 }
 
 type RouteSourceCode struct {
@@ -89,11 +91,11 @@ type RouteIntegrationConfig struct {
 }
 
 type Binding struct {
-	ID            uuid.UUID
-	Type          BindingType
-	IP            string
-	Port          int
-	CertificateID *uuid.UUID
+	ID                  uuid.UUID
+	Type                BindingType
+	IP                  string
+	Port                int
+	ServerCertificateID *uuid.UUID
 }
 
 type VPN struct {

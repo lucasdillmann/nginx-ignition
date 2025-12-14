@@ -1,4 +1,4 @@
-package server
+package client
 
 import (
 	"time"
@@ -8,9 +8,10 @@ import (
 
 type Certificate struct {
 	ID             uuid.UUID
+	Name           string
 	Type           Type
-	CA             CACertificate
-	Clients        []ClientCertificate
+	CA             *CA
+	Clients        []*Client
 	ValidationMode ValidationMode
 	Stapling       Stapling
 }
@@ -18,22 +19,25 @@ type Certificate struct {
 type Type string
 
 const (
-	ManagedType  Type = "MANAGED"
-	ExternalType Type = "EXTERNAL"
+	SimpleType            Type = "SIMPLE"
+	IgnitionManagedType   Type = "IGNITION_MANAGED"
+	ExternallyManagedType Type = "EXTERNALLY_MANAGED"
 )
 
-type CACertificate struct {
-	DN            *string
-	PublicKey     *string
-	PrivateKey    *string
+type CA struct {
+	PublicKey     *[]byte
+	PrivateKey    *[]byte
 	SendToClients *bool
 }
 
-type ClientCertificate struct {
+type Client struct {
+	ID         uuid.UUID
 	DN         *string
-	PublicKey  *string
-	PrivateKey *string
+	PublicKey  *[]byte
+	PrivateKey *[]byte
 	IssuedAt   *time.Time
+	ExpiresAt  *time.Time
+	Revoked    *bool
 }
 
 type Stapling struct {
@@ -51,3 +55,34 @@ const (
 	OptionalValidationMode     ValidationMode = "OPTIONAL"
 	OptionalNoCAValidationMode ValidationMode = "OPTIONAL_NO_CA"
 )
+
+type CreateRequest struct {
+	Name         string
+	Type         Type
+	CARequest    *CertificateRequest
+	CAPublicKey  *[]byte
+	CAPrivateKey *[]byte
+}
+
+type UpdateRequest struct {
+	Name           string
+	ValidationMode ValidationMode
+	Stapling       Stapling
+}
+
+type ReplaceCARequest struct {
+	CARequest    *CertificateRequest
+	CAPublicKey  *[]byte
+	CAPrivateKey *[]byte
+}
+
+type CreateClientRequest struct {
+	DN      *string
+	Request *CertificateRequest
+}
+
+type UpdateClientRequest struct {
+	ID      uuid.UUID
+	DN      *string
+	Revoked *bool
+}

@@ -1,7 +1,7 @@
 import React from "react"
 import { ServerCertificateResponse } from "./model/ServerCertificateResponse"
-import RenewCertificateAction from "./actions/RenewServerCertificateAction"
-import DeleteCertificateAction from "./actions/DeleteServerCertificateAction"
+import RenewServerCertificateAction from "./actions/RenewServerCertificateAction"
+import DeleteServerCertificateAction from "./actions/DeleteServerCertificateAction"
 import { navigateTo, routeParams } from "../../../core/components/router/AppRouter"
 import ServerCertificateService from "./ServerCertificateService"
 import Preloader from "../../../core/components/preloader/Preloader"
@@ -26,12 +26,12 @@ interface CertificateDetailsPageState {
 }
 
 export default class ServerCertificateDetailsPage extends React.Component<unknown, CertificateDetailsPageState> {
-    private readonly certificateId: string
+    private readonly serverCertificateId: string
     private readonly service: ServerCertificateService
 
     constructor(props: any) {
         super(props)
-        this.certificateId = routeParams().id as string
+        this.serverCertificateId = routeParams().id as string
         this.service = new ServerCertificateService()
         this.state = {
             loading: true,
@@ -40,11 +40,13 @@ export default class ServerCertificateDetailsPage extends React.Component<unknow
     }
 
     private async deleteCertificate() {
-        return DeleteCertificateAction.execute(this.certificateId).then(() => navigateTo("/certificates/server"))
+        return DeleteServerCertificateAction.execute(this.serverCertificateId).then(() =>
+            navigateTo("/certificates/server"),
+        )
     }
 
     private async renewCertificate() {
-        return RenewCertificateAction.execute(this.certificateId)
+        return RenewServerCertificateAction.execute(this.serverCertificateId)
             .then(() => this.setState({ loading: true }))
             .then(() => this.fetchData())
     }
@@ -74,7 +76,7 @@ export default class ServerCertificateDetailsPage extends React.Component<unknow
     }
 
     private async fetchData() {
-        const certificate = this.service.getById(this.certificateId)
+        const certificate = this.service.getById(this.serverCertificateId)
         const providers = this.service.availableProviders()
 
         return Promise.all([certificate, providers])
@@ -158,7 +160,7 @@ export default class ServerCertificateDetailsPage extends React.Component<unknow
 
         return (
             <>
-                <h2 className="certificate-details-section-name">General</h2>
+                <h2 className="server-certificate-details-section-name">General</h2>
                 <ProDescriptions {...DescriptionLayout.Defaults} dataSource={certificate}>
                     <ProDescriptions.Item title="Provider">{provider?.name}</ProDescriptions.Item>
                     <ProDescriptions.Item title="Domain names">
@@ -171,7 +173,7 @@ export default class ServerCertificateDetailsPage extends React.Component<unknow
                     </ProDescriptions.Item>
                 </ProDescriptions>
 
-                <h2 className="certificate-details-section-name">Validity</h2>
+                <h2 className="server-certificate-details-section-name">Validity</h2>
                 <ProDescriptions {...DescriptionLayout.Defaults} dataSource={certificate}>
                     <ProDescriptions.Item
                         title="Issued at"
@@ -200,7 +202,7 @@ export default class ServerCertificateDetailsPage extends React.Component<unknow
                 </ProDescriptions>
 
                 <If condition={Object.keys(certificate!!.parameters).length > 0}>
-                    <h2 className="certificate-details-section-name">Provider-specific parameters</h2>
+                    <h2 className="server-certificate-details-section-name">Provider-specific parameters</h2>
                     <ProDescriptions {...DescriptionLayout.Defaults} dataSource={certificate}>
                         {this.renderDynamicFields()}
                     </ProDescriptions>

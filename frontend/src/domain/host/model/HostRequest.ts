@@ -27,7 +27,7 @@ export interface HostBinding {
     type: HostBindingType
     ip: string
     port: number
-    certificateId?: string
+    serverCertificateId?: string
 }
 
 export interface HostRouteStaticResponse {

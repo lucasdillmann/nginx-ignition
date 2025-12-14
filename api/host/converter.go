@@ -29,7 +29,7 @@ func toDto(input *host.Host, globalSettings *settings.Settings) *hostResponseDto
 		GlobalBindings:    globalBindings,
 		VPNs:              toVpnDtoSlice(input.VPNs),
 		FeatureSet:        toFeatureSetDto(&input.FeatureSet),
-		AccessListId:      input.AccessListID,
+		AccessListID:      input.AccessListID,
 	}
 }
 
@@ -47,7 +47,7 @@ func toDomain(input *hostRequestDto) *host.Host {
 		Bindings:          toBindingSlice(input.Bindings),
 		VPNs:              toVpnsSlice(input.VPNs),
 		FeatureSet:        *toFeatureSet(input.FeatureSet),
-		AccessListID:      input.AccessListId,
+		AccessListID:      input.AccessListID,
 	}
 }
 
@@ -79,7 +79,7 @@ func toRouteDto(route *host.Route) *routeDto {
 		RedirectCode: route.RedirectCode,
 		Response:     toStaticResponseDto(route.Response),
 		Integration:  toIntegrationConfigDto(route.Integration),
-		AccessListId: route.AccessListID,
+		AccessListID: route.AccessListID,
 		SourceCode:   toRouteSourceCodeDto(route.SourceCode),
 	}
 }
@@ -103,10 +103,10 @@ func toBindingDto(binding *host.Binding) *bindingDto {
 	}
 
 	return &bindingDto{
-		Type:          &binding.Type,
-		Ip:            &binding.IP,
-		Port:          &binding.Port,
-		CertificateId: binding.CertificateID,
+		Type:                &binding.Type,
+		IP:                  &binding.IP,
+		Port:                &binding.Port,
+		ServerCertificateID: binding.ServerCertificateID,
 	}
 }
 
@@ -179,8 +179,8 @@ func toIntegrationConfigDto(config *host.RouteIntegrationConfig) *integrationCon
 	}
 
 	return &integrationConfigDto{
-		IntegrationId: &config.IntegrationID,
-		OptionId:      &config.OptionID,
+		IntegrationID: &config.IntegrationID,
+		OptionID:      &config.OptionID,
 	}
 }
 
@@ -257,7 +257,7 @@ func toDomainModelRoute(input *routeDto) *host.Route {
 		RedirectCode: input.RedirectCode,
 		Response:     toRouteStaticResponse(input.Response),
 		Integration:  toRouteIntegrationConfig(input.Integration),
-		AccessListID: input.AccessListId,
+		AccessListID: input.AccessListID,
 		SourceCode:   toRouteSourceCode(input.SourceCode),
 	}
 }
@@ -294,8 +294,8 @@ func toRouteIntegrationConfig(input *integrationConfigDto) *host.RouteIntegratio
 	}
 
 	return &host.RouteIntegrationConfig{
-		IntegrationID: getUuidValue(input.IntegrationId),
-		OptionID:      getStringValue(input.OptionId),
+		IntegrationID: getUuidValue(input.IntegrationID),
+		OptionID:      getStringValue(input.OptionID),
 	}
 }
 
@@ -359,10 +359,10 @@ func toDomainModelBinding(input *bindingDto) *host.Binding {
 	}
 
 	return &host.Binding{
-		Type:          *input.Type,
-		IP:            getStringValue(input.Ip),
-		Port:          getIntValue(input.Port),
-		CertificateID: input.CertificateId,
+		Type:                *input.Type,
+		IP:                  getStringValue(input.IP),
+		Port:                getIntValue(input.Port),
+		ServerCertificateID: input.ServerCertificateID,
 	}
 }
 

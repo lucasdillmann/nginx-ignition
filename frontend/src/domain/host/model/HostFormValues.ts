@@ -9,7 +9,7 @@ export interface HostFormBinding {
     type: HostBindingType
     ip: string
     port: number
-    certificate?: ServerCertificateResponse
+    serverCertificate?: ServerCertificateResponse
 }
 
 export interface HostFormStaticResponse {

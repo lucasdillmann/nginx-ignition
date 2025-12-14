@@ -5,10 +5,10 @@ import { HostBinding } from "../host/model/HostRequest"
 import { HostFormBinding } from "../host/model/HostFormValues"
 
 class SettingsConverter {
-    private readonly certificateService: ServerCertificateService
+    private readonly serverCertificateService: ServerCertificateService
 
     constructor() {
-        this.certificateService = new ServerCertificateService()
+        this.serverCertificateService = new ServerCertificateService()
     }
 
     private notNull(value?: any) {
@@ -16,23 +16,23 @@ class SettingsConverter {
     }
 
     private async bindingToFormValues(binding: HostBinding): Promise<HostFormBinding> {
-        const certificate = this.notNull(binding.certificateId)
-            ? await this.certificateService.getById(binding.certificateId!!)
+        const serverCertificate = this.notNull(binding.serverCertificateId)
+            ? await this.serverCertificateService.getById(binding.serverCertificateId!!)
             : undefined
 
         return {
             ...binding,
-            certificate,
+            serverCertificate,
         }
     }
 
     private formValuesToBinding(binding: HostFormBinding): HostBinding {
         const output = {
             ...binding,
-            certificateId: binding.certificate?.id,
+            serverCertificateId: binding.serverCertificate?.id,
         }
 
-        delete output.certificate
+        delete output.serverCertificate
         return output
     }
 
