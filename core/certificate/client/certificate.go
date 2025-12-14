@@ -38,6 +38,17 @@ func buildCertificate(request *CertificateRequest, ca bool, caPrivateKey *[]byte
 		return nil, err
 	}
 
+	template := buildCertificateTemplate(request, serialNumber)
+
+	certBytes, err := createCertificateBytes(&template, privateKey, ca, caPrivateKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return buildCertificateResponse(privateKey, certBytes, &template), nil
+}
+
+func buildCertificateTemplate(request *CertificateRequest, serialNumber *big.Int) x509.Certificate {
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
@@ -55,36 +66,52 @@ func buildCertificate(request *CertificateRequest, ca bool, caPrivateKey *[]byte
 		template.EmailAddresses = []string{request.Email}
 	}
 
-	var certBytes []byte
+	return template
+}
 
+func createCertificateBytes(
+	template *x509.Certificate,
+	privateKey *rsa.PrivateKey,
+	ca bool,
+	caPrivateKey *[]byte,
+) ([]byte, error) {
 	if ca {
 		template.IsCA = true
 		template.KeyUsage |= x509.KeyUsageCertSign
-		certBytes, err = x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, privateKey)
-	} else {
-		if caPrivateKey == nil {
-			certBytes, err = x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, privateKey)
-		} else {
-			caKeyBlock, _ := pem.Decode(*caPrivateKey)
-			if caKeyBlock == nil {
-				return nil, err
-			}
-
-			var caPKey interface{}
-			if caPKey, err = x509.ParsePKCS1PrivateKey(caKeyBlock.Bytes); err != nil {
-				if caPKey, err = x509.ParsePKCS8PrivateKey(caKeyBlock.Bytes); err != nil {
-					return nil, err
-				}
-			}
-
-			certBytes, err = x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, caPKey)
-		}
+		return x509.CreateCertificate(rand.Reader, template, template, &privateKey.PublicKey, privateKey)
 	}
 
+	if caPrivateKey == nil {
+		return x509.CreateCertificate(rand.Reader, template, template, &privateKey.PublicKey, privateKey)
+	}
+
+	caPKey, err := parseCAPrivateKey(caPrivateKey)
 	if err != nil {
 		return nil, err
 	}
 
+	return x509.CreateCertificate(rand.Reader, template, template, &privateKey.PublicKey, caPKey)
+}
+
+func parseCAPrivateKey(caPrivateKey *[]byte) (interface{}, error) {
+	caKeyBlock, _ := pem.Decode(*caPrivateKey)
+	if caKeyBlock == nil {
+		return nil, x509.ErrUnsupportedAlgorithm
+	}
+
+	caPKey, err := x509.ParsePKCS1PrivateKey(caKeyBlock.Bytes)
+	if err == nil {
+		return caPKey, nil
+	}
+
+	return x509.ParsePKCS8PrivateKey(caKeyBlock.Bytes)
+}
+
+func buildCertificateResponse(
+	privateKey *rsa.PrivateKey,
+	certBytes []byte,
+	template *x509.Certificate,
+) *CertificateResponse {
 	privateKeyBytes := pem.EncodeToMemory(&pem.Block{
 		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
@@ -100,5 +127,5 @@ func buildCertificate(request *CertificateRequest, ca bool, caPrivateKey *[]byte
 		PublicKey:  &publicKeyBytes,
 		IssuedAt:   template.NotBefore,
 		ExpiresAt:  template.NotAfter,
-	}, nil
+	}
 }
