@@ -83,7 +83,8 @@ type hostResponseDto struct {
 	UseGlobalBindings *bool          `json:"useGlobalBindings"`
 	DomainNames       []*string      `json:"domainNames"`
 	Routes            []*routeDto    `json:"routes"`
-	Bindings          []*bindingDto  `json:"bindings"`
+	Bindings          []*bindingDto  `json:"bindings,omitempty"`
+	GlobalBindings    *[]*bindingDto `json:"globalBindings,omitempty"`
 	VPNs              []*vpnDto      `json:"vpns"`
 	FeatureSet        *featureSetDto `json:"featureSet"`
 	AccessListId      *uuid.UUID     `json:"accessListId"`

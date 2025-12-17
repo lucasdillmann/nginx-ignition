@@ -22,10 +22,11 @@ type integrationResponse struct {
 }
 
 type integrationOptionResponse struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Port     int    `json:"port"`
-	Protocol string `json:"protocol"`
+	ID        string  `json:"id"`
+	Name      string  `json:"name"`
+	Port      int     `json:"port"`
+	Qualifier *string `json:"qualifier"`
+	Protocol  string  `json:"protocol"`
 }
 
 type integrationDriverResponse struct {

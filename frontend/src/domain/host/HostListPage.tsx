@@ -10,7 +10,7 @@ import { Link } from "react-router-dom"
 import UserConfirmation from "../../core/components/confirmation/UserConfirmation"
 import Notification from "../../core/components/notification/Notification"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
-import TagGroup from "../../core/components/taggroup/TagGroup"
+import TagGroup, { TagGroupItem } from "../../core/components/taggroup/TagGroup"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import DeleteHostAction from "./actions/DeleteHostAction"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
@@ -20,6 +20,7 @@ import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedM
 import { navigateTo } from "../../core/components/router/AppRouter"
 import { Button } from "antd"
 import HostSupportWarning from "./components/HostSupportWarning"
+import { HostBindingType } from "./model/HostRequest"
 
 const BUTTON_STYLE = {
     height: "auto",
@@ -39,10 +40,19 @@ export default class HostListPage extends React.PureComponent {
         return !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.hosts)
     }
 
-    private handleDomainNames(domainNames?: string[]): string[] {
-        if (Array.isArray(domainNames) && domainNames.length > 0) return domainNames
+    private handleDomainNames(host: HostResponse): string[] | TagGroupItem[] {
+        const { domainNames, useGlobalBindings, globalBindings, bindings } = host
+        if (!Array.isArray(domainNames) || domainNames.length == 0) return ["(default server)"]
 
-        return ["(default server)"]
+        const targetBindings = useGlobalBindings ? globalBindings : bindings
+        if (!Array.isArray(targetBindings) || targetBindings.length == 0) return domainNames
+
+        const targetBinding = targetBindings.find(item => item.type == HostBindingType.HTTPS) ?? targetBindings[0]
+
+        return domainNames.map(domainName => ({
+            name: domainName,
+            url: `${targetBinding.type.toLowerCase()}://${domainName}:${targetBinding.port}`,
+        }))
     }
 
     private buildColumns(): DataTableColumn<HostResponse>[] {
@@ -50,7 +60,7 @@ export default class HostListPage extends React.PureComponent {
             {
                 id: "domainNames",
                 description: "Domain names",
-                renderer: item => <TagGroup values={this.handleDomainNames(item.domainNames)} />,
+                renderer: item => <TagGroup values={this.handleDomainNames(item)} />,
             },
             {
                 id: "defaultServer",

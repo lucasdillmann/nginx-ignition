@@ -11,6 +11,11 @@ import (
 type currentHandler struct{}
 
 func (h currentHandler) handle(ctx *gin.Context) {
-	currentUser := authorization.CurrentSubject(ctx).User
-	ctx.JSON(http.StatusOK, toDto(currentUser))
+	currentSubject := authorization.CurrentSubject(ctx)
+	if currentSubject == nil || currentSubject.User == nil {
+		ctx.Status(http.StatusUnauthorized)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, toDto(currentSubject.User))
 }

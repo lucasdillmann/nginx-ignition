@@ -154,6 +154,13 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         this.optionsRef.current?.reset()
     }
 
+    private buildIntegrationOptionLabel(option: IntegrationOptionResponse): string {
+        const { name, port, qualifier } = option
+        if (qualifier) return `${name} (${qualifier} ${port} TCP)`
+
+        return `${name} (${port} TCP)`
+    }
+
     private renderIntegrationRoute(field: FormListFieldData, index: number): React.ReactNode {
         const { validationResult, routes } = this.props
         const { name } = field
@@ -194,7 +201,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         ref={this.optionsRef}
                         disabled={currentIntegrationId === undefined}
                         itemKey={item => item.id}
-                        itemDescription={item => `${item.name} (${item.port} TCP)`}
+                        itemDescription={item => this.buildIntegrationOptionLabel(item)}
                         pageProvider={(pageSize, pageNumber, searchTerms) =>
                             this.fetchIntegrationOptions(pageSize, pageNumber, searchTerms, currentIntegrationId)
                         }

@@ -39,10 +39,11 @@ func fromDto(id uuid.UUID, data *integrationRequest) *integration.Integration {
 
 func toOptionDto(option *integration.DriverOption) *integrationOptionResponse {
 	return &integrationOptionResponse{
-		ID:       option.ID,
-		Name:     option.Name,
-		Port:     option.Port,
-		Protocol: string(option.Protocol),
+		ID:        option.ID,
+		Name:      option.Name,
+		Port:      option.Port,
+		Qualifier: option.Qualifier,
+		Protocol:  string(option.Protocol),
 	}
 }
 

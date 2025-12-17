@@ -15,5 +15,9 @@ type Subject struct {
 
 func CurrentSubject(ctx *gin.Context) *Subject {
 	subject, _ := ctx.Get(RequestSubject)
+	if subject == nil {
+		return nil
+	}
+
 	return subject.(*Subject)
 }

@@ -44,12 +44,12 @@ var (
 
 	proxyUrlField = dynamicfields.DynamicField{
 		ID:          "proxyUrl",
-		Description: "Apps URL",
+		Description: "Host URL",
 		Priority:    3,
 		Required:    false,
 		Type:        dynamicfields.URLType,
-		HelpText: stringPtr("The URL to be used when proxying a request to a Docker container. Use this if the " +
-			"apps are exposed in another address that isn't the container IP (from the Docker network)."),
+		HelpText: stringPtr("The URL to be used when proxying a request to a Docker container using a port " +
+			"exposed on the host. If not set, the container IP will be used instead."),
 	}
 )
 

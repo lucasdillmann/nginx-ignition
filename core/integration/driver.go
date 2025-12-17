@@ -39,8 +39,9 @@ type Driver interface {
 }
 
 type DriverOption struct {
-	ID       string
-	Name     string
-	Port     int
-	Protocol Protocol
+	ID        string
+	Name      string
+	Port      int
+	Qualifier *string
+	Protocol  Protocol
 }

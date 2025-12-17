@@ -7,5 +7,6 @@ export default interface IntegrationOptionResponse {
     id: string
     name: string
     port: number
+    qualifier?: string
     protocol: IntegrationOptionProtocol
 }

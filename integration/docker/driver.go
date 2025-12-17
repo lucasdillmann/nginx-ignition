@@ -13,14 +13,9 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
-
-type containerMetadata struct {
-	container *container.Summary
-	port      *container.Port
-	name      string
-}
 
 type Driver struct{}
 
@@ -96,7 +91,7 @@ func (a *Driver) GetOptionProxyURL(
 
 	publicUrl, _ := parameters[proxyUrlField.ID].(string)
 	var targetHost string
-	if publicUrl != "" {
+	if publicUrl != "" && option.qualifier == hostQualifier {
 		uri, err := url.Parse(publicUrl)
 		if err != nil {
 			return nil, err
@@ -116,12 +111,7 @@ func (a *Driver) GetOptionProxyURL(
 		}
 	}
 
-	targetPort := option.port.PrivatePort
-	if publicUrl != "" {
-		targetPort = option.port.PublicPort
-	}
-
-	result := fmt.Sprintf("http://%s:%d", targetHost, targetPort)
+	result := fmt.Sprintf("http://%s:%d", targetHost, option.portNumber)
 	return &result, nil
 }
 
@@ -136,15 +126,12 @@ func (a *Driver) resolveAvailableOptionById(
 	}
 
 	idParts := strings.Split(id, ":")
-	if len(idParts) != 2 {
+	if len(idParts) != 3 {
 		return nil, coreerror.New("Invalid option ID", true)
 	}
 
-	containerId := idParts[0]
-	portNumber := idParts[1]
-
 	for _, option := range options {
-		if option.container.ID == containerId && fmt.Sprintf("%d", option.port.PublicPort) == portNumber {
+		if option.id == id {
 			return option, nil
 		}
 	}
@@ -200,34 +187,51 @@ func (a *Driver) buildOptions(containers []container.Summary, tcpOnly bool) []*c
 				continue
 			}
 
-			optionID := fmt.Sprintf("%s:%d", item.ID, port.PublicPort)
-			if optionIDs[optionID] {
-				continue
+			if metadata := buildOption(&port, &item, true); metadata != nil && !optionIDs[metadata.id] {
+				options = append(options, metadata)
+				optionIDs[metadata.id] = true
 			}
 
-			if port.PublicPort != 0 {
-				option := &containerMetadata{
-					name:      strings.TrimPrefix(item.Names[0], "/"),
-					container: &item,
-					port:      &port,
-				}
-				options = append(options, option)
-				optionIDs[optionID] = true
+			if metadata := buildOption(&port, &item, false); metadata != nil && !optionIDs[metadata.id] {
+				options = append(options, metadata)
+				optionIDs[metadata.id] = true
 			}
 		}
 	}
+
 	return options
 }
 
-func toDriverOption(option *containerMetadata) *integration.DriverOption {
-	port := option.port
-	protocol := strings.ToUpper(port.Type)
+func buildOption(port *container.Port, item *container.Summary, usePublicPort bool) *containerMetadata {
+	portNumber := port.PrivatePort
+	qualifierType := containerQualifier
 
+	if usePublicPort {
+		portNumber = port.PublicPort
+		qualifierType = hostQualifier
+	}
+
+	if portNumber == 0 {
+		return nil
+	}
+
+	return &containerMetadata{
+		id:         fmt.Sprintf("%s:%d:%s", item.ID, portNumber, qualifierType),
+		name:       strings.TrimPrefix(item.Names[0], "/"),
+		container:  item,
+		portNumber: int(portNumber),
+		qualifier:  qualifierType,
+		protocol:   port.Type,
+	}
+}
+
+func toDriverOption(option *containerMetadata) *integration.DriverOption {
 	return &integration.DriverOption{
-		ID:       fmt.Sprintf("%s:%d", option.container.ID, port.PublicPort),
-		Name:     option.name,
-		Port:     int(port.PublicPort),
-		Protocol: integration.Protocol(protocol),
+		ID:        option.id,
+		Name:      option.name,
+		Port:      option.portNumber,
+		Qualifier: ptr.Of(string(option.qualifier)),
+		Protocol:  integration.Protocol(option.protocol),
 	}
 }
 
