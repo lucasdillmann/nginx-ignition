@@ -81,7 +81,7 @@ export default interface HostRequest {
     useGlobalBindings: boolean
     domainNames?: string[]
     routes: HostRoute[]
-    bindings: HostBinding[]
+    bindings?: HostBinding[]
     vpns: HostVpn[]
     featureSet: HostFeatureSet
     accessListId?: string

@@ -183,7 +183,8 @@ class HostConverter {
         const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessListId } = response
 
         const routes = response.routes.map(route => this.routeToFormValues(route))
-        const bindings = await Promise.all(response.bindings.map(binding => this.bindingToFormValues(binding)))
+        const responseBindings = response.bindings ?? []
+        const bindings = await Promise.all(responseBindings.map(binding => this.bindingToFormValues(binding)))
         const vpns = await Promise.all(response.vpns.map(vpn => this.vpnToFormValues(vpn)))
         const accessList = this.notNull(accessListId) ? await this.accessListService.getById(accessListId!!) : undefined
 

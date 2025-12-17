@@ -3,12 +3,19 @@ package host
 import (
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func toDto(input *host.Host) *hostResponseDto {
+func toDto(input *host.Host, globalSettings *settings.Settings) *hostResponseDto {
 	if input == nil {
 		return nil
+	}
+
+	var globalBindings *[]*bindingDto
+	if input.UseGlobalBindings && globalSettings != nil && len(globalSettings.GlobalBindings) > 0 {
+		globalBindings = ptr.Of(toBindingDtoSlice(globalSettings.GlobalBindings))
 	}
 
 	return &hostResponseDto{
@@ -19,6 +26,7 @@ func toDto(input *host.Host) *hostResponseDto {
 		DomainNames:       input.DomainNames,
 		Routes:            toRouteDtoSlice(input.Routes),
 		Bindings:          toBindingDtoSlice(input.Bindings),
+		GlobalBindings:    globalBindings,
 		VPNs:              toVpnDtoSlice(input.VPNs),
 		FeatureSet:        toFeatureSetDto(&input.FeatureSet),
 		AccessListId:      input.AccessListID,
