@@ -28,5 +28,5 @@ export interface DynamicFieldEnumOption {
 
 export interface DynamicFieldCondition {
     parentField: string
-    value: string
+    value: any
 }

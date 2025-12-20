@@ -2,12 +2,8 @@ package docker
 
 import (
 	"context"
-	"fmt"
-	"net/url"
 	"strings"
 
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
@@ -15,6 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/integration"
+	"dillmann.com.br/nginx-ignition/integration/docker/resolver"
 )
 
 type Driver struct{}
@@ -41,6 +38,9 @@ func (a *Driver) ConfigurationFields() []*dynamicfields.DynamicField {
 		&connectionModeField,
 		&socketPathField,
 		&hostUrlField,
+		&swarmModeField,
+		&swarmServiceMeshField,
+		&swarmDNSResolverField,
 		&proxyUrlField,
 	}
 }
@@ -52,15 +52,20 @@ func (a *Driver) GetAvailableOptions(
 	searchTerms *string,
 	tcpOnly bool,
 ) (*pagination.Page[*integration.DriverOption], error) {
-	options, err := a.resolveAvailableOptions(ctx, parameters, searchTerms, tcpOnly)
+	optionResolver, err := startOptionResolver(parameters)
 	if err != nil {
 		return nil, err
 	}
 
-	totalItems := len(options)
+	options, err := optionResolver.ResolveOptions(ctx, tcpOnly, searchTerms)
+	if err != nil {
+		return nil, err
+	}
+
+	totalItems := len(*options)
 	driverOptions := make([]*integration.DriverOption, totalItems)
-	for index, option := range options {
-		driverOptions[index] = toDriverOption(option)
+	for index, option := range *options {
+		driverOptions[index] = option.DriverOption
 	}
 
 	return pagination.New(0, totalItems, totalItems, driverOptions), nil
@@ -71,175 +76,43 @@ func (a *Driver) GetAvailableOptionById(
 	parameters map[string]any,
 	id string,
 ) (*integration.DriverOption, error) {
-	option, err := a.resolveAvailableOptionById(ctx, parameters, id)
-	if err != nil || option == nil {
+	optionResolver, err := startOptionResolver(parameters)
+	if err != nil {
 		return nil, err
 	}
 
-	return toDriverOption(option), nil
+	option, err := optionResolver.ResolveOptionByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return option.DriverOption, nil
 }
 
 func (a *Driver) GetOptionProxyURL(
 	ctx context.Context,
 	parameters map[string]any,
 	id string,
-) (*string, error) {
-	option, err := a.resolveAvailableOptionById(ctx, parameters, id)
-	if err != nil || option == nil {
-		return nil, err
+) (*string, *[]string, error) {
+	optionResolver, err := startOptionResolver(parameters)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	option, err := optionResolver.ResolveOptionByID(ctx, id)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	publicUrl, _ := parameters[proxyUrlField.ID].(string)
-	var targetHost string
-	if publicUrl != "" && option.qualifier == hostQualifier {
-		uri, err := url.Parse(publicUrl)
-		if err != nil {
-			return nil, err
-		}
 
-		targetHost = uri.Hostname()
-	} else {
-		if len(option.container.NetworkSettings.Networks) > 0 {
-			for _, network := range option.container.NetworkSettings.Networks {
-				targetHost = network.IPAddress
-				break
-			}
-		}
-
-		if targetHost == "" {
-			return nil, fmt.Errorf("no network or IP address found for the container with ID %s", id)
-		}
-	}
-
-	result := fmt.Sprintf("http://%s:%d", targetHost, option.portNumber)
-	return &result, nil
+	url, err := option.URL(ctx, publicUrl)
+	return url, option.DNSResolvers, err
 }
 
-func (a *Driver) resolveAvailableOptionById(
-	ctx context.Context,
-	parameters map[string]any,
-	id string,
-) (*containerMetadata, error) {
-	options, err := a.resolveAvailableOptions(ctx, parameters, nil, false)
-	if err != nil {
-		return nil, err
-	}
-
-	idParts := strings.Split(id, ":")
-	if len(idParts) != 3 {
-		return nil, coreerror.New("Invalid option ID", true)
-	}
-
-	for _, option := range options {
-		if option.id == id {
-			return option, nil
-		}
-	}
-
-	return nil, nil
-}
-
-func (a *Driver) resolveAvailableOptions(
-	ctx context.Context,
-	parameters map[string]any,
-	searchTerms *string,
-	tcpOnly bool,
-) ([]*containerMetadata, error) {
-	dockerClient, err := startClient(parameters)
-	if err != nil {
-		return nil, err
-	}
-
-	containers, err := dockerClient.ContainerList(
-		ctx,
-		container.ListOptions{
-			All:     true,
-			Filters: filters.Args{},
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	options := a.buildOptions(containers, tcpOnly)
-
-	if searchTerms != nil {
-		filteredOptions := make([]*containerMetadata, 0)
-		for _, option := range options {
-			if strings.Contains(strings.ToLower(option.name), strings.ToLower(*searchTerms)) {
-				filteredOptions = append(filteredOptions, option)
-			}
-		}
-
-		options = filteredOptions
-	}
-
-	return options, nil
-}
-
-func (a *Driver) buildOptions(containers []container.Summary, tcpOnly bool) []*containerMetadata {
-	optionIDs := make(map[string]bool)
-	options := make([]*containerMetadata, 0, len(containers))
-
-	for _, item := range containers {
-		for _, port := range item.Ports {
-			if tcpOnly && strings.ToUpper(port.Type) != "TCP" {
-				continue
-			}
-
-			if metadata := buildOption(&port, &item, true); metadata != nil && !optionIDs[metadata.id] {
-				options = append(options, metadata)
-				optionIDs[metadata.id] = true
-			}
-
-			if metadata := buildOption(&port, &item, false); metadata != nil && !optionIDs[metadata.id] {
-				options = append(options, metadata)
-				optionIDs[metadata.id] = true
-			}
-		}
-	}
-
-	return options
-}
-
-func buildOption(port *container.Port, item *container.Summary, usePublicPort bool) *containerMetadata {
-	portNumber := port.PrivatePort
-	qualifierType := containerQualifier
-
-	if usePublicPort {
-		portNumber = port.PublicPort
-		qualifierType = hostQualifier
-	}
-
-	if portNumber == 0 {
-		return nil
-	}
-
-	return &containerMetadata{
-		id:         fmt.Sprintf("%s:%d:%s", item.ID, portNumber, qualifierType),
-		name:       strings.TrimPrefix(item.Names[0], "/"),
-		container:  item,
-		portNumber: int(portNumber),
-		qualifier:  qualifierType,
-		protocol:   port.Type,
-	}
-}
-
-func toDriverOption(option *containerMetadata) *integration.DriverOption {
-	return &integration.DriverOption{
-		ID:        option.id,
-		Name:      option.name,
-		Port:      option.portNumber,
-		Qualifier: ptr.Of(string(option.qualifier)),
-		Protocol:  integration.Protocol(option.protocol),
-	}
-}
-
-func startClient(parameters map[string]any) (*client.Client, error) {
-	connectionMode := parameters[connectionModeField.ID].(string)
-
+func startOptionResolver(parameters map[string]any) (resolver.Resolver, error) {
 	var connectionString string
-	switch connectionMode {
+	switch parameters[connectionModeField.ID].(string) {
 	case "SOCKET":
 		socketPath := parameters[socketPathField.ID].(string)
 		connectionString = "unix://" + socketPath
@@ -250,8 +123,43 @@ func startClient(parameters map[string]any) (*client.Client, error) {
 		return nil, coreerror.New("Invalid connection mode", false)
 	}
 
-	return client.NewClientWithOpts(
+	dockerClient, err := client.NewClientWithOpts(
 		client.WithHost(connectionString),
 		client.WithAPIVersionNegotiation(),
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	swarmEnabled, useServiceMesh, dnsResolvers := extractSwarmParams(parameters)
+	if swarmEnabled {
+		return resolver.FromServices(dockerClient, useServiceMesh, dnsResolvers), nil
+	}
+
+	return resolver.FromContainers(dockerClient), nil
+}
+
+func extractSwarmParams(parameters map[string]any) (bool, bool, *[]string) {
+	swarmMode := false
+	useServiceMesh := false
+	var dnsResolvers *[]string
+
+	if rawValue, exists := parameters[swarmModeField.ID]; exists {
+		swarmMode = rawValue.(bool)
+	}
+
+	if rawValue, exists := parameters[swarmServiceMeshField.ID]; exists {
+		useServiceMesh = rawValue.(bool)
+	}
+
+	if rawValue, exists := parameters[swarmDNSResolverField.ID]; exists {
+		textValue := rawValue.(string)
+		dnsResolvers = ptr.Of(strings.Split(textValue, "\n"))
+
+		for index, value := range *dnsResolvers {
+			(*dnsResolvers)[index] = strings.TrimSpace(value)
+		}
+	}
+
+	return swarmMode, useServiceMesh, dnsResolvers
 }

@@ -20,5 +20,5 @@ type EnumOption struct {
 
 type Condition struct {
 	ParentField string `json:"parentField"`
-	Value       string `json:"value"`
+	Value       any    `json:"value"`
 }

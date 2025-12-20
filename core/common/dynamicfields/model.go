@@ -32,5 +32,5 @@ type EnumOption struct {
 
 type Condition struct {
 	ParentField string
-	Value       string
+	Value       any
 }

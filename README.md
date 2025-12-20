@@ -24,7 +24,7 @@ Some of the available features include:
 - Server and virtual hosts access and error logs with automatic log rotation
 - Multiple users with attribute-based access control (ABAC)
 - Support for TrueNAS, allowing to easily configure to proxy to an app hosted in your NAS
-- Native integration with Docker for easy pick of a container as the proxy target
+- Native integration with Docker and Docker Swarm for easy pick of a container/service as the proxy target
 - Built-in support for Tailscale VPNs, enabling easy exposure of hosts in your Tailnet networks as virtual machines
 - Access lists for easy control of who can access what using basic authentication and/or source IP address checks 
 
