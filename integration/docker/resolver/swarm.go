@@ -18,14 +18,7 @@ type swarmAdapter struct {
 	client         *client.Client
 	useServiceMesh bool
 	dnsResolvers   *[]string
-}
-
-func FromServices(c *client.Client, useServiceMesh bool, dnsResolvers *[]string) Resolver {
-	return &swarmAdapter{
-		client:         c,
-		useServiceMesh: useServiceMesh,
-		dnsResolvers:   dnsResolvers,
-	}
+	publicUrl      string
 }
 
 func (s *swarmAdapter) ResolveOptionByID(ctx context.Context, id string) (*Option, error) {
@@ -108,8 +101,8 @@ func (s *swarmAdapter) buildServiceOption(port *swarm.PortConfig, service *swarm
 			Protocol:     integration.Protocol(port.Protocol),
 			DNSResolvers: s.dnsResolvers,
 		},
-		urlResolver: func(ctx context.Context, option *Option, publicUrl string) (*string, error) {
-			return s.buildServiceOptionURL(ctx, option, publicUrl, service)
+		urlResolver: func(ctx context.Context, option *Option) (*string, error) {
+			return s.buildServiceOptionURL(ctx, option, service)
 		},
 	}
 }
@@ -117,45 +110,49 @@ func (s *swarmAdapter) buildServiceOption(port *swarm.PortConfig, service *swarm
 func (s *swarmAdapter) buildServiceOptionURL(
 	ctx context.Context,
 	option *Option,
-	publicUrl string,
 	service *swarm.Service,
 ) (*string, error) {
-	var targetHost string
-
-	if s.useServiceMesh {
-		targetHost = service.Spec.Name
-	} else if publicUrl != "" {
-		uri, err := url.Parse(publicUrl)
-		if err != nil {
-			return nil, err
-		}
-
-		targetHost = uri.Hostname()
-	} else {
-		nodes, err := s.client.NodeList(ctx, swarm.NodeListOptions{})
-		if err != nil {
-			return nil, err
-		}
-
-		if len(nodes) == 0 {
-			return nil, fmt.Errorf("no nodes found")
-		}
-
-		var leaderNode *swarm.Node
-		for _, node := range nodes {
-			if node.ManagerStatus.Leader {
-				leaderNode = &node
-				break
-			}
-		}
-
-		if leaderNode == nil {
-			return nil, fmt.Errorf("no leader node found")
-		}
-
-		targetHost = leaderNode.Status.Addr
+	targetHost, err := s.resolveTargetHost(ctx, service)
+	if err != nil {
+		return nil, err
 	}
 
 	result := fmt.Sprintf("http://%s:%d", targetHost, option.Port)
 	return &result, nil
+}
+
+func (s *swarmAdapter) resolveTargetHost(ctx context.Context, service *swarm.Service) (string, error) {
+	if s.useServiceMesh {
+		return service.Spec.Name, nil
+	}
+
+	if s.publicUrl != "" {
+		uri, err := url.Parse(s.publicUrl)
+		if err != nil {
+			return "", err
+		}
+
+		return uri.Hostname(), nil
+	}
+
+	return s.findLeaderNodeAddress(ctx)
+}
+
+func (s *swarmAdapter) findLeaderNodeAddress(ctx context.Context) (string, error) {
+	nodes, err := s.client.NodeList(ctx, swarm.NodeListOptions{})
+	if err != nil {
+		return "", err
+	}
+
+	if len(nodes) == 0 {
+		return "", fmt.Errorf("no nodes found")
+	}
+
+	for _, node := range nodes {
+		if node.ManagerStatus.Leader {
+			return node.Status.Addr, nil
+		}
+	}
+
+	return "", fmt.Errorf("no leader node found")
 }

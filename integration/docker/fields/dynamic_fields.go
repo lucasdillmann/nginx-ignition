@@ -1,4 +1,4 @@
-package docker
+package fields
 
 import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	connectionModeField = dynamicfields.DynamicField{
+	ConnectionMode = dynamicfields.DynamicField{
 		ID:          "connectionMode",
 		Description: "Connection mode",
 		Priority:    1,
@@ -19,7 +19,7 @@ var (
 		DefaultValue: ptr.Of("SOCKET"),
 	}
 
-	socketPathField = dynamicfields.DynamicField{
+	SocketPath = dynamicfields.DynamicField{
 		ID:           "socketPath",
 		Description:  "Socket path",
 		Priority:     2,
@@ -27,12 +27,12 @@ var (
 		Type:         dynamicfields.SingleLineTextType,
 		DefaultValue: ptr.Of("/var/run/docker.sock"),
 		Condition: &dynamicfields.Condition{
-			ParentField: connectionModeField.ID,
+			ParentField: ConnectionMode.ID,
 			Value:       "SOCKET",
 		},
 	}
 
-	hostUrlField = dynamicfields.DynamicField{
+	HostURL = dynamicfields.DynamicField{
 		ID:          "hostUrl",
 		Description: "Host URL",
 		Priority:    3,
@@ -40,12 +40,12 @@ var (
 		Type:        dynamicfields.URLType,
 		HelpText:    ptr.Of("The URL to be used to connect to the Docker daemon, such as tcp://example.com:2375"),
 		Condition: &dynamicfields.Condition{
-			ParentField: connectionModeField.ID,
+			ParentField: ConnectionMode.ID,
 			Value:       "TCP",
 		},
 	}
 
-	swarmModeField = dynamicfields.DynamicField{
+	SwarmMode = dynamicfields.DynamicField{
 		ID:          "swarmMode",
 		Description: "Swarm mode",
 		Priority:    4,
@@ -55,7 +55,7 @@ var (
 			"deployed Swarm services instead of resolving available containers"),
 	}
 
-	swarmServiceMeshField = dynamicfields.DynamicField{
+	SwarmServiceMesh = dynamicfields.DynamicField{
 		ID:          "swarmServiceMesh",
 		Description: "Service mesh",
 		Priority:    5,
@@ -64,12 +64,12 @@ var (
 		HelpText: ptr.Of("When enabled, nginx will be configured to reach Swarm services using the service mesh " +
 			"(internal DNS names)."),
 		Condition: &dynamicfields.Condition{
-			ParentField: swarmModeField.ID,
+			ParentField: SwarmMode.ID,
 			Value:       true,
 		},
 	}
 
-	swarmDNSResolverField = dynamicfields.DynamicField{
+	SwarmDNSResolvers = dynamicfields.DynamicField{
 		ID:          "swarmDnsResolvers",
 		Description: "Swarm DNS resolvers",
 		Priority:    6,
@@ -78,12 +78,12 @@ var (
 		HelpText: ptr.Of("Overrides the default DNS resolvers used by nginx when resolving Swarm services (" +
 			"if omitted, nginx will use the default resolvers). Inform one resolver IP address per line."),
 		Condition: &dynamicfields.Condition{
-			ParentField: swarmModeField.ID,
+			ParentField: SwarmMode.ID,
 			Value:       true,
 		},
 	}
 
-	proxyUrlField = dynamicfields.DynamicField{
+	ProxyURL = dynamicfields.DynamicField{
 		ID:          "proxyUrl",
 		Description: "Proxy URL",
 		Priority:    6,
@@ -92,8 +92,18 @@ var (
 		HelpText: ptr.Of("The URL to be used when proxying a request to a Docker container using a port " +
 			"exposed on the host. If not set, the container IP will be used instead."),
 		Condition: &dynamicfields.Condition{
-			ParentField: swarmModeField.ID,
+			ParentField: SwarmMode.ID,
 			Value:       false,
 		},
+	}
+
+	All = []*dynamicfields.DynamicField{
+		&ConnectionMode,
+		&SocketPath,
+		&HostURL,
+		&SwarmMode,
+		&SwarmServiceMesh,
+		&SwarmDNSResolvers,
+		&ProxyURL,
 	}
 )

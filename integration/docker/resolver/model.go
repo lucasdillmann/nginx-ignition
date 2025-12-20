@@ -6,22 +6,11 @@ import (
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
-type Resolver interface {
-	ResolveOptions(ctx context.Context, tcpOnly bool, searchTerms *string) (*[]Option, error)
-	ResolveOptionByID(ctx context.Context, optionId string) (*Option, error)
-}
-
 type Option struct {
 	*integration.DriverOption
-	urlResolver func(ctx context.Context, option *Option, publicUrl string) (*string, error)
+	urlResolver func(ctx context.Context, option *Option) (*string, error)
 }
 
-func (o *Option) URL(ctx context.Context, publicUrl string) (*string, error) {
-	return o.urlResolver(ctx, o, publicUrl)
+func (o *Option) URL(ctx context.Context) (*string, error) {
+	return o.urlResolver(ctx, o)
 }
-
-const (
-	hostQualifier      = "host"
-	containerQualifier = "container"
-	ingressQualifier   = "ingress"
-)

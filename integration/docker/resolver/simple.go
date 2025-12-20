@@ -15,13 +15,8 @@ import (
 )
 
 type simpleAdapter struct {
-	client *client.Client
-}
-
-func FromContainers(c *client.Client) Resolver {
-	return &simpleAdapter{
-		client: c,
-	}
+	client    *client.Client
+	publicUrl string
 }
 
 func (s *simpleAdapter) ResolveOptionByID(ctx context.Context, id string) (*Option, error) {
@@ -106,20 +101,16 @@ func (s *simpleAdapter) buildOption(port *container.Port, item *container.Summar
 			Qualifier: ptr.Of(qualifierType),
 			Protocol:  integration.Protocol(port.Type),
 		},
-		urlResolver: func(_ context.Context, option *Option, publicUrl string) (*string, error) {
-			return s.buildOptionURL(option, publicUrl, item)
+		urlResolver: func(_ context.Context, option *Option) (*string, error) {
+			return s.buildOptionURL(option, item)
 		},
 	}
 }
 
-func (s *simpleAdapter) buildOptionURL(
-	option *Option,
-	publicUrl string,
-	summary *container.Summary,
-) (*string, error) {
+func (s *simpleAdapter) buildOptionURL(option *Option, summary *container.Summary) (*string, error) {
 	var targetHost string
-	if publicUrl != "" && *option.Qualifier == hostQualifier {
-		uri, err := url.Parse(publicUrl)
+	if s.publicUrl != "" && *option.Qualifier == hostQualifier {
+		uri, err := url.Parse(s.publicUrl)
 		if err != nil {
 			return nil, err
 		}
