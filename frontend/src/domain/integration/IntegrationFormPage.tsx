@@ -190,6 +190,18 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
         )
     }
 
+    private fillDynamicFieldsDefaultValues(
+        formValues: IntegrationRequest,
+        availableDrivers: AvailableDriverResponse[],
+    ): IntegrationRequest {
+        const provider = availableDrivers.find(item => item.id === formValues.driver)
+        return (
+            provider?.configurationFields
+                .sort((left, right) => (left.priority > right.priority ? 1 : -1))
+                .reduce((acc, field) => ({ ...acc, [field.id]: field.defaultValue }), formValues) ?? formValues
+        )
+    }
+
     componentDidMount() {
         this.updateShellConfig(false)
         const availableDriversPromise = this.service.availableDrivers()
@@ -208,7 +220,10 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
 
                 this.setState({
                     loading: false,
-                    formValues: formValues ?? integrationRequestDefaults(),
+                    formValues: this.fillDynamicFieldsDefaultValues(
+                        formValues ?? integrationRequestDefaults(),
+                        availableDrivers,
+                    ),
                     notFound,
                     availableDrivers,
                 })

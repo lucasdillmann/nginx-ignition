@@ -46,19 +46,19 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
     }
 
     private renderBoolean() {
-        return <Switch value={this.initialValue()} />
+        return <Switch />
     }
 
     private renderSingleLineText() {
         const {
             field: { sensitive },
         } = this.props
-        if (sensitive) return <Password value={this.initialValue()} />
-        else return <Input value={this.initialValue()} />
+        if (sensitive) return <Password />
+        else return <Input />
     }
 
     private renderMultiLineText() {
-        return <TextArea rows={4} value={this.initialValue()} />
+        return <TextArea rows={4} />
     }
 
     private renderEnum() {
@@ -68,7 +68,7 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
             label: option.description,
         }))
 
-        return <Select value={this.initialValue()} options={options} showSearch />
+        return <Select options={options} showSearch />
     }
 
     private renderFileUpload() {
@@ -111,6 +111,7 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
         return (
             <Form.Item
                 name={[this.dataField, field.id]}
+                initialValue={this.initialValue()}
                 validateStatus={validationResult.getStatus(this.qualifiedId)}
                 help={validationResult.getMessage(this.qualifiedId) ?? field.helpText}
                 label={field.description}
