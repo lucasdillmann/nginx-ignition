@@ -146,11 +146,11 @@ func (s *swarmAdapter) resolveTargetHost(
 		return uri.Hostname(), nil, nil
 	}
 
-	leaderAddress, err := s.findLeaderNodeAddress(ctx)
-	return leaderAddress, nil, err
+	nodeAddress, err := s.findNodeAddress(ctx)
+	return nodeAddress, nil, err
 }
 
-func (s *swarmAdapter) findLeaderNodeAddress(ctx context.Context) (string, error) {
+func (s *swarmAdapter) findNodeAddress(ctx context.Context) (string, error) {
 	nodes, err := s.client.NodeList(ctx, swarm.NodeListOptions{})
 	if err != nil {
 		return "", err
