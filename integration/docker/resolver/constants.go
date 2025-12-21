@@ -13,5 +13,5 @@ const (
 
 var (
 	containerNameGeneralNormalizationRegex    = regexp.MustCompile(`[^a-zA-Z0-9\-_.]+`)
-	containerNameUnderscoreNormalizationRegex = regexp.MustCompile(`[^a-zA-Z0-9\-_.]+`)
+	containerNameUnderscoreNormalizationRegex = regexp.MustCompile(`_{2,}`)
 )
