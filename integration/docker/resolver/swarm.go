@@ -63,7 +63,7 @@ func (s *swarmAdapter) buildServiceOptions(services []swarm.Service, tcpOnly boo
 	options := make([]Option, 0, len(services))
 
 	for _, service := range services {
-		if service.Spec.EndpointSpec == nil {
+		if service.Spec.EndpointSpec == nil || service.Spec.EndpointSpec.Ports == nil {
 			continue
 		}
 
