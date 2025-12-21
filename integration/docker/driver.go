@@ -70,7 +70,7 @@ func (a *Driver) GetAvailableOptionById(
 	}
 
 	option, err := optionResolver.ResolveOptionByID(ctx, id)
-	if err != nil {
+	if err != nil || option == nil {
 		return nil, err
 	}
 

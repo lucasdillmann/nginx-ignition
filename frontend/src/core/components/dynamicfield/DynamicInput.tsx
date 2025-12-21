@@ -38,7 +38,9 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
 
         for (const condition of conditions) {
             const { parentField, value } = condition
-            if (formValues[this.dataField][parentField] !== value) return false
+            const currentValue = formValues[this.dataField][parentField]
+            const fallbackState = value === false && currentValue == undefined
+            if (!fallbackState && currentValue !== value) return false
         }
 
         return true

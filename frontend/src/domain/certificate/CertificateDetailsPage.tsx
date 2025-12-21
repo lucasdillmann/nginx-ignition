@@ -109,7 +109,9 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
 
         for (const condition of conditions) {
             const { parentField, value } = condition
-            if (parameters[parentField] !== value) return false
+            const currentValue = parameters[parentField]
+            const fallbackState = value === false && currentValue == undefined
+            if (!fallbackState && currentValue !== value) return false
         }
 
         return true
