@@ -92,6 +92,5 @@ func (a *Driver) GetOptionProxyURL(
 		return nil, nil, err
 	}
 
-	url, err := option.URL(ctx)
-	return url, option.DNSResolvers, err
+	return option.URL(ctx)
 }

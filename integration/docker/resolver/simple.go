@@ -110,18 +110,18 @@ func (s *simpleAdapter) buildOption(port *container.Port, item *container.Summar
 			Qualifier: ptr.Of(qualifierType),
 			Protocol:  integration.Protocol(port.Type),
 		},
-		urlResolver: func(_ context.Context, option *Option) (*string, error) {
+		urlResolver: func(_ context.Context, option *Option) (*string, *[]string, error) {
 			return s.buildOptionURL(option, item)
 		},
 	}
 }
 
-func (s *simpleAdapter) buildOptionURL(option *Option, summary *container.Summary) (*string, error) {
+func (s *simpleAdapter) buildOptionURL(option *Option, summary *container.Summary) (*string, *[]string, error) {
 	var targetHost string
 	if s.publicUrl != "" && *option.Qualifier == hostQualifier {
 		uri, err := url.Parse(s.publicUrl)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		targetHost = uri.Hostname()
@@ -134,10 +134,10 @@ func (s *simpleAdapter) buildOptionURL(option *Option, summary *container.Summar
 		}
 
 		if targetHost == "" {
-			return nil, fmt.Errorf("no network or IP address found for the container with ID %s", option.ID)
+			return nil, nil, fmt.Errorf("no network or IP address found for the container with ID %s", option.ID)
 		}
 	}
 
 	result := fmt.Sprintf("http://%s:%d", targetHost, option.Port)
-	return &result, nil
+	return &result, nil, nil
 }

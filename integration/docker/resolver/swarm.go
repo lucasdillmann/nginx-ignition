@@ -102,7 +102,7 @@ func (s *swarmAdapter) buildServiceOption(port *swarm.PortConfig, service *swarm
 			Protocol:     integration.Protocol(port.Protocol),
 			DNSResolvers: s.dnsResolvers,
 		},
-		urlResolver: func(ctx context.Context, option *Option) (*string, error) {
+		urlResolver: func(ctx context.Context, option *Option) (*string, *[]string, error) {
 			return s.buildServiceOptionURL(ctx, option, service)
 		},
 	}
@@ -112,35 +112,41 @@ func (s *swarmAdapter) buildServiceOptionURL(
 	ctx context.Context,
 	option *Option,
 	service *swarm.Service,
-) (*string, error) {
-	targetHost, err := s.resolveTargetHost(ctx, service, *option.Qualifier)
+) (*string, *[]string, error) {
+	targetHost, dnsResolvers, err := s.resolveTargetHost(ctx, service, *option.Qualifier)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	result := fmt.Sprintf("http://%s:%d", targetHost, option.Port)
-	return &result, nil
+	return &result, dnsResolvers, nil
 }
 
 func (s *swarmAdapter) resolveTargetHost(
 	ctx context.Context,
 	service *swarm.Service,
 	qualifier string,
-) (string, error) {
+) (string, *[]string, error) {
 	if s.useServiceMesh && qualifier == ingressQualifier {
-		return service.Spec.Name, nil
+		dnsResolvers := s.dnsResolvers
+		if dnsResolvers == nil || len(*dnsResolvers) == 0 {
+			dnsResolvers = &[]string{defaultDockerDNSIP}
+		}
+
+		return service.Spec.Name, dnsResolvers, nil
 	}
 
 	if s.publicUrl != "" {
 		uri, err := url.Parse(s.publicUrl)
 		if err != nil {
-			return "", err
+			return "", nil, err
 		}
 
-		return uri.Hostname(), nil
+		return uri.Hostname(), nil, nil
 	}
 
-	return s.findLeaderNodeAddress(ctx)
+	leaderAddress, err := s.findLeaderNodeAddress(ctx)
+	return leaderAddress, nil, err
 }
 
 func (s *swarmAdapter) findLeaderNodeAddress(ctx context.Context) (string, error) {
