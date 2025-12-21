@@ -7,7 +7,6 @@ import (
 	"github.com/docker/docker/client"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/integration/docker/fields"
 )
 
@@ -68,10 +67,16 @@ func extractSwarmParams(parameters map[string]any) (bool, bool, *[]string) {
 	if useServiceMesh {
 		if rawValue, exists := parameters[fields.SwarmDNSResolvers.ID]; exists {
 			textValue := rawValue.(string)
-			dnsResolvers = ptr.Of(strings.Split(textValue, "\n"))
+			result := make([]string, 0)
 
-			for index, value := range *dnsResolvers {
-				(*dnsResolvers)[index] = strings.TrimSpace(value)
+			for _, value := range strings.Split(textValue, "\n") {
+				if normalizedValue := strings.TrimSpace(value); normalizedValue != "" {
+					result = append(result, normalizedValue)
+				}
+			}
+
+			if len(result) != 0 {
+				dnsResolvers = &result
 			}
 		}
 	}
