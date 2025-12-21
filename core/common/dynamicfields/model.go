@@ -20,9 +20,9 @@ type DynamicField struct {
 	Type         Type
 	EnumOptions  *[]*EnumOption
 	Sensitive    bool
-	Condition    *Condition
+	Conditions   *[]Condition
 	HelpText     *string
-	DefaultValue *string
+	DefaultValue any
 }
 
 type EnumOption struct {
@@ -32,5 +32,5 @@ type EnumOption struct {
 
 type Condition struct {
 	ParentField string
-	Value       string
+	Value       any
 }

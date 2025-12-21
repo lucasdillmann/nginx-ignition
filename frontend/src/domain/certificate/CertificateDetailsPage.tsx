@@ -100,12 +100,19 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
     }
 
     private evaluateConditions(field: DynamicField) {
-        const { certificate } = this.state
-        const { condition } = field
-        if (condition === undefined || condition === null) return true
+        const { conditions } = field
+        if (!Array.isArray(conditions) || conditions.length === 0) return true
 
-        const { parentField, value } = condition
-        return certificate!!.parameters !== undefined && certificate!!.parameters[parentField] === value
+        const { certificate } = this.state
+        const { parameters } = certificate!!
+        if (parameters === undefined) return false
+
+        for (const condition of conditions) {
+            const { parentField, value } = condition
+            if (parameters[parentField] !== value) return false
+        }
+
+        return true
     }
 
     private renderDynamicField(field: DynamicField) {

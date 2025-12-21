@@ -110,7 +110,7 @@ func (a *Driver) GetOptionProxyURL(
 	_ context.Context,
 	parameters map[string]any,
 	id string,
-) (*string, error) {
+) (*string, *[]string, error) {
 	baseUrl := parameters[urlField.ID].(string)
 	proxyUrl := parameters[proxyUrlField.ID].(string)
 	parts := strings.Split(id, ":")
@@ -119,11 +119,11 @@ func (a *Driver) GetOptionProxyURL(
 
 	_, port, err := a.getWorkloadPort(parameters, appId, containerPort)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if port == nil || len(port.HostPorts) == 0 {
-		return nil, fmt.Errorf("unable to resolve proxy URL for %s: service is probably offline/stopped", id)
+		return nil, nil, fmt.Errorf("unable to resolve proxy URL for %s: service is probably offline/stopped", id)
 	}
 
 	hostPort := port.HostPorts[0].HostPort
@@ -134,7 +134,7 @@ func (a *Driver) GetOptionProxyURL(
 	case proxyUrl != "":
 		parseResult, err := url.Parse(proxyUrl)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		endpoint = parseResult.Host
@@ -142,7 +142,7 @@ func (a *Driver) GetOptionProxyURL(
 	case hostIp == "0.0.0.0":
 		parseResult, err := url.Parse(baseUrl)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		endpoint = parseResult.Host
@@ -151,8 +151,8 @@ func (a *Driver) GetOptionProxyURL(
 		endpoint = hostIp
 	}
 
-	output := "http://" + endpoint + ":" + strconv.Itoa(hostPort)
-	return &output, nil
+	output := fmt.Sprintf("http://%s:%d", endpoint, hostPort)
+	return &output, nil, nil
 }
 
 func (a *Driver) getWorkloadPort(

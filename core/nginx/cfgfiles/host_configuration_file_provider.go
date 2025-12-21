@@ -311,13 +311,20 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	features host.FeatureSet,
 	paths *Paths,
 ) (string, error) {
-	proxyUrl, err := p.integrationCommands.GetOptionUrl(ctx, r.Integration.IntegrationID, r.Integration.OptionID)
+	proxyUrl, dnsResolvers, err := p.integrationCommands.GetOptionURL(ctx, r.Integration.IntegrationID, r.Integration.OptionID)
 	if err != nil {
 		return "", err
 	}
 
 	if proxyUrl == nil {
-		return "", coreerror.New("Integration option not found", false)
+		msg := fmt.Sprintf("Integration option not found: %s", r.Integration.OptionID)
+		return "", coreerror.New(msg, false)
+	}
+
+	dnsConfig := ""
+	if dnsResolvers != nil && len(*dnsResolvers) > 0 {
+		ips := strings.Join(*dnsResolvers, " ")
+		dnsConfig = fmt.Sprintf("resolver %s valid=5s;", ips)
 	}
 
 	return fmt.Sprintf(
@@ -325,8 +332,10 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 			%s
 			%s
 			%s
+			%s
 		}`,
 		r.SourcePath,
+		dnsConfig,
 		p.buildProxyPass(r, *proxyUrl),
 		p.buildRouteFeatures(features),
 		p.buildRouteSettings(r, paths),

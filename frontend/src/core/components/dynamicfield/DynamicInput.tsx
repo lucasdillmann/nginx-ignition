@@ -25,32 +25,40 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
 
     private initialValue() {
         const { formValues, field } = this.props
-        return formValues[this.dataField]?.[field.id]
+        const { id, defaultValue } = field
+        return formValues[this.dataField]?.[id] ?? defaultValue
     }
 
     private evaluateConditions() {
         const { formValues, field } = this.props
-        const { condition } = field
-        if (condition === undefined || condition === null) return true
+        const { conditions } = field
 
-        const { parentField, value } = condition
-        return formValues[this.dataField] !== undefined && formValues[this.dataField][parentField] === value
+        if (!Array.isArray(conditions) || conditions.length === 0) return true
+
+        if (formValues[this.dataField] === undefined) return false
+
+        for (const condition of conditions) {
+            const { parentField, value } = condition
+            if (formValues[this.dataField][parentField] !== value) return false
+        }
+
+        return true
     }
 
     private renderBoolean() {
-        return <Switch value={this.initialValue()} />
+        return <Switch />
     }
 
     private renderSingleLineText() {
         const {
             field: { sensitive },
         } = this.props
-        if (sensitive) return <Password value={this.initialValue()} />
-        else return <Input value={this.initialValue()} />
+        if (sensitive) return <Password />
+        else return <Input />
     }
 
     private renderMultiLineText() {
-        return <TextArea rows={4} value={this.initialValue()} />
+        return <TextArea rows={4} />
     }
 
     private renderEnum() {
@@ -60,7 +68,7 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
             label: option.description,
         }))
 
-        return <Select value={this.initialValue()} options={options} showSearch />
+        return <Select options={options} showSearch />
     }
 
     private renderFileUpload() {
@@ -103,6 +111,7 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
         return (
             <Form.Item
                 name={[this.dataField, field.id]}
+                initialValue={this.initialValue()}
                 validateStatus={validationResult.getStatus(this.qualifiedId)}
                 help={validationResult.getMessage(this.qualifiedId) ?? field.helpText}
                 label={field.description}

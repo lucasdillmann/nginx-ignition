@@ -18,14 +18,14 @@ func buildCommands(
 	serviceInstance := newService(repository, drivers)
 
 	return &Commands{
-		Get:                 serviceInstance.getById,
+		Get:                 serviceInstance.getByID,
 		Save:                serviceInstance.save,
-		Delete:              serviceInstance.deleteById,
-		Exists:              serviceInstance.existsById,
+		Delete:              serviceInstance.deleteByID,
+		Exists:              serviceInstance.existsByID,
 		List:                serviceInstance.list,
 		GetAvailableDrivers: serviceInstance.getAvailableDrivers,
-		GetOption:           serviceInstance.getOptionById,
-		GetOptionUrl:        serviceInstance.getOptionUrl,
+		GetOption:           serviceInstance.getOptionByID,
+		GetOptionURL:        serviceInstance.getOptionURL,
 		ListOptions:         serviceInstance.listOptions,
 	}
 }

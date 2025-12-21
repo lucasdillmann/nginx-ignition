@@ -35,13 +35,14 @@ type Driver interface {
 		ctx context.Context,
 		parameters map[string]any,
 		id string,
-	) (*string, error)
+	) (*string, *[]string, error)
 }
 
 type DriverOption struct {
-	ID        string
-	Name      string
-	Port      int
-	Qualifier *string
-	Protocol  Protocol
+	ID           string
+	Name         string
+	Port         int
+	Qualifier    *string
+	Protocol     Protocol
+	DNSResolvers *[]string
 }

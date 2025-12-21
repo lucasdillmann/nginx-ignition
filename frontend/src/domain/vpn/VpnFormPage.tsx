@@ -201,6 +201,23 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
         )
     }
 
+    private fillDynamicFieldsDefaultValues(
+        formValues: VpnRequest,
+        availableDrivers: AvailableDriverResponse[],
+    ): VpnRequest {
+        const { driver, parameters } = formValues
+        const provider = availableDrivers.find(item => item.id === driver)
+        if (provider === undefined) return formValues
+
+        const currentParameters = parameters ?? {}
+        const updatedParameters = provider.configurationFields?.reduce(
+            (acc, { id, defaultValue }) => ({ [id]: defaultValue, ...acc }),
+            currentParameters,
+        )
+
+        return { ...formValues, parameters: updatedParameters ?? currentParameters }
+    }
+
     componentDidMount() {
         this.updateShellConfig(false)
         const availableDriversPromise = this.service.availableDrivers()
@@ -219,7 +236,10 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
 
                 this.setState({
                     loading: false,
-                    formValues: formValues ?? vpnRequestDefaults(),
+                    formValues: this.fillDynamicFieldsDefaultValues(
+                        formValues ?? vpnRequestDefaults(),
+                        availableDrivers,
+                    ),
                     notFound,
                     availableDrivers,
                 })

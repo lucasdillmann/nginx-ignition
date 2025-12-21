@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strings"
 
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
@@ -20,7 +21,7 @@ func Validate(
 			continue
 		}
 
-		conditionSatisfied := isConditionSatisfied(field, parameters)
+		conditionSatisfied := areConditionsSatisfied(field, parameters)
 		if !exists && field.Required && conditionSatisfied {
 			violations = append(violations, validation.ConsistencyViolation{
 				Path:    "parameters." + field.ID,
@@ -46,13 +47,23 @@ func Validate(
 	return nil
 }
 
-func isConditionSatisfied(field *DynamicField, parameters map[string]any) bool {
-	if field.Condition == nil {
+func areConditionsSatisfied(field *DynamicField, parameters map[string]any) bool {
+	if field.Conditions == nil || len(*field.Conditions) == 0 {
 		return true
 	}
 
-	expectedValue := field.Condition.Value
-	currentValue, exists := parameters[field.Condition.ParentField]
+	for _, condition := range *field.Conditions {
+		if !isConditionSatisfied(&condition, parameters) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func isConditionSatisfied(condition *Condition, parameters map[string]any) bool {
+	expectedValue := condition.Value
+	currentValue, exists := parameters[condition.ParentField]
 	return exists && expectedValue == currentValue
 }
 
@@ -63,31 +74,26 @@ func resolveErrorMessage(field *DynamicField, value interface{}) *string {
 
 	case FileType:
 		if !canDecodeFile(value) {
-			msg := "A file is expected, encoded in a Base64 String"
-			return &msg
+			return ptr.Of("A file is expected, encoded in a Base64 String")
 		}
 
 	case BooleanType:
 		if _, ok := value.(bool); !ok {
-			msg := "A boolean value is expected"
-			return &msg
+			return ptr.Of("A boolean value is expected")
 		}
 
 	case EmailType:
 		if !isAnEmail(value) {
-			msg := "An email is expected"
-			return &msg
+			return ptr.Of("An email is expected")
 		}
 
 	case URLType:
 		if !isAnUrl(value) {
-			msg := "A URL is expected"
-			return &msg
+			return ptr.Of("Not a valid URL")
 		}
 
 	default:
-		msg := "Unknown field type"
-		return &msg
+		return ptr.Of("Unknown field type")
 	}
 
 	return nil
@@ -123,13 +129,11 @@ func isAnUrl(value interface{}) bool {
 func resolveTextBasedFieldErrorMessage(field *DynamicField, value interface{}) *string {
 	castedValue, casted := value.(string)
 	if !casted {
-		msg := "A text value is expected"
-		return &msg
+		return ptr.Of("A text value is expected")
 	}
 
 	if field.Required && strings.TrimSpace(castedValue) == "" {
-		msg := "A not empty text value is required"
-		return &msg
+		return ptr.Of("A not empty text value is required")
 	}
 
 	if field.Type == EnumType {
@@ -154,8 +158,7 @@ func resolveEnumFieldErrorMessage(field *DynamicField, value interface{}) *strin
 	}
 
 	if !valid {
-		msg := "Not a recognized option. Valid values: " + strings.Join(enumOptions, ", ")
-		return &msg
+		return ptr.Of("Not a recognized option. Valid values: " + strings.Join(enumOptions, ", "))
 	}
 
 	return nil

@@ -8,7 +8,6 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 const (
@@ -33,7 +32,7 @@ func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 			Description:  "Joker API mode",
 			Type:         dynamicfields.EnumType,
 			Required:     true,
-			DefaultValue: ptr.Of(dmapi),
+			DefaultValue: dmapi,
 			EnumOptions: &[]*dynamicfields.EnumOption{
 				{
 					ID:          dmapi,
@@ -51,20 +50,20 @@ func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 			Sensitive:   true,
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
-			Condition: &dynamicfields.Condition{
+			Conditions: &[]dynamicfields.Condition{{
 				ParentField: apiModeFieldID,
 				Value:       dmapi,
-			},
+			}},
 		},
 		{
 			ID:          usernameFieldID,
 			Description: "Joker username",
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
-			Condition: &dynamicfields.Condition{
+			Conditions: &[]dynamicfields.Condition{{
 				ParentField: apiModeFieldID,
 				Value:       svc,
-			},
+			}},
 		},
 		{
 			ID:          passwordFieldID,
@@ -72,10 +71,10 @@ func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
-			Condition: &dynamicfields.Condition{
+			Conditions: &[]dynamicfields.Condition{{
 				ParentField: apiModeFieldID,
 				Value:       svc,
-			},
+			}},
 		},
 	})
 }
