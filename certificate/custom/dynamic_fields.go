@@ -9,12 +9,13 @@ const (
 
 var (
 	uploadModeField = dynamicfields.DynamicField{
-		ID:          "uploadMode",
-		Priority:    0,
-		Description: "Upload mode",
-		Required:    true,
-		Sensitive:   true,
-		Type:        dynamicfields.EnumType,
+		ID:           "uploadMode",
+		Priority:     0,
+		Description:  "Upload mode",
+		Required:     true,
+		Sensitive:    true,
+		Type:         dynamicfields.EnumType,
+		DefaultValue: fileUploadModeID,
 		EnumOptions: &[]*dynamicfields.EnumOption{
 			{
 				ID:          textFieldUploadModeID,
