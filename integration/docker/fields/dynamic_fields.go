@@ -7,16 +7,16 @@ import (
 
 var (
 	ConnectionMode = dynamicfields.DynamicField{
-		ID:          "connectionMode",
-		Description: "Connection mode",
-		Priority:    1,
-		Required:    true,
-		Type:        dynamicfields.EnumType,
+		ID:           "connectionMode",
+		Description:  "Connection mode",
+		Priority:     1,
+		Required:     true,
+		Type:         dynamicfields.EnumType,
+		DefaultValue: SocketConnectionMode,
 		EnumOptions: &[]*dynamicfields.EnumOption{
-			{ID: "SOCKET", Description: "Socket"},
-			{ID: "TCP", Description: "TCP"},
+			{ID: SocketConnectionMode, Description: "Socket"},
+			{ID: TCPConnectionMode, Description: "TCP"},
 		},
-		DefaultValue: ptr.Of("SOCKET"),
 	}
 
 	SocketPath = dynamicfields.DynamicField{
@@ -25,42 +25,45 @@ var (
 		Priority:     2,
 		Required:     true,
 		Type:         dynamicfields.SingleLineTextType,
-		DefaultValue: ptr.Of("/var/run/docker.sock"),
+		DefaultValue: "/var/run/docker.sock",
 		Conditions: &[]dynamicfields.Condition{{
 			ParentField: ConnectionMode.ID,
-			Value:       "SOCKET",
+			Value:       SocketConnectionMode,
 		}},
 	}
 
 	HostURL = dynamicfields.DynamicField{
-		ID:          "hostUrl",
-		Description: "Host URL",
-		Priority:    3,
-		Required:    true,
-		Type:        dynamicfields.URLType,
-		HelpText:    ptr.Of("The URL to be used to connect to Docker (such as tcp://example.com:2375)"),
+		ID:           "hostUrl",
+		Description:  "Host URL",
+		Priority:     3,
+		Required:     true,
+		Type:         dynamicfields.URLType,
+		DefaultValue: "",
+		HelpText:     ptr.Of("The URL to be used to connect to Docker (such as tcp://example.com:2375)"),
 		Conditions: &[]dynamicfields.Condition{{
 			ParentField: ConnectionMode.ID,
-			Value:       "TCP",
+			Value:       TCPConnectionMode,
 		}},
 	}
 
 	SwarmMode = dynamicfields.DynamicField{
-		ID:          "swarmMode",
-		Description: "Swarm mode",
-		Priority:    4,
-		Required:    true,
-		Type:        dynamicfields.BooleanType,
+		ID:           "swarmMode",
+		Description:  "Swarm mode",
+		Priority:     4,
+		Required:     true,
+		Type:         dynamicfields.BooleanType,
+		DefaultValue: false,
 		HelpText: ptr.Of("When enabled, ignition will retrieve the available options by looking for the " +
 			"deployed Swarm services instead of resolving available containers"),
 	}
 
 	SwarmServiceMesh = dynamicfields.DynamicField{
-		ID:          "swarmServiceMesh",
-		Description: "Service mesh",
-		Priority:    5,
-		Required:    true,
-		Type:        dynamicfields.BooleanType,
+		ID:           "swarmServiceMesh",
+		Description:  "Service mesh",
+		Priority:     5,
+		Required:     true,
+		Type:         dynamicfields.BooleanType,
+		DefaultValue: false,
 		HelpText: ptr.Of("When enabled, nginx will be configured to reach Swarm services using the service mesh " +
 			"(internal DNS names) when an ingress is selected as the proxy target"),
 		Conditions: &[]dynamicfields.Condition{{
@@ -70,11 +73,12 @@ var (
 	}
 
 	SwarmDNSResolvers = dynamicfields.DynamicField{
-		ID:          "swarmDnsResolvers",
-		Description: "Swarm DNS resolvers",
-		Priority:    6,
-		Required:    false,
-		Type:        dynamicfields.MultiLineTextType,
+		ID:           "swarmDnsResolvers",
+		Description:  "Swarm DNS resolvers",
+		Priority:     6,
+		Required:     false,
+		Type:         dynamicfields.MultiLineTextType,
+		DefaultValue: "",
 		HelpText: ptr.Of("Overrides the default DNS resolvers used by nginx when resolving Swarm services. " +
 			"One IP address per line."),
 		Conditions: &[]dynamicfields.Condition{
@@ -90,11 +94,12 @@ var (
 	}
 
 	UseContainerNameAsID = dynamicfields.DynamicField{
-		ID:          "useContainerNameAsId",
-		Description: "Use container name as ID",
-		Priority:    5,
-		Required:    true,
-		Type:        dynamicfields.BooleanType,
+		ID:           "useContainerNameAsId",
+		Description:  "Use container name as ID",
+		Priority:     5,
+		Required:     true,
+		Type:         dynamicfields.BooleanType,
+		DefaultValue: false,
 		HelpText: ptr.Of("When enabled, ignition will use the container name as the ID instead of the " +
 			"container's actual ID. Use this option when the containers are recreated constantly and/or managed " +
 			"by a third-party tool."),
@@ -105,11 +110,12 @@ var (
 	}
 
 	ProxyURL = dynamicfields.DynamicField{
-		ID:          "proxyUrl",
-		Description: "Proxy URL",
-		Priority:    6,
-		Required:    false,
-		Type:        dynamicfields.URLType,
+		ID:           "proxyUrl",
+		Description:  "Proxy URL",
+		Priority:     6,
+		Required:     false,
+		Type:         dynamicfields.URLType,
+		DefaultValue: "",
 		HelpText: ptr.Of("The URL to be used when proxying a request to a Docker container using a port " +
 			"exposed on the host. If not set, the container IP will be used instead."),
 		Conditions: &[]dynamicfields.Condition{{

@@ -22,7 +22,7 @@ type DynamicField struct {
 	Sensitive    bool
 	Conditions   *[]Condition
 	HelpText     *string
-	DefaultValue *string
+	DefaultValue any
 }
 
 type EnumOption struct {

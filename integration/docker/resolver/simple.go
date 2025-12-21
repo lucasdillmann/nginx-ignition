@@ -107,7 +107,7 @@ func (s *simpleAdapter) buildOption(port *container.Port, item *container.Summar
 	itemName := strings.TrimPrefix(item.Names[0], "/")
 
 	if s.useNameAsID {
-		itemID = strings.ReplaceAll(itemName, " ", "_")
+		itemID = normalizeContainerName(itemName, itemID)
 	}
 
 	return &Option{
@@ -148,4 +148,21 @@ func (s *simpleAdapter) buildOptionURL(option *Option, summary *container.Summar
 
 	result := fmt.Sprintf("http://%s:%d", targetHost, option.Port)
 	return &result, nil, nil
+}
+
+func normalizeContainerName(name, containerId string) string {
+	if strings.TrimSpace(name) == "" {
+		return containerId
+	}
+
+	name = strings.TrimSpace(name)
+	name = strings.ReplaceAll(name, " ", "_")
+	name = containerNameGeneralNormalizationRegex.ReplaceAllString(name, "_")
+	name = containerNameUnderscoreNormalizationRegex.ReplaceAllString(name, "_")
+
+	if name == "" {
+		return containerId
+	}
+
+	return name
 }

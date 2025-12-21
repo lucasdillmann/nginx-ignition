@@ -9,6 +9,7 @@ import (
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/client"
 
+	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
@@ -165,5 +166,6 @@ func (s *swarmAdapter) findLeaderNodeAddress(ctx context.Context) (string, error
 		}
 	}
 
-	return "", fmt.Errorf("no leader node found")
+	log.Warnf("No Swarm leader node found. Using first node in the list instead.")
+	return nodes[0].Status.Addr, nil
 }

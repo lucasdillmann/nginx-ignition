@@ -10,7 +10,6 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 const (
@@ -66,7 +65,7 @@ func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 			ID:           environmentFieldID,
 			Description:  "Azure environment",
 			Required:     true,
-			DefaultValue: ptr.Of(defaultRegion),
+			DefaultValue: defaultRegion,
 			Type:         dynamicfields.EnumType,
 			EnumOptions: &[]*dynamicfields.EnumOption{
 				{

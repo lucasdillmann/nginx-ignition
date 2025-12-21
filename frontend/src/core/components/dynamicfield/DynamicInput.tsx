@@ -25,22 +25,21 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
 
     private initialValue() {
         const { formValues, field } = this.props
-        return formValues[this.dataField]?.[field.id]
+        const { id, defaultValue } = field
+        return formValues[this.dataField]?.[id] ?? defaultValue
     }
 
     private evaluateConditions() {
         const { formValues, field } = this.props
         const { conditions } = field
 
-        if (!Array.isArray(conditions) || conditions.length == 0) return true
+        if (!Array.isArray(conditions) || conditions.length === 0) return true
 
         if (formValues[this.dataField] === undefined) return false
 
         for (const condition of conditions) {
             const { parentField, value } = condition
-            const currentValue = formValues[this.dataField][parentField]
-            const fallbackState = value === false && currentValue == undefined
-            if (!fallbackState && currentValue !== value) return false
+            if (formValues[this.dataField][parentField] !== value) return false
         }
 
         return true

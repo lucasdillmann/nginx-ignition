@@ -2,6 +2,7 @@ package retry
 
 import (
 	"fmt"
+	"runtime/debug"
 	"time"
 )
 
@@ -28,7 +29,7 @@ func (r *Retry) Start() error {
 	go func() {
 		defer func() {
 			if errDetails := recover(); errDetails != nil {
-				err := fmt.Errorf("panic: %v", errDetails)
+				err := fmt.Errorf("panic: %v\n%s", errDetails, debug.Stack())
 				r.sendCallback(err, -1, true)
 			}
 		}()
@@ -41,7 +42,19 @@ func (r *Retry) Start() error {
 
 func (r *Retry) executeAttempts() {
 	for attempt := 0; attempt < r.Attempts; attempt++ {
-		if err := r.Action(); err != nil {
+		var err error
+
+		func() {
+			defer func() {
+				if errDetails := recover(); errDetails != nil {
+					err = fmt.Errorf("panic: %v\n%s", errDetails, debug.Stack())
+				}
+			}()
+
+			err = r.Action()
+		}()
+
+		if err != nil {
 			willRetry := attempt+1 < r.Attempts
 			r.sendCallback(err, attempt, !willRetry)
 			time.Sleep(r.DelayBetweenAttempts)

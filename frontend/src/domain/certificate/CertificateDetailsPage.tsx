@@ -101,7 +101,7 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
 
     private evaluateConditions(field: DynamicField) {
         const { conditions } = field
-        if (!Array.isArray(conditions) || conditions.length == 0) return true
+        if (!Array.isArray(conditions) || conditions.length === 0) return true
 
         const { certificate } = this.state
         const { parameters } = certificate!!
@@ -109,9 +109,7 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
 
         for (const condition of conditions) {
             const { parentField, value } = condition
-            const currentValue = parameters[parentField]
-            const fallbackState = value === false && currentValue == undefined
-            if (!fallbackState && currentValue !== value) return false
+            if (parameters[parentField] !== value) return false
         }
 
         return true

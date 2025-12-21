@@ -8,7 +8,7 @@ export default interface DynamicField {
     enumOptions: DynamicFieldEnumOption[]
     conditions?: DynamicFieldCondition[]
     helpText?: string
-    defaultValue?: string
+    defaultValue?: any
 }
 
 export enum DynamicFieldType {

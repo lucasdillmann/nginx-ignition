@@ -8,7 +8,6 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 const (
@@ -33,7 +32,7 @@ func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 			Description:  "Joker API mode",
 			Type:         dynamicfields.EnumType,
 			Required:     true,
-			DefaultValue: ptr.Of(dmapi),
+			DefaultValue: dmapi,
 			EnumOptions: &[]*dynamicfields.EnumOption{
 				{
 					ID:          dmapi,

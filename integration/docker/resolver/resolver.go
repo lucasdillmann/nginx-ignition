@@ -18,10 +18,10 @@ type Resolver interface {
 func For(parameters map[string]any) (Resolver, error) {
 	var connectionUrl string
 	switch parameters[fields.ConnectionMode.ID].(string) {
-	case "SOCKET":
+	case fields.SocketConnectionMode:
 		socketPath := parameters[fields.SocketPath.ID].(string)
 		connectionUrl = "unix://" + socketPath
-	case "TCP":
+	case fields.TCPConnectionMode:
 		hostUrl := parameters[fields.HostURL.ID].(string)
 		connectionUrl = hostUrl
 	default:
