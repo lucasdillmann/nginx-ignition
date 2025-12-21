@@ -45,9 +45,15 @@ func For(parameters map[string]any) (Resolver, error) {
 		}, nil
 	}
 
+	var useNameAsID bool
+	if rawValue, exists := parameters[fields.UseContainerNameAsID.ID]; exists {
+		useNameAsID = rawValue.(bool)
+	}
+
 	return &simpleAdapter{
-		client:    dockerClient,
-		publicUrl: publicUrl,
+		client:      dockerClient,
+		publicUrl:   publicUrl,
+		useNameAsID: useNameAsID,
 	}, nil
 }
 

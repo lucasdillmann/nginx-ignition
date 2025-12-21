@@ -89,6 +89,21 @@ var (
 		},
 	}
 
+	UseContainerNameAsID = dynamicfields.DynamicField{
+		ID:          "useContainerNameAsId",
+		Description: "Use container names as ID",
+		Priority:    5,
+		Required:    true,
+		Type:        dynamicfields.BooleanType,
+		HelpText: ptr.Of("When enabled, ignition will use the container name as the ID instead of the " +
+			"container's actual ID. Use this option when the containers are recreated constantly and/or managed " +
+			"by a third-party tool."),
+		Conditions: &[]dynamicfields.Condition{{
+			ParentField: SwarmMode.ID,
+			Value:       false,
+		}},
+	}
+
 	ProxyURL = dynamicfields.DynamicField{
 		ID:          "proxyUrl",
 		Description: "Proxy URL",
@@ -110,6 +125,7 @@ var (
 		&SwarmMode,
 		&SwarmServiceMesh,
 		&SwarmDNSResolvers,
+		&UseContainerNameAsID,
 		&ProxyURL,
 	}
 )

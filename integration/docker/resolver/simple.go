@@ -14,8 +14,9 @@ import (
 )
 
 type simpleAdapter struct {
-	client    *client.Client
-	publicUrl string
+	client      *client.Client
+	publicUrl   string
+	useNameAsID bool
 }
 
 func (s *simpleAdapter) ResolveOptionByID(ctx context.Context, id string) (*Option, error) {
@@ -102,10 +103,17 @@ func (s *simpleAdapter) buildOption(port *container.Port, item *container.Summar
 		return nil
 	}
 
+	itemID := item.ID
+	itemName := strings.TrimPrefix(item.Names[0], "/")
+
+	if s.useNameAsID {
+		itemID = strings.ReplaceAll(itemName, " ", "_")
+	}
+
 	return &Option{
 		DriverOption: &integration.DriverOption{
-			ID:        fmt.Sprintf("%s:%d:%s", item.ID, portNumber, qualifierType),
-			Name:      strings.TrimPrefix(item.Names[0], "/"),
+			ID:        fmt.Sprintf("%s:%d:%s", itemID, portNumber, qualifierType),
+			Name:      itemName,
 			Port:      int(portNumber),
 			Qualifier: ptr.Of(qualifierType),
 			Protocol:  integration.Protocol(port.Type),
