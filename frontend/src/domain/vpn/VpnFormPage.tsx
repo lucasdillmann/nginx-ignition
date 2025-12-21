@@ -205,12 +205,17 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
         formValues: VpnRequest,
         availableDrivers: AvailableDriverResponse[],
     ): VpnRequest {
-        const provider = availableDrivers.find(item => item.id === formValues.driver)
-        return (
-            provider?.configurationFields
-                .sort((left, right) => (left.priority > right.priority ? 1 : -1))
-                .reduce((acc, field) => ({ ...acc, [field.id]: field.defaultValue }), formValues) ?? formValues
+        const { driver, parameters } = formValues
+        const provider = availableDrivers.find(item => item.id === driver)
+        if (provider === undefined) return formValues
+
+        const currentParameters = parameters ?? {}
+        const updatedParameters = provider.configurationFields?.reduce(
+            (acc, { id, defaultValue }) => ({ [id]: defaultValue, ...acc }),
+            currentParameters,
         )
+
+        return { ...formValues, parameters: updatedParameters ?? currentParameters }
     }
 
     componentDidMount() {
