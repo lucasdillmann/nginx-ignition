@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/client"
 
@@ -37,20 +36,22 @@ func (s *swarmAdapter) ResolveOptionByID(ctx context.Context, id string) (*Optio
 }
 
 func (s *swarmAdapter) ResolveOptions(ctx context.Context, tcpOnly bool, searchTerms *string) (*[]Option, error) {
-	args := filters.NewArgs()
-	if searchTerms != nil {
-		q := strings.TrimSpace(*searchTerms)
-		if q != "" {
-			args.Add("name", q)
-			args.Add("id", q)
-		}
-	}
-
-	services, err := s.client.ServiceList(ctx, swarm.ServiceListOptions{
-		Filters: args,
-	})
+	services, err := s.client.ServiceList(ctx, swarm.ServiceListOptions{})
 	if err != nil {
 		return nil, err
+	}
+
+	if searchTerms != nil && strings.TrimSpace(*searchTerms) != "" {
+		normalizedTerms := strings.ToLower(strings.TrimSpace(*searchTerms))
+		filteredResults := make([]swarm.Service, 0)
+
+		for _, service := range services {
+			if strings.Contains(strings.ToLower(service.Spec.Name), normalizedTerms) {
+				filteredResults = append(filteredResults, service)
+			}
+		}
+
+		services = filteredResults
 	}
 
 	return s.buildServiceOptions(services, tcpOnly), nil

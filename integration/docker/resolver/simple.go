@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
@@ -35,21 +34,31 @@ func (s *simpleAdapter) ResolveOptionByID(ctx context.Context, id string) (*Opti
 }
 
 func (s *simpleAdapter) ResolveOptions(ctx context.Context, tcpOnly bool, searchTerms *string) (*[]Option, error) {
-	args := filters.NewArgs()
-	if searchTerms != nil {
-		q := strings.TrimSpace(*searchTerms)
-		if q != "" {
-			args.Add("name", q)
-			args.Add("id", q)
-			args.Add("ancestor", q)
-		}
-	}
-
-	containers, err := s.client.ContainerList(ctx, container.ListOptions{
-		Filters: args,
-	})
+	containers, err := s.client.ContainerList(ctx, container.ListOptions{})
 	if err != nil {
 		return nil, err
+	}
+
+	if searchTerms != nil && strings.TrimSpace(*searchTerms) != "" {
+		normalizedTerms := strings.ToLower(strings.TrimSpace(*searchTerms))
+		filteredResults := make([]container.Summary, 0)
+
+		for _, item := range containers {
+			matches := false
+
+			for _, name := range item.Names {
+				if strings.Contains(strings.ToLower(name), normalizedTerms) {
+					matches = true
+					break
+				}
+			}
+
+			if matches {
+				filteredResults = append(filteredResults, item)
+			}
+		}
+
+		containers = filteredResults
 	}
 
 	return s.buildOptions(containers, tcpOnly), nil
