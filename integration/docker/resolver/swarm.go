@@ -160,7 +160,7 @@ func (s *swarmAdapter) findLeaderNodeAddress(ctx context.Context) (string, error
 	}
 
 	for _, node := range nodes {
-		if node.ManagerStatus.Leader {
+		if node.ManagerStatus != nil && node.ManagerStatus.Leader {
 			return node.Status.Addr, nil
 		}
 	}
