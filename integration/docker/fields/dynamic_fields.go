@@ -59,7 +59,7 @@ var (
 		ID:          "swarmServiceMesh",
 		Description: "Service mesh",
 		Priority:    5,
-		Required:    false,
+		Required:    true,
 		Type:        dynamicfields.BooleanType,
 		HelpText: ptr.Of("When enabled, nginx will be configured to reach Swarm services using the service mesh " +
 			"(internal DNS names) when an ingress is selected as the proxy target"),
@@ -75,8 +75,8 @@ var (
 		Priority:    6,
 		Required:    false,
 		Type:        dynamicfields.MultiLineTextType,
-		HelpText: ptr.Of("Overrides the default DNS resolvers used by nginx when resolving Swarm services (" +
-			"if omitted, nginx will use the default resolvers). One IP address per line."),
+		HelpText: ptr.Of("Overrides the default DNS resolvers used by nginx when resolving Swarm services. " +
+			"One IP address per line."),
 		Conditions: &[]dynamicfields.Condition{
 			{
 				ParentField: SwarmMode.ID,
