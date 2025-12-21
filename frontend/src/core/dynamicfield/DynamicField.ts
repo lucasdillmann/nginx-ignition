@@ -6,7 +6,7 @@ export default interface DynamicField {
     sensitive: boolean
     type: DynamicFieldType
     enumOptions: DynamicFieldEnumOption[]
-    condition?: DynamicFieldCondition
+    conditions?: DynamicFieldCondition[]
     helpText?: string
     defaultValue?: string
 }

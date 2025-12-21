@@ -14,7 +14,7 @@ func ToResponse(fields []*dynamicfields.DynamicField) []*DynamicFieldResponse {
 			Type:         string(field.Type),
 			EnumOptions:  toEnumOptions(field.EnumOptions),
 			HelpText:     field.HelpText,
-			Condition:    toCondition(field.Condition),
+			Conditions:   toConditions(field.Conditions),
 			DefaultValue: field.DefaultValue,
 		}
 	}
@@ -37,13 +37,18 @@ func toEnumOptions(options *[]*dynamicfields.EnumOption) []EnumOption {
 	return enumOptions
 }
 
-func toCondition(condition *dynamicfields.Condition) *Condition {
-	if condition == nil {
+func toConditions(condition *[]dynamicfields.Condition) *[]Condition {
+	if condition == nil || len(*condition) == 0 {
 		return nil
 	}
 
-	return &Condition{
-		ParentField: condition.ParentField,
-		Value:       condition.Value,
+	result := make([]Condition, len(*condition))
+	for index, item := range *condition {
+		result[index] = Condition{
+			ParentField: item.ParentField,
+			Value:       item.Value,
+		}
 	}
+
+	return &result
 }

@@ -20,7 +20,7 @@ type DynamicField struct {
 	Type         Type
 	EnumOptions  *[]*EnumOption
 	Sensitive    bool
-	Condition    *Condition
+	Conditions   *[]Condition
 	HelpText     *string
 	DefaultValue *string
 }

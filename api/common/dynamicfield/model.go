@@ -9,7 +9,7 @@ type DynamicFieldResponse struct {
 	Type         string       `json:"type"`
 	EnumOptions  []EnumOption `json:"enumOptions,omitempty"`
 	HelpText     *string      `json:"helpText,omitempty"`
-	Condition    *Condition   `json:"condition,omitempty"`
+	Conditions   *[]Condition `json:"conditions,omitempty"`
 	DefaultValue *string      `json:"defaultValue,omitempty"`
 }
 

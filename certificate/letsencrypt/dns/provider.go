@@ -6,6 +6,7 @@ import (
 	"github.com/go-acme/lego/v4/challenge"
 
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 type Provider interface {
@@ -24,12 +25,16 @@ func LinkedToProvider(id string, fields []dynamicfields.DynamicField) []*dynamic
 
 	for index, field := range fields {
 		field.Priority = index + 2
-		if field.Condition == nil {
-			field.Condition = &dynamicfields.Condition{
+		if field.Conditions == nil {
+			field.Conditions = ptr.Of(make([]dynamicfields.Condition, 0, 1))
+		}
+
+		field.Conditions = ptr.Of(
+			append(*field.Conditions, dynamicfields.Condition{
 				ParentField: "challengeDnsProvider",
 				Value:       id,
-			}
-		}
+			}),
+		)
 
 		output = append(output, &field)
 	}

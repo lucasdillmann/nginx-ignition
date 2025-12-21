@@ -333,8 +333,8 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 			%s
 			%s
 		}`,
-		dnsConfig,
 		r.SourcePath,
+		dnsConfig,
 		p.buildProxyPass(r, *proxyUrl),
 		p.buildRouteFeatures(features),
 		p.buildRouteSettings(r, paths),

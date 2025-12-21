@@ -34,10 +34,10 @@ var (
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.MultiLineTextType,
-		Condition: &dynamicfields.Condition{
+		Conditions: &[]dynamicfields.Condition{{
 			ParentField: uploadModeField.ID,
 			Value:       textFieldUploadModeID,
-		},
+		}},
 	}
 
 	privateKeyTextField = dynamicfields.DynamicField{
@@ -47,10 +47,10 @@ var (
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.MultiLineTextType,
-		Condition: &dynamicfields.Condition{
+		Conditions: &[]dynamicfields.Condition{{
 			ParentField: uploadModeField.ID,
 			Value:       textFieldUploadModeID,
-		},
+		}},
 	}
 
 	certificationChainTextField = dynamicfields.DynamicField{
@@ -60,10 +60,10 @@ var (
 		Required:    false,
 		Sensitive:   true,
 		Type:        dynamicfields.MultiLineTextType,
-		Condition: &dynamicfields.Condition{
+		Conditions: &[]dynamicfields.Condition{{
 			ParentField: uploadModeField.ID,
 			Value:       textFieldUploadModeID,
-		},
+		}},
 	}
 
 	publicKeyFileField = dynamicfields.DynamicField{
@@ -73,10 +73,10 @@ var (
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
-		Condition: &dynamicfields.Condition{
+		Conditions: &[]dynamicfields.Condition{{
 			ParentField: uploadModeField.ID,
 			Value:       fileUploadModeID,
-		},
+		}},
 	}
 
 	privateKeyFileField = dynamicfields.DynamicField{
@@ -86,10 +86,10 @@ var (
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
-		Condition: &dynamicfields.Condition{
+		Conditions: &[]dynamicfields.Condition{{
 			ParentField: uploadModeField.ID,
 			Value:       fileUploadModeID,
-		},
+		}},
 	}
 
 	certificationChainFileField = dynamicfields.DynamicField{
@@ -99,9 +99,9 @@ var (
 		Required:    false,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
-		Condition: &dynamicfields.Condition{
+		Conditions: &[]dynamicfields.Condition{{
 			ParentField: uploadModeField.ID,
 			Value:       fileUploadModeID,
-		},
+		}},
 	}
 )

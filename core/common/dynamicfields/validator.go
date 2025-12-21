@@ -20,7 +20,7 @@ func Validate(
 			continue
 		}
 
-		conditionSatisfied := isConditionSatisfied(field, parameters)
+		conditionSatisfied := areConditionsSatisfied(field, parameters)
 		if !exists && field.Required && conditionSatisfied {
 			violations = append(violations, validation.ConsistencyViolation{
 				Path:    "parameters." + field.ID,
@@ -46,13 +46,23 @@ func Validate(
 	return nil
 }
 
-func isConditionSatisfied(field *DynamicField, parameters map[string]any) bool {
-	if field.Condition == nil {
+func areConditionsSatisfied(field *DynamicField, parameters map[string]any) bool {
+	if field.Conditions == nil || len(*field.Conditions) == 0 {
 		return true
 	}
 
-	expectedValue := field.Condition.Value
-	currentValue, exists := parameters[field.Condition.ParentField]
+	for _, condition := range *field.Conditions {
+		if !isConditionSatisfied(&condition, parameters) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func isConditionSatisfied(condition *Condition, parameters map[string]any) bool {
+	expectedValue := condition.Value
+	currentValue, exists := parameters[condition.ParentField]
 	return exists && expectedValue == currentValue
 }
 

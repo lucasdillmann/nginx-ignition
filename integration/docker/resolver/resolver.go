@@ -65,12 +65,14 @@ func extractSwarmParams(parameters map[string]any) (bool, bool, *[]string) {
 		useServiceMesh = rawValue.(bool)
 	}
 
-	if rawValue, exists := parameters[fields.SwarmDNSResolvers.ID]; exists {
-		textValue := rawValue.(string)
-		dnsResolvers = ptr.Of(strings.Split(textValue, "\n"))
+	if useServiceMesh {
+		if rawValue, exists := parameters[fields.SwarmDNSResolvers.ID]; exists {
+			textValue := rawValue.(string)
+			dnsResolvers = ptr.Of(strings.Split(textValue, "\n"))
 
-		for index, value := range *dnsResolvers {
-			(*dnsResolvers)[index] = strings.TrimSpace(value)
+			for index, value := range *dnsResolvers {
+				(*dnsResolvers)[index] = strings.TrimSpace(value)
+			}
 		}
 	}
 

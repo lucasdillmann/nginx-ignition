@@ -26,10 +26,10 @@ var (
 		Required:     true,
 		Type:         dynamicfields.SingleLineTextType,
 		DefaultValue: ptr.Of("/var/run/docker.sock"),
-		Condition: &dynamicfields.Condition{
+		Conditions: &[]dynamicfields.Condition{{
 			ParentField: ConnectionMode.ID,
 			Value:       "SOCKET",
-		},
+		}},
 	}
 
 	HostURL = dynamicfields.DynamicField{
@@ -39,10 +39,10 @@ var (
 		Required:    true,
 		Type:        dynamicfields.URLType,
 		HelpText:    ptr.Of("The URL to be used to connect to the Docker daemon, such as tcp://example.com:2375"),
-		Condition: &dynamicfields.Condition{
+		Conditions: &[]dynamicfields.Condition{{
 			ParentField: ConnectionMode.ID,
 			Value:       "TCP",
-		},
+		}},
 	}
 
 	SwarmMode = dynamicfields.DynamicField{
@@ -62,11 +62,11 @@ var (
 		Required:    false,
 		Type:        dynamicfields.BooleanType,
 		HelpText: ptr.Of("When enabled, nginx will be configured to reach Swarm services using the service mesh " +
-			"(internal DNS names)."),
-		Condition: &dynamicfields.Condition{
+			"(internal DNS names)"),
+		Conditions: &[]dynamicfields.Condition{{
 			ParentField: SwarmMode.ID,
 			Value:       true,
-		},
+		}},
 	}
 
 	SwarmDNSResolvers = dynamicfields.DynamicField{
@@ -77,9 +77,15 @@ var (
 		Type:        dynamicfields.MultiLineTextType,
 		HelpText: ptr.Of("Overrides the default DNS resolvers used by nginx when resolving Swarm services (" +
 			"if omitted, nginx will use the default resolvers). Inform one resolver IP address per line."),
-		Condition: &dynamicfields.Condition{
-			ParentField: SwarmMode.ID,
-			Value:       true,
+		Conditions: &[]dynamicfields.Condition{
+			{
+				ParentField: SwarmMode.ID,
+				Value:       true,
+			},
+			{
+				ParentField: SwarmServiceMesh.ID,
+				Value:       true,
+			},
 		},
 	}
 
@@ -91,10 +97,10 @@ var (
 		Type:        dynamicfields.URLType,
 		HelpText: ptr.Of("The URL to be used when proxying a request to a Docker container using a port " +
 			"exposed on the host. If not set, the container IP will be used instead."),
-		Condition: &dynamicfields.Condition{
+		Conditions: &[]dynamicfields.Condition{{
 			ParentField: SwarmMode.ID,
 			Value:       false,
-		},
+		}},
 	}
 
 	All = []*dynamicfields.DynamicField{

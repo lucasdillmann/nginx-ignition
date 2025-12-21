@@ -51,20 +51,20 @@ func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 			Sensitive:   true,
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
-			Condition: &dynamicfields.Condition{
+			Conditions: &[]dynamicfields.Condition{{
 				ParentField: apiModeFieldID,
 				Value:       dmapi,
-			},
+			}},
 		},
 		{
 			ID:          usernameFieldID,
 			Description: "Joker username",
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
-			Condition: &dynamicfields.Condition{
+			Conditions: &[]dynamicfields.Condition{{
 				ParentField: apiModeFieldID,
 				Value:       svc,
-			},
+			}},
 		},
 		{
 			ID:          passwordFieldID,
@@ -72,10 +72,10 @@ func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
-			Condition: &dynamicfields.Condition{
+			Conditions: &[]dynamicfields.Condition{{
 				ParentField: apiModeFieldID,
 				Value:       svc,
-			},
+			}},
 		},
 	})
 }
