@@ -91,7 +91,7 @@ var (
 
 	UseContainerNameAsID = dynamicfields.DynamicField{
 		ID:          "useContainerNameAsId",
-		Description: "Use container names as ID",
+		Description: "Use container name as ID",
 		Priority:    5,
 		Required:    true,
 		Type:        dynamicfields.BooleanType,
