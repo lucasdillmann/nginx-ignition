@@ -38,7 +38,7 @@ var (
 		Priority:    3,
 		Required:    true,
 		Type:        dynamicfields.URLType,
-		HelpText:    ptr.Of("The URL to be used to connect to the Docker daemon, such as tcp://example.com:2375"),
+		HelpText:    ptr.Of("The URL to be used to connect to Docker (such as tcp://example.com:2375)"),
 		Conditions: &[]dynamicfields.Condition{{
 			ParentField: ConnectionMode.ID,
 			Value:       "TCP",
@@ -62,7 +62,7 @@ var (
 		Required:    false,
 		Type:        dynamicfields.BooleanType,
 		HelpText: ptr.Of("When enabled, nginx will be configured to reach Swarm services using the service mesh " +
-			"(internal DNS names)"),
+			"(internal DNS names) when an ingress is selected as the proxy target"),
 		Conditions: &[]dynamicfields.Condition{{
 			ParentField: SwarmMode.ID,
 			Value:       true,
@@ -76,7 +76,7 @@ var (
 		Required:    false,
 		Type:        dynamicfields.MultiLineTextType,
 		HelpText: ptr.Of("Overrides the default DNS resolvers used by nginx when resolving Swarm services (" +
-			"if omitted, nginx will use the default resolvers). Inform one resolver IP address per line."),
+			"if omitted, nginx will use the default resolvers). One IP address per line."),
 		Conditions: &[]dynamicfields.Condition{
 			{
 				ParentField: SwarmMode.ID,

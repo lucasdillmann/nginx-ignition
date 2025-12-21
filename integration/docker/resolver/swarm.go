@@ -112,7 +112,7 @@ func (s *swarmAdapter) buildServiceOptionURL(
 	option *Option,
 	service *swarm.Service,
 ) (*string, error) {
-	targetHost, err := s.resolveTargetHost(ctx, service)
+	targetHost, err := s.resolveTargetHost(ctx, service, *option.Qualifier)
 	if err != nil {
 		return nil, err
 	}
@@ -121,8 +121,12 @@ func (s *swarmAdapter) buildServiceOptionURL(
 	return &result, nil
 }
 
-func (s *swarmAdapter) resolveTargetHost(ctx context.Context, service *swarm.Service) (string, error) {
-	if s.useServiceMesh {
+func (s *swarmAdapter) resolveTargetHost(
+	ctx context.Context,
+	service *swarm.Service,
+	qualifier string,
+) (string, error) {
+	if s.useServiceMesh && qualifier == ingressQualifier {
 		return service.Spec.Name, nil
 	}
 
