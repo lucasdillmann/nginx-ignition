@@ -88,7 +88,7 @@ func (a *Driver) GetOptionProxyURL(
 	}
 
 	option, err := optionResolver.ResolveOptionByID(ctx, id)
-	if err != nil {
+	if err != nil || option == nil {
 		return nil, nil, err
 	}
 

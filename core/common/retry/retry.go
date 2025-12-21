@@ -26,11 +26,12 @@ func (r *Retry) Start() error {
 	}
 
 	go func() {
-		if errDetails := recover(); errDetails != nil {
-			err := fmt.Errorf("%v", errDetails)
-			r.sendCallback(err, -1, true)
-			return
-		}
+		defer func() {
+			if errDetails := recover(); errDetails != nil {
+				err := fmt.Errorf("panic: %v", errDetails)
+				r.sendCallback(err, -1, true)
+			}
+		}()
 
 		r.executeAttempts()
 	}()

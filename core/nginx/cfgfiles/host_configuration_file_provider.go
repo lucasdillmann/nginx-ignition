@@ -317,7 +317,8 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	}
 
 	if proxyUrl == nil {
-		return "", coreerror.New("Integration option not found", false)
+		msg := fmt.Sprintf("Integration option not found: %s", r.Integration.OptionID)
+		return "", coreerror.New(msg, false)
 	}
 
 	dnsConfig := ""
