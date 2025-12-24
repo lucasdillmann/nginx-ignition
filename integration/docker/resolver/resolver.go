@@ -57,10 +57,10 @@ func For(parameters map[string]any) (Resolver, error) {
 	}, nil
 }
 
-func extractSwarmParams(parameters map[string]any) (bool, bool, *[]string) {
+func extractSwarmParams(parameters map[string]any) (bool, bool, []string) {
 	swarmMode := false
 	useServiceMesh := false
-	var dnsResolvers *[]string
+	var dnsResolvers []string
 
 	if rawValue, exists := parameters[fields.SwarmMode.ID]; exists {
 		swarmMode = rawValue.(bool)
@@ -82,7 +82,7 @@ func extractSwarmParams(parameters map[string]any) (bool, bool, *[]string) {
 			}
 
 			if len(result) != 0 {
-				dnsResolvers = &result
+				dnsResolvers = result
 			}
 		}
 	}

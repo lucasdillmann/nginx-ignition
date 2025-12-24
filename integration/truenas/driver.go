@@ -110,7 +110,7 @@ func (a *Driver) GetOptionProxyURL(
 	_ context.Context,
 	parameters map[string]any,
 	id string,
-) (*string, *[]string, error) {
+) (*string, []string, error) {
 	baseUrl := parameters[urlField.ID].(string)
 	proxyUrl := parameters[proxyUrlField.ID].(string)
 	parts := strings.Split(id, ":")

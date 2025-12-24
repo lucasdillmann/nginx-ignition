@@ -124,7 +124,7 @@ func (s *service) getOptionURL(
 	ctx context.Context,
 	integrationId uuid.UUID,
 	optionId string,
-) (*string, *[]string, error) {
+) (*string, []string, error) {
 	data, err := s.repository.FindByID(ctx, integrationId)
 	if err != nil {
 		return nil, nil, err

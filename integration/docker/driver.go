@@ -81,7 +81,7 @@ func (a *Driver) GetOptionProxyURL(
 	ctx context.Context,
 	parameters map[string]any,
 	id string,
-) (*string, *[]string, error) {
+) (*string, []string, error) {
 	optionResolver, err := resolver.For(parameters)
 	if err != nil {
 		return nil, nil, err

@@ -22,7 +22,7 @@ type Commands struct {
 	Save                func(ctx context.Context, data *Integration) error
 	Exists              func(ctx context.Context, id uuid.UUID) (*bool, error)
 	GetOption           func(ctx context.Context, integrationId uuid.UUID, optionId string) (*DriverOption, error)
-	GetOptionURL        func(ctx context.Context, integrationId uuid.UUID, optionId string) (*string, *[]string, error)
+	GetOptionURL        func(ctx context.Context, integrationId uuid.UUID, optionId string) (*string, []string, error)
 	GetAvailableDrivers func(ctx context.Context) (*[]*AvailableDriver, error)
 	List                func(
 		ctx context.Context,

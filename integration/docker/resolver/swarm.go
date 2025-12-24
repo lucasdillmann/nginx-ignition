@@ -6,10 +6,10 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/client"
 
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
@@ -17,7 +17,7 @@ import (
 type swarmAdapter struct {
 	client         *client.Client
 	useServiceMesh bool
-	dnsResolvers   *[]string
+	dnsResolvers   []string
 	publicUrl      string
 }
 
@@ -103,7 +103,8 @@ func (s *swarmAdapter) buildServiceOption(port *swarm.PortConfig, service *swarm
 			Protocol:     integration.Protocol(port.Protocol),
 			DNSResolvers: s.dnsResolvers,
 		},
-		urlResolver: func(ctx context.Context, option *Option) (*string, *[]string, error) {
+		privatePort: int(port.TargetPort),
+		urlResolver: func(ctx context.Context, option *Option) (*string, []string, error) {
 			return s.buildServiceOptionURL(ctx, option, service)
 		},
 	}
@@ -113,59 +114,67 @@ func (s *swarmAdapter) buildServiceOptionURL(
 	ctx context.Context,
 	option *Option,
 	service *swarm.Service,
-) (*string, *[]string, error) {
-	targetHost, dnsResolvers, err := s.resolveTargetHost(ctx, service, *option.Qualifier)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	result := fmt.Sprintf("http://%s:%d", targetHost, option.Port)
-	return &result, dnsResolvers, nil
-}
-
-func (s *swarmAdapter) resolveTargetHost(
-	ctx context.Context,
-	service *swarm.Service,
-	qualifier string,
-) (string, *[]string, error) {
-	if s.useServiceMesh && qualifier == ingressQualifier {
+) (*string, []string, error) {
+	if s.useServiceMesh && *option.Qualifier == ingressQualifier {
 		dnsResolvers := s.dnsResolvers
-		if dnsResolvers == nil || len(*dnsResolvers) == 0 {
-			dnsResolvers = &[]string{defaultDockerDNSIP}
+		if dnsResolvers == nil || len(dnsResolvers) == 0 {
+			dnsResolvers = []string{defaultDockerDNSIP}
 		}
 
-		return service.Spec.Name, dnsResolvers, nil
+		fullUrl := fmt.Sprintf("http://%s:%d", service.Spec.Name, option.privatePort)
+		return &fullUrl, dnsResolvers, nil
 	}
 
 	if s.publicUrl != "" {
 		uri, err := url.Parse(s.publicUrl)
 		if err != nil {
-			return "", nil, err
+			return nil, nil, err
 		}
 
-		return uri.Hostname(), nil, nil
+		fullUrl := fmt.Sprintf("http://%s:%d", uri.Hostname(), option.Port)
+		return &fullUrl, nil, nil
 	}
 
-	nodeAddress, err := s.findNodeAddress(ctx)
-	return nodeAddress, nil, err
+	nodeAddress, err := s.findNodeAddress(ctx, service)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	fullUrl := fmt.Sprintf("http://%s:%d", *nodeAddress, option.Port)
+	return &fullUrl, nil, err
 }
 
-func (s *swarmAdapter) findNodeAddress(ctx context.Context) (string, error) {
+func (s *swarmAdapter) findNodeAddress(ctx context.Context, service *swarm.Service) (*string, error) {
+	tasks, err := s.client.TaskList(ctx, swarm.TaskListOptions{
+		Filters: filters.NewArgs(filters.Arg("service", service.ID)),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(tasks) == 0 {
+		return nil, fmt.Errorf("unable to resolve node IPs: no running tasks found for service %s", service.ID)
+	}
+
 	nodes, err := s.client.NodeList(ctx, swarm.NodeListOptions{})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if len(nodes) == 0 {
-		return "", fmt.Errorf("no nodes found")
+		return nil, fmt.Errorf("unable to resolve node IPs: no nodes found")
 	}
 
-	for _, node := range nodes {
-		if node.ManagerStatus != nil && node.ManagerStatus.Leader {
-			return node.Status.Addr, nil
+	for _, task := range tasks {
+		for _, node := range nodes {
+			if node.ID == task.NodeID && task.Status.State == swarm.TaskStateRunning {
+				return &node.Status.Addr, nil
+			}
 		}
 	}
 
-	log.Warnf("No Swarm leader node found. Using first node in the list instead.")
-	return nodes[0].Status.Addr, nil
+	return nil, fmt.Errorf(
+		"unable to resolve node IPs: unable to conciliate tasks and nodes for service %s",
+		service.ID,
+	)
 }

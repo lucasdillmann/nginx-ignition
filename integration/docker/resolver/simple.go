@@ -118,13 +118,13 @@ func (s *simpleAdapter) buildOption(port *container.Port, item *container.Summar
 			Qualifier: ptr.Of(qualifierType),
 			Protocol:  integration.Protocol(port.Type),
 		},
-		urlResolver: func(_ context.Context, option *Option) (*string, *[]string, error) {
+		urlResolver: func(_ context.Context, option *Option) (*string, []string, error) {
 			return s.buildOptionURL(option, item)
 		},
 	}
 }
 
-func (s *simpleAdapter) buildOptionURL(option *Option, summary *container.Summary) (*string, *[]string, error) {
+func (s *simpleAdapter) buildOptionURL(option *Option, summary *container.Summary) (*string, []string, error) {
 	var targetHost string
 	if s.publicUrl != "" && *option.Qualifier == hostQualifier {
 		uri, err := url.Parse(s.publicUrl)

@@ -35,7 +35,7 @@ type Driver interface {
 		ctx context.Context,
 		parameters map[string]any,
 		id string,
-	) (*string, *[]string, error)
+	) (*string, []string, error)
 }
 
 type DriverOption struct {
@@ -44,5 +44,5 @@ type DriverOption struct {
 	Port         int
 	Qualifier    *string
 	Protocol     Protocol
-	DNSResolvers *[]string
+	DNSResolvers []string
 }

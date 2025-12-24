@@ -322,8 +322,8 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	}
 
 	dnsConfig := ""
-	if dnsResolvers != nil && len(*dnsResolvers) > 0 {
-		ips := strings.Join(*dnsResolvers, " ")
+	if dnsResolvers != nil && len(dnsResolvers) > 0 {
+		ips := strings.Join(dnsResolvers, " ")
 		dnsConfig = fmt.Sprintf("resolver %s valid=5s;", ips)
 	}
 
