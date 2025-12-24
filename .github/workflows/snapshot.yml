@@ -10,6 +10,11 @@ on:
 jobs:
   quality-checks:
     runs-on: self-hosted
+    env:
+      GOPATH: /data/cache/go
+      GOMODCACHE: /data/cache/go/pkg/mod
+      GOTOOLCHAIN: ""
+      npm_config_cache: /data/cache/npm
     steps:
       - uses: actions/checkout@v5
         with:
@@ -17,37 +22,30 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
       - uses: actions/setup-go@v5
         with:
           go-version: 1.25.5
-          cache: true
-          cache-dependency-path: "**/go.sum"
       - name: Lint
         run: make check
       - name: Sonarqube
         uses: SonarSource/sonarqube-scan-action@v6
         env:
-          GOPATH: ${{ github.workspace }}/.go
-          GOMODCACHE: ${{ github.workspace }}/.go/pkg/mod
-          GOTOOLCHAIN: ""
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build:
     runs-on: self-hosted
+    env:
+      GOPATH: /data/cache/go
+      GOMODCACHE: /data/cache/go/pkg/mod
+      npm_config_cache: /data/cache/npm
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
       - uses: actions/setup-go@v5
         with:
           go-version: 1.25.5
-          cache: true
-          cache-dependency-path: "**/go.sum"
       - name: Install nfpm
         run: |
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
@@ -66,20 +64,4 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and release
-        env:
-          GOPATH: ${{ github.workspace }}/.go
-          GOMODCACHE: ${{ github.workspace }}/.go/pkg/mod
-          GOTOOLCHAIN: ""
         run: make build-snapshot PR_ID=${{ github.event.pull_request.number }}
-      - name: Archive distribution files
-        uses: actions/upload-artifact@v4
-        with:
-          name: distribution-files
-          retention-days: 1
-          path: |
-            build/nginx-ignition*.zip
-            build/nginx-ignition*.deb
-            build/nginx-ignition*.rpm
-            build/nginx-ignition*.apk
-            build/nginx-ignition*.pkg.tar.zst
-            build/nginx-ignition*.ipk
