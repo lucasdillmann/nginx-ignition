@@ -7,15 +7,16 @@ import (
 )
 
 type hostRequestDto struct {
-	Enabled           *bool          `json:"enabled"`
-	DefaultServer     *bool          `json:"defaultServer"`
-	UseGlobalBindings *bool          `json:"useGlobalBindings"`
-	DomainNames       []*string      `json:"domainNames"`
-	Routes            []*routeDto    `json:"routes"`
-	Bindings          []*bindingDto  `json:"bindings"`
-	VPNs              []*vpnDto      `json:"vpns"`
-	FeatureSet        *featureSetDto `json:"featureSet"`
-	AccessListId      *uuid.UUID     `json:"accessListId"`
+	Enabled                           *bool                     `json:"enabled"`
+	DefaultServer                     *bool                     `json:"defaultServer"`
+	UseGlobalBindings                 *bool                     `json:"useGlobalBindings"`
+	GlobalBindingCertificateOverrides *map[uuid.UUID]*uuid.UUID `json:"globalBindingCertificateOverrides"`
+	DomainNames                       []*string                 `json:"domainNames"`
+	Routes                            []*routeDto               `json:"routes"`
+	Bindings                          []*bindingDto             `json:"bindings"`
+	VPNs                              []*vpnDto                 `json:"vpns"`
+	FeatureSet                        *featureSetDto            `json:"featureSet"`
+	AccessListId                      *uuid.UUID                `json:"accessListId"`
 }
 
 type routeDto struct {
@@ -64,6 +65,7 @@ type featureSetDto struct {
 }
 
 type bindingDto struct {
+	ID            *uuid.UUID        `json:"id,omitempty"`
 	Type          *host.BindingType `json:"type"`
 	Ip            *string           `json:"ip"`
 	Port          *int              `json:"port"`
@@ -77,15 +79,16 @@ type vpnDto struct {
 }
 
 type hostResponseDto struct {
-	ID                *uuid.UUID     `json:"id"`
-	Enabled           *bool          `json:"enabled"`
-	DefaultServer     *bool          `json:"defaultServer"`
-	UseGlobalBindings *bool          `json:"useGlobalBindings"`
-	DomainNames       []*string      `json:"domainNames"`
-	Routes            []*routeDto    `json:"routes"`
-	Bindings          []*bindingDto  `json:"bindings,omitempty"`
-	GlobalBindings    *[]*bindingDto `json:"globalBindings,omitempty"`
-	VPNs              []*vpnDto      `json:"vpns"`
-	FeatureSet        *featureSetDto `json:"featureSet"`
-	AccessListId      *uuid.UUID     `json:"accessListId"`
+	ID                                *uuid.UUID                `json:"id"`
+	Enabled                           *bool                     `json:"enabled"`
+	DefaultServer                     *bool                     `json:"defaultServer"`
+	UseGlobalBindings                 *bool                     `json:"useGlobalBindings"`
+	GlobalBindingCertificateOverrides *map[uuid.UUID]*uuid.UUID `json:"globalBindingCertificateOverrides"`
+	DomainNames                       []*string                 `json:"domainNames"`
+	Routes                            []*routeDto               `json:"routes"`
+	Bindings                          []*bindingDto             `json:"bindings,omitempty"`
+	GlobalBindings                    *[]*bindingDto            `json:"globalBindings,omitempty"`
+	VPNs                              []*vpnDto                 `json:"vpns"`
+	FeatureSet                        *featureSetDto            `json:"featureSet"`
+	AccessListId                      *uuid.UUID                `json:"accessListId"`
 }

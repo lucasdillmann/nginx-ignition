@@ -19,17 +19,18 @@ func toDto(input *host.Host, globalSettings *settings.Settings) *hostResponseDto
 	}
 
 	return &hostResponseDto{
-		ID:                &input.ID,
-		Enabled:           &input.Enabled,
-		DefaultServer:     &input.DefaultServer,
-		UseGlobalBindings: &input.UseGlobalBindings,
-		DomainNames:       input.DomainNames,
-		Routes:            toRouteDtoSlice(input.Routes),
-		Bindings:          toBindingDtoSlice(input.Bindings),
-		GlobalBindings:    globalBindings,
-		VPNs:              toVpnDtoSlice(input.VPNs),
-		FeatureSet:        toFeatureSetDto(&input.FeatureSet),
-		AccessListId:      input.AccessListID,
+		ID:                                &input.ID,
+		Enabled:                           &input.Enabled,
+		DefaultServer:                     &input.DefaultServer,
+		UseGlobalBindings:                 &input.UseGlobalBindings,
+		GlobalBindingCertificateOverrides: &input.GlobalBindingCertificateOverrides,
+		DomainNames:                       input.DomainNames,
+		Routes:                            toRouteDtoSlice(input.Routes),
+		Bindings:                          toBindingDtoSlice(input.Bindings),
+		GlobalBindings:                    globalBindings,
+		VPNs:                              toVpnDtoSlice(input.VPNs),
+		FeatureSet:                        toFeatureSetDto(&input.FeatureSet),
+		AccessListId:                      input.AccessListID,
 	}
 }
 
@@ -38,16 +39,22 @@ func toDomain(input *hostRequestDto) *host.Host {
 		return nil
 	}
 
+	var certificateOverrides map[uuid.UUID]*uuid.UUID
+	if input.GlobalBindingCertificateOverrides != nil {
+		certificateOverrides = *input.GlobalBindingCertificateOverrides
+	}
+
 	return &host.Host{
-		Enabled:           getBoolValue(input.Enabled),
-		DefaultServer:     getBoolValue(input.DefaultServer),
-		UseGlobalBindings: getBoolValue(input.UseGlobalBindings),
-		DomainNames:       input.DomainNames,
-		Routes:            toRouteSlice(input.Routes),
-		Bindings:          toBindingSlice(input.Bindings),
-		VPNs:              toVpnsSlice(input.VPNs),
-		FeatureSet:        *toFeatureSet(input.FeatureSet),
-		AccessListID:      input.AccessListId,
+		Enabled:                           getBoolValue(input.Enabled),
+		DefaultServer:                     getBoolValue(input.DefaultServer),
+		UseGlobalBindings:                 getBoolValue(input.UseGlobalBindings),
+		GlobalBindingCertificateOverrides: certificateOverrides,
+		DomainNames:                       input.DomainNames,
+		Routes:                            toRouteSlice(input.Routes),
+		Bindings:                          toBindingSlice(input.Bindings),
+		VPNs:                              toVpnsSlice(input.VPNs),
+		FeatureSet:                        *toFeatureSet(input.FeatureSet),
+		AccessListID:                      input.AccessListId,
 	}
 }
 
@@ -103,6 +110,7 @@ func toBindingDto(binding *host.Binding) *bindingDto {
 	}
 
 	return &bindingDto{
+		ID:            &binding.ID,
 		Type:          &binding.Type,
 		Ip:            &binding.IP,
 		Port:          &binding.Port,

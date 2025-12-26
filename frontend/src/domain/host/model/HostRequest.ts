@@ -24,6 +24,7 @@ export interface HostFeatureSet {
 }
 
 export interface HostBinding {
+    id?: string
     type: HostBindingType
     ip: string
     port: number
@@ -79,6 +80,7 @@ export default interface HostRequest {
     enabled: boolean
     defaultServer: boolean
     useGlobalBindings: boolean
+    globalBindingCertificateOverrides?: Record<string, string | null>
     domainNames?: string[]
     routes: HostRoute[]
     bindings?: HostBinding[]

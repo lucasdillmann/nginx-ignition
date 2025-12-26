@@ -130,6 +130,15 @@ func (p *hostConfigurationFileProvider) buildBinding(
 	case host.HttpBindingType:
 		listen = fmt.Sprintf("listen %s:%d %s;", b.IP, b.Port, p.buildBindingAdditionalParams(h))
 	case host.HttpsBindingType:
+		certificateID := b.CertificateID
+		if h.UseGlobalBindings && h.GlobalBindingCertificateOverrides != nil {
+			if overrideCertID, exists := h.GlobalBindingCertificateOverrides[b.ID]; exists {
+				if overrideCertID != nil {
+					certificateID = overrideCertID
+				}
+			}
+		}
+
 		listen = fmt.Sprintf(
 			`
 				listen %s:%d ssl %s;
@@ -142,9 +151,9 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			b.Port,
 			p.buildBindingAdditionalParams(h),
 			paths.Config,
-			b.CertificateID,
+			certificateID,
 			paths.Config,
-			b.CertificateID,
+			certificateID,
 		)
 	}
 

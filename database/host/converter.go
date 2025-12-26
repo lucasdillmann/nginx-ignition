@@ -85,15 +85,24 @@ func toDomain(model *hostModel) (*host.Host, error) {
 		}
 	}
 
+	var certificateOverrides map[uuid.UUID]*uuid.UUID
+	if len(model.GlobalBindingCertificateOverrides) > 0 {
+		certificateOverrides = make(map[uuid.UUID]*uuid.UUID)
+		for _, override := range model.GlobalBindingCertificateOverrides {
+			certificateOverrides[override.GlobalBindingID] = override.CertificateID
+		}
+	}
+
 	return &host.Host{
-		ID:                model.ID,
-		Enabled:           model.Enabled,
-		DefaultServer:     model.DefaultServer,
-		UseGlobalBindings: model.UseGlobalBindings,
-		DomainNames:       pointers.Reference(model.DomainNames),
-		Routes:            routes,
-		Bindings:          bindings,
-		VPNs:              vpns,
+		ID:                                model.ID,
+		Enabled:                           model.Enabled,
+		DefaultServer:                     model.DefaultServer,
+		UseGlobalBindings:                 model.UseGlobalBindings,
+		GlobalBindingCertificateOverrides: certificateOverrides,
+		DomainNames:                       pointers.Reference(model.DomainNames),
+		Routes:                            routes,
+		Bindings:                          bindings,
+		VPNs:                              vpns,
 		FeatureSet: host.FeatureSet{
 			WebsocketSupport:    model.WebsocketSupport,
 			HTTP2Support:        model.HTTP2Support,
@@ -182,19 +191,29 @@ func toModel(domain *host.Host) (*hostModel, error) {
 		}
 	}
 
+	certificateOverrides := make([]*hostGlobalBindingCertificateOverride, 0, len(domain.GlobalBindingCertificateOverrides))
+	for bindingID, certificateID := range domain.GlobalBindingCertificateOverrides {
+		certificateOverrides = append(certificateOverrides, &hostGlobalBindingCertificateOverride{
+			HostID:          domain.ID,
+			GlobalBindingID: bindingID,
+			CertificateID:   certificateID,
+		})
+	}
+
 	return &hostModel{
-		ID:                  domain.ID,
-		Enabled:             domain.Enabled,
-		DefaultServer:       domain.DefaultServer,
-		DomainNames:         pointers.Dereference(domain.DomainNames),
-		WebsocketSupport:    domain.FeatureSet.WebsocketSupport,
-		HTTP2Support:        domain.FeatureSet.HTTP2Support,
-		RedirectHTTPToHTTPS: domain.FeatureSet.RedirectHTTPToHTTPS,
-		UseGlobalBindings:   domain.UseGlobalBindings,
-		AccessListID:        domain.AccessListID,
-		Bindings:            bindings,
-		Routes:              routes,
-		VPNs:                vpns,
+		ID:                                domain.ID,
+		Enabled:                           domain.Enabled,
+		DefaultServer:                     domain.DefaultServer,
+		DomainNames:                       pointers.Dereference(domain.DomainNames),
+		WebsocketSupport:                  domain.FeatureSet.WebsocketSupport,
+		HTTP2Support:                      domain.FeatureSet.HTTP2Support,
+		RedirectHTTPToHTTPS:               domain.FeatureSet.RedirectHTTPToHTTPS,
+		UseGlobalBindings:                 domain.UseGlobalBindings,
+		AccessListID:                      domain.AccessListID,
+		Bindings:                          bindings,
+		Routes:                            routes,
+		VPNs:                              vpns,
+		GlobalBindingCertificateOverrides: certificateOverrides,
 	}, nil
 }
 

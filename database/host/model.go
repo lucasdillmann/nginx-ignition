@@ -8,18 +8,19 @@ import (
 type hostModel struct {
 	bun.BaseModel `bun:"host"`
 
-	ID                  uuid.UUID           `bun:"id,pk"`
-	Enabled             bool                `bun:"enabled,notnull"`
-	DefaultServer       bool                `bun:"default_server,notnull"`
-	DomainNames         []string            `bun:"domain_names,array"`
-	WebsocketSupport    bool                `bun:"websocket_support,notnull"`
-	HTTP2Support        bool                `bun:"http2_support,notnull"`
-	RedirectHTTPToHTTPS bool                `bun:"redirect_http_to_https,notnull"`
-	UseGlobalBindings   bool                `bun:"use_global_bindings,notnull"`
-	AccessListID        *uuid.UUID          `bun:"access_list_id"`
-	Bindings            []*hostBindingModel `bun:"rel:has-many,join:id=host_id"`
-	Routes              []*hostRouteModel   `bun:"rel:has-many,join:id=host_id"`
-	VPNs                []*hostVpnModel     `bun:"rel:has-many,join:id=host_id"`
+	ID                                uuid.UUID                               `bun:"id,pk"`
+	Enabled                           bool                                    `bun:"enabled,notnull"`
+	DefaultServer                     bool                                    `bun:"default_server,notnull"`
+	DomainNames                       []string                                `bun:"domain_names,array"`
+	WebsocketSupport                  bool                                    `bun:"websocket_support,notnull"`
+	HTTP2Support                      bool                                    `bun:"http2_support,notnull"`
+	RedirectHTTPToHTTPS               bool                                    `bun:"redirect_http_to_https,notnull"`
+	UseGlobalBindings                 bool                                    `bun:"use_global_bindings,notnull"`
+	AccessListID                      *uuid.UUID                              `bun:"access_list_id"`
+	Bindings                          []*hostBindingModel                     `bun:"rel:has-many,join:id=host_id"`
+	Routes                            []*hostRouteModel                       `bun:"rel:has-many,join:id=host_id"`
+	VPNs                              []*hostVpnModel                         `bun:"rel:has-many,join:id=host_id"`
+	GlobalBindingCertificateOverrides []*hostGlobalBindingCertificateOverride `bun:"rel:has-many,join:id=host_id"`
 }
 
 type hostBindingModel struct {
@@ -67,4 +68,12 @@ type hostRouteModel struct {
 	CodeContents            *string    `bun:"code_contents"`
 	CodeMainFunction        *string    `bun:"code_main_function"`
 	Enabled                 bool       `bun:"enabled,notnull"`
+}
+
+type hostGlobalBindingCertificateOverride struct {
+	bun.BaseModel `bun:"host_global_binding_certificate_override"`
+
+	HostID          uuid.UUID  `bun:"host_id,pk"`
+	GlobalBindingID uuid.UUID  `bun:"global_binding_id,pk"`
+	CertificateID   *uuid.UUID `bun:"certificate_id"`
 }

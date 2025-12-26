@@ -31,9 +31,13 @@ import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPa
 import { hostFormValuesDefaults } from "./model/HostFormValuesDefaults"
 import HostSupportWarning from "./components/HostSupportWarning"
 import HostVpns from "./components/HostVpns"
+import HostGlobalBindingCertificateOverrides from "./components/HostGlobalBindingCertificateOverrides"
+import { HostBinding } from "./model/HostRequest"
+import SettingsService from "../settings/SettingsService"
 
 interface HostFormPageState {
     formValues: HostFormValues
+    globalBindings?: HostBinding[]
     validationResult: ValidationResult
     loading: boolean
     notFound: boolean
@@ -43,6 +47,7 @@ interface HostFormPageState {
 export default class HostFormPage extends React.Component<any, HostFormPageState> {
     private readonly hostService: HostService
     private readonly accessListService: AccessListService
+    private readonly settingsService: SettingsService
     private readonly saveModal: ModalPreloader
     private readonly formRef: React.RefObject<FormInstance | null>
     private hostId?: string
@@ -54,6 +59,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         this.hostId = hostId === "new" ? undefined : hostId
         this.hostService = new HostService()
         this.accessListService = new AccessListService()
+        this.settingsService = new SettingsService()
         this.saveModal = new ModalPreloader()
         this.formRef = React.createRef()
         this.state = {
@@ -326,6 +332,19 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                     validationResult={validationResult}
                 />
 
+                <If condition={formValues.useGlobalBindings}>
+                    <h2 className="hosts-form-section-name" style={{ marginTop: 50 }}>
+                        Certificate overrides for global bindings
+                    </h2>
+                    <p className="hosts-form-section-help-text">
+                        Configure SSL certificates for each HTTPS global binding individually
+                    </p>
+                    <HostGlobalBindingCertificateOverrides
+                        globalBindings={this.state.globalBindings}
+                        validationResult={validationResult}
+                    />
+                </If>
+
                 <h2 className="hosts-form-section-name">VPN bindings</h2>
                 <p className="hosts-form-section-help-text">
                     Relation of VPN connections on where this host should be exposed to
@@ -340,15 +359,36 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
         const copyFrom = queryParams().copyFrom as string | undefined
         if (this.hostId === undefined && copyFrom === undefined) {
-            this.setState({ loading: false })
-            this.updateShellConfig(true)
+            // When creating a new host, load global bindings from settings
+            this.settingsService
+                .get()
+                .then(settings => {
+                    const formValues = hostFormValuesDefaults()
+                    // Initialize certificate overrides for each global binding
+                    formValues.globalBindingCertificateOverrides = settings.globalBindings.map(binding => ({
+                        bindingId: binding.id!,
+                        certificate: undefined,
+                    }))
+                    this.setState({ loading: false, globalBindings: settings.globalBindings, formValues })
+                    this.updateShellConfig(true)
+                })
+                .catch(error => {
+                    CommonNotifications.failedToFetch()
+                    this.setState({ loading: false, error })
+                })
             return
         }
 
         this.hostService
             .getById((this.hostId ?? copyFrom)!!)
-            .then(response => (response === undefined ? undefined : HostConverter.responseToFormValues(response)))
-            .then(formValues => {
+            .then(response => {
+                if (response === undefined) return { formValues: undefined, globalBindings: undefined }
+                return HostConverter.responseToFormValues(response).then(formValues => ({
+                    formValues,
+                    globalBindings: response.globalBindings,
+                }))
+            })
+            .then(({ formValues, globalBindings }) => {
                 if (formValues === undefined) {
                     this.setState({ loading: false, notFound: true })
                     return
@@ -360,7 +400,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                         "The values from the selected host where successfully copied as a new host",
                     )
 
-                this.setState({ loading: false, formValues })
+                this.setState({ loading: false, formValues, globalBindings })
                 this.updateShellConfig(true)
             })
             .catch(error => {

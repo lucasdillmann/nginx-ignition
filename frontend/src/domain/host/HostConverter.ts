@@ -1,6 +1,7 @@
 import HostResponse from "./model/HostResponse"
 import HostFormValues, {
     HostFormBinding,
+    HostFormGlobalBindingCertificateOverride,
     HostFormRoute,
     HostFormRouteIntegration,
     HostFormStaticResponse,
@@ -179,14 +180,72 @@ class HostConverter {
         return data
     }
 
+    private async certificateOverridesToFormValues(
+        overrides: Record<string, string | null> | undefined,
+        globalBindings: HostBinding[] | undefined,
+    ): Promise<HostFormGlobalBindingCertificateOverride[]> {
+        if (!globalBindings || globalBindings.length === 0) {
+            return []
+        }
+
+        const result: HostFormGlobalBindingCertificateOverride[] = []
+
+        for (const binding of globalBindings) {
+            if (!binding.id) continue
+
+            const certificateId = overrides?.[binding.id] ?? null
+            const certificate = certificateId ? await this.certificateService.getById(certificateId) : undefined
+
+            result.push({
+                bindingId: binding.id,
+                certificate,
+            })
+        }
+
+        return result
+    }
+
+    private formValuesToCertificateOverrides(
+        overrides: HostFormGlobalBindingCertificateOverride[],
+    ): Record<string, string | null> | undefined {
+        if (!overrides || overrides.length === 0) {
+            return undefined
+        }
+
+        const result: Record<string, string | null> = {}
+
+        for (const override of overrides) {
+            if (!override?.bindingId) continue
+
+            const certificateId = override.certificate?.id ?? null
+            result[override.bindingId] = certificateId
+        }
+
+        return Object.keys(result).length > 0 ? result : undefined
+    }
+
     async responseToFormValues(response: HostResponse): Promise<HostFormValues> {
-        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessListId } = response
+        const {
+            enabled,
+            domainNames,
+            featureSet,
+            defaultServer,
+            useGlobalBindings,
+            accessListId,
+            globalBindingCertificateOverrides,
+            globalBindings,
+        } = response
 
         const routes = response.routes.map(route => this.routeToFormValues(route))
         const responseBindings = response.bindings ?? []
         const bindings = await Promise.all(responseBindings.map(binding => this.bindingToFormValues(binding)))
         const vpns = await Promise.all(response.vpns.map(vpn => this.vpnToFormValues(vpn)))
         const accessList = this.notNull(accessListId) ? await this.accessListService.getById(accessListId!!) : undefined
+
+        const certificateOverrides = await this.certificateOverridesToFormValues(
+            globalBindingCertificateOverrides,
+            globalBindings,
+        )
 
         return {
             enabled,
@@ -195,6 +254,7 @@ class HostConverter {
             featureSet,
             defaultServer,
             useGlobalBindings,
+            globalBindingCertificateOverrides: certificateOverrides,
             accessList,
             domainNames: domainNames ?? [""],
             routes: await Promise.all(routes),
@@ -202,17 +262,28 @@ class HostConverter {
     }
 
     formValuesToRequest(formValues: HostFormValues): HostRequest {
-        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessList } = formValues
+        const {
+            enabled,
+            domainNames,
+            featureSet,
+            defaultServer,
+            useGlobalBindings,
+            accessList,
+            globalBindingCertificateOverrides,
+        } = formValues
 
         const routes = formValues.routes.map(route => this.formValuesToRoute(route))
         const bindings = useGlobalBindings ? [] : formValues.bindings.map(binding => this.formValuesToBinding(binding))
         const vpns = formValues.vpns?.map(vpn => this.formValuesToVpn(vpn)) ?? []
+
+        const overrides = this.formValuesToCertificateOverrides(globalBindingCertificateOverrides)
 
         return {
             enabled,
             featureSet,
             defaultServer,
             useGlobalBindings,
+            globalBindingCertificateOverrides: overrides,
             bindings,
             routes,
             vpns,

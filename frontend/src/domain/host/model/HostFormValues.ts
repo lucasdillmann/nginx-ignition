@@ -43,10 +43,16 @@ export interface HostFormVpn {
     host?: string
 }
 
+export interface HostFormGlobalBindingCertificateOverride {
+    bindingId: string
+    certificate?: CertificateResponse
+}
+
 export default interface HostFormValues {
     enabled: boolean
     defaultServer: boolean
     useGlobalBindings: boolean
+    globalBindingCertificateOverrides: HostFormGlobalBindingCertificateOverride[]
     domainNames: string[]
     routes: HostFormRoute[]
     bindings: HostFormBinding[]

@@ -1,0 +1,1 @@
+drop table if exists host_global_binding_certificate_override;

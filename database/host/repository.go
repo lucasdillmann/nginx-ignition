@@ -35,6 +35,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*host.Host, er
 		Relation("Bindings").
 		Relation("Routes").
 		Relation("VPNs").
+		Relation("GlobalBindingCertificateOverrides").
 		Where(constants.ByIdFilter, id).
 		Scan(ctx)
 
@@ -75,6 +76,14 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*hostVpnModel)(nil)).
+		Where(byHostIdFilter, id).
+		Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = transaction.NewDelete().
+		Model((*hostGlobalBindingCertificateOverride)(nil)).
 		Where(byHostIdFilter, id).
 		Exec(ctx)
 	if err != nil {
@@ -153,6 +162,11 @@ func (r *repository) performUpdate(ctx context.Context, model *hostModel, transa
 		return err
 	}
 
+	_, err = transaction.NewDelete().Table("host_global_binding_certificate_override").Where(byHostIdFilter, model.ID).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
 	return r.saveLinkedModels(ctx, model, transaction)
 }
 
@@ -186,6 +200,15 @@ func (r *repository) saveLinkedModels(ctx context.Context, model *hostModel, tra
 		}
 	}
 
+	for _, override := range model.GlobalBindingCertificateOverrides {
+		override.HostID = model.ID
+
+		_, err := transaction.NewInsert().Model(override).Exec(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -210,6 +233,7 @@ func (r *repository) FindPage(
 		Relation("Bindings").
 		Relation("Routes").
 		Relation("VPNs").
+		Relation("GlobalBindingCertificateOverrides").
 		Limit(pageSize).
 		Offset(pageSize * pageNumber).
 		Order("domain_names").
@@ -239,6 +263,7 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]*host.Host, error) {
 		Relation("Bindings").
 		Relation("Routes").
 		Relation("VPNs").
+		Relation("GlobalBindingCertificateOverrides").
 		Where("enabled = ?", true).
 		Scan(ctx)
 	if err != nil {
@@ -265,6 +290,7 @@ func (r *repository) FindDefault(ctx context.Context) (*host.Host, error) {
 		Relation("Bindings").
 		Relation("Routes").
 		Relation("VPNs").
+		Relation("GlobalBindingCertificateOverrides").
 		Where("default_server = ?", true).
 		Scan(ctx)
 

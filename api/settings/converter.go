@@ -68,6 +68,7 @@ func toDto(settings *settings.Settings) *settingsDto {
 	if settings.GlobalBindings != nil {
 		for _, binding := range settings.GlobalBindings {
 			bindingsModel = append(bindingsModel, &bindingDto{
+				ID:            &binding.ID,
 				Type:          &binding.Type,
 				IP:            &binding.IP,
 				Port:          &binding.Port,
@@ -149,8 +150,15 @@ func toDomain(input *settingsDto) *settings.Settings {
 	var globalBindings []*host.Binding
 	if bindings != nil {
 		for _, binding := range bindings {
+			var id uuid.UUID
+			if binding.ID != nil {
+				id = *binding.ID
+			} else {
+				id = uuid.New()
+			}
+
 			globalBindings = append(globalBindings, &host.Binding{
-				ID:            uuid.New(),
+				ID:            id,
 				Type:          *binding.Type,
 				IP:            *binding.IP,
 				Port:          *binding.Port,

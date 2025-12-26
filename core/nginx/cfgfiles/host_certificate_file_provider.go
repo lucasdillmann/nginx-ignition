@@ -58,6 +58,26 @@ func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, err
 		}
 	}
 
+	for _, h := range ctx.hosts {
+		if h.UseGlobalBindings && h.GlobalBindingCertificateOverrides != nil {
+			for _, certID := range h.GlobalBindingCertificateOverrides {
+				if certID != nil {
+					certIdStr := certID.String()
+					if !uniqueCertIds[certIdStr] {
+						uniqueCertIds[certIdStr] = true
+
+						output, err := p.buildCertificateFile(ctx.context, *certID)
+						if err != nil {
+							return nil, err
+						}
+
+						outputs = append(outputs, *output)
+					}
+				}
+			}
+		}
+	}
+
 	return outputs, nil
 }
 

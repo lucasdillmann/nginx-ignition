@@ -30,16 +30,17 @@ const (
 )
 
 type Host struct {
-	ID                uuid.UUID
-	Enabled           bool
-	DefaultServer     bool
-	UseGlobalBindings bool
-	DomainNames       []*string
-	Routes            []*Route
-	Bindings          []*Binding
-	VPNs              []*VPN
-	FeatureSet        FeatureSet
-	AccessListID      *uuid.UUID
+	ID                                uuid.UUID
+	Enabled                           bool
+	DefaultServer                     bool
+	UseGlobalBindings                 bool
+	GlobalBindingCertificateOverrides map[uuid.UUID]*uuid.UUID
+	DomainNames                       []*string
+	Routes                            []*Route
+	Bindings                          []*Binding
+	VPNs                              []*VPN
+	FeatureSet                        FeatureSet
+	AccessListID                      *uuid.UUID
 }
 
 type FeatureSet struct {

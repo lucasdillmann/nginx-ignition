@@ -6,6 +6,7 @@ export function hostFormValuesDefaults(): HostFormValues {
         enabled: true,
         defaultServer: false,
         useGlobalBindings: true,
+        globalBindingCertificateOverrides: [],
         domainNames: [""],
         vpns: [],
         bindings: [
