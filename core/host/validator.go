@@ -9,6 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/accesslist"
+	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/integration"
@@ -19,6 +21,8 @@ type validator struct {
 	hostRepository      Repository
 	integrationCommands *integration.Commands
 	vpnCommands         *vpn.Commands
+	accessListCommands  *accesslist.Commands
+	cacheCommands       *cache.Commands
 	delegate            *validation.ConsistencyValidator
 }
 
@@ -26,11 +30,15 @@ func newValidator(
 	hostRepository Repository,
 	integrationCommands *integration.Commands,
 	vpnCommands *vpn.Commands,
+	accessListCommands *accesslist.Commands,
+	cacheCommands *cache.Commands,
 ) *validator {
 	return &validator{
 		hostRepository:      hostRepository,
 		integrationCommands: integrationCommands,
 		vpnCommands:         vpnCommands,
+		accessListCommands:  accessListCommands,
+		cacheCommands:       cacheCommands,
 		delegate:            validation.NewValidator(),
 	}
 }
@@ -61,6 +69,14 @@ func (v *validator) validate(ctx context.Context, host *Host) error {
 	}
 
 	if err := v.validateVPNs(ctx, host); err != nil {
+		return err
+	}
+
+	if err := v.validateAccessList(ctx, host.AccessListID, "accessListId"); err != nil {
+		return err
+	}
+
+	if err := v.validateCache(ctx, host.CacheID, "cacheId"); err != nil {
 		return err
 	}
 
@@ -194,6 +210,14 @@ func (v *validator) validateRoute(ctx context.Context, route *Route, index int, 
 		)
 	} else {
 		(*distinctPaths)[route.SourcePath] = true
+	}
+
+	if err := v.validateAccessList(ctx, route.AccessListID, buildIndexedRoutePath(index, "accessListId")); err != nil {
+		return err
+	}
+
+	if err := v.validateCache(ctx, route.CacheID, buildIndexedRoutePath(index, "cacheId")); err != nil {
+		return err
 	}
 
 	switch route.Type {
@@ -379,4 +403,38 @@ func buildOutOfRangeMessage(minimum, maximum int) string {
 
 func buildIndexedRoutePath(index int, childPath string) string {
 	return "routes[" + strconv.Itoa(index) + "]." + childPath
+}
+
+func (v *validator) validateAccessList(ctx context.Context, accessListID *uuid.UUID, path string) error {
+	if accessListID == nil {
+		return nil
+	}
+
+	exists, err := v.accessListCommands.Exists(ctx, *accessListID)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		v.delegate.Add(path, "No access list found with provided ID")
+	}
+
+	return nil
+}
+
+func (v *validator) validateCache(ctx context.Context, cacheID *uuid.UUID, path string) error {
+	if cacheID == nil {
+		return nil
+	}
+
+	exists, err := v.cacheCommands.Exists(ctx, *cacheID)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		v.delegate.Add(path, "No cache configuration found with provided ID")
+	}
+
+	return nil
 }

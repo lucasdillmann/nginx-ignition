@@ -5,6 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/accesslist"
+	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/integration"
@@ -15,18 +17,36 @@ type service struct {
 	hostRepository      Repository
 	integrationCommands *integration.Commands
 	vpnCommands         *vpn.Commands
+	accessListCommands  *accesslist.Commands
+	cacheCommands       *cache.Commands
 }
 
 func newService(
 	hostRepository Repository,
 	integrationCommands *integration.Commands,
 	vpnCommands *vpn.Commands,
+	accessListCommands *accesslist.Commands,
+	cacheCommands *cache.Commands,
 ) *service {
-	return &service{hostRepository, integrationCommands, vpnCommands}
+	return &service{
+		hostRepository,
+		integrationCommands,
+		vpnCommands,
+		accessListCommands,
+		cacheCommands,
+	}
 }
 
 func (s *service) save(ctx context.Context, input *Host) error {
-	if err := newValidator(s.hostRepository, s.integrationCommands, s.vpnCommands).validate(ctx, input); err != nil {
+	validatorInstance := newValidator(
+		s.hostRepository,
+		s.integrationCommands,
+		s.vpnCommands,
+		s.accessListCommands,
+		s.cacheCommands,
+	)
+
+	if err := validatorInstance.validate(ctx, input); err != nil {
 		return err
 	}
 
@@ -64,6 +84,8 @@ func (s *service) validateBinding(
 		s.hostRepository,
 		s.integrationCommands,
 		s.vpnCommands,
+		s.accessListCommands,
+		s.cacheCommands,
 		context,
 	}
 	return validatorInstance.validateBinding(ctx, path, binding, index)
