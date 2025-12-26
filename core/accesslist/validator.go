@@ -49,7 +49,7 @@ func (v *validator) validateEntry(
 	}
 
 	if entry.Priority < 0 {
-		v.delegate.Add(path+".priority", "Value must be 0 or greater")
+		v.delegate.Add(path+".priority", validation.ValueCannotBeZeroMessage)
 	}
 
 	if len(entry.SourceAddress) == 0 {

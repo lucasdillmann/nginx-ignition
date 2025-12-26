@@ -20,58 +20,75 @@ func newValidator() *validator {
 }
 
 func (v *validator) validate(c *Cache) error {
+	v.validateBasicSettings(c)
+	v.validateStoragePath(c.StoragePath)
+	v.validateConcurrencyLock(c.ConcurrencyLock)
+	v.validateCollections(c)
+
+	return v.delegate.Result()
+}
+
+func (v *validator) validateBasicSettings(c *Cache) {
 	if strings.TrimSpace(c.Name) == "" {
 		v.delegate.Add("name", validation.ValueMissingMessage)
 	}
 
-	if c.StoragePath != nil && strings.TrimSpace(*c.StoragePath) != "" {
-		trimmedPath := strings.TrimSpace(*c.StoragePath)
-		if !filepath.IsAbs(trimmedPath) {
-			v.delegate.Add("storagePath", "Value must be an absolute path")
-		} else if _, err := os.Stat(trimmedPath); os.IsNotExist(err) {
-			v.delegate.Add("storagePath", "Path does not exist")
-		}
-	}
-
 	if c.InactiveSeconds != nil && *c.InactiveSeconds < 0 {
-		v.delegate.Add("inactiveSeconds", "Value must be 0 or greater")
+		v.delegate.Add("inactiveSeconds", validation.ValueCannotBeNegativeMessage)
 	}
 
 	if c.MaxSizeMB != nil && *c.MaxSizeMB < 1 {
-		v.delegate.Add("maxSizeMB", "Value must be 1 or greater")
-	}
-
-	for index, method := range c.AllowedMethods {
-		v.validateMethod(index, method)
+		v.delegate.Add("maxSizeMb", "Value must be 1 or greater")
 	}
 
 	if c.MinimumUsesBeforeCaching != nil && *c.MinimumUsesBeforeCaching < 1 {
 		v.delegate.Add("minimumUsesBeforeCaching", "Value must be 1 or greater")
+	}
+}
+
+func (v *validator) validateStoragePath(path *string) {
+	if path == nil || strings.TrimSpace(*path) == "" {
+		return
+	}
+
+	trimmedPath := strings.TrimSpace(*path)
+	if !filepath.IsAbs(trimmedPath) {
+		v.delegate.Add("storagePath", "Value must be an absolute path")
+	} else if _, err := os.Stat(trimmedPath); os.IsNotExist(err) {
+		v.delegate.Add("storagePath", "Path does not exist")
+	}
+}
+
+func (v *validator) validateConcurrencyLock(lock ConcurrencyLock) {
+	if !lock.Enabled {
+		return
+	}
+
+	if lock.TimeoutSeconds == nil {
+		v.delegate.Add("concurrencyLock.timeoutSeconds", validation.ValueMissingMessage)
+	} else if *lock.TimeoutSeconds < 0 {
+		v.delegate.Add("concurrencyLock.timeoutSeconds", validation.ValueCannotBeNegativeMessage)
+	}
+
+	if lock.AgeSeconds == nil {
+		v.delegate.Add("concurrencyLock.ageSeconds", validation.ValueMissingMessage)
+	} else if *lock.AgeSeconds < 0 {
+		v.delegate.Add("concurrencyLock.ageSeconds", validation.ValueCannotBeNegativeMessage)
+	}
+}
+
+func (v *validator) validateCollections(c *Cache) {
+	for index, method := range c.AllowedMethods {
+		v.validateMethod(index, method)
 	}
 
 	for index, staleOption := range c.UseStale {
 		v.validateUseStaleOption(index, staleOption)
 	}
 
-	if c.ConcurrencyLock.Enabled {
-		if c.ConcurrencyLock.TimeoutSeconds == nil {
-			v.delegate.Add("concurrencyLock.timeoutSeconds", validation.ValueMissingMessage)
-		} else if *c.ConcurrencyLock.TimeoutSeconds < 0 {
-			v.delegate.Add("concurrencyLock.timeoutSeconds", "Value must be 0 or greater")
-		}
-
-		if c.ConcurrencyLock.AgeSeconds == nil {
-			v.delegate.Add("concurrencyLock.ageSeconds", validation.ValueMissingMessage)
-		} else if *c.ConcurrencyLock.AgeSeconds < 0 {
-			v.delegate.Add("concurrencyLock.ageSeconds", "Value must be 0 or greater")
-		}
-	}
-
 	for index, duration := range c.Durations {
 		v.validateDuration(index, &duration)
 	}
-
-	return v.delegate.Result()
 }
 
 func (v *validator) validateMethod(index int, method Method) {
@@ -103,6 +120,6 @@ func (v *validator) validateDuration(index int, duration *Duration) {
 	}
 
 	if duration.ValidTimeSeconds < 0 {
-		v.delegate.Add(path+".validTimeSeconds", "Value must be 0 or greater")
+		v.delegate.Add(path+".validTimeSeconds", validation.ValueCannotBeNegativeMessage)
 	}
 }
