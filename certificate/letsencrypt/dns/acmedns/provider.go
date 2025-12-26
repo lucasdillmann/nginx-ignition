@@ -71,7 +71,7 @@ func (p *Provider) ChallengeProvider(
 	}
 
 	if allowListStr != "" {
-		var list []string
+		list := make([]string, 0)
 		for _, raw := range strings.Split(allowListStr, ",") {
 			trimmedValue := strings.TrimSpace(raw)
 			if trimmedValue != "" {

@@ -14,7 +14,7 @@ func Init(ctx context.Context) {
 	_ = Singleton(ctx)
 }
 
-func Provide(providers ...interface{}) error {
+func Provide(providers ...any) error {
 	for _, provider := range providers {
 		if err := delegate.Provide(provider); err != nil {
 			return err
@@ -30,7 +30,7 @@ func Singleton[T any](value T) error {
 	})
 }
 
-func Run(fns ...interface{}) error {
+func Run(fns ...any) error {
 	for _, fn := range fns {
 		if err := delegate.Invoke(fn); err != nil {
 			return err

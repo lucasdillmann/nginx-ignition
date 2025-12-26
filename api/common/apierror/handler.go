@@ -22,7 +22,7 @@ type problemDetail struct {
 func Handler(ctx *gin.Context, outcome any) {
 	err, isErr := outcome.(error)
 	if !isErr {
-		err = errors.New(fmt.Sprintf("%s", outcome))
+		err = fmt.Errorf("%s", outcome)
 	}
 
 	httpError := &ApiError{}

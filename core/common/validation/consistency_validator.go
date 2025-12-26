@@ -14,7 +14,7 @@ func NewValidator() *ConsistencyValidator {
 	return &ConsistencyValidator{}
 }
 
-func (v *ConsistencyValidator) Add(path string, message string) {
+func (v *ConsistencyValidator) Add(path, message string) {
 	violation := ConsistencyViolation{path, message}
 	v.violations = append(v.violations, violation)
 }

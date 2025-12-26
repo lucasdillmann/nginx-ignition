@@ -14,7 +14,7 @@ func newHostRouteSourceCodeFileProvider() *hostRouteSourceCodeFileProvider {
 }
 
 func (p *hostRouteSourceCodeFileProvider) provide(ctx *providerContext) ([]File, error) {
-	var outputs []File
+	outputs := make([]File, 0)
 
 	for _, h := range ctx.hosts {
 		files, err := p.buildSourceCodeFiles(ctx, &h)
@@ -32,7 +32,7 @@ func (p *hostRouteSourceCodeFileProvider) buildSourceCodeFiles(
 	ctx *providerContext,
 	h *host.Host,
 ) ([]File, error) {
-	var outputs []File
+	outputs := make([]File, 0)
 
 	for _, r := range h.Routes {
 		if !r.Enabled || r.Type != host.ExecuteCodeRouteType {

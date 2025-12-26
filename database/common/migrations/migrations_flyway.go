@@ -22,6 +22,7 @@ func (m *migrations) migrateFromFlyway(db *sql.DB, driver string) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer result.Close()
 
 	if result.Next() {

@@ -11,6 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
+//nolint:gosec
 const (
 	nameserverFieldID    = "rfc2136Nameserver"
 	tsigKeyFieldID       = "rfc2136TsigKey"

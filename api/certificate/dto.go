@@ -9,10 +9,10 @@ import (
 )
 
 type availableProviderResponse struct {
-	ID            string                              `json:"id"`
-	Name          string                              `json:"name"`
-	Priority      int                                 `json:"priority"`
-	DynamicFields []dynamicfield.DynamicFieldResponse `json:"dynamicFields"`
+	ID            string                  `json:"id"`
+	Name          string                  `json:"name"`
+	Priority      int                     `json:"priority"`
+	DynamicFields []dynamicfield.Response `json:"dynamicFields"`
 }
 
 type certificateResponse struct {

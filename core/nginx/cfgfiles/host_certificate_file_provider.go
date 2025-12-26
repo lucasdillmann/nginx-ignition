@@ -27,7 +27,7 @@ func newHostCertificateFileProvider(certificateRepository certificate.Repository
 }
 
 func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, error) {
-	var bindings []host.Binding
+	bindings := make([]host.Binding, 0)
 	for _, h := range ctx.hosts {
 		bindings = append(bindings, h.Bindings...)
 	}
@@ -39,7 +39,7 @@ func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, err
 
 	bindings = append(bindings, cgf.GlobalBindings...)
 
-	var outputs []File
+	outputs := make([]File, 0)
 	uniqueCertIds := map[string]bool{}
 
 	for _, binding := range bindings {
@@ -98,17 +98,17 @@ func (p *hostCertificateFileProvider) buildCertificateFile(
 func convertToPemEncodedCertificateString(bytes []byte) string {
 	if strings.Contains(string(bytes), "CERTIFICATE") {
 		return string(bytes)
-	} else {
-		certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: bytes})
-		return string(certPEM)
 	}
+
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: bytes})
+	return string(certPEM)
 }
 
 func convertToPemEncodedPrivateKeyString(bytes []byte) string {
 	if strings.Contains(string(bytes), "PRIVATE KEY") {
 		return string(bytes)
-	} else {
-		keyPEM := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: bytes})
-		return string(keyPEM)
 	}
+
+	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: bytes})
+	return string(keyPEM)
 }

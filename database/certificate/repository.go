@@ -40,6 +40,7 @@ func (r repository) FindByID(ctx context.Context, id uuid.UUID) (*certificate.Ce
 		return nil, err
 	}
 
+	//nolint:revive
 	if result, err := toDomain(&model); err != nil {
 		return nil, err
 	} else {
@@ -65,6 +66,7 @@ func (r repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	_, err = transaction.NewDelete().
@@ -84,6 +86,7 @@ func (r repository) Save(ctx context.Context, certificate *certificate.Certifica
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	model, err := toModel(certificate)
@@ -114,7 +117,7 @@ func (r repository) FindPage(
 	pageSize, pageNumber int,
 	searchTerms *string,
 ) (*pagination.Page[certificate.Certificate], error) {
-	var certificates []certificateModel
+	certificates := make([]certificateModel, 0)
 
 	query := r.database.Select().Model(&certificates)
 	if searchTerms != nil {
@@ -140,8 +143,9 @@ func (r repository) FindPage(
 		return nil, err
 	}
 
-	var result []certificate.Certificate
+	result := make([]certificate.Certificate, 0)
 	for _, model := range certificates {
+		//nolint:revive
 		if domain, err := toDomain(&model); err != nil {
 			return nil, err
 		} else {
@@ -153,7 +157,7 @@ func (r repository) FindPage(
 }
 
 func (r repository) FindAllDueToRenew(ctx context.Context) ([]certificate.Certificate, error) {
-	var certificates []certificateModel
+	certificates := make([]certificateModel, 0)
 
 	err := r.database.Select().
 		Model(&certificates).
@@ -163,8 +167,9 @@ func (r repository) FindAllDueToRenew(ctx context.Context) ([]certificate.Certif
 		return nil, err
 	}
 
-	var result []certificate.Certificate
+	result := make([]certificate.Certificate, 0)
 	for _, model := range certificates {
+		//nolint:revive
 		if domain, err := toDomain(&model); err != nil {
 			return nil, err
 		} else {

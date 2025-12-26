@@ -46,6 +46,7 @@ func (m *migrations) unsetDirtyStatus(db *sql.DB) {
 		return
 	}
 
+	//nolint:errcheck
 	defer rows.Close()
 
 	if rows.Next() {

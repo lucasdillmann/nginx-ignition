@@ -80,10 +80,7 @@ func sanitizePath(path string) (*string, error) {
 		return nil, err
 	}
 
-	if strings.HasPrefix(absPath, "/") {
-		absPath = absPath[1:]
-	}
-
+	absPath = strings.TrimPrefix(absPath, "/")
 	return &absPath, nil
 }
 
@@ -99,6 +96,7 @@ func (h staticFilesHandler) loadFile(path string) ([]byte, *string, error) {
 		return nil, nil, err
 	}
 
+	//nolint:errcheck
 	defer file.Close()
 
 	ext := filepath.Ext(path)

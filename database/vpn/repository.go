@@ -100,6 +100,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer tx.Rollback()
 
 	_, err = tx.NewDelete().Model((*vpnModel)(nil)).Where(constants.ByIdFilter, id).Exec(ctx)
@@ -116,6 +117,7 @@ func (r *repository) Save(ctx context.Context, values *vpn.VPN) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	model, err := toModel(values)
@@ -147,7 +149,7 @@ func (r *repository) FindPage(
 	searchTerms *string,
 	enabledOnly bool,
 ) (*pagination.Page[vpn.VPN], error) {
-	var models []vpnModel
+	models := make([]vpnModel, 0)
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil && *searchTerms != "" {
@@ -172,7 +174,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []vpn.VPN
+	result := make([]vpn.VPN, 0)
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {

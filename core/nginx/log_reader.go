@@ -33,6 +33,7 @@ func (r *logReader) read(_ context.Context, fileName string, tailSize int) ([]st
 		return nil, err
 	}
 
+	//nolint:errcheck
 	defer file.Close()
 
 	lines := make([]string, 0)

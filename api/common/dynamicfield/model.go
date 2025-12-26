@@ -1,6 +1,6 @@
 package dynamicfield
 
-type DynamicFieldResponse struct {
+type Response struct {
 	ID           string       `json:"id"`
 	Priority     int          `json:"priority"`
 	Description  string       `json:"description"`

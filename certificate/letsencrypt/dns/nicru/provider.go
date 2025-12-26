@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	usernameFieldID  = "nicRuUsername"
 	passwordFieldID  = "nicRuPassword"

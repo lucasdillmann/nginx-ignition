@@ -11,6 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	oauthTokenFieldID = "yandex360OAuthToken"
 	orgIDFieldID      = "yandex360OrgId"

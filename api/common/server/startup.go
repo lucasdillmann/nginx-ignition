@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"time"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
@@ -36,7 +37,10 @@ func (s startup) Run(_ context.Context) error {
 	}
 
 	log.Infof("Starting HTTP server on port %s", port)
-	s.state.server = &http.Server{Handler: s.state.engine.Handler()}
+	s.state.server = &http.Server{
+		Handler:           s.state.engine.Handler(),
+		ReadHeaderTimeout: 2 * time.Second,
+	}
 
 	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", address, port))
 	if err != nil {

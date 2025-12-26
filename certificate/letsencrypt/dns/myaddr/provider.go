@@ -13,6 +13,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
+//nolint:gosec
 const (
 	credentialsFieldID = "myAddrCredentials"
 )

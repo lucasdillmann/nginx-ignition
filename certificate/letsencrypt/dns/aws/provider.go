@@ -15,6 +15,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	region           = "us-east-1"
 	accessKeyFieldID = "awsAccessKey"

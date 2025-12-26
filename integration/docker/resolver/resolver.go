@@ -60,7 +60,7 @@ func For(parameters map[string]any) (Resolver, error) {
 func extractSwarmParams(parameters map[string]any) (bool, bool, []string) {
 	swarmMode := false
 	useServiceMesh := false
-	var dnsResolvers []string
+	dnsResolvers := make([]string, 0)
 
 	if rawValue, exists := parameters[fields.SwarmMode.ID]; exists {
 		swarmMode = rawValue.(bool)

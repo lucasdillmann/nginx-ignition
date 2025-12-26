@@ -62,6 +62,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	err = r.cleanupLinkedModels(ctx, transaction, id)
@@ -92,6 +93,7 @@ func (r *repository) Save(ctx context.Context, stream *stream.Stream) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	model := toModel(stream)
@@ -119,7 +121,7 @@ func (r *repository) FindPage(
 	pageSize, pageNumber int,
 	searchTerms *string,
 ) (*pagination.Page[stream.Stream], error) {
-	var models []streamModel
+	models := make([]streamModel, 0)
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil && *searchTerms != "" {
@@ -140,7 +142,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []stream.Stream
+	result := make([]stream.Stream, 0)
 	for _, model := range models {
 		domainValue := toDomain(&model)
 		err = r.fillLinkedModels(ctx, &domainValue)
@@ -155,7 +157,7 @@ func (r *repository) FindPage(
 }
 
 func (r *repository) FindAllEnabled(ctx context.Context) ([]stream.Stream, error) {
-	var models []streamModel
+	models := make([]streamModel, 0)
 
 	err := r.database.Select().
 		Model(&models).
@@ -165,7 +167,7 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]stream.Stream, error
 		return nil, err
 	}
 
-	var result []stream.Stream
+	result := make([]stream.Stream, 0)
 	for _, model := range models {
 		domainValue := toDomain(&model)
 		err = r.fillLinkedModels(ctx, &domainValue)
@@ -201,7 +203,7 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 		return err
 	}
 
-	var routeIDs []uuid.UUID
+	routeIDs := make([]uuid.UUID, 0)
 	err = transaction.
 		NewSelect().
 		Table("stream_route").
@@ -264,7 +266,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, s
 }
 
 func (r *repository) fillLinkedModels(ctx context.Context, stream *stream.Stream) error {
-	var routeModels []streamRouteModel
+	routeModels := make([]streamRouteModel, 0)
 	err := r.database.Select().
 		Model(&routeModels).
 		Where(byStreamIdFilter, stream.ID).
@@ -274,7 +276,7 @@ func (r *repository) fillLinkedModels(ctx context.Context, stream *stream.Stream
 	}
 
 	for _, routeModel := range routeModels {
-		var backendModels []streamBackendModel
+		backendModels := make([]streamBackendModel, 0)
 		err = r.database.
 			Select().
 			Model(&backendModels).

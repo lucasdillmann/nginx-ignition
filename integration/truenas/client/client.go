@@ -34,7 +34,7 @@ func (c *Client) UpdateCredentials(baseUrl, username, password string) {
 }
 
 func (c *Client) GetAvailableApps() ([]AvailableAppDTO, error) {
-	var apps []AvailableAppDTO
+	apps := make([]AvailableAppDTO, 0)
 	err := c.get("app", &apps)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (c *Client) GetAvailableApps() ([]AvailableAppDTO, error) {
 	return apps, nil
 }
 
-func (c *Client) get(endpoint string, result interface{}) error {
+func (c *Client) get(endpoint string, result any) error {
 	response := c.cache.get(endpoint, func() []byte {
 		output, err := c.executeGetRequest(endpoint, result)
 		if err != nil {
@@ -60,7 +60,7 @@ func (c *Client) get(endpoint string, result interface{}) error {
 	return nil
 }
 
-func (c *Client) executeGetRequest(endpoint string, result interface{}) ([]byte, error) {
+func (c *Client) executeGetRequest(endpoint string, result any) ([]byte, error) {
 	req, err := http.NewRequest("GET", c.baseUrl+"/api/v2.0/"+endpoint, nil)
 	if err != nil {
 		return nil, err
@@ -73,6 +73,7 @@ func (c *Client) executeGetRequest(endpoint string, result interface{}) ([]byte,
 		return nil, err
 	}
 
+	//nolint:errcheck
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {

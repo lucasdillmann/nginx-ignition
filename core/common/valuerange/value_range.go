@@ -5,8 +5,8 @@ type ValueRange struct {
 	Max int
 }
 
-func New(min, max int) *ValueRange {
-	return &ValueRange{Min: min, Max: max}
+func New(minValue, maxValue int) *ValueRange {
+	return &ValueRange{Min: minValue, Max: maxValue}
 }
 
 func (vr *ValueRange) Contains(value int) bool {

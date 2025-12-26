@@ -8,7 +8,7 @@ import (
 )
 
 func toAvailableProviderResponse(input []certificate.AvailableProvider) []availableProviderResponse {
-	var responses []availableProviderResponse
+	responses := make([]availableProviderResponse, 0)
 	for _, provider := range input {
 		responses = append(responses, availableProviderResponse{
 			ID:            provider.ID(),

@@ -115,7 +115,7 @@ func (f *Facade) ReplaceConfigurationFiles(
 		Logs:   normalizedPath + "/logs/",
 	}
 
-	if err := f.createMissingFolders(paths); err != nil {
+	if err = f.createMissingFolders(paths); err != nil {
 		return nil, nil, err
 	}
 
@@ -167,7 +167,7 @@ func (f *Facade) emptyConfigFolder(paths *Paths) error {
 
 func (f *Facade) writeConfigFile(paths *Paths, file File) error {
 	filePath := filepath.Join(paths.Config, file.Name)
-	if err := os.WriteFile(filePath, []byte(file.FormattedContents()), os.ModePerm); err != nil {
+	if err := os.WriteFile(filePath, []byte(file.FormattedContents()), 0o644); err != nil {
 		return fmt.Errorf("unable to write file %s: %w", filePath, err)
 	}
 

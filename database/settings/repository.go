@@ -35,7 +35,7 @@ func (r repository) Get(ctx context.Context) (*settings.Settings, error) {
 		return nil, err
 	}
 
-	var bindings []bindingModel
+	bindings := make([]bindingModel, 0)
 	if err := r.database.Select().Model(&bindings).Scan(ctx); err != nil {
 		return nil, err
 	}
@@ -62,6 +62,7 @@ func (r repository) Save(ctx context.Context, settings *settings.Settings) error
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	if _, err = transaction.NewTruncateTable().Model(nginx).Exec(ctx); err != nil {

@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	apiTokenFieldID   = "f5xcApiToken"
 	tenantNameFieldID = "f5xcTenantName"

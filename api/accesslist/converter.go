@@ -11,7 +11,7 @@ func toDto(accessList *accesslist.AccessList) *accessListResponseDto {
 		return nil
 	}
 
-	var entries []entrySetDto
+	entries := make([]entrySetDto, 0)
 	for _, entry := range accessList.Entries {
 		entries = append(entries, entrySetDto{
 			Priority:        &entry.Priority,
@@ -20,7 +20,7 @@ func toDto(accessList *accesslist.AccessList) *accessListResponseDto {
 		})
 	}
 
-	var credentials []credentialsDto
+	credentials := make([]credentialsDto, 0)
 	for _, credential := range accessList.Credentials {
 		credentials = append(credentials, credentialsDto{
 			Username: &credential.Username,
@@ -45,7 +45,7 @@ func toDomain(request *accessListRequestDto) *accesslist.AccessList {
 		return nil
 	}
 
-	var entries []accesslist.Entry
+	entries := make([]accesslist.Entry, 0)
 	if request.Entries != nil {
 		for _, entry := range request.Entries {
 			entries = append(entries, accesslist.Entry{
@@ -56,7 +56,7 @@ func toDomain(request *accessListRequestDto) *accesslist.AccessList {
 		}
 	}
 
-	var credentials []accesslist.Credentials
+	credentials := make([]accesslist.Credentials, 0)
 	if request.Credentials != nil {
 		for _, credential := range request.Credentials {
 			credentials = append(credentials, accesslist.Credentials{

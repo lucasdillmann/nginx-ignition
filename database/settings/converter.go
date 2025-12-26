@@ -67,7 +67,7 @@ func toDomain(
 }
 
 func toBindingDomain(bindings []bindingModel) []host.Binding {
-	var result []host.Binding
+	result := make([]host.Binding, 0)
 
 	for _, binding := range bindings {
 		result = append(result, host.Binding{
@@ -140,7 +140,7 @@ func toModel(settings *settings.Settings) (
 }
 
 func toBindingModel(bindings []host.Binding) []bindingModel {
-	var result []bindingModel
+	result := make([]bindingModel, 0)
 
 	for _, binding := range bindings {
 		result = append(result, bindingModel{

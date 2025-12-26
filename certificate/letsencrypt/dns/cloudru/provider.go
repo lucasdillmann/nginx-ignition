@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	serviceInstanceIDFieldID = "cloudRuServiceInstanceId"
 	keyIDFieldID             = "cloudRuKeyID"

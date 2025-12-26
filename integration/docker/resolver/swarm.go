@@ -117,7 +117,7 @@ func (s *swarmAdapter) buildServiceOptionURL(
 ) (*string, []string, error) {
 	if s.useServiceMesh && *option.Qualifier == ingressQualifier {
 		dnsResolvers := s.dnsResolvers
-		if dnsResolvers == nil || len(dnsResolvers) == 0 {
+		if len(dnsResolvers) == 0 {
 			dnsResolvers = []string{defaultDockerDNSIP}
 		}
 

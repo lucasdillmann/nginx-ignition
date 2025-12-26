@@ -1,5 +1,7 @@
+//nolint:misspell
 package internetbs
 
+//nolint:misspell
 import (
 	"context"
 
@@ -10,6 +12,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	apiKeyFieldID   = "internetBsApiKey"
 	passwordFieldID = "internetBsPassword"
@@ -17,6 +20,7 @@ const (
 
 type Provider struct{}
 
+//nolint:misspell
 func (p *Provider) ID() string { return "INTERNETBS" }
 
 func (p *Provider) Name() string { return "Internet.bs" }
@@ -48,6 +52,7 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
 
+	//nolint:misspell
 	cfg := &internetbs.Config{
 		APIKey:             apiKey,
 		Password:           password,
@@ -56,5 +61,6 @@ func (p *Provider) ChallengeProvider(
 		TTL:                dns.TTL,
 	}
 
+	//nolint:misspell
 	return internetbs.NewDNSProviderConfig(cfg)
 }

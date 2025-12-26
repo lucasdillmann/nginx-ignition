@@ -66,7 +66,7 @@ func (a *Driver) GetAvailableOptions(
 	options := a.buildOptions(apps, tcpOnly)
 
 	if searchTerms != nil {
-		var filteredOptions []integration.DriverOption
+		filteredOptions := make([]integration.DriverOption, 0)
 		for _, option := range options {
 			if strings.Contains(strings.ToLower(option.Name), strings.ToLower(*searchTerms)) {
 				filteredOptions = append(filteredOptions, option)
@@ -178,7 +178,7 @@ func (a *Driver) getWorkloadPort(
 }
 
 func (a *Driver) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []integration.DriverOption {
-	var options []integration.DriverOption
+	options := make([]integration.DriverOption, 0)
 
 	for _, app := range apps {
 		for _, port := range app.ActiveWorkloads.UsedPorts {

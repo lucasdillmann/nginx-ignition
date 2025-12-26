@@ -54,6 +54,7 @@ func resolveLatestAvailableVersion() *string {
 		return nil
 	}
 
+	//nolint:errcheck
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
@@ -62,7 +63,7 @@ func resolveLatestAvailableVersion() *string {
 		return nil
 	}
 
-	var releases []map[string]interface{}
+	releases := make([]map[string]any, 0)
 	if err := json.Unmarshal(body, &releases); err != nil {
 		log.Warnf("Failed to parse latest available version: %s", err)
 		return nil

@@ -10,20 +10,20 @@ import (
 )
 
 type accessListFileProvider struct {
-	accessListRepository accesslist.Repository
+	repository accesslist.Repository
 }
 
 func newAccessListFileProvider(accessListRepository accesslist.Repository) *accessListFileProvider {
-	return &accessListFileProvider{accessListRepository: accessListRepository}
+	return &accessListFileProvider{repository: accessListRepository}
 }
 
 func (p *accessListFileProvider) provide(ctx *providerContext) ([]File, error) {
-	accessLists, err := p.accessListRepository.FindAll(ctx.context)
+	accessLists, err := p.repository.FindAll(ctx.context)
 	if err != nil {
 		return nil, err
 	}
 
-	var outputs []File
+	outputs := make([]File, 0)
 	for _, accessList := range accessLists {
 		outputs = append(outputs, p.build(&accessList, ctx.paths)...)
 	}
@@ -32,7 +32,7 @@ func (p *accessListFileProvider) provide(ctx *providerContext) ([]File, error) {
 }
 
 func (p *accessListFileProvider) build(accessList *accesslist.AccessList, paths *Paths) []File {
-	var outputs []File
+	outputs := make([]File, 0)
 
 	if confFile := p.buildConfFile(accessList, paths); confFile != nil {
 		outputs = append(outputs, *confFile)
@@ -46,7 +46,7 @@ func (p *accessListFileProvider) build(accessList *accesslist.AccessList, paths 
 }
 
 func (p *accessListFileProvider) buildConfFile(accessList *accesslist.AccessList, paths *Paths) *File {
-	var entriesContents []string
+	entriesContents := make([]string, 0)
 	for _, entry := range accessList.Entries {
 		for _, sourceAddress := range entry.SourceAddress {
 			entriesContents = append(
@@ -101,7 +101,7 @@ func (p *accessListFileProvider) buildHtpasswdFile(accessList *accesslist.Access
 		return nil
 	}
 
-	var contents []string
+	contents := make([]string, 0)
 	for _, credential := range accessList.Credentials {
 		hash := apr1_crypt.Crypt(credential.Password, apr1_crypt.GenerateSalt(8))
 		contents = append(contents, fmt.Sprintf("%s:%s", credential.Username, hash))

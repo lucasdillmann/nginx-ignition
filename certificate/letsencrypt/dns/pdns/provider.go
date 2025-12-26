@@ -14,6 +14,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
+//nolint:gosec
 const (
 	apiKeyFieldID     = "powerDnsApiKey"
 	hostURLFieldID    = "powerDnsHostUtl"

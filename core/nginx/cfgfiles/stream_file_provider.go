@@ -68,10 +68,10 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 
 	switch s.Binding.Protocol {
 	case stream.SocketProtocol:
-		instruction.WriteString(fmt.Sprintf("unix:%s", s.Binding.Address))
+		fmt.Fprintf(&instruction, "unix:%s", s.Binding.Address)
 
 	case stream.TCPProtocol:
-		instruction.WriteString(fmt.Sprintf("%s:%d", s.Binding.Address, *s.Binding.Port))
+		fmt.Fprintf(&instruction, "%s:%d", s.Binding.Address, *s.Binding.Port)
 
 		if s.FeatureSet.UseProxyProtocol {
 			instruction.WriteString(" proxy_protocol")
@@ -86,7 +86,7 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 		}
 
 	case stream.UDPProtocol:
-		instruction.WriteString(fmt.Sprintf("%s:%d udp", s.Binding.Address, *s.Binding.Port))
+		fmt.Fprintf(&instruction, "%s:%d udp", s.Binding.Address, *s.Binding.Port)
 
 	default:
 		return nil, fmt.Errorf("unknown binding protocol: %s", s.Binding.Protocol)
@@ -99,31 +99,32 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 
 func (p *streamFileProvider) buildUpstream(backends []stream.Backend, name string) (*string, error) {
 	instructions := strings.Builder{}
-	instructions.WriteString(fmt.Sprintf("upstream %s {\n", name))
+	fmt.Fprintf(&instructions, "upstream %s {\n", name)
 
 	for _, backend := range backends {
 		address := backend.Address
 		switch address.Protocol {
 		case stream.SocketProtocol:
-			instructions.WriteString(fmt.Sprintf("server unix:%s", address.Address))
+			fmt.Fprintf(&instructions, "server unix:%s", address.Address)
 
 		case stream.TCPProtocol, stream.UDPProtocol:
-			instructions.WriteString(fmt.Sprintf("server %s:%d", address.Address, *address.Port))
+			fmt.Fprintf(&instructions, "server %s:%d", address.Address, *address.Port)
 
 		default:
 			return nil, fmt.Errorf("unknown backend protocol: %s", address.Protocol)
 		}
 
 		if backend.Weight != nil {
-			instructions.WriteString(fmt.Sprintf(" weight=%d", *backend.Weight))
+			fmt.Fprintf(&instructions, " weight=%d", *backend.Weight)
 		}
 
 		if backend.CircuitBreaker != nil {
-			instructions.WriteString(fmt.Sprintf(
+			fmt.Fprintf(
+				&instructions,
 				" max_fails=%d fail_timeout=%ds",
 				backend.CircuitBreaker.MaxFailures,
 				backend.CircuitBreaker.OpenSeconds,
-			))
+			)
 		}
 
 		instructions.WriteString(";\n")
@@ -144,7 +145,7 @@ func (p *streamFileProvider) buildRoutedStream(ctx *providerContext, s *stream.S
 
 	mapping := strings.Builder{}
 	mappingId := fmt.Sprintf("$stream_%s_router", nginxId(s))
-	mapping.WriteString(fmt.Sprintf("map $ssl_preread_server_name %s {\n", mappingId))
+	fmt.Fprintf(&mapping, "map $ssl_preread_server_name %s {\n", mappingId)
 
 	upstreams := strings.Builder{}
 	for routeIndex, route := range s.Routes {
@@ -157,7 +158,7 @@ func (p *streamFileProvider) buildRoutedStream(ctx *providerContext, s *stream.S
 		upstreams.WriteString(*upstream + "\n")
 
 		for _, domainName := range route.DomainNames {
-			mapping.WriteString(fmt.Sprintf("%s %s;\n", domainName, routeId))
+			fmt.Fprintf(&mapping, "%s %s;\n", domainName, routeId)
 		}
 	}
 
@@ -168,7 +169,7 @@ func (p *streamFileProvider) buildRoutedStream(ctx *providerContext, s *stream.S
 	}
 
 	upstreams.WriteString(*defaultUpstream + "\n")
-	mapping.WriteString(fmt.Sprintf("default %s;\n}", defaultUpstreamId))
+	fmt.Fprintf(&mapping, "default %s;\n}", defaultUpstreamId)
 	instructions := fmt.Sprintf(
 		`
 			ssl_preread on;

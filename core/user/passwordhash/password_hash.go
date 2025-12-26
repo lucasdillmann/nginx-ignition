@@ -25,7 +25,7 @@ func (h *PasswordHash) Hash(password string) (string, string, error) {
 	}
 
 	salt := make([]byte, saltSize)
-	if _, err := rand.Read(salt); err != nil {
+	if _, err = rand.Read(salt); err != nil {
 		return "", "", err
 	}
 
@@ -61,7 +61,7 @@ func (h *PasswordHash) Verify(password, hash, salt string) (bool, error) {
 	return reflect.DeepEqual(generatedHash, hashBytes), nil
 }
 
-func (h *PasswordHash) hashValue(password []byte, salt []byte, hashIterations int) ([]byte, error) {
+func (h *PasswordHash) hashValue(password, salt []byte, hashIterations int) ([]byte, error) {
 	output := slices.Concat(password, salt)
 	hash := sha512.New()
 

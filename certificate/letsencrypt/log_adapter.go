@@ -12,27 +12,27 @@ var logAdapterInstance acmelog.StdLogger = &logAdapter{}
 
 type logAdapter struct{}
 
-func (l *logAdapter) Fatal(args ...interface{}) {
+func (l *logAdapter) Fatal(args ...any) {
 	l.Fatalln(args...)
 }
 
-func (l *logAdapter) Fatalln(args ...interface{}) {
+func (l *logAdapter) Fatalln(args ...any) {
 	log.Fatalf("%v", args...)
 }
 
-func (l *logAdapter) Fatalf(format string, args ...interface{}) {
+func (l *logAdapter) Fatalf(format string, args ...any) {
 	log.Fatalf(format, args...)
 }
 
-func (l *logAdapter) Print(args ...interface{}) {
+func (l *logAdapter) Print(args ...any) {
 	l.Println(args...)
 }
 
-func (l *logAdapter) Println(args ...interface{}) {
+func (l *logAdapter) Println(args ...any) {
 	log.Infof("%v", args...)
 }
 
-func (l *logAdapter) Printf(format string, args ...interface{}) {
+func (l *logAdapter) Printf(format string, args ...any) {
 	switch {
 	case strings.HasPrefix(format, "[INFO] "):
 		format = strings.Replace(format, "[INFO] ", "", 1)

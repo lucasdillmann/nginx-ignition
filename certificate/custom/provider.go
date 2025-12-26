@@ -77,7 +77,7 @@ func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (
 		return nil, coreerror.New("Invalid public key", true)
 	}
 
-	var chain []x509.Certificate
+	chain := make([]x509.Certificate, 0)
 	if chainPresent && chainStr != "" {
 		chain, err = parseCertificateChain(chainStr, fileUploadMode)
 		if err != nil {

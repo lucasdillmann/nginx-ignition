@@ -55,6 +55,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	_, err = transaction.NewDelete().
@@ -98,6 +99,7 @@ func (r *repository) Save(ctx context.Context, host *host.Host) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	model, err := toModel(host)
@@ -194,7 +196,7 @@ func (r *repository) FindPage(
 	pageSize, pageNumber int,
 	searchTerms *string,
 ) (*pagination.Page[host.Host], error) {
-	var models []hostModel
+	models := make([]hostModel, 0)
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil && *searchTerms != "" {
@@ -218,7 +220,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []host.Host
+	result := make([]host.Host, 0)
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {
@@ -232,7 +234,7 @@ func (r *repository) FindPage(
 }
 
 func (r *repository) FindAllEnabled(ctx context.Context) ([]host.Host, error) {
-	var models []hostModel
+	models := make([]hostModel, 0)
 
 	err := r.database.Select().
 		Model(&models).
@@ -245,7 +247,7 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]host.Host, error) {
 		return nil, err
 	}
 
-	var result []host.Host
+	result := make([]host.Host, 0)
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {

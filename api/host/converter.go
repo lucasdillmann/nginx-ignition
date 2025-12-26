@@ -12,7 +12,7 @@ func toDto(input *host.Host, globalSettings *settings.Settings) *hostResponseDto
 		return nil
 	}
 
-	var globalBindings []bindingDto
+	globalBindings := make([]bindingDto, 0)
 	if input.UseGlobalBindings && globalSettings != nil && len(globalSettings.GlobalBindings) > 0 {
 		globalBindings = toBindingDtoSlice(globalSettings.GlobalBindings)
 	}

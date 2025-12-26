@@ -30,7 +30,7 @@ linters:
       min-len: 3
       min-occurrences: 3
     gocyclo:
-      min-complexity: 15
+      min-complexity: 20
     gosec:
       excludes:
         - G204

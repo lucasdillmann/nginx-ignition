@@ -11,6 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	endpointFieldID = "easyDnsEndpoint"
 	tokenFieldID    = "easyDnsToken"

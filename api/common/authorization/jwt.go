@@ -83,7 +83,7 @@ func (j *Jwt) GenerateToken(usr *user.User) (*string, error) {
 }
 
 func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errInvalidToken
 		}
@@ -109,6 +109,10 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 		tokenId := claims["jti"].(string)
 		if !usr.Enabled {
 			j.RevokeToken(tokenId)
+			return nil, errInvalidToken
+		}
+
+		if j.isRevoked(tokenId) {
 			return nil, errInvalidToken
 		}
 

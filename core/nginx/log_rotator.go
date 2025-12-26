@@ -77,6 +77,7 @@ func (r *logRotator) rotateFile(_ context.Context, basePath, fileName string, ma
 		return err
 	}
 
+	//nolint:errcheck
 	defer file.Close()
 
 	lines, err := r.readTail(file, maximumLines)
@@ -89,11 +90,11 @@ func (r *logRotator) rotateFile(_ context.Context, basePath, fileName string, ma
 	}
 
 	trimmedContent := strings.Join(lines, "\n") + "\n"
-	return os.WriteFile(filePath, []byte(trimmedContent), 0o777)
+	return os.WriteFile(filePath, []byte(trimmedContent), 0o644)
 }
 
 func (r *logRotator) readTail(file *os.File, size int) ([]string, error) {
-	var lines []string
+	lines := make([]string, 0)
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
@@ -116,7 +117,7 @@ func (r *logRotator) getLogFiles(ctx context.Context) ([]string, error) {
 		return nil, err
 	}
 
-	var logFiles []string
+	logFiles := make([]string, 0)
 	for _, item := range hosts {
 		logFiles = append(
 			logFiles,

@@ -144,7 +144,7 @@ func (p *mainConfigurationFileProvider) enabledFlag(value bool) string {
 }
 
 func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []host.Host) string {
-	var includes []string
+	includes := make([]string, 0)
 	for _, h := range hosts {
 		includes = append(includes, fmt.Sprintf("include %shost-%s.conf;", paths.Config, h.ID))
 	}
@@ -153,7 +153,7 @@ func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []ho
 }
 
 func (p *mainConfigurationFileProvider) getStreamIncludes(paths *Paths, streams []stream.Stream) string {
-	var includes []string
+	includes := make([]string, 0)
 
 	for _, s := range streams {
 		includes = append(includes, fmt.Sprintf("include %sstream-%s.conf;", paths.Config, s.ID))
@@ -167,7 +167,7 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(paths *Paths, caches
 		return ""
 	}
 
-	var results []string
+	results := make([]string, 0)
 	for _, c := range caches {
 		cacheIDNoDashes := strings.ReplaceAll(c.ID.String(), "-", "")
 		storagePath := c.StoragePath

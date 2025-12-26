@@ -30,7 +30,7 @@ func newHostConfigurationFileProvider(
 }
 
 func (p *hostConfigurationFileProvider) provide(ctx *providerContext) ([]File, error) {
-	var outputs []File
+	outputs := make([]File, 0)
 	for _, h := range ctx.hosts {
 		if h.Enabled {
 			output, err := p.buildHost(ctx, &h)
@@ -46,7 +46,7 @@ func (p *hostConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 }
 
 func (p *hostConfigurationFileProvider) buildHost(ctx *providerContext, h *host.Host) (*File, error) {
-	var routes []string
+	routes := make([]string, 0)
 	for _, r := range h.Routes {
 		if r.Enabled {
 			route, err := p.buildRoute(ctx, h, &r)
@@ -58,10 +58,7 @@ func (p *hostConfigurationFileProvider) buildHost(ctx *providerContext, h *host.
 		}
 	}
 
-	serverNames, err := p.buildServerNames(h)
-	if err != nil {
-		return nil, err
-	}
+	serverNames := p.buildServerNames(h)
 
 	httpsRedirect := ""
 	if h.FeatureSet.RedirectHTTPToHTTPS {
@@ -83,9 +80,9 @@ func (p *hostConfigurationFileProvider) buildHost(ctx *providerContext, h *host.
 		bindings = cfg.GlobalBindings
 	}
 
-	var contents []string
+	contents := make([]string, 0)
 	for _, b := range bindings {
-		binding, err := p.buildBinding(ctx, h, &b, routes, *serverNames, httpsRedirect, http2)
+		binding, err := p.buildBinding(ctx, h, &b, routes, serverNames, httpsRedirect, http2)
 		if err != nil {
 			return nil, err
 		}
@@ -98,21 +95,16 @@ func (p *hostConfigurationFileProvider) buildHost(ctx *providerContext, h *host.
 	}, nil
 }
 
-func (p *hostConfigurationFileProvider) buildServerNames(h *host.Host) (*string, error) {
+func (p *hostConfigurationFileProvider) buildServerNames(h *host.Host) string {
 	serverNames := ""
 
 	if h.DefaultServer {
 		serverNames = "server_name _;"
 	} else if len(h.DomainNames) > 0 {
-		domainNames := make([]string, len(h.DomainNames))
-		for index, domainName := range h.DomainNames {
-			domainNames[index] = domainName
-		}
-
-		serverNames = "server_name " + strings.Join(domainNames, " ") + ";"
+		serverNames = "server_name " + strings.Join(h.DomainNames, " ") + ";"
 	}
 
-	return &serverNames, nil
+	return serverNames
 }
 
 func (p *hostConfigurationFileProvider) buildBinding(
@@ -319,7 +311,7 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	}
 
 	dnsConfig := ""
-	if dnsResolvers != nil && len(dnsResolvers) > 0 {
+	if len(dnsResolvers) > 0 {
 		ips := strings.Join(dnsResolvers, " ")
 		dnsConfig = fmt.Sprintf("resolver %s valid=5s;", ips)
 	}
@@ -407,11 +399,11 @@ func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...str
 	}
 
 	builder := strings.Builder{}
-	builder.WriteString(fmt.Sprintf("proxy_pass %s;", *targetUri))
+	fmt.Fprintf(&builder, "proxy_pass %s;", *targetUri)
 
 	if r.Settings.KeepOriginalDomainName {
 		u, _ := url.Parse(*targetUri)
-		builder.WriteString(fmt.Sprintf("\nproxy_set_header Host %s;", u.Host))
+		fmt.Fprintf(&builder, "\nproxy_set_header Host %s;", u.Host)
 	}
 
 	return builder.String()
@@ -440,7 +432,7 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(ctx *providerContext,
 	}
 
 	if r.AccessListID != nil {
-		builder.WriteString(fmt.Sprintf("\ninclude %saccess-list-%s.conf;", ctx.paths.Config, *r.AccessListID))
+		fmt.Fprintf(&builder, "\ninclude %saccess-list-%s.conf;", ctx.paths.Config, *r.AccessListID)
 	}
 
 	builder.WriteString(p.buildCacheConfig(ctx.caches, r.CacheID))
@@ -468,14 +460,14 @@ func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, c
 	cacheIDNoDashes := strings.ReplaceAll(selectedCache.ID.String(), "-", "")
 	builder := strings.Builder{}
 	builder.WriteString("\n")
-	builder.WriteString(fmt.Sprintf("proxy_cache cache_%s;", cacheIDNoDashes))
+	fmt.Fprintf(&builder, "proxy_cache cache_%s;", cacheIDNoDashes)
 
 	for _, d := range selectedCache.Durations {
 		statusCodes := make([]string, len(d.StatusCodes))
 		for i, code := range d.StatusCodes {
 			statusCodes[i] = fmt.Sprintf("%d", code)
 		}
-		builder.WriteString(fmt.Sprintf("\nproxy_cache_valid %s %ds;", strings.Join(statusCodes, " "), d.ValidTimeSeconds))
+		fmt.Fprintf(&builder, "\nproxy_cache_valid %s %ds;", strings.Join(statusCodes, " "), d.ValidTimeSeconds)
 	}
 
 	if len(selectedCache.AllowedMethods) > 0 {
@@ -483,11 +475,11 @@ func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, c
 		for i, m := range selectedCache.AllowedMethods {
 			methods[i] = string(m)
 		}
-		builder.WriteString(fmt.Sprintf("\nproxy_cache_methods %s;", strings.Join(methods, " ")))
+		fmt.Fprintf(&builder, "\nproxy_cache_methods %s;", strings.Join(methods, " "))
 	}
 
 	if selectedCache.MinimumUsesBeforeCaching != nil {
-		builder.WriteString(fmt.Sprintf("\nproxy_cache_min_uses %d;", *selectedCache.MinimumUsesBeforeCaching))
+		fmt.Fprintf(&builder, "\nproxy_cache_min_uses %d;", *selectedCache.MinimumUsesBeforeCaching)
 	}
 
 	if len(selectedCache.UseStale) > 0 {
@@ -495,33 +487,33 @@ func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, c
 		for i, o := range selectedCache.UseStale {
 			staleOptions[i] = string(o)
 		}
-		builder.WriteString(fmt.Sprintf("\nproxy_cache_use_stale %s;", strings.Join(staleOptions, " ")))
+		fmt.Fprintf(&builder, "\nproxy_cache_use_stale %s;", strings.Join(staleOptions, " "))
 	}
 
 	if selectedCache.BackgroundUpdate != nil {
-		builder.WriteString(fmt.Sprintf("\nproxy_cache_background_update %s;", p.flag(*selectedCache.BackgroundUpdate, "on", "off")))
+		fmt.Fprintf(&builder, "\nproxy_cache_background_update %s;", p.flag(*selectedCache.BackgroundUpdate, "on", "off"))
 	}
 
 	if selectedCache.ConcurrencyLock.Enabled {
 		builder.WriteString("\nproxy_cache_lock on;")
 		if selectedCache.ConcurrencyLock.TimeoutSeconds != nil {
-			builder.WriteString(fmt.Sprintf("\nproxy_cache_lock_timeout %ds;", *selectedCache.ConcurrencyLock.TimeoutSeconds))
+			fmt.Fprintf(&builder, "\nproxy_cache_lock_timeout %ds;", *selectedCache.ConcurrencyLock.TimeoutSeconds)
 		}
 		if selectedCache.ConcurrencyLock.AgeSeconds != nil {
-			builder.WriteString(fmt.Sprintf("\nproxy_cache_lock_age %ds;", *selectedCache.ConcurrencyLock.AgeSeconds))
+			fmt.Fprintf(&builder, "\nproxy_cache_lock_age %ds;", *selectedCache.ConcurrencyLock.AgeSeconds)
 		}
 	}
 
 	if selectedCache.Revalidate != nil {
-		builder.WriteString(fmt.Sprintf("\nproxy_cache_revalidate %s;", p.flag(*selectedCache.Revalidate, "on", "off")))
+		fmt.Fprintf(&builder, "\nproxy_cache_revalidate %s;", p.flag(*selectedCache.Revalidate, "on", "off"))
 	}
 
 	if len(selectedCache.BypassRules) > 0 {
-		builder.WriteString(fmt.Sprintf("\nproxy_cache_bypass %s;", strings.Join(selectedCache.BypassRules, " ")))
+		fmt.Fprintf(&builder, "\nproxy_cache_bypass %s;", strings.Join(selectedCache.BypassRules, " "))
 	}
 
 	if len(selectedCache.NoCacheRules) > 0 {
-		builder.WriteString(fmt.Sprintf("\nproxy_no_cache %s;", strings.Join(selectedCache.NoCacheRules, " ")))
+		fmt.Fprintf(&builder, "\nproxy_no_cache %s;", strings.Join(selectedCache.NoCacheRules, " "))
 	}
 
 	return builder.String()

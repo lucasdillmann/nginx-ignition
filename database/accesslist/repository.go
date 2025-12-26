@@ -87,6 +87,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	err = r.cleanupLinkedModels(ctx, transaction, id)
@@ -131,7 +132,7 @@ func (r *repository) FindPage(
 	pageNumber, pageSize int,
 	searchTerms *string,
 ) (*pagination.Page[accesslist.AccessList], error) {
-	var models []accessListModel
+	models := make([]accessListModel, 0)
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil {
@@ -154,7 +155,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []accesslist.AccessList
+	result := make([]accesslist.AccessList, 0)
 	for _, model := range models {
 		result = append(result, *toDomain(&model))
 	}
@@ -163,7 +164,7 @@ func (r *repository) FindPage(
 }
 
 func (r *repository) FindAll(ctx context.Context) ([]accesslist.AccessList, error) {
-	var models []accessListModel
+	models := make([]accessListModel, 0)
 
 	err := r.database.Select().
 		Model(&models).
@@ -174,7 +175,7 @@ func (r *repository) FindAll(ctx context.Context) ([]accesslist.AccessList, erro
 		return nil, err
 	}
 
-	var result []accesslist.AccessList
+	result := make([]accesslist.AccessList, 0)
 	for _, model := range models {
 		result = append(result, *toDomain(&model))
 	}
@@ -188,6 +189,7 @@ func (r *repository) Save(ctx context.Context, accessList *accesslist.AccessList
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	exists, err := transaction.NewSelect().Model((*accessListModel)(nil)).Where(constants.ByIdFilter, accessList.ID).Exists(ctx)

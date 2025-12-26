@@ -12,6 +12,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	tenantFieldID       = "azureTenantId"
 	subscriptionFieldID = "azureSubscriptionId"

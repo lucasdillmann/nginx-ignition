@@ -32,10 +32,7 @@ func (h listOptionsHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	tcpOnly := false
-	if ctx.Query("tcpOnly") == "true" {
-		tcpOnly = true
-	}
+	tcpOnly := ctx.Query("tcpOnly") == "true"
 
 	page, err := h.commands.ListOptions(ctx.Request.Context(), uuidValue, pageSize, pageNumber, searchTerms, tcpOnly)
 	if err != nil {

@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
-	"sync"
 
 	"github.com/google/uuid"
 
@@ -25,7 +24,6 @@ type service struct {
 	logReader          *logReader
 	logRotator         *logRotator
 	vpnManager         *vpnManager
-	mu                 sync.Mutex
 }
 
 func newService(
@@ -174,6 +172,8 @@ func (s *service) getConfigFilesZipFile(
 
 	buffer := new(bytes.Buffer)
 	zipWriter := zip.NewWriter(buffer)
+
+	//nolint:errcheck
 	defer zipWriter.Close()
 
 	for _, file := range configFiles {

@@ -64,7 +64,7 @@ func toDto(settings *settings.Settings) *settingsDto {
 		IntervalUnitCount: &settings.CertificateAutoRenew.IntervalUnitCount,
 	}
 
-	var bindingsModel []bindingDto
+	bindingsModel := make([]bindingDto, 0)
 	if settings.GlobalBindings != nil {
 		for _, binding := range settings.GlobalBindings {
 			bindingsModel = append(bindingsModel, bindingDto{
@@ -146,17 +146,15 @@ func toDomain(input *settingsDto) *settings.Settings {
 		IntervalUnitCount: *certificate.IntervalUnitCount,
 	}
 
-	var globalBindings []host.Binding
-	if bindings != nil {
-		for _, binding := range bindings {
-			globalBindings = append(globalBindings, host.Binding{
-				ID:            uuid.New(),
-				Type:          *binding.Type,
-				IP:            *binding.IP,
-				Port:          *binding.Port,
-				CertificateID: binding.CertificateID,
-			})
-		}
+	globalBindings := make([]host.Binding, 0)
+	for _, binding := range bindings {
+		globalBindings = append(globalBindings, host.Binding{
+			ID:            uuid.New(),
+			Type:          *binding.Type,
+			IP:            *binding.IP,
+			Port:          *binding.Port,
+			CertificateID: binding.CertificateID,
+		})
 	}
 
 	return &settings.Settings{

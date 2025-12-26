@@ -83,6 +83,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	err = r.cleanupLinkedModels(ctx, transaction, id)
@@ -126,7 +127,7 @@ func (r *repository) FindPage(
 	pageNumber, pageSize int,
 	searchTerms *string,
 ) (*pagination.Page[cache.Cache], error) {
-	var models []cacheModel
+	models := make([]cacheModel, 0)
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil {
@@ -148,7 +149,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []cache.Cache
+	result := make([]cache.Cache, 0)
 	for _, model := range models {
 		result = append(result, toDomain(&model))
 	}
@@ -156,27 +157,8 @@ func (r *repository) FindPage(
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAll(ctx context.Context) ([]cache.Cache, error) {
-	var models []cacheModel
-
-	err := r.database.Select().
-		Model(&models).
-		Relation("Durations").
-		Scan(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	var result []cache.Cache
-	for _, model := range models {
-		result = append(result, toDomain(&model))
-	}
-
-	return result, nil
-}
-
 func (r *repository) FindAllInUse(ctx context.Context) ([]cache.Cache, error) {
-	var models []cacheModel
+	models := make([]cacheModel, 0)
 
 	hostSubquery := r.database.
 		Select().
@@ -213,6 +195,7 @@ func (r *repository) Save(ctx context.Context, domain *cache.Cache) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	exists, err := transaction.NewSelect().Model((*cacheModel)(nil)).Where(constants.ByIdFilter, domain.ID).Exists(ctx)

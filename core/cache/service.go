@@ -48,10 +48,6 @@ func (s *service) existsByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	return s.repository.ExistsByID(ctx, id)
 }
 
-func (s *service) findAll(ctx context.Context) ([]Cache, error) {
-	return s.repository.FindAll(ctx)
-}
-
 func (s *service) list(
 	ctx context.Context,
 	pageSize,

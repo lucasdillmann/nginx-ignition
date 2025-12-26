@@ -46,6 +46,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	_, err = transaction.NewDelete().
@@ -83,7 +84,7 @@ func (r *repository) FindPage(
 	pageSize, pageNumber int,
 	searchTerms *string,
 ) (*pagination.Page[user.User], error) {
-	var models []userModel
+	models := make([]userModel, 0)
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil {
@@ -109,7 +110,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []user.User
+	result := make([]user.User, 0)
 	for _, model := range models {
 		result = append(result, toDomain(&model))
 	}
@@ -151,6 +152,7 @@ func (r *repository) Save(ctx context.Context, user *user.User) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Where(constants.ByIdFilter, user.ID).Exists(ctx)

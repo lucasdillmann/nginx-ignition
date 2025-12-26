@@ -109,7 +109,7 @@ func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerm
 }
 
 func (s *service) availableProviders(_ context.Context) ([]AvailableProvider, error) {
-	var availableProviders []AvailableProvider
+	availableProviders := make([]AvailableProvider, 0)
 	for _, provider := range s.providers() {
 		availableProviders = append(availableProviders, AvailableProvider{
 			provider: provider,

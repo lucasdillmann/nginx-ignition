@@ -2,10 +2,10 @@ package dynamicfield
 
 import "dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 
-func ToResponse(fields []dynamicfields.DynamicField) []DynamicFieldResponse {
-	response := make([]DynamicFieldResponse, len(fields))
+func ToResponse(fields []dynamicfields.DynamicField) []Response {
+	response := make([]Response, len(fields))
 	for index, field := range fields {
-		response[index] = DynamicFieldResponse{
+		response[index] = Response{
 			ID:           field.ID,
 			Priority:     field.Priority,
 			Description:  field.Description,
@@ -39,7 +39,7 @@ func toEnumOptions(options []dynamicfields.EnumOption) []EnumOption {
 }
 
 func toConditions(condition []dynamicfields.Condition) []Condition {
-	if condition == nil || len(condition) == 0 {
+	if len(condition) == 0 {
 		return nil
 	}
 
