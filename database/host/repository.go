@@ -15,7 +15,10 @@ import (
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
 
-const byHostIdFilter = "host_id = ?"
+const (
+	byHostIdFilter       = "host_id = ?"
+	byAccessListIdFilter = "access_list_id = ?"
+)
 
 type repository struct {
 	database *database.Database
@@ -313,7 +316,7 @@ func (r *repository) ExistsByCertificateID(ctx context.Context, certificateId uu
 func (r *repository) ExistsByAccessListID(ctx context.Context, accessListId uuid.UUID) (bool, error) {
 	count, err := r.database.Select().
 		Model((*hostModel)(nil)).
-		Where("access_list_id = ?", accessListId).
+		Where(byAccessListIdFilter, accessListId).
 		Count(ctx)
 	if err != nil {
 		return false, err
@@ -325,7 +328,7 @@ func (r *repository) ExistsByAccessListID(ctx context.Context, accessListId uuid
 
 	count, err = r.database.Select().
 		Model((*hostRouteModel)(nil)).
-		Where("access_list_id = ?", accessListId).
+		Where(byAccessListIdFilter, accessListId).
 		Count(ctx)
 	if err != nil {
 		return false, err

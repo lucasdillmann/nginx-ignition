@@ -69,7 +69,7 @@ func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error)
 func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	hostExists, err := r.database.Select().
 		Table("host").
-		Where("access_list_id = ?", id).
+		Where(byAccessListIdFilter, id).
 		Exists(ctx)
 	if err != nil || hostExists {
 		return hostExists, err
@@ -77,7 +77,7 @@ func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) 
 
 	return r.database.Select().
 		Table("host_route").
-		Where("access_list_id = ?", id).
+		Where(byAccessListIdFilter, id).
 		Exists(ctx)
 }
 

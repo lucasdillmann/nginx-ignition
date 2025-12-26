@@ -441,82 +441,99 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(ctx *providerContext,
 }
 
 func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, cacheID *uuid.UUID) string {
-	if cacheID == nil || caches == nil {
+	if cacheID == nil || len(caches) == 0 {
 		return ""
 	}
 
-	var selectedCache *cache.Cache
-	for _, c := range caches {
-		if c.ID == *cacheID {
-			selectedCache = &c
+	var c *cache.Cache
+	for _, item := range caches {
+		if item.ID == *cacheID {
+			c = &item
 			break
 		}
 	}
 
-	if selectedCache == nil {
+	if c == nil {
 		return ""
 	}
 
-	cacheIDNoDashes := strings.ReplaceAll(selectedCache.ID.String(), "-", "")
 	builder := strings.Builder{}
 	builder.WriteString("\n")
+
+	cacheIDNoDashes := strings.ReplaceAll(c.ID.String(), "-", "")
 	fmt.Fprintf(&builder, "proxy_cache cache_%s;", cacheIDNoDashes)
 
-	for _, d := range selectedCache.Durations {
+	p.appendCacheDurations(&builder, c)
+	p.appendCacheMethods(&builder, c)
+	p.appendCacheStandardOptions(&builder, c)
+	p.appendCacheLock(&builder, c)
+	p.appendCacheBypassRules(&builder, c)
+
+	return builder.String()
+}
+
+func (p *hostConfigurationFileProvider) appendCacheDurations(builder *strings.Builder, c *cache.Cache) {
+	for _, d := range c.Durations {
 		statusCodes := make([]string, len(d.StatusCodes))
 		for i, code := range d.StatusCodes {
 			statusCodes[i] = fmt.Sprintf("%d", code)
 		}
-		fmt.Fprintf(&builder, "\nproxy_cache_valid %s %ds;", strings.Join(statusCodes, " "), d.ValidTimeSeconds)
+		fmt.Fprintf(builder, "\nproxy_cache_valid %s %ds;", strings.Join(statusCodes, " "), d.ValidTimeSeconds)
 	}
+}
 
-	if len(selectedCache.AllowedMethods) > 0 {
-		methods := make([]string, len(selectedCache.AllowedMethods))
-		for i, m := range selectedCache.AllowedMethods {
+func (p *hostConfigurationFileProvider) appendCacheMethods(builder *strings.Builder, c *cache.Cache) {
+	if len(c.AllowedMethods) > 0 {
+		methods := make([]string, len(c.AllowedMethods))
+		for i, m := range c.AllowedMethods {
 			methods[i] = string(m)
 		}
-		fmt.Fprintf(&builder, "\nproxy_cache_methods %s;", strings.Join(methods, " "))
+		fmt.Fprintf(builder, "\nproxy_cache_methods %s;", strings.Join(methods, " "))
+	}
+}
+
+func (p *hostConfigurationFileProvider) appendCacheStandardOptions(builder *strings.Builder, c *cache.Cache) {
+	if c.MinimumUsesBeforeCaching != nil {
+		fmt.Fprintf(builder, "\nproxy_cache_min_uses %d;", *c.MinimumUsesBeforeCaching)
 	}
 
-	if selectedCache.MinimumUsesBeforeCaching != nil {
-		fmt.Fprintf(&builder, "\nproxy_cache_min_uses %d;", *selectedCache.MinimumUsesBeforeCaching)
-	}
-
-	if len(selectedCache.UseStale) > 0 {
-		staleOptions := make([]string, len(selectedCache.UseStale))
-		for i, o := range selectedCache.UseStale {
+	if len(c.UseStale) > 0 {
+		staleOptions := make([]string, len(c.UseStale))
+		for i, o := range c.UseStale {
 			staleOptions[i] = string(o)
 		}
-		fmt.Fprintf(&builder, "\nproxy_cache_use_stale %s;", strings.Join(staleOptions, " "))
+		fmt.Fprintf(builder, "\nproxy_cache_use_stale %s;", strings.Join(staleOptions, " "))
 	}
 
-	if selectedCache.BackgroundUpdate != nil {
-		fmt.Fprintf(&builder, "\nproxy_cache_background_update %s;", p.flag(*selectedCache.BackgroundUpdate, "on", "off"))
+	if c.BackgroundUpdate != nil {
+		fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", p.flag(*c.BackgroundUpdate, "on", "off"))
 	}
 
-	if selectedCache.ConcurrencyLock.Enabled {
+	if c.Revalidate != nil {
+		fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", p.flag(*c.Revalidate, "on", "off"))
+	}
+}
+
+func (p *hostConfigurationFileProvider) appendCacheLock(builder *strings.Builder, c *cache.Cache) {
+	if c.ConcurrencyLock.Enabled {
 		builder.WriteString("\nproxy_cache_lock on;")
-		if selectedCache.ConcurrencyLock.TimeoutSeconds != nil {
-			fmt.Fprintf(&builder, "\nproxy_cache_lock_timeout %ds;", *selectedCache.ConcurrencyLock.TimeoutSeconds)
+		if c.ConcurrencyLock.TimeoutSeconds != nil {
+			fmt.Fprintf(builder, "\nproxy_cache_lock_timeout %ds;", *c.ConcurrencyLock.TimeoutSeconds)
 		}
-		if selectedCache.ConcurrencyLock.AgeSeconds != nil {
-			fmt.Fprintf(&builder, "\nproxy_cache_lock_age %ds;", *selectedCache.ConcurrencyLock.AgeSeconds)
+		if c.ConcurrencyLock.AgeSeconds != nil {
+			fmt.Fprintf(builder, "\nproxy_cache_lock_age %ds;", *c.ConcurrencyLock.AgeSeconds)
 		}
 	}
+}
 
-	if selectedCache.Revalidate != nil {
-		fmt.Fprintf(&builder, "\nproxy_cache_revalidate %s;", p.flag(*selectedCache.Revalidate, "on", "off"))
+func (p *hostConfigurationFileProvider) appendCacheBypassRules(builder *strings.Builder, c *cache.Cache) {
+	if len(c.BypassRules) > 0 {
+		fmt.Fprintf(builder, "\nproxy_cache_bypass %s;", strings.Join(c.BypassRules, " "))
 	}
 
-	if len(selectedCache.BypassRules) > 0 {
-		fmt.Fprintf(&builder, "\nproxy_cache_bypass %s;", strings.Join(selectedCache.BypassRules, " "))
+	if len(c.NoCacheRules) > 0 {
+		fmt.Fprintf(builder, "\nproxy_no_cache %s;", strings.Join(c.NoCacheRules, " "))
 	}
-
-	if len(selectedCache.NoCacheRules) > 0 {
-		fmt.Fprintf(&builder, "\nproxy_no_cache %s;", strings.Join(selectedCache.NoCacheRules, " "))
-	}
-
-	return builder.String()
 }
 
 func (p *hostConfigurationFileProvider) flag(enabled bool, trueValue, falseValue string) string {
