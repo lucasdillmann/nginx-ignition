@@ -15,6 +15,10 @@ import (
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
 
+const (
+	byCacheIdFilter = "cache_id = ?"
+)
+
 type repository struct {
 	database *database.Database
 }
@@ -48,7 +52,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*cache.Cache, 
 func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	hostExists, err := r.database.Select().
 		Table("host").
-		Where("cache_id = ?", id).
+		Where(byCacheIdFilter, id).
 		Exists(ctx)
 	if err != nil || hostExists {
 		return hostExists, err
@@ -56,7 +60,7 @@ func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) 
 
 	return r.database.Select().
 		Table("host_route").
-		Where("cache_id = ?", id).
+		Where(byCacheIdFilter, id).
 		Exists(ctx)
 }
 
@@ -255,7 +259,7 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 	_, err := transaction.
 		NewDelete().
 		Table("cache_duration").
-		Where("cache_id = ?", id).
+		Where(byCacheIdFilter, id).
 		Exec(ctx)
 
 	return err
