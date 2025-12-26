@@ -60,3 +60,7 @@ func (s *service) list(
 ) (*pagination.Page[*Cache], error) {
 	return s.repository.FindPage(ctx, pageNumber, pageSize, searchTerms)
 }
+
+func (s *service) findAllInUse(ctx context.Context) (*[]Cache, error) {
+	return s.repository.FindAllInUse(ctx)
+}

@@ -11,10 +11,11 @@ func Install() error {
 func buildCommands(repository Repository) *Commands {
 	serviceInstance := newService(repository)
 	return &Commands{
-		Delete: serviceInstance.deleteById,
-		Get:    serviceInstance.findById,
-		Exists: serviceInstance.existsByID,
-		List:   serviceInstance.list,
-		Save:   serviceInstance.save,
+		Save:        serviceInstance.save,
+		Delete:      serviceInstance.deleteById,
+		List:        serviceInstance.list,
+		Get:         serviceInstance.findById,
+		Exists:      serviceInstance.existsByID,
+		GetAllInUse: serviceInstance.findAllInUse,
 	}
 }

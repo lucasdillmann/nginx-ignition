@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/stream"
@@ -82,6 +83,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				include %smime.types;
 				%s
 				%s
+				%s
 			}
 			
 			%s
@@ -112,6 +114,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		cfg.Nginx.DefaultContentType,
 		ctx.paths.Config,
 		customCfg,
+		p.getCacheDefinitions(ctx.paths, ctx.caches),
 		p.getHostIncludes(ctx.paths, ctx.hosts),
 		streamLines.String(),
 	)
@@ -157,4 +160,40 @@ func (p *mainConfigurationFileProvider) getStreamIncludes(paths *Paths, streams 
 	}
 
 	return strings.Join(includes, "\n")
+}
+
+func (p *mainConfigurationFileProvider) getCacheDefinitions(paths *Paths, caches *[]cache.Cache) string {
+	if caches == nil {
+		return ""
+	}
+
+	var results []string
+	for _, c := range *caches {
+		cacheIDNoDashes := strings.ReplaceAll(c.ID.String(), "-", "")
+		storagePath := c.StoragePath
+		if storagePath == nil || *storagePath == "" {
+			fallback := paths.Base + "/cache/" + cacheIDNoDashes
+			storagePath = &fallback
+		}
+
+		inactive := ""
+		if c.InactiveSeconds != nil {
+			inactive = fmt.Sprintf(" inactive=%ds", *c.InactiveSeconds)
+		}
+
+		maxSize := ""
+		if c.MaxSizeMB != nil {
+			maxSize = fmt.Sprintf(" max_size=%dm", *c.MaxSizeMB)
+		}
+
+		results = append(results, fmt.Sprintf(
+			"proxy_cache_path %s levels=1:2 keys_zone=cache_%s:10m%s%s;",
+			*storagePath,
+			cacheIDNoDashes,
+			inactive,
+			maxSize,
+		))
+	}
+
+	return strings.Join(results, "\n")
 }

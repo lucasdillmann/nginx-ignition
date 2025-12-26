@@ -174,6 +174,38 @@ func (r *repository) FindAll(ctx context.Context) ([]*cache.Cache, error) {
 	return result, nil
 }
 
+func (r *repository) FindAllInUse(ctx context.Context) (*[]cache.Cache, error) {
+	var models []cacheModel
+
+	hostSubquery := r.database.
+		Select().
+		Table("host").
+		Column("cache_id").
+		Where("cache_id is not null")
+	routeSubquery := r.database.
+		Select().
+		Table("host_route").
+		Column("cache_id").
+		Where("cache_id is not null")
+
+	err := r.database.Select().
+		Model(&models).
+		Relation("Durations").
+		Where("id in (?)", hostSubquery).
+		WhereOr("id in (?)", routeSubquery).
+		Scan(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]cache.Cache, len(models))
+	for i, model := range models {
+		result[i] = *toDomain(&model)
+	}
+
+	return &result, nil
+}
+
 func (r *repository) Save(ctx context.Context, domain *cache.Cache) error {
 	transaction, err := r.database.Begin()
 	if err != nil {

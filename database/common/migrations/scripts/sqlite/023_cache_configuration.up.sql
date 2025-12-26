@@ -82,3 +82,6 @@ alter table host
 
 alter table host_route
     add column cache_id text references cache(id);
+
+create index idx_host_cache_id on host (cache_id);
+create index idx_host_route_cache_id on host_route (cache_id);

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/accesslist"
+	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
@@ -20,6 +21,7 @@ import (
 type Facade struct {
 	hostCommands   *host.Commands
 	streamCommands *stream.Commands
+	cacheCommands  *cache.Commands
 	providers      []fileProvider
 	configuration  *configuration.Configuration
 }
@@ -27,6 +29,7 @@ type Facade struct {
 func newFacade(
 	hostCommands *host.Commands,
 	streamCommands *stream.Commands,
+	cacheCommands *cache.Commands,
 	integrationCommands *integration.Commands,
 	configuration *configuration.Configuration,
 	accessListRepository accesslist.Repository,
@@ -47,6 +50,7 @@ func newFacade(
 	return &Facade{
 		hostCommands:   hostCommands,
 		streamCommands: streamCommands,
+		cacheCommands:  cacheCommands,
 		providers:      providers,
 		configuration:  configuration,
 	}
@@ -68,11 +72,17 @@ func (f *Facade) GetConfigurationFiles(ctx context.Context, paths *Paths, suppor
 		return nil, nil, nil, err
 	}
 
+	enabledCaches, err := f.cacheCommands.GetAllInUse(ctx)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
 	providerCtx := &providerContext{
 		context:           ctx,
 		paths:             paths,
 		hosts:             enabledHosts,
 		streams:           enabledStreams,
+		caches:            enabledCaches,
 		supportedFeatures: supportedFeatures,
 	}
 

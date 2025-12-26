@@ -1,11 +1,13 @@
 package cfgfiles
 
 import (
-	"context"
 	"fmt"
 	"net/url"
 	"strings"
 
+	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
@@ -31,7 +33,7 @@ func (p *hostConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 	var outputs []File
 	for _, h := range ctx.hosts {
 		if h.Enabled {
-			output, err := p.buildHost(ctx.context, ctx.paths, h)
+			output, err := p.buildHost(ctx, h)
 			if err != nil {
 				return nil, err
 			}
@@ -43,11 +45,11 @@ func (p *hostConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 	return outputs, nil
 }
 
-func (p *hostConfigurationFileProvider) buildHost(ctx context.Context, paths *Paths, h *host.Host) (*File, error) {
+func (p *hostConfigurationFileProvider) buildHost(ctx *providerContext, h *host.Host) (*File, error) {
 	var routes []string
 	for _, r := range h.Routes {
 		if r.Enabled {
-			route, err := p.buildRoute(ctx, h, r, paths)
+			route, err := p.buildRoute(ctx, h, r)
 			if err != nil {
 				return nil, err
 			}
@@ -73,7 +75,7 @@ func (p *hostConfigurationFileProvider) buildHost(ctx context.Context, paths *Pa
 
 	bindings := h.Bindings
 	if h.UseGlobalBindings {
-		cfg, err := p.settingsRepository.Get(ctx)
+		cfg, err := p.settingsRepository.Get(ctx.context)
 		if err != nil {
 			return nil, err
 		}
@@ -83,7 +85,7 @@ func (p *hostConfigurationFileProvider) buildHost(ctx context.Context, paths *Pa
 
 	var contents []string
 	for _, b := range bindings {
-		binding, err := p.buildBinding(ctx, paths, h, b, routes, *serverNames, httpsRedirect, http2)
+		binding, err := p.buildBinding(ctx, h, b, routes, *serverNames, httpsRedirect, http2)
 		if err != nil {
 			return nil, err
 		}
@@ -118,8 +120,7 @@ func (p *hostConfigurationFileProvider) buildServerNames(h *host.Host) (*string,
 }
 
 func (p *hostConfigurationFileProvider) buildBinding(
-	ctx context.Context,
-	paths *Paths,
+	ctx *providerContext,
 	h *host.Host,
 	b *host.Binding,
 	routes []string,
@@ -141,9 +142,9 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			b.IP,
 			b.Port,
 			p.buildBindingAdditionalParams(h),
-			paths.Config,
+			ctx.paths.Config,
 			b.CertificateID,
-			paths.Config,
+			ctx.paths.Config,
 			b.CertificateID,
 		)
 	}
@@ -153,7 +154,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		conditionalHttpsRedirect = httpsRedirect
 	}
 
-	cfg, err := p.settingsRepository.Get(ctx)
+	cfg, err := p.settingsRepository.Get(ctx.context)
 	if err != nil {
 		return "", err
 	}
@@ -173,12 +174,14 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			%s
 			%s
 			%s
+			%s
 		}`,
-		p.flag(logs.AccessLogsEnabled, fmt.Sprintf("%shost-%s.access.log", paths.Logs, h.ID), "off"),
-		p.flag(logs.ErrorLogsEnabled, fmt.Sprintf("%shost-%s.error.log %s", paths.Logs, h.ID, strings.ToLower(string(logs.ErrorLogsLevel))), "off"),
+		p.flag(logs.AccessLogsEnabled, fmt.Sprintf("%shost-%s.access.log", ctx.paths.Logs, h.ID), "off"),
+		p.flag(logs.ErrorLogsEnabled, fmt.Sprintf("%shost-%s.error.log %s", ctx.paths.Logs, h.ID, strings.ToLower(string(logs.ErrorLogsLevel))), "off"),
 		p.flag(cfg.Nginx.GzipEnabled, "on", "off"),
 		cfg.Nginx.MaximumBodySizeMb,
-		p.flag(h.AccessListID != nil, fmt.Sprintf("include %saccess-list-%s.conf;", paths.Config, h.AccessListID), ""),
+		p.flag(h.AccessListID != nil, fmt.Sprintf("include %saccess-list-%s.conf;", ctx.paths.Config, h.AccessListID), ""),
+		p.buildCacheConfig(ctx.caches, h.CacheID),
 		conditionalHttpsRedirect,
 		http2,
 		listen,
@@ -196,30 +199,29 @@ func (p *hostConfigurationFileProvider) buildBindingAdditionalParams(h *host.Hos
 }
 
 func (p *hostConfigurationFileProvider) buildRoute(
-	ctx context.Context,
+	ctx *providerContext,
 	h *host.Host,
 	r *host.Route,
-	paths *Paths,
 ) (string, error) {
 	switch r.Type {
 	case host.StaticResponseRouteType:
-		return p.buildStaticResponseRoute(h, r, paths), nil
+		return p.buildStaticResponseRoute(ctx, h, r), nil
 	case host.ProxyRouteType:
-		return p.buildProxyRoute(r, h.FeatureSet, paths), nil
+		return p.buildProxyRoute(ctx, r, h.FeatureSet), nil
 	case host.RedirectRouteType:
-		return p.buildRedirectRoute(r, h.FeatureSet, paths), nil
+		return p.buildRedirectRoute(ctx, r, h.FeatureSet), nil
 	case host.IntegrationRouteType:
-		return p.buildIntegrationRoute(ctx, r, h.FeatureSet, paths)
+		return p.buildIntegrationRoute(ctx, r, h.FeatureSet)
 	case host.ExecuteCodeRouteType:
-		return p.buildExecuteCodeRoute(h, r, paths), nil
+		return p.buildExecuteCodeRoute(ctx, h, r), nil
 	case host.StaticFilesRouteType:
-		return p.buildStaticFilesRoute(r, paths), nil
+		return p.buildStaticFilesRoute(ctx, r), nil
 	default:
 		return "", fmt.Errorf("invalid route type: %s", r.Type)
 	}
 }
 
-func (p *hostConfigurationFileProvider) buildStaticFilesRoute(r *host.Route, paths *Paths) string {
+func (p *hostConfigurationFileProvider) buildStaticFilesRoute(ctx *providerContext, r *host.Route) string {
 	normalizedSourcePath := r.SourcePath
 	if !strings.HasSuffix(normalizedSourcePath, "/") {
 		normalizedSourcePath += "/"
@@ -241,14 +243,14 @@ func (p *hostConfigurationFileProvider) buildStaticFilesRoute(r *host.Route, pat
 		normalizedSourcePath,
 		*r.TargetURI,
 		autoIndex,
-		p.buildRouteSettings(r, paths),
+		p.buildRouteSettings(ctx, r),
 	)
 }
 
 func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
+	ctx *providerContext,
 	h *host.Host,
 	r *host.Route,
-	paths *Paths,
 ) string {
 	headers := ""
 	payloadFilePath := fmt.Sprintf("/host-%s-route-%d.payload", h.ID, r.Priority)
@@ -275,7 +277,7 @@ func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 		}`,
 		r.Priority,
 		headers,
-		paths.Config,
+		ctx.paths.Config,
 		payloadFilePath,
 		r.Response.StatusCode,
 		r.SourcePath,
@@ -283,14 +285,14 @@ func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 		r.Response.StatusCode,
 		r.Priority,
 		p.buildRouteFeatures(h.FeatureSet),
-		p.buildRouteSettings(r, paths),
+		p.buildRouteSettings(ctx, r),
 	)
 }
 
 func (p *hostConfigurationFileProvider) buildProxyRoute(
+	ctx *providerContext,
 	r *host.Route,
 	features host.FeatureSet,
-	paths *Paths,
 ) string {
 	return fmt.Sprintf(
 		`location %s {
@@ -301,17 +303,16 @@ func (p *hostConfigurationFileProvider) buildProxyRoute(
 		r.SourcePath,
 		p.buildProxyPass(r),
 		p.buildRouteFeatures(features),
-		p.buildRouteSettings(r, paths),
+		p.buildRouteSettings(ctx, r),
 	)
 }
 
 func (p *hostConfigurationFileProvider) buildIntegrationRoute(
-	ctx context.Context,
+	ctx *providerContext,
 	r *host.Route,
 	features host.FeatureSet,
-	paths *Paths,
 ) (string, error) {
-	proxyUrl, dnsResolvers, err := p.integrationCommands.GetOptionURL(ctx, r.Integration.IntegrationID, r.Integration.OptionID)
+	proxyUrl, dnsResolvers, err := p.integrationCommands.GetOptionURL(ctx.context, r.Integration.IntegrationID, r.Integration.OptionID)
 	if err != nil {
 		return "", err
 	}
@@ -338,14 +339,14 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 		dnsConfig,
 		p.buildProxyPass(r, *proxyUrl),
 		p.buildRouteFeatures(features),
-		p.buildRouteSettings(r, paths),
+		p.buildRouteSettings(ctx, r),
 	), nil
 }
 
 func (p *hostConfigurationFileProvider) buildRedirectRoute(
+	ctx *providerContext,
 	r *host.Route,
 	features host.FeatureSet,
-	paths *Paths,
 ) string {
 	return fmt.Sprintf(
 		`location %s {
@@ -357,15 +358,15 @@ func (p *hostConfigurationFileProvider) buildRedirectRoute(
 		*r.RedirectCode,
 		*r.TargetURI,
 		p.buildRouteFeatures(features),
-		p.buildRouteSettings(r, paths),
+		p.buildRouteSettings(ctx, r),
 	)
 }
 
-func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(h *host.Host, r *host.Route, paths *Paths) string {
+func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(ctx *providerContext, h *host.Host, r *host.Route) string {
 	var headerBlock, routeBlock string
 	switch r.SourceCode.Language {
 	case host.JavascriptCodeLanguage:
-		headerBlock = fmt.Sprintf("js_import route_%d from %shost-%s-route-%d.js;", r.Priority, paths.Config, h.ID, r.Priority)
+		headerBlock = fmt.Sprintf("js_import route_%d from %shost-%s-route-%d.js;", r.Priority, ctx.paths.Config, h.ID, r.Priority)
 		routeBlock = fmt.Sprintf("js_content route_%d.%s;", r.Priority, *r.SourceCode.MainFunction)
 	case host.LuaCodeLanguage:
 		routeBlock = fmt.Sprintf(
@@ -387,7 +388,7 @@ func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(h *host.Host, r *h
 		r.SourcePath,
 		routeBlock,
 		p.buildRouteFeatures(h.FeatureSet),
-		p.buildRouteSettings(r, paths),
+		p.buildRouteSettings(ctx, r),
 	)
 }
 
@@ -420,7 +421,7 @@ func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...str
 	return builder.String()
 }
 
-func (p *hostConfigurationFileProvider) buildRouteSettings(r *host.Route, paths *Paths) string {
+func (p *hostConfigurationFileProvider) buildRouteSettings(ctx *providerContext, r *host.Route) string {
 	builder := strings.Builder{}
 	if r.Settings.ProxySSLServerName {
 		builder.WriteString("proxy_ssl_server_name on;")
@@ -443,7 +444,88 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(r *host.Route, paths 
 	}
 
 	if r.AccessListID != nil {
-		builder.WriteString(fmt.Sprintf("\ninclude %saccess-list-%s.conf;", paths.Config, *r.AccessListID))
+		builder.WriteString(fmt.Sprintf("\ninclude %saccess-list-%s.conf;", ctx.paths.Config, *r.AccessListID))
+	}
+
+	builder.WriteString(p.buildCacheConfig(ctx.caches, r.CacheID))
+
+	return builder.String()
+}
+
+func (p *hostConfigurationFileProvider) buildCacheConfig(caches *[]cache.Cache, cacheID *uuid.UUID) string {
+	if cacheID == nil || caches == nil {
+		return ""
+	}
+
+	var selectedCache *cache.Cache
+	for _, c := range *caches {
+		if c.ID == *cacheID {
+			selectedCache = &c
+			break
+		}
+	}
+
+	if selectedCache == nil {
+		return ""
+	}
+
+	cacheIDNoDashes := strings.ReplaceAll(selectedCache.ID.String(), "-", "")
+	builder := strings.Builder{}
+	builder.WriteString("\n")
+	builder.WriteString(fmt.Sprintf("proxy_cache cache_%s;", cacheIDNoDashes))
+
+	for _, d := range selectedCache.Durations {
+		statusCodes := make([]string, len(d.StatusCodes))
+		for i, code := range d.StatusCodes {
+			statusCodes[i] = fmt.Sprintf("%d", code)
+		}
+		builder.WriteString(fmt.Sprintf("\nproxy_cache_valid %s %ds;", strings.Join(statusCodes, " "), d.ValidTimeSeconds))
+	}
+
+	if len(selectedCache.AllowedMethods) > 0 {
+		methods := make([]string, len(selectedCache.AllowedMethods))
+		for i, m := range selectedCache.AllowedMethods {
+			methods[i] = string(m)
+		}
+		builder.WriteString(fmt.Sprintf("\nproxy_cache_methods %s;", strings.Join(methods, " ")))
+	}
+
+	if selectedCache.MinimumUsesBeforeCaching != nil {
+		builder.WriteString(fmt.Sprintf("\nproxy_cache_min_uses %d;", *selectedCache.MinimumUsesBeforeCaching))
+	}
+
+	if len(selectedCache.UseStale) > 0 {
+		staleOptions := make([]string, len(selectedCache.UseStale))
+		for i, o := range selectedCache.UseStale {
+			staleOptions[i] = string(o)
+		}
+		builder.WriteString(fmt.Sprintf("\nproxy_cache_use_stale %s;", strings.Join(staleOptions, " ")))
+	}
+
+	if selectedCache.BackgroundUpdate != nil {
+		builder.WriteString(fmt.Sprintf("\nproxy_cache_background_update %s;", p.flag(*selectedCache.BackgroundUpdate, "on", "off")))
+	}
+
+	if selectedCache.ConcurrencyLock.Enabled {
+		builder.WriteString("\nproxy_cache_lock on;")
+		if selectedCache.ConcurrencyLock.TimeoutSeconds != nil {
+			builder.WriteString(fmt.Sprintf("\nproxy_cache_lock_timeout %ds;", *selectedCache.ConcurrencyLock.TimeoutSeconds))
+		}
+		if selectedCache.ConcurrencyLock.AgeSeconds != nil {
+			builder.WriteString(fmt.Sprintf("\nproxy_cache_lock_age %ds;", *selectedCache.ConcurrencyLock.AgeSeconds))
+		}
+	}
+
+	if selectedCache.Revalidate != nil {
+		builder.WriteString(fmt.Sprintf("\nproxy_cache_revalidate %s;", p.flag(*selectedCache.Revalidate, "on", "off")))
+	}
+
+	if len(selectedCache.BypassRules) > 0 {
+		builder.WriteString(fmt.Sprintf("\nproxy_cache_bypass %s;", strings.Join(selectedCache.BypassRules, " ")))
+	}
+
+	if len(selectedCache.NoCacheRules) > 0 {
+		builder.WriteString(fmt.Sprintf("\nproxy_no_cache %s;", strings.Join(selectedCache.NoCacheRules, " ")))
 	}
 
 	return builder.String()
