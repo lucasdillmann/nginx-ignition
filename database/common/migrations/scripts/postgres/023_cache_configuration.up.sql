@@ -46,7 +46,7 @@ insert into cache (
     no_cache_rules
 ) values (
     '08c8430a-661d-4034-893d-4c31278f99e8',
-    'Static Files',
+    'Static files',
     null,
     259200,
     512,

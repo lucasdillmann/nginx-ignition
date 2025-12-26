@@ -1,0 +1,74 @@
+package cache
+
+import (
+	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/cache"
+)
+
+func toDomain(id uuid.UUID, dto *cacheRequestDto) *cache.Cache {
+	durations := make([]cache.Duration, len(dto.Durations))
+	for index, duration := range dto.Durations {
+		durations[index] = cache.Duration{
+			StatusCodes:      duration.StatusCodes,
+			ValidTimeSeconds: duration.ValidTimeSeconds,
+		}
+	}
+
+	var lock cache.ConcurrencyLock
+	if dto.ConcurrencyLock != nil {
+		lock = cache.ConcurrencyLock{
+			Enabled:        dto.ConcurrencyLock.Enabled,
+			TimeoutSeconds: dto.ConcurrencyLock.TimeoutSeconds,
+			AgeSeconds:     dto.ConcurrencyLock.AgeSeconds,
+		}
+	}
+
+	return &cache.Cache{
+		ID:                       id,
+		Name:                     *dto.Name,
+		StoragePath:              dto.StoragePath,
+		InactiveSeconds:          dto.InactiveSeconds,
+		MaxSizeMB:                dto.MaxSizeMB,
+		AllowedMethods:           dto.AllowedMethods,
+		MinimumUsesBeforeCaching: dto.MinimumUsesBeforeCaching,
+		UseStale:                 dto.UseStale,
+		BackgroundUpdate:         dto.BackgroundUpdate,
+		ConcurrencyLock:          lock,
+		Revalidate:               dto.Revalidate,
+		BypassRules:              dto.BypassRules,
+		NoCacheRules:             dto.NoCacheRules,
+		Durations:                durations,
+	}
+}
+
+func toResponseDto(domain *cache.Cache) cacheResponseDto {
+	durations := make([]durationDto, len(domain.Durations))
+	for index, duration := range domain.Durations {
+		durations[index] = durationDto{
+			StatusCodes:      duration.StatusCodes,
+			ValidTimeSeconds: duration.ValidTimeSeconds,
+		}
+	}
+
+	return cacheResponseDto{
+		ID:                       domain.ID,
+		Name:                     domain.Name,
+		StoragePath:              domain.StoragePath,
+		InactiveSeconds:          domain.InactiveSeconds,
+		MaxSizeMB:                domain.MaxSizeMB,
+		AllowedMethods:           domain.AllowedMethods,
+		MinimumUsesBeforeCaching: domain.MinimumUsesBeforeCaching,
+		UseStale:                 domain.UseStale,
+		BackgroundUpdate:         domain.BackgroundUpdate,
+		ConcurrencyLock: concurrencyLockDto{
+			Enabled:        domain.ConcurrencyLock.Enabled,
+			TimeoutSeconds: domain.ConcurrencyLock.TimeoutSeconds,
+			AgeSeconds:     domain.ConcurrencyLock.AgeSeconds,
+		},
+		Revalidate:   domain.Revalidate,
+		BypassRules:  domain.BypassRules,
+		NoCacheRules: domain.NoCacheRules,
+		Durations:    durations,
+	}
+}
