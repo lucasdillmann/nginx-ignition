@@ -19,3 +19,5 @@ vendor/
 .idea/
 .qodo
 build/
+
+application/tmp/

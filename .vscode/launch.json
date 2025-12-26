@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Backend",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/application/main.go",
+      "env": {
+        "NGINX_IGNITION_DATABASE_DRIVER": "postgres",
+        "NGINX_IGNITION_DATABASE_HOST": "localhost",
+        "NGINX_IGNITION_DATABASE_PORT": "5432",
+        "NGINX_IGNITION_DATABASE_NAME": "nginx_ignition",
+        "NGINX_IGNITION_DATABASE_SSL_MODE": "disable",
+        "NGINX_IGNITION_DATABASE_USERNAME": "nginx_ignition",
+        "NGINX_IGNITION_DATABASE_PASSWORD": "devpassword",
+        "NGINX_IGNITION_SECURITY_JWT_SECRET": "LtxbJbQfCriAuiRZQUzaUeQ8bAQXUZph7XyH4pfcYygjTCMb5kXYPLcAwEF5nN3j"
+      },
+      "args": [],
+      "showLog": true,
+      "preLaunchTask": ""
+    },
+    {
+      "name": "Debug Backend (Remote Attach)",
+      "type": "go",
+      "request": "attach",
+      "mode": "remote",
+      "remotePath": "${workspaceFolder}",
+      "port": 2345,
+      "host": "localhost",
+      "showLog": true
+    }
+  ]
+}

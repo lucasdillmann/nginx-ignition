@@ -1,0 +1,44 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+    network_mode: service:db
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Database configuration for development
+      NGINX_IGNITION_DATABASE_DRIVER: postgres
+      NGINX_IGNITION_DATABASE_HOST: localhost
+      NGINX_IGNITION_DATABASE_PORT: 5432
+      NGINX_IGNITION_DATABASE_NAME: nginx_ignition
+      NGINX_IGNITION_DATABASE_SSL_MODE: disable
+      NGINX_IGNITION_DATABASE_USERNAME: nginx_ignition
+      NGINX_IGNITION_DATABASE_PASSWORD: devpassword
+      NGINX_IGNITION_SECURITY_JWT_SECRET: LtxbJbQfCriAuiRZQUzaUeQ8bAQXUZph7XyH4pfcYygjTCMb5kXYPLcAwEF5nN3j
+
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nginx_ignition
+      POSTGRES_USER: nginx_ignition
+      POSTGRES_PASSWORD: devpassword
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nginx_ignition"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    ports:
+      - "0.0.0.0:5432:5432"
+      - "0.0.0.0:8090:8090"
+      - "0.0.0.0:5173:5173"
+
+volumes:
+  postgres-data:
