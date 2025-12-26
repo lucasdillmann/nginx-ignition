@@ -13,7 +13,7 @@ func Convert[I, O any](
 	page *pagination.Page[I],
 	converter func(*I) O,
 ) PageDTO[O] {
-	contents := make([]O, 0)
+	contents := make([]O, len(page.Contents))
 	for index, item := range page.Contents {
 		contents[index] = converter(&item)
 	}

@@ -7,6 +7,15 @@ import { defineConfig } from "vite"
 export default defineConfig({
     base: "/",
     plugins: [viteReact()],
+    server: {
+        host: "0.0.0.0",
+        port: 8080,
+        proxy: {
+            "/api": {
+                target: "http://localhost:8090",
+            },
+        },
+    },
     build: {
         outDir: "build",
         emptyOutDir: true,

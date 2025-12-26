@@ -159,8 +159,8 @@ func parseCertificateChain(chain string, base64Encoded bool) ([]x509.Certificate
 
 func encodeChain(chain []x509.Certificate) []string {
 	encodedChain := make([]string, len(chain))
-	for _, cert := range chain {
-		encodedChain = append(encodedChain, base64.StdEncoding.EncodeToString(cert.Raw))
+	for index, cert := range chain {
+		encodedChain[index] = base64.StdEncoding.EncodeToString(cert.Raw)
 	}
 
 	return encodedChain

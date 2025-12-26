@@ -6,7 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 )
 
-func toDomain(model *accessListModel) *accesslist.AccessList {
+func toDomain(model *accessListModel) accesslist.AccessList {
 	entries := make([]accesslist.Entry, len(model.EntrySets))
 	for index, entry := range model.EntrySets {
 		entries[index] = accesslist.Entry{
@@ -24,7 +24,7 @@ func toDomain(model *accessListModel) *accesslist.AccessList {
 		}
 	}
 
-	return &accesslist.AccessList{
+	return accesslist.AccessList{
 		ID:                          model.ID,
 		Name:                        model.Name,
 		Realm:                       model.Realm,
@@ -36,7 +36,7 @@ func toDomain(model *accessListModel) *accesslist.AccessList {
 	}
 }
 
-func toModel(domain *accesslist.AccessList) *accessListModel {
+func toModel(domain *accesslist.AccessList) accessListModel {
 	entrySets := make([]entrySetModel, len(domain.Entries))
 	for index, entry := range domain.Entries {
 		entrySets[index] = entrySetModel{
@@ -58,7 +58,7 @@ func toModel(domain *accesslist.AccessList) *accessListModel {
 		}
 	}
 
-	return &accessListModel{
+	return accessListModel{
 		ID:                          domain.ID,
 		Name:                        domain.Name,
 		Realm:                       domain.Realm,

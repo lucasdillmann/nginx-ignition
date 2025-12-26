@@ -10,6 +10,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
@@ -46,7 +47,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*accesslist.Ac
 		return nil, err
 	}
 
-	return toDomain(&model), nil
+	return ptr.Of(toDomain(&model)), nil
 }
 
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
@@ -124,7 +125,7 @@ func (r *repository) FindByName(ctx context.Context, name string) (*accesslist.A
 		return nil, err
 	}
 
-	return toDomain(&model), nil
+	return ptr.Of(toDomain(&model)), nil
 }
 
 func (r *repository) FindPage(
@@ -157,7 +158,7 @@ func (r *repository) FindPage(
 
 	result := make([]accesslist.AccessList, 0)
 	for _, model := range models {
-		result = append(result, *toDomain(&model))
+		result = append(result, toDomain(&model))
 	}
 
 	return pagination.New(pageNumber, pageSize, count, result), nil
@@ -177,7 +178,7 @@ func (r *repository) FindAll(ctx context.Context) ([]accesslist.AccessList, erro
 
 	result := make([]accesslist.AccessList, 0)
 	for _, model := range models {
-		result = append(result, *toDomain(&model))
+		result = append(result, toDomain(&model))
 	}
 
 	return result, nil
@@ -197,16 +198,16 @@ func (r *repository) Save(ctx context.Context, accessList *accesslist.AccessList
 		return err
 	}
 
+	model := toModel(accessList)
 	if exists {
-		err = r.performUpdate(ctx, toModel(accessList), transaction)
+		err = r.performUpdate(ctx, &model, transaction)
 	} else {
-		model := toModel(accessList)
 		_, err = transaction.NewInsert().Model(model).Exec(ctx)
 		if err != nil {
 			return err
 		}
 
-		err = r.saveLinkedModels(ctx, transaction, model)
+		err = r.saveLinkedModels(ctx, transaction, &model)
 	}
 
 	if err != nil {

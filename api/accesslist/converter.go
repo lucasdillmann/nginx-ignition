@@ -46,24 +46,20 @@ func toDomain(request *accessListRequestDto) *accesslist.AccessList {
 	}
 
 	entries := make([]accesslist.Entry, 0)
-	if request.Entries != nil {
-		for _, entry := range request.Entries {
-			entries = append(entries, accesslist.Entry{
-				Priority:      *entry.Priority,
-				Outcome:       *entry.Outcome,
-				SourceAddress: entry.SourceAddresses,
-			})
-		}
+	for _, entry := range request.Entries {
+		entries = append(entries, accesslist.Entry{
+			Priority:      *entry.Priority,
+			Outcome:       *entry.Outcome,
+			SourceAddress: entry.SourceAddresses,
+		})
 	}
 
 	credentials := make([]accesslist.Credentials, 0)
-	if request.Credentials != nil {
-		for _, credential := range request.Credentials {
-			credentials = append(credentials, accesslist.Credentials{
-				Username: *credential.Username,
-				Password: *credential.Password,
-			})
-		}
+	for _, credential := range request.Credentials {
+		credentials = append(credentials, accesslist.Credentials{
+			Username: *credential.Username,
+			Password: *credential.Password,
+		})
 	}
 
 	return &accesslist.AccessList{

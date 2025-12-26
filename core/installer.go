@@ -24,6 +24,7 @@ func Install() error {
 		settings.Install,
 		user.Install,
 		accesslist.Install,
+		cache.Install,
 		certificate.Install,
 		vpn.Install,
 		host.Install,
@@ -31,6 +32,5 @@ func Install() error {
 		stream.Install,
 		nginx.Install,
 		backup.Install,
-		cache.Install,
 	)
 }

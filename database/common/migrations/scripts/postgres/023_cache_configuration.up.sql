@@ -62,18 +62,6 @@ insert into cache (
     '{}'
 );
 
-insert into cache_duration (
-    id,
-    cache_id,
-    status_codes,
-    valid_time_seconds
-) values (
-    '8b2847a1-90be-459f-958b-308102e3b2e5',
-    '08c8430a-661d-4034-893d-4c31278f99e8',
-    '{200, 301, 302}',
-    259200
-);
-
 alter table "user" add column caches_access_level
     varchar(32) not null default 'NO_ACCESS';
 
@@ -83,5 +71,7 @@ alter table host
 alter table host_route
     add column cache_id uuid references cache(id);
 
-create index idx_host_cache_id on host (cache_id);
-create index idx_host_route_cache_id on host_route (cache_id);
+create index idx_host_cache_id
+    on host (cache_id);
+create index idx_host_route_cache_id
+    on host_route (cache_id);

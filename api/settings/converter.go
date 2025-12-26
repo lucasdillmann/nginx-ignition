@@ -65,15 +65,13 @@ func toDto(settings *settings.Settings) *settingsDto {
 	}
 
 	bindingsModel := make([]bindingDto, 0)
-	if settings.GlobalBindings != nil {
-		for _, binding := range settings.GlobalBindings {
-			bindingsModel = append(bindingsModel, bindingDto{
-				Type:          &binding.Type,
-				IP:            &binding.IP,
-				Port:          &binding.Port,
-				CertificateID: binding.CertificateID,
-			})
-		}
+	for _, binding := range settings.GlobalBindings {
+		bindingsModel = append(bindingsModel, bindingDto{
+			Type:          &binding.Type,
+			IP:            &binding.IP,
+			Port:          &binding.Port,
+			CertificateID: binding.CertificateID,
+		})
 	}
 
 	return &settingsDto{
