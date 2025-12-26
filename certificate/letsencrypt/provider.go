@@ -42,7 +42,7 @@ func (p *Provider) Name() string {
 	return "Let's encrypt"
 }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return resolveDynamicFields()
 }
 

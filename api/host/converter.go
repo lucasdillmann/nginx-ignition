@@ -3,7 +3,6 @@ package host
 import (
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
@@ -13,9 +12,9 @@ func toDto(input *host.Host, globalSettings *settings.Settings) *hostResponseDto
 		return nil
 	}
 
-	var globalBindings *[]*bindingDto
+	var globalBindings []bindingDto
 	if input.UseGlobalBindings && globalSettings != nil && len(globalSettings.GlobalBindings) > 0 {
-		globalBindings = ptr.Of(toBindingDtoSlice(globalSettings.GlobalBindings))
+		globalBindings = toBindingDtoSlice(globalSettings.GlobalBindings)
 	}
 
 	return &hostResponseDto{
@@ -53,25 +52,21 @@ func toDomain(input *hostRequestDto) *host.Host {
 	}
 }
 
-func toRouteDtoSlice(routes []*host.Route) []*routeDto {
+func toRouteDtoSlice(routes []host.Route) []routeDto {
 	if routes == nil {
 		return nil
 	}
 
-	result := make([]*routeDto, len(routes))
+	result := make([]routeDto, len(routes))
 	for index, route := range routes {
-		result[index] = toRouteDto(route)
+		result[index] = toRouteDto(&route)
 	}
 
 	return result
 }
 
-func toRouteDto(route *host.Route) *routeDto {
-	if route == nil {
-		return nil
-	}
-
-	return &routeDto{
+func toRouteDto(route *host.Route) routeDto {
+	return routeDto{
 		Priority:     &route.Priority,
 		Enabled:      &route.Enabled,
 		Type:         &route.Type,
@@ -87,25 +82,21 @@ func toRouteDto(route *host.Route) *routeDto {
 	}
 }
 
-func toBindingDtoSlice(bindings []*host.Binding) []*bindingDto {
+func toBindingDtoSlice(bindings []host.Binding) []bindingDto {
 	if bindings == nil {
 		return nil
 	}
 
-	result := make([]*bindingDto, len(bindings))
+	result := make([]bindingDto, len(bindings))
 	for index, binding := range bindings {
-		result[index] = toBindingDto(binding)
+		result[index] = toBindingDto(&binding)
 	}
 
 	return result
 }
 
-func toBindingDto(binding *host.Binding) *bindingDto {
-	if binding == nil {
-		return nil
-	}
-
-	return &bindingDto{
+func toBindingDto(binding *host.Binding) bindingDto {
+	return bindingDto{
 		Type:          &binding.Type,
 		Ip:            &binding.IP,
 		Port:          &binding.Port,
@@ -113,25 +104,21 @@ func toBindingDto(binding *host.Binding) *bindingDto {
 	}
 }
 
-func toVpnDtoSlice(vpns []*host.VPN) []*vpnDto {
+func toVpnDtoSlice(vpns []host.VPN) []vpnDto {
 	if vpns == nil {
 		return nil
 	}
 
-	result := make([]*vpnDto, len(vpns))
+	result := make([]vpnDto, len(vpns))
 	for index, vpn := range vpns {
-		result[index] = toVpnDto(vpn)
+		result[index] = toVpnDto(&vpn)
 	}
 
 	return result
 }
 
-func toVpnDto(vpn *host.VPN) *vpnDto {
-	if vpn == nil {
-		return nil
-	}
-
-	return &vpnDto{
+func toVpnDto(vpn *host.VPN) vpnDto {
+	return vpnDto{
 		VPNID: &vpn.VPNID,
 		Name:  &vpn.Name,
 		Host:  vpn.Host,
@@ -206,51 +193,47 @@ func getBoolValue(value *bool) bool {
 	return *value
 }
 
-func toRouteSlice(routes []*routeDto) []*host.Route {
+func toRouteSlice(routes []routeDto) []host.Route {
 	if routes == nil {
 		return nil
 	}
 
-	result := make([]*host.Route, len(routes))
+	result := make([]host.Route, len(routes))
 	for index, route := range routes {
-		result[index] = toDomainModelRoute(route)
+		result[index] = toDomainModelRoute(&route)
 	}
 
 	return result
 }
 
-func toBindingSlice(bindings []*bindingDto) []*host.Binding {
+func toBindingSlice(bindings []bindingDto) []host.Binding {
 	if bindings == nil {
 		return nil
 	}
 
-	result := make([]*host.Binding, len(bindings))
+	result := make([]host.Binding, len(bindings))
 	for index, binding := range bindings {
-		result[index] = toDomainModelBinding(binding)
+		result[index] = toDomainModelBinding(&binding)
 	}
 
 	return result
 }
 
-func toVpnsSlice(vpns []*vpnDto) []*host.VPN {
+func toVpnsSlice(vpns []vpnDto) []host.VPN {
 	if vpns == nil {
 		return nil
 	}
 
-	result := make([]*host.VPN, len(vpns))
+	result := make([]host.VPN, len(vpns))
 	for index, vpn := range vpns {
-		result[index] = toDomainModelVPN(vpn)
+		result[index] = toDomainModelVPN(&vpn)
 	}
 
 	return result
 }
 
-func toDomainModelRoute(input *routeDto) *host.Route {
-	if input == nil {
-		return nil
-	}
-
-	return &host.Route{
+func toDomainModelRoute(input *routeDto) host.Route {
+	return host.Route{
 		Priority:     getIntValue(input.Priority),
 		Enabled:      getBoolValue(input.Enabled),
 		Type:         *input.Type,
@@ -357,12 +340,8 @@ func getMapValue(value *map[string]string) map[string]string {
 	return *value
 }
 
-func toDomainModelBinding(input *bindingDto) *host.Binding {
-	if input == nil {
-		return nil
-	}
-
-	return &host.Binding{
+func toDomainModelBinding(input *bindingDto) host.Binding {
+	return host.Binding{
 		Type:          *input.Type,
 		IP:            getStringValue(input.Ip),
 		Port:          getIntValue(input.Port),
@@ -370,12 +349,8 @@ func toDomainModelBinding(input *bindingDto) *host.Binding {
 	}
 }
 
-func toDomainModelVPN(input *vpnDto) *host.VPN {
-	if input == nil {
-		return nil
-	}
-
-	return &host.VPN{
+func toDomainModelVPN(input *vpnDto) host.VPN {
+	return host.VPN{
 		VPNID: getUuidValue(input.VPNID),
 		Name:  getStringValue(input.Name),
 		Host:  input.Host,

@@ -34,7 +34,7 @@ func (p *Provider) Name() string {
 	return "Azure"
 }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tenantFieldID,
@@ -67,7 +67,7 @@ func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 			Required:     true,
 			DefaultValue: defaultRegion,
 			Type:         dynamicfields.EnumType,
-			EnumOptions: &[]*dynamicfields.EnumOption{
+			EnumOptions: []dynamicfields.EnumOption{
 				{
 					ID:          defaultRegion,
 					Description: "Azure (default)",

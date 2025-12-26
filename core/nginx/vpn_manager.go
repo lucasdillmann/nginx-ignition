@@ -14,7 +14,7 @@ type endpointAdapter struct {
 	vpnID      uuid.UUID
 	name       string
 	domainName *string
-	bindings   []*host.Binding
+	bindings   []host.Binding
 }
 
 type vpnManager struct {
@@ -31,7 +31,7 @@ func newVpnManager(vpnCommands *vpn.Commands, settingsCommands *settings.Command
 	}
 }
 
-func (m *vpnManager) start(ctx context.Context, hosts []*host.Host) error {
+func (m *vpnManager) start(ctx context.Context, hosts []host.Host) error {
 	endpoints, err := m.buildEndpoints(ctx, hosts)
 	if err != nil {
 		return err
@@ -47,7 +47,7 @@ func (m *vpnManager) start(ctx context.Context, hosts []*host.Host) error {
 	return nil
 }
 
-func (m *vpnManager) reload(ctx context.Context, hosts []*host.Host) error {
+func (m *vpnManager) reload(ctx context.Context, hosts []host.Host) error {
 	newEndpoints, err := m.buildEndpoints(ctx, hosts)
 	if err != nil {
 		return err
@@ -89,7 +89,7 @@ func (m *vpnManager) reload(ctx context.Context, hosts []*host.Host) error {
 	return nil
 }
 
-func (m *vpnManager) buildEndpoints(ctx context.Context, hosts []*host.Host) ([]vpn.Endpoint, error) {
+func (m *vpnManager) buildEndpoints(ctx context.Context, hosts []host.Host) ([]vpn.Endpoint, error) {
 	setts, err := m.settingsCommands.Get(ctx)
 	if err != nil {
 		return nil, err
@@ -106,8 +106,8 @@ func (m *vpnManager) buildEndpoints(ctx context.Context, hosts []*host.Host) ([]
 			}
 
 			domainName := vpnEntry.Host
-			if (domainName == nil || *domainName == "") && len(h.DomainNames) > 0 && h.DomainNames[0] != nil {
-				domainName = h.DomainNames[0]
+			if (domainName == nil || *domainName == "") && len(h.DomainNames) > 0 {
+				domainName = &h.DomainNames[0]
 			}
 
 			endpoints = append(endpoints, &endpointAdapter{

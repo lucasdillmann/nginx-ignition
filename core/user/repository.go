@@ -13,7 +13,7 @@ type Repository interface {
 	DeleteByID(ctx context.Context, id uuid.UUID) error
 	FindByID(ctx context.Context, id uuid.UUID) (*User, error)
 	FindByUsername(ctx context.Context, username string) (*User, error)
-	FindPage(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*User], error)
+	FindPage(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[User], error)
 	IsEnabledByID(ctx context.Context, id uuid.UUID) (bool, error)
 	Count(ctx context.Context) (int, error)
 }

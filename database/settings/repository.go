@@ -35,7 +35,7 @@ func (r repository) Get(ctx context.Context) (*settings.Settings, error) {
 		return nil, err
 	}
 
-	var bindings []*bindingModel
+	var bindings []bindingModel
 	if err := r.database.Select().Model(&bindings).Scan(ctx); err != nil {
 		return nil, err
 	}

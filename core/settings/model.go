@@ -6,7 +6,7 @@ type Settings struct {
 	Nginx                *NginxSettings
 	LogRotation          *LogRotationSettings
 	CertificateAutoRenew *CertificateAutoRenewSettings
-	GlobalBindings       []*host.Binding
+	GlobalBindings       []host.Binding
 }
 
 type NginxSettings struct {

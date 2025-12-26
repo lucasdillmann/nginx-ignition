@@ -22,7 +22,7 @@ func (p *Provider) ID() string { return "CLOUDRU" }
 
 func (p *Provider) Name() string { return "Cloud.ru" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          serviceInstanceIDFieldID,

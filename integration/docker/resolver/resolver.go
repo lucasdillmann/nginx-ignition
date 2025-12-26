@@ -11,7 +11,7 @@ import (
 )
 
 type Resolver interface {
-	ResolveOptions(ctx context.Context, tcpOnly bool, searchTerms *string) (*[]Option, error)
+	ResolveOptions(ctx context.Context, tcpOnly bool, searchTerms *string) ([]Option, error)
 	ResolveOptionByID(ctx context.Context, optionId string) (*Option, error)
 }
 

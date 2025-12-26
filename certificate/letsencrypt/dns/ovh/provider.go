@@ -23,7 +23,7 @@ func (p *Provider) ID() string { return "OVH" }
 
 func (p *Provider) Name() string { return "OVH" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          endpointFieldID,

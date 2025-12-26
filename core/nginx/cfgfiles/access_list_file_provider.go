@@ -25,7 +25,7 @@ func (p *accessListFileProvider) provide(ctx *providerContext) ([]File, error) {
 
 	var outputs []File
 	for _, accessList := range accessLists {
-		outputs = append(outputs, p.build(accessList, ctx.paths)...)
+		outputs = append(outputs, p.build(&accessList, ctx.paths)...)
 	}
 
 	return outputs, nil
@@ -49,13 +49,9 @@ func (p *accessListFileProvider) buildConfFile(accessList *accesslist.AccessList
 	var entriesContents []string
 	for _, entry := range accessList.Entries {
 		for _, sourceAddress := range entry.SourceAddress {
-			if sourceAddress == nil {
-				continue
-			}
-
 			entriesContents = append(
 				entriesContents,
-				fmt.Sprintf("%s %s;", toNginxOperation(entry.Outcome), *sourceAddress),
+				fmt.Sprintf("%s %s;", toNginxOperation(entry.Outcome), sourceAddress),
 			)
 		}
 	}

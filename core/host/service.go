@@ -14,7 +14,7 @@ import (
 )
 
 type service struct {
-	hostRepository      Repository
+	repository          Repository
 	integrationCommands *integration.Commands
 	vpnCommands         *vpn.Commands
 	accessListCommands  *accesslist.Commands
@@ -22,14 +22,14 @@ type service struct {
 }
 
 func newService(
-	hostRepository Repository,
+	repository Repository,
 	integrationCommands *integration.Commands,
 	vpnCommands *vpn.Commands,
 	accessListCommands *accesslist.Commands,
 	cacheCommands *cache.Commands,
 ) *service {
 	return &service{
-		hostRepository,
+		repository,
 		integrationCommands,
 		vpnCommands,
 		accessListCommands,
@@ -39,7 +39,7 @@ func newService(
 
 func (s *service) save(ctx context.Context, input *Host) error {
 	validatorInstance := newValidator(
-		s.hostRepository,
+		s.repository,
 		s.integrationCommands,
 		s.vpnCommands,
 		s.accessListCommands,
@@ -50,27 +50,27 @@ func (s *service) save(ctx context.Context, input *Host) error {
 		return err
 	}
 
-	return s.hostRepository.Save(ctx, input)
+	return s.repository.Save(ctx, input)
 }
 
 func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
-	return s.hostRepository.DeleteByID(ctx, id)
+	return s.repository.DeleteByID(ctx, id)
 }
 
-func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*Host], error) {
-	return s.hostRepository.FindPage(ctx, pageSize, pageNumber, searchTerms)
+func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[Host], error) {
+	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms)
 }
 
 func (s *service) getByID(ctx context.Context, id uuid.UUID) (*Host, error) {
-	return s.hostRepository.FindByID(ctx, id)
+	return s.repository.FindByID(ctx, id)
 }
 
-func (s *service) getAllEnabled(ctx context.Context) ([]*Host, error) {
-	return s.hostRepository.FindAllEnabled(ctx)
+func (s *service) getAllEnabled(ctx context.Context) ([]Host, error) {
+	return s.repository.FindAllEnabled(ctx)
 }
 
 func (s *service) existsByID(ctx context.Context, id uuid.UUID) (bool, error) {
-	return s.hostRepository.ExistsByID(ctx, id)
+	return s.repository.ExistsByID(ctx, id)
 }
 
 func (s *service) validateBinding(
@@ -81,7 +81,7 @@ func (s *service) validateBinding(
 	context *validation.ConsistencyValidator,
 ) error {
 	validatorInstance := &validator{
-		s.hostRepository,
+		s.repository,
 		s.integrationCommands,
 		s.vpnCommands,
 		s.accessListCommands,

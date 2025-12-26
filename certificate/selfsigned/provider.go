@@ -27,8 +27,8 @@ func (p *Provider) Name() string {
 	return "Self-signed certificate"
 }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
-	return []*dynamicfields.DynamicField{}
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+	return []dynamicfields.DynamicField{}
 }
 
 func (p *Provider) Priority() int {

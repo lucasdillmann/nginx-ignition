@@ -2,7 +2,7 @@ package healthcheck
 
 type Status struct {
 	Healthy bool
-	Details []*Detail
+	Details []Detail
 }
 
 type Detail struct {

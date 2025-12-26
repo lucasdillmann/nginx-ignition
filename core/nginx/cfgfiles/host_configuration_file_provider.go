@@ -33,7 +33,7 @@ func (p *hostConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 	var outputs []File
 	for _, h := range ctx.hosts {
 		if h.Enabled {
-			output, err := p.buildHost(ctx, h)
+			output, err := p.buildHost(ctx, &h)
 			if err != nil {
 				return nil, err
 			}
@@ -49,7 +49,7 @@ func (p *hostConfigurationFileProvider) buildHost(ctx *providerContext, h *host.
 	var routes []string
 	for _, r := range h.Routes {
 		if r.Enabled {
-			route, err := p.buildRoute(ctx, h, r)
+			route, err := p.buildRoute(ctx, h, &r)
 			if err != nil {
 				return nil, err
 			}
@@ -85,7 +85,7 @@ func (p *hostConfigurationFileProvider) buildHost(ctx *providerContext, h *host.
 
 	var contents []string
 	for _, b := range bindings {
-		binding, err := p.buildBinding(ctx, h, b, routes, *serverNames, httpsRedirect, http2)
+		binding, err := p.buildBinding(ctx, h, &b, routes, *serverNames, httpsRedirect, http2)
 		if err != nil {
 			return nil, err
 		}
@@ -106,11 +106,7 @@ func (p *hostConfigurationFileProvider) buildServerNames(h *host.Host) (*string,
 	} else if len(h.DomainNames) > 0 {
 		domainNames := make([]string, len(h.DomainNames))
 		for index, domainName := range h.DomainNames {
-			if domainName == nil {
-				return nil, coreerror.New("Unexpected null domain Name", false)
-			}
-
-			domainNames[index] = *domainName
+			domainNames[index] = domainName
 		}
 
 		serverNames = "server_name " + strings.Join(domainNames, " ") + ";"
@@ -452,13 +448,13 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(ctx *providerContext,
 	return builder.String()
 }
 
-func (p *hostConfigurationFileProvider) buildCacheConfig(caches *[]cache.Cache, cacheID *uuid.UUID) string {
+func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, cacheID *uuid.UUID) string {
 	if cacheID == nil || caches == nil {
 		return ""
 	}
 
 	var selectedCache *cache.Cache
-	for _, c := range *caches {
+	for _, c := range caches {
 		if c.ID == *cacheID {
 			selectedCache = &c
 			break

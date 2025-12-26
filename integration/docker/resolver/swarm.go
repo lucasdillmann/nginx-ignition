@@ -27,7 +27,7 @@ func (s *swarmAdapter) ResolveOptionByID(ctx context.Context, id string) (*Optio
 		return nil, err
 	}
 
-	for _, item := range *availableOptions {
+	for _, item := range availableOptions {
 		if item.ID == id {
 			return &item, nil
 		}
@@ -36,7 +36,7 @@ func (s *swarmAdapter) ResolveOptionByID(ctx context.Context, id string) (*Optio
 	return nil, nil
 }
 
-func (s *swarmAdapter) ResolveOptions(ctx context.Context, tcpOnly bool, searchTerms *string) (*[]Option, error) {
+func (s *swarmAdapter) ResolveOptions(ctx context.Context, tcpOnly bool, searchTerms *string) ([]Option, error) {
 	services, err := s.client.ServiceList(ctx, swarm.ServiceListOptions{})
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func (s *swarmAdapter) ResolveOptions(ctx context.Context, tcpOnly bool, searchT
 	return s.buildServiceOptions(services, tcpOnly), nil
 }
 
-func (s *swarmAdapter) buildServiceOptions(services []swarm.Service, tcpOnly bool) *[]Option {
+func (s *swarmAdapter) buildServiceOptions(services []swarm.Service, tcpOnly bool) []Option {
 	optionIDs := make(map[string]bool)
 	options := make([]Option, 0, len(services))
 
@@ -79,7 +79,7 @@ func (s *swarmAdapter) buildServiceOptions(services []swarm.Service, tcpOnly boo
 		}
 	}
 
-	return &options
+	return options
 }
 
 func (s *swarmAdapter) buildServiceOption(port *swarm.PortConfig, service *swarm.Service) *Option {

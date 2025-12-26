@@ -23,7 +23,7 @@ func (p *Provider) ID() string { return "HURRICANE" }
 
 func (p *Provider) Name() string { return "Hurricane Electric" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokensFieldID,

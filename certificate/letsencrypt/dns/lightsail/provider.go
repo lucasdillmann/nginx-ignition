@@ -22,7 +22,7 @@ func (p *Provider) ID() string { return "LIGHTSAIL" }
 
 func (p *Provider) Name() string { return "AWS Lightsail" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          dnsZoneFieldID,

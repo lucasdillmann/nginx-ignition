@@ -22,7 +22,7 @@ func (p *Provider) ID() string { return "MAIL_IN_A_BOX" }
 
 func (p *Provider) Name() string { return "Mail-in-a-Box" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          baseURLFieldID,

@@ -22,7 +22,7 @@ func (p *Provider) ID() string { return "IIJ_DPF" }
 
 func (p *Provider) Name() string { return "IIJ DNS Platform Service" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokenFieldID,

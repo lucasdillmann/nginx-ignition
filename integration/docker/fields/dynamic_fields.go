@@ -13,7 +13,7 @@ var (
 		Required:     true,
 		Type:         dynamicfields.EnumType,
 		DefaultValue: SocketConnectionMode,
-		EnumOptions: &[]*dynamicfields.EnumOption{
+		EnumOptions: []dynamicfields.EnumOption{
 			{ID: SocketConnectionMode, Description: "Socket"},
 			{ID: TCPConnectionMode, Description: "TCP"},
 		},
@@ -26,7 +26,7 @@ var (
 		Required:     true,
 		Type:         dynamicfields.SingleLineTextType,
 		DefaultValue: "/var/run/docker.sock",
-		Conditions: &[]dynamicfields.Condition{{
+		Conditions: []dynamicfields.Condition{{
 			ParentField: ConnectionMode.ID,
 			Value:       SocketConnectionMode,
 		}},
@@ -40,7 +40,7 @@ var (
 		Type:         dynamicfields.URLType,
 		DefaultValue: "",
 		HelpText:     ptr.Of("The URL to be used to connect to Docker (such as tcp://example.com:2375)"),
-		Conditions: &[]dynamicfields.Condition{{
+		Conditions: []dynamicfields.Condition{{
 			ParentField: ConnectionMode.ID,
 			Value:       TCPConnectionMode,
 		}},
@@ -66,7 +66,7 @@ var (
 		DefaultValue: false,
 		HelpText: ptr.Of("When enabled, nginx will be configured to reach Swarm services using the service mesh " +
 			"(internal DNS names) when an ingress is selected as the proxy target"),
-		Conditions: &[]dynamicfields.Condition{{
+		Conditions: []dynamicfields.Condition{{
 			ParentField: SwarmMode.ID,
 			Value:       true,
 		}},
@@ -81,7 +81,7 @@ var (
 		DefaultValue: "",
 		HelpText: ptr.Of("Overrides the default DNS resolvers used by nginx when resolving Swarm services. " +
 			"One IP address per line."),
-		Conditions: &[]dynamicfields.Condition{
+		Conditions: []dynamicfields.Condition{
 			{
 				ParentField: SwarmMode.ID,
 				Value:       true,
@@ -103,7 +103,7 @@ var (
 		HelpText: ptr.Of("When enabled, ignition will use the container name as the ID instead of the " +
 			"container's actual ID. Use this option when the containers are recreated constantly and/or managed " +
 			"by a third-party tool."),
-		Conditions: &[]dynamicfields.Condition{{
+		Conditions: []dynamicfields.Condition{{
 			ParentField: SwarmMode.ID,
 			Value:       false,
 		}},
@@ -118,20 +118,20 @@ var (
 		DefaultValue: "",
 		HelpText: ptr.Of("The URL to be used when proxying a request to a Docker container using a port " +
 			"exposed on the host. If not set, the container IP will be used instead."),
-		Conditions: &[]dynamicfields.Condition{{
+		Conditions: []dynamicfields.Condition{{
 			ParentField: SwarmMode.ID,
 			Value:       false,
 		}},
 	}
 
-	All = []*dynamicfields.DynamicField{
-		&ConnectionMode,
-		&SocketPath,
-		&HostURL,
-		&SwarmMode,
-		&SwarmServiceMesh,
-		&SwarmDNSResolvers,
-		&UseContainerNameAsID,
-		&ProxyURL,
+	All = []dynamicfields.DynamicField{
+		ConnectionMode,
+		SocketPath,
+		HostURL,
+		SwarmMode,
+		SwarmServiceMesh,
+		SwarmDNSResolvers,
+		UseContainerNameAsID,
+		ProxyURL,
 	}
 )

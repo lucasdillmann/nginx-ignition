@@ -27,7 +27,7 @@ func (p *Provider) ID() string { return "INFOBLOX" }
 
 func (p *Provider) Name() string { return "Infoblox" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          hostFieldID,

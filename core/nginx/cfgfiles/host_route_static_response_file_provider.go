@@ -16,18 +16,18 @@ func (p *hostRouteStaticResponseFileProvider) provide(ctx *providerContext) ([]F
 	var outputs []File
 
 	for _, h := range ctx.hosts {
-		files, err := p.buildStaticResponseFiles(h)
+		files, err := p.buildStaticResponseFiles(&h)
 		if err != nil {
 			return nil, err
 		}
 
-		outputs = append(outputs, *files...)
+		outputs = append(outputs, files...)
 	}
 
 	return outputs, nil
 }
 
-func (p *hostRouteStaticResponseFileProvider) buildStaticResponseFiles(h *host.Host) (*[]File, error) {
+func (p *hostRouteStaticResponseFileProvider) buildStaticResponseFiles(h *host.Host) ([]File, error) {
 	var outputs []File
 
 	for _, r := range h.Routes {
@@ -46,5 +46,5 @@ func (p *hostRouteStaticResponseFileProvider) buildStaticResponseFiles(h *host.H
 		})
 	}
 
-	return &outputs, nil
+	return outputs, nil
 }

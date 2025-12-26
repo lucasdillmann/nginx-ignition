@@ -17,12 +17,12 @@ func (p *hostRouteSourceCodeFileProvider) provide(ctx *providerContext) ([]File,
 	var outputs []File
 
 	for _, h := range ctx.hosts {
-		files, err := p.buildSourceCodeFiles(ctx, h)
+		files, err := p.buildSourceCodeFiles(ctx, &h)
 		if err != nil {
 			return nil, err
 		}
 
-		outputs = append(outputs, *files...)
+		outputs = append(outputs, files...)
 	}
 
 	return outputs, nil
@@ -31,7 +31,7 @@ func (p *hostRouteSourceCodeFileProvider) provide(ctx *providerContext) ([]File,
 func (p *hostRouteSourceCodeFileProvider) buildSourceCodeFiles(
 	ctx *providerContext,
 	h *host.Host,
-) (*[]File, error) {
+) ([]File, error) {
 	var outputs []File
 
 	for _, r := range h.Routes {
@@ -55,5 +55,5 @@ func (p *hostRouteSourceCodeFileProvider) buildSourceCodeFiles(
 		}
 	}
 
-	return &outputs, nil
+	return outputs, nil
 }

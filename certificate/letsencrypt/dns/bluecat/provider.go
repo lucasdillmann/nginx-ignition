@@ -24,7 +24,7 @@ func (p *Provider) ID() string { return "BLUECAT" }
 
 func (p *Provider) Name() string { return "BlueCat" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          baseURLFieldID,

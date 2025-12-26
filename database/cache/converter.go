@@ -6,7 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/cache"
 )
 
-func toDomain(model *cacheModel) *cache.Cache {
+func toDomain(model *cacheModel) cache.Cache {
 	durations := make([]cache.Duration, len(model.Durations))
 	for index, duration := range model.Durations {
 		durations[index] = cache.Duration{
@@ -25,7 +25,7 @@ func toDomain(model *cacheModel) *cache.Cache {
 		useStale[index] = cache.UseStaleOption(option)
 	}
 
-	return &cache.Cache{
+	return cache.Cache{
 		ID:                       model.ID,
 		Name:                     model.Name,
 		StoragePath:              model.StoragePath,
@@ -47,10 +47,10 @@ func toDomain(model *cacheModel) *cache.Cache {
 	}
 }
 
-func toModel(domain *cache.Cache) *cacheModel {
-	durations := make([]*durationModel, len(domain.Durations))
+func toModel(domain *cache.Cache) cacheModel {
+	durations := make([]durationModel, len(domain.Durations))
 	for index, duration := range domain.Durations {
-		durations[index] = &durationModel{
+		durations[index] = durationModel{
 			ID:               uuid.New(),
 			CacheID:          domain.ID,
 			StatusCodes:      duration.StatusCodes,
@@ -68,7 +68,7 @@ func toModel(domain *cache.Cache) *cacheModel {
 		useStale[index] = string(option)
 	}
 
-	return &cacheModel{
+	return cacheModel{
 		ID:                            domain.ID,
 		Name:                          domain.Name,
 		StoragePath:                   domain.StoragePath,

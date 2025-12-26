@@ -21,7 +21,7 @@ func (p *Provider) ID() string { return "NAMECHEAP" }
 
 func (p *Provider) Name() string { return "Namecheap" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiUserFieldID,

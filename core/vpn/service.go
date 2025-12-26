@@ -30,7 +30,7 @@ func (s *service) list(
 	pageSize, pageNumber int,
 	searchTerms *string,
 	enabledOnly bool,
-) (*pagination.Page[*VPN], error) {
+) (*pagination.Page[VPN], error) {
 	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms, enabledOnly)
 }
 
@@ -64,15 +64,15 @@ func (s *service) existsById(ctx context.Context, id uuid.UUID) (*bool, error) {
 	return s.repository.ExistsByID(ctx, id)
 }
 
-func (s *service) getAvailableDrivers(_ context.Context) (*[]*AvailableDriver, error) {
+func (s *service) getAvailableDrivers(_ context.Context) ([]AvailableDriver, error) {
 	drivers := s.drivers()
 	sort.Slice(drivers, func(left, right int) bool {
 		return drivers[left].Name() < drivers[right].Name()
 	})
 
-	output := make([]*AvailableDriver, len(drivers))
+	output := make([]AvailableDriver, len(drivers))
 	for index, driver := range drivers {
-		output[index] = &AvailableDriver{
+		output[index] = AvailableDriver{
 			ID:                    driver.ID(),
 			Name:                  driver.Name(),
 			ImportantInstructions: driver.ImportantInstructions(),
@@ -80,7 +80,7 @@ func (s *service) getAvailableDrivers(_ context.Context) (*[]*AvailableDriver, e
 		}
 	}
 
-	return &output, nil
+	return output, nil
 }
 
 func (s *service) start(ctx context.Context, endpoint Endpoint) error {

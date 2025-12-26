@@ -58,8 +58,8 @@ func newFacade(
 
 func (f *Facade) GetConfigurationFiles(ctx context.Context, paths *Paths, supportedFeatures *SupportedFeatures) (
 	configFiles []File,
-	hosts []*host.Host,
-	streams []*stream.Stream,
+	hosts []host.Host,
+	streams []stream.Stream,
 	err error,
 ) {
 	enabledHosts, err := f.hostCommands.GetAllEnabled(ctx)
@@ -102,7 +102,7 @@ func (f *Facade) GetConfigurationFiles(ctx context.Context, paths *Paths, suppor
 func (f *Facade) ReplaceConfigurationFiles(
 	ctx context.Context,
 	supportedFeatures *SupportedFeatures,
-) ([]*host.Host, []*stream.Stream, error) {
+) ([]host.Host, []stream.Stream, error) {
 	configDir, err := f.configuration.Get("nginx-ignition.nginx.config-path")
 	if err != nil {
 		return nil, nil, err

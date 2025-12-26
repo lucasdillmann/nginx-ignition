@@ -10,6 +10,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
@@ -41,7 +42,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*cache.Cache, 
 		return nil, err
 	}
 
-	return toDomain(&model), nil
+	return ptr.Of(toDomain(&model)), nil
 }
 
 func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
@@ -117,14 +118,14 @@ func (r *repository) FindByName(ctx context.Context, name string) (*cache.Cache,
 		return nil, err
 	}
 
-	return toDomain(&model), nil
+	return ptr.Of(toDomain(&model)), nil
 }
 
 func (r *repository) FindPage(
 	ctx context.Context,
 	pageNumber, pageSize int,
 	searchTerms *string,
-) (*pagination.Page[*cache.Cache], error) {
+) (*pagination.Page[cache.Cache], error) {
 	var models []cacheModel
 
 	query := r.database.Select().Model(&models)
@@ -147,7 +148,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []*cache.Cache
+	var result []cache.Cache
 	for _, model := range models {
 		result = append(result, toDomain(&model))
 	}
@@ -155,7 +156,7 @@ func (r *repository) FindPage(
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAll(ctx context.Context) ([]*cache.Cache, error) {
+func (r *repository) FindAll(ctx context.Context) ([]cache.Cache, error) {
 	var models []cacheModel
 
 	err := r.database.Select().
@@ -166,7 +167,7 @@ func (r *repository) FindAll(ctx context.Context) ([]*cache.Cache, error) {
 		return nil, err
 	}
 
-	var result []*cache.Cache
+	var result []cache.Cache
 	for _, model := range models {
 		result = append(result, toDomain(&model))
 	}
@@ -174,7 +175,7 @@ func (r *repository) FindAll(ctx context.Context) ([]*cache.Cache, error) {
 	return result, nil
 }
 
-func (r *repository) FindAllInUse(ctx context.Context) (*[]cache.Cache, error) {
+func (r *repository) FindAllInUse(ctx context.Context) ([]cache.Cache, error) {
 	var models []cacheModel
 
 	hostSubquery := r.database.
@@ -200,10 +201,10 @@ func (r *repository) FindAllInUse(ctx context.Context) (*[]cache.Cache, error) {
 
 	result := make([]cache.Cache, len(models))
 	for i, model := range models {
-		result[i] = *toDomain(&model)
+		result[i] = toDomain(&model)
 	}
 
-	return &result, nil
+	return result, nil
 }
 
 func (r *repository) Save(ctx context.Context, domain *cache.Cache) error {
@@ -221,9 +222,9 @@ func (r *repository) Save(ctx context.Context, domain *cache.Cache) error {
 
 	model := toModel(domain)
 	if exists {
-		err = r.performUpdate(ctx, transaction, model)
+		err = r.performUpdate(ctx, transaction, &model)
 	} else {
-		err = r.performInsert(ctx, transaction, model)
+		err = r.performInsert(ctx, transaction, &model)
 	}
 
 	if err != nil {
@@ -257,8 +258,8 @@ func (r *repository) performUpdate(ctx context.Context, transaction bun.Tx, mode
 }
 
 func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, model *cacheModel) error {
-	for _, duration := range model.Durations {
-		_, err := transaction.NewInsert().Model(duration).Exec(ctx)
+	for index := range model.Durations {
+		_, err := transaction.NewInsert().Model(&model.Durations[index]).Exec(ctx)
 		if err != nil {
 			return err
 		}

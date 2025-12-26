@@ -8,14 +8,14 @@ import (
 type accessListModel struct {
 	bun.BaseModel `bun:"access_list"`
 
-	ID                          uuid.UUID           `bun:"id,pk"`
-	Name                        string              `bun:"name,unique,notnull"`
-	Realm                       string              `bun:"realm"`
-	DefaultOutcome              string              `bun:"default_outcome,notnull"`
-	ForwardAuthenticationHeader bool                `bun:"forward_authentication_header,notnull"`
-	SatisfyAll                  bool                `bun:"satisfy_all,notnull"`
-	Credentials                 []*credentialsModel `bun:"rel:has-many,join:id=access_list_id"`
-	EntrySets                   []*entrySetModel    `bun:"rel:has-many,join:id=access_list_id"`
+	ID                          uuid.UUID          `bun:"id,pk"`
+	Name                        string             `bun:"name,unique,notnull"`
+	Realm                       string             `bun:"realm"`
+	DefaultOutcome              string             `bun:"default_outcome,notnull"`
+	ForwardAuthenticationHeader bool               `bun:"forward_authentication_header,notnull"`
+	SatisfyAll                  bool               `bun:"satisfy_all,notnull"`
+	Credentials                 []credentialsModel `bun:"rel:has-many,join:id=access_list_id"`
+	EntrySets                   []entrySetModel    `bun:"rel:has-many,join:id=access_list_id"`
 }
 
 type credentialsModel struct {

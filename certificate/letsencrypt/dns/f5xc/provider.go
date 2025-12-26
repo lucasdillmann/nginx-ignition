@@ -22,7 +22,7 @@ func (p *Provider) ID() string { return "F5_XC" }
 
 func (p *Provider) Name() string { return "F5 XC" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiTokenFieldID,

@@ -88,9 +88,9 @@ func handleCoreError(ctx *gin.Context, err *coreerror.CoreError) {
 }
 
 func handleConsistencyError(ctx *gin.Context, err *validation.ConsistencyError) {
-	details := make([]*problemDetail, len(err.Violations))
+	details := make([]problemDetail, len(err.Violations))
 	for index, detail := range err.Violations {
-		details[index] = &problemDetail{
+		details[index] = problemDetail{
 			FieldPath: detail.Path,
 			Message:   detail.Message,
 		}
@@ -99,7 +99,7 @@ func handleConsistencyError(ctx *gin.Context, err *validation.ConsistencyError) 
 	sendError(ctx, details)
 }
 
-func sendError(ctx *gin.Context, details []*problemDetail) {
+func sendError(ctx *gin.Context, details []problemDetail) {
 	ctx.JSON(http.StatusBadRequest, gin.H{
 		"message":             "One or more consistency problems were found",
 		"consistencyProblems": details,

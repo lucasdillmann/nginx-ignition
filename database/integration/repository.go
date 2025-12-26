@@ -146,7 +146,7 @@ func (r *repository) FindPage(
 	pageSize, pageNumber int,
 	searchTerms *string,
 	enabledOnly bool,
-) (*pagination.Page[*integration.Integration], error) {
+) (*pagination.Page[integration.Integration], error) {
 	var models []integrationModel
 
 	query := r.database.Select().Model(&models)
@@ -172,14 +172,14 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []*integration.Integration
+	var result []integration.Integration
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {
 			return nil, err
 		}
 
-		result = append(result, domain)
+		result = append(result, *domain)
 	}
 
 	return pagination.New(pageNumber, pageSize, count, result), nil

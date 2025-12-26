@@ -26,7 +26,7 @@ func (p *Provider) Name() string {
 	return "StackPath"
 }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          clientIDFieldID,

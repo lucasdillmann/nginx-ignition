@@ -4,8 +4,8 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-func toDomain(model *userModel) *user.User {
-	return &user.User{
+func toDomain(model *userModel) user.User {
+	return user.User{
 		ID:           model.ID,
 		Enabled:      model.Enabled,
 		Name:         model.Name,

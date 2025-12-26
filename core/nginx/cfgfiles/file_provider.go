@@ -26,9 +26,9 @@ type SupportedFeatures struct {
 type providerContext struct {
 	context           context.Context
 	paths             *Paths
-	hosts             []*host.Host
-	streams           []*stream.Stream
-	caches            *[]cache.Cache
+	hosts             []host.Host
+	streams           []stream.Stream
+	caches            []cache.Cache
 	supportedFeatures *SupportedFeatures
 }
 

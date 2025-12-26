@@ -11,9 +11,9 @@ type accessListRequestDto struct {
 	Realm                       *string             `json:"realm"`
 	SatisfyAll                  *bool               `json:"satisfyAll"`
 	DefaultOutcome              *accesslist.Outcome `json:"defaultOutcome"`
-	Entries                     []*entrySetDto      `json:"entries"`
+	Entries                     []entrySetDto       `json:"entries"`
 	ForwardAuthenticationHeader *bool               `json:"forwardAuthenticationHeader"`
-	Credentials                 []*credentialsDto   `json:"credentials"`
+	Credentials                 []credentialsDto    `json:"credentials"`
 }
 
 type accessListResponseDto struct {
@@ -30,7 +30,7 @@ type accessListResponseDto struct {
 type entrySetDto struct {
 	Priority        *int                `json:"priority"`
 	Outcome         *accesslist.Outcome `json:"outcome"`
-	SourceAddresses []*string           `json:"sourceAddresses"`
+	SourceAddresses []string            `json:"sourceAddresses"`
 }
 
 type credentialsDto struct {

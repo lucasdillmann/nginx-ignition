@@ -20,7 +20,7 @@ func (p *Provider) ID() string { return "YANDEX" }
 
 func (p *Provider) Name() string { return "Yandex" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          pddTokenFieldID,

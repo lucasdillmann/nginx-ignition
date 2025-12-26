@@ -21,7 +21,7 @@ func (p *Provider) ID() string { return "SAKURA_CLOUD" }
 
 func (p *Provider) Name() string { return "SakuraCloud" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessTokenFieldID,

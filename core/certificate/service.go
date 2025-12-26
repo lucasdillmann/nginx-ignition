@@ -89,7 +89,7 @@ func (s *service) getById(ctx context.Context, id uuid.UUID) (*Certificate, erro
 	return cert, nil
 }
 
-func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*Certificate], error) {
+func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[Certificate], error) {
 	certs, err := s.certificateRepository.FindPage(ctx, pageSize, pageNumber, searchTerms)
 	if err != nil {
 		return nil, err
@@ -108,10 +108,10 @@ func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerm
 	return certs, nil
 }
 
-func (s *service) availableProviders(_ context.Context) ([]*AvailableProvider, error) {
-	var availableProviders []*AvailableProvider
+func (s *service) availableProviders(_ context.Context) ([]AvailableProvider, error) {
+	var availableProviders []AvailableProvider
 	for _, provider := range s.providers() {
-		availableProviders = append(availableProviders, &AvailableProvider{
+		availableProviders = append(availableProviders, AvailableProvider{
 			provider: provider,
 		})
 	}
@@ -195,7 +195,7 @@ func (s *service) issue(ctx context.Context, request *IssueRequest) (*Certificat
 	return certificate, nil
 }
 
-func providerById(availableProviders []*AvailableProvider, id string) Provider {
+func providerById(availableProviders []AvailableProvider, id string) Provider {
 	for _, p := range availableProviders {
 		if p.provider.ID() == id {
 			return p.provider

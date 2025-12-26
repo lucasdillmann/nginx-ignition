@@ -44,7 +44,7 @@ func (s *service) findById(ctx context.Context, id uuid.UUID) (*AccessList, erro
 	return s.repository.FindByID(ctx, id)
 }
 
-func (s *service) findAll(ctx context.Context) ([]*AccessList, error) {
+func (s *service) findAll(ctx context.Context) ([]AccessList, error) {
 	return s.repository.FindAll(ctx)
 }
 
@@ -53,7 +53,7 @@ func (s *service) list(
 	pageSize,
 	pageNumber int,
 	searchTerms *string,
-) (*pagination.Page[*AccessList], error) {
+) (*pagination.Page[AccessList], error) {
 	return s.repository.FindPage(ctx, pageNumber, pageSize, searchTerms)
 }
 

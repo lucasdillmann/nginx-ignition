@@ -27,7 +27,7 @@ func newHostCertificateFileProvider(certificateRepository certificate.Repository
 }
 
 func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, error) {
-	var bindings []*host.Binding
+	var bindings []host.Binding
 	for _, h := range ctx.hosts {
 		bindings = append(bindings, h.Bindings...)
 	}

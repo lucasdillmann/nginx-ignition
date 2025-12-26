@@ -9,7 +9,7 @@ func toDomain(
 	nginx *nginxModel,
 	logRotation *logRotationModel,
 	certificate *certificateModel,
-	bindings []*bindingModel,
+	bindings []bindingModel,
 	buffers *buffersModel,
 ) *settings.Settings {
 	return &settings.Settings{
@@ -66,11 +66,11 @@ func toDomain(
 	}
 }
 
-func toBindingDomain(bindings []*bindingModel) []*host.Binding {
-	var result []*host.Binding
+func toBindingDomain(bindings []bindingModel) []host.Binding {
+	var result []host.Binding
 
 	for _, binding := range bindings {
-		result = append(result, &host.Binding{
+		result = append(result, host.Binding{
 			ID:            binding.ID,
 			Type:          host.BindingType(binding.Type),
 			IP:            binding.IP,
@@ -86,7 +86,7 @@ func toModel(settings *settings.Settings) (
 	*nginxModel,
 	*logRotationModel,
 	*certificateModel,
-	[]*bindingModel,
+	[]bindingModel,
 	*buffersModel,
 ) {
 	nginx := &nginxModel{
@@ -139,13 +139,13 @@ func toModel(settings *settings.Settings) (
 	return nginx, logRotation, certificate, bindings, buffers
 }
 
-func toBindingModel(bindings []*host.Binding) []*bindingModel {
-	var result []*bindingModel
+func toBindingModel(bindings []host.Binding) []bindingModel {
+	var result []bindingModel
 
 	for _, binding := range bindings {
-		result = append(result, &bindingModel{
+		result = append(result, bindingModel{
 			ID:            binding.ID,
-			Type:          string(binding.Type), // Assuming host.BindingType has a String method
+			Type:          string(binding.Type),
 			IP:            binding.IP,
 			Port:          binding.Port,
 			CertificateID: binding.CertificateID,

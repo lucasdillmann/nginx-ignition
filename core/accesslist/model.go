@@ -17,18 +17,18 @@ type AccessList struct {
 	Realm                       string
 	SatisfyAll                  bool
 	DefaultOutcome              Outcome
-	Entries                     []AccessListEntry
-	Credentials                 []AccessListCredentials
+	Entries                     []Entry
+	Credentials                 []Credentials
 	ForwardAuthenticationHeader bool
 }
 
-type AccessListEntry struct {
+type Entry struct {
 	Priority      int
 	Outcome       Outcome
-	SourceAddress []*string
+	SourceAddress []string
 }
 
-type AccessListCredentials struct {
+type Credentials struct {
 	Username string
 	Password string
 }

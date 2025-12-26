@@ -5,14 +5,13 @@ import (
 
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/common/pointers"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
 func toDomain(model *hostModel) (*host.Host, error) {
-	bindings := make([]*host.Binding, len(model.Bindings))
+	bindings := make([]host.Binding, len(model.Bindings))
 	for index, binding := range model.Bindings {
-		bindings[index] = &host.Binding{
+		bindings[index] = host.Binding{
 			ID:            binding.ID,
 			Type:          host.BindingType(binding.Type),
 			IP:            binding.IP,
@@ -21,16 +20,16 @@ func toDomain(model *hostModel) (*host.Host, error) {
 		}
 	}
 
-	vpns := make([]*host.VPN, len(model.VPNs))
+	vpns := make([]host.VPN, len(model.VPNs))
 	for index, vpn := range model.VPNs {
-		vpns[index] = &host.VPN{
+		vpns[index] = host.VPN{
 			VPNID: vpn.VPNID,
 			Name:  vpn.Name,
 			Host:  vpn.Host,
 		}
 	}
 
-	routes := make([]*host.Route, len(model.Routes))
+	routes := make([]host.Route, len(model.Routes))
 	for index, route := range model.Routes {
 		headers, err := parseHeaders(route.StaticResponseHeaders)
 		if err != nil {
@@ -63,7 +62,7 @@ func toDomain(model *hostModel) (*host.Host, error) {
 			}
 		}
 
-		routes[index] = &host.Route{
+		routes[index] = host.Route{
 			ID:           route.ID,
 			Priority:     route.Priority,
 			Enabled:      route.Enabled,
@@ -91,7 +90,7 @@ func toDomain(model *hostModel) (*host.Host, error) {
 		Enabled:           model.Enabled,
 		DefaultServer:     model.DefaultServer,
 		UseGlobalBindings: model.UseGlobalBindings,
-		DomainNames:       pointers.Reference(model.DomainNames),
+		DomainNames:       model.DomainNames,
 		Routes:            routes,
 		Bindings:          bindings,
 		VPNs:              vpns,
@@ -106,9 +105,9 @@ func toDomain(model *hostModel) (*host.Host, error) {
 }
 
 func toModel(domain *host.Host) (*hostModel, error) {
-	bindings := make([]*hostBindingModel, len(domain.Bindings))
+	bindings := make([]hostBindingModel, len(domain.Bindings))
 	for index, binding := range domain.Bindings {
-		bindings[index] = &hostBindingModel{
+		bindings[index] = hostBindingModel{
 			ID:            binding.ID,
 			HostID:        domain.ID,
 			Type:          string(binding.Type),
@@ -118,9 +117,9 @@ func toModel(domain *host.Host) (*hostModel, error) {
 		}
 	}
 
-	vpns := make([]*hostVpnModel, len(domain.VPNs))
+	vpns := make([]hostVpnModel, len(domain.VPNs))
 	for index, vpn := range domain.VPNs {
-		vpns[index] = &hostVpnModel{
+		vpns[index] = hostVpnModel{
 			HostID: domain.ID,
 			VPNID:  vpn.VPNID,
 			Name:   vpn.Name,
@@ -128,7 +127,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 		}
 	}
 
-	routes := make([]*hostRouteModel, len(domain.Routes))
+	routes := make([]hostRouteModel, len(domain.Routes))
 	for index, route := range domain.Routes {
 		var responseHeaders, responsePayload *string
 		var responseStatusCode *int
@@ -158,7 +157,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 			codeMainFunction = route.SourceCode.MainFunction
 		}
 
-		routes[index] = &hostRouteModel{
+		routes[index] = hostRouteModel{
 			ID:                      route.ID,
 			HostID:                  domain.ID,
 			Priority:                route.Priority,
@@ -189,7 +188,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 		ID:                  domain.ID,
 		Enabled:             domain.Enabled,
 		DefaultServer:       domain.DefaultServer,
-		DomainNames:         pointers.Dereference(domain.DomainNames),
+		DomainNames:         domain.DomainNames,
 		WebsocketSupport:    domain.FeatureSet.WebsocketSupport,
 		HTTP2Support:        domain.FeatureSet.HTTP2Support,
 		RedirectHTTPToHTTPS: domain.FeatureSet.RedirectHTTPToHTTPS,

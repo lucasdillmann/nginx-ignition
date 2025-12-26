@@ -110,7 +110,7 @@ func (v *validator) validateDomainNames(host *Host) {
 	}
 
 	for index, domainName := range host.DomainNames {
-		if domainName == nil || !constants.TLDPattern.MatchString(*domainName) {
+		if !constants.TLDPattern.MatchString(domainName) {
 			v.delegate.Add("domainNames["+strconv.Itoa(index)+"]", "Value is not a valid domain name")
 		}
 	}
@@ -127,7 +127,7 @@ func (v *validator) validateBindings(ctx context.Context, host *Host) error {
 		}
 
 		for index, binding := range host.Bindings {
-			if err := v.validateBinding(ctx, bindingsPath, binding, index); err != nil {
+			if err := v.validateBinding(ctx, bindingsPath, &binding, index); err != nil {
 				return err
 			}
 		}
@@ -194,7 +194,7 @@ func (v *validator) validateRoutes(ctx context.Context, host *Host) error {
 
 	distinctPaths := make(map[string]bool)
 	for index, route := range host.Routes {
-		if err := v.validateRoute(ctx, route, index, &distinctPaths); err != nil {
+		if err := v.validateRoute(ctx, &route, index, &distinctPaths); err != nil {
 			return err
 		}
 	}

@@ -18,9 +18,9 @@ type DynamicField struct {
 	Description  string
 	Required     bool
 	Type         Type
-	EnumOptions  *[]*EnumOption
+	EnumOptions  []EnumOption
 	Sensitive    bool
-	Conditions   *[]Condition
+	Conditions   []Condition
 	HelpText     *string
 	DefaultValue any
 }

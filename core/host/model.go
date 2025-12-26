@@ -34,10 +34,10 @@ type Host struct {
 	Enabled           bool
 	DefaultServer     bool
 	UseGlobalBindings bool
-	DomainNames       []*string
-	Routes            []*Route
-	Bindings          []*Binding
-	VPNs              []*VPN
+	DomainNames       []string
+	Routes            []Route
+	Bindings          []Binding
+	VPNs              []VPN
 	FeatureSet        FeatureSet
 	AccessListID      *uuid.UUID
 	CacheID           *uuid.UUID

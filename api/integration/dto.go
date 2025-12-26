@@ -30,8 +30,8 @@ type integrationOptionResponse struct {
 }
 
 type integrationDriverResponse struct {
-	ID                  string                               `json:"id"`
-	Name                string                               `json:"name"`
-	Description         string                               `json:"description"`
-	ConfigurationFields []*dynamicfield.DynamicFieldResponse `json:"configurationFields"`
+	ID                  string                              `json:"id"`
+	Name                string                              `json:"name"`
+	Description         string                              `json:"description"`
+	ConfigurationFields []dynamicfield.DynamicFieldResponse `json:"configurationFields"`
 }

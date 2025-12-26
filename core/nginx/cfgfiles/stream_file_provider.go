@@ -27,7 +27,7 @@ func (p *streamFileProvider) provide(ctx *providerContext) ([]File, error) {
 	files := make([]File, 0, len(ctx.streams))
 
 	for _, s := range ctx.streams {
-		contents, err := p.buildConfigFileContents(ctx, s)
+		contents, err := p.buildConfigFileContents(ctx, &s)
 		if err != nil {
 			return nil, err
 		}

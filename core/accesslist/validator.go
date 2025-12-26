@@ -38,7 +38,7 @@ func (v *validator) validate(accessList *AccessList) error {
 
 func (v *validator) validateEntry(
 	index int,
-	entry *AccessListEntry,
+	entry *Entry,
 	knownUsernames *map[int]bool,
 ) {
 	path := "entries[" + strconv.Itoa(index) + "]"
@@ -57,24 +57,24 @@ func (v *validator) validateEntry(
 	}
 
 	for addressIndex, address := range entry.SourceAddress {
-		if singleIp := net.ParseIP(*address); singleIp != nil {
+		if singleIp := net.ParseIP(address); singleIp != nil {
 			continue
 		}
 
-		if _, _, err := net.ParseCIDR(*address); err == nil {
+		if _, _, err := net.ParseCIDR(address); err == nil {
 			continue
 		}
 
 		v.delegate.Add(
 			path+".sourceAddress["+strconv.Itoa(addressIndex)+"]",
-			"Address \""+*address+"\" is not a valid IPv4 or IPv6 address or range",
+			"Address \""+address+"\" is not a valid IPv4 or IPv6 address or range",
 		)
 	}
 }
 
 func (v *validator) validateCredentials(
 	index int,
-	credentials *AccessListCredentials,
+	credentials *Credentials,
 	knownUsernames *map[string]bool,
 ) {
 	path := "credentials[" + strconv.Itoa(index) + "].username"

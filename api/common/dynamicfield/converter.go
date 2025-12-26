@@ -2,10 +2,10 @@ package dynamicfield
 
 import "dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 
-func ToResponse(fields []*dynamicfields.DynamicField) []*DynamicFieldResponse {
-	response := make([]*DynamicFieldResponse, len(fields))
+func ToResponse(fields []dynamicfields.DynamicField) []DynamicFieldResponse {
+	response := make([]DynamicFieldResponse, len(fields))
 	for index, field := range fields {
-		response[index] = &DynamicFieldResponse{
+		response[index] = DynamicFieldResponse{
 			ID:           field.ID,
 			Priority:     field.Priority,
 			Description:  field.Description,
@@ -18,16 +18,17 @@ func ToResponse(fields []*dynamicfields.DynamicField) []*DynamicFieldResponse {
 			DefaultValue: field.DefaultValue,
 		}
 	}
+
 	return response
 }
 
-func toEnumOptions(options *[]*dynamicfields.EnumOption) []EnumOption {
+func toEnumOptions(options []dynamicfields.EnumOption) []EnumOption {
 	if options == nil {
 		return nil
 	}
 
-	enumOptions := make([]EnumOption, len(*options))
-	for index, option := range *options {
+	enumOptions := make([]EnumOption, len(options))
+	for index, option := range options {
 		enumOptions[index] = EnumOption{
 			ID:          option.ID,
 			Description: option.Description,
@@ -37,18 +38,18 @@ func toEnumOptions(options *[]*dynamicfields.EnumOption) []EnumOption {
 	return enumOptions
 }
 
-func toConditions(condition *[]dynamicfields.Condition) *[]Condition {
-	if condition == nil || len(*condition) == 0 {
+func toConditions(condition []dynamicfields.Condition) []Condition {
+	if condition == nil || len(condition) == 0 {
 		return nil
 	}
 
-	result := make([]Condition, len(*condition))
-	for index, item := range *condition {
+	result := make([]Condition, len(condition))
+	for index, item := range condition {
 		result[index] = Condition{
 			ParentField: item.ParentField,
 			Value:       item.Value,
 		}
 	}
 
-	return &result
+	return result
 }

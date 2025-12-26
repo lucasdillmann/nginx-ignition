@@ -143,7 +143,7 @@ func (p *mainConfigurationFileProvider) enabledFlag(value bool) string {
 	return "off"
 }
 
-func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []*host.Host) string {
+func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []host.Host) string {
 	var includes []string
 	for _, h := range hosts {
 		includes = append(includes, fmt.Sprintf("include %shost-%s.conf;", paths.Config, h.ID))
@@ -152,7 +152,7 @@ func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []*h
 	return strings.Join(includes, "\n")
 }
 
-func (p *mainConfigurationFileProvider) getStreamIncludes(paths *Paths, streams []*stream.Stream) string {
+func (p *mainConfigurationFileProvider) getStreamIncludes(paths *Paths, streams []stream.Stream) string {
 	var includes []string
 
 	for _, s := range streams {
@@ -162,13 +162,13 @@ func (p *mainConfigurationFileProvider) getStreamIncludes(paths *Paths, streams 
 	return strings.Join(includes, "\n")
 }
 
-func (p *mainConfigurationFileProvider) getCacheDefinitions(paths *Paths, caches *[]cache.Cache) string {
-	if caches == nil {
+func (p *mainConfigurationFileProvider) getCacheDefinitions(paths *Paths, caches []cache.Cache) string {
+	if len(caches) == 0 {
 		return ""
 	}
 
 	var results []string
-	for _, c := range *caches {
+	for _, c := range caches {
 		cacheIDNoDashes := strings.ReplaceAll(c.ID.String(), "-", "")
 		storagePath := c.StoragePath
 		if storagePath == nil || *storagePath == "" {

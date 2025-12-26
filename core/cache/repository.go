@@ -14,8 +14,8 @@ type Repository interface {
 	ExistsByID(ctx context.Context, id uuid.UUID) (bool, error)
 	DeleteByID(ctx context.Context, id uuid.UUID) error
 	FindByName(ctx context.Context, name string) (*Cache, error)
-	FindPage(ctx context.Context, pageNumber, pageSize int, searchTerms *string) (*pagination.Page[*Cache], error)
-	FindAll(ctx context.Context) ([]*Cache, error)
-	FindAllInUse(ctx context.Context) (*[]Cache, error)
+	FindPage(ctx context.Context, pageNumber, pageSize int, searchTerms *string) (*pagination.Page[Cache], error)
+	FindAll(ctx context.Context) ([]Cache, error)
+	FindAllInUse(ctx context.Context) ([]Cache, error)
 	Save(ctx context.Context, cache *Cache) error
 }

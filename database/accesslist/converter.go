@@ -4,22 +4,21 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/accesslist"
-	"dillmann.com.br/nginx-ignition/core/common/pointers"
 )
 
 func toDomain(model *accessListModel) *accesslist.AccessList {
-	entries := make([]accesslist.AccessListEntry, len(model.EntrySets))
+	entries := make([]accesslist.Entry, len(model.EntrySets))
 	for index, entry := range model.EntrySets {
-		entries[index] = accesslist.AccessListEntry{
+		entries[index] = accesslist.Entry{
 			Priority:      entry.Priority,
 			Outcome:       accesslist.Outcome(entry.Outcome),
-			SourceAddress: pointers.Reference(entry.SourceAddresses),
+			SourceAddress: entry.SourceAddresses,
 		}
 	}
 
-	credentials := make([]accesslist.AccessListCredentials, len(model.Credentials))
+	credentials := make([]accesslist.Credentials, len(model.Credentials))
 	for index, credential := range model.Credentials {
-		credentials[index] = accesslist.AccessListCredentials{
+		credentials[index] = accesslist.Credentials{
 			Username: credential.Username,
 			Password: credential.Password,
 		}
@@ -38,20 +37,20 @@ func toDomain(model *accessListModel) *accesslist.AccessList {
 }
 
 func toModel(domain *accesslist.AccessList) *accessListModel {
-	entrySets := make([]*entrySetModel, len(domain.Entries))
+	entrySets := make([]entrySetModel, len(domain.Entries))
 	for index, entry := range domain.Entries {
-		entrySets[index] = &entrySetModel{
+		entrySets[index] = entrySetModel{
 			ID:              uuid.New(),
 			AccessListID:    domain.ID,
 			Priority:        entry.Priority,
 			Outcome:         string(entry.Outcome),
-			SourceAddresses: pointers.Dereference(entry.SourceAddress),
+			SourceAddresses: entry.SourceAddress,
 		}
 	}
 
-	credentials := make([]*credentialsModel, len(domain.Credentials))
+	credentials := make([]credentialsModel, len(domain.Credentials))
 	for index, cred := range domain.Credentials {
-		credentials[index] = &credentialsModel{
+		credentials[index] = credentialsModel{
 			ID:           uuid.New(),
 			AccessListID: domain.ID,
 			Username:     cred.Username,

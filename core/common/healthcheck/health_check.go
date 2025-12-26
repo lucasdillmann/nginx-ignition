@@ -21,11 +21,11 @@ func (h *HealthCheck) Register(provider Provider) {
 func (h *HealthCheck) Status(ctx context.Context) *Status {
 	status := Status{
 		Healthy: true,
-		Details: make([]*Detail, len(h.providers)),
+		Details: make([]Detail, len(h.providers)),
 	}
 
 	for index, provider := range h.providers {
-		status.Details[index] = &Detail{
+		status.Details[index] = Detail{
 			ID:    provider.ID(),
 			Error: provider.Check(ctx),
 		}

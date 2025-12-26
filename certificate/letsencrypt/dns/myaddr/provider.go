@@ -23,7 +23,7 @@ func (p *Provider) ID() string { return "MYADDR" }
 
 func (p *Provider) Name() string { return "myaddr" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          credentialsFieldID,

@@ -28,7 +28,7 @@ func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
 	return s.streamRepository.DeleteByID(ctx, id)
 }
 
-func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*Stream], error) {
+func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[Stream], error) {
 	return s.streamRepository.FindPage(ctx, pageSize, pageNumber, searchTerms)
 }
 
@@ -36,7 +36,7 @@ func (s *service) getByID(ctx context.Context, id uuid.UUID) (*Stream, error) {
 	return s.streamRepository.FindByID(ctx, id)
 }
 
-func (s *service) getAllEnabled(ctx context.Context) ([]*Stream, error) {
+func (s *service) getAllEnabled(ctx context.Context) ([]Stream, error) {
 	return s.streamRepository.FindAllEnabled(ctx)
 }
 

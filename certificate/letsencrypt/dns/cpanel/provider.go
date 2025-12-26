@@ -24,7 +24,7 @@ func (p *Provider) ID() string { return "CPANEL" }
 
 func (p *Provider) Name() string { return "cPanel" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          hostFieldID,

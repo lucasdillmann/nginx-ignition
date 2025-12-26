@@ -20,7 +20,7 @@ func (p *Provider) ID() string { return "DREAMHOST" }
 
 func (p *Provider) Name() string { return "DreamHost" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiKeyFieldID,

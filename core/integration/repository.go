@@ -20,5 +20,5 @@ type Repository interface {
 		pageSize, pageNumber int,
 		searchTerms *string,
 		enabledOnly bool,
-	) (*pagination.Page[*Integration], error)
+	) (*pagination.Page[Integration], error)
 }

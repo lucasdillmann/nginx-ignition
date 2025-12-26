@@ -23,7 +23,7 @@ func (p *Provider) ID() string { return "DNSHOME_DE" }
 
 func (p *Provider) Name() string { return "dnsHome.de" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          credentialsFieldID,

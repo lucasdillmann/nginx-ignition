@@ -41,7 +41,7 @@ func (a *AvailableProvider) Name() string {
 	return a.provider.Name()
 }
 
-func (a *AvailableProvider) DynamicFields() []*dynamicfields.DynamicField {
+func (a *AvailableProvider) DynamicFields() []dynamicfields.DynamicField {
 	return a.provider.DynamicFields()
 }
 

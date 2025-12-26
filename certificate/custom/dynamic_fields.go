@@ -16,7 +16,7 @@ var (
 		Sensitive:    true,
 		Type:         dynamicfields.EnumType,
 		DefaultValue: fileUploadModeID,
-		EnumOptions: &[]*dynamicfields.EnumOption{
+		EnumOptions: []dynamicfields.EnumOption{
 			{
 				ID:          textFieldUploadModeID,
 				Description: "PEM-encoded text",
@@ -35,7 +35,7 @@ var (
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.MultiLineTextType,
-		Conditions: &[]dynamicfields.Condition{{
+		Conditions: []dynamicfields.Condition{{
 			ParentField: uploadModeField.ID,
 			Value:       textFieldUploadModeID,
 		}},
@@ -48,7 +48,7 @@ var (
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.MultiLineTextType,
-		Conditions: &[]dynamicfields.Condition{{
+		Conditions: []dynamicfields.Condition{{
 			ParentField: uploadModeField.ID,
 			Value:       textFieldUploadModeID,
 		}},
@@ -61,7 +61,7 @@ var (
 		Required:    false,
 		Sensitive:   true,
 		Type:        dynamicfields.MultiLineTextType,
-		Conditions: &[]dynamicfields.Condition{{
+		Conditions: []dynamicfields.Condition{{
 			ParentField: uploadModeField.ID,
 			Value:       textFieldUploadModeID,
 		}},
@@ -74,7 +74,7 @@ var (
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
-		Conditions: &[]dynamicfields.Condition{{
+		Conditions: []dynamicfields.Condition{{
 			ParentField: uploadModeField.ID,
 			Value:       fileUploadModeID,
 		}},
@@ -87,7 +87,7 @@ var (
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
-		Conditions: &[]dynamicfields.Condition{{
+		Conditions: []dynamicfields.Condition{{
 			ParentField: uploadModeField.ID,
 			Value:       fileUploadModeID,
 		}},
@@ -100,7 +100,7 @@ var (
 		Required:    false,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
-		Conditions: &[]dynamicfields.Condition{{
+		Conditions: []dynamicfields.Condition{{
 			ParentField: uploadModeField.ID,
 			Value:       fileUploadModeID,
 		}},

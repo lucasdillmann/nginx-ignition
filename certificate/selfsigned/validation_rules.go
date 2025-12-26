@@ -8,8 +8,8 @@ import (
 
 type validationRules struct{}
 
-func (r validationRules) DynamicFields() []*dynamicfields.DynamicField {
-	return make([]*dynamicfields.DynamicField, 0)
+func (r validationRules) DynamicFields() []dynamicfields.DynamicField {
+	return make([]dynamicfields.DynamicField, 0)
 }
 
 func (r validationRules) Validate(_ *certificate.IssueRequest) []validation.ConsistencyViolation {

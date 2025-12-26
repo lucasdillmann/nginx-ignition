@@ -141,7 +141,7 @@ func (s *service) isEnabled(ctx context.Context, id uuid.UUID) (bool, error) {
 	return s.repository.IsEnabledByID(ctx, id)
 }
 
-func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*User], error) {
+func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[User], error) {
 	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms)
 }
 

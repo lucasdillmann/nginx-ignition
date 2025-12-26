@@ -25,7 +25,7 @@ func (p *Provider) ID() string { return "NICMANAGER" }
 
 func (p *Provider) Name() string { return "Nicmanager" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          loginFieldID,

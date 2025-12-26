@@ -113,7 +113,7 @@ func (r repository) FindPage(
 	ctx context.Context,
 	pageSize, pageNumber int,
 	searchTerms *string,
-) (*pagination.Page[*certificate.Certificate], error) {
+) (*pagination.Page[certificate.Certificate], error) {
 	var certificates []certificateModel
 
 	query := r.database.Select().Model(&certificates)
@@ -140,19 +140,19 @@ func (r repository) FindPage(
 		return nil, err
 	}
 
-	var result []*certificate.Certificate
+	var result []certificate.Certificate
 	for _, model := range certificates {
 		if domain, err := toDomain(&model); err != nil {
 			return nil, err
 		} else {
-			result = append(result, domain)
+			result = append(result, *domain)
 		}
 	}
 
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r repository) FindAllDueToRenew(ctx context.Context) ([]*certificate.Certificate, error) {
+func (r repository) FindAllDueToRenew(ctx context.Context) ([]certificate.Certificate, error) {
 	var certificates []certificateModel
 
 	err := r.database.Select().
@@ -163,12 +163,12 @@ func (r repository) FindAllDueToRenew(ctx context.Context) ([]*certificate.Certi
 		return nil, err
 	}
 
-	var result []*certificate.Certificate
+	var result []certificate.Certificate
 	for _, model := range certificates {
 		if domain, err := toDomain(&model); err != nil {
 			return nil, err
 		} else {
-			result = append(result, domain)
+			result = append(result, *domain)
 		}
 	}
 

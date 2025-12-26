@@ -28,7 +28,7 @@ func (p *Provider) ID() string { return "ORACLE_CLOUD" }
 
 func (p *Provider) Name() string { return "Oracle Cloud (OCI)" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          compartmentOCIDFieldID,

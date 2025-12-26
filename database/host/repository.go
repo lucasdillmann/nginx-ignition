@@ -193,7 +193,7 @@ func (r *repository) FindPage(
 	ctx context.Context,
 	pageSize, pageNumber int,
 	searchTerms *string,
-) (*pagination.Page[*host.Host], error) {
+) (*pagination.Page[host.Host], error) {
 	var models []hostModel
 
 	query := r.database.Select().Model(&models)
@@ -218,20 +218,20 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []*host.Host
+	var result []host.Host
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {
 			return nil, err
 		}
 
-		result = append(result, domain)
+		result = append(result, *domain)
 	}
 
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAllEnabled(ctx context.Context) ([]*host.Host, error) {
+func (r *repository) FindAllEnabled(ctx context.Context) ([]host.Host, error) {
 	var models []hostModel
 
 	err := r.database.Select().
@@ -245,13 +245,13 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]*host.Host, error) {
 		return nil, err
 	}
 
-	var result []*host.Host
+	var result []host.Host
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {
 			return nil, err
 		}
-		result = append(result, domain)
+		result = append(result, *domain)
 	}
 
 	return result, nil

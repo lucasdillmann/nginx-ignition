@@ -7,6 +7,6 @@ import (
 )
 
 type DomainRules interface {
-	DynamicFields() []*dynamicfields.DynamicField
+	DynamicFields() []dynamicfields.DynamicField
 	Validate(request *certificate.IssueRequest) []validation.ConsistencyViolation
 }

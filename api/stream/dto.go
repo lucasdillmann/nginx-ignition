@@ -13,7 +13,7 @@ type streamRequestDto struct {
 	FeatureSet     *featureSetDto `json:"featureSet"`
 	DefaultBackend *backendDto    `json:"defaultBackend"`
 	Binding        *addressDto    `json:"binding"`
-	Routes         *[]routeDto    `json:"routes"`
+	Routes         []routeDto     `json:"routes"`
 }
 
 type featureSetDto struct {
@@ -42,8 +42,8 @@ type circuitBreakerDto struct {
 }
 
 type routeDto struct {
-	DomainNames *[]string     `json:"domainNames"`
-	Backends    *[]backendDto `json:"backends"`
+	DomainNames []string     `json:"domainNames"`
+	Backends    []backendDto `json:"backends"`
 }
 
 type streamResponseDto struct {
@@ -54,5 +54,5 @@ type streamResponseDto struct {
 	FeatureSet     *featureSetDto `json:"featureSet"`
 	DefaultBackend *backendDto    `json:"defaultBackend"`
 	Binding        *addressDto    `json:"binding"`
-	Routes         *[]routeDto    `json:"routes"`
+	Routes         []routeDto     `json:"routes"`
 }

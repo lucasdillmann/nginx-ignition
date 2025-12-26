@@ -11,7 +11,7 @@ type settingsDto struct {
 	Nginx                *nginxSettingsDto                `json:"nginx"`
 	LogRotation          *logRotationSettingsDto          `json:"logRotation"`
 	CertificateAutoRenew *certificateAutoRenewSettingsDto `json:"certificateAutoRenew"`
-	GlobalBindings       []*bindingDto                    `json:"globalBindings"`
+	GlobalBindings       []bindingDto                     `json:"globalBindings"`
 }
 
 type nginxSettingsDto struct {

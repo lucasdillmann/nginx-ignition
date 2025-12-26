@@ -18,9 +18,9 @@ func (h availableDriversHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	payload := make([]*vpnDriverResponse, len(*data))
-	for index, driver := range *data {
-		payload[index] = toAvailableDriverDto(driver)
+	payload := make([]vpnDriverResponse, len(data))
+	for index, driver := range data {
+		payload[index] = toAvailableDriverDto(&driver)
 	}
 
 	ctx.JSON(http.StatusOK, payload)

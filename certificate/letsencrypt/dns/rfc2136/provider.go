@@ -24,7 +24,7 @@ func (p *Provider) ID() string { return "RFC2136" }
 
 func (p *Provider) Name() string { return "RFC2136" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          nameserverFieldID,
