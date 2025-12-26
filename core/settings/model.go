@@ -10,32 +10,32 @@ type Settings struct {
 }
 
 type NginxSettings struct {
-	Logs                *NginxLogsSettings
 	Timeouts            *NginxTimeoutsSettings
 	Buffers             *NginxBuffersSettings
+	Logs                *NginxLogsSettings
+	Custom              *string
+	RuntimeUser         string
+	DefaultContentType  string
 	WorkerProcesses     int
 	WorkerConnections   int
-	DefaultContentType  string
-	ServerTokensEnabled bool
 	MaximumBodySizeMb   int
-	SendfileEnabled     bool
-	GzipEnabled         bool
+	ServerTokensEnabled bool
 	TcpNoDelayEnabled   bool
-	RuntimeUser         string
-	Custom              *string
+	GzipEnabled         bool
+	SendfileEnabled     bool
 }
 
 type LogRotationSettings struct {
-	Enabled           bool
-	MaximumLines      int
 	IntervalUnit      TimeUnit
+	MaximumLines      int
 	IntervalUnitCount int
+	Enabled           bool
 }
 
 type CertificateAutoRenewSettings struct {
-	Enabled           bool
 	IntervalUnit      TimeUnit
 	IntervalUnitCount int
+	Enabled           bool
 }
 
 type NginxTimeoutsSettings struct {
@@ -47,10 +47,10 @@ type NginxTimeoutsSettings struct {
 }
 
 type NginxBuffersSettings struct {
-	ClientBodyKb      int
-	ClientHeaderKb    int
 	LargeClientHeader *NginxBufferSize
 	Output            *NginxBufferSize
+	ClientBodyKb      int
+	ClientHeaderKb    int
 }
 
 type NginxBufferSize struct {
@@ -59,11 +59,11 @@ type NginxBufferSize struct {
 }
 
 type NginxLogsSettings struct {
-	ServerLogsEnabled bool
 	ServerLogsLevel   LogLevel
+	ErrorLogsLevel    LogLevel
+	ServerLogsEnabled bool
 	AccessLogsEnabled bool
 	ErrorLogsEnabled  bool
-	ErrorLogsLevel    LogLevel
 }
 
 type LogLevel string

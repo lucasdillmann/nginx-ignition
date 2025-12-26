@@ -34,26 +34,26 @@ const (
 )
 
 type Cache struct {
-	ID                       uuid.UUID
-	Name                     string
-	StoragePath              *string
-	InactiveSeconds          *int
-	MaxSizeMB                *int
-	AllowedMethods           []Method
-	MinimumUsesBeforeCaching *int
-	UseStale                 []UseStaleOption
-	BackgroundUpdate         *bool
 	ConcurrencyLock          ConcurrencyLock
+	InactiveSeconds          *int
+	StoragePath              *string
+	MaxSizeMB                *int
+	MinimumUsesBeforeCaching *int
+	BackgroundUpdate         *bool
 	Revalidate               *bool
+	Name                     string
+	AllowedMethods           []Method
+	UseStale                 []UseStaleOption
 	BypassRules              []string
 	NoCacheRules             []string
 	Durations                []Duration
+	ID                       uuid.UUID
 }
 
 type ConcurrencyLock struct {
-	Enabled        bool
 	TimeoutSeconds *int
 	AgeSeconds     *int
+	Enabled        bool
 }
 
 type Duration struct {

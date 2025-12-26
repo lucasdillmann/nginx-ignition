@@ -1,16 +1,16 @@
 package dynamicfield
 
 type Response struct {
+	DefaultValue any          `json:"defaultValue,omitempty"`
+	HelpText     *string      `json:"helpText,omitempty"`
 	ID           string       `json:"id"`
-	Priority     int          `json:"priority"`
 	Description  string       `json:"description"`
-	Required     bool         `json:"required"`
-	Sensitive    bool         `json:"sensitive"`
 	Type         string       `json:"type"`
 	EnumOptions  []EnumOption `json:"enumOptions,omitempty"`
-	HelpText     *string      `json:"helpText,omitempty"`
 	Conditions   []Condition  `json:"conditions,omitempty"`
-	DefaultValue any          `json:"defaultValue,omitempty"`
+	Priority     int          `json:"priority"`
+	Required     bool         `json:"required"`
+	Sensitive    bool         `json:"sensitive"`
 }
 
 type EnumOption struct {
@@ -19,6 +19,6 @@ type EnumOption struct {
 }
 
 type Condition struct {
-	ParentField string `json:"parentField"`
 	Value       any    `json:"value"`
+	ParentField string `json:"parentField"`
 }

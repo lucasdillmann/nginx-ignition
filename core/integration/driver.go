@@ -39,10 +39,10 @@ type Driver interface {
 }
 
 type DriverOption struct {
+	Qualifier    *string
 	ID           string
 	Name         string
-	Port         int
-	Qualifier    *string
 	Protocol     Protocol
 	DNSResolvers []string
+	Port         int
 }

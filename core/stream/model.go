@@ -18,14 +18,14 @@ const (
 )
 
 type Stream struct {
-	ID             uuid.UUID
-	Enabled        bool
+	DefaultBackend Backend
+	Binding        Address
 	Name           string
 	Type           Type
 	Routes         []Route
-	Binding        Address
-	DefaultBackend Backend
+	ID             uuid.UUID
 	FeatureSet     FeatureSet
+	Enabled        bool
 }
 
 type Route struct {
@@ -35,8 +35,8 @@ type Route struct {
 
 type Backend struct {
 	Weight         *int
-	Address        Address
 	CircuitBreaker *CircuitBreaker
+	Address        Address
 }
 
 type CircuitBreaker struct {
@@ -45,9 +45,9 @@ type CircuitBreaker struct {
 }
 
 type Address struct {
+	Port     *int
 	Protocol Protocol
 	Address  string
-	Port     *int
 }
 
 type FeatureSet struct {

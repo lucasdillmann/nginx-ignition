@@ -8,11 +8,11 @@ import (
 )
 
 type Client struct {
+	delegate *http.Client
+	cache    *apiCache[[]byte]
 	baseUrl  string
 	username string
 	password string
-	delegate *http.Client
-	cache    *apiCache[[]byte]
 }
 
 func New(baseUrl, username, password string, cacheTimeoutSeconds int) *Client {

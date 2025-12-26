@@ -3,12 +3,12 @@ package user
 import "github.com/google/uuid"
 
 type SaveRequest struct {
-	ID          uuid.UUID
-	Enabled     bool
-	Name        string
-	Username    string
 	Password    *string
 	Permissions Permissions
+	Name        string
+	Username    string
+	ID          uuid.UUID
+	Enabled     bool
 }
 
 type AccessLevel string
@@ -20,13 +20,13 @@ const (
 )
 
 type User struct {
-	ID           uuid.UUID
-	Enabled      bool
+	Permissions  Permissions
 	Name         string
 	Username     string
 	PasswordHash string
 	PasswordSalt string
-	Permissions  Permissions
+	ID           uuid.UUID
+	Enabled      bool
 }
 
 type Permissions struct {

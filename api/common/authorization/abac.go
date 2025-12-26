@@ -13,10 +13,10 @@ type PermissionResolver func(permissions user.Permissions) user.AccessLevel
 
 type ABAC struct {
 	configuration           *configuration.Configuration
-	anonymousPaths          []string
-	allowedForAllUsers      []string
 	pathPermissionResolvers map[string]PermissionResolver
 	jwt                     *Jwt
+	anonymousPaths          []string
+	allowedForAllUsers      []string
 }
 
 func New(configuration *configuration.Configuration, repository user.Repository) (*ABAC, error) {

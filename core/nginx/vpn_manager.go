@@ -11,10 +11,10 @@ import (
 )
 
 type endpointAdapter struct {
-	vpnID      uuid.UUID
-	name       string
 	domainName *string
+	name       string
 	bindings   []host.Binding
+	vpnID      uuid.UUID
 }
 
 type vpnManager struct {

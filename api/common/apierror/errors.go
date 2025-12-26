@@ -1,8 +1,8 @@
 package apierror
 
 type ApiError struct {
-	StatusCode int
 	Message    string
+	StatusCode int
 }
 
 func New(statusCode int, message string) *ApiError {

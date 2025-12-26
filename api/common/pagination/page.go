@@ -3,10 +3,10 @@ package pagination
 import "dillmann.com.br/nginx-ignition/core/common/pagination"
 
 type PageDTO[T any] struct {
+	Contents   []T `json:"contents"`
 	PageNumber int `json:"pageNumber"`
 	PageSize   int `json:"pageSize"`
 	TotalItems int `json:"totalItems"`
-	Contents   []T `json:"contents"`
 }
 
 func Convert[I, O any](

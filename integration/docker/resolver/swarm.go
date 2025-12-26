@@ -16,9 +16,9 @@ import (
 
 type swarmAdapter struct {
 	client         *client.Client
-	useServiceMesh bool
-	dnsResolvers   []string
 	publicUrl      string
+	dnsResolvers   []string
+	useServiceMesh bool
 }
 
 func (s *swarmAdapter) ResolveOptionByID(ctx context.Context, id string) (*Option, error) {

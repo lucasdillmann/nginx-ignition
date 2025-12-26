@@ -22,8 +22,8 @@ type Facade struct {
 	hostCommands   *host.Commands
 	streamCommands *stream.Commands
 	cacheCommands  *cache.Commands
-	providers      []fileProvider
 	configuration  *configuration.Configuration
+	providers      []fileProvider
 }
 
 func newFacade(

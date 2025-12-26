@@ -12,20 +12,20 @@ const (
 )
 
 type AccessList struct {
-	ID                          uuid.UUID
 	Name                        string
 	Realm                       string
-	SatisfyAll                  bool
 	DefaultOutcome              Outcome
 	Entries                     []Entry
 	Credentials                 []Credentials
+	ID                          uuid.UUID
+	SatisfyAll                  bool
 	ForwardAuthenticationHeader bool
 }
 
 type Entry struct {
-	Priority      int
 	Outcome       Outcome
 	SourceAddress []string
+	Priority      int
 }
 
 type Credentials struct {

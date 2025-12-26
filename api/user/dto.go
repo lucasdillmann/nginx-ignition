@@ -31,11 +31,11 @@ type userRequestDto struct {
 }
 
 type userResponseDto struct {
-	ID          uuid.UUID          `json:"id"`
-	Enabled     bool               `json:"enabled"`
+	Permissions userPermissionsDto `json:"permissions"`
 	Name        string             `json:"name"`
 	Username    string             `json:"username"`
-	Permissions userPermissionsDto `json:"permissions"`
+	ID          uuid.UUID          `json:"id"`
+	Enabled     bool               `json:"enabled"`
 }
 
 type userPermissionsDto struct {

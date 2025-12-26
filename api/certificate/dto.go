@@ -11,34 +11,34 @@ import (
 type availableProviderResponse struct {
 	ID            string                  `json:"id"`
 	Name          string                  `json:"name"`
-	Priority      int                     `json:"priority"`
 	DynamicFields []dynamicfield.Response `json:"dynamicFields"`
+	Priority      int                     `json:"priority"`
 }
 
 type certificateResponse struct {
-	ID          uuid.UUID      `json:"id"`
-	DomainNames []string       `json:"domainNames"`
-	ProviderID  string         `json:"providerId"`
 	IssuedAt    time.Time      `json:"issuedAt"`
 	ValidUntil  time.Time      `json:"validUntil"`
 	ValidFrom   time.Time      `json:"validFrom"`
 	RenewAfter  *time.Time     `json:"renewAfter"`
 	Parameters  map[string]any `json:"parameters"`
+	ProviderID  string         `json:"providerId"`
+	DomainNames []string       `json:"domainNames"`
+	ID          uuid.UUID      `json:"id"`
 }
 
 type issueCertificateRequest struct {
+	Parameters  map[string]any `json:"parameters"`
 	ProviderID  string         `json:"providerId"`
 	DomainNames []string       `json:"domainNames"`
-	Parameters  map[string]any `json:"parameters"`
 }
 
 type issueCertificateResponse struct {
-	Success       bool       `json:"success"`
 	ErrorReason   *string    `json:"errorReason"`
 	CertificateID *uuid.UUID `json:"certificateId"`
+	Success       bool       `json:"success"`
 }
 
 type renewCertificateResponse struct {
-	Success     bool    `json:"success"`
 	ErrorReason *string `json:"errorReason"`
+	Success     bool    `json:"success"`
 }

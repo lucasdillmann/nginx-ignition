@@ -6,15 +6,14 @@ import (
 )
 
 type streamModel struct {
-	bun.BaseModel `bun:"stream"`
-
-	ID               uuid.UUID `bun:"id,pk"`
-	Enabled          bool      `bun:"enabled,notnull"`
+	bun.BaseModel    `bun:"stream"`
+	BindingPort      *int      `bun:"binding_port"`
+	BindingAddress   string    `bun:"binding_address,notnull"`
 	Name             string    `bun:"name,notnull"`
 	Type             string    `bun:"type,notnull"`
 	BindingProtocol  string    `bun:"binding_protocol,notnull"`
-	BindingAddress   string    `bun:"binding_address,notnull"`
-	BindingPort      *int      `bun:"binding_port"`
+	ID               uuid.UUID `bun:"id,pk"`
+	Enabled          bool      `bun:"enabled,notnull"`
 	UseProxyProtocol bool      `bun:"use_proxy_protocol,notnull"`
 	SocketKeepAlive  bool      `bun:"socket_keep_alive,notnull"`
 	TCPKeepAlive     bool      `bun:"tcp_keep_alive,notnull"`
@@ -24,22 +23,20 @@ type streamModel struct {
 
 type streamRouteModel struct {
 	bun.BaseModel `bun:"stream_route"`
-
-	ID          uuid.UUID `bun:"id,pk"`
-	StreamID    uuid.UUID `bun:"stream_id,notnull"`
-	DomainNames []string  `bun:"domain_names,array,notnull"`
+	DomainNames   []string  `bun:"domain_names,array,notnull"`
+	ID            uuid.UUID `bun:"id,pk"`
+	StreamID      uuid.UUID `bun:"stream_id,notnull"`
 }
 
 type streamBackendModel struct {
 	bun.BaseModel `bun:"stream_backend"`
-
-	ID            uuid.UUID  `bun:"id,pk"`
 	StreamID      *uuid.UUID `bun:"stream_id"`
 	StreamRouteID *uuid.UUID `bun:"stream_route_id"`
-	Protocol      string     `bun:"protocol,notnull"`
-	Address       string     `bun:"address,notnull"`
 	Port          *int       `bun:"port"`
 	Weight        *int       `bun:"weight"`
 	MaxFailures   *int       `bun:"max_failures"`
 	OpenSeconds   *int       `bun:"open_seconds"`
+	Protocol      string     `bun:"protocol,notnull"`
+	Address       string     `bun:"address,notnull"`
+	ID            uuid.UUID  `bun:"id,pk"`
 }

@@ -17,14 +17,14 @@ type accessListRequestDto struct {
 }
 
 type accessListResponseDto struct {
-	ID                          uuid.UUID          `json:"id"`
-	Name                        string             `json:"name"`
 	Realm                       *string            `json:"realm"`
-	SatisfyAll                  bool               `json:"satisfyAll"`
+	Name                        string             `json:"name"`
 	DefaultOutcome              accesslist.Outcome `json:"defaultOutcome"`
 	Entries                     []entrySetDto      `json:"entries"`
-	ForwardAuthenticationHeader bool               `json:"forwardAuthenticationHeader"`
 	Credentials                 []credentialsDto   `json:"credentials"`
+	ID                          uuid.UUID          `json:"id"`
+	SatisfyAll                  bool               `json:"satisfyAll"`
+	ForwardAuthenticationHeader bool               `json:"forwardAuthenticationHeader"`
 }
 
 type entrySetDto struct {

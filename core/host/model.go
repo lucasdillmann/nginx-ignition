@@ -30,17 +30,17 @@ const (
 )
 
 type Host struct {
-	ID                uuid.UUID
-	Enabled           bool
-	DefaultServer     bool
-	UseGlobalBindings bool
+	AccessListID      *uuid.UUID
+	CacheID           *uuid.UUID
 	DomainNames       []string
 	Routes            []Route
 	Bindings          []Binding
 	VPNs              []VPN
+	ID                uuid.UUID
 	FeatureSet        FeatureSet
-	AccessListID      *uuid.UUID
-	CacheID           *uuid.UUID
+	Enabled           bool
+	DefaultServer     bool
+	UseGlobalBindings bool
 }
 
 type FeatureSet struct {
@@ -50,56 +50,56 @@ type FeatureSet struct {
 }
 
 type Route struct {
-	ID           uuid.UUID
-	Priority     int
-	Enabled      bool
-	Type         RouteType
-	SourcePath   string
-	TargetURI    *string
+	Settings     RouteSettings
 	RedirectCode *int
+	TargetURI    *string
 	AccessListID *uuid.UUID
 	CacheID      *uuid.UUID
-	Settings     RouteSettings
 	Response     *RouteStaticResponse
 	Integration  *RouteIntegrationConfig
 	SourceCode   *RouteSourceCode
+	Type         RouteType
+	SourcePath   string
+	Priority     int
+	ID           uuid.UUID
+	Enabled      bool
 }
 
 type RouteSourceCode struct {
+	MainFunction *string
 	Language     CodeLanguage
 	Contents     string
-	MainFunction *string
 }
 
 type RouteSettings struct {
+	Custom                  *string
 	IncludeForwardHeaders   bool
 	ProxySSLServerName      bool
 	KeepOriginalDomainName  bool
 	DirectoryListingEnabled bool
-	Custom                  *string
 }
 
 type RouteStaticResponse struct {
-	StatusCode int
 	Headers    map[string]string
 	Payload    *string
+	StatusCode int
 }
 
 type RouteIntegrationConfig struct {
-	IntegrationID uuid.UUID
 	OptionID      string
+	IntegrationID uuid.UUID
 }
 
 type Binding struct {
-	ID            uuid.UUID
+	CertificateID *uuid.UUID
 	Type          BindingType
 	IP            string
 	Port          int
-	CertificateID *uuid.UUID
+	ID            uuid.UUID
 }
 
 type VPN struct {
-	VPNID uuid.UUID
-	Name  string
 	Host  *string
+	Name  string
+	VPNID uuid.UUID
 }

@@ -26,10 +26,10 @@ type SupportedFeatures struct {
 type providerContext struct {
 	context           context.Context
 	paths             *Paths
+	supportedFeatures *SupportedFeatures
 	hosts             []host.Host
 	streams           []stream.Stream
 	caches            []cache.Cache
-	supportedFeatures *SupportedFeatures
 }
 
 type Paths struct {

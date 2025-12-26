@@ -25,9 +25,9 @@ type featureSetDto struct {
 }
 
 type addressDto struct {
-	Protocol stream.Protocol `json:"protocol"`
 	Address  *string         `json:"address"`
 	Port     *int            `json:"port"`
+	Protocol stream.Protocol `json:"protocol"`
 }
 
 type backendDto struct {

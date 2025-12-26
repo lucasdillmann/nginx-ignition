@@ -10,13 +10,13 @@ type hostRequestDto struct {
 	Enabled           *bool          `json:"enabled"`
 	DefaultServer     *bool          `json:"defaultServer"`
 	UseGlobalBindings *bool          `json:"useGlobalBindings"`
+	FeatureSet        *featureSetDto `json:"featureSet"`
+	AccessListID      *uuid.UUID     `json:"accessListId"`
+	CacheID           *uuid.UUID     `json:"cacheId"`
 	DomainNames       []string       `json:"domainNames"`
 	Routes            []routeDto     `json:"routes"`
 	Bindings          []bindingDto   `json:"bindings"`
 	VPNs              []vpnDto       `json:"vpns"`
-	FeatureSet        *featureSetDto `json:"featureSet"`
-	AccessListID      *uuid.UUID     `json:"accessListId"`
-	CacheID           *uuid.UUID     `json:"cacheId"`
 }
 
 type routeDto struct {
@@ -83,12 +83,12 @@ type hostResponseDto struct {
 	Enabled           *bool          `json:"enabled"`
 	DefaultServer     *bool          `json:"defaultServer"`
 	UseGlobalBindings *bool          `json:"useGlobalBindings"`
+	FeatureSet        *featureSetDto `json:"featureSet"`
+	AccessListID      *uuid.UUID     `json:"accessListId"`
+	CacheID           *uuid.UUID     `json:"cacheId"`
 	DomainNames       []string       `json:"domainNames"`
 	Routes            []routeDto     `json:"routes"`
 	Bindings          []bindingDto   `json:"bindings,omitempty"`
 	GlobalBindings    []bindingDto   `json:"globalBindings,omitempty"`
 	VPNs              []vpnDto       `json:"vpns"`
-	FeatureSet        *featureSetDto `json:"featureSet"`
-	AccessListID      *uuid.UUID     `json:"accessListId"`
-	CacheID           *uuid.UUID     `json:"cacheId"`
 }
