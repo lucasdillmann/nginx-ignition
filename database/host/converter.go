@@ -72,6 +72,7 @@ func toDomain(model *hostModel) (*host.Host, error) {
 			TargetURI:    route.TargetURI,
 			RedirectCode: route.RedirectCode,
 			AccessListID: route.AccessListID,
+			CacheID:      route.CacheID,
 			Settings: host.RouteSettings{
 				IncludeForwardHeaders:   route.IncludeForwardHeaders,
 				ProxySSLServerName:      route.ProxySSLServerName,
@@ -100,6 +101,7 @@ func toDomain(model *hostModel) (*host.Host, error) {
 			RedirectHTTPToHTTPS: model.RedirectHTTPToHTTPS,
 		},
 		AccessListID: model.AccessListID,
+		CacheID:      model.CacheID,
 	}, nil
 }
 
@@ -175,6 +177,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 			KeepOriginalDomainName:  route.Settings.KeepOriginalDomainName,
 			DirectoryListingEnabled: route.Settings.DirectoryListingEnabled,
 			AccessListID:            route.AccessListID,
+			CacheID:                 route.CacheID,
 			CodeLanguage:            codeLanguage,
 			CodeContents:            codeContents,
 			CodeMainFunction:        codeMainFunction,
@@ -192,6 +195,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 		RedirectHTTPToHTTPS: domain.FeatureSet.RedirectHTTPToHTTPS,
 		UseGlobalBindings:   domain.UseGlobalBindings,
 		AccessListID:        domain.AccessListID,
+		CacheID:             domain.CacheID,
 		Bindings:            bindings,
 		Routes:              routes,
 		VPNs:                vpns,

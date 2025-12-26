@@ -15,7 +15,8 @@ type hostRequestDto struct {
 	Bindings          []*bindingDto  `json:"bindings"`
 	VPNs              []*vpnDto      `json:"vpns"`
 	FeatureSet        *featureSetDto `json:"featureSet"`
-	AccessListId      *uuid.UUID     `json:"accessListId"`
+	AccessListID      *uuid.UUID     `json:"accessListId"`
+	CacheID           *uuid.UUID     `json:"cacheId"`
 }
 
 type routeDto struct {
@@ -28,7 +29,8 @@ type routeDto struct {
 	RedirectCode *int                  `json:"redirectCode"`
 	Response     *staticResponseDto    `json:"response"`
 	Integration  *integrationConfigDto `json:"integration"`
-	AccessListId *uuid.UUID            `json:"accessListId"`
+	AccessListID *uuid.UUID            `json:"accessListId"`
+	CacheID      *uuid.UUID            `json:"cacheId"`
 	SourceCode   *routeSourceCodeDto   `json:"sourceCode"`
 }
 
@@ -87,5 +89,6 @@ type hostResponseDto struct {
 	GlobalBindings    *[]*bindingDto `json:"globalBindings,omitempty"`
 	VPNs              []*vpnDto      `json:"vpns"`
 	FeatureSet        *featureSetDto `json:"featureSet"`
-	AccessListId      *uuid.UUID     `json:"accessListId"`
+	AccessListID      *uuid.UUID     `json:"accessListId"`
+	CacheID           *uuid.UUID     `json:"cacheId"`
 }

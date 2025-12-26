@@ -29,7 +29,8 @@ func toDto(input *host.Host, globalSettings *settings.Settings) *hostResponseDto
 		GlobalBindings:    globalBindings,
 		VPNs:              toVpnDtoSlice(input.VPNs),
 		FeatureSet:        toFeatureSetDto(&input.FeatureSet),
-		AccessListId:      input.AccessListID,
+		AccessListID:      input.AccessListID,
+		CacheID:           input.CacheID,
 	}
 }
 
@@ -47,7 +48,8 @@ func toDomain(input *hostRequestDto) *host.Host {
 		Bindings:          toBindingSlice(input.Bindings),
 		VPNs:              toVpnsSlice(input.VPNs),
 		FeatureSet:        *toFeatureSet(input.FeatureSet),
-		AccessListID:      input.AccessListId,
+		AccessListID:      input.AccessListID,
+		CacheID:           input.CacheID,
 	}
 }
 
@@ -79,7 +81,8 @@ func toRouteDto(route *host.Route) *routeDto {
 		RedirectCode: route.RedirectCode,
 		Response:     toStaticResponseDto(route.Response),
 		Integration:  toIntegrationConfigDto(route.Integration),
-		AccessListId: route.AccessListID,
+		AccessListID: route.AccessListID,
+		CacheID:      route.CacheID,
 		SourceCode:   toRouteSourceCodeDto(route.SourceCode),
 	}
 }
@@ -257,7 +260,8 @@ func toDomainModelRoute(input *routeDto) *host.Route {
 		RedirectCode: input.RedirectCode,
 		Response:     toRouteStaticResponse(input.Response),
 		Integration:  toRouteIntegrationConfig(input.Integration),
-		AccessListID: input.AccessListId,
+		AccessListID: input.AccessListID,
+		CacheID:      input.CacheID,
 		SourceCode:   toRouteSourceCode(input.SourceCode),
 	}
 }

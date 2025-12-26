@@ -76,3 +76,9 @@ insert into cache_duration (
 
 alter table "user" add column caches_access_level
     varchar(32) not null default 'NO_ACCESS';
+
+alter table host
+    add column cache_id text references cache(id);
+
+alter table host_route
+    add column cache_id text references cache(id);

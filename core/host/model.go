@@ -40,6 +40,7 @@ type Host struct {
 	VPNs              []*VPN
 	FeatureSet        FeatureSet
 	AccessListID      *uuid.UUID
+	CacheID           *uuid.UUID
 }
 
 type FeatureSet struct {
@@ -57,6 +58,7 @@ type Route struct {
 	TargetURI    *string
 	RedirectCode *int
 	AccessListID *uuid.UUID
+	CacheID      *uuid.UUID
 	Settings     RouteSettings
 	Response     *RouteStaticResponse
 	Integration  *RouteIntegrationConfig

@@ -45,9 +45,18 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*cache.Cache, 
 }
 
 func (r *repository) IsInUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
-	// For now, there are no other tables referencing the cache table.
-	// This will be updated once Host or HostRoute are updated to include a CacheID.
-	return false, nil
+	hostExists, err := r.database.Select().
+		Table("host").
+		Where("cache_id = ?", id).
+		Exists(ctx)
+	if err != nil || hostExists {
+		return hostExists, err
+	}
+
+	return r.database.Select().
+		Table("host_route").
+		Where("cache_id = ?", id).
+		Exists(ctx)
 }
 
 func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
