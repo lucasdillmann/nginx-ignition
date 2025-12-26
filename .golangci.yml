@@ -114,15 +114,6 @@ linters:
           - gocyclo
           - gosec
         path: _test\.go
-      - linters:
-          - gosec
-        text: 'G304: Potential file inclusion via variable'
-      - path: (.+)\.go$
-        text: Error return value of `.*` is not checked
-      - path: (.+)\.go$
-        text: func name will be used as test\.Test.* by other packages, and that stutters; consider calling this
-      - path: (.+)\.go$
-        text: (comment on exported (method|function|type|const)|should have( a package)? comment|comment should be of the form)
     paths:
       - vendor
       - testdata

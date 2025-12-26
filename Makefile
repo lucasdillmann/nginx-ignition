@@ -13,17 +13,17 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 
 .backend-check:
 	go tool golangci-lint run \
-    		./api \
-    		./application \
-    		./certificate/commons \
-    		./certificate/custom \
-    		./certificate/letsencrypt \
-    		./certificate/selfsigned \
-    		./core \
-    		./database \
-    		./integration/docker \
-    		./integration/truenas \
-    		./vpn/tailscale
+    		./api/... \
+    		./application/... \
+    		./certificate/commons/... \
+    		./certificate/custom/... \
+    		./certificate/letsencrypt/... \
+    		./certificate/selfsigned/... \
+    		./core/... \
+    		./database/... \
+    		./integration/docker/... \
+    		./integration/truenas/... \
+    		./vpn/tailscale/...
 
 .build-frontend:
 	cd frontend/ && npm run build
