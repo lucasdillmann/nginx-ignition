@@ -41,4 +41,5 @@ type Permissions struct {
 	NginxServer  AccessLevel
 	ExportData   AccessLevel
 	VPNs         AccessLevel
+	Caches       AccessLevel
 }

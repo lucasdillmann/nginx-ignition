@@ -70,6 +70,7 @@ func (v *validator) validatePermissions(permissions Permissions) {
 	v.validatePermission("nginxServer", permissions.NginxServer)
 	v.validatePermission("exportData", permissions.ExportData)
 	v.validatePermission("vpns", permissions.VPNs)
+	v.validatePermission("caches", permissions.Caches)
 
 	if permissions.NginxServer == NoAccessAccessLevel {
 		v.delegate.Add("permissions.nginxServer", "At least read-only access is required")
