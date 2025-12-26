@@ -1,0 +1,119 @@
+import React from "react"
+import DataTable, { DataTableColumn } from "../../core/components/datatable/DataTable"
+import { Link } from "react-router-dom"
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons"
+import PageResponse from "../../core/pagination/PageResponse"
+import CacheService from "./CacheService"
+import AppShellContext from "../../core/components/shell/AppShellContext"
+import CacheResponse from "./model/CacheResponse"
+import DeleteAccessListAction from "./actions/DeleteCacheAction"
+import { AccessListOutcome } from "./model/CacheRequest"
+import AccessControl from "../../core/components/accesscontrol/AccessControl"
+import { UserAccessLevel } from "../user/model/UserAccessLevel"
+import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+
+export default class CacheListPage extends React.PureComponent {
+    private readonly service: CacheService
+    private readonly table: React.RefObject<DataTable<CacheResponse> | null>
+
+    constructor(props: any) {
+        super(props)
+        this.service = new CacheService()
+        this.table = React.createRef()
+    }
+
+    private buildColumns(): DataTableColumn<CacheResponse>[] {
+        return [
+            {
+                id: "name",
+                description: "Name",
+                renderer: item => item.name,
+            },
+            {
+                id: "realm",
+                description: "Realm",
+                renderer: item => item.realm,
+                width: 250,
+            },
+            {
+                id: "defaultOutcome",
+                description: "Default outcome",
+                renderer: item => {
+                    switch (item.defaultOutcome) {
+                        case AccessListOutcome.ALLOW:
+                            return "Allow access"
+                        case AccessListOutcome.DENY:
+                            return "Deny access"
+                    }
+                },
+                width: 150,
+            },
+            {
+                id: "satisfyAll",
+                description: "Mode",
+                renderer: item => (item.satisfyAll ? "Satisfy all" : "Satisfy any"),
+                width: 150,
+            },
+            {
+                id: "actions",
+                description: "",
+                renderer: item => (
+                    <>
+                        <Link to={`/access-lists/${item.id}`}>
+                            <EditOutlined className="action-icon" />
+                        </Link>
+
+                        <Link to="" onClick={() => this.deleteAccessList(item)}>
+                            <DeleteOutlined className="action-icon" />
+                        </Link>
+                    </>
+                ),
+                width: 120,
+            },
+        ]
+    }
+
+    private async deleteAccessList(accessList: CacheResponse) {
+        return DeleteAccessListAction.execute(accessList.id).then(() => this.table.current?.refresh())
+    }
+
+    private fetchData(
+        pageSize: number,
+        pageNumber: number,
+        searchTerms?: string,
+    ): Promise<PageResponse<CacheResponse>> {
+        return this.service.list(pageSize, pageNumber, searchTerms)
+    }
+
+    componentDidMount() {
+        AppShellContext.get().updateConfig({
+            title: "Access lists",
+            subtitle: "Relation of the access lists for the nginx authentication and access control",
+            actions: [
+                {
+                    description: "New access list",
+                    onClick: "/access-lists/new",
+                    disabled: !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.accessLists),
+                },
+            ],
+        })
+    }
+
+    render() {
+        return (
+            <AccessControl
+                requiredAccessLevel={UserAccessLevel.READ_ONLY}
+                permissionResolver={permissions => permissions.accessLists}
+            >
+                <DataTable
+                    ref={this.table}
+                    columns={this.buildColumns()}
+                    dataProvider={(pageSize, pageNumber, searchTerms) =>
+                        this.fetchData(pageSize, pageNumber, searchTerms)
+                    }
+                    rowKey={item => item.id}
+                />
+            </AccessControl>
+        )
+    }
+}
