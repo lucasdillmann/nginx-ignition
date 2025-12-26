@@ -44,7 +44,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*cache.Cache, 
 	return toDomain(&model), nil
 }
 
-func (r *repository) IsInUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
+func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	hostExists, err := r.database.Select().
 		Table("host").
 		Where("cache_id = ?", id).
@@ -57,6 +57,23 @@ func (r *repository) IsInUseByID(ctx context.Context, id uuid.UUID) (bool, error
 		Table("host_route").
 		Where("cache_id = ?", id).
 		Exists(ctx)
+}
+
+func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
+	count, err := r.database.Select().
+		Model((*cacheModel)(nil)).
+		Where(constants.ByIdFilter, id).
+		Count(ctx)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
 }
 
 func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {

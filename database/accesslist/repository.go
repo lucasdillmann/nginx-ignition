@@ -49,6 +49,38 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*accesslist.Ac
 	return toDomain(&model), nil
 }
 
+func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
+	count, err := r.database.Select().
+		Model((*accessListModel)(nil)).
+		Where(constants.ByIdFilter, id).
+		Count(ctx)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
+func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
+	hostExists, err := r.database.Select().
+		Table("host").
+		Where("access_list_id = ?", id).
+		Exists(ctx)
+	if err != nil || hostExists {
+		return hostExists, err
+	}
+
+	return r.database.Select().
+		Table("host_route").
+		Where("access_list_id = ?", id).
+		Exists(ctx)
+}
+
 func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	transaction, err := r.database.Begin()
 	if err != nil {

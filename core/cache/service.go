@@ -28,7 +28,7 @@ func (s *service) save(ctx context.Context, c *Cache) error {
 }
 
 func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
-	inUse, err := s.repository.IsInUseByID(ctx, id)
+	inUse, err := s.repository.InUseByID(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -42,6 +42,10 @@ func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
 
 func (s *service) findById(ctx context.Context, id uuid.UUID) (*Cache, error) {
 	return s.repository.FindByID(ctx, id)
+}
+
+func (s *service) existsByID(ctx context.Context, id uuid.UUID) (bool, error) {
+	return s.repository.ExistsByID(ctx, id)
 }
 
 func (s *service) findAll(ctx context.Context) ([]*Cache, error) {
