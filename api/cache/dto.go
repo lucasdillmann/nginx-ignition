@@ -16,6 +16,7 @@ type cacheRequestDto struct {
 	AllowedMethods           []cache.Method         `json:"allowedMethods"`
 	BypassRules              []string               `json:"bypassRules"`
 	NoCacheRules             []string               `json:"noCacheRules"`
+	FileExtensions           []string               `json:"fileExtensions"`
 	Durations                []durationDto          `json:"durations"`
 	MinimumUsesBeforeCaching int                    `json:"minimumUsesBeforeCaching"`
 	BackgroundUpdate         bool                   `json:"backgroundUpdate"`
@@ -32,6 +33,7 @@ type cacheResponseDto struct {
 	AllowedMethods           []cache.Method         `json:"allowedMethods"`
 	BypassRules              []string               `json:"bypassRules"`
 	NoCacheRules             []string               `json:"noCacheRules"`
+	FileExtensions           []string               `json:"fileExtensions"`
 	Durations                []durationDto          `json:"durations"`
 	MinimumUsesBeforeCaching int                    `json:"minimumUsesBeforeCaching"`
 	ID                       uuid.UUID              `json:"id"`

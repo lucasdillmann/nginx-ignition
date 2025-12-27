@@ -42,6 +42,7 @@ type Cache struct {
 	AllowedMethods           []Method
 	BypassRules              []string
 	NoCacheRules             []string
+	FileExtensions           []string
 	Durations                []Duration
 	MinimumUsesBeforeCaching int
 	ID                       uuid.UUID

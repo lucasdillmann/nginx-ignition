@@ -467,6 +467,7 @@ func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, c
 	p.appendCacheStandardOptions(&builder, c)
 	p.appendCacheLock(&builder, c)
 	p.appendCacheBypassRules(&builder, c)
+	p.appendCacheFileExtensions(&builder, c)
 
 	return builder.String()
 }
@@ -532,4 +533,27 @@ func (p *hostConfigurationFileProvider) appendCacheBypassRules(builder *strings.
 	for _, rule := range c.NoCacheRules {
 		fmt.Fprintf(builder, "\nproxy_no_cache %s;", rule)
 	}
+}
+
+func (p *hostConfigurationFileProvider) appendCacheFileExtensions(builder *strings.Builder, c *cache.Cache) {
+	if len(c.FileExtensions) == 0 {
+		return
+	}
+
+	extensions := make([]string, len(c.FileExtensions))
+	for index, extension := range c.FileExtensions {
+		extensions[index] = strings.ReplaceAll(
+			strings.TrimSpace(extension),
+			".", "\\.",
+		)
+	}
+
+	fmt.Fprintf(
+		builder,
+		`
+			if ($uri !~* "%s") { set $no_cache_ext 1; }
+			proxy_no_cache $no_cache_ext;
+		`,
+		fmt.Sprintf("\\.(%s)$", strings.Join(extensions, "|")),
+	)
 }

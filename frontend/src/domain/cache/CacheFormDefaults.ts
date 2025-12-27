@@ -13,6 +13,7 @@ export function cacheFormDefaults(): CacheRequest {
         },
         bypassRules: [],
         noCacheRules: [],
+        fileExtensions: [],
         durations: [],
     }
 }

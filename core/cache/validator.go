@@ -26,6 +26,7 @@ func (v *validator) validate(c *Cache) error {
 	v.validateStoragePath(c.StoragePath)
 	v.validateConcurrencyLock(c.ConcurrencyLock)
 	v.validateCollections(c)
+	v.validateFileExtensions(c.FileExtensions)
 
 	return v.delegate.Result()
 }
@@ -132,5 +133,20 @@ func (v *validator) validateDuration(index int, duration *Duration) {
 
 	if duration.ValidTimeSeconds < 1 {
 		v.delegate.Add(path+".validTimeSeconds", validation.ValueCannotBeZeroMessage)
+	}
+}
+
+func (v *validator) validateFileExtensions(extensions []string) {
+	for index, extension := range extensions {
+		path := fmt.Sprintf("fileExtensions[%d]", index)
+
+		if strings.TrimSpace(extension) == "" {
+			v.delegate.Add(path, validation.ValueMissingMessage)
+			continue
+		}
+
+		if strings.HasPrefix(extension, ".") {
+			v.delegate.Add(path, "File extension cannot start with a dot")
+		}
 	}
 }

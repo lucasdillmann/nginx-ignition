@@ -124,6 +124,17 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                         >
                             <InputNumber min={1} style={{ width: "100%" }} />
                         </Form.Item>
+                        <Form.Item
+                            name="fileExtensions"
+                            validateStatus={validationResult.getStatus("fileExtensions")}
+                            help={
+                                validationResult.getMessage("fileExtensions") ??
+                                "If specified, only requests with these extensions will be cached (e.g. jpg, png, css)"
+                            }
+                            label="File extensions"
+                        >
+                            <Select mode="tags" />
+                        </Form.Item>
                     </Flex>
                 </Flex>
 

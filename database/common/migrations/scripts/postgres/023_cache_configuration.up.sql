@@ -14,6 +14,7 @@ create table cache (
     revalidate boolean not null,
     bypass_rules varchar[] not null,
     no_cache_rules varchar[] not null,
+    file_extensions varchar[] not null,
     constraint pk_cache primary key (id)
 );
 
@@ -41,7 +42,8 @@ insert into cache (
     concurrency_lock_enabled,
     revalidate,
     bypass_rules,
-    no_cache_rules
+    no_cache_rules,
+    file_extensions
 ) values (
     '08c8430a-661d-4034-893d-4c31278f99e8',
     'Static files',
@@ -54,6 +56,7 @@ insert into cache (
     true,
     false,
     true,
+    '{}',
     '{}',
     '{}'
 );

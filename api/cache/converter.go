@@ -28,6 +28,7 @@ func toDomain(id uuid.UUID, dto *cacheRequestDto) *cache.Cache {
 		Revalidate:               dto.Revalidate,
 		BypassRules:              dto.BypassRules,
 		NoCacheRules:             dto.NoCacheRules,
+		FileExtensions:           dto.FileExtensions,
 		Durations:                durations,
 		ConcurrencyLock: cache.ConcurrencyLock{
 			Enabled:        dto.ConcurrencyLock.Enabled,
@@ -61,9 +62,10 @@ func toResponseDto(domain *cache.Cache) cacheResponseDto {
 			TimeoutSeconds: domain.ConcurrencyLock.TimeoutSeconds,
 			AgeSeconds:     domain.ConcurrencyLock.AgeSeconds,
 		},
-		Revalidate:   domain.Revalidate,
-		BypassRules:  domain.BypassRules,
-		NoCacheRules: domain.NoCacheRules,
-		Durations:    durations,
+		Revalidate:     domain.Revalidate,
+		BypassRules:    domain.BypassRules,
+		NoCacheRules:   domain.NoCacheRules,
+		FileExtensions: domain.FileExtensions,
+		Durations:      durations,
 	}
 }

@@ -46,5 +46,6 @@ export default interface CacheRequest {
     revalidate: boolean
     bypassRules: string[]
     noCacheRules: string[]
+    fileExtensions: string[]
     durations: Duration[]
 }
