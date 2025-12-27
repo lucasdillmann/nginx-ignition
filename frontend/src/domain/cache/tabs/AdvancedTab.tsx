@@ -24,7 +24,9 @@ export default class AdvancedTab extends React.Component<AdvancedTabProps> {
                     style={{ marginBottom: 20 }}
                     showIcon
                 />
-                <h2 className="cache-form-section-name" style={{ marginTop: 30 }}>Concurrency lock</h2>
+                <h2 className="cache-form-section-name" style={{ marginTop: 30 }}>
+                    Concurrency lock
+                </h2>
                 <p className="cache-form-section-help-text">
                     Settings to prevent multiple simultaneous requests from populating the cache at the same time.
                 </p>

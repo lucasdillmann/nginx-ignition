@@ -31,13 +31,13 @@ export default class CacheListPage extends React.PureComponent {
             {
                 id: "inactiveSeconds",
                 description: "Expire after",
-                renderer: item => item.inactiveSeconds ? `${item.inactiveSeconds} seconds` : "No expiration",
+                renderer: item => (item.inactiveSeconds ? `${item.inactiveSeconds} seconds` : "No expiration"),
                 width: 200,
             },
             {
                 id: "maximumSizeMb",
                 description: "Maximum size",
-                renderer: item => item.maximumSizeMb ? `${item.maximumSizeMb} MB` : "Unlimited",
+                renderer: item => (item.maximumSizeMb ? `${item.maximumSizeMb} MB` : "Unlimited"),
                 width: 200,
             },
             {

@@ -166,7 +166,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		}`,
 		p.flag(logs.AccessLogsEnabled, fmt.Sprintf("%shost-%s.access.log", ctx.paths.Logs, h.ID), "off"),
 		p.flag(logs.ErrorLogsEnabled, fmt.Sprintf("%shost-%s.error.log %s", ctx.paths.Logs, h.ID, strings.ToLower(string(logs.ErrorLogsLevel))), "off"),
-		p.flag(cfg.Nginx.GzipEnabled, "on", "off"),
+		p.statusFlag(cfg.Nginx.GzipEnabled),
 		cfg.Nginx.MaximumBodySizeMb,
 		p.flag(h.AccessListID != nil, fmt.Sprintf("include %saccess-list-%s.conf;", ctx.paths.Config, h.AccessListID), ""),
 		p.buildCacheConfig(ctx.caches, h.CacheID),
@@ -215,7 +215,7 @@ func (p *hostConfigurationFileProvider) buildStaticFilesRoute(ctx *providerConte
 		normalizedSourcePath += "/"
 	}
 
-	autoIndex := p.flag(r.Settings.DirectoryListingEnabled, "on", "off")
+	autoIndex := p.statusFlag(r.Settings.DirectoryListingEnabled)
 
 	return fmt.Sprintf(
 		`location %s {
@@ -500,10 +500,10 @@ func (p *hostConfigurationFileProvider) appendCacheMethods(builder *strings.Buil
 
 func (p *hostConfigurationFileProvider) appendCacheStandardOptions(builder *strings.Builder, c *cache.Cache) {
 	fmt.Fprintf(builder, "\nproxy_cache_min_uses %d;", c.MinimumUsesBeforeCaching)
-	fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", p.flag(c.BackgroundUpdate, "on", "off"))
-	fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", p.flag(c.Revalidate, "on", "off"))
+	fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", p.statusFlag(c.BackgroundUpdate))
+	fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", p.statusFlag(c.Revalidate))
 
-	staleConfig := "off"
+	staleConfig := offFlag
 
 	if len(c.UseStale) > 0 {
 		staleOptions := make([]string, len(c.UseStale))
@@ -545,4 +545,8 @@ func (p *hostConfigurationFileProvider) flag(enabled bool, trueValue, falseValue
 	}
 
 	return falseValue
+}
+
+func (p *hostConfigurationFileProvider) statusFlag(enabled bool) string {
+	return p.flag(enabled, onFlag, offFlag)
 }

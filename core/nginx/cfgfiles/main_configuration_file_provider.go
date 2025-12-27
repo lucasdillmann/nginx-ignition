@@ -137,10 +137,10 @@ func (p *mainConfigurationFileProvider) getErrorLogPath(paths *Paths, logs *sett
 
 func (p *mainConfigurationFileProvider) enabledFlag(value bool) string {
 	if value {
-		return "on"
+		return onFlag
 	}
 
-	return "off"
+	return offFlag
 }
 
 func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []host.Host) string {
