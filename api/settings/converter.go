@@ -3,7 +3,7 @@ package settings
 import (
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
@@ -65,12 +65,12 @@ func toDto(settings *settings.Settings) *settingsDto {
 	}
 
 	bindingsModel := make([]bindingDto, 0)
-	for _, binding := range settings.GlobalBindings {
+	for _, b := range settings.GlobalBindings {
 		bindingsModel = append(bindingsModel, bindingDto{
-			Type:          &binding.Type,
-			IP:            &binding.IP,
-			Port:          &binding.Port,
-			CertificateID: binding.CertificateID,
+			Type:          &b.Type,
+			IP:            &b.IP,
+			Port:          &b.Port,
+			CertificateID: b.CertificateID,
 		})
 	}
 
@@ -144,14 +144,14 @@ func toDomain(input *settingsDto) *settings.Settings {
 		IntervalUnitCount: *certificate.IntervalUnitCount,
 	}
 
-	globalBindings := make([]host.Binding, 0)
-	for _, binding := range bindings {
-		globalBindings = append(globalBindings, host.Binding{
+	globalBindings := make([]binding.Binding, 0)
+	for _, b := range bindings {
+		globalBindings = append(globalBindings, binding.Binding{
 			ID:            uuid.New(),
-			Type:          *binding.Type,
-			IP:            *binding.IP,
-			Port:          *binding.Port,
-			CertificateID: binding.CertificateID,
+			Type:          *b.Type,
+			IP:            *b.IP,
+			Port:          *b.Port,
+			CertificateID: b.CertificateID,
 		})
 	}
 

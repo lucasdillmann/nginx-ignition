@@ -1,7 +1,7 @@
 create table cache (
     id uuid not null,
     name varchar(256) not null,
-    storage_path text,
+    storage_path varchar(512),
     inactive_seconds integer,
     maximum_size_mb integer,
     allowed_methods varchar array not null,
@@ -11,7 +11,7 @@ create table cache (
     concurrency_lock_enabled boolean not null,
     concurrency_lock_timeout_seconds integer,
     concurrency_lock_age_seconds integer,
-    revalidate boolean,
+    revalidate boolean not null,
     bypass_rules varchar array not null,
     no_cache_rules varchar array not null,
     constraint pk_cache primary key (id)

@@ -6,11 +6,18 @@ import (
 	"github.com/google/uuid"
 )
 
+type GetConfigFilesInput struct {
+	BasePath   string
+	ConfigPath string
+	LogPath    string
+	CachePath  string
+}
+
 type Commands struct {
 	GetHostLogs    func(ctx context.Context, hostId uuid.UUID, qualifier string, lines int) ([]string, error)
 	GetMainLogs    func(ctx context.Context, lines int) ([]string, error)
 	GetStatus      func(ctx context.Context) bool
-	GetConfigFiles func(ctx context.Context, basePath, configPath, logPath, cachePath string) ([]byte, error)
+	GetConfigFiles func(ctx context.Context, input GetConfigFilesInput) ([]byte, error)
 	GetMetadata    func(ctx context.Context) (*Metadata, error)
 	Reload         func(ctx context.Context, failIfNotRunning bool) error
 	Start          func(ctx context.Context) error

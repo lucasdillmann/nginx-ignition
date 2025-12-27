@@ -11,18 +11,17 @@ class DeleteCacheAction {
     }
 
     private handleError(error: Error) {
+        let message =
+            "An unexpected error was found while trying to delete the cache configuration. Please try again later."
+
         if (error instanceof UnexpectedResponseError) {
-            const message = error.response?.body?.message
-            if (typeof message === "string") {
-                Notification.error(`Unable to delete the cache configuration`, message)
-                return
+            const responseMessage = error.response?.body?.message
+            if (typeof responseMessage === "string") {
+                message = responseMessage
             }
         }
 
-        Notification.error(
-            `Unable to delete the cache configuration`,
-            `An unexpected error was found while trying to delete the cache configuration. Please try again later.`,
-        )
+        Notification.error("Unable to delete the cache configuration", message)
     }
 
     async execute(userId: string): Promise<void> {

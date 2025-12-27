@@ -1,12 +1,14 @@
 package settings
 
-import "dillmann.com.br/nginx-ignition/core/host"
+import (
+	"dillmann.com.br/nginx-ignition/core/binding"
+)
 
 type Settings struct {
 	Nginx                *NginxSettings
 	LogRotation          *LogRotationSettings
 	CertificateAutoRenew *CertificateAutoRenewSettings
-	GlobalBindings       []host.Binding
+	GlobalBindings       []binding.Binding
 }
 
 type NginxSettings struct {

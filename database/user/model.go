@@ -6,7 +6,8 @@ import (
 )
 
 type userModel struct {
-	bun.BaseModel           `bun:"user"`
+	bun.BaseModel `bun:"user"`
+
 	StreamsAccessLevel      string    `bun:"streams_access_level,notnull"`
 	IntegrationsAccessLevel string    `bun:"integrations_access_level,notnull"`
 	Name                    string    `bun:"name,notnull"`

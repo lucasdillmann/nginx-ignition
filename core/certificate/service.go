@@ -10,68 +10,41 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
-	"dillmann.com.br/nginx-ignition/core/host"
-	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 type service struct {
-	certificateRepository Repository
-	hostRepository        host.Repository
-	settingsRepository    settings.Repository
-	providers             func() []Provider
+	repository Repository
+	providers  func() []Provider
 }
 
 func newService(
-	certificateRepository Repository,
-	hostRepository host.Repository,
-	settingsRepository settings.Repository,
+	repository Repository,
 	providers func() []Provider,
 ) *service {
 	return &service{
-		certificateRepository: certificateRepository,
-		hostRepository:        hostRepository,
-		settingsRepository:    settingsRepository,
-		providers:             providers,
+		repository: repository,
+		providers:  providers,
 	}
 }
 
 func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
-	inUse, err := s.hostRepository.ExistsByCertificateID(ctx, id)
+	inUse, err := s.repository.InUseByID(ctx, id)
 	if err != nil {
 		return err
 	}
 
 	if inUse {
 		return coreerror.New(
-			"Certificate is being used by at least one host. Please update them and try again.",
+			"Certificate is being used by at least one host or by a global binding. Please update them and try again.",
 			true,
 		)
 	}
 
-	cfg, err := s.settingsRepository.Get(ctx)
-	if err != nil {
-		return err
-	}
-
-	for _, binding := range cfg.GlobalBindings {
-		if binding.CertificateID != nil && *binding.CertificateID == id {
-			inUse = true
-			break
-		}
-	}
-
-	if inUse {
-		return coreerror.New(
-			"Certificate is being used by a global binding. Please update the settings and try again.",
-			true,
-		)
-	}
-
-	return s.certificateRepository.DeleteByID(ctx, id)
+	return s.repository.DeleteByID(ctx, id)
 }
 
 func (s *service) getById(ctx context.Context, id uuid.UUID) (*Certificate, error) {
-	cert, err := s.certificateRepository.FindByID(ctx, id)
+	cert, err := s.repository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -89,8 +62,12 @@ func (s *service) getById(ctx context.Context, id uuid.UUID) (*Certificate, erro
 	return cert, nil
 }
 
+func (s *service) existsById(ctx context.Context, id uuid.UUID) (bool, error) {
+	return s.repository.ExistsByID(ctx, id)
+}
+
 func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[Certificate], error) {
-	certs, err := s.certificateRepository.FindPage(ctx, pageSize, pageNumber, searchTerms)
+	certs, err := s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +97,7 @@ func (s *service) availableProviders(_ context.Context) ([]AvailableProvider, er
 }
 
 func (s *service) renewAllDue(ctx context.Context) error {
-	certificates, err := s.certificateRepository.FindAllDueToRenew(ctx)
+	certificates, err := s.repository.FindAllDueToRenew(ctx)
 	if err != nil {
 		return err
 	}
@@ -147,7 +124,7 @@ func (s *service) renewAllDue(ctx context.Context) error {
 }
 
 func (s *service) renew(ctx context.Context, certificateId uuid.UUID) error {
-	certificate, err := s.certificateRepository.FindByID(ctx, certificateId)
+	certificate, err := s.repository.FindByID(ctx, certificateId)
 	if err != nil {
 		return err
 	}
@@ -168,7 +145,7 @@ func (s *service) renew(ctx context.Context, certificateId uuid.UUID) error {
 	}
 
 	certificate.ID = certificateId
-	return s.certificateRepository.Save(ctx, certificate)
+	return s.repository.Save(ctx, certificate)
 }
 
 func (s *service) issue(ctx context.Context, request *IssueRequest) (*Certificate, error) {
@@ -187,12 +164,16 @@ func (s *service) issue(ctx context.Context, request *IssueRequest) (*Certificat
 		return nil, err
 	}
 
-	err = s.certificateRepository.Save(ctx, certificate)
+	err = s.repository.Save(ctx, certificate)
 	if err != nil {
 		return nil, err
 	}
 
 	return certificate, nil
+}
+
+func (s *service) autoRenewSettings(ctx context.Context) (*AutoRenewSettings, error) {
+	return s.repository.GetAutoRenewSettings(ctx)
 }
 
 func providerById(availableProviders []AvailableProvider, id string) Provider {

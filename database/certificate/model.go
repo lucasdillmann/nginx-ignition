@@ -8,7 +8,8 @@ import (
 )
 
 type certificateModel struct {
-	bun.BaseModel      `bun:"certificate"`
+	bun.BaseModel `bun:"certificate"`
+
 	ValidFrom          time.Time  `bun:"valid_from"`
 	IssuedAt           time.Time  `bun:"issued_at"`
 	ValidUntil         time.Time  `bun:"valid_until"`

@@ -10,7 +10,6 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
-	"dillmann.com.br/nginx-ignition/database/certificate"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
@@ -285,54 +284,8 @@ func (r *repository) FindDefault(ctx context.Context) (*host.Host, error) {
 }
 
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
-	count, err := r.database.Select().
+	return r.database.Select().
 		Model((*hostModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Count(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
-}
-
-func (r *repository) ExistsCertificateByID(ctx context.Context, certificateId uuid.UUID) (bool, error) {
-	return certificate.New(r.database).ExistsByID(ctx, certificateId)
-}
-
-func (r *repository) ExistsByCertificateID(ctx context.Context, certificateId uuid.UUID) (bool, error) {
-	count, err := r.database.
-		Select().
-		Model((*hostBindingModel)(nil)).
-		Where("certificate_id = ?", certificateId).
-		Count(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
-}
-
-func (r *repository) ExistsByAccessListID(ctx context.Context, accessListId uuid.UUID) (bool, error) {
-	count, err := r.database.Select().
-		Model((*hostModel)(nil)).
-		Where(byAccessListIdFilter, accessListId).
-		Count(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	if count > 0 {
-		return true, nil
-	}
-
-	count, err = r.database.Select().
-		Model((*hostRouteModel)(nil)).
-		Where(byAccessListIdFilter, accessListId).
-		Count(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
+		Exists(ctx)
 }

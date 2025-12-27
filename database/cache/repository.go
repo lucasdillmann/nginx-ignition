@@ -65,20 +65,10 @@ func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) 
 }
 
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
-	count, err := r.database.Select().
+	return r.database.Select().
 		Model((*cacheModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Count(ctx)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		return false, nil
-	}
-
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
+		Exists(ctx)
 }
 
 func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
@@ -104,26 +94,6 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	}
 
 	return transaction.Commit()
-}
-
-func (r *repository) FindByName(ctx context.Context, name string) (*cache.Cache, error) {
-	var model cacheModel
-
-	err := r.database.Select().
-		Model(&model).
-		Relation("Durations").
-		Where("name = ?", name).
-		Scan(ctx)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	return ptr.Of(toDomain(&model)), nil
 }
 
 func (r *repository) FindPage(
@@ -202,7 +172,10 @@ func (r *repository) Save(ctx context.Context, domain *cache.Cache) error {
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	exists, err := transaction.NewSelect().Model((*cacheModel)(nil)).Where(constants.ByIdFilter, domain.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().
+		Model((*cacheModel)(nil)).
+		Where(constants.ByIdFilter, domain.ID).
+		Exists(ctx)
 	if err != nil {
 		return err
 	}
@@ -231,7 +204,10 @@ func (r *repository) performInsert(ctx context.Context, transaction bun.Tx, mode
 }
 
 func (r *repository) performUpdate(ctx context.Context, transaction bun.Tx, model *cacheModel) error {
-	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
+	_, err := transaction.NewUpdate().
+		Model(model).
+		Where(constants.ByIdFilter, model.ID).
+		Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -246,7 +222,9 @@ func (r *repository) performUpdate(ctx context.Context, transaction bun.Tx, mode
 
 func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, model *cacheModel) error {
 	for index := range model.Durations {
-		_, err := transaction.NewInsert().Model(&model.Durations[index]).Exec(ctx)
+		_, err := transaction.NewInsert().
+			Model(&model.Durations[index]).
+			Exec(ctx)
 		if err != nil {
 			return err
 		}
@@ -256,8 +234,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, m
 }
 
 func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx, id uuid.UUID) error {
-	_, err := transaction.
-		NewDelete().
+	_, err := transaction.NewDelete().
 		Table("cache_duration").
 		Where(byCacheIdFilter, id).
 		Exec(ctx)

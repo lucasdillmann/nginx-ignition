@@ -19,7 +19,7 @@ func New(database *database.Database) settings.Repository {
 	}
 }
 
-func (r repository) Get(ctx context.Context) (*settings.Settings, error) {
+func (r *repository) Get(ctx context.Context) (*settings.Settings, error) {
 	nginx := nginxModel{}
 	if err := r.database.Select().Model(&nginx).Scan(ctx); err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (r repository) Get(ctx context.Context) (*settings.Settings, error) {
 	return toDomain(&nginx, &logRotation, &certificate, bindings, &buffers), nil
 }
 
-func (r repository) Save(ctx context.Context, settings *settings.Settings) error {
+func (r *repository) Save(ctx context.Context, settings *settings.Settings) error {
 	nginx, logRotation, certificate, bindings, buffers := toModel(settings)
 
 	transaction, err := r.database.Begin()

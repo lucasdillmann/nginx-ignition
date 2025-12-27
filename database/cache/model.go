@@ -6,7 +6,8 @@ import (
 )
 
 type cacheModel struct {
-	bun.BaseModel                 `bun:"cache"`
+	bun.BaseModel `bun:"cache"`
+
 	ConcurrencyLockAgeSeconds     *int            `bun:"concurrency_lock_age_seconds"`
 	ConcurrencyLockTimeoutSeconds *int            `bun:"concurrency_lock_timeout_seconds"`
 	StoragePath                   *string         `bun:"storage_path"`
@@ -26,7 +27,8 @@ type cacheModel struct {
 }
 
 type durationModel struct {
-	bun.BaseModel    `bun:"cache_duration"`
+	bun.BaseModel `bun:"cache_duration"`
+
 	StatusCodes      []int     `bun:"status_codes,array,notnull"`
 	ValidTimeSeconds int       `bun:"valid_time_seconds,notnull"`
 	ID               uuid.UUID `bun:"id,pk"`

@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"strings"
 
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
-	"dillmann.com.br/nginx-ignition/core/host"
 )
 
 const (
@@ -26,11 +26,11 @@ var (
 )
 
 type validator struct {
-	commands *host.Commands
+	commands *binding.Commands
 	delegate *validation.ConsistencyValidator
 }
 
-func newValidator(commands *host.Commands) *validator {
+func newValidator(commands *binding.Commands) *validator {
 	return &validator{
 		commands,
 		validation.NewValidator(),
@@ -84,9 +84,9 @@ func (v *validator) validateCertificateAutoRenew(settings *CertificateAutoRenewS
 	v.checkRange(settings.IntervalUnitCount, intervalRange, "certificateAutoRenew.intervalUnitCount")
 }
 
-func (v *validator) validateGlobalBindings(ctx context.Context, settings []host.Binding) error {
-	for index, binding := range settings {
-		if err := v.commands.ValidateBinding(ctx, "globalBindings", index, &binding, v.delegate); err != nil {
+func (v *validator) validateGlobalBindings(ctx context.Context, settings []binding.Binding) error {
+	for index, b := range settings {
+		if err := v.commands.Validate(ctx, "globalBindings", index, &b, v.delegate); err != nil {
 			return err
 		}
 	}

@@ -6,7 +6,8 @@ import (
 )
 
 type streamModel struct {
-	bun.BaseModel    `bun:"stream"`
+	bun.BaseModel `bun:"stream"`
+
 	BindingPort      *int      `bun:"binding_port"`
 	BindingAddress   string    `bun:"binding_address,notnull"`
 	Name             string    `bun:"name,notnull"`
@@ -23,13 +24,15 @@ type streamModel struct {
 
 type streamRouteModel struct {
 	bun.BaseModel `bun:"stream_route"`
-	DomainNames   []string  `bun:"domain_names,array,notnull"`
-	ID            uuid.UUID `bun:"id,pk"`
-	StreamID      uuid.UUID `bun:"stream_id,notnull"`
+
+	DomainNames []string  `bun:"domain_names,array,notnull"`
+	ID          uuid.UUID `bun:"id,pk"`
+	StreamID    uuid.UUID `bun:"stream_id,notnull"`
 }
 
 type streamBackendModel struct {
 	bun.BaseModel `bun:"stream_backend"`
+
 	StreamID      *uuid.UUID `bun:"stream_id"`
 	StreamRouteID *uuid.UUID `bun:"stream_route_id"`
 	Port          *int       `bun:"port"`

@@ -61,20 +61,12 @@ func (r *repository) ExistsByName(ctx context.Context, name string) (*bool, erro
 }
 
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (*bool, error) {
-	count, err := r.database.Select().
+	exists, err := r.database.Select().
 		Model((*vpnModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Count(ctx)
+		Exists(ctx)
 
-	if errors.Is(err, sql.ErrNoRows) {
-		return ptr.Of(false), nil
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	return ptr.Of(count > 0), nil
+	return &exists, err
 }
 
 func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (*bool, error) {

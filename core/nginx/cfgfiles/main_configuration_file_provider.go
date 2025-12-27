@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/stream"
@@ -95,9 +96,9 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		ctx.paths.Base,
 		p.getErrorLogPath(ctx.paths, logs),
 		cfg.Nginx.WorkerConnections,
-		p.enabledFlag(cfg.Nginx.SendfileEnabled),
-		p.enabledFlag(cfg.Nginx.ServerTokensEnabled),
-		p.enabledFlag(cfg.Nginx.TcpNoDelayEnabled),
+		statusFlag(cfg.Nginx.SendfileEnabled),
+		statusFlag(cfg.Nginx.ServerTokensEnabled),
+		statusFlag(cfg.Nginx.TcpNoDelayEnabled),
 		cfg.Nginx.Timeouts.Keepalive,
 		cfg.Nginx.Timeouts.Connect,
 		cfg.Nginx.Timeouts.Read,
@@ -135,14 +136,6 @@ func (p *mainConfigurationFileProvider) getErrorLogPath(paths *Paths, logs *sett
 	return "off"
 }
 
-func (p *mainConfigurationFileProvider) enabledFlag(value bool) string {
-	if value {
-		return onFlag
-	}
-
-	return offFlag
-}
-
 func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []host.Host) string {
 	includes := make([]string, 0)
 	for _, h := range hosts {
@@ -171,9 +164,9 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(paths *Paths, caches
 	for _, c := range caches {
 		cacheIDNoDashes := strings.ReplaceAll(c.ID.String(), "-", "")
 		storagePath := c.StoragePath
-		if storagePath == nil || *storagePath == "" {
-			fallback := paths.Cache + cacheIDNoDashes
-			storagePath = &fallback
+
+		if storagePath == nil || strings.TrimSpace(*storagePath) == "" {
+			storagePath = ptr.Of(paths.Cache + cacheIDNoDashes)
 		}
 
 		inactive := ""

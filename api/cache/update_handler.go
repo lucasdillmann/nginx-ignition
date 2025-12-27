@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/api/common/converter"
 	"dillmann.com.br/nginx-ignition/core/cache"
 )
 
@@ -25,7 +26,7 @@ func (h updateHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	domain := toDomain(id, &dto)
+	domain := converter.Wrap2(toDomain, id, &dto)
 	if err := h.commands.Save(ctx, domain); err != nil {
 		panic(err)
 	}

@@ -1,13 +1,15 @@
 package cache
 
 import (
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/validation"
+	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 )
+
+var httpStatusCodeRange = valuerange.New(100, 599)
 
 type validator struct {
 	delegate *validation.ConsistencyValidator
@@ -33,16 +35,16 @@ func (v *validator) validateBasicSettings(c *Cache) {
 		v.delegate.Add("name", validation.ValueMissingMessage)
 	}
 
-	if c.InactiveSeconds != nil && *c.InactiveSeconds < 0 {
-		v.delegate.Add("inactiveSeconds", validation.ValueCannotBeNegativeMessage)
+	if c.InactiveSeconds != nil && *c.InactiveSeconds < 1 {
+		v.delegate.Add("inactiveSeconds", validation.ValueCannotBeZeroMessage)
 	}
 
 	if c.MaximumSizeMB != nil && *c.MaximumSizeMB < 1 {
-		v.delegate.Add("maximumSizeMb", "Value must be 1 or greater")
+		v.delegate.Add("maximumSizeMb", validation.ValueCannotBeZeroMessage)
 	}
 
 	if c.MinimumUsesBeforeCaching < 1 {
-		v.delegate.Add("minimumUsesBeforeCaching", "Value must be 1 or greater")
+		v.delegate.Add("minimumUsesBeforeCaching", validation.ValueCannotBeZeroMessage)
 	}
 }
 
@@ -54,8 +56,6 @@ func (v *validator) validateStoragePath(path *string) {
 	trimmedPath := strings.TrimSpace(*path)
 	if !filepath.IsAbs(trimmedPath) {
 		v.delegate.Add("storagePath", "Value must be an absolute path")
-	} else if _, err := os.Stat(trimmedPath); os.IsNotExist(err) {
-		v.delegate.Add("storagePath", "Path does not exist")
 	}
 }
 
@@ -66,14 +66,14 @@ func (v *validator) validateConcurrencyLock(lock ConcurrencyLock) {
 
 	if lock.TimeoutSeconds == nil {
 		v.delegate.Add("concurrencyLock.timeoutSeconds", validation.ValueMissingMessage)
-	} else if *lock.TimeoutSeconds < 0 {
-		v.delegate.Add("concurrencyLock.timeoutSeconds", validation.ValueCannotBeNegativeMessage)
+	} else if *lock.TimeoutSeconds < 1 {
+		v.delegate.Add("concurrencyLock.timeoutSeconds", validation.ValueCannotBeZeroMessage)
 	}
 
 	if lock.AgeSeconds == nil {
 		v.delegate.Add("concurrencyLock.ageSeconds", validation.ValueMissingMessage)
-	} else if *lock.AgeSeconds < 0 {
-		v.delegate.Add("concurrencyLock.ageSeconds", validation.ValueCannotBeNegativeMessage)
+	} else if *lock.AgeSeconds < 1 {
+		v.delegate.Add("concurrencyLock.ageSeconds", validation.ValueCannotBeZeroMessage)
 	}
 }
 
@@ -119,7 +119,18 @@ func (v *validator) validateDuration(index int, duration *Duration) {
 		v.delegate.Add(path+".statusCodes", validation.ValueMissingMessage)
 	}
 
-	if duration.ValidTimeSeconds < 0 {
-		v.delegate.Add(path+".validTimeSeconds", validation.ValueCannotBeNegativeMessage)
+	for statusCodeIndex, statusCode := range duration.StatusCodes {
+		if httpStatusCodeRange.Contains(statusCode) {
+			continue
+		}
+
+		v.delegate.Add(
+			path+".statusCodes["+strconv.Itoa(statusCodeIndex)+"]",
+			"Invalid status code (must be between 100 and 599 inclusive)",
+		)
+	}
+
+	if duration.ValidTimeSeconds < 1 {
+		v.delegate.Add(path+".validTimeSeconds", validation.ValueCannotBeZeroMessage)
 	}
 }

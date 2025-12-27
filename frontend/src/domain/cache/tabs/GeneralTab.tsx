@@ -96,7 +96,7 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                     </Flex>
 
                     <Flex className="cache-form-inner-flex-container-column cache-form-expanded-label-size">
-                        <h2 className="cache-form-section-name">Request</h2>
+                        <h2 className="cache-form-section-name">Request matching</h2>
                         <p className="cache-form-section-help-text">Define which requests should be cached and how.</p>
                         <Form.Item
                             name="allowedMethods"
@@ -128,7 +128,7 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                 </Flex>
 
                 <h2 className="cache-form-section-name" style={{ marginTop: 40 }}>
-                    Stale & revalidation
+                    Stale contents and revalidation
                 </h2>
                 <p className="cache-form-section-help-text">
                     Define how the cache should behave when the content is stale and how nginx should handle
@@ -177,9 +177,9 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                     </Select>
                 </Form.Item>
 
-                <h2 className="cache-form-section-name">Durations</h2>
+                <h2 className="cache-form-section-name">Cache content expiration</h2>
                 <p className="cache-form-section-help-text">
-                    Define how long the cache should be valid for different status codes.
+                    Customization of how long the cache should be valid by HTTP status codes.
                 </p>
                 <CacheDurations validationResult={validationResult} />
             </>

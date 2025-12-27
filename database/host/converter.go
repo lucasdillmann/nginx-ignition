@@ -5,18 +5,19 @@ import (
 
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
 func toDomain(model *hostModel) (*host.Host, error) {
-	bindings := make([]host.Binding, len(model.Bindings))
-	for index, binding := range model.Bindings {
-		bindings[index] = host.Binding{
-			ID:            binding.ID,
-			Type:          host.BindingType(binding.Type),
-			IP:            binding.IP,
-			Port:          binding.Port,
-			CertificateID: binding.CertificateID,
+	bindings := make([]binding.Binding, len(model.Bindings))
+	for index, b := range model.Bindings {
+		bindings[index] = binding.Binding{
+			ID:            b.ID,
+			Type:          binding.Type(b.Type),
+			IP:            b.IP,
+			Port:          b.Port,
+			CertificateID: b.CertificateID,
 		}
 	}
 

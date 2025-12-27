@@ -29,6 +29,12 @@ type IssueRequest struct {
 	DomainNames []string
 }
 
+type AutoRenewSettings struct {
+	IntervalUnit      string
+	IntervalUnitCount int
+	Enabled           bool
+}
+
 type AvailableProvider struct {
 	provider Provider
 }

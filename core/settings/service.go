@@ -3,25 +3,25 @@ package settings
 import (
 	"context"
 
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
-	"dillmann.com.br/nginx-ignition/core/host"
 )
 
 type service struct {
-	repository             Repository
-	validateBindingCommand *host.Commands
-	scheduler              *scheduler.Scheduler
+	repository      Repository
+	bindingCommands *binding.Commands
+	scheduler       *scheduler.Scheduler
 }
 
 func newService(
 	repository Repository,
-	validateBindingCommand *host.Commands,
+	bindingCommands *binding.Commands,
 	scheduler *scheduler.Scheduler,
 ) *service {
 	return &service{
-		repository:             repository,
-		validateBindingCommand: validateBindingCommand,
-		scheduler:              scheduler,
+		repository:      repository,
+		bindingCommands: bindingCommands,
+		scheduler:       scheduler,
 	}
 }
 
@@ -30,7 +30,7 @@ func (s *service) get(ctx context.Context) (*Settings, error) {
 }
 
 func (s *service) save(ctx context.Context, settings *Settings) error {
-	if err := newValidator(s.validateBindingCommand).validate(ctx, settings); err != nil {
+	if err := newValidator(s.bindingCommands).validate(ctx, settings); err != nil {
 		return err
 	}
 

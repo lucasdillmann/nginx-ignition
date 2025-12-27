@@ -158,7 +158,7 @@ export default class CacheFormPage extends React.Component<unknown, CacheFormSta
 
         AppShellContext.get().updateConfig({
             title: "Cache configuration details",
-            subtitle: "Full details of the cache configuration",
+            subtitle: "Full details of the nginx content cache configuration",
             actions,
         })
     }

@@ -95,7 +95,7 @@ func (s *swarmAdapter) buildServiceOption(port *swarm.PortConfig, service *swarm
 	}
 
 	return &Option{
-		DriverOption: &integration.DriverOption{
+		DriverOption: integration.DriverOption{
 			ID:           fmt.Sprintf("%s:%d:%s", service.ID, portNumber, qualifierType),
 			Name:         service.Spec.Name,
 			Port:         int(portNumber),

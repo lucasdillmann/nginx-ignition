@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/host"
@@ -96,29 +97,25 @@ func (p *hostConfigurationFileProvider) buildHost(ctx *providerContext, h *host.
 }
 
 func (p *hostConfigurationFileProvider) buildServerNames(h *host.Host) string {
-	serverNames := ""
-
 	if h.DefaultServer {
-		serverNames = "server_name _;"
-	} else if len(h.DomainNames) > 0 {
-		serverNames = "server_name " + strings.Join(h.DomainNames, " ") + ";"
+		return "server_name _;"
 	}
 
-	return serverNames
+	return "server_name " + strings.Join(h.DomainNames, " ") + ";"
 }
 
 func (p *hostConfigurationFileProvider) buildBinding(
 	ctx *providerContext,
 	h *host.Host,
-	b *host.Binding,
+	b *binding.Binding,
 	routes []string,
 	serverNames, httpsRedirect, http2 string,
 ) (string, error) {
 	listen := ""
 	switch b.Type {
-	case host.HttpBindingType:
+	case binding.HttpBindingType:
 		listen = fmt.Sprintf("listen %s:%d %s;", b.IP, b.Port, p.buildBindingAdditionalParams(h))
-	case host.HttpsBindingType:
+	case binding.HttpsBindingType:
 		listen = fmt.Sprintf(
 			`
 				listen %s:%d ssl %s;
@@ -138,7 +135,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 	}
 
 	conditionalHttpsRedirect := ""
-	if b.Type == host.HttpBindingType {
+	if b.Type == binding.HttpBindingType {
 		conditionalHttpsRedirect = httpsRedirect
 	}
 
@@ -164,11 +161,11 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			%s
 			%s
 		}`,
-		p.flag(logs.AccessLogsEnabled, fmt.Sprintf("%shost-%s.access.log", ctx.paths.Logs, h.ID), "off"),
-		p.flag(logs.ErrorLogsEnabled, fmt.Sprintf("%shost-%s.error.log %s", ctx.paths.Logs, h.ID, strings.ToLower(string(logs.ErrorLogsLevel))), "off"),
-		p.statusFlag(cfg.Nginx.GzipEnabled),
+		flag(logs.AccessLogsEnabled, fmt.Sprintf("%shost-%s.access.log", ctx.paths.Logs, h.ID), "off"),
+		flag(logs.ErrorLogsEnabled, fmt.Sprintf("%shost-%s.error.log %s", ctx.paths.Logs, h.ID, strings.ToLower(string(logs.ErrorLogsLevel))), "off"),
+		statusFlag(cfg.Nginx.GzipEnabled),
 		cfg.Nginx.MaximumBodySizeMb,
-		p.flag(h.AccessListID != nil, fmt.Sprintf("include %saccess-list-%s.conf;", ctx.paths.Config, h.AccessListID), ""),
+		flag(h.AccessListID != nil, fmt.Sprintf("include %saccess-list-%s.conf;", ctx.paths.Config, h.AccessListID), ""),
 		p.buildCacheConfig(ctx.caches, h.CacheID),
 		conditionalHttpsRedirect,
 		http2,
@@ -215,8 +212,6 @@ func (p *hostConfigurationFileProvider) buildStaticFilesRoute(ctx *providerConte
 		normalizedSourcePath += "/"
 	}
 
-	autoIndex := p.statusFlag(r.Settings.DirectoryListingEnabled)
-
 	return fmt.Sprintf(
 		`location %s {
 			rewrite  ^%s(.*) /$1 break;
@@ -230,7 +225,7 @@ func (p *hostConfigurationFileProvider) buildStaticFilesRoute(ctx *providerConte
 		normalizedSourcePath,
 		normalizedSourcePath,
 		*r.TargetURI,
-		autoIndex,
+		statusFlag(r.Settings.DirectoryListingEnabled),
 		p.buildRouteSettings(ctx, r),
 	)
 }
@@ -500,8 +495,8 @@ func (p *hostConfigurationFileProvider) appendCacheMethods(builder *strings.Buil
 
 func (p *hostConfigurationFileProvider) appendCacheStandardOptions(builder *strings.Builder, c *cache.Cache) {
 	fmt.Fprintf(builder, "\nproxy_cache_min_uses %d;", c.MinimumUsesBeforeCaching)
-	fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", p.statusFlag(c.BackgroundUpdate))
-	fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", p.statusFlag(c.Revalidate))
+	fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", statusFlag(c.BackgroundUpdate))
+	fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", statusFlag(c.Revalidate))
 
 	staleConfig := offFlag
 
@@ -530,23 +525,11 @@ func (p *hostConfigurationFileProvider) appendCacheLock(builder *strings.Builder
 }
 
 func (p *hostConfigurationFileProvider) appendCacheBypassRules(builder *strings.Builder, c *cache.Cache) {
-	if len(c.BypassRules) > 0 {
-		fmt.Fprintf(builder, "\nproxy_cache_bypass %s;", strings.Join(c.BypassRules, " "))
+	for _, rule := range c.BypassRules {
+		fmt.Fprintf(builder, "\nproxy_cache_bypass %s;", rule)
 	}
 
-	if len(c.NoCacheRules) > 0 {
-		fmt.Fprintf(builder, "\nproxy_no_cache %s;", strings.Join(c.NoCacheRules, " "))
+	for _, rule := range c.NoCacheRules {
+		fmt.Fprintf(builder, "\nproxy_no_cache %s;", rule)
 	}
-}
-
-func (p *hostConfigurationFileProvider) flag(enabled bool, trueValue, falseValue string) string {
-	if enabled {
-		return trueValue
-	}
-
-	return falseValue
-}
-
-func (p *hostConfigurationFileProvider) statusFlag(enabled bool) string {
-	return p.flag(enabled, onFlag, offFlag)
 }

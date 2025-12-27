@@ -182,15 +182,10 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]stream.Stream, error
 }
 
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
-	count, err := r.database.Select().
+	return r.database.Select().
 		Model((*streamModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Count(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
+		Exists(ctx)
 }
 
 func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx, id uuid.UUID) error {

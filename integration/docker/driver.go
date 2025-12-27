@@ -53,7 +53,7 @@ func (a *Driver) GetAvailableOptions(
 	totalItems := len(options)
 	driverOptions := make([]integration.DriverOption, totalItems)
 	for index, option := range options {
-		driverOptions[index] = *option.DriverOption
+		driverOptions[index] = option.DriverOption
 	}
 
 	return pagination.New(0, totalItems, totalItems, driverOptions), nil
@@ -74,7 +74,7 @@ func (a *Driver) GetAvailableOptionById(
 		return nil, err
 	}
 
-	return option.DriverOption, nil
+	return &option.DriverOption, nil
 }
 
 func (a *Driver) GetOptionProxyURL(

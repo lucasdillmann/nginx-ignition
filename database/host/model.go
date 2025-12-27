@@ -6,7 +6,8 @@ import (
 )
 
 type hostModel struct {
-	bun.BaseModel       `bun:"host"`
+	bun.BaseModel `bun:"host"`
+
 	AccessListID        *uuid.UUID         `bun:"access_list_id"`
 	CacheID             *uuid.UUID         `bun:"cache_id"`
 	VPNs                []hostVpnModel     `bun:"rel:has-many,join:id=host_id"`
@@ -24,6 +25,7 @@ type hostModel struct {
 
 type hostBindingModel struct {
 	bun.BaseModel `bun:"host_binding"`
+
 	CertificateID *uuid.UUID `bun:"certificate_id"`
 	Type          string     `bun:"type,notnull"`
 	IP            string     `bun:"ip,notnull"`
@@ -34,14 +36,16 @@ type hostBindingModel struct {
 
 type hostVpnModel struct {
 	bun.BaseModel `bun:"host_vpn"`
-	Host          *string   `bun:"host"`
-	Name          string    `bun:"name,notnull"`
-	HostID        uuid.UUID `bun:"host_id,notnull"`
-	VPNID         uuid.UUID `bun:"vpn_id,notnull"`
+
+	Host   *string   `bun:"host"`
+	Name   string    `bun:"name,notnull"`
+	HostID uuid.UUID `bun:"host_id,notnull"`
+	VPNID  uuid.UUID `bun:"vpn_id,notnull"`
 }
 
 type hostRouteModel struct {
-	bun.BaseModel           `bun:"host_route"`
+	bun.BaseModel `bun:"host_route"`
+
 	IntegrationID           *uuid.UUID `bun:"integration_id"`
 	StaticResponsePayload   *string    `bun:"static_response_payload"`
 	CodeMainFunction        *string    `bun:"code_main_function"`

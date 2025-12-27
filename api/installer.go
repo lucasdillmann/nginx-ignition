@@ -24,6 +24,7 @@ func Install() error {
 		healthcheck.Install,
 		settings.Install,
 		accesslist.Install,
+		cache.Install,
 		certificate.Install,
 		user.Install,
 		host.Install,
@@ -32,7 +33,6 @@ func Install() error {
 		stream.Install,
 		backup.Install,
 		vpn.Install,
-		cache.Install,
 		frontend.Install,
 	)
 }

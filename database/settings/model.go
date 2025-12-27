@@ -6,7 +6,8 @@ import (
 )
 
 type nginxModel struct {
-	bun.BaseModel       `bun:"settings_nginx"`
+	bun.BaseModel `bun:"settings_nginx"`
+
 	Custom              *string   `bun:"custom"`
 	RuntimeUser         string    `bun:"runtime_user"`
 	DefaultContentType  string    `bun:"default_content_type"`
@@ -31,7 +32,8 @@ type nginxModel struct {
 }
 
 type logRotationModel struct {
-	bun.BaseModel     `bun:"settings_log_rotation"`
+	bun.BaseModel `bun:"settings_log_rotation"`
+
 	IntervalUnit      string    `bun:"interval_unit"`
 	MaximumLines      int       `bun:"maximum_lines"`
 	IntervalUnitCount int       `bun:"interval_unit_count"`
@@ -40,7 +42,8 @@ type logRotationModel struct {
 }
 
 type certificateModel struct {
-	bun.BaseModel     `bun:"settings_certificate_auto_renew"`
+	bun.BaseModel `bun:"settings_certificate_auto_renew"`
+
 	IntervalUnit      string    `bun:"interval_unit"`
 	IntervalUnitCount int       `bun:"interval_unit_count"`
 	ID                uuid.UUID `bun:"id,pk"`
@@ -49,6 +52,7 @@ type certificateModel struct {
 
 type bindingModel struct {
 	bun.BaseModel `bun:"settings_global_binding"`
+
 	CertificateID *uuid.UUID `bun:"certificate_id"`
 	Type          string     `bun:"type"`
 	IP            string     `bun:"ip"`

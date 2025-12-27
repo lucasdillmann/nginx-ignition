@@ -2,13 +2,8 @@ package host
 
 import (
 	"github.com/google/uuid"
-)
 
-type BindingType string
-
-const (
-	HttpBindingType  BindingType = "HTTP"
-	HttpsBindingType BindingType = "HTTPS"
+	"dillmann.com.br/nginx-ignition/core/binding"
 )
 
 type CodeLanguage string
@@ -34,7 +29,7 @@ type Host struct {
 	CacheID           *uuid.UUID
 	DomainNames       []string
 	Routes            []Route
-	Bindings          []Binding
+	Bindings          []binding.Binding
 	VPNs              []VPN
 	ID                uuid.UUID
 	FeatureSet        FeatureSet
@@ -88,14 +83,6 @@ type RouteStaticResponse struct {
 type RouteIntegrationConfig struct {
 	OptionID      string
 	IntegrationID uuid.UUID
-}
-
-type Binding struct {
-	CertificateID *uuid.UUID
-	Type          BindingType
-	IP            string
-	Port          int
-	ID            uuid.UUID
 }
 
 type VPN struct {

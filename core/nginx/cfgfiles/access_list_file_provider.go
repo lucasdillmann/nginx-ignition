@@ -13,8 +13,10 @@ type accessListFileProvider struct {
 	repository accesslist.Repository
 }
 
-func newAccessListFileProvider(accessListRepository accesslist.Repository) *accessListFileProvider {
-	return &accessListFileProvider{repository: accessListRepository}
+func newAccessListFileProvider(repository accesslist.Repository) *accessListFileProvider {
+	return &accessListFileProvider{
+		repository: repository,
+	}
 }
 
 func (p *accessListFileProvider) provide(ctx *providerContext) ([]File, error) {

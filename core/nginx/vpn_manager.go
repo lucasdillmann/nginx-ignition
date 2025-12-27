@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/vpn"
@@ -13,7 +14,7 @@ import (
 type endpointAdapter struct {
 	domainName *string
 	name       string
-	bindings   []host.Binding
+	bindings   []binding.Binding
 	vpnID      uuid.UUID
 }
 
@@ -156,11 +157,11 @@ func (a *endpointAdapter) Targets() []vpn.EndpointTarget {
 	}
 
 	output := make([]vpn.EndpointTarget, len(a.bindings))
-	for index, binding := range a.bindings {
+	for index, b := range a.bindings {
 		output[index].Host = targetHost
-		output[index].IP = binding.IP
-		output[index].Port = binding.Port
-		output[index].HTTPS = binding.Type == host.HttpsBindingType
+		output[index].IP = b.IP
+		output[index].Port = b.Port
+		output[index].HTTPS = b.Type == binding.HttpsBindingType
 	}
 
 	return output

@@ -7,8 +7,8 @@ import (
 )
 
 type Option struct {
-	*integration.DriverOption
 	urlResolver func(ctx context.Context, option *Option) (*string, []string, error)
+	integration.DriverOption
 	privatePort int
 }
 

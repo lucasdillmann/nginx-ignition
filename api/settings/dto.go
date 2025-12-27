@@ -3,7 +3,7 @@ package settings
 import (
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
@@ -72,8 +72,8 @@ type nginxLogsSettingsDto struct {
 }
 
 type bindingDto struct {
-	Type          *host.BindingType `json:"type"`
-	IP            *string           `json:"ip"`
-	Port          *int              `json:"port"`
-	CertificateID *uuid.UUID        `json:"certificateId"`
+	Type          *binding.Type `json:"type"`
+	IP            *string       `json:"ip"`
+	Port          *int          `json:"port"`
+	CertificateID *uuid.UUID    `json:"certificateId"`
 }

@@ -28,8 +28,7 @@ export default class AdvancedTab extends React.Component<AdvancedTabProps> {
                     Concurrency lock
                 </h2>
                 <p className="cache-form-section-help-text">
-                    Settings to prevent multiple simultaneous requests from populating the same cache key at the same
-                    time.
+                    Prevents multiple simultaneous requests from populating the same cache key at the same time.
                 </p>
                 <Form.Item
                     name={["concurrencyLock", "enabled"]}

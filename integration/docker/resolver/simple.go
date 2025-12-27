@@ -111,7 +111,7 @@ func (s *simpleAdapter) buildOption(port *container.Port, item *container.Summar
 	}
 
 	return &Option{
-		DriverOption: &integration.DriverOption{
+		DriverOption: integration.DriverOption{
 			ID:        fmt.Sprintf("%s:%d:%s", itemID, portNumber, qualifierType),
 			Name:      itemName,
 			Port:      int(portNumber),

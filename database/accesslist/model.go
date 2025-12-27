@@ -6,7 +6,8 @@ import (
 )
 
 type accessListModel struct {
-	bun.BaseModel               `bun:"access_list"`
+	bun.BaseModel `bun:"access_list"`
+
 	Name                        string             `bun:"name,unique,notnull"`
 	Realm                       string             `bun:"realm"`
 	DefaultOutcome              string             `bun:"default_outcome,notnull"`
@@ -19,14 +20,16 @@ type accessListModel struct {
 
 type credentialsModel struct {
 	bun.BaseModel `bun:"access_list_credentials"`
-	Username      string    `bun:"username,notnull"`
-	Password      string    `bun:"password,notnull"`
-	ID            uuid.UUID `bun:"id,pk"`
-	AccessListID  uuid.UUID `bun:"access_list_id,notnull"`
+
+	Username     string    `bun:"username,notnull"`
+	Password     string    `bun:"password,notnull"`
+	ID           uuid.UUID `bun:"id,pk"`
+	AccessListID uuid.UUID `bun:"access_list_id,notnull"`
 }
 
 type entrySetModel struct {
-	bun.BaseModel   `bun:"access_list_entry_set"`
+	bun.BaseModel `bun:"access_list_entry_set"`
+
 	Outcome         string    `bun:"outcome,notnull"`
 	SourceAddresses []string  `bun:"source_addresses,array,notnull"`
 	Priority        int       `bun:"priority,notnull"`

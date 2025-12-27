@@ -6,9 +6,9 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/accesslist"
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
-	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
@@ -19,6 +19,7 @@ type service struct {
 	vpnCommands         *vpn.Commands
 	accessListCommands  *accesslist.Commands
 	cacheCommands       *cache.Commands
+	bindingCommands     *binding.Commands
 }
 
 func newService(
@@ -27,13 +28,15 @@ func newService(
 	vpnCommands *vpn.Commands,
 	accessListCommands *accesslist.Commands,
 	cacheCommands *cache.Commands,
+	bindingCommands *binding.Commands,
 ) *service {
 	return &service{
-		repository,
-		integrationCommands,
-		vpnCommands,
-		accessListCommands,
-		cacheCommands,
+		repository:          repository,
+		integrationCommands: integrationCommands,
+		vpnCommands:         vpnCommands,
+		accessListCommands:  accessListCommands,
+		cacheCommands:       cacheCommands,
+		bindingCommands:     bindingCommands,
 	}
 }
 
@@ -44,6 +47,7 @@ func (s *service) save(ctx context.Context, input *Host) error {
 		s.vpnCommands,
 		s.accessListCommands,
 		s.cacheCommands,
+		s.bindingCommands,
 	)
 
 	if err := validatorInstance.validate(ctx, input); err != nil {
@@ -71,22 +75,4 @@ func (s *service) getAllEnabled(ctx context.Context) ([]Host, error) {
 
 func (s *service) existsByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	return s.repository.ExistsByID(ctx, id)
-}
-
-func (s *service) validateBinding(
-	ctx context.Context,
-	path string,
-	index int,
-	binding *Binding,
-	context *validation.ConsistencyValidator,
-) error {
-	validatorInstance := &validator{
-		s.repository,
-		s.integrationCommands,
-		s.vpnCommands,
-		s.accessListCommands,
-		s.cacheCommands,
-		context,
-	}
-	return validatorInstance.validateBinding(ctx, path, binding, index)
 }

@@ -3,6 +3,7 @@ package host
 import (
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
@@ -66,10 +67,10 @@ type featureSetDto struct {
 }
 
 type bindingDto struct {
-	Type          *host.BindingType `json:"type"`
-	Ip            *string           `json:"ip"`
-	Port          *int              `json:"port"`
-	CertificateId *uuid.UUID        `json:"certificateId"`
+	Type          *binding.Type `json:"type"`
+	Ip            *string       `json:"ip"`
+	Port          *int          `json:"port"`
+	CertificateId *uuid.UUID    `json:"certificateId"`
 }
 
 type vpnDto struct {

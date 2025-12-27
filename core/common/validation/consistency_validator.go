@@ -1,9 +1,8 @@
 package validation
 
 const (
-	ValueMissingMessage          = "A value is required"
-	ValueCannotBeNegativeMessage = "Value must be 0 or greater"
-	ValueCannotBeZeroMessage     = "Value must be greater than 0"
+	ValueMissingMessage      = "A value is required"
+	ValueCannotBeZeroMessage = "Must be 1 or greater"
 )
 
 type ConsistencyValidator struct {

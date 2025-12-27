@@ -15,12 +15,6 @@ func toDomain(id uuid.UUID, dto *cacheRequestDto) *cache.Cache {
 		}
 	}
 
-	lock := cache.ConcurrencyLock{
-		Enabled:        dto.ConcurrencyLock.Enabled,
-		TimeoutSeconds: dto.ConcurrencyLock.TimeoutSeconds,
-		AgeSeconds:     dto.ConcurrencyLock.AgeSeconds,
-	}
-
 	return &cache.Cache{
 		ID:                       id,
 		Name:                     dto.Name,
@@ -31,11 +25,15 @@ func toDomain(id uuid.UUID, dto *cacheRequestDto) *cache.Cache {
 		MinimumUsesBeforeCaching: dto.MinimumUsesBeforeCaching,
 		UseStale:                 dto.UseStale,
 		BackgroundUpdate:         dto.BackgroundUpdate,
-		ConcurrencyLock:          lock,
 		Revalidate:               dto.Revalidate,
 		BypassRules:              dto.BypassRules,
 		NoCacheRules:             dto.NoCacheRules,
 		Durations:                durations,
+		ConcurrencyLock: cache.ConcurrencyLock{
+			Enabled:        dto.ConcurrencyLock.Enabled,
+			TimeoutSeconds: dto.ConcurrencyLock.TimeoutSeconds,
+			AgeSeconds:     dto.ConcurrencyLock.AgeSeconds,
+		},
 	}
 }
 

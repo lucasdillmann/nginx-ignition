@@ -51,20 +51,10 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*accesslist.Ac
 }
 
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
-	count, err := r.database.Select().
+	return r.database.Select().
 		Model((*accessListModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Count(ctx)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		return false, nil
-	}
-
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
+		Exists(ctx)
 }
 
 func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
@@ -105,27 +95,6 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	}
 
 	return transaction.Commit()
-}
-
-func (r *repository) FindByName(ctx context.Context, name string) (*accesslist.AccessList, error) {
-	var model accessListModel
-
-	err := r.database.Select().
-		Model(&model).
-		Relation("Credentials").
-		Relation("EntrySets").
-		Where("name = ?", name).
-		Scan(ctx)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	return ptr.Of(toDomain(&model)), nil
 }
 
 func (r *repository) FindPage(
