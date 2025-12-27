@@ -27,6 +27,7 @@ Some of the available features include:
 - Native integration with Docker and Docker Swarm for easy pick of a container/service as the proxy target
 - Built-in support for Tailscale VPNs, enabling easy exposure of hosts in your Tailnet networks as virtual machines
 - Access lists for easy control of who can access what using basic authentication and/or source IP address checks 
+- Easy nginx content caching configuration
 
 ## Getting started
 
