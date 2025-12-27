@@ -10,6 +10,7 @@ import {
     MergeCellsOutlined,
     SettingOutlined,
     ApartmentOutlined,
+    RocketOutlined,
 } from "@ant-design/icons"
 import { Flex } from "antd"
 import Videos from "./videos/Videos"
@@ -188,15 +189,33 @@ export default class HomePage extends React.PureComponent {
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-left-side-video">
                         <div className="home-guide-video-mask">
-                            <video src={Videos.Settings} autoPlay loop controls />
+                            <video src={Videos.Caches} autoPlay loop controls />
                         </div>
                     </Flex>
+                    <Flex className="home-guide-section-content" vertical>
+                        <h2>
+                            <RocketOutlined /> Cache configuration
+                        </h2>
+                        <p>
+                            Speed up your websites and reduce load on your upstream servers by enabling nginx's content
+                            caching capabilities. Ignition makes it easy to configure cache rules that determine which
+                            requests should be cached and for how long.
+                        </p>
+                        <p>
+                            You can customize cache behavior by HTTP status codes, file extensions, request methods, and
+                            more. Advanced features like stale content handling, background updates, and concurrency
+                            locks give you fine-grained control over how your content is cached and served.
+                        </p>
+                    </Flex>
+                </Flex>
+
+                <Flex className="home-guide-section">
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
                             <SettingOutlined /> Settings
                         </h2>
                         <p>
-                            ignition abstracts away the complexity of the nginx's configuration files, but that doesn't
+                            Ignition abstracts away the complexity of the nginx's configuration files, but that doesn't
                             mean that you lose the ability to apply some fine adjustments.
                         </p>
                         <p>
@@ -208,6 +227,11 @@ export default class HomePage extends React.PureComponent {
                             Beyond that, you can also configure some of the nginx ignition's features there, like the
                             automatic renewal of SSL certificates and log rotation.
                         </p>
+                    </Flex>
+                    <Flex className="home-guide-right-side-video">
+                        <div className="home-guide-video-mask">
+                            <video src={Videos.Settings} autoPlay loop controls />
+                        </div>
                     </Flex>
                 </Flex>
 
