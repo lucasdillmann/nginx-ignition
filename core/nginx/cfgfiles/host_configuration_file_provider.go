@@ -548,11 +548,14 @@ func (p *hostConfigurationFileProvider) appendCacheFileExtensions(builder *strin
 		)
 	}
 
+	builder.WriteString("\n")
 	fmt.Fprintf(
 		builder,
 		`
-			if ($uri !~* "%s") { set $no_cache_ext 1; }
-			proxy_no_cache $no_cache_ext;
+			if ($uri !~* "%s") { 
+				set $__no_cache_allowed_extension 1; 
+			}
+			proxy_no_cache $__no_cache_allowed_extension;
 		`,
 		fmt.Sprintf("\\.(%s)$", strings.Join(extensions, "|")),
 	)
