@@ -6,8 +6,7 @@ import ValidationResult from "../../../core/validation/ValidationResult"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
-    alignItems: "start",
-    marginTop: 37,
+    marginTop: 7,
 }
 
 export interface CacheRulesProps {
@@ -29,7 +28,6 @@ export default class CacheRules extends React.Component<CacheRulesProps> {
                     name={name}
                     validateStatus={validationResult.getStatus(`${listName}[${index}]`)}
                     help={validationResult.getMessage(`${listName}[${index}]`)}
-                    label="Rule"
                     required
                     style={{ flex: 1 }}
                 >

@@ -1,5 +1,5 @@
 import React from "react"
-import { Button, Flex, Form, FormListFieldData, FormListOperation, InputNumber, Select } from "antd"
+import { Button, Flex, Form, FormListFieldData, FormListOperation, InputNumber, Select, Space } from "antd"
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons"
 import FormLayout from "../../../core/components/form/FormLayout"
 import ValidationResult from "../../../core/validation/ValidationResult"
@@ -36,14 +36,18 @@ export default class CacheDurations extends React.Component<CacheDurationsProps>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
                     layout="vertical"
-                    name={[name, "validTimeSeconds"]}
                     validateStatus={validationResult.getStatus(`durations[${index}].validTimeSeconds`)}
                     help={validationResult.getMessage(`durations[${index}].validTimeSeconds`)}
-                    label="Valid time (seconds)"
+                    label="Valid time"
                     required
                     style={{ flex: 1, marginLeft: 10 }}
                 >
-                    <InputNumber min={0} style={{ width: "100%" }} />
+                    <Space.Compact style={{ width: "100%" }}>
+                        <Form.Item name={[name, "validTimeSeconds"]} noStyle>
+                            <InputNumber min={0} style={{ width: "100%" }} />
+                        </Form.Item>
+                        <Space.Addon>seconds</Space.Addon>
+                    </Space.Compact>
                 </Form.Item>
 
                 <DeleteOutlined onClick={() => operations.remove(index)} style={ACTION_ICON_STYLE} />
