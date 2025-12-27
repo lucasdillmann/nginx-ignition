@@ -105,7 +105,7 @@ func (v *validator) validateUseStaleOption(index int, option UseStaleOption) {
 	switch option {
 	case ErrorUseStale, TimeoutUseStale, InvalidHeaderUseStale, UpdatingUseStale,
 		Http500UseStale, Http502UseStale, Http503UseStale, Http504UseStale,
-		Http403UseStale, Http404UseStale, Http429UseStale, OffUseStale:
+		Http403UseStale, Http404UseStale, Http429UseStale:
 		// Valid
 	default:
 		path := "useStale[" + strconv.Itoa(index) + "]"

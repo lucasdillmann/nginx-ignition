@@ -4,10 +4,15 @@ import { DeleteOutlined, PlusOutlined } from "@ant-design/icons"
 import FormLayout from "../../../core/components/form/FormLayout"
 import ValidationResult from "../../../core/validation/ValidationResult"
 
-const ACTION_ICON_STYLE = {
+const SECOND_ONWARDS_ACTION_ICON_STYLE = {
+    marginLeft: 15,
+    marginTop: 9,
+}
+
+const FIRST_ACTION_ICON_STYLE = {
     marginLeft: 15,
     alignItems: "start",
-    marginTop: 37,
+    marginTop: 40,
 }
 
 export interface CacheDurationsProps {
@@ -27,7 +32,7 @@ export default class CacheDurations extends React.Component<CacheDurationsProps>
                     name={[name, "statusCodes"]}
                     validateStatus={validationResult.getStatus(`durations[${index}].statusCodes`)}
                     help={validationResult.getMessage(`durations[${index}].statusCodes`)}
-                    label="Status codes"
+                    label={index === 0 ? "Status codes" : undefined}
                     required
                     style={{ flex: 1 }}
                 >
@@ -38,7 +43,7 @@ export default class CacheDurations extends React.Component<CacheDurationsProps>
                     layout="vertical"
                     validateStatus={validationResult.getStatus(`durations[${index}].validTimeSeconds`)}
                     help={validationResult.getMessage(`durations[${index}].validTimeSeconds`)}
-                    label="Valid time"
+                    label={index === 0 ? "Valid time" : undefined}
                     required
                     style={{ flex: 1, marginLeft: 10 }}
                 >
@@ -50,7 +55,10 @@ export default class CacheDurations extends React.Component<CacheDurationsProps>
                     </Space.Compact>
                 </Form.Item>
 
-                <DeleteOutlined onClick={() => operations.remove(index)} style={ACTION_ICON_STYLE} />
+                <DeleteOutlined
+                    onClick={() => operations.remove(index)}
+                    style={index === 0 ? FIRST_ACTION_ICON_STYLE : SECOND_ONWARDS_ACTION_ICON_STYLE}
+                />
             </Flex>
         )
     }
@@ -74,6 +82,8 @@ export default class CacheDurations extends React.Component<CacheDurationsProps>
     }
 
     render() {
-        return <Form.List name="durations">{(fields, operations) => this.renderDurations(fields, operations)}</Form.List>
+        return (
+            <Form.List name="durations">{(fields, operations) => this.renderDurations(fields, operations)}</Form.List>
+        )
     }
 }

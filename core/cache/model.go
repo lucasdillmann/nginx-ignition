@@ -30,7 +30,6 @@ const (
 	Http403UseStale       UseStaleOption = "HTTP_403"
 	Http404UseStale       UseStaleOption = "HTTP_404"
 	Http429UseStale       UseStaleOption = "HTTP_429"
-	OffUseStale           UseStaleOption = "OFF"
 )
 
 type Cache struct {

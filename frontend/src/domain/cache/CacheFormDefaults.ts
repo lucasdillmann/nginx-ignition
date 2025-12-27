@@ -1,21 +1,17 @@
-import CacheRequest from "./model/CacheRequest"
+import CacheRequest, { HttpMethod, UseStale } from "./model/CacheRequest"
 
 export function cacheFormDefaults(): CacheRequest {
     return {
         name: "",
         storagePath: "",
-        inactiveSeconds: 0,
-        maximumSizeMb: 0,
-        allowedMethods: [],
-        minimumUsesBeforeCaching: 0,
-        useStale: [],
+        allowedMethods: [HttpMethod.GET, HttpMethod.HEAD],
+        minimumUsesBeforeCaching: 1,
+        useStale: [UseStale.ERROR, UseStale.TIMEOUT, UseStale.UPDATING],
         backgroundUpdate: false,
+        revalidate: true,
         concurrencyLock: {
-            timeoutSeconds: 0,
-            ageSeconds: 0,
             enabled: false,
         },
-        revalidate: false,
         bypassRules: [],
         noCacheRules: [],
         durations: [],

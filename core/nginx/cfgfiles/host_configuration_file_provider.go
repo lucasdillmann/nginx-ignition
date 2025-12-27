@@ -503,14 +503,18 @@ func (p *hostConfigurationFileProvider) appendCacheStandardOptions(builder *stri
 	fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", p.flag(c.BackgroundUpdate, "on", "off"))
 	fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", p.flag(c.Revalidate, "on", "off"))
 
+	staleConfig := "off"
+
 	if len(c.UseStale) > 0 {
 		staleOptions := make([]string, len(c.UseStale))
 		for index, option := range c.UseStale {
 			staleOptions[index] = strings.ToLower(string(option))
 		}
 
-		fmt.Fprintf(builder, "\nproxy_cache_use_stale %s;", strings.Join(staleOptions, " "))
+		staleConfig = strings.Join(staleOptions, " ")
 	}
+
+	fmt.Fprintf(builder, "\nproxy_cache_use_stale %s;", staleConfig)
 }
 
 func (p *hostConfigurationFileProvider) appendCacheLock(builder *strings.Builder, c *cache.Cache) {

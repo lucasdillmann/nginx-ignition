@@ -6,7 +6,7 @@ import ValidationResult from "../../../core/validation/ValidationResult"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
-    marginTop: 7,
+    marginTop: 9,
 }
 
 export interface CacheRulesProps {

@@ -20,7 +20,6 @@ export enum UseStale {
     HTTP_403 = "HTTP_403",
     HTTP_404 = "HTTP_404",
     HTTP_429 = "HTTP_429",
-    OFF = "OFF",
 }
 
 export interface ConcurrencyLock {
