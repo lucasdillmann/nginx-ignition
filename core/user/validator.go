@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/google/uuid"
 
@@ -95,7 +94,7 @@ func (v *validator) validatePermission(key string, value AccessLevel) {
 }
 
 func minimumLengthMessage(length int) string {
-	return "Should have at least " + strconv.Itoa(length) + " characters"
+	return fmt.Sprintf("Should have at least %d characters", length)
 }
 
 func newValidator(repository Repository) *validator {

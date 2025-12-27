@@ -1,8 +1,8 @@
 package accesslist
 
 import (
+	"fmt"
 	"net"
-	"strconv"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/validation"
@@ -41,7 +41,7 @@ func (v *validator) validateEntry(
 	entry *Entry,
 	knownUsernames *map[int]bool,
 ) {
-	path := "entries[" + strconv.Itoa(index) + "]"
+	path := fmt.Sprintf("entries[%d]", index)
 	if (*knownUsernames)[entry.Priority] {
 		v.delegate.Add(path+".priority", "Value is duplicated")
 	} else {
@@ -66,7 +66,7 @@ func (v *validator) validateEntry(
 		}
 
 		v.delegate.Add(
-			path+".sourceAddress["+strconv.Itoa(addressIndex)+"]",
+			fmt.Sprintf("%s.sourceAddress[%d]", path, addressIndex),
 			"Address \""+address+"\" is not a valid IPv4 or IPv6 address or range",
 		)
 	}
@@ -77,7 +77,7 @@ func (v *validator) validateCredentials(
 	credentials *Credentials,
 	knownUsernames *map[string]bool,
 ) {
-	path := "credentials[" + strconv.Itoa(index) + "].username"
+	path := fmt.Sprintf("credentials[%d].username", index)
 
 	if strings.TrimSpace(credentials.Username) == "" {
 		v.delegate.Add(path, validation.ValueMissingMessage)

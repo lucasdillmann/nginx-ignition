@@ -2,8 +2,8 @@ package host
 
 import (
 	"context"
+	"fmt"
 	"net/url"
-	"strconv"
 	"strings"
 
 	"github.com/google/uuid"
@@ -114,7 +114,10 @@ func (v *validator) validateDomainNames(host *Host) {
 
 	for index, domainName := range host.DomainNames {
 		if !constants.TLDPattern.MatchString(domainName) {
-			v.delegate.Add("domainNames["+strconv.Itoa(index)+"]", "Value is not a valid domain name")
+			v.delegate.Add(
+				fmt.Sprintf("domainNames[%d]", index),
+				"Value is not a valid domain name",
+			)
 		}
 	}
 }
@@ -153,7 +156,7 @@ func (v *validator) validateRoutes(ctx context.Context, host *Host) error {
 		if count > 1 {
 			v.delegate.Add(
 				"routes",
-				"Priority "+strconv.Itoa(priority)+" is duplicated in two or more routes",
+				fmt.Sprintf("Priority %d is duplicated in two or more routes", priority),
 			)
 		}
 	}
@@ -320,7 +323,7 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 	vpnNameUsage := make(map[uuid.UUID]map[string]int)
 
 	for index, value := range host.VPNs {
-		basePath := "vpns[" + strconv.Itoa(index) + "]"
+		basePath := fmt.Sprintf("vpns[%d]", index)
 		vpnIdPath := basePath + ".vpnId"
 		namePath := basePath + ".name"
 
@@ -362,11 +365,11 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 }
 
 func buildOutOfRangeMessage(valueRange *valuerange.ValueRange) string {
-	return "Value must be between " + strconv.Itoa(valueRange.Min) + " and " + strconv.Itoa(valueRange.Max)
+	return fmt.Sprintf("Value must be between %d and %d", valueRange.Min, valueRange.Max)
 }
 
 func buildIndexedRoutePath(index int, childPath string) string {
-	return "routes[" + strconv.Itoa(index) + "]." + childPath
+	return fmt.Sprintf("routes[%d].%s", index, childPath)
 }
 
 func (v *validator) validateAccessList(ctx context.Context, accessListID *uuid.UUID, path string) error {

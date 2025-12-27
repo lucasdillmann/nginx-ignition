@@ -1,8 +1,8 @@
 package cache
 
 import (
+	"fmt"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/validation"
@@ -96,7 +96,7 @@ func (v *validator) validateMethod(index int, method Method) {
 	case GetMethod, HeadMethod, PostMethod, PutMethod, DeleteMethod, PatchMethod, OptionsMethod:
 		// Valid
 	default:
-		path := "allowedMethods[" + strconv.Itoa(index) + "]"
+		path := fmt.Sprintf("allowedMethods[%d]", index)
 		v.delegate.Add(path, "Invalid HTTP method")
 	}
 }
@@ -108,13 +108,13 @@ func (v *validator) validateUseStaleOption(index int, option UseStaleOption) {
 		Http403UseStale, Http404UseStale, Http429UseStale:
 		// Valid
 	default:
-		path := "useStale[" + strconv.Itoa(index) + "]"
+		path := fmt.Sprintf("useStale[%d]", index)
 		v.delegate.Add(path, "Invalid stale cache option")
 	}
 }
 
 func (v *validator) validateDuration(index int, duration *Duration) {
-	path := "durations[" + strconv.Itoa(index) + "]"
+	path := fmt.Sprintf("durations[%d]", index)
 	if len(duration.StatusCodes) == 0 {
 		v.delegate.Add(path+".statusCodes", validation.ValueMissingMessage)
 	}
@@ -125,7 +125,7 @@ func (v *validator) validateDuration(index int, duration *Duration) {
 		}
 
 		v.delegate.Add(
-			path+".statusCodes["+strconv.Itoa(statusCodeIndex)+"]",
+			fmt.Sprintf("%s.statusCodes[%d]", path, statusCodeIndex),
 			"Invalid status code (must be between 100 and 599 inclusive)",
 		)
 	}

@@ -2,7 +2,7 @@ package settings
 
 import (
 	"context"
-	"strconv"
+	"fmt"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
@@ -96,6 +96,9 @@ func (v *validator) validateGlobalBindings(ctx context.Context, settings []bindi
 
 func (v *validator) checkRange(value int, r *valuerange.ValueRange, path string) {
 	if !r.Contains(value) {
-		v.delegate.Add(path, "Must be between "+strconv.Itoa(r.Min)+" and "+strconv.Itoa(r.Max))
+		v.delegate.Add(
+			path,
+			fmt.Sprintf("Must be between %d and %d", r.Min, r.Max),
+		)
 	}
 }
