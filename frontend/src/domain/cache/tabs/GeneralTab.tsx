@@ -197,7 +197,7 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                         validationResult.getMessage("useStale") ??
                         "Determines in which cases a stale cached response can be used"
                     }
-                    label="Use stale"
+                    label="Use stale contents"
                     style={{ marginTop: 40 }}
                 >
                     <Select mode="multiple">
