@@ -52,10 +52,7 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                         <Form.Item
                             name="cacheStatusResponseHeaderEnabled"
                             validateStatus={validationResult.getStatus("cacheStatusResponseHeaderEnabled")}
-                            help={
-                                validationResult.getMessage("cacheStatusResponseHeaderEnabled") ??
-                                "If enabled, nginx will add a 'X-Cache-Status' response header to indicate the cache status of the response"
-                            }
+                            help={validationResult.getMessage("cacheStatusResponseHeaderEnabled")}
                             label="Cache status response header"
                             required
                         >
@@ -111,18 +108,6 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                         <h2 className="cache-form-section-name">Request matching</h2>
                         <p className="cache-form-section-help-text">Define which requests should be cached and how.</p>
                         <Form.Item
-                            name="ignoreUpstreamCacheHeaders"
-                            validateStatus={validationResult.getStatus("ignoreUpstreamCacheHeaders")}
-                            help={
-                                validationResult.getMessage("ignoreUpstreamCacheHeaders") ??
-                                "If enabled, nginx will ignore cache headers from upstream servers when deciding whether to cache a response or not"
-                            }
-                            label="Ignore upstream cache headers"
-                            required
-                        >
-                            <Switch />
-                        </Form.Item>
-                        <Form.Item
                             name="allowedMethods"
                             validateStatus={validationResult.getStatus("allowedMethods")}
                             help={validationResult.getMessage("allowedMethods")}
@@ -158,6 +143,18 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                             label="File extensions"
                         >
                             <Select mode="tags" />
+                        </Form.Item>
+                        <Form.Item
+                            name="ignoreUpstreamCacheHeaders"
+                            validateStatus={validationResult.getStatus("ignoreUpstreamCacheHeaders")}
+                            help={
+                                validationResult.getMessage("ignoreUpstreamCacheHeaders") ??
+                                "If enabled, nginx will ignore cache headers from upstream servers when deciding whether to cache a response or not"
+                            }
+                            label="Ignore upstream cache headers"
+                            required
+                        >
+                            <Switch />
                         </Form.Item>
                     </Flex>
                 </Flex>
