@@ -54,6 +54,19 @@ func (m *vpnManager) reload(ctx context.Context, hosts []host.Host) error {
 		return err
 	}
 
+	if err := m.stopObsoleteEndpoints(ctx, newEndpoints); err != nil {
+		return err
+	}
+
+	if err := m.startNewEndpoints(ctx, newEndpoints); err != nil {
+		return err
+	}
+
+	m.currentEndpoints = newEndpoints
+	return nil
+}
+
+func (m *vpnManager) stopObsoleteEndpoints(ctx context.Context, newEndpoints []vpn.Endpoint) error {
 	for _, oldEndpoint := range m.currentEndpoints {
 		found := false
 		for _, newEndpoint := range newEndpoints {
@@ -70,6 +83,10 @@ func (m *vpnManager) reload(ctx context.Context, hosts []host.Host) error {
 		}
 	}
 
+	return nil
+}
+
+func (m *vpnManager) startNewEndpoints(ctx context.Context, newEndpoints []vpn.Endpoint) error {
 	for _, newEndpoint := range newEndpoints {
 		found := false
 		for _, oldDest := range m.currentEndpoints {
@@ -85,8 +102,6 @@ func (m *vpnManager) reload(ctx context.Context, hosts []host.Host) error {
 			}
 		}
 	}
-
-	m.currentEndpoints = newEndpoints
 	return nil
 }
 
