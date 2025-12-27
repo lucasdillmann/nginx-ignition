@@ -58,7 +58,7 @@ insert into cache (
     true,
     '{}',
     '{}',
-    '{}'
+    '{"ico", "css", "js", "gif", "jpg", "jpeg", "png", "svg", "svgz", "webp", "avif", "woff", "woff2", "ttf", "otf", "mp4", "webm", "wav", "mp3", "m4a", "aac", "ogg", "json", "xml", "html", "htm", "webmanifest"}'
 );
 
 alter table "user" add column caches_access_level
