@@ -57,6 +57,6 @@ type ConcurrencyLock struct {
 }
 
 type Duration struct {
-	StatusCodes      []int
+	StatusCodes      []string
 	ValidTimeSeconds int
 }

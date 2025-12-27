@@ -3,6 +3,7 @@ package cache
 import (
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/validation"
@@ -115,20 +116,25 @@ func (v *validator) validateUseStaleOption(index int, option UseStaleOption) {
 }
 
 func (v *validator) validateDuration(index int, duration *Duration) {
-	path := fmt.Sprintf("durations[%d]", index)
+	path := fmt.Sprintf("durations[%d].statusCodes", index)
 	if len(duration.StatusCodes) == 0 {
-		v.delegate.Add(path+".statusCodes", validation.ValueMissingMessage)
+		v.delegate.Add(path, validation.ValueMissingMessage)
 	}
 
-	for statusCodeIndex, statusCode := range duration.StatusCodes {
-		if httpStatusCodeRange.Contains(statusCode) {
+	for _, rawValue := range duration.StatusCodes {
+		invalidValueMessage := fmt.Sprintf(
+			"Invalid status code %s: must be a valid integer from %d to %d",
+			rawValue,
+			httpStatusCodeRange.Min,
+			httpStatusCodeRange.Max,
+		)
+
+		statusCode, err := strconv.Atoi(rawValue)
+		if err == nil && httpStatusCodeRange.Contains(statusCode) {
 			continue
 		}
 
-		v.delegate.Add(
-			fmt.Sprintf("%s.statusCodes[%d]", path, statusCodeIndex),
-			"Invalid status code (must be between 100 and 599 inclusive)",
-		)
+		v.delegate.Add(path, invalidValueMessage)
 	}
 
 	if duration.ValidTimeSeconds < 1 {

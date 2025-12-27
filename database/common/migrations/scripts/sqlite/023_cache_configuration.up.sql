@@ -21,7 +21,7 @@ create table cache (
 create table cache_duration (
     id uuid not null,
     cache_id uuid not null,
-    status_codes integer array not null,
+    status_codes varchar array not null,
     valid_time_seconds integer not null,
     constraint pk_cache_duration primary key (id),
     constraint fk_cache_duration_cache foreign key (cache_id) references cache (id) on delete cascade
@@ -52,7 +52,7 @@ insert into cache (
     512,
     '["GET", "HEAD"]',
     1,
-    '["ERROR", "TIMEOUT", "UPDATING", "HTTP_500", "HTTP_502", "HTTP_503", "HTTP_504"]',
+    '["ERROR", "TIMEOUT", "UPDATING"]',
     true,
     false,
     true,

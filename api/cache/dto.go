@@ -48,6 +48,6 @@ type concurrencyLockDto struct {
 }
 
 type durationDto struct {
-	StatusCodes      []int `json:"statusCodes"`
-	ValidTimeSeconds int   `json:"validTimeSeconds"`
+	StatusCodes      []string `json:"statusCodes"`
+	ValidTimeSeconds int      `json:"validTimeSeconds"`
 }

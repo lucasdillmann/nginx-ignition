@@ -474,12 +474,12 @@ func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, c
 
 func (p *hostConfigurationFileProvider) appendCacheDurations(builder *strings.Builder, c *cache.Cache) {
 	for _, d := range c.Durations {
-		statusCodes := make([]string, len(d.StatusCodes))
-		for index, statusCode := range d.StatusCodes {
-			statusCodes[index] = fmt.Sprintf("%d", statusCode)
-		}
-
-		fmt.Fprintf(builder, "\nproxy_cache_valid %s %ds;", strings.Join(statusCodes, " "), d.ValidTimeSeconds)
+		fmt.Fprintf(
+			builder,
+			"\nproxy_cache_valid %s %ds;",
+			strings.Join(d.StatusCodes, " "),
+			d.ValidTimeSeconds,
+		)
 	}
 }
 

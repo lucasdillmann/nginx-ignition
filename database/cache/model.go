@@ -30,7 +30,7 @@ type cacheModel struct {
 type durationModel struct {
 	bun.BaseModel `bun:"cache_duration"`
 
-	StatusCodes      []int     `bun:"status_codes,array,notnull"`
+	StatusCodes      []string  `bun:"status_codes,array,notnull"`
 	ValidTimeSeconds int       `bun:"valid_time_seconds,notnull"`
 	ID               uuid.UUID `bun:"id,pk"`
 	CacheID          uuid.UUID `bun:"cache_id,notnull"`
