@@ -50,7 +50,7 @@ insert into cache (
     512,
     '["GET", "HEAD"]',
     1,
-    '{"ERROR", "TIMEOUT", "UPDATING", "HTTP_500", "HTTP_502", "HTTP_503", "HTTP_504"}',,
+    '{"ERROR", "TIMEOUT", "UPDATING", "HTTP_500", "HTTP_502", "HTTP_503", "HTTP_504"}',
     true,
     false,
     true,
