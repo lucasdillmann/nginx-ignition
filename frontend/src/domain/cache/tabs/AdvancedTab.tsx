@@ -28,15 +28,13 @@ export default class AdvancedTab extends React.Component<AdvancedTabProps> {
                     Concurrency lock
                 </h2>
                 <p className="cache-form-section-help-text">
-                    Settings to prevent multiple simultaneous requests from populating the cache at the same time.
+                    Settings to prevent multiple simultaneous requests from populating the same cache key at the same
+                    time.
                 </p>
                 <Form.Item
                     name={["concurrencyLock", "enabled"]}
                     validateStatus={validationResult.getStatus("concurrencyLock.enabled")}
-                    help={
-                        validationResult.getMessage("concurrencyLock.enabled") ??
-                        "When enabled, only one request at a time will be allowed to populate a new cache element"
-                    }
+                    help={validationResult.getMessage("concurrencyLock.enabled")}
                     label="Enable concurrency lock"
                     required
                 >
@@ -45,10 +43,7 @@ export default class AdvancedTab extends React.Component<AdvancedTabProps> {
                 <Form.Item
                     label="Lock timeout"
                     validateStatus={validationResult.getStatus("concurrencyLock.timeoutSeconds")}
-                    help={
-                        validationResult.getMessage("concurrencyLock.timeoutSeconds") ??
-                        "Sets the timeout for the concurrency lock"
-                    }
+                    help={validationResult.getMessage("concurrencyLock.timeoutSeconds")}
                 >
                     <Space.Compact style={{ width: "100%" }}>
                         <Form.Item name={["concurrencyLock", "timeoutSeconds"]} noStyle>
