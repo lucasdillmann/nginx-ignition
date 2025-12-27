@@ -272,6 +272,21 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                     </Flex>
                     <Flex className="hosts-form-inner-flex-container-column">
                         <Form.Item
+                            name="cache"
+                            validateStatus={validationResult.getStatus("cacheId")}
+                            help={validationResult.getMessage("cacheId")}
+                            label="Cache"
+                        >
+                            <PaginatedSelect<CacheResponse>
+                                itemDescription={item => item?.name}
+                                itemKey={item => item?.id}
+                                pageProvider={(pageSize, pageNumber, searchTerms) =>
+                                    this.fetchCaches(pageSize, pageNumber, searchTerms)
+                                }
+                                allowEmpty
+                            />
+                        </Form.Item>
+                        <Form.Item
                             name="accessList"
                             validateStatus={validationResult.getStatus("accessListId")}
                             help={validationResult.getMessage("accessListId")}
@@ -282,21 +297,6 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                                 itemKey={item => item?.id}
                                 pageProvider={(pageSize, pageNumber, searchTerms) =>
                                     this.fetchAccessLists(pageSize, pageNumber, searchTerms)
-                                }
-                                allowEmpty
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            name="cache"
-                            validateStatus={validationResult.getStatus("cacheId")}
-                            help={validationResult.getMessage("cacheId")}
-                            label="Cache configuration"
-                        >
-                            <PaginatedSelect<CacheResponse>
-                                itemDescription={item => item?.name}
-                                itemKey={item => item?.id}
-                                pageProvider={(pageSize, pageNumber, searchTerms) =>
-                                    this.fetchCaches(pageSize, pageNumber, searchTerms)
                                 }
                                 allowEmpty
                             />

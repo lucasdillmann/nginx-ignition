@@ -29,6 +29,18 @@ export default class CacheListPage extends React.PureComponent {
                 renderer: item => item.name,
             },
             {
+                id: "inactiveSeconds",
+                description: "Expire after",
+                renderer: item => item.inactiveSeconds ? `${item.inactiveSeconds} seconds` : "No expiration",
+                width: 200,
+            },
+            {
+                id: "maximumSizeMb",
+                description: "Maximum size",
+                renderer: item => item.maximumSizeMb ? `${item.maximumSizeMb} MB` : "Unlimited",
+                width: 200,
+            },
+            {
                 id: "actions",
                 description: "",
                 renderer: item => (
@@ -42,7 +54,7 @@ export default class CacheListPage extends React.PureComponent {
                         </Link>
                     </>
                 ),
-                width: 120,
+                width: 100,
             },
         ]
     }

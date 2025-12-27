@@ -120,6 +120,22 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
 
         return (
             <>
+                <Form.Item
+                    {...ItemProps}
+                    name={[fieldPath, "cache"]}
+                    validateStatus={validationResult.getStatus(`routes[${index}].cacheId`)}
+                    help={validationResult.getMessage(`routes[${index}].cacheId`)}
+                    label="Cache"
+                >
+                    <PaginatedSelect<CacheResponse>
+                        itemDescription={item => item?.name}
+                        itemKey={item => item?.id}
+                        pageProvider={(pageSize, pageNumber, searchTerms) =>
+                            this.fetchCaches(pageSize, pageNumber, searchTerms)
+                        }
+                        allowEmpty
+                    />
+                </Form.Item>
                 <Conditional types={ACCESS_LIST_SUPPORTED_ROUTE_TYPES}>
                     <Form.Item
                         {...ItemProps}
@@ -138,22 +154,6 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         />
                     </Form.Item>
                 </Conditional>
-                <Form.Item
-                    {...ItemProps}
-                    name={[fieldPath, "cache"]}
-                    validateStatus={validationResult.getStatus(`routes[${index}].cacheId`)}
-                    help={validationResult.getMessage(`routes[${index}].cacheId`)}
-                    label="Cache configuration"
-                >
-                    <PaginatedSelect<CacheResponse>
-                        itemDescription={item => item?.name}
-                        itemKey={item => item?.id}
-                        pageProvider={(pageSize, pageNumber, searchTerms) =>
-                            this.fetchCaches(pageSize, pageNumber, searchTerms)
-                        }
-                        allowEmpty
-                    />
-                </Form.Item>
                 <Conditional types={[HostRouteType.STATIC_FILES]}>
                     <Form.Item
                         {...ItemProps}
