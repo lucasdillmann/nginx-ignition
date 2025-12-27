@@ -1,7 +1,6 @@
 import React from "react"
 import { navigateTo, routeParams } from "../../core/components/router/AppRouter"
 import CacheService from "./CacheService"
-import { FormInstance } from "antd"
 import Preloader from "../../core/components/preloader/Preloader"
 import ValidationResult from "../../core/validation/ValidationResult"
 import ModalPreloader from "../../core/components/preloader/ModalPreloader"
@@ -30,13 +29,11 @@ interface CacheFormState {
 export default class CacheFormPage extends React.Component<unknown, CacheFormState> {
     private readonly service: CacheService
     private readonly saveModal: ModalPreloader
-    private readonly formRef: React.RefObject<FormInstance | null>
     private cacheId?: string
 
     constructor(props: any) {
         super(props)
         const cacheId = routeParams().id
-        this.formRef = React.createRef()
         this.cacheId = cacheId === "new" ? undefined : cacheId
         this.service = new CacheService()
         this.saveModal = new ModalPreloader()
