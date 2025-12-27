@@ -44,6 +44,8 @@ export default interface CacheRequest {
     backgroundUpdate: boolean
     concurrencyLock: ConcurrencyLock
     revalidate: boolean
+    cacheStatusResponseHeaderEnabled: boolean
+    ignoreUpstreamCacheHeaders: boolean
     bypassRules: string[]
     noCacheRules: string[]
     fileExtensions: string[]

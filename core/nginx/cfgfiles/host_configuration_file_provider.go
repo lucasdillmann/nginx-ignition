@@ -499,6 +499,14 @@ func (p *hostConfigurationFileProvider) appendCacheStandardOptions(builder *stri
 	fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", statusFlag(c.BackgroundUpdate))
 	fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", statusFlag(c.Revalidate))
 
+	if c.IgnoreUpstreamCacheHeaders {
+		builder.WriteString("\nproxy_ignore_headers Cache-Control Expires;")
+	}
+
+	if c.CacheStatusResponseHeaderEnabled {
+		builder.WriteString("\nadd_header X-Cache-Status $upstream_cache_status;")
+	}
+
 	staleConfig := offFlag
 
 	if len(c.UseStale) > 0 {

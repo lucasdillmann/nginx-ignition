@@ -7,38 +7,42 @@ import (
 )
 
 type cacheRequestDto struct {
-	StoragePath              *string                `json:"storagePath"`
-	InactiveSeconds          *int                   `json:"inactiveSeconds"`
-	MaximumSizeMB            *int                   `json:"maximumSizeMb"`
-	ConcurrencyLock          concurrencyLockDto     `json:"concurrencyLock"`
-	Name                     string                 `json:"name"`
-	UseStale                 []cache.UseStaleOption `json:"useStale"`
-	AllowedMethods           []cache.Method         `json:"allowedMethods"`
-	BypassRules              []string               `json:"bypassRules"`
-	NoCacheRules             []string               `json:"noCacheRules"`
-	FileExtensions           []string               `json:"fileExtensions"`
-	Durations                []durationDto          `json:"durations"`
-	MinimumUsesBeforeCaching int                    `json:"minimumUsesBeforeCaching"`
-	BackgroundUpdate         bool                   `json:"backgroundUpdate"`
-	Revalidate               bool                   `json:"revalidate"`
+	StoragePath                      *string                `json:"storagePath"`
+	InactiveSeconds                  *int                   `json:"inactiveSeconds"`
+	MaximumSizeMB                    *int                   `json:"maximumSizeMb"`
+	ConcurrencyLock                  concurrencyLockDto     `json:"concurrencyLock"`
+	Name                             string                 `json:"name"`
+	UseStale                         []cache.UseStaleOption `json:"useStale"`
+	AllowedMethods                   []cache.Method         `json:"allowedMethods"`
+	BypassRules                      []string               `json:"bypassRules"`
+	NoCacheRules                     []string               `json:"noCacheRules"`
+	FileExtensions                   []string               `json:"fileExtensions"`
+	Durations                        []durationDto          `json:"durations"`
+	MinimumUsesBeforeCaching         int                    `json:"minimumUsesBeforeCaching"`
+	BackgroundUpdate                 bool                   `json:"backgroundUpdate"`
+	Revalidate                       bool                   `json:"revalidate"`
+	IgnoreUpstreamCacheHeaders       bool                   `json:"ignoreUpstreamCacheHeaders"`
+	CacheStatusResponseHeaderEnabled bool                   `json:"cacheStatusResponseHeaderEnabled"`
 }
 
 type cacheResponseDto struct {
-	InactiveSeconds          *int                   `json:"inactiveSeconds"`
-	StoragePath              *string                `json:"storagePath"`
-	MaximumSizeMB            *int                   `json:"maximumSizeMb"`
-	ConcurrencyLock          concurrencyLockDto     `json:"concurrencyLock"`
-	Name                     string                 `json:"name"`
-	UseStale                 []cache.UseStaleOption `json:"useStale"`
-	AllowedMethods           []cache.Method         `json:"allowedMethods"`
-	BypassRules              []string               `json:"bypassRules"`
-	NoCacheRules             []string               `json:"noCacheRules"`
-	FileExtensions           []string               `json:"fileExtensions"`
-	Durations                []durationDto          `json:"durations"`
-	MinimumUsesBeforeCaching int                    `json:"minimumUsesBeforeCaching"`
-	ID                       uuid.UUID              `json:"id"`
-	Revalidate               bool                   `json:"revalidate"`
-	BackgroundUpdate         bool                   `json:"backgroundUpdate"`
+	InactiveSeconds                  *int                   `json:"inactiveSeconds"`
+	StoragePath                      *string                `json:"storagePath"`
+	MaximumSizeMB                    *int                   `json:"maximumSizeMb"`
+	ConcurrencyLock                  concurrencyLockDto     `json:"concurrencyLock"`
+	Name                             string                 `json:"name"`
+	UseStale                         []cache.UseStaleOption `json:"useStale"`
+	AllowedMethods                   []cache.Method         `json:"allowedMethods"`
+	BypassRules                      []string               `json:"bypassRules"`
+	NoCacheRules                     []string               `json:"noCacheRules"`
+	FileExtensions                   []string               `json:"fileExtensions"`
+	Durations                        []durationDto          `json:"durations"`
+	MinimumUsesBeforeCaching         int                    `json:"minimumUsesBeforeCaching"`
+	ID                               uuid.UUID              `json:"id"`
+	Revalidate                       bool                   `json:"revalidate"`
+	BackgroundUpdate                 bool                   `json:"backgroundUpdate"`
+	IgnoreUpstreamCacheHeaders       bool                   `json:"ignoreUpstreamCacheHeaders"`
+	CacheStatusResponseHeaderEnabled bool                   `json:"cacheStatusResponseHeaderEnabled"`
 }
 
 type concurrencyLockDto struct {

@@ -15,6 +15,8 @@ create table cache (
     bypass_rules varchar array not null,
     no_cache_rules varchar array not null,
     file_extensions varchar array not null,
+    ignore_upstream_cache_headers boolean not null,
+    cache_status_response_header_enabled boolean not null,
     constraint pk_cache primary key (id)
 );
 
@@ -43,7 +45,9 @@ insert into cache (
     revalidate,
     bypass_rules,
     no_cache_rules,
-    file_extensions
+    file_extensions,
+    ignore_upstream_cache_headers,
+    cache_status_response_header_enabled
 ) values (
     '08c8430a-661d-4034-893d-4c31278f99e8',
     'Static assets',
@@ -58,7 +62,9 @@ insert into cache (
     true,
     '[]',
     '[]',
-    '["ico", "css", "js", "gif", "jpg", "jpeg", "png", "svg", "svgz", "webp", "avif", "woff", "woff2", "ttf", "otf", "mp4", "webm", "wav", "mp3", "m4a", "aac", "ogg", "json", "xml", "html", "htm", "webmanifest"]'
+    '["ico", "css", "js", "gif", "jpg", "jpeg", "png", "svg", "svgz", "webp", "avif", "woff", "woff2", "ttf", "otf", "mp4", "webm", "wav", "mp3", "m4a", "aac", "ogg", "json", "xml", "html", "htm", "webmanifest"]',
+    false,
+    true
 );
 
 alter table "user" add column caches_access_level

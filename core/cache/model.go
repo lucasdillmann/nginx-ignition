@@ -33,21 +33,23 @@ const (
 )
 
 type Cache struct {
-	InactiveSeconds          *int
-	StoragePath              *string
-	MaximumSizeMB            *int
-	ConcurrencyLock          ConcurrencyLock
-	Name                     string
-	UseStale                 []UseStaleOption
-	AllowedMethods           []Method
-	BypassRules              []string
-	NoCacheRules             []string
-	FileExtensions           []string
-	Durations                []Duration
-	MinimumUsesBeforeCaching int
-	ID                       uuid.UUID
-	Revalidate               bool
-	BackgroundUpdate         bool
+	InactiveSeconds                  *int
+	StoragePath                      *string
+	MaximumSizeMB                    *int
+	ConcurrencyLock                  ConcurrencyLock
+	Name                             string
+	UseStale                         []UseStaleOption
+	AllowedMethods                   []Method
+	BypassRules                      []string
+	NoCacheRules                     []string
+	FileExtensions                   []string
+	Durations                        []Duration
+	MinimumUsesBeforeCaching         int
+	ID                               uuid.UUID
+	Revalidate                       bool
+	BackgroundUpdate                 bool
+	IgnoreUpstreamCacheHeaders       bool
+	CacheStatusResponseHeaderEnabled bool
 }
 
 type ConcurrencyLock struct {

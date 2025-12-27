@@ -50,6 +50,18 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                             Main definitions and properties of the cache configuration.
                         </p>
                         <Form.Item
+                            name="cacheStatusResponseHeaderEnabled"
+                            validateStatus={validationResult.getStatus("cacheStatusResponseHeaderEnabled")}
+                            help={
+                                validationResult.getMessage("cacheStatusResponseHeaderEnabled") ??
+                                "If enabled, nginx will add a 'X-Cache-Status' response header to indicate the cache status of the response"
+                            }
+                            label="Cache status response header"
+                            required
+                        >
+                            <Switch />
+                        </Form.Item>
+                        <Form.Item
                             name="name"
                             validateStatus={validationResult.getStatus("name")}
                             help={validationResult.getMessage("name")}
@@ -98,6 +110,18 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                     <Flex className="cache-form-inner-flex-container-column cache-form-expanded-label-size">
                         <h2 className="cache-form-section-name">Request matching</h2>
                         <p className="cache-form-section-help-text">Define which requests should be cached and how.</p>
+                        <Form.Item
+                            name="ignoreUpstreamCacheHeaders"
+                            validateStatus={validationResult.getStatus("ignoreUpstreamCacheHeaders")}
+                            help={
+                                validationResult.getMessage("ignoreUpstreamCacheHeaders") ??
+                                "If enabled, nginx will ignore cache headers from upstream servers when deciding whether to cache a response or not"
+                            }
+                            label="Ignore upstream cache headers"
+                            required
+                        >
+                            <Switch />
+                        </Form.Item>
                         <Form.Item
                             name="allowedMethods"
                             validateStatus={validationResult.getStatus("allowedMethods")}

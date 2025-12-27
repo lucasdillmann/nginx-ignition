@@ -8,6 +8,8 @@ export function cacheFormDefaults(): CacheRequest {
         useStale: [UseStale.ERROR, UseStale.TIMEOUT, UseStale.UPDATING],
         backgroundUpdate: false,
         revalidate: true,
+        cacheStatusResponseHeaderEnabled: true,
+        ignoreUpstreamCacheHeaders: false,
         concurrencyLock: {
             enabled: false,
         },
