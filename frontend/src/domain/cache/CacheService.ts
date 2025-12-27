@@ -12,11 +12,7 @@ export default class CacheService {
         this.gateway = new CacheGateway()
     }
 
-    async list(
-        pageSize?: number,
-        pageNumber?: number,
-        searchTerms?: string,
-    ): Promise<PageResponse<CacheResponse>> {
+    async list(pageSize?: number, pageNumber?: number, searchTerms?: string): Promise<PageResponse<CacheResponse>> {
         return this.gateway.getPage(pageSize, pageNumber, searchTerms).then(requireSuccessPayload)
     }
 

@@ -1,5 +1,6 @@
 // @ts-expect-error Types not available
 import path from "path"
+// @ts-expect-error Types are available even though the IDE says otherwise
 import viteReact from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 

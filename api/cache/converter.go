@@ -15,21 +15,18 @@ func toDomain(id uuid.UUID, dto *cacheRequestDto) *cache.Cache {
 		}
 	}
 
-	var lock cache.ConcurrencyLock
-	if dto.ConcurrencyLock != nil {
-		lock = cache.ConcurrencyLock{
-			Enabled:        dto.ConcurrencyLock.Enabled,
-			TimeoutSeconds: dto.ConcurrencyLock.TimeoutSeconds,
-			AgeSeconds:     dto.ConcurrencyLock.AgeSeconds,
-		}
+	lock := cache.ConcurrencyLock{
+		Enabled:        dto.ConcurrencyLock.Enabled,
+		TimeoutSeconds: dto.ConcurrencyLock.TimeoutSeconds,
+		AgeSeconds:     dto.ConcurrencyLock.AgeSeconds,
 	}
 
 	return &cache.Cache{
 		ID:                       id,
-		Name:                     *dto.Name,
+		Name:                     dto.Name,
 		StoragePath:              dto.StoragePath,
 		InactiveSeconds:          dto.InactiveSeconds,
-		MaxSizeMB:                dto.MaxSizeMB,
+		MaximumSizeMB:            dto.MaximumSizeMB,
 		AllowedMethods:           dto.AllowedMethods,
 		MinimumUsesBeforeCaching: dto.MinimumUsesBeforeCaching,
 		UseStale:                 dto.UseStale,
@@ -56,7 +53,7 @@ func toResponseDto(domain *cache.Cache) cacheResponseDto {
 		Name:                     domain.Name,
 		StoragePath:              domain.StoragePath,
 		InactiveSeconds:          domain.InactiveSeconds,
-		MaxSizeMB:                domain.MaxSizeMB,
+		MaximumSizeMB:            domain.MaximumSizeMB,
 		AllowedMethods:           domain.AllowedMethods,
 		MinimumUsesBeforeCaching: domain.MinimumUsesBeforeCaching,
 		UseStale:                 domain.UseStale,

@@ -11,17 +11,17 @@ type cacheModel struct {
 	ConcurrencyLockTimeoutSeconds *int            `bun:"concurrency_lock_timeout_seconds"`
 	StoragePath                   *string         `bun:"storage_path"`
 	InactiveSeconds               *int            `bun:"inactive_seconds"`
-	MaxSizeMB                     *int            `bun:"max_size_mb"`
-	Revalidate                    *bool           `bun:"revalidate"`
-	MinimumUsesBeforeCaching      *int            `bun:"minimum_uses_before_caching"`
-	BackgroundUpdate              *bool           `bun:"background_update"`
+	MaximumSizeMB                 *int            `bun:"maximum_size_mb"`
 	Name                          string          `bun:"name,notnull"`
+	BypassRules                   []string        `bun:"bypass_rules,array,notnull"`
 	UseStale                      []string        `bun:"use_stale,array,notnull"`
 	AllowedMethods                []string        `bun:"allowed_methods,array,notnull"`
-	BypassRules                   []string        `bun:"bypass_rules,array,notnull"`
 	NoCacheRules                  []string        `bun:"no_cache_rules,array,notnull"`
 	Durations                     []durationModel `bun:"rel:has-many,join:id=cache_id"`
+	MinimumUsesBeforeCaching      int             `bun:"minimum_uses_before_caching,notnull"`
 	ID                            uuid.UUID       `bun:"id,pk"`
+	BackgroundUpdate              bool            `bun:"background_update,notnull"`
+	Revalidate                    bool            `bun:"revalidate,notnull"`
 	ConcurrencyLockEnabled        bool            `bun:"concurrency_lock_enabled,notnull"`
 }
 

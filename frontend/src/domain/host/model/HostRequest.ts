@@ -60,6 +60,7 @@ export interface HostRoute {
     response?: HostRouteStaticResponse
     integration?: HostRouteIntegration
     accessListId?: string
+    cacheId?: string
     redirectCode?: number
     sourceCode?: HostRouteSourceCode
 }
@@ -85,4 +86,5 @@ export default interface HostRequest {
     vpns: HostVpn[]
     featureSet: HostFeatureSet
     accessListId?: string
+    cacheId?: string
 }

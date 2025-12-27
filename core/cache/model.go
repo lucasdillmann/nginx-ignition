@@ -19,35 +19,35 @@ const (
 type UseStaleOption string
 
 const (
-	ErrorUseStale         UseStaleOption = "error"
-	TimeoutUseStale       UseStaleOption = "timeout"
-	InvalidHeaderUseStale UseStaleOption = "invalid_header"
-	UpdatingUseStale      UseStaleOption = "updating"
-	Http500UseStale       UseStaleOption = "http_500"
-	Http502UseStale       UseStaleOption = "http_502"
-	Http503UseStale       UseStaleOption = "http_503"
-	Http504UseStale       UseStaleOption = "http_504"
-	Http403UseStale       UseStaleOption = "http_403"
-	Http404UseStale       UseStaleOption = "http_404"
-	Http429UseStale       UseStaleOption = "http_429"
-	OffUseStale           UseStaleOption = "off"
+	ErrorUseStale         UseStaleOption = "ERROR"
+	TimeoutUseStale       UseStaleOption = "TIMEOUT"
+	InvalidHeaderUseStale UseStaleOption = "INVALID_HEADER"
+	UpdatingUseStale      UseStaleOption = "UPDATING"
+	Http500UseStale       UseStaleOption = "HTTP_500"
+	Http502UseStale       UseStaleOption = "HTTP_502"
+	Http503UseStale       UseStaleOption = "HTTP_503"
+	Http504UseStale       UseStaleOption = "HTTP_504"
+	Http403UseStale       UseStaleOption = "HTTP_403"
+	Http404UseStale       UseStaleOption = "HTTP_404"
+	Http429UseStale       UseStaleOption = "HTTP_429"
+	OffUseStale           UseStaleOption = "OFF"
 )
 
 type Cache struct {
-	ConcurrencyLock          ConcurrencyLock
 	InactiveSeconds          *int
 	StoragePath              *string
-	MaxSizeMB                *int
-	MinimumUsesBeforeCaching *int
-	BackgroundUpdate         *bool
-	Revalidate               *bool
+	MaximumSizeMB            *int
+	ConcurrencyLock          ConcurrencyLock
 	Name                     string
-	AllowedMethods           []Method
 	UseStale                 []UseStaleOption
+	AllowedMethods           []Method
 	BypassRules              []string
 	NoCacheRules             []string
 	Durations                []Duration
+	MinimumUsesBeforeCaching int
 	ID                       uuid.UUID
+	Revalidate               bool
+	BackgroundUpdate         bool
 }
 
 type ConcurrencyLock struct {

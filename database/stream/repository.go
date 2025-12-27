@@ -99,9 +99,9 @@ func (r *repository) Save(ctx context.Context, stream *stream.Stream) error {
 	model := toModel(stream)
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
 	} else {
-		_, err = transaction.NewInsert().Model(model).Exec(ctx)
+		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 	}
 
 	if err != nil {
@@ -244,7 +244,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, s
 	for _, route := range stream.Routes {
 		routeModel := toRouteModel(&route, stream.ID)
 
-		_, err = transaction.NewInsert().Model(routeModel).Exec(ctx)
+		_, err = transaction.NewInsert().Model(&routeModel).Exec(ctx)
 		if err != nil {
 			return err
 		}
@@ -252,7 +252,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, s
 		for _, backend := range route.Backends {
 			backendModel := toBackendModel(&backend, nil, &routeModel.ID)
 
-			_, err = transaction.NewInsert().Model(backendModel).Exec(ctx)
+			_, err = transaction.NewInsert().Model(&backendModel).Exec(ctx)
 			if err != nil {
 				return err
 			}
@@ -260,7 +260,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, s
 	}
 
 	defaultBackendModel := toBackendModel(&stream.DefaultBackend, &stream.ID, nil)
-	_, err = transaction.NewInsert().Model(defaultBackendModel).Exec(ctx)
+	_, err = transaction.NewInsert().Model(&defaultBackendModel).Exec(ctx)
 
 	return err
 }

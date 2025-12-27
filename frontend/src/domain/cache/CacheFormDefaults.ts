@@ -1,29 +1,23 @@
-import { AccessListCredentials, AccessListOutcome } from "./model/CacheRequest"
-import CacheFormValues, { AccessListEntrySetFormValues } from "./model/CacheFormValues"
+import CacheRequest from "./model/CacheRequest"
 
-export function cacheFormDefaults(): CacheFormValues {
+export function cacheFormDefaults(): CacheRequest {
     return {
         name: "",
-        realm: "",
-        satisfyAll: true,
-        defaultOutcome: AccessListOutcome.DENY,
-        forwardAuthenticationHeader: false,
-        credentials: [],
-        entries: [],
-    }
-}
-
-export function accessListFormEntryDefaults(): AccessListEntrySetFormValues {
-    return {
-        priority: 0,
-        outcome: AccessListOutcome.ALLOW,
-        sourceAddresses: "",
-    }
-}
-
-export function accessListFormCredentialsDefaults(): AccessListCredentials {
-    return {
-        username: "",
-        password: "",
+        storagePath: "",
+        inactiveSeconds: 0,
+        maximumSizeMb: 0,
+        allowedMethods: [],
+        minimumUsesBeforeCaching: 0,
+        useStale: [],
+        backgroundUpdate: false,
+        concurrencyLock: {
+            timeoutSeconds: 0,
+            ageSeconds: 0,
+            enabled: false,
+        },
+        revalidate: false,
+        bypassRules: [],
+        noCacheRules: [],
+        durations: [],
     }
 }

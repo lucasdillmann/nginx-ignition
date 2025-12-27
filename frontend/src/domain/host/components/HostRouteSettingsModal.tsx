@@ -11,6 +11,8 @@ import AccessListService from "../../accesslist/AccessListService"
 import { HostRouteType } from "../model/HostRequest"
 import { HostFormRoute } from "../model/HostFormValues"
 import HideableFormInput from "../../../core/components/form/HideableFormInput"
+import CacheResponse from "../../cache/model/CacheResponse"
+import CacheService from "../../cache/CacheService"
 
 const NOT_AVAILABLE_REASON = "Not available for this route type"
 const PROXY_ROUTE_TYPES: HostRouteType[] = [HostRouteType.INTEGRATION, HostRouteType.PROXY]
@@ -41,10 +43,12 @@ export interface HostRouteSettingsProps {
 
 export default class HostRouteSettingsModal extends React.Component<HostRouteSettingsProps> {
     private readonly accessListService: AccessListService
+    private readonly cacheService: CacheService
 
     constructor(props: HostRouteSettingsProps) {
         super(props)
         this.accessListService = new AccessListService()
+        this.cacheService = new CacheService()
     }
 
     private renderAdvancedTab() {
@@ -91,6 +95,14 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
         return this.accessListService.list(pageSize, pageNumber, searchTerms)
     }
 
+    private fetchCaches(
+        pageSize: number,
+        pageNumber: number,
+        searchTerms?: string,
+    ): Promise<PageResponse<CacheResponse>> {
+        return this.cacheService.list(pageSize, pageNumber, searchTerms)
+    }
+
     private renderConditionally(props: { types: HostRouteType[]; children: any }) {
         const { route } = this.props
         const { types } = props
@@ -126,6 +138,22 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         />
                     </Form.Item>
                 </Conditional>
+                <Form.Item
+                    {...ItemProps}
+                    name={[fieldPath, "cache"]}
+                    validateStatus={validationResult.getStatus(`routes[${index}].cacheId`)}
+                    help={validationResult.getMessage(`routes[${index}].cacheId`)}
+                    label="Cache configuration"
+                >
+                    <PaginatedSelect<CacheResponse>
+                        itemDescription={item => item?.name}
+                        itemKey={item => item?.id}
+                        pageProvider={(pageSize, pageNumber, searchTerms) =>
+                            this.fetchCaches(pageSize, pageNumber, searchTerms)
+                        }
+                        allowEmpty
+                    />
+                </Form.Item>
                 <Conditional types={[HostRouteType.STATIC_FILES]}>
                     <Form.Item
                         {...ItemProps}

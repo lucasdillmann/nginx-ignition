@@ -186,8 +186,8 @@ func (r *repository) FindAllInUse(ctx context.Context) ([]cache.Cache, error) {
 	}
 
 	result := make([]cache.Cache, len(models))
-	for i, model := range models {
-		result[i] = toDomain(&model)
+	for index, model := range models {
+		result[index] = toDomain(&model)
 	}
 
 	return result, nil

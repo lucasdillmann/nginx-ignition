@@ -37,11 +37,11 @@ func (v *validator) validateBasicSettings(c *Cache) {
 		v.delegate.Add("inactiveSeconds", validation.ValueCannotBeNegativeMessage)
 	}
 
-	if c.MaxSizeMB != nil && *c.MaxSizeMB < 1 {
-		v.delegate.Add("maxSizeMb", "Value must be 1 or greater")
+	if c.MaximumSizeMB != nil && *c.MaximumSizeMB < 1 {
+		v.delegate.Add("maximumSizeMb", "Value must be 1 or greater")
 	}
 
-	if c.MinimumUsesBeforeCaching != nil && *c.MinimumUsesBeforeCaching < 1 {
+	if c.MinimumUsesBeforeCaching < 1 {
 		v.delegate.Add("minimumUsesBeforeCaching", "Value must be 1 or greater")
 	}
 }

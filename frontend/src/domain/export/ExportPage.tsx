@@ -15,6 +15,7 @@ interface ExportPageState {
     nginxBasePath: string
     nginxConfigPath: string
     nginxLogPath: string
+    nginxCachePath: string
     nginxLoading: boolean
     databaseLoading: boolean
 }
@@ -32,6 +33,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
             nginxBasePath: "",
             nginxConfigPath: "",
             nginxLogPath: "",
+            nginxCachePath: "",
             databaseLoading: false,
         }
     }
@@ -62,11 +64,11 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
     }
 
     private nginxConfigurationFiles() {
-        const { nginxBasePath, nginxConfigPath, nginxLogPath } = this.state
+        const { nginxBasePath, nginxConfigPath, nginxLogPath, nginxCachePath } = this.state
 
         this.setState({ nginxLoading: true, nginxModalOpen: false }, () =>
             this.service
-                .downloadNginxConfigurationFiles(nginxBasePath, nginxConfigPath, nginxLogPath)
+                .downloadNginxConfigurationFiles(nginxBasePath, nginxConfigPath, nginxLogPath, nginxCachePath)
                 .catch(error => this.showErrorNotification(error))
                 .then(() => this.setState({ nginxLoading: false })),
         )
@@ -163,7 +165,8 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
     }
 
     private renderNginxConfigurationModal(): ReactNode {
-        const { nginxModalOpen, nginxBasePath, nginxConfigPath, nginxLogPath, nginxLoading } = this.state
+        const { nginxModalOpen, nginxBasePath, nginxConfigPath, nginxLogPath, nginxCachePath, nginxLoading } =
+            this.state
         return (
             <Modal
                 afterClose={() => this.closeNginxModal()}
@@ -211,6 +214,15 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                         onChange={event => this.setValue("nginxLogPath", event.target.value)}
                         required={false}
                         placeholder="e.g. /var/log/nginx"
+                        autoFocus
+                    />
+                </Form.Item>
+                <Form.Item label="Path for the nginx cache files" initialValue={nginxCachePath} layout="vertical">
+                    <Input
+                        size="large"
+                        onChange={event => this.setValue("nginxCachePath", event.target.value)}
+                        required={false}
+                        placeholder="e.g. /tmp/nginx/cache"
                         autoFocus
                     />
                 </Form.Item>

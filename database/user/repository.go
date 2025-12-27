@@ -160,10 +160,11 @@ func (r *repository) Save(ctx context.Context, user *user.User) error {
 		return err
 	}
 
+	model := toModel(user)
 	if exists {
-		_, err = transaction.NewUpdate().Model(toModel(user)).Where(constants.ByIdFilter, user.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIdFilter, user.ID).Exec(ctx)
 	} else {
-		_, err = transaction.NewInsert().Model(toModel(user)).Exec(ctx)
+		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 	}
 
 	if err != nil {

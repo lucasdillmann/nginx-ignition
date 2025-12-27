@@ -17,8 +17,9 @@ func (h configFilesHandler) handle(ctx *gin.Context) {
 	basePath := normalizePathQuery(ctx, "basePath")
 	configPath := normalizePathQuery(ctx, "configPath")
 	logPath := normalizePathQuery(ctx, "logPath")
+	cachePath := normalizePathQuery(ctx, "cachePath")
 
-	bytes, err := h.commands.GetConfigFiles(ctx.Request.Context(), basePath, configPath, logPath)
+	bytes, err := h.commands.GetConfigFiles(ctx.Request.Context(), basePath, configPath, logPath, cachePath)
 	if err != nil {
 		panic(err)
 	}

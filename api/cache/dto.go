@@ -7,36 +7,36 @@ import (
 )
 
 type cacheRequestDto struct {
-	Name                     *string                `json:"name"`
 	StoragePath              *string                `json:"storagePath"`
 	InactiveSeconds          *int                   `json:"inactiveSeconds"`
-	MaxSizeMB                *int                   `json:"maxSizeMb"`
-	AllowedMethods           []cache.Method         `json:"allowedMethods"`
-	MinimumUsesBeforeCaching *int                   `json:"minimumUsesBeforeCaching"`
+	MaximumSizeMB            *int                   `json:"maximumSizeMb"`
+	ConcurrencyLock          concurrencyLockDto     `json:"concurrencyLock"`
+	Name                     string                 `json:"name"`
 	UseStale                 []cache.UseStaleOption `json:"useStale"`
-	BackgroundUpdate         *bool                  `json:"backgroundUpdate"`
-	ConcurrencyLock          *concurrencyLockDto    `json:"concurrencyLock"`
-	Revalidate               *bool                  `json:"revalidate"`
+	AllowedMethods           []cache.Method         `json:"allowedMethods"`
 	BypassRules              []string               `json:"bypassRules"`
 	NoCacheRules             []string               `json:"noCacheRules"`
 	Durations                []durationDto          `json:"durations"`
+	MinimumUsesBeforeCaching int                    `json:"minimumUsesBeforeCaching"`
+	BackgroundUpdate         bool                   `json:"backgroundUpdate"`
+	Revalidate               bool                   `json:"revalidate"`
 }
 
 type cacheResponseDto struct {
-	ConcurrencyLock          concurrencyLockDto     `json:"concurrencyLock"`
 	InactiveSeconds          *int                   `json:"inactiveSeconds"`
 	StoragePath              *string                `json:"storagePath"`
-	MaxSizeMB                *int                   `json:"maxSizeMb"`
-	MinimumUsesBeforeCaching *int                   `json:"minimumUsesBeforeCaching"`
-	BackgroundUpdate         *bool                  `json:"backgroundUpdate"`
-	Revalidate               *bool                  `json:"revalidate"`
+	MaximumSizeMB            *int                   `json:"maximumSizeMb"`
+	ConcurrencyLock          concurrencyLockDto     `json:"concurrencyLock"`
 	Name                     string                 `json:"name"`
-	AllowedMethods           []cache.Method         `json:"allowedMethods"`
 	UseStale                 []cache.UseStaleOption `json:"useStale"`
+	AllowedMethods           []cache.Method         `json:"allowedMethods"`
 	BypassRules              []string               `json:"bypassRules"`
 	NoCacheRules             []string               `json:"noCacheRules"`
 	Durations                []durationDto          `json:"durations"`
+	MinimumUsesBeforeCaching int                    `json:"minimumUsesBeforeCaching"`
 	ID                       uuid.UUID              `json:"id"`
+	Revalidate               bool                   `json:"revalidate"`
+	BackgroundUpdate         bool                   `json:"backgroundUpdate"`
 }
 
 type concurrencyLockDto struct {

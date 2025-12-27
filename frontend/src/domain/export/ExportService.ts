@@ -11,9 +11,14 @@ export default class ExportService {
         this.backupGateway = new BackupGateway()
     }
 
-    async downloadNginxConfigurationFiles(basePath: string, configPath: string, logPath: string): Promise<void> {
+    async downloadNginxConfigurationFiles(
+        basePath: string,
+        configPath: string,
+        logPath: string,
+        cachePath: string,
+    ): Promise<void> {
         return this.nginxGateway
-            .configFiles(basePath, configPath, logPath)
+            .configFiles(basePath, configPath, logPath, cachePath)
             .then(requireSuccessRawResponse)
             .then(response => response.raw.blob())
             .then(blob => this.sendBlob(blob, "nginx-config.zip"))

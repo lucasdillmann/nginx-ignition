@@ -18,17 +18,20 @@ import CertificateService from "../certificate/CertificateService"
 import IntegrationService from "../integration/IntegrationService"
 import AccessListService from "../accesslist/AccessListService"
 import VpnService from "../vpn/VpnService"
+import CacheService from "../cache/CacheService"
 
 class HostConverter {
     private readonly certificateService: CertificateService
     private readonly integrationService: IntegrationService
     private readonly accessListService: AccessListService
+    private readonly cacheService: CacheService
     private readonly vpnService: VpnService
 
     constructor() {
         this.certificateService = new CertificateService()
         this.integrationService = new IntegrationService()
         this.accessListService = new AccessListService()
+        this.cacheService = new CacheService()
         this.vpnService = new VpnService()
     }
 
@@ -64,20 +67,30 @@ class HostConverter {
     }
 
     private async routeToFormValues(route: HostRoute): Promise<HostFormRoute> {
-        const accessList = this.notNull(route.accessListId)
-            ? await this.accessListService.getById(route.accessListId!!)
-            : undefined
-        const response = this.notNull(route.response) ? this.staticResponseToFormValues(route.response!!) : undefined
-        const integration =
+        const accessListPromise = this.notNull(route.accessListId)
+            ? this.accessListService.getById(route.accessListId!!)
+            : Promise.resolve(undefined)
+        const cachePromise = this.notNull(route.cacheId)
+            ? this.cacheService.getById(route.cacheId!!)
+            : Promise.resolve(undefined)
+        const integrationPromise =
             this.notNull(route.integration) && route.type === HostRouteType.INTEGRATION
-                ? await this.integrationToFormValues(route.integration!!)
-                : undefined
+                ? this.integrationToFormValues(route.integration!!)
+                : Promise.resolve(undefined)
 
+        const response = this.notNull(route.response) ? this.staticResponseToFormValues(route.response!!) : undefined
+
+        const [accessList, cache, integration] = await Promise.all([
+            accessListPromise,
+            cachePromise,
+            integrationPromise,
+        ])
         return {
             ...route,
             response,
             integration,
             accessList,
+            cache,
         }
     }
 
@@ -134,7 +147,18 @@ class HostConverter {
     }
 
     private formValuesToRoute(route: HostFormRoute): HostRoute {
-        const { priority, enabled, type, settings, targetUri, sourcePath, accessList, redirectCode, sourceCode } = route
+        const {
+            priority,
+            enabled,
+            type,
+            settings,
+            targetUri,
+            sourcePath,
+            accessList,
+            redirectCode,
+            sourceCode,
+            cache,
+        } = route
         const response = this.notNull(route.response) ? this.formValuesToStaticResponse(route.response!!) : undefined
         const integration = this.notNull(route.integration)
             ? this.formValuesToIntegration(route.integration!!)
@@ -152,6 +176,7 @@ class HostConverter {
             redirectCode,
             sourceCode,
             accessListId: accessList?.id,
+            cacheId: cache?.id,
         }
     }
 
@@ -180,13 +205,23 @@ class HostConverter {
     }
 
     async responseToFormValues(response: HostResponse): Promise<HostFormValues> {
-        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessListId } = response
+        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessListId, cacheId } = response
 
         const routes = response.routes.map(route => this.routeToFormValues(route))
         const responseBindings = response.bindings ?? []
-        const bindings = await Promise.all(responseBindings.map(binding => this.bindingToFormValues(binding)))
-        const vpns = await Promise.all(response.vpns.map(vpn => this.vpnToFormValues(vpn)))
-        const accessList = this.notNull(accessListId) ? await this.accessListService.getById(accessListId!!) : undefined
+        const bindingsPromise = Promise.all(responseBindings.map(binding => this.bindingToFormValues(binding)))
+        const vpnsPromise = Promise.all(response.vpns.map(vpn => this.vpnToFormValues(vpn)))
+        const accessListPromise = this.notNull(accessListId)
+            ? this.accessListService.getById(accessListId!!)
+            : Promise.resolve(undefined)
+        const cachePromise = this.notNull(cacheId) ? this.cacheService.getById(cacheId!!) : Promise.resolve(undefined)
+
+        const [bindings, vpns, accessList, cache] = await Promise.all([
+            bindingsPromise,
+            vpnsPromise,
+            accessListPromise,
+            cachePromise,
+        ])
 
         return {
             enabled,
@@ -196,13 +231,14 @@ class HostConverter {
             defaultServer,
             useGlobalBindings,
             accessList,
+            cache,
             domainNames: domainNames ?? [""],
             routes: await Promise.all(routes),
         }
     }
 
     formValuesToRequest(formValues: HostFormValues): HostRequest {
-        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessList } = formValues
+        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessList, cache } = formValues
 
         const routes = formValues.routes.map(route => this.formValuesToRoute(route))
         const bindings = useGlobalBindings ? [] : formValues.bindings.map(binding => this.formValuesToBinding(binding))
@@ -217,6 +253,7 @@ class HostConverter {
             routes,
             vpns,
             accessListId: accessList?.id,
+            cacheId: cache?.id,
             domainNames: defaultServer ? [] : domainNames,
         }
     }

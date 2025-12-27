@@ -11,10 +11,9 @@ import ValidationResultConverter from "../../core/validation/ValidationResultCon
 import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
-import DeleteAccessListAction from "./actions/DeleteCacheAction"
+import DeleteCacheAction from "./actions/DeleteCacheAction"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
 import CacheRequest from "./model/CacheRequest"
-import "./AccessListFormPage.css"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
@@ -91,7 +90,7 @@ export default class CacheFormPage extends React.Component<unknown, CacheFormSta
     private async delete() {
         if (this.cacheId === undefined) return
 
-        return DeleteAccessListAction.execute(this.cacheId).then(() => navigateTo("/caches"))
+        return DeleteCacheAction.execute(this.cacheId).then(() => navigateTo("/caches"))
     }
 
     private updateShellConfig(enableActions: boolean) {

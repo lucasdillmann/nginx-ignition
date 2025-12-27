@@ -172,7 +172,7 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(paths *Paths, caches
 		cacheIDNoDashes := strings.ReplaceAll(c.ID.String(), "-", "")
 		storagePath := c.StoragePath
 		if storagePath == nil || *storagePath == "" {
-			fallback := paths.Base + "/cache/" + cacheIDNoDashes
+			fallback := paths.Cache + cacheIDNoDashes
 			storagePath = &fallback
 		}
 
@@ -182,8 +182,8 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(paths *Paths, caches
 		}
 
 		maxSize := ""
-		if c.MaxSizeMB != nil {
-			maxSize = fmt.Sprintf(" max_size=%dm", *c.MaxSizeMB)
+		if c.MaximumSizeMB != nil {
+			maxSize = fmt.Sprintf(" max_size=%dm", *c.MaximumSizeMB)
 		}
 
 		results = append(results, fmt.Sprintf(

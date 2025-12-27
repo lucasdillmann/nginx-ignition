@@ -29,8 +29,8 @@ func toDomain(model *userModel) user.User {
 	}
 }
 
-func toModel(domain *user.User) *userModel {
-	return &userModel{
+func toModel(domain *user.User) userModel {
+	return userModel{
 		ID:                      domain.ID,
 		Enabled:                 domain.Enabled,
 		Name:                    domain.Name,

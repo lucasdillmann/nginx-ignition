@@ -6,8 +6,7 @@ import PageResponse from "../../core/pagination/PageResponse"
 import CacheService from "./CacheService"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import CacheResponse from "./model/CacheResponse"
-import DeleteAccessListAction from "./actions/DeleteCacheAction"
-import { AccessListOutcome } from "./model/CacheRequest"
+import DeleteCacheAction from "./actions/DeleteCacheAction"
 import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
@@ -30,40 +29,15 @@ export default class CacheListPage extends React.PureComponent {
                 renderer: item => item.name,
             },
             {
-                id: "realm",
-                description: "Realm",
-                renderer: item => item.realm,
-                width: 250,
-            },
-            {
-                id: "defaultOutcome",
-                description: "Default outcome",
-                renderer: item => {
-                    switch (item.defaultOutcome) {
-                        case AccessListOutcome.ALLOW:
-                            return "Allow access"
-                        case AccessListOutcome.DENY:
-                            return "Deny access"
-                    }
-                },
-                width: 150,
-            },
-            {
-                id: "satisfyAll",
-                description: "Mode",
-                renderer: item => (item.satisfyAll ? "Satisfy all" : "Satisfy any"),
-                width: 150,
-            },
-            {
                 id: "actions",
                 description: "",
                 renderer: item => (
                     <>
-                        <Link to={`/access-lists/${item.id}`}>
+                        <Link to={`/caches/${item.id}`}>
                             <EditOutlined className="action-icon" />
                         </Link>
 
-                        <Link to="" onClick={() => this.deleteAccessList(item)}>
+                        <Link to="" onClick={() => this.deleteCache(item)}>
                             <DeleteOutlined className="action-icon" />
                         </Link>
                     </>
@@ -73,8 +47,8 @@ export default class CacheListPage extends React.PureComponent {
         ]
     }
 
-    private async deleteAccessList(accessList: CacheResponse) {
-        return DeleteAccessListAction.execute(accessList.id).then(() => this.table.current?.refresh())
+    private async deleteCache(cache: CacheResponse) {
+        return DeleteCacheAction.execute(cache.id).then(() => this.table.current?.refresh())
     }
 
     private fetchData(
@@ -87,13 +61,13 @@ export default class CacheListPage extends React.PureComponent {
 
     componentDidMount() {
         AppShellContext.get().updateConfig({
-            title: "Access lists",
-            subtitle: "Relation of the access lists for the nginx authentication and access control",
+            title: "Cache configurations",
+            subtitle: "Relation of the cache configurations for the nginx content cache",
             actions: [
                 {
-                    description: "New access list",
-                    onClick: "/access-lists/new",
-                    disabled: !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.accessLists),
+                    description: "New cache configuration",
+                    onClick: "/caches/new",
+                    disabled: !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.caches),
                 },
             ],
         })
@@ -103,7 +77,7 @@ export default class CacheListPage extends React.PureComponent {
         return (
             <AccessControl
                 requiredAccessLevel={UserAccessLevel.READ_ONLY}
-                permissionResolver={permissions => permissions.accessLists}
+                permissionResolver={permissions => permissions.caches}
             >
                 <DataTable
                     ref={this.table}

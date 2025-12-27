@@ -113,6 +113,7 @@ func (f *Facade) ReplaceConfigurationFiles(
 		Base:   normalizedPath + "/",
 		Config: normalizedPath + "/config/",
 		Logs:   normalizedPath + "/logs/",
+		Cache:  normalizedPath + "/cache/",
 	}
 
 	if err = f.createMissingFolders(paths); err != nil {
@@ -139,7 +140,7 @@ func (f *Facade) ReplaceConfigurationFiles(
 }
 
 func (f *Facade) createMissingFolders(paths *Paths) error {
-	for _, folderPath := range []string{paths.Config, paths.Logs} {
+	for _, folderPath := range []string{paths.Config, paths.Logs, paths.Cache} {
 		if _, err := os.Stat(folderPath); os.IsNotExist(err) {
 			if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
 				return fmt.Errorf("unable to create folder %s: %w", folderPath, err)

@@ -166,7 +166,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, model *hostModel, tra
 		binding.ID = uuid.New()
 		binding.HostID = model.ID
 
-		_, err := transaction.NewInsert().Model(binding).Exec(ctx)
+		_, err := transaction.NewInsert().Model(&binding).Exec(ctx)
 		if err != nil {
 			return err
 		}
@@ -176,7 +176,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, model *hostModel, tra
 		route.ID = uuid.New()
 		route.HostID = model.ID
 
-		_, err := transaction.NewInsert().Model(route).Exec(ctx)
+		_, err := transaction.NewInsert().Model(&route).Exec(ctx)
 		if err != nil {
 			return err
 		}
@@ -185,7 +185,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, model *hostModel, tra
 	for _, vpn := range model.VPNs {
 		vpn.HostID = model.ID
 
-		_, err := transaction.NewInsert().Model(vpn).Exec(ctx)
+		_, err := transaction.NewInsert().Model(&vpn).Exec(ctx)
 		if err != nil {
 			return err
 		}

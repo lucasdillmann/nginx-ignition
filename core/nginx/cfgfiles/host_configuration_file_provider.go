@@ -398,6 +398,10 @@ func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...str
 		targetUri = &uri[0]
 	}
 
+	if targetUri == nil {
+		return ""
+	}
+
 	builder := strings.Builder{}
 	fmt.Fprintf(&builder, "proxy_pass %s;", *targetUri)
 
@@ -475,9 +479,10 @@ func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, c
 func (p *hostConfigurationFileProvider) appendCacheDurations(builder *strings.Builder, c *cache.Cache) {
 	for _, d := range c.Durations {
 		statusCodes := make([]string, len(d.StatusCodes))
-		for i, code := range d.StatusCodes {
-			statusCodes[i] = fmt.Sprintf("%d", code)
+		for index, statusCode := range d.StatusCodes {
+			statusCodes[index] = fmt.Sprintf("%d", statusCode)
 		}
+
 		fmt.Fprintf(builder, "\nproxy_cache_valid %s %ds;", strings.Join(statusCodes, " "), d.ValidTimeSeconds)
 	}
 }
@@ -485,32 +490,26 @@ func (p *hostConfigurationFileProvider) appendCacheDurations(builder *strings.Bu
 func (p *hostConfigurationFileProvider) appendCacheMethods(builder *strings.Builder, c *cache.Cache) {
 	if len(c.AllowedMethods) > 0 {
 		methods := make([]string, len(c.AllowedMethods))
-		for i, m := range c.AllowedMethods {
-			methods[i] = string(m)
+		for index, method := range c.AllowedMethods {
+			methods[index] = strings.ToLower(string(method))
 		}
+
 		fmt.Fprintf(builder, "\nproxy_cache_methods %s;", strings.Join(methods, " "))
 	}
 }
 
 func (p *hostConfigurationFileProvider) appendCacheStandardOptions(builder *strings.Builder, c *cache.Cache) {
-	if c.MinimumUsesBeforeCaching != nil {
-		fmt.Fprintf(builder, "\nproxy_cache_min_uses %d;", *c.MinimumUsesBeforeCaching)
-	}
+	fmt.Fprintf(builder, "\nproxy_cache_min_uses %d;", c.MinimumUsesBeforeCaching)
+	fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", p.flag(c.BackgroundUpdate, "on", "off"))
+	fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", p.flag(c.Revalidate, "on", "off"))
 
 	if len(c.UseStale) > 0 {
 		staleOptions := make([]string, len(c.UseStale))
-		for i, o := range c.UseStale {
-			staleOptions[i] = string(o)
+		for index, option := range c.UseStale {
+			staleOptions[index] = strings.ToLower(string(option))
 		}
+
 		fmt.Fprintf(builder, "\nproxy_cache_use_stale %s;", strings.Join(staleOptions, " "))
-	}
-
-	if c.BackgroundUpdate != nil {
-		fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", p.flag(*c.BackgroundUpdate, "on", "off"))
-	}
-
-	if c.Revalidate != nil {
-		fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", p.flag(*c.Revalidate, "on", "off"))
 	}
 }
 

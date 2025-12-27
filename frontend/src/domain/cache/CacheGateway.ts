@@ -24,15 +24,15 @@ export default class CacheGateway {
         return this.client.get(`/${id}`)
     }
 
-    async putById(id: string, accessList: CacheRequest): Promise<ApiResponse<void>> {
-        return this.client.put(`/${id}`, accessList)
+    async putById(id: string, cache: CacheRequest): Promise<ApiResponse<void>> {
+        return this.client.put(`/${id}`, cache)
     }
 
     async deleteById(id: string): Promise<ApiResponse<void>> {
         return this.client.delete(`/${id}`)
     }
 
-    async post(accessList: CacheRequest): Promise<ApiResponse<GenericCreateResponse>> {
-        return this.client.post("", accessList)
+    async post(cache: CacheRequest): Promise<ApiResponse<GenericCreateResponse>> {
+        return this.client.post("", cache)
     }
 }

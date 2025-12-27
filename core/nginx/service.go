@@ -152,12 +152,13 @@ func (s *service) attachListeners() {
 
 func (s *service) getConfigFilesZipFile(
 	ctx context.Context,
-	basePath, configPath, logPath string,
+	basePath, configPath, logPath, cachePath string,
 ) ([]byte, error) {
 	paths := &cfgfiles.Paths{
 		Base:   basePath,
 		Config: configPath,
 		Logs:   logPath,
+		Cache:  cachePath,
 	}
 
 	supportedFeatures, err := s.resolveSupportedFeatures(ctx)

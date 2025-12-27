@@ -55,7 +55,7 @@ func (r repository) Get(ctx context.Context) (*settings.Settings, error) {
 }
 
 func (r repository) Save(ctx context.Context, settings *settings.Settings) error {
-	nginx, certificate, logRotation, bindings, buffers := toModel(settings)
+	nginx, logRotation, certificate, bindings, buffers := toModel(settings)
 
 	transaction, err := r.database.Begin()
 	if err != nil {
