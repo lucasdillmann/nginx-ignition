@@ -10,6 +10,7 @@ import DeleteCacheAction from "./actions/DeleteCacheAction"
 import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import TagGroup from "../../core/components/taggroup/TagGroup"
 
 export default class CacheListPage extends React.PureComponent {
     private readonly service: CacheService
@@ -29,16 +30,17 @@ export default class CacheListPage extends React.PureComponent {
                 renderer: item => item.name,
             },
             {
-                id: "inactiveSeconds",
-                description: "Expire after",
-                renderer: item => (item.inactiveSeconds ? `${item.inactiveSeconds} seconds` : "No expiration"),
-                width: 200,
+                id: "fileExtensions",
+                description: "File extensions",
+                renderer: item =>
+                    item.fileExtensions ? <TagGroup values={item.fileExtensions} maximumSize={3} /> : "All extensions",
+                width: 300,
             },
             {
                 id: "maximumSizeMb",
                 description: "Maximum size",
                 renderer: item => (item.maximumSizeMb ? `${item.maximumSizeMb} MB` : "Unlimited"),
-                width: 200,
+                width: 150,
             },
             {
                 id: "actions",

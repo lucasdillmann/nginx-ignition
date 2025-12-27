@@ -40,10 +40,11 @@ func toDomain(model *cacheModel) cache.Cache {
 			TimeoutSeconds: model.ConcurrencyLockTimeoutSeconds,
 			AgeSeconds:     model.ConcurrencyLockAgeSeconds,
 		},
-		Revalidate:   model.Revalidate,
-		BypassRules:  model.BypassRules,
-		NoCacheRules: model.NoCacheRules,
-		Durations:    durations,
+		Revalidate:     model.Revalidate,
+		BypassRules:    model.BypassRules,
+		NoCacheRules:   model.NoCacheRules,
+		FileExtensions: model.FileExtensions,
+		Durations:      durations,
 	}
 }
 
@@ -84,6 +85,7 @@ func toModel(domain *cache.Cache) cacheModel {
 		Revalidate:                    domain.Revalidate,
 		BypassRules:                   domain.BypassRules,
 		NoCacheRules:                  domain.NoCacheRules,
+		FileExtensions:                domain.FileExtensions,
 		Durations:                     durations,
 	}
 }

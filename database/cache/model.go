@@ -18,6 +18,7 @@ type cacheModel struct {
 	UseStale                      []string        `bun:"use_stale,array,notnull"`
 	AllowedMethods                []string        `bun:"allowed_methods,array,notnull"`
 	NoCacheRules                  []string        `bun:"no_cache_rules,array,notnull"`
+	FileExtensions                []string        `bun:"file_extensions,array,notnull"`
 	Durations                     []durationModel `bun:"rel:has-many,join:id=cache_id"`
 	MinimumUsesBeforeCaching      int             `bun:"minimum_uses_before_caching,notnull"`
 	ID                            uuid.UUID       `bun:"id,pk"`
