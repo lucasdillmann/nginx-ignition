@@ -11,7 +11,7 @@ import (
 )
 
 type Resolver interface {
-	ResolveOptions(ctx context.Context, tcpOnly bool, searchTerms *string) (*[]Option, error)
+	ResolveOptions(ctx context.Context, tcpOnly bool, searchTerms *string) ([]Option, error)
 	ResolveOptionByID(ctx context.Context, optionId string) (*Option, error)
 }
 
@@ -60,7 +60,7 @@ func For(parameters map[string]any) (Resolver, error) {
 func extractSwarmParams(parameters map[string]any) (bool, bool, []string) {
 	swarmMode := false
 	useServiceMesh := false
-	var dnsResolvers []string
+	dnsResolvers := make([]string, 0)
 
 	if rawValue, exists := parameters[fields.SwarmMode.ID]; exists {
 		swarmMode = rawValue.(bool)

@@ -25,7 +25,7 @@ func (p *Provider) ID() string { return "ACME_DNS" }
 
 func (p *Provider) Name() string { return "ACME-DNS" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiBaseFieldID,
@@ -71,7 +71,7 @@ func (p *Provider) ChallengeProvider(
 	}
 
 	if allowListStr != "" {
-		var list []string
+		list := make([]string, 0)
 		for _, raw := range strings.Split(allowListStr, ",") {
 			trimmedValue := strings.TrimSpace(raw)
 			if trimmedValue != "" {

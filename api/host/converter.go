@@ -3,7 +3,7 @@ package host
 import (
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
@@ -13,9 +13,9 @@ func toDto(input *host.Host, globalSettings *settings.Settings) *hostResponseDto
 		return nil
 	}
 
-	var globalBindings *[]*bindingDto
+	globalBindings := make([]bindingDto, 0)
 	if input.UseGlobalBindings && globalSettings != nil && len(globalSettings.GlobalBindings) > 0 {
-		globalBindings = ptr.Of(toBindingDtoSlice(globalSettings.GlobalBindings))
+		globalBindings = toBindingDtoSlice(globalSettings.GlobalBindings)
 	}
 
 	return &hostResponseDto{
@@ -29,7 +29,8 @@ func toDto(input *host.Host, globalSettings *settings.Settings) *hostResponseDto
 		GlobalBindings:    globalBindings,
 		VPNs:              toVpnDtoSlice(input.VPNs),
 		FeatureSet:        toFeatureSetDto(&input.FeatureSet),
-		AccessListId:      input.AccessListID,
+		AccessListID:      input.AccessListID,
+		CacheID:           input.CacheID,
 	}
 }
 
@@ -45,31 +46,24 @@ func toDomain(input *hostRequestDto) *host.Host {
 		DomainNames:       input.DomainNames,
 		Routes:            toRouteSlice(input.Routes),
 		Bindings:          toBindingSlice(input.Bindings),
-		VPNs:              toVpnsSlice(input.VPNs),
+		VPNs:              toVPNsSlice(input.VPNs),
 		FeatureSet:        *toFeatureSet(input.FeatureSet),
-		AccessListID:      input.AccessListId,
+		AccessListID:      input.AccessListID,
+		CacheID:           input.CacheID,
 	}
 }
 
-func toRouteDtoSlice(routes []*host.Route) []*routeDto {
-	if routes == nil {
-		return nil
-	}
-
-	result := make([]*routeDto, len(routes))
+func toRouteDtoSlice(routes []host.Route) []routeDto {
+	result := make([]routeDto, len(routes))
 	for index, route := range routes {
-		result[index] = toRouteDto(route)
+		result[index] = toRouteDto(&route)
 	}
 
 	return result
 }
 
-func toRouteDto(route *host.Route) *routeDto {
-	if route == nil {
-		return nil
-	}
-
-	return &routeDto{
+func toRouteDto(route *host.Route) routeDto {
+	return routeDto{
 		Priority:     &route.Priority,
 		Enabled:      &route.Enabled,
 		Type:         &route.Type,
@@ -79,60 +73,37 @@ func toRouteDto(route *host.Route) *routeDto {
 		RedirectCode: route.RedirectCode,
 		Response:     toStaticResponseDto(route.Response),
 		Integration:  toIntegrationConfigDto(route.Integration),
-		AccessListId: route.AccessListID,
+		AccessListID: route.AccessListID,
+		CacheID:      route.CacheID,
 		SourceCode:   toRouteSourceCodeDto(route.SourceCode),
 	}
 }
 
-func toBindingDtoSlice(bindings []*host.Binding) []*bindingDto {
-	if bindings == nil {
-		return nil
-	}
-
-	result := make([]*bindingDto, len(bindings))
-	for index, binding := range bindings {
-		result[index] = toBindingDto(binding)
+func toBindingDtoSlice(bindings []binding.Binding) []bindingDto {
+	result := make([]bindingDto, len(bindings))
+	for index, b := range bindings {
+		result[index] = bindingDto{
+			Type:          &b.Type,
+			Ip:            &b.IP,
+			Port:          &b.Port,
+			CertificateId: b.CertificateID,
+		}
 	}
 
 	return result
 }
 
-func toBindingDto(binding *host.Binding) *bindingDto {
-	if binding == nil {
-		return nil
-	}
-
-	return &bindingDto{
-		Type:          &binding.Type,
-		Ip:            &binding.IP,
-		Port:          &binding.Port,
-		CertificateId: binding.CertificateID,
-	}
-}
-
-func toVpnDtoSlice(vpns []*host.VPN) []*vpnDto {
-	if vpns == nil {
-		return nil
-	}
-
-	result := make([]*vpnDto, len(vpns))
+func toVpnDtoSlice(vpns []host.VPN) []vpnDto {
+	result := make([]vpnDto, len(vpns))
 	for index, vpn := range vpns {
-		result[index] = toVpnDto(vpn)
+		result[index] = vpnDto{
+			VPNID: &vpn.VPNID,
+			Name:  &vpn.Name,
+			Host:  vpn.Host,
+		}
 	}
 
 	return result
-}
-
-func toVpnDto(vpn *host.VPN) *vpnDto {
-	if vpn == nil {
-		return nil
-	}
-
-	return &vpnDto{
-		VPNID: &vpn.VPNID,
-		Name:  &vpn.Name,
-		Host:  vpn.Host,
-	}
 }
 
 func toFeatureSetDto(featureSet *host.FeatureSet) *featureSetDto {
@@ -203,71 +174,57 @@ func getBoolValue(value *bool) bool {
 	return *value
 }
 
-func toRouteSlice(routes []*routeDto) []*host.Route {
-	if routes == nil {
-		return nil
-	}
-
-	result := make([]*host.Route, len(routes))
+func toRouteSlice(routes []routeDto) []host.Route {
+	result := make([]host.Route, len(routes))
 	for index, route := range routes {
-		result[index] = toDomainModelRoute(route)
+		result[index] = host.Route{
+			Priority:     getIntValue(route.Priority),
+			Enabled:      getBoolValue(route.Enabled),
+			Type:         *route.Type,
+			SourcePath:   getStringValue(route.SourcePath),
+			Settings:     toRouteSettings(route.Settings),
+			TargetURI:    route.TargetUri,
+			RedirectCode: route.RedirectCode,
+			Response:     toRouteStaticResponse(route.Response),
+			Integration:  toRouteIntegrationConfig(route.Integration),
+			AccessListID: route.AccessListID,
+			CacheID:      route.CacheID,
+			SourceCode:   toRouteSourceCode(route.SourceCode),
+		}
 	}
 
 	return result
 }
 
-func toBindingSlice(bindings []*bindingDto) []*host.Binding {
-	if bindings == nil {
-		return nil
-	}
-
-	result := make([]*host.Binding, len(bindings))
-	for index, binding := range bindings {
-		result[index] = toDomainModelBinding(binding)
+func toBindingSlice(bindings []bindingDto) []binding.Binding {
+	result := make([]binding.Binding, len(bindings))
+	for index, b := range bindings {
+		result[index] = binding.Binding{
+			Type:          *b.Type,
+			IP:            getStringValue(b.Ip),
+			Port:          getIntValue(b.Port),
+			CertificateID: b.CertificateId,
+		}
 	}
 
 	return result
 }
 
-func toVpnsSlice(vpns []*vpnDto) []*host.VPN {
-	if vpns == nil {
-		return nil
-	}
-
-	result := make([]*host.VPN, len(vpns))
+func toVPNsSlice(vpns []vpnDto) []host.VPN {
+	result := make([]host.VPN, len(vpns))
 	for index, vpn := range vpns {
-		result[index] = toDomainModelVPN(vpn)
+		result[index] = host.VPN{
+			VPNID: getUuidValue(vpn.VPNID),
+			Name:  getStringValue(vpn.Name),
+			Host:  vpn.Host,
+		}
 	}
 
 	return result
 }
 
-func toDomainModelRoute(input *routeDto) *host.Route {
-	if input == nil {
-		return nil
-	}
-
-	return &host.Route{
-		Priority:     getIntValue(input.Priority),
-		Enabled:      getBoolValue(input.Enabled),
-		Type:         *input.Type,
-		SourcePath:   getStringValue(input.SourcePath),
-		Settings:     *toRouteSettings(input.Settings),
-		TargetURI:    input.TargetUri,
-		RedirectCode: input.RedirectCode,
-		Response:     toRouteStaticResponse(input.Response),
-		Integration:  toRouteIntegrationConfig(input.Integration),
-		AccessListID: input.AccessListId,
-		SourceCode:   toRouteSourceCode(input.SourceCode),
-	}
-}
-
-func toRouteSettings(input *routeSettingsDto) *host.RouteSettings {
-	if input == nil {
-		return nil
-	}
-
-	return &host.RouteSettings{
+func toRouteSettings(input *routeSettingsDto) host.RouteSettings {
+	return host.RouteSettings{
 		IncludeForwardHeaders:   getBoolValue(input.IncludeForwardHeaders),
 		ProxySSLServerName:      getBoolValue(input.ProxySslServerName),
 		KeepOriginalDomainName:  getBoolValue(input.KeepOriginalDomainName),
@@ -351,29 +308,4 @@ func getMapValue(value *map[string]string) map[string]string {
 	}
 
 	return *value
-}
-
-func toDomainModelBinding(input *bindingDto) *host.Binding {
-	if input == nil {
-		return nil
-	}
-
-	return &host.Binding{
-		Type:          *input.Type,
-		IP:            getStringValue(input.Ip),
-		Port:          getIntValue(input.Port),
-		CertificateID: input.CertificateId,
-	}
-}
-
-func toDomainModelVPN(input *vpnDto) *host.VPN {
-	if input == nil {
-		return nil
-	}
-
-	return &host.VPN{
-		VPNID: getUuidValue(input.VPNID),
-		Name:  getStringValue(input.Name),
-		Host:  input.Host,
-	}
 }

@@ -19,7 +19,7 @@ type service struct {
 	configuration *configuration.Configuration
 }
 
-func (s *service) authenticate(ctx context.Context, username string, password string) (*User, error) {
+func (s *service) authenticate(ctx context.Context, username, password string) (*User, error) {
 	usr, err := s.repository.FindByUsername(ctx, username)
 	if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func (s *service) authenticate(ctx context.Context, username string, password st
 	return usr, nil
 }
 
-func (s *service) changePassword(ctx context.Context, id uuid.UUID, currentPassword string, newPassword string) error {
+func (s *service) changePassword(ctx context.Context, id uuid.UUID, currentPassword, newPassword string) error {
 	hash := passwordhash.New(s.configuration)
 	databaseState, err := s.repository.FindByID(ctx, id)
 	if err != nil {
@@ -141,7 +141,7 @@ func (s *service) isEnabled(ctx context.Context, id uuid.UUID) (bool, error) {
 	return s.repository.IsEnabledByID(ctx, id)
 }
 
-func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[*User], error) {
+func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[User], error) {
 	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms)
 }
 

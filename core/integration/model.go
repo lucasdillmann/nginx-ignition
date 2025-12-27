@@ -5,9 +5,9 @@ import (
 )
 
 type Integration struct {
-	ID         uuid.UUID
+	Parameters map[string]any
 	Driver     string
 	Name       string
+	ID         uuid.UUID
 	Enabled    bool
-	Parameters map[string]any
 }

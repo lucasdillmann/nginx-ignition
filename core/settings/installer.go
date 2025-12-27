@@ -1,9 +1,9 @@
 package settings
 
 import (
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
-	"dillmann.com.br/nginx-ignition/core/host"
 )
 
 func Install() error {
@@ -12,10 +12,10 @@ func Install() error {
 
 func buildCommands(
 	repository Repository,
-	hostCommands *host.Commands,
+	bindingCommands *binding.Commands,
 	scheduler *scheduler.Scheduler,
 ) *Commands {
-	serviceInstance := newService(repository, hostCommands, scheduler)
+	serviceInstance := newService(repository, bindingCommands, scheduler)
 	return &Commands{
 		Get:  serviceInstance.get,
 		Save: serviceInstance.save,

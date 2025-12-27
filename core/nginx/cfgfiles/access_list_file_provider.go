@@ -10,29 +10,31 @@ import (
 )
 
 type accessListFileProvider struct {
-	accessListRepository accesslist.Repository
+	repository accesslist.Repository
 }
 
-func newAccessListFileProvider(accessListRepository accesslist.Repository) *accessListFileProvider {
-	return &accessListFileProvider{accessListRepository: accessListRepository}
+func newAccessListFileProvider(repository accesslist.Repository) *accessListFileProvider {
+	return &accessListFileProvider{
+		repository: repository,
+	}
 }
 
 func (p *accessListFileProvider) provide(ctx *providerContext) ([]File, error) {
-	accessLists, err := p.accessListRepository.FindAll(ctx.context)
+	accessLists, err := p.repository.FindAll(ctx.context)
 	if err != nil {
 		return nil, err
 	}
 
-	var outputs []File
+	outputs := make([]File, 0)
 	for _, accessList := range accessLists {
-		outputs = append(outputs, p.build(accessList, ctx.paths)...)
+		outputs = append(outputs, p.build(&accessList, ctx.paths)...)
 	}
 
 	return outputs, nil
 }
 
 func (p *accessListFileProvider) build(accessList *accesslist.AccessList, paths *Paths) []File {
-	var outputs []File
+	outputs := make([]File, 0)
 
 	if confFile := p.buildConfFile(accessList, paths); confFile != nil {
 		outputs = append(outputs, *confFile)
@@ -46,16 +48,12 @@ func (p *accessListFileProvider) build(accessList *accesslist.AccessList, paths 
 }
 
 func (p *accessListFileProvider) buildConfFile(accessList *accesslist.AccessList, paths *Paths) *File {
-	var entriesContents []string
+	entriesContents := make([]string, 0)
 	for _, entry := range accessList.Entries {
 		for _, sourceAddress := range entry.SourceAddress {
-			if sourceAddress == nil {
-				continue
-			}
-
 			entriesContents = append(
 				entriesContents,
-				fmt.Sprintf("%s %s;", toNginxOperation(entry.Outcome), *sourceAddress),
+				fmt.Sprintf("%s %s;", toNginxOperation(entry.Outcome), sourceAddress),
 			)
 		}
 	}
@@ -105,7 +103,7 @@ func (p *accessListFileProvider) buildHtpasswdFile(accessList *accesslist.Access
 		return nil
 	}
 
-	var contents []string
+	contents := make([]string, 0)
 	for _, credential := range accessList.Credentials {
 		hash := apr1_crypt.Crypt(credential.Password, apr1_crypt.GenerateSalt(8))
 		contents = append(contents, fmt.Sprintf("%s:%s", credential.Username, hash))

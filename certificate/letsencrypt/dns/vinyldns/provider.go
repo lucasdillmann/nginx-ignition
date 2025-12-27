@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	accessKeyFieldID = "vinylDnsAccessKey"
 	secretKeyFieldID = "vinylDnsSecretKey"
@@ -26,7 +27,7 @@ func (p *Provider) Name() string {
 	return "VinylDNS"
 }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,

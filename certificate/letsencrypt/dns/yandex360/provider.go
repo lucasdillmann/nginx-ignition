@@ -11,6 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	oauthTokenFieldID = "yandex360OAuthToken"
 	orgIDFieldID      = "yandex360OrgId"
@@ -26,7 +27,7 @@ func (p *Provider) Name() string {
 	return "Yandex 360"
 }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          oauthTokenFieldID,

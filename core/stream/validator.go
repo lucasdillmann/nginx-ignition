@@ -2,12 +2,19 @@ package stream
 
 import (
 	"context"
-	"strconv"
+	"fmt"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
+	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 )
+
+const (
+	invalidValue = "Invalid value"
+)
+
+var portRange = valuerange.New(1, 65535)
 
 type validator struct {
 	delegate *validation.ConsistencyValidator
@@ -18,12 +25,6 @@ func newValidator() *validator {
 		delegate: validation.NewValidator(),
 	}
 }
-
-const (
-	minimumPort  = 1
-	maximumPort  = 65535
-	invalidValue = "Invalid value"
-)
 
 func (v *validator) validate(_ context.Context, stream *Stream) error {
 	if stream == nil {
@@ -80,7 +81,7 @@ func (v *validator) validateRoutes(stream *Stream) {
 }
 
 func (v *validator) validateRoute(route *Route, index int) {
-	prefix := "routes[" + strconv.Itoa(index) + "]"
+	prefix := fmt.Sprintf("routes[%d]", index)
 
 	if len(route.DomainNames) == 0 {
 		v.delegate.Add(prefix+".domainNames", "Route must have at least one domain")
@@ -100,7 +101,7 @@ func (v *validator) validateRoute(route *Route, index int) {
 }
 
 func (v *validator) validateDomainName(domain, prefix string, index int) {
-	domainPrefix := prefix + ".domainNames[" + strconv.Itoa(index) + "]"
+	domainPrefix := fmt.Sprintf("%s.domainNames[%d]", prefix, index)
 
 	if domain == "" {
 		v.delegate.Add(domainPrefix, "Domain cannot be empty")
@@ -110,7 +111,7 @@ func (v *validator) validateDomainName(domain, prefix string, index int) {
 }
 
 func (v *validator) validateBackend(backend *Backend, routePrefix string, index int) {
-	prefix := routePrefix + ".backends[" + strconv.Itoa(index) + "]"
+	prefix := fmt.Sprintf("%s.backends[%d]", routePrefix, index)
 
 	v.validateAddress(prefix+".target", backend.Address)
 	v.validateCircuitBreaker(prefix+".circuitBreaker", backend.CircuitBreaker)
@@ -145,11 +146,14 @@ func (v *validator) validateAddress(fieldPrefix string, address Address) {
 func (v *validator) validateAddressProtocol(fieldPrefix string, address Address) {
 	if address.Protocol != SocketProtocol {
 		if address.Port == nil {
-			v.delegate.Add(fieldPrefix+".port", "Port is required when using TCP or UDP protocol")
-		} else if *address.Port < minimumPort || *address.Port > maximumPort {
 			v.delegate.Add(
 				fieldPrefix+".port",
-				"Value must be between "+strconv.Itoa(minimumPort)+" and "+strconv.Itoa(maximumPort),
+				"Port is required when using TCP or UDP protocol",
+			)
+		} else if !portRange.Contains(*address.Port) {
+			v.delegate.Add(
+				fieldPrefix+".port",
+				fmt.Sprintf("Value must be between %d and %d", portRange.Min, portRange.Max),
 			)
 		}
 	} else if address.Port != nil {

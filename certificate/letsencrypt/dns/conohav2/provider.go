@@ -23,7 +23,7 @@ func (p *Provider) ID() string { return "CONOHA_V2" }
 
 func (p *Provider) Name() string { return "ConoHa v2" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          regionFieldID,

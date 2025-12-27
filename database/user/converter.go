@@ -4,8 +4,8 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-func toDomain(model *userModel) *user.User {
-	return &user.User{
+func toDomain(model *userModel) user.User {
+	return user.User{
 		ID:           model.ID,
 		Enabled:      model.Enabled,
 		Name:         model.Name,
@@ -24,12 +24,13 @@ func toDomain(model *userModel) *user.User {
 			NginxServer:  user.AccessLevel(model.NginxServerAccessLevel),
 			ExportData:   user.AccessLevel(model.ExportDataAccessLevel),
 			VPNs:         user.AccessLevel(model.VPNsAccessLevel),
+			Caches:       user.AccessLevel(model.CachesAccessLevel),
 		},
 	}
 }
 
-func toModel(domain *user.User) *userModel {
-	return &userModel{
+func toModel(domain *user.User) userModel {
+	return userModel{
 		ID:                      domain.ID,
 		Enabled:                 domain.Enabled,
 		Name:                    domain.Name,
@@ -47,5 +48,6 @@ func toModel(domain *user.User) *userModel {
 		NginxServerAccessLevel:  string(domain.Permissions.NginxServer),
 		ExportDataAccessLevel:   string(domain.Permissions.ExportData),
 		VPNsAccessLevel:         string(domain.Permissions.VPNs),
+		CachesAccessLevel:       string(domain.Permissions.Caches),
 	}
 }

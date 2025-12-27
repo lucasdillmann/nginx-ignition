@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	usernameFieldID     = "inwxUsername"
 	passwordFieldID     = "inwxPassword"
@@ -22,7 +23,7 @@ func (p *Provider) ID() string { return "INWX" }
 
 func (p *Provider) Name() string { return "INWX" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,

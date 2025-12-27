@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
-	"sync"
 
 	"github.com/google/uuid"
 
@@ -25,7 +24,6 @@ type service struct {
 	logReader          *logReader
 	logRotator         *logRotator
 	vpnManager         *vpnManager
-	mu                 sync.Mutex
 }
 
 func newService(
@@ -154,12 +152,13 @@ func (s *service) attachListeners() {
 
 func (s *service) getConfigFilesZipFile(
 	ctx context.Context,
-	basePath, configPath, logPath string,
+	input GetConfigFilesInput,
 ) ([]byte, error) {
 	paths := &cfgfiles.Paths{
-		Base:   basePath,
-		Config: configPath,
-		Logs:   logPath,
+		Base:   input.BasePath,
+		Config: input.ConfigPath,
+		Logs:   input.LogPath,
+		Cache:  input.CachePath,
 	}
 
 	supportedFeatures, err := s.resolveSupportedFeatures(ctx)
@@ -174,6 +173,8 @@ func (s *service) getConfigFilesZipFile(
 
 	buffer := new(bytes.Buffer)
 	zipWriter := zip.NewWriter(buffer)
+
+	//nolint:errcheck
 	defer zipWriter.Close()
 
 	for _, file := range configFiles {

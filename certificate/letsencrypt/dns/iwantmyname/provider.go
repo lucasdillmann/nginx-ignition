@@ -21,7 +21,7 @@ func (p *Provider) ID() string { return "IWANTMYNAME" }
 
 func (p *Provider) Name() string { return "iwantmyname" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,

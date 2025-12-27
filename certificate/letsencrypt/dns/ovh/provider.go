@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	endpointFieldID       = "ovhEndpoint"
 	applicationKeyFieldID = "ovhApplicationKey"
@@ -23,7 +24,7 @@ func (p *Provider) ID() string { return "OVH" }
 
 func (p *Provider) Name() string { return "OVH" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          endpointFieldID,

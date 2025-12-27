@@ -36,16 +36,16 @@ var (
 	}
 )
 
-func resolveDynamicFields() []*dynamicfields.DynamicField {
-	output := make([]*dynamicfields.DynamicField, 0, len(providers))
+func resolveDynamicFields() []dynamicfields.DynamicField {
+	output := make([]dynamicfields.DynamicField, 0, len(providers))
 
-	output = append(output, &termsOfService, &emailAddress, &dnsProvider)
-	providerOptions := make([]*dynamicfields.EnumOption, 0, len(providers))
+	output = append(output, termsOfService, emailAddress, dnsProvider)
+	providerOptions := make([]dynamicfields.EnumOption, 0, len(providers))
 
 	for _, provider := range providers {
 		output = append(output, provider.DynamicFields()...)
 
-		providerOptions = append(providerOptions, &dynamicfields.EnumOption{
+		providerOptions = append(providerOptions, dynamicfields.EnumOption{
 			ID:          provider.ID(),
 			Description: provider.Name(),
 		})
@@ -58,7 +58,7 @@ func resolveDynamicFields() []*dynamicfields.DynamicField {
 		return leftValue < rightValue
 	})
 
-	dnsProvider.EnumOptions = &providerOptions
+	dnsProvider.EnumOptions = providerOptions
 
 	return output
 }

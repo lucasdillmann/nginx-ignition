@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/user"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
@@ -36,7 +37,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*user.User, er
 		return nil, err
 	}
 
-	return toDomain(&model), nil
+	return ptr.Of(toDomain(&model)), nil
 }
 
 func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
@@ -45,6 +46,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	_, err = transaction.NewDelete().
@@ -74,15 +76,15 @@ func (r *repository) FindByUsername(ctx context.Context, username string) (*user
 		return nil, err
 	}
 
-	return toDomain(&model), nil
+	return ptr.Of(toDomain(&model)), nil
 }
 
 func (r *repository) FindPage(
 	ctx context.Context,
 	pageSize, pageNumber int,
 	searchTerms *string,
-) (*pagination.Page[*user.User], error) {
-	var models []userModel
+) (*pagination.Page[user.User], error) {
+	models := make([]userModel, 0)
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil {
@@ -108,7 +110,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []*user.User
+	result := make([]user.User, 0)
 	for _, model := range models {
 		result = append(result, toDomain(&model))
 	}
@@ -150,6 +152,7 @@ func (r *repository) Save(ctx context.Context, user *user.User) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Where(constants.ByIdFilter, user.ID).Exists(ctx)
@@ -157,10 +160,11 @@ func (r *repository) Save(ctx context.Context, user *user.User) error {
 		return err
 	}
 
+	model := toModel(user)
 	if exists {
-		_, err = transaction.NewUpdate().Model(toModel(user)).Where(constants.ByIdFilter, user.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIdFilter, user.ID).Exec(ctx)
 	} else {
-		_, err = transaction.NewInsert().Model(toModel(user)).Exec(ctx)
+		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 	}
 
 	if err != nil {

@@ -3,6 +3,7 @@ package host
 import (
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
@@ -10,12 +11,13 @@ type hostRequestDto struct {
 	Enabled           *bool          `json:"enabled"`
 	DefaultServer     *bool          `json:"defaultServer"`
 	UseGlobalBindings *bool          `json:"useGlobalBindings"`
-	DomainNames       []*string      `json:"domainNames"`
-	Routes            []*routeDto    `json:"routes"`
-	Bindings          []*bindingDto  `json:"bindings"`
-	VPNs              []*vpnDto      `json:"vpns"`
 	FeatureSet        *featureSetDto `json:"featureSet"`
-	AccessListId      *uuid.UUID     `json:"accessListId"`
+	AccessListID      *uuid.UUID     `json:"accessListId"`
+	CacheID           *uuid.UUID     `json:"cacheId"`
+	DomainNames       []string       `json:"domainNames"`
+	Routes            []routeDto     `json:"routes"`
+	Bindings          []bindingDto   `json:"bindings"`
+	VPNs              []vpnDto       `json:"vpns"`
 }
 
 type routeDto struct {
@@ -28,7 +30,8 @@ type routeDto struct {
 	RedirectCode *int                  `json:"redirectCode"`
 	Response     *staticResponseDto    `json:"response"`
 	Integration  *integrationConfigDto `json:"integration"`
-	AccessListId *uuid.UUID            `json:"accessListId"`
+	AccessListID *uuid.UUID            `json:"accessListId"`
+	CacheID      *uuid.UUID            `json:"cacheId"`
 	SourceCode   *routeSourceCodeDto   `json:"sourceCode"`
 }
 
@@ -64,10 +67,10 @@ type featureSetDto struct {
 }
 
 type bindingDto struct {
-	Type          *host.BindingType `json:"type"`
-	Ip            *string           `json:"ip"`
-	Port          *int              `json:"port"`
-	CertificateId *uuid.UUID        `json:"certificateId"`
+	Type          *binding.Type `json:"type"`
+	Ip            *string       `json:"ip"`
+	Port          *int          `json:"port"`
+	CertificateId *uuid.UUID    `json:"certificateId"`
 }
 
 type vpnDto struct {
@@ -81,11 +84,12 @@ type hostResponseDto struct {
 	Enabled           *bool          `json:"enabled"`
 	DefaultServer     *bool          `json:"defaultServer"`
 	UseGlobalBindings *bool          `json:"useGlobalBindings"`
-	DomainNames       []*string      `json:"domainNames"`
-	Routes            []*routeDto    `json:"routes"`
-	Bindings          []*bindingDto  `json:"bindings,omitempty"`
-	GlobalBindings    *[]*bindingDto `json:"globalBindings,omitempty"`
-	VPNs              []*vpnDto      `json:"vpns"`
 	FeatureSet        *featureSetDto `json:"featureSet"`
-	AccessListId      *uuid.UUID     `json:"accessListId"`
+	AccessListID      *uuid.UUID     `json:"accessListId"`
+	CacheID           *uuid.UUID     `json:"cacheId"`
+	DomainNames       []string       `json:"domainNames"`
+	Routes            []routeDto     `json:"routes"`
+	Bindings          []bindingDto   `json:"bindings,omitempty"`
+	GlobalBindings    []bindingDto   `json:"globalBindings,omitempty"`
+	VPNs              []vpnDto       `json:"vpns"`
 }

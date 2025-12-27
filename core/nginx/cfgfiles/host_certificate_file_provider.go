@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
@@ -27,7 +27,7 @@ func newHostCertificateFileProvider(certificateRepository certificate.Repository
 }
 
 func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, error) {
-	var bindings []*host.Binding
+	bindings := make([]binding.Binding, 0)
 	for _, h := range ctx.hosts {
 		bindings = append(bindings, h.Bindings...)
 	}
@@ -39,16 +39,16 @@ func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, err
 
 	bindings = append(bindings, cgf.GlobalBindings...)
 
-	var outputs []File
+	outputs := make([]File, 0)
 	uniqueCertIds := map[string]bool{}
 
-	for _, binding := range bindings {
-		if binding.Type == host.HttpsBindingType && binding.CertificateID != nil {
-			certId := binding.CertificateID.String()
+	for _, b := range bindings {
+		if b.Type == binding.HttpsBindingType && b.CertificateID != nil {
+			certId := b.CertificateID.String()
 			if !uniqueCertIds[certId] {
 				uniqueCertIds[certId] = true
 
-				output, err := p.buildCertificateFile(ctx.context, *binding.CertificateID)
+				output, err := p.buildCertificateFile(ctx.context, *b.CertificateID)
 				if err != nil {
 					return nil, err
 				}
@@ -98,17 +98,17 @@ func (p *hostCertificateFileProvider) buildCertificateFile(
 func convertToPemEncodedCertificateString(bytes []byte) string {
 	if strings.Contains(string(bytes), "CERTIFICATE") {
 		return string(bytes)
-	} else {
-		certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: bytes})
-		return string(certPEM)
 	}
+
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: bytes})
+	return string(certPEM)
 }
 
 func convertToPemEncodedPrivateKeyString(bytes []byte) string {
 	if strings.Contains(string(bytes), "PRIVATE KEY") {
 		return string(bytes)
-	} else {
-		keyPEM := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: bytes})
-		return string(keyPEM)
 	}
+
+	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: bytes})
+	return string(keyPEM)
 }

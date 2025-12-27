@@ -1,6 +1,7 @@
 package pagination
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -29,7 +30,7 @@ func ExtractPaginationParameters(ctx *gin.Context) (int, int, *string, error) {
 	if !pageSizeRange.Contains(pageSizeInt) {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
-			"Page size must be between "+strconv.Itoa(pageSizeRange.Min)+" and "+strconv.Itoa(pageSizeRange.Max),
+			fmt.Sprintf("Page size must be between %d and %d", pageSizeRange.Min, pageSizeRange.Max),
 		)
 	}
 

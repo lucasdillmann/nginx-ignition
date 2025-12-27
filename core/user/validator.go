@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/google/uuid"
 
@@ -70,6 +69,7 @@ func (v *validator) validatePermissions(permissions Permissions) {
 	v.validatePermission("nginxServer", permissions.NginxServer)
 	v.validatePermission("exportData", permissions.ExportData)
 	v.validatePermission("vpns", permissions.VPNs)
+	v.validatePermission("caches", permissions.Caches)
 
 	if permissions.NginxServer == NoAccessAccessLevel {
 		v.delegate.Add("permissions.nginxServer", "At least read-only access is required")
@@ -94,7 +94,7 @@ func (v *validator) validatePermission(key string, value AccessLevel) {
 }
 
 func minimumLengthMessage(length int) string {
-	return "Should have at least " + strconv.Itoa(length) + " characters"
+	return fmt.Sprintf("Should have at least %d characters", length)
 }
 
 func newValidator(repository Repository) *validator {

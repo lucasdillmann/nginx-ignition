@@ -30,15 +30,15 @@ func (p *Provider) Name() string {
 	return "Custom certificate"
 }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
-	return []*dynamicfields.DynamicField{
-		&uploadModeField,
-		&publicKeyTextField,
-		&privateKeyTextField,
-		&certificationChainTextField,
-		&publicKeyFileField,
-		&privateKeyFileField,
-		&certificationChainFileField,
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+	return []dynamicfields.DynamicField{
+		uploadModeField,
+		publicKeyTextField,
+		privateKeyTextField,
+		certificationChainTextField,
+		publicKeyFileField,
+		privateKeyFileField,
+		certificationChainFileField,
 	}
 }
 
@@ -77,7 +77,7 @@ func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (
 		return nil, coreerror.New("Invalid public key", true)
 	}
 
-	var chain []*x509.Certificate
+	chain := make([]x509.Certificate, 0)
 	if chainPresent && chainStr != "" {
 		chain, err = parseCertificateChain(chainStr, fileUploadMode)
 		if err != nil {
@@ -133,13 +133,13 @@ func parseCertificate(cert string, base64Encoded bool) (*x509.Certificate, error
 	return x509.ParseCertificate(block.Bytes)
 }
 
-func parseCertificateChain(chain string, base64Encoded bool) ([]*x509.Certificate, error) {
+func parseCertificateChain(chain string, base64Encoded bool) ([]x509.Certificate, error) {
 	decodedChain, err := stringToByteArray(chain, base64Encoded)
 	if err != nil {
 		return nil, coreerror.New("Failed to decode chain", true)
 	}
 
-	certs := make([]*x509.Certificate, 0)
+	certs := make([]x509.Certificate, 0)
 	for _, cert := range strings.Split(string(decodedChain), "-----END CERTIFICATE-----") {
 		if cert == "" {
 			continue
@@ -151,16 +151,16 @@ func parseCertificateChain(chain string, base64Encoded bool) ([]*x509.Certificat
 			return nil, err
 		}
 
-		certs = append(certs, parsedCert)
+		certs = append(certs, *parsedCert)
 	}
 
 	return certs, nil
 }
 
-func encodeChain(chain []*x509.Certificate) []string {
+func encodeChain(chain []x509.Certificate) []string {
 	encodedChain := make([]string, len(chain))
-	for _, cert := range chain {
-		encodedChain = append(encodedChain, base64.StdEncoding.EncodeToString(cert.Raw))
+	for index, cert := range chain {
+		encodedChain[index] = base64.StdEncoding.EncodeToString(cert.Raw)
 	}
 
 	return encodedChain

@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	accountNameFieldID = "simplyAccountName"
 	apiKeyFieldID      = "simplyApiKey"
@@ -25,7 +26,7 @@ func (p *Provider) Name() string {
 	return "Simply.com"
 }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accountNameFieldID,

@@ -6,12 +6,8 @@ import (
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
-func toDomain(model *streamModel) *stream.Stream {
-	if model == nil {
-		return nil
-	}
-
-	return &stream.Stream{
+func toDomain(model *streamModel) stream.Stream {
+	return stream.Stream{
 		ID:             model.ID,
 		Enabled:        model.Enabled,
 		Name:           model.Name,
@@ -32,11 +28,7 @@ func toDomain(model *streamModel) *stream.Stream {
 	}
 }
 
-func toDomainBackend(model *streamBackendModel) *stream.Backend {
-	if model == nil {
-		return nil
-	}
-
+func toDomainBackend(model *streamBackendModel) stream.Backend {
 	circuitBreaker := &stream.CircuitBreaker{}
 	if model.MaxFailures == nil || model.OpenSeconds == nil {
 		circuitBreaker = nil
@@ -45,7 +37,7 @@ func toDomainBackend(model *streamBackendModel) *stream.Backend {
 		circuitBreaker.OpenSeconds = *model.OpenSeconds
 	}
 
-	return &stream.Backend{
+	return stream.Backend{
 		Weight:         model.Weight,
 		CircuitBreaker: circuitBreaker,
 		Address: stream.Address{
@@ -56,28 +48,20 @@ func toDomainBackend(model *streamBackendModel) *stream.Backend {
 	}
 }
 
-func toDomainRoute(model *streamRouteModel, backendModels []streamBackendModel) *stream.Route {
-	if model == nil {
-		return nil
-	}
-
+func toDomainRoute(model *streamRouteModel, backendModels []streamBackendModel) stream.Route {
 	backends := make([]stream.Backend, len(backendModels))
 	for index, backend := range backendModels {
-		backends[index] = *toDomainBackend(&backend)
+		backends[index] = toDomainBackend(&backend)
 	}
 
-	return &stream.Route{
+	return stream.Route{
 		DomainNames: model.DomainNames,
 		Backends:    backends,
 	}
 }
 
-func toModel(domain *stream.Stream) *streamModel {
-	if domain == nil {
-		return nil
-	}
-
-	return &streamModel{
+func toModel(domain *stream.Stream) streamModel {
+	return streamModel{
 		ID:               domain.ID,
 		Enabled:          domain.Enabled,
 		Name:             domain.Name,
@@ -93,18 +77,14 @@ func toModel(domain *stream.Stream) *streamModel {
 	}
 }
 
-func toModelBackend(backend *stream.Backend, streamId, routeId *uuid.UUID) *streamBackendModel {
-	if backend == nil {
-		return nil
-	}
-
+func toBackendModel(backend *stream.Backend, streamId, routeId *uuid.UUID) streamBackendModel {
 	var maxFailures, openSeconds *int
 	if backend.CircuitBreaker != nil {
 		maxFailures = &backend.CircuitBreaker.MaxFailures
 		openSeconds = &backend.CircuitBreaker.OpenSeconds
 	}
 
-	return &streamBackendModel{
+	return streamBackendModel{
 		ID:            uuid.New(),
 		StreamID:      streamId,
 		StreamRouteID: routeId,
@@ -117,12 +97,8 @@ func toModelBackend(backend *stream.Backend, streamId, routeId *uuid.UUID) *stre
 	}
 }
 
-func toModelRoute(route *stream.Route, streamId uuid.UUID) *streamRouteModel {
-	if route == nil {
-		return nil
-	}
-
-	return &streamRouteModel{
+func toRouteModel(route *stream.Route, streamId uuid.UUID) streamRouteModel {
+	return streamRouteModel{
 		ID:          uuid.New(),
 		StreamID:    streamId,
 		DomainNames: route.DomainNames,

@@ -12,11 +12,11 @@ type WorkloadDTO struct {
 
 type WorkloadPortDTO struct {
 	Protocol      string        `json:"protocol"`
-	ContainerPort int           `json:"container_port"`
 	HostPorts     []HostPortDTO `json:"host_ports"`
+	ContainerPort int           `json:"container_port"`
 }
 
 type HostPortDTO struct {
-	HostPort int    `json:"host_port"`
 	HostIp   string `json:"host_ip"`
+	HostPort int    `json:"host_port"`
 }

@@ -27,7 +27,7 @@ func (s *service) list(
 	pageSize, pageNumber int,
 	searchTerms *string,
 	enabledOnly bool,
-) (*pagination.Page[*Integration], error) {
+) (*pagination.Page[Integration], error) {
 	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms, enabledOnly)
 }
 
@@ -67,7 +67,7 @@ func (s *service) listOptions(
 	pageNumber, pageSize int,
 	searchTerms *string,
 	tcpOnly bool,
-) (*pagination.Page[*DriverOption], error) {
+) (*pagination.Page[DriverOption], error) {
 	data, err := s.repository.FindByID(ctx, integrationId)
 	if err != nil {
 		return nil, err
@@ -146,15 +146,15 @@ func (s *service) getOptionURL(
 	return driver.GetOptionProxyURL(ctx, data.Parameters, optionId)
 }
 
-func (s *service) getAvailableDrivers(_ context.Context) (*[]*AvailableDriver, error) {
+func (s *service) getAvailableDrivers(_ context.Context) ([]AvailableDriver, error) {
 	drivers := s.drivers()
 	sort.Slice(drivers, func(left, right int) bool {
 		return drivers[left].Name() < drivers[right].Name()
 	})
 
-	output := make([]*AvailableDriver, len(drivers))
+	output := make([]AvailableDriver, len(drivers))
 	for index, driver := range drivers {
-		output[index] = &AvailableDriver{
+		output[index] = AvailableDriver{
 			ID:                  driver.ID(),
 			Name:                driver.Name(),
 			Description:         driver.Description(),
@@ -162,7 +162,7 @@ func (s *service) getAvailableDrivers(_ context.Context) (*[]*AvailableDriver, e
 		}
 	}
 
-	return &output, nil
+	return output, nil
 }
 
 func (s *service) findDriver(data *Integration) Driver {

@@ -12,6 +12,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
+//nolint:gosec
 const (
 	compartmentOCIDFieldID   = "oracleCloudCompartmentOCID"
 	regionFieldID            = "oracleCloudRegion"
@@ -28,7 +29,7 @@ func (p *Provider) ID() string { return "ORACLE_CLOUD" }
 
 func (p *Provider) Name() string { return "Oracle Cloud (OCI)" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          compartmentOCIDFieldID,

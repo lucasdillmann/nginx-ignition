@@ -21,7 +21,7 @@ func (p *Provider) ID() string { return "ALL_INKL" }
 
 func (p *Provider) Name() string { return "ALL-INKL" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          loginFieldID,

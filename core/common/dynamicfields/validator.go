@@ -11,10 +11,10 @@ import (
 )
 
 func Validate(
-	dynamicFields []*DynamicField,
+	dynamicFields []DynamicField,
 	parameters map[string]any,
 ) *validation.ConsistencyError {
-	var violations []validation.ConsistencyViolation
+	violations := make([]validation.ConsistencyViolation, 0)
 	for _, field := range dynamicFields {
 		value, exists := parameters[field.ID]
 		if !field.Required && (!exists || value == "" || value == nil) {
@@ -47,12 +47,12 @@ func Validate(
 	return nil
 }
 
-func areConditionsSatisfied(field *DynamicField, parameters map[string]any) bool {
-	if field.Conditions == nil || len(*field.Conditions) == 0 {
+func areConditionsSatisfied(field DynamicField, parameters map[string]any) bool {
+	if len(field.Conditions) == 0 {
 		return true
 	}
 
-	for _, condition := range *field.Conditions {
+	for _, condition := range field.Conditions {
 		if !isConditionSatisfied(&condition, parameters) {
 			return false
 		}
@@ -67,7 +67,7 @@ func isConditionSatisfied(condition *Condition, parameters map[string]any) bool 
 	return exists && expectedValue == currentValue
 }
 
-func resolveErrorMessage(field *DynamicField, value interface{}) *string {
+func resolveErrorMessage(field DynamicField, value any) *string {
 	switch field.Type {
 	case EnumType, SingleLineTextType, MultiLineTextType:
 		return resolveTextBasedFieldErrorMessage(field, value)
@@ -99,7 +99,7 @@ func resolveErrorMessage(field *DynamicField, value interface{}) *string {
 	return nil
 }
 
-func canDecodeFile(value interface{}) bool {
+func canDecodeFile(value any) bool {
 	if value == nil {
 		return false
 	}
@@ -108,7 +108,7 @@ func canDecodeFile(value interface{}) bool {
 	return err == nil
 }
 
-func isAnEmail(value interface{}) bool {
+func isAnEmail(value any) bool {
 	if value == nil {
 		return false
 	}
@@ -117,7 +117,7 @@ func isAnEmail(value interface{}) bool {
 	return err == nil
 }
 
-func isAnUrl(value interface{}) bool {
+func isAnUrl(value any) bool {
 	if value == nil {
 		return false
 	}
@@ -126,7 +126,7 @@ func isAnUrl(value interface{}) bool {
 	return err == nil
 }
 
-func resolveTextBasedFieldErrorMessage(field *DynamicField, value interface{}) *string {
+func resolveTextBasedFieldErrorMessage(field DynamicField, value any) *string {
 	castedValue, casted := value.(string)
 	if !casted {
 		return ptr.Of("A text value is expected")
@@ -143,9 +143,9 @@ func resolveTextBasedFieldErrorMessage(field *DynamicField, value interface{}) *
 	return nil
 }
 
-func resolveEnumFieldErrorMessage(field *DynamicField, value interface{}) *string {
-	enumOptions := make([]string, len(*field.EnumOptions))
-	for index, option := range *field.EnumOptions {
+func resolveEnumFieldErrorMessage(field DynamicField, value any) *string {
+	enumOptions := make([]string, len(field.EnumOptions))
+	for index, option := range field.EnumOptions {
 		enumOptions[index] = option.ID
 	}
 

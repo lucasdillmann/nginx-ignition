@@ -10,7 +10,7 @@ const (
 	coordinatorUrlFieldName = "coordinatorUrl"
 )
 
-var configurationFields = []*dynamicfields.DynamicField{
+var configurationFields = []dynamicfields.DynamicField{
 	{
 		ID:          authKeyFieldName,
 		Priority:    0,

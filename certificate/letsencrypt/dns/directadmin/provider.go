@@ -23,7 +23,7 @@ func (p *Provider) ID() string { return "DIRECTADMIN" }
 
 func (p *Provider) Name() string { return "DirectAdmin" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          hostFieldID,

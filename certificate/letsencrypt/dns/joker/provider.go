@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	dmapi           = "DMAPI"
 	svc             = "SVC"
@@ -25,7 +26,7 @@ func (p *Provider) ID() string { return "JOKER" }
 
 func (p *Provider) Name() string { return "Joker" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:           apiModeFieldID,
@@ -33,7 +34,7 @@ func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 			Type:         dynamicfields.EnumType,
 			Required:     true,
 			DefaultValue: dmapi,
-			EnumOptions: &[]*dynamicfields.EnumOption{
+			EnumOptions: []dynamicfields.EnumOption{
 				{
 					ID:          dmapi,
 					Description: dmapi,
@@ -50,7 +51,7 @@ func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 			Sensitive:   true,
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
-			Conditions: &[]dynamicfields.Condition{{
+			Conditions: []dynamicfields.Condition{{
 				ParentField: apiModeFieldID,
 				Value:       dmapi,
 			}},
@@ -60,7 +61,7 @@ func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 			Description: "Joker username",
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
-			Conditions: &[]dynamicfields.Condition{{
+			Conditions: []dynamicfields.Condition{{
 				ParentField: apiModeFieldID,
 				Value:       svc,
 			}},
@@ -71,7 +72,7 @@ func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
-			Conditions: &[]dynamicfields.Condition{{
+			Conditions: []dynamicfields.Condition{{
 				ParentField: apiModeFieldID,
 				Value:       svc,
 			}},

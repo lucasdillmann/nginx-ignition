@@ -21,7 +21,7 @@ func (p *Provider) ID() string { return "MYDNS_JP" }
 
 func (p *Provider) Name() string { return "MyDNS.jp" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          masterIDFieldID,

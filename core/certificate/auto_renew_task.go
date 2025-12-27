@@ -7,21 +7,18 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
-	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 type autoRenewTask struct {
-	service            *service
-	settingsRepository settings.Repository
+	service *service
 }
 
 func registerScheduledTask(
 	ctx context.Context,
 	service *service,
-	settingsRepository settings.Repository,
 	scheduler *scheduler.Scheduler,
 ) error {
-	task := autoRenewTask{service, settingsRepository}
+	task := autoRenewTask{service}
 	return scheduler.Register(ctx, &task)
 }
 
@@ -30,27 +27,26 @@ func (t autoRenewTask) Run(ctx context.Context) error {
 }
 
 func (t autoRenewTask) Schedule(ctx context.Context) (*scheduler.Schedule, error) {
-	cfg, err := t.settingsRepository.Get(ctx)
+	cfg, err := t.service.autoRenewSettings(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	var interval time.Duration
 
-	certCfg := cfg.CertificateAutoRenew
-	switch certCfg.IntervalUnit {
-	case settings.MinutesTimeUnit:
-		interval = time.Minute * time.Duration(certCfg.IntervalUnitCount)
-	case settings.HoursTimeUnit:
-		interval = time.Hour * time.Duration(certCfg.IntervalUnitCount)
-	case settings.DaysTimeUnit:
-		interval = time.Hour * 24 * time.Duration(certCfg.IntervalUnitCount)
+	switch cfg.IntervalUnit {
+	case "MINUTES":
+		interval = time.Minute * time.Duration(cfg.IntervalUnitCount)
+	case "HOURS":
+		interval = time.Hour * time.Duration(cfg.IntervalUnitCount)
+	case "DAYS":
+		interval = time.Hour * 24 * time.Duration(cfg.IntervalUnitCount)
 	default:
 		return nil, coreerror.New("invalid interval unit", false)
 	}
 
 	return &scheduler.Schedule{
-		Enabled:  cfg.CertificateAutoRenew.Enabled,
+		Enabled:  cfg.Enabled,
 		Interval: interval,
 	}, nil
 }

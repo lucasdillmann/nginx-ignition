@@ -20,7 +20,7 @@ func (p *Provider) ID() string { return "BINARY_LANE" }
 
 func (p *Provider) Name() string { return "Binary Lane" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiTokenFieldID,

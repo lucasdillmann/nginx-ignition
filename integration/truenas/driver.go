@@ -42,12 +42,12 @@ func (a *Driver) Description() string {
 		"target for your nginx ignition's host routes."
 }
 
-func (a *Driver) ConfigurationFields() []*dynamicfields.DynamicField {
-	return []*dynamicfields.DynamicField{
-		&urlField,
-		&proxyUrlField,
-		&usernameField,
-		&passwordField,
+func (a *Driver) ConfigurationFields() []dynamicfields.DynamicField {
+	return []dynamicfields.DynamicField{
+		urlField,
+		proxyUrlField,
+		usernameField,
+		passwordField,
 	}
 }
 
@@ -57,7 +57,7 @@ func (a *Driver) GetAvailableOptions(
 	_, _ int,
 	searchTerms *string,
 	tcpOnly bool,
-) (*pagination.Page[*integration.DriverOption], error) {
+) (*pagination.Page[integration.DriverOption], error) {
 	apps, err := a.getAvailableApps(parameters)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (a *Driver) GetAvailableOptions(
 	options := a.buildOptions(apps, tcpOnly)
 
 	if searchTerms != nil {
-		var filteredOptions []*integration.DriverOption
+		filteredOptions := make([]integration.DriverOption, 0)
 		for _, option := range options {
 			if strings.Contains(strings.ToLower(option.Name), strings.ToLower(*searchTerms)) {
 				filteredOptions = append(filteredOptions, option)
@@ -177,8 +177,8 @@ func (a *Driver) getWorkloadPort(
 	return nil, nil, nil
 }
 
-func (a *Driver) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []*integration.DriverOption {
-	var options []*integration.DriverOption
+func (a *Driver) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []integration.DriverOption {
+	options := make([]integration.DriverOption, 0)
 
 	for _, app := range apps {
 		for _, port := range app.ActiveWorkloads.UsedPorts {
@@ -192,7 +192,7 @@ func (a *Driver) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []*in
 					continue
 				}
 
-				options = append(options, &integration.DriverOption{
+				options = append(options, integration.DriverOption{
 					ID:       fmt.Sprintf("%s:%d", app.ID, port.ContainerPort),
 					Name:     app.Name,
 					Port:     hostPort.HostPort,

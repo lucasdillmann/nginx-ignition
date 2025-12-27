@@ -9,24 +9,30 @@ import (
 )
 
 type Certificate struct {
-	ID                 uuid.UUID
-	DomainNames        []string
-	ProviderID         string
 	IssuedAt           time.Time
 	ValidUntil         time.Time
 	ValidFrom          time.Time
 	RenewAfter         *time.Time
-	PrivateKey         string
-	PublicKey          string
-	CertificationChain []string
 	Parameters         map[string]any
 	Metadata           *string
+	ProviderID         string
+	PrivateKey         string
+	PublicKey          string
+	DomainNames        []string
+	CertificationChain []string
+	ID                 uuid.UUID
 }
 
 type IssueRequest struct {
+	Parameters  map[string]any
 	ProviderID  string
 	DomainNames []string
-	Parameters  map[string]any
+}
+
+type AutoRenewSettings struct {
+	IntervalUnit      string
+	IntervalUnitCount int
+	Enabled           bool
 }
 
 type AvailableProvider struct {
@@ -41,7 +47,7 @@ func (a *AvailableProvider) Name() string {
 	return a.provider.Name()
 }
 
-func (a *AvailableProvider) DynamicFields() []*dynamicfields.DynamicField {
+func (a *AvailableProvider) DynamicFields() []dynamicfields.DynamicField {
 	return a.provider.DynamicFields()
 }
 

@@ -14,6 +14,7 @@ import {
     TeamOutlined,
     DownloadOutlined,
     ApartmentOutlined,
+    RocketOutlined,
 } from "@ant-design/icons"
 import HostListPage from "./host/HostListPage"
 import HostFormPage from "./host/HostFormPage"
@@ -34,6 +35,8 @@ import IntegrationListPage from "./integration/IntegrationListPage"
 import IntegrationFormPage from "./integration/IntegrationFormPage"
 import VpnListPage from "./vpn/VpnListPage"
 import VpnFormPage from "./vpn/VpnFormPage"
+import CacheFormPage from "./cache/CacheFormPage"
+import CacheListPage from "./cache/CacheListPage"
 
 const Routes: AppRoute[] = [
     {
@@ -148,6 +151,23 @@ const Routes: AppRoute[] = [
         menuItem: {
             description: "VPNs",
             icon: <ApartmentOutlined />,
+        },
+    },
+    {
+        path: "/caches/:id",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <CacheFormPage />,
+        activeMenuItemPath: "/caches",
+    },
+    {
+        path: "/caches",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <CacheListPage />,
+        menuItem: {
+            description: "Cache configurations",
+            icon: <RocketOutlined />,
         },
     },
     {

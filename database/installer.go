@@ -4,6 +4,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/database/accesslist"
 	"dillmann.com.br/nginx-ignition/database/backup"
+	"dillmann.com.br/nginx-ignition/database/cache"
 	"dillmann.com.br/nginx-ignition/database/certificate"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 	"dillmann.com.br/nginx-ignition/database/common/migrations"
@@ -25,6 +26,7 @@ func Install() error {
 
 	return container.Provide(
 		accesslist.New,
+		cache.New,
 		host.New,
 		user.New,
 		settings.New,

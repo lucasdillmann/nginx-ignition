@@ -2,15 +2,18 @@ package host
 
 import (
 	"context"
-	"net"
+	"fmt"
 	"net/url"
-	"strconv"
 	"strings"
 
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/accesslist"
+	"dillmann.com.br/nginx-ignition/core/binding"
+	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
+	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
@@ -19,6 +22,9 @@ type validator struct {
 	hostRepository      Repository
 	integrationCommands *integration.Commands
 	vpnCommands         *vpn.Commands
+	accessListCommands  *accesslist.Commands
+	cacheCommands       *cache.Commands
+	bindingCommands     *binding.Commands
 	delegate            *validation.ConsistencyValidator
 }
 
@@ -26,24 +32,29 @@ func newValidator(
 	hostRepository Repository,
 	integrationCommands *integration.Commands,
 	vpnCommands *vpn.Commands,
+	accessListCommands *accesslist.Commands,
+	cacheCommands *cache.Commands,
+	bindingCommands *binding.Commands,
 ) *validator {
 	return &validator{
 		hostRepository:      hostRepository,
 		integrationCommands: integrationCommands,
 		vpnCommands:         vpnCommands,
+		accessListCommands:  accessListCommands,
+		cacheCommands:       cacheCommands,
+		bindingCommands:     bindingCommands,
 		delegate:            validation.NewValidator(),
 	}
 }
 
 const (
-	invalidValue              = "Invalid value"
-	bindingsPath              = "bindings"
-	minimumPort               = 1
-	maximumPort               = 65535
-	minimumRedirectStatusCode = 300
-	maximumRedirectStatusCode = 399
-	minimumStatusCode         = 100
-	maximumStatusCode         = 599
+	invalidValue = "Invalid value"
+	bindingsPath = "bindings"
+)
+
+var (
+	redirectStatusCodeRange = valuerange.New(300, 399)
+	statusCodeRange         = valuerange.New(100, 599)
 )
 
 func (v *validator) validate(ctx context.Context, host *Host) error {
@@ -61,6 +72,14 @@ func (v *validator) validate(ctx context.Context, host *Host) error {
 	}
 
 	if err := v.validateVPNs(ctx, host); err != nil {
+		return err
+	}
+
+	if err := v.validateAccessList(ctx, host.AccessListID, "accessListId"); err != nil {
+		return err
+	}
+
+	if err := v.validateCache(ctx, host.CacheID, "cacheId"); err != nil {
 		return err
 	}
 
@@ -94,8 +113,11 @@ func (v *validator) validateDomainNames(host *Host) {
 	}
 
 	for index, domainName := range host.DomainNames {
-		if domainName == nil || !constants.TLDPattern.MatchString(*domainName) {
-			v.delegate.Add("domainNames["+strconv.Itoa(index)+"]", "Value is not a valid domain name")
+		if !constants.TLDPattern.MatchString(domainName) {
+			v.delegate.Add(
+				fmt.Sprintf("domainNames[%d]", index),
+				"Value is not a valid domain name",
+			)
 		}
 	}
 }
@@ -110,48 +132,11 @@ func (v *validator) validateBindings(ctx context.Context, host *Host) error {
 			v.delegate.Add(bindingsPath, "At least one binding must be informed")
 		}
 
-		for index, binding := range host.Bindings {
-			if err := v.validateBinding(ctx, bindingsPath, binding, index); err != nil {
+		for index, b := range host.Bindings {
+			if err := v.bindingCommands.Validate(ctx, bindingsPath, index, &b, v.delegate); err != nil {
 				return err
 			}
 		}
-	}
-
-	return nil
-}
-
-func (v *validator) validateBinding(ctx context.Context, pathPrefix string, binding *Binding, index int) error {
-	if net.ParseIP(binding.IP) == nil {
-		v.delegate.Add(pathPrefix+"["+strconv.Itoa(index)+"].ip", "Not a valid IPv4 or IPv6 address")
-	}
-
-	if binding.Port < minimumPort || binding.Port > maximumPort {
-		v.delegate.Add(
-			pathPrefix+"["+strconv.Itoa(index)+"].port",
-			buildOutOfRangeMessage(minimumPort, maximumPort),
-		)
-	}
-
-	certificateIdField := pathPrefix + "[" + strconv.Itoa(index) + "].certificateId"
-
-	switch {
-	case binding.Type == HttpBindingType && binding.CertificateID != nil:
-		v.delegate.Add(certificateIdField, "Value cannot be informed for a HTTP binding")
-	case binding.Type == HttpBindingType && binding.CertificateID == nil:
-		return nil
-	case binding.Type == HttpsBindingType && binding.CertificateID == nil:
-		v.delegate.Add(certificateIdField, "Value must be informed for a HTTPS binding")
-	case binding.Type == HttpsBindingType:
-		exists, err := v.hostRepository.ExistsCertificateByID(ctx, *binding.CertificateID)
-		if err != nil {
-			return err
-		}
-
-		if !exists {
-			v.delegate.Add(certificateIdField, "No SSL certificate found with provided ID")
-		}
-	default:
-		v.delegate.Add(pathPrefix+"["+strconv.Itoa(index)+"].type", invalidValue)
 	}
 
 	return nil
@@ -171,14 +156,14 @@ func (v *validator) validateRoutes(ctx context.Context, host *Host) error {
 		if count > 1 {
 			v.delegate.Add(
 				"routes",
-				"Priority "+strconv.Itoa(priority)+" is duplicated in two or more routes",
+				fmt.Sprintf("Priority %d is duplicated in two or more routes", priority),
 			)
 		}
 	}
 
 	distinctPaths := make(map[string]bool)
 	for index, route := range host.Routes {
-		if err := v.validateRoute(ctx, route, index, &distinctPaths); err != nil {
+		if err := v.validateRoute(ctx, &route, index, &distinctPaths); err != nil {
 			return err
 		}
 	}
@@ -194,6 +179,14 @@ func (v *validator) validateRoute(ctx context.Context, route *Route, index int, 
 		)
 	} else {
 		(*distinctPaths)[route.SourcePath] = true
+	}
+
+	if err := v.validateAccessList(ctx, route.AccessListID, buildIndexedRoutePath(index, "accessListId")); err != nil {
+		return err
+	}
+
+	if err := v.validateCache(ctx, route.CacheID, buildIndexedRoutePath(index, "cacheId")); err != nil {
+		return err
 	}
 
 	switch route.Type {
@@ -249,12 +242,10 @@ func (v *validator) validateRedirectRoute(route *Route, index int) {
 		}
 	}
 
-	if route.RedirectCode == nil ||
-		*route.RedirectCode < minimumRedirectStatusCode ||
-		*route.RedirectCode > maximumRedirectStatusCode {
+	if route.RedirectCode == nil || !redirectStatusCodeRange.Contains(*route.RedirectCode) {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "redirectCode"),
-			buildOutOfRangeMessage(minimumRedirectStatusCode, maximumRedirectStatusCode),
+			buildOutOfRangeMessage(redirectStatusCodeRange),
 		)
 	}
 }
@@ -268,10 +259,10 @@ func (v *validator) validateStaticResponseRoute(route *Route, index int) {
 		return
 	}
 
-	if route.Response.StatusCode < minimumStatusCode || route.Response.StatusCode > maximumStatusCode {
+	if !statusCodeRange.Contains(route.Response.StatusCode) {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "response.statusCode"),
-			buildOutOfRangeMessage(minimumStatusCode, maximumStatusCode),
+			buildOutOfRangeMessage(statusCodeRange),
 		)
 	}
 }
@@ -332,7 +323,7 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 	vpnNameUsage := make(map[uuid.UUID]map[string]int)
 
 	for index, value := range host.VPNs {
-		basePath := "vpns[" + strconv.Itoa(index) + "]"
+		basePath := fmt.Sprintf("vpns[%d]", index)
 		vpnIdPath := basePath + ".vpnId"
 		namePath := basePath + ".name"
 
@@ -373,10 +364,44 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 	return nil
 }
 
-func buildOutOfRangeMessage(minimum, maximum int) string {
-	return "Value must be between " + strconv.Itoa(minimum) + " and " + strconv.Itoa(maximum)
+func buildOutOfRangeMessage(valueRange *valuerange.ValueRange) string {
+	return fmt.Sprintf("Value must be between %d and %d", valueRange.Min, valueRange.Max)
 }
 
 func buildIndexedRoutePath(index int, childPath string) string {
-	return "routes[" + strconv.Itoa(index) + "]." + childPath
+	return fmt.Sprintf("routes[%d].%s", index, childPath)
+}
+
+func (v *validator) validateAccessList(ctx context.Context, accessListID *uuid.UUID, path string) error {
+	if accessListID == nil {
+		return nil
+	}
+
+	exists, err := v.accessListCommands.Exists(ctx, *accessListID)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		v.delegate.Add(path, "No access list found with provided ID")
+	}
+
+	return nil
+}
+
+func (v *validator) validateCache(ctx context.Context, cacheID *uuid.UUID, path string) error {
+	if cacheID == nil {
+		return nil
+	}
+
+	exists, err := v.cacheCommands.Exists(ctx, *cacheID)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		v.delegate.Add(path, "No cache configuration found with provided ID")
+	}
+
+	return nil
 }

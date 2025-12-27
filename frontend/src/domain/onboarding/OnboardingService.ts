@@ -29,6 +29,7 @@ export default class OnboardingService {
                 nginxServer: UserAccessLevel.READ_WRITE,
                 exportData: UserAccessLevel.READ_ONLY,
                 vpns: UserAccessLevel.READ_WRITE,
+                caches: UserAccessLevel.READ_WRITE,
             },
         }
 

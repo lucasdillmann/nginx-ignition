@@ -48,12 +48,12 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*stream.Stream
 	}
 
 	domain := toDomain(&model)
-	err = r.fillLinkedModels(ctx, domain)
+	err = r.fillLinkedModels(ctx, &domain)
 	if err != nil {
 		return nil, err
 	}
 
-	return domain, nil
+	return &domain, nil
 }
 
 func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
@@ -62,6 +62,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	err = r.cleanupLinkedModels(ctx, transaction, id)
@@ -92,14 +93,15 @@ func (r *repository) Save(ctx context.Context, stream *stream.Stream) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	model := toModel(stream)
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
 	} else {
-		_, err = transaction.NewInsert().Model(model).Exec(ctx)
+		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 	}
 
 	if err != nil {
@@ -118,8 +120,8 @@ func (r *repository) FindPage(
 	ctx context.Context,
 	pageSize, pageNumber int,
 	searchTerms *string,
-) (*pagination.Page[*stream.Stream], error) {
-	var models []streamModel
+) (*pagination.Page[stream.Stream], error) {
+	models := make([]streamModel, 0)
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil && *searchTerms != "" {
@@ -140,10 +142,10 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []*stream.Stream
+	result := make([]stream.Stream, 0)
 	for _, model := range models {
 		domainValue := toDomain(&model)
-		err = r.fillLinkedModels(ctx, domainValue)
+		err = r.fillLinkedModels(ctx, &domainValue)
 		if err != nil {
 			return nil, err
 		}
@@ -154,8 +156,8 @@ func (r *repository) FindPage(
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAllEnabled(ctx context.Context) ([]*stream.Stream, error) {
-	var models []streamModel
+func (r *repository) FindAllEnabled(ctx context.Context) ([]stream.Stream, error) {
+	models := make([]streamModel, 0)
 
 	err := r.database.Select().
 		Model(&models).
@@ -165,10 +167,10 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]*stream.Stream, erro
 		return nil, err
 	}
 
-	var result []*stream.Stream
+	result := make([]stream.Stream, 0)
 	for _, model := range models {
 		domainValue := toDomain(&model)
-		err = r.fillLinkedModels(ctx, domainValue)
+		err = r.fillLinkedModels(ctx, &domainValue)
 		if err != nil {
 			return nil, err
 		}
@@ -180,15 +182,10 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]*stream.Stream, erro
 }
 
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
-	count, err := r.database.Select().
+	return r.database.Select().
 		Model((*streamModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Count(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
+		Exists(ctx)
 }
 
 func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx, id uuid.UUID) error {
@@ -201,7 +198,7 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 		return err
 	}
 
-	var routeIDs []uuid.UUID
+	routeIDs := make([]uuid.UUID, 0)
 	err = transaction.
 		NewSelect().
 		Table("stream_route").
@@ -240,31 +237,31 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, s
 	}
 
 	for _, route := range stream.Routes {
-		routeModel := toModelRoute(&route, stream.ID)
+		routeModel := toRouteModel(&route, stream.ID)
 
-		_, err = transaction.NewInsert().Model(routeModel).Exec(ctx)
+		_, err = transaction.NewInsert().Model(&routeModel).Exec(ctx)
 		if err != nil {
 			return err
 		}
 
 		for _, backend := range route.Backends {
-			backendModel := toModelBackend(&backend, nil, &routeModel.ID)
+			backendModel := toBackendModel(&backend, nil, &routeModel.ID)
 
-			_, err = transaction.NewInsert().Model(backendModel).Exec(ctx)
+			_, err = transaction.NewInsert().Model(&backendModel).Exec(ctx)
 			if err != nil {
 				return err
 			}
 		}
 	}
 
-	defaultBackendModel := toModelBackend(&stream.DefaultBackend, &stream.ID, nil)
-	_, err = transaction.NewInsert().Model(defaultBackendModel).Exec(ctx)
+	defaultBackendModel := toBackendModel(&stream.DefaultBackend, &stream.ID, nil)
+	_, err = transaction.NewInsert().Model(&defaultBackendModel).Exec(ctx)
 
 	return err
 }
 
 func (r *repository) fillLinkedModels(ctx context.Context, stream *stream.Stream) error {
-	var routeModels []streamRouteModel
+	routeModels := make([]streamRouteModel, 0)
 	err := r.database.Select().
 		Model(&routeModels).
 		Where(byStreamIdFilter, stream.ID).
@@ -274,7 +271,7 @@ func (r *repository) fillLinkedModels(ctx context.Context, stream *stream.Stream
 	}
 
 	for _, routeModel := range routeModels {
-		var backendModels []streamBackendModel
+		backendModels := make([]streamBackendModel, 0)
 		err = r.database.
 			Select().
 			Model(&backendModels).
@@ -284,7 +281,7 @@ func (r *repository) fillLinkedModels(ctx context.Context, stream *stream.Stream
 			return err
 		}
 
-		stream.Routes = append(stream.Routes, *toDomainRoute(&routeModel, backendModels))
+		stream.Routes = append(stream.Routes, toDomainRoute(&routeModel, backendModels))
 	}
 
 	var defaultBackendModel streamBackendModel
@@ -297,6 +294,6 @@ func (r *repository) fillLinkedModels(ctx context.Context, stream *stream.Stream
 		return err
 	}
 
-	stream.DefaultBackend = *toDomainBackend(&defaultBackendModel)
+	stream.DefaultBackend = toDomainBackend(&defaultBackendModel)
 	return nil
 }

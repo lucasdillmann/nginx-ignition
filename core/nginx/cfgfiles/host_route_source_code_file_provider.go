@@ -14,15 +14,15 @@ func newHostRouteSourceCodeFileProvider() *hostRouteSourceCodeFileProvider {
 }
 
 func (p *hostRouteSourceCodeFileProvider) provide(ctx *providerContext) ([]File, error) {
-	var outputs []File
+	outputs := make([]File, 0)
 
 	for _, h := range ctx.hosts {
-		files, err := p.buildSourceCodeFiles(ctx, h)
+		files, err := p.buildSourceCodeFiles(ctx, &h)
 		if err != nil {
 			return nil, err
 		}
 
-		outputs = append(outputs, *files...)
+		outputs = append(outputs, files...)
 	}
 
 	return outputs, nil
@@ -31,8 +31,8 @@ func (p *hostRouteSourceCodeFileProvider) provide(ctx *providerContext) ([]File,
 func (p *hostRouteSourceCodeFileProvider) buildSourceCodeFiles(
 	ctx *providerContext,
 	h *host.Host,
-) (*[]File, error) {
-	var outputs []File
+) ([]File, error) {
+	outputs := make([]File, 0)
 
 	for _, r := range h.Routes {
 		if !r.Enabled || r.Type != host.ExecuteCodeRouteType {
@@ -55,5 +55,5 @@ func (p *hostRouteSourceCodeFileProvider) buildSourceCodeFiles(
 		}
 	}
 
-	return &outputs, nil
+	return outputs, nil
 }

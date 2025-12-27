@@ -13,16 +13,16 @@ const (
 )
 
 type DynamicField struct {
-	ID           string
-	Priority     int
-	Description  string
-	Required     bool
-	Type         Type
-	EnumOptions  *[]*EnumOption
-	Sensitive    bool
-	Conditions   *[]Condition
-	HelpText     *string
 	DefaultValue any
+	HelpText     *string
+	ID           string
+	Description  string
+	Type         Type
+	EnumOptions  []EnumOption
+	Conditions   []Condition
+	Priority     int
+	Required     bool
+	Sensitive    bool
 }
 
 type EnumOption struct {
@@ -31,6 +31,6 @@ type EnumOption struct {
 }
 
 type Condition struct {
-	ParentField string
 	Value       any
+	ParentField string
 }

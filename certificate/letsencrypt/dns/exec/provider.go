@@ -21,7 +21,7 @@ func (p *Provider) ID() string { return "EXEC_PROGRAM" }
 
 func (p *Provider) Name() string { return "Custom script or program" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          programFieldID,

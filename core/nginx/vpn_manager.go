@@ -5,16 +5,17 @@ import (
 
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
 type endpointAdapter struct {
-	vpnID      uuid.UUID
-	name       string
 	domainName *string
-	bindings   []*host.Binding
+	name       string
+	bindings   []binding.Binding
+	vpnID      uuid.UUID
 }
 
 type vpnManager struct {
@@ -31,7 +32,7 @@ func newVpnManager(vpnCommands *vpn.Commands, settingsCommands *settings.Command
 	}
 }
 
-func (m *vpnManager) start(ctx context.Context, hosts []*host.Host) error {
+func (m *vpnManager) start(ctx context.Context, hosts []host.Host) error {
 	endpoints, err := m.buildEndpoints(ctx, hosts)
 	if err != nil {
 		return err
@@ -47,12 +48,25 @@ func (m *vpnManager) start(ctx context.Context, hosts []*host.Host) error {
 	return nil
 }
 
-func (m *vpnManager) reload(ctx context.Context, hosts []*host.Host) error {
+func (m *vpnManager) reload(ctx context.Context, hosts []host.Host) error {
 	newEndpoints, err := m.buildEndpoints(ctx, hosts)
 	if err != nil {
 		return err
 	}
 
+	if err := m.stopObsoleteEndpoints(ctx, newEndpoints); err != nil {
+		return err
+	}
+
+	if err := m.startNewEndpoints(ctx, newEndpoints); err != nil {
+		return err
+	}
+
+	m.currentEndpoints = newEndpoints
+	return nil
+}
+
+func (m *vpnManager) stopObsoleteEndpoints(ctx context.Context, newEndpoints []vpn.Endpoint) error {
 	for _, oldEndpoint := range m.currentEndpoints {
 		found := false
 		for _, newEndpoint := range newEndpoints {
@@ -69,6 +83,10 @@ func (m *vpnManager) reload(ctx context.Context, hosts []*host.Host) error {
 		}
 	}
 
+	return nil
+}
+
+func (m *vpnManager) startNewEndpoints(ctx context.Context, newEndpoints []vpn.Endpoint) error {
 	for _, newEndpoint := range newEndpoints {
 		found := false
 		for _, oldDest := range m.currentEndpoints {
@@ -84,12 +102,10 @@ func (m *vpnManager) reload(ctx context.Context, hosts []*host.Host) error {
 			}
 		}
 	}
-
-	m.currentEndpoints = newEndpoints
 	return nil
 }
 
-func (m *vpnManager) buildEndpoints(ctx context.Context, hosts []*host.Host) ([]vpn.Endpoint, error) {
+func (m *vpnManager) buildEndpoints(ctx context.Context, hosts []host.Host) ([]vpn.Endpoint, error) {
 	setts, err := m.settingsCommands.Get(ctx)
 	if err != nil {
 		return nil, err
@@ -106,8 +122,8 @@ func (m *vpnManager) buildEndpoints(ctx context.Context, hosts []*host.Host) ([]
 			}
 
 			domainName := vpnEntry.Host
-			if (domainName == nil || *domainName == "") && len(h.DomainNames) > 0 && h.DomainNames[0] != nil {
-				domainName = h.DomainNames[0]
+			if (domainName == nil || *domainName == "") && len(h.DomainNames) > 0 {
+				domainName = &h.DomainNames[0]
 			}
 
 			endpoints = append(endpoints, &endpointAdapter{
@@ -156,11 +172,11 @@ func (a *endpointAdapter) Targets() []vpn.EndpointTarget {
 	}
 
 	output := make([]vpn.EndpointTarget, len(a.bindings))
-	for index, binding := range a.bindings {
+	for index, b := range a.bindings {
 		output[index].Host = targetHost
-		output[index].IP = binding.IP
-		output[index].Port = binding.Port
-		output[index].HTTPS = binding.Type == host.HttpsBindingType
+		output[index].IP = b.IP
+		output[index].Port = b.Port
+		output[index].HTTPS = b.Type == binding.HttpsBindingType
 	}
 
 	return output

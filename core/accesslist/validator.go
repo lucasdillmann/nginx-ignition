@@ -1,8 +1,8 @@
 package accesslist
 
 import (
+	"fmt"
 	"net"
-	"strconv"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/validation"
@@ -38,10 +38,10 @@ func (v *validator) validate(accessList *AccessList) error {
 
 func (v *validator) validateEntry(
 	index int,
-	entry *AccessListEntry,
+	entry *Entry,
 	knownUsernames *map[int]bool,
 ) {
-	path := "entries[" + strconv.Itoa(index) + "]"
+	path := fmt.Sprintf("entries[%d]", index)
 	if (*knownUsernames)[entry.Priority] {
 		v.delegate.Add(path+".priority", "Value is duplicated")
 	} else {
@@ -49,7 +49,7 @@ func (v *validator) validateEntry(
 	}
 
 	if entry.Priority < 0 {
-		v.delegate.Add(path+".priority", "Value must be 0 or greater")
+		v.delegate.Add(path+".priority", validation.ValueCannotBeZeroMessage)
 	}
 
 	if len(entry.SourceAddress) == 0 {
@@ -57,27 +57,27 @@ func (v *validator) validateEntry(
 	}
 
 	for addressIndex, address := range entry.SourceAddress {
-		if singleIp := net.ParseIP(*address); singleIp != nil {
+		if singleIp := net.ParseIP(address); singleIp != nil {
 			continue
 		}
 
-		if _, _, err := net.ParseCIDR(*address); err == nil {
+		if _, _, err := net.ParseCIDR(address); err == nil {
 			continue
 		}
 
 		v.delegate.Add(
-			path+".sourceAddress["+strconv.Itoa(addressIndex)+"]",
-			"Address \""+*address+"\" is not a valid IPv4 or IPv6 address or range",
+			fmt.Sprintf("%s.sourceAddress[%d]", path, addressIndex),
+			"Address \""+address+"\" is not a valid IPv4 or IPv6 address or range",
 		)
 	}
 }
 
 func (v *validator) validateCredentials(
 	index int,
-	credentials *AccessListCredentials,
+	credentials *Credentials,
 	knownUsernames *map[string]bool,
 ) {
-	path := "credentials[" + strconv.Itoa(index) + "].username"
+	path := fmt.Sprintf("credentials[%d].username", index)
 
 	if strings.TrimSpace(credentials.Username) == "" {
 		v.delegate.Add(path, validation.ValueMissingMessage)

@@ -13,17 +13,17 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 
 .backend-check:
 	go tool golangci-lint run \
-    		./api \
-    		./application \
-    		./certificate/commons \
-    		./certificate/custom \
-    		./certificate/letsencrypt \
-    		./certificate/selfsigned \
-    		./core \
-    		./database \
-    		./integration/docker \
-    		./integration/truenas \
-    		./vpn/tailscale
+    		./api/... \
+    		./application/... \
+    		./certificate/commons/... \
+    		./certificate/custom/... \
+    		./certificate/letsencrypt/... \
+    		./certificate/selfsigned/... \
+    		./core/... \
+    		./database/... \
+    		./integration/docker/... \
+    		./integration/truenas/... \
+    		./vpn/tailscale/...
 
 .build-frontend:
 	cd frontend/ && npm run build
@@ -81,8 +81,20 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 check: .prerequisites .frontend-check .backend-check
 
 format: .prerequisites
-	go tool gofumpt -w .
 	cd frontend/ && npx prettier --write .
+	go tool gofumpt -w .
+	go tool fieldalignment -fix \
+    		./api/... \
+    		./application/... \
+    		./certificate/commons/... \
+    		./certificate/custom/... \
+    		./certificate/letsencrypt/... \
+    		./certificate/selfsigned/... \
+    		./core/... \
+    		./database/... \
+    		./integration/docker/... \
+    		./integration/truenas/... \
+    		./vpn/tailscale/...
 
 update-dependencies:
 	cd api && go get -u all

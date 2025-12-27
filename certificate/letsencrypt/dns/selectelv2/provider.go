@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	baseURLFieldID   = "selectelv2BaseUrl"
 	usernameFieldID  = "selectelv2Username"
@@ -29,7 +30,7 @@ func (p *Provider) Name() string {
 	return "Selectel v2"
 }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,

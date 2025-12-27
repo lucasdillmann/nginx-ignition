@@ -13,7 +13,7 @@ type AvailableDriver struct {
 	ID                    string
 	Name                  string
 	ImportantInstructions []string
-	ConfigurationFields   []*dynamicfields.DynamicField
+	ConfigurationFields   []dynamicfields.DynamicField
 }
 
 type Commands struct {
@@ -21,7 +21,7 @@ type Commands struct {
 	Delete              func(ctx context.Context, id uuid.UUID) error
 	Save                func(ctx context.Context, data *VPN) error
 	Exists              func(ctx context.Context, id uuid.UUID) (*bool, error)
-	GetAvailableDrivers func(ctx context.Context) (*[]*AvailableDriver, error)
+	GetAvailableDrivers func(ctx context.Context) ([]AvailableDriver, error)
 	Start               func(ctx context.Context, endpoint Endpoint) error
 	Reload              func(ctx context.Context, endpoint Endpoint) error
 	Stop                func(ctx context.Context, endpoint Endpoint) error
@@ -30,5 +30,5 @@ type Commands struct {
 		pageSize, pageNumber int,
 		searchTerms *string,
 		enabledOnly bool,
-	) (*pagination.Page[*VPN], error)
+	) (*pagination.Page[VPN], error)
 }

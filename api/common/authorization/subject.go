@@ -8,9 +8,9 @@ import (
 )
 
 type Subject struct {
-	TokenID string
 	User    *user.User
 	claims  *jwt.MapClaims
+	TokenID string
 }
 
 func CurrentSubject(ctx *gin.Context) *Subject {

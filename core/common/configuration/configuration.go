@@ -1,7 +1,6 @@
 package configuration
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -58,11 +57,11 @@ func (c *Configuration) Get(key string) (string, error) {
 		return value, nil
 	}
 
-	return "", errors.New(fmt.Sprintf(
+	return "", fmt.Errorf(
 		"no configuration or environment value found for %s or %s",
 		fullKey,
 		formattedKey,
-	))
+	)
 }
 
 func (c *Configuration) GetInt(key string) (int, error) {

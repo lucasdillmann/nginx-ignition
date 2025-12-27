@@ -10,6 +10,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
@@ -46,7 +47,29 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*accesslist.Ac
 		return nil, err
 	}
 
-	return toDomain(&model), nil
+	return ptr.Of(toDomain(&model)), nil
+}
+
+func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
+	return r.database.Select().
+		Model((*accessListModel)(nil)).
+		Where(constants.ByIdFilter, id).
+		Exists(ctx)
+}
+
+func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
+	hostExists, err := r.database.Select().
+		Table("host").
+		Where(byAccessListIdFilter, id).
+		Exists(ctx)
+	if err != nil || hostExists {
+		return hostExists, err
+	}
+
+	return r.database.Select().
+		Table("host_route").
+		Where(byAccessListIdFilter, id).
+		Exists(ctx)
 }
 
 func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
@@ -55,6 +78,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	err = r.cleanupLinkedModels(ctx, transaction, id)
@@ -73,33 +97,12 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r *repository) FindByName(ctx context.Context, name string) (*accesslist.AccessList, error) {
-	var model accessListModel
-
-	err := r.database.Select().
-		Model(&model).
-		Relation("Credentials").
-		Relation("EntrySets").
-		Where("name = ?", name).
-		Scan(ctx)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	return toDomain(&model), nil
-}
-
 func (r *repository) FindPage(
 	ctx context.Context,
 	pageNumber, pageSize int,
 	searchTerms *string,
-) (*pagination.Page[*accesslist.AccessList], error) {
-	var models []accessListModel
+) (*pagination.Page[accesslist.AccessList], error) {
+	models := make([]accessListModel, 0)
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil {
@@ -122,7 +125,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []*accesslist.AccessList
+	result := make([]accesslist.AccessList, 0)
 	for _, model := range models {
 		result = append(result, toDomain(&model))
 	}
@@ -130,8 +133,8 @@ func (r *repository) FindPage(
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAll(ctx context.Context) ([]*accesslist.AccessList, error) {
-	var models []accessListModel
+func (r *repository) FindAll(ctx context.Context) ([]accesslist.AccessList, error) {
+	models := make([]accessListModel, 0)
 
 	err := r.database.Select().
 		Model(&models).
@@ -142,7 +145,7 @@ func (r *repository) FindAll(ctx context.Context) ([]*accesslist.AccessList, err
 		return nil, err
 	}
 
-	var result []*accesslist.AccessList
+	result := make([]accesslist.AccessList, 0)
 	for _, model := range models {
 		result = append(result, toDomain(&model))
 	}
@@ -156,6 +159,7 @@ func (r *repository) Save(ctx context.Context, accessList *accesslist.AccessList
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	exists, err := transaction.NewSelect().Model((*accessListModel)(nil)).Where(constants.ByIdFilter, accessList.ID).Exists(ctx)
@@ -163,16 +167,16 @@ func (r *repository) Save(ctx context.Context, accessList *accesslist.AccessList
 		return err
 	}
 
+	model := toModel(accessList)
 	if exists {
-		err = r.performUpdate(ctx, toModel(accessList), transaction)
+		err = r.performUpdate(ctx, &model, transaction)
 	} else {
-		model := toModel(accessList)
-		_, err = transaction.NewInsert().Model(model).Exec(ctx)
+		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 		if err != nil {
 			return err
 		}
 
-		err = r.saveLinkedModels(ctx, transaction, model)
+		err = r.saveLinkedModels(ctx, transaction, &model)
 	}
 
 	if err != nil {
@@ -201,7 +205,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, m
 		credentials.ID = uuid.New()
 		credentials.AccessListID = model.ID
 
-		_, err := transaction.NewInsert().Model(credentials).Exec(ctx)
+		_, err := transaction.NewInsert().Model(&credentials).Exec(ctx)
 		if err != nil {
 			return err
 		}
@@ -211,7 +215,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, m
 		entrySet.ID = uuid.New()
 		entrySet.AccessListID = model.ID
 
-		_, err := transaction.NewInsert().Model(entrySet).Exec(ctx)
+		_, err := transaction.NewInsert().Model(&entrySet).Exec(ctx)
 		if err != nil {
 			return err
 		}

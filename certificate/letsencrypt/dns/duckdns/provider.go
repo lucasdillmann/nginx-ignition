@@ -20,7 +20,7 @@ func (p *Provider) ID() string { return "DUCK_DNS" }
 
 func (p *Provider) Name() string { return "Duck DNS" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokenFieldID,

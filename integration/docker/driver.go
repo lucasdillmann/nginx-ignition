@@ -29,7 +29,7 @@ func (a *Driver) Description() string {
 		"ignition's host routes."
 }
 
-func (a *Driver) ConfigurationFields() []*dynamicfields.DynamicField {
+func (a *Driver) ConfigurationFields() []dynamicfields.DynamicField {
 	return fields.All
 }
 
@@ -39,7 +39,7 @@ func (a *Driver) GetAvailableOptions(
 	_, _ int,
 	searchTerms *string,
 	tcpOnly bool,
-) (*pagination.Page[*integration.DriverOption], error) {
+) (*pagination.Page[integration.DriverOption], error) {
 	optionResolver, err := resolver.For(parameters)
 	if err != nil {
 		return nil, err
@@ -50,9 +50,9 @@ func (a *Driver) GetAvailableOptions(
 		return nil, err
 	}
 
-	totalItems := len(*options)
-	driverOptions := make([]*integration.DriverOption, totalItems)
-	for index, option := range *options {
+	totalItems := len(options)
+	driverOptions := make([]integration.DriverOption, totalItems)
+	for index, option := range options {
 		driverOptions[index] = option.DriverOption
 	}
 
@@ -74,7 +74,7 @@ func (a *Driver) GetAvailableOptionById(
 		return nil, err
 	}
 
-	return option.DriverOption, nil
+	return &option.DriverOption, nil
 }
 
 func (a *Driver) GetOptionProxyURL(

@@ -7,16 +7,17 @@ import (
 	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
-func toAvailableProviderResponse(input []*certificate.AvailableProvider) []*availableProviderResponse {
-	var responses []*availableProviderResponse
+func toAvailableProviderResponse(input []certificate.AvailableProvider) []availableProviderResponse {
+	responses := make([]availableProviderResponse, 0)
 	for _, provider := range input {
-		responses = append(responses, &availableProviderResponse{
+		responses = append(responses, availableProviderResponse{
 			ID:            provider.ID(),
 			Name:          provider.Name(),
 			Priority:      provider.Priority(),
 			DynamicFields: dynamicfield.ToResponse(provider.DynamicFields()),
 		})
 	}
+
 	return responses
 }
 
@@ -68,18 +69,7 @@ func toCertificateResponse(input *certificate.Certificate) *certificateResponse 
 func toIssueCertificateRequest(input *issueCertificateRequest) *certificate.IssueRequest {
 	return &certificate.IssueRequest{
 		ProviderID:  input.ProviderID,
-		DomainNames: dereference(input.DomainNames),
+		DomainNames: input.DomainNames,
 		Parameters:  input.Parameters,
 	}
-}
-
-func dereference(input []*string) []string {
-	var output []string
-	for _, str := range input {
-		if str != nil {
-			output = append(output, *str)
-		}
-	}
-
-	return output
 }

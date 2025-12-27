@@ -61,20 +61,12 @@ func (r *repository) ExistsByName(ctx context.Context, name string) (*bool, erro
 }
 
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (*bool, error) {
-	count, err := r.database.Select().
+	exists, err := r.database.Select().
 		Model((*integrationModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Count(ctx)
+		Exists(ctx)
 
-	if errors.Is(err, sql.ErrNoRows) {
-		return ptr.Of(false), nil
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	return ptr.Of(count > 0), nil
+	return &exists, err
 }
 
 func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (*bool, error) {
@@ -100,6 +92,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer tx.Rollback()
 
 	_, err = tx.NewDelete().Model((*integrationModel)(nil)).Where(constants.ByIdFilter, id).Exec(ctx)
@@ -116,6 +109,7 @@ func (r *repository) Save(ctx context.Context, values *integration.Integration) 
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	model, err := toModel(values)
@@ -146,8 +140,8 @@ func (r *repository) FindPage(
 	pageSize, pageNumber int,
 	searchTerms *string,
 	enabledOnly bool,
-) (*pagination.Page[*integration.Integration], error) {
-	var models []integrationModel
+) (*pagination.Page[integration.Integration], error) {
+	models := make([]integrationModel, 0)
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil && *searchTerms != "" {
@@ -172,14 +166,14 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []*integration.Integration
+	result := make([]integration.Integration, 0)
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {
 			return nil, err
 		}
 
-		result = append(result, domain)
+		result = append(result, *domain)
 	}
 
 	return pagination.New(pageNumber, pageSize, count, result), nil

@@ -10,7 +10,7 @@ type Driver interface {
 	ID() string
 	Name() string
 	ImportantInstructions() []string
-	ConfigurationFields() []*dynamicfields.DynamicField
+	ConfigurationFields() []dynamicfields.DynamicField
 	Reload(ctx context.Context, configDir string, endpoint Endpoint, parameters map[string]any) error
 	Start(ctx context.Context, configDir string, endpoint Endpoint, parameters map[string]any) error
 	Stop(ctx context.Context, endpoint Endpoint) error

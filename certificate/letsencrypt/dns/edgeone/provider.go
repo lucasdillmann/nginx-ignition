@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	secretIDFieldID  = "edgeOneSecretID"
 	secretKeyFieldID = "edgeOneSecretKey"
@@ -22,7 +23,7 @@ func (p *Provider) ID() string { return "EDGEONE" }
 
 func (p *Provider) Name() string { return "Tencent EdgeOne" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          secretIDFieldID,

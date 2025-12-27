@@ -2,13 +2,8 @@ package host
 
 import (
 	"github.com/google/uuid"
-)
 
-type BindingType string
-
-const (
-	HttpBindingType  BindingType = "HTTP"
-	HttpsBindingType BindingType = "HTTPS"
+	"dillmann.com.br/nginx-ignition/core/binding"
 )
 
 type CodeLanguage string
@@ -30,16 +25,17 @@ const (
 )
 
 type Host struct {
+	AccessListID      *uuid.UUID
+	CacheID           *uuid.UUID
+	DomainNames       []string
+	Routes            []Route
+	Bindings          []binding.Binding
+	VPNs              []VPN
 	ID                uuid.UUID
+	FeatureSet        FeatureSet
 	Enabled           bool
 	DefaultServer     bool
 	UseGlobalBindings bool
-	DomainNames       []*string
-	Routes            []*Route
-	Bindings          []*Binding
-	VPNs              []*VPN
-	FeatureSet        FeatureSet
-	AccessListID      *uuid.UUID
 }
 
 type FeatureSet struct {
@@ -49,55 +45,48 @@ type FeatureSet struct {
 }
 
 type Route struct {
-	ID           uuid.UUID
-	Priority     int
-	Enabled      bool
-	Type         RouteType
-	SourcePath   string
-	TargetURI    *string
-	RedirectCode *int
-	AccessListID *uuid.UUID
 	Settings     RouteSettings
+	RedirectCode *int
+	TargetURI    *string
+	AccessListID *uuid.UUID
+	CacheID      *uuid.UUID
 	Response     *RouteStaticResponse
 	Integration  *RouteIntegrationConfig
 	SourceCode   *RouteSourceCode
+	Type         RouteType
+	SourcePath   string
+	Priority     int
+	ID           uuid.UUID
+	Enabled      bool
 }
 
 type RouteSourceCode struct {
+	MainFunction *string
 	Language     CodeLanguage
 	Contents     string
-	MainFunction *string
 }
 
 type RouteSettings struct {
+	Custom                  *string
 	IncludeForwardHeaders   bool
 	ProxySSLServerName      bool
 	KeepOriginalDomainName  bool
 	DirectoryListingEnabled bool
-	Custom                  *string
 }
 
 type RouteStaticResponse struct {
-	StatusCode int
 	Headers    map[string]string
 	Payload    *string
+	StatusCode int
 }
 
 type RouteIntegrationConfig struct {
-	IntegrationID uuid.UUID
 	OptionID      string
-}
-
-type Binding struct {
-	ID            uuid.UUID
-	Type          BindingType
-	IP            string
-	Port          int
-	CertificateID *uuid.UUID
+	IntegrationID uuid.UUID
 }
 
 type VPN struct {
-	VPNID uuid.UUID
-	Name  string
 	Host  *string
+	Name  string
+	VPNID uuid.UUID
 }

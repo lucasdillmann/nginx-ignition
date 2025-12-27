@@ -10,12 +10,14 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/host"
-	"dillmann.com.br/nginx-ignition/database/certificate"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
 
-const byHostIdFilter = "host_id = ?"
+const (
+	byHostIdFilter       = "host_id = ?"
+	byAccessListIdFilter = "access_list_id = ?"
+)
 
 type repository struct {
 	database *database.Database
@@ -55,6 +57,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	_, err = transaction.NewDelete().
@@ -98,6 +101,7 @@ func (r *repository) Save(ctx context.Context, host *host.Host) error {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	model, err := toModel(host)
@@ -161,7 +165,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, model *hostModel, tra
 		binding.ID = uuid.New()
 		binding.HostID = model.ID
 
-		_, err := transaction.NewInsert().Model(binding).Exec(ctx)
+		_, err := transaction.NewInsert().Model(&binding).Exec(ctx)
 		if err != nil {
 			return err
 		}
@@ -171,7 +175,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, model *hostModel, tra
 		route.ID = uuid.New()
 		route.HostID = model.ID
 
-		_, err := transaction.NewInsert().Model(route).Exec(ctx)
+		_, err := transaction.NewInsert().Model(&route).Exec(ctx)
 		if err != nil {
 			return err
 		}
@@ -180,7 +184,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, model *hostModel, tra
 	for _, vpn := range model.VPNs {
 		vpn.HostID = model.ID
 
-		_, err := transaction.NewInsert().Model(vpn).Exec(ctx)
+		_, err := transaction.NewInsert().Model(&vpn).Exec(ctx)
 		if err != nil {
 			return err
 		}
@@ -193,8 +197,8 @@ func (r *repository) FindPage(
 	ctx context.Context,
 	pageSize, pageNumber int,
 	searchTerms *string,
-) (*pagination.Page[*host.Host], error) {
-	var models []hostModel
+) (*pagination.Page[host.Host], error) {
+	models := make([]hostModel, 0)
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil && *searchTerms != "" {
@@ -218,21 +222,21 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	var result []*host.Host
+	result := make([]host.Host, 0)
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {
 			return nil, err
 		}
 
-		result = append(result, domain)
+		result = append(result, *domain)
 	}
 
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAllEnabled(ctx context.Context) ([]*host.Host, error) {
-	var models []hostModel
+func (r *repository) FindAllEnabled(ctx context.Context) ([]host.Host, error) {
+	models := make([]hostModel, 0)
 
 	err := r.database.Select().
 		Model(&models).
@@ -245,13 +249,13 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]*host.Host, error) {
 		return nil, err
 	}
 
-	var result []*host.Host
+	result := make([]host.Host, 0)
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {
 			return nil, err
 		}
-		result = append(result, domain)
+		result = append(result, *domain)
 	}
 
 	return result, nil
@@ -280,54 +284,8 @@ func (r *repository) FindDefault(ctx context.Context) (*host.Host, error) {
 }
 
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
-	count, err := r.database.Select().
+	return r.database.Select().
 		Model((*hostModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Count(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
-}
-
-func (r *repository) ExistsCertificateByID(ctx context.Context, certificateId uuid.UUID) (bool, error) {
-	return certificate.New(r.database).ExistsByID(ctx, certificateId)
-}
-
-func (r *repository) ExistsByCertificateID(ctx context.Context, certificateId uuid.UUID) (bool, error) {
-	count, err := r.database.
-		Select().
-		Model((*hostBindingModel)(nil)).
-		Where("certificate_id = ?", certificateId).
-		Count(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
-}
-
-func (r *repository) ExistsByAccessListID(ctx context.Context, accessListId uuid.UUID) (bool, error) {
-	count, err := r.database.Select().
-		Model((*hostModel)(nil)).
-		Where("access_list_id = ?", accessListId).
-		Count(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	if count > 0 {
-		return true, nil
-	}
-
-	count, err = r.database.Select().
-		Model((*hostRouteModel)(nil)).
-		Where("access_list_id = ?", accessListId).
-		Count(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
+		Exists(ctx)
 }

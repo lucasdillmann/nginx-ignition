@@ -9,10 +9,10 @@ import (
 )
 
 type validationRules struct {
-	dynamicFields []*dynamicfields.DynamicField
+	dynamicFields []dynamicfields.DynamicField
 }
 
-func (r validationRules) DynamicFields() []*dynamicfields.DynamicField {
+func (r validationRules) DynamicFields() []dynamicfields.DynamicField {
 	return r.dynamicFields
 }
 

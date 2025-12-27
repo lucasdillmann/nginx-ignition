@@ -1,5 +1,6 @@
 // @ts-expect-error Types not available
 import path from "path"
+// @ts-expect-error Types are available even though the IDE says otherwise
 import viteReact from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 
@@ -7,6 +8,15 @@ import { defineConfig } from "vite"
 export default defineConfig({
     base: "/",
     plugins: [viteReact()],
+    server: {
+        host: "0.0.0.0",
+        port: 8080,
+        proxy: {
+            "/api": {
+                target: "http://localhost:8090",
+            },
+        },
+    },
     build: {
         outDir: "build",
         emptyOutDir: true,

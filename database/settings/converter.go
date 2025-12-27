@@ -1,7 +1,7 @@
 package settings
 
 import (
-	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
@@ -9,7 +9,7 @@ func toDomain(
 	nginx *nginxModel,
 	logRotation *logRotationModel,
 	certificate *certificateModel,
-	bindings []*bindingModel,
+	bindings []bindingModel,
 	buffers *buffersModel,
 ) *settings.Settings {
 	return &settings.Settings{
@@ -66,16 +66,16 @@ func toDomain(
 	}
 }
 
-func toBindingDomain(bindings []*bindingModel) []*host.Binding {
-	var result []*host.Binding
+func toBindingDomain(bindings []bindingModel) []binding.Binding {
+	result := make([]binding.Binding, 0)
 
-	for _, binding := range bindings {
-		result = append(result, &host.Binding{
-			ID:            binding.ID,
-			Type:          host.BindingType(binding.Type),
-			IP:            binding.IP,
-			Port:          binding.Port,
-			CertificateID: binding.CertificateID,
+	for _, b := range bindings {
+		result = append(result, binding.Binding{
+			ID:            b.ID,
+			Type:          binding.Type(b.Type),
+			IP:            b.IP,
+			Port:          b.Port,
+			CertificateID: b.CertificateID,
 		})
 	}
 
@@ -86,7 +86,7 @@ func toModel(settings *settings.Settings) (
 	*nginxModel,
 	*logRotationModel,
 	*certificateModel,
-	[]*bindingModel,
+	[]bindingModel,
 	*buffersModel,
 ) {
 	nginx := &nginxModel{
@@ -139,16 +139,16 @@ func toModel(settings *settings.Settings) (
 	return nginx, logRotation, certificate, bindings, buffers
 }
 
-func toBindingModel(bindings []*host.Binding) []*bindingModel {
-	var result []*bindingModel
+func toBindingModel(bindings []binding.Binding) []bindingModel {
+	result := make([]bindingModel, 0)
 
-	for _, binding := range bindings {
-		result = append(result, &bindingModel{
-			ID:            binding.ID,
-			Type:          string(binding.Type), // Assuming host.BindingType has a String method
-			IP:            binding.IP,
-			Port:          binding.Port,
-			CertificateID: binding.CertificateID,
+	for _, b := range bindings {
+		result = append(result, bindingModel{
+			ID:            b.ID,
+			Type:          string(b.Type),
+			IP:            b.IP,
+			Port:          b.Port,
+			CertificateID: b.CertificateID,
 		})
 	}
 

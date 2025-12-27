@@ -110,59 +110,43 @@ func toBackendDto(input *stream.Backend) *backendDto {
 	}
 }
 
-func toRouteDtos(input []stream.Route) *[]routeDto {
-	if input == nil {
-		return nil
-	}
-
+func toRouteDtos(input []stream.Route) []routeDto {
 	output := make([]routeDto, len(input))
 	for index := range input {
 		output[index] = routeDto{
-			DomainNames: &input[index].DomainNames,
+			DomainNames: input[index].DomainNames,
 			Backends:    toBackendDtos(input[index].Backends),
-		}
-	}
-
-	return &output
-}
-
-func toBackendDtos(input []stream.Backend) *[]backendDto {
-	if input == nil {
-		return nil
-	}
-
-	output := make([]backendDto, len(input))
-	for index := range input {
-		output[index] = *toBackendDto(&input[index])
-	}
-
-	return &output
-}
-
-func toRoutes(input *[]routeDto) []stream.Route {
-	if input == nil {
-		return nil
-	}
-
-	output := make([]stream.Route, len(*input))
-	for index := range *input {
-		output[index] = stream.Route{
-			DomainNames: getStringArrayValue((*input)[index].DomainNames),
-			Backends:    toBackends((*input)[index].Backends),
 		}
 	}
 
 	return output
 }
 
-func toBackends(input *[]backendDto) []stream.Backend {
-	if input == nil {
-		return nil
+func toBackendDtos(input []stream.Backend) []backendDto {
+	output := make([]backendDto, len(input))
+	for index := range input {
+		output[index] = *toBackendDto(&input[index])
 	}
 
-	output := make([]stream.Backend, len(*input))
-	for index := range *input {
-		output[index] = *toBackend(&(*input)[index])
+	return output
+}
+
+func toRoutes(input []routeDto) []stream.Route {
+	output := make([]stream.Route, len(input))
+	for index := range input {
+		output[index] = stream.Route{
+			DomainNames: input[index].DomainNames,
+			Backends:    toBackends(input[index].Backends),
+		}
+	}
+
+	return output
+}
+
+func toBackends(input []backendDto) []stream.Backend {
+	output := make([]stream.Backend, len(input))
+	for index := range input {
+		output[index] = *toBackend(&input[index])
 	}
 
 	return output
@@ -205,14 +189,6 @@ func getBoolValue(value *bool) bool {
 func getStringValue(value *string) string {
 	if value == nil {
 		return ""
-	}
-
-	return *value
-}
-
-func getStringArrayValue(value *[]string) []string {
-	if value == nil {
-		return []string{}
 	}
 
 	return *value

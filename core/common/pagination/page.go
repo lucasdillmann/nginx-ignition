@@ -1,10 +1,10 @@
 package pagination
 
 type Page[T any] struct {
+	Contents   []T
 	PageNumber int
 	PageSize   int
 	TotalItems int
-	Contents   []T
 }
 
 func New[T any](pageNumber, pageSize, totalItems int, contents []T) *Page[T] {

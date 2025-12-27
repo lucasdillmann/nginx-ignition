@@ -24,7 +24,7 @@ ENV NGINX_IGNITION_NGINX_BINARY_PATH="/usr/sbin/nginx" \
     NGINX_IGNITION_DATABASE_DRIVER="sqlite" \
     NGINX_IGNITION_DATABASE_MIGRATIONS_PATH="/opt/nginx-ignition/migrations" \
     NGINX_IGNITION_DATABASE_DATA_PATH="/opt/nginx-ignition/data" \
-    GOMEMLIMIT="96MiB"
+    GOMEMLIMIT="128MiB"
 
 ENTRYPOINT ["/opt/nginx-ignition/nginx-ignition"]
 WORKDIR /opt/nginx-ignition

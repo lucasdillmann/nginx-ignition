@@ -11,6 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	endpointFieldID = "easyDnsEndpoint"
 	tokenFieldID    = "easyDnsToken"
@@ -23,7 +24,7 @@ func (p *Provider) ID() string { return "EASYDNS" }
 
 func (p *Provider) Name() string { return "EasyDNS" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokenFieldID,

@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	loginFieldID     = "nicManagerLogin"
 	usernameFieldID  = "nicManagerUsername"
@@ -25,7 +26,7 @@ func (p *Provider) ID() string { return "NICMANAGER" }
 
 func (p *Provider) Name() string { return "Nicmanager" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          loginFieldID,

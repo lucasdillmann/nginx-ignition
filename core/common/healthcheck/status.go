@@ -1,11 +1,11 @@
 package healthcheck
 
 type Status struct {
+	Details []Detail
 	Healthy bool
-	Details []*Detail
 }
 
 type Detail struct {
-	ID    string
 	Error error
+	ID    string
 }

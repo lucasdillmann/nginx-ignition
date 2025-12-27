@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"dillmann.com.br/nginx-ignition/core/cache"
+	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/stream"
@@ -82,6 +84,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				include %smime.types;
 				%s
 				%s
+				%s
 			}
 			
 			%s
@@ -93,9 +96,9 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		ctx.paths.Base,
 		p.getErrorLogPath(ctx.paths, logs),
 		cfg.Nginx.WorkerConnections,
-		p.enabledFlag(cfg.Nginx.SendfileEnabled),
-		p.enabledFlag(cfg.Nginx.ServerTokensEnabled),
-		p.enabledFlag(cfg.Nginx.TcpNoDelayEnabled),
+		statusFlag(cfg.Nginx.SendfileEnabled),
+		statusFlag(cfg.Nginx.ServerTokensEnabled),
+		statusFlag(cfg.Nginx.TcpNoDelayEnabled),
 		cfg.Nginx.Timeouts.Keepalive,
 		cfg.Nginx.Timeouts.Connect,
 		cfg.Nginx.Timeouts.Read,
@@ -112,6 +115,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		cfg.Nginx.DefaultContentType,
 		ctx.paths.Config,
 		customCfg,
+		p.getCacheDefinitions(ctx.paths, ctx.caches),
 		p.getHostIncludes(ctx.paths, ctx.hosts),
 		streamLines.String(),
 	)
@@ -132,16 +136,8 @@ func (p *mainConfigurationFileProvider) getErrorLogPath(paths *Paths, logs *sett
 	return "off"
 }
 
-func (p *mainConfigurationFileProvider) enabledFlag(value bool) string {
-	if value {
-		return "on"
-	}
-
-	return "off"
-}
-
-func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []*host.Host) string {
-	var includes []string
+func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []host.Host) string {
+	includes := make([]string, 0)
 	for _, h := range hosts {
 		includes = append(includes, fmt.Sprintf("include %shost-%s.conf;", paths.Config, h.ID))
 	}
@@ -149,12 +145,48 @@ func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []*h
 	return strings.Join(includes, "\n")
 }
 
-func (p *mainConfigurationFileProvider) getStreamIncludes(paths *Paths, streams []*stream.Stream) string {
-	var includes []string
+func (p *mainConfigurationFileProvider) getStreamIncludes(paths *Paths, streams []stream.Stream) string {
+	includes := make([]string, 0)
 
 	for _, s := range streams {
 		includes = append(includes, fmt.Sprintf("include %sstream-%s.conf;", paths.Config, s.ID))
 	}
 
 	return strings.Join(includes, "\n")
+}
+
+func (p *mainConfigurationFileProvider) getCacheDefinitions(paths *Paths, caches []cache.Cache) string {
+	if len(caches) == 0 {
+		return ""
+	}
+
+	results := make([]string, 0)
+	for _, c := range caches {
+		cacheIDNoDashes := strings.ReplaceAll(c.ID.String(), "-", "")
+		storagePath := c.StoragePath
+
+		if storagePath == nil || strings.TrimSpace(*storagePath) == "" {
+			storagePath = ptr.Of(paths.Cache + cacheIDNoDashes)
+		}
+
+		inactive := ""
+		if c.InactiveSeconds != nil {
+			inactive = fmt.Sprintf(" inactive=%ds", *c.InactiveSeconds)
+		}
+
+		maxSize := ""
+		if c.MaximumSizeMB != nil {
+			maxSize = fmt.Sprintf(" max_size=%dm", *c.MaximumSizeMB)
+		}
+
+		results = append(results, fmt.Sprintf(
+			"proxy_cache_path %s levels=1:2 keys_zone=cache_%s:10m%s%s;",
+			*storagePath,
+			cacheIDNoDashes,
+			inactive,
+			maxSize,
+		))
+	}
+
+	return strings.Join(results, "\n")
 }

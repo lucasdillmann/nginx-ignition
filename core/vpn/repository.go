@@ -20,5 +20,5 @@ type Repository interface {
 		pageSize, pageNumber int,
 		searchTerms *string,
 		enabledOnly bool,
-	) (*pagination.Page[*VPN], error)
+	) (*pagination.Page[VPN], error)
 }

@@ -19,12 +19,12 @@ type repository struct {
 }
 
 func New(database *database.Database) certificate.Repository {
-	return repository{
+	return &repository{
 		database: database,
 	}
 }
 
-func (r repository) FindByID(ctx context.Context, id uuid.UUID) (*certificate.Certificate, error) {
+func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*certificate.Certificate, error) {
 	var model certificateModel
 
 	err := r.database.Select().
@@ -40,6 +40,7 @@ func (r repository) FindByID(ctx context.Context, id uuid.UUID) (*certificate.Ce
 		return nil, err
 	}
 
+	//nolint:revive
 	if result, err := toDomain(&model); err != nil {
 		return nil, err
 	} else {
@@ -47,24 +48,60 @@ func (r repository) FindByID(ctx context.Context, id uuid.UUID) (*certificate.Ce
 	}
 }
 
-func (r repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
-	count, err := r.database.Select().
+func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
+	return r.database.Select().
 		Model((*certificateModel)(nil)).
 		Where(constants.ByIdFilter, id).
-		Count(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
+		Exists(ctx)
 }
 
-func (r repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
+func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
+	exists, err := r.database.
+		Select().
+		Table("host_binding").
+		Where("certificate_id = ?", id).
+		Exists(ctx)
+
+	if err != nil || exists {
+		return exists, err
+	}
+
+	return r.database.
+		Select().
+		Table("settings_global_binding").
+		Where("certificate_id = ?", id).
+		Exists(ctx)
+}
+
+func (r *repository) GetAutoRenewSettings(ctx context.Context) (*certificate.AutoRenewSettings, error) {
+	var enabled bool
+	var intervalUnit string
+	var intervalUnitCount int
+
+	err := r.database.
+		Select().
+		Column("enabled", "interval_unit", "interval_unit_count").
+		Table("settings_certificate_auto_renew").
+		Limit(1).
+		Scan(ctx, &enabled, &intervalUnit, &intervalUnitCount)
+	if err != nil {
+		return nil, err
+	}
+
+	return &certificate.AutoRenewSettings{
+		Enabled:           enabled,
+		IntervalUnit:      intervalUnit,
+		IntervalUnitCount: intervalUnitCount,
+	}, nil
+}
+
+func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	_, err = transaction.NewDelete().
@@ -78,12 +115,13 @@ func (r repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r repository) Save(ctx context.Context, certificate *certificate.Certificate) error {
+func (r *repository) Save(ctx context.Context, certificate *certificate.Certificate) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
 	}
 
+	//nolint:errcheck
 	defer transaction.Rollback()
 
 	model, err := toModel(certificate)
@@ -109,12 +147,12 @@ func (r repository) Save(ctx context.Context, certificate *certificate.Certifica
 	return transaction.Commit()
 }
 
-func (r repository) FindPage(
+func (r *repository) FindPage(
 	ctx context.Context,
 	pageSize, pageNumber int,
 	searchTerms *string,
-) (*pagination.Page[*certificate.Certificate], error) {
-	var certificates []certificateModel
+) (*pagination.Page[certificate.Certificate], error) {
+	certificates := make([]certificateModel, 0)
 
 	query := r.database.Select().Model(&certificates)
 	if searchTerms != nil {
@@ -140,20 +178,21 @@ func (r repository) FindPage(
 		return nil, err
 	}
 
-	var result []*certificate.Certificate
+	result := make([]certificate.Certificate, 0)
 	for _, model := range certificates {
+		//nolint:revive
 		if domain, err := toDomain(&model); err != nil {
 			return nil, err
 		} else {
-			result = append(result, domain)
+			result = append(result, *domain)
 		}
 	}
 
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r repository) FindAllDueToRenew(ctx context.Context) ([]*certificate.Certificate, error) {
-	var certificates []certificateModel
+func (r *repository) FindAllDueToRenew(ctx context.Context) ([]certificate.Certificate, error) {
+	certificates := make([]certificateModel, 0)
 
 	err := r.database.Select().
 		Model(&certificates).
@@ -163,12 +202,13 @@ func (r repository) FindAllDueToRenew(ctx context.Context) ([]*certificate.Certi
 		return nil, err
 	}
 
-	var result []*certificate.Certificate
+	result := make([]certificate.Certificate, 0)
 	for _, model := range certificates {
+		//nolint:revive
 		if domain, err := toDomain(&model); err != nil {
 			return nil, err
 		} else {
-			result = append(result, domain)
+			result = append(result, *domain)
 		}
 	}
 

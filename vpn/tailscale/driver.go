@@ -26,7 +26,7 @@ func (d Driver) ImportantInstructions() []string {
 	return importantInstructions
 }
 
-func (d Driver) ConfigurationFields() []*dynamicfields.DynamicField {
+func (d Driver) ConfigurationFields() []dynamicfields.DynamicField {
 	return configurationFields
 }
 

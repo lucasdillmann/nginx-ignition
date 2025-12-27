@@ -3,7 +3,7 @@ package settings
 import (
 	"github.com/google/uuid"
 
-	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
@@ -64,16 +64,14 @@ func toDto(settings *settings.Settings) *settingsDto {
 		IntervalUnitCount: &settings.CertificateAutoRenew.IntervalUnitCount,
 	}
 
-	var bindingsModel []*bindingDto
-	if settings.GlobalBindings != nil {
-		for _, binding := range settings.GlobalBindings {
-			bindingsModel = append(bindingsModel, &bindingDto{
-				Type:          &binding.Type,
-				IP:            &binding.IP,
-				Port:          &binding.Port,
-				CertificateID: binding.CertificateID,
-			})
-		}
+	bindingsModel := make([]bindingDto, 0)
+	for _, b := range settings.GlobalBindings {
+		bindingsModel = append(bindingsModel, bindingDto{
+			Type:          &b.Type,
+			IP:            &b.IP,
+			Port:          &b.Port,
+			CertificateID: b.CertificateID,
+		})
 	}
 
 	return &settingsDto{
@@ -146,17 +144,15 @@ func toDomain(input *settingsDto) *settings.Settings {
 		IntervalUnitCount: *certificate.IntervalUnitCount,
 	}
 
-	var globalBindings []*host.Binding
-	if bindings != nil {
-		for _, binding := range bindings {
-			globalBindings = append(globalBindings, &host.Binding{
-				ID:            uuid.New(),
-				Type:          *binding.Type,
-				IP:            *binding.IP,
-				Port:          *binding.Port,
-				CertificateID: binding.CertificateID,
-			})
-		}
+	globalBindings := make([]binding.Binding, 0)
+	for _, b := range bindings {
+		globalBindings = append(globalBindings, binding.Binding{
+			ID:            uuid.New(),
+			Type:          *b.Type,
+			IP:            *b.IP,
+			Port:          *b.Port,
+			CertificateID: b.CertificateID,
+		})
 	}
 
 	return &settings.Settings{

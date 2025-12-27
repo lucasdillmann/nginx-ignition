@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
@@ -25,15 +26,17 @@ type SupportedFeatures struct {
 type providerContext struct {
 	context           context.Context
 	paths             *Paths
-	hosts             []*host.Host
-	streams           []*stream.Stream
 	supportedFeatures *SupportedFeatures
+	hosts             []host.Host
+	streams           []stream.Stream
+	caches            []cache.Cache
 }
 
 type Paths struct {
 	Base   string
 	Config string
 	Logs   string
+	Cache  string
 }
 
 type fileProvider interface {

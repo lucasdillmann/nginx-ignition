@@ -1,4 +1,5 @@
 import AccessLists from "./access-lists.mp4"
+import Caches from "./caches.mp4"
 import Hosts from "./hosts.mp4"
 import Integrations from "./integrations.mp4"
 import Logs from "./logs.mp4"
@@ -9,6 +10,7 @@ import VPNs from "./vpns.mp4"
 
 export default {
     AccessLists,
+    Caches,
     Hosts,
     Integrations,
     Logs,

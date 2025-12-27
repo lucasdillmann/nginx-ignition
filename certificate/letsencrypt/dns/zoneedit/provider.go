@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	userFieldID      = "zoneeditUser"
 	authTokenFieldID = "zoneeditAuthToken"
@@ -25,7 +26,7 @@ func (p *Provider) Name() string {
 	return "ZoneEdit"
 }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          userFieldID,

@@ -1,8 +1,8 @@
 package healthcheck
 
 type statusDto struct {
-	Healthy bool         `json:"healthy"`
-	Details []*detailDto `json:"details"`
+	Details []detailDto `json:"details"`
+	Healthy bool        `json:"healthy"`
 }
 
 type detailDto struct {

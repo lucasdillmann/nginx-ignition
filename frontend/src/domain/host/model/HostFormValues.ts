@@ -4,6 +4,7 @@ import IntegrationOptionResponse from "../../integration/model/IntegrationOption
 import AccessListResponse from "../../accesslist/model/AccessListResponse"
 import IntegrationResponse from "../../integration/model/IntegrationResponse"
 import VpnResponse from "../../vpn/model/VpnResponse"
+import CacheResponse from "../../cache/model/CacheResponse"
 
 export interface HostFormBinding {
     type: HostBindingType
@@ -28,6 +29,7 @@ export interface HostFormRoute {
     response?: HostFormStaticResponse
     integration?: HostFormRouteIntegration
     accessList?: AccessListResponse
+    cache?: CacheResponse
     redirectCode?: number
     sourceCode?: HostRouteSourceCode
 }
@@ -53,4 +55,5 @@ export default interface HostFormValues {
     vpns: HostFormVpn[]
     featureSet: HostFeatureSet
     accessList?: AccessListResponse
+    cache?: CacheResponse
 }

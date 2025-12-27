@@ -12,4 +12,5 @@ export default interface UserPermissions {
     nginxServer: UserAccessLevel
     exportData: UserAccessLevel
     vpns: UserAccessLevel
+    caches: UserAccessLevel
 }

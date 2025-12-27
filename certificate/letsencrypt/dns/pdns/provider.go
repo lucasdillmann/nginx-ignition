@@ -14,6 +14,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
+//nolint:gosec
 const (
 	apiKeyFieldID     = "powerDnsApiKey"
 	hostURLFieldID    = "powerDnsHostUtl"
@@ -27,7 +28,7 @@ func (p *Provider) ID() string { return "POWERDNS" }
 
 func (p *Provider) Name() string { return "PowerDNS" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiKeyFieldID,

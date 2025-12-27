@@ -31,6 +31,8 @@ import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPa
 import { hostFormValuesDefaults } from "./model/HostFormValuesDefaults"
 import HostSupportWarning from "./components/HostSupportWarning"
 import HostVpns from "./components/HostVpns"
+import CacheService from "../cache/CacheService"
+import CacheResponse from "../cache/model/CacheResponse"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -43,6 +45,7 @@ interface HostFormPageState {
 export default class HostFormPage extends React.Component<any, HostFormPageState> {
     private readonly hostService: HostService
     private readonly accessListService: AccessListService
+    private readonly cacheService: CacheService
     private readonly saveModal: ModalPreloader
     private readonly formRef: React.RefObject<FormInstance | null>
     private hostId?: string
@@ -54,6 +57,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         this.hostId = hostId === "new" ? undefined : hostId
         this.hostService = new HostService()
         this.accessListService = new AccessListService()
+        this.cacheService = new CacheService()
         this.saveModal = new ModalPreloader()
         this.formRef = React.createRef()
         this.state = {
@@ -191,6 +195,14 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         return this.accessListService.list(pageSize, pageNumber, searchTerms)
     }
 
+    private fetchCaches(
+        pageSize: number,
+        pageNumber: number,
+        searchTerms?: string,
+    ): Promise<PageResponse<CacheResponse>> {
+        return this.cacheService.list(pageSize, pageNumber, searchTerms)
+    }
+
     private renderForm() {
         const { validationResult, formValues } = this.state
 
@@ -259,6 +271,21 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                         </Form.Item>
                     </Flex>
                     <Flex className="hosts-form-inner-flex-container-column">
+                        <Form.Item
+                            name="cache"
+                            validateStatus={validationResult.getStatus("cacheId")}
+                            help={validationResult.getMessage("cacheId")}
+                            label="Cache"
+                        >
+                            <PaginatedSelect<CacheResponse>
+                                itemDescription={item => item?.name}
+                                itemKey={item => item?.id}
+                                pageProvider={(pageSize, pageNumber, searchTerms) =>
+                                    this.fetchCaches(pageSize, pageNumber, searchTerms)
+                                }
+                                allowEmpty
+                            />
+                        </Form.Item>
                         <Form.Item
                             name="accessList"
                             validateStatus={validationResult.getStatus("accessListId")}

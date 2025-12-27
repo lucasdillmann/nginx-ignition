@@ -18,7 +18,7 @@ var (
 func stacktrace() []byte {
 	buf := new(bytes.Buffer)
 
-	var lines [][]byte
+	lines := make([][]byte, 0)
 	var lastFile string
 	for i := skip; ; i++ {
 		pc, file, line, ok := runtime.Caller(i)

@@ -15,6 +15,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
+//nolint:gosec
 const (
 	region           = "us-east-1"
 	accessKeyFieldID = "awsAccessKey"
@@ -31,7 +32,7 @@ func (p *Provider) Name() string {
 	return "AWS Route53"
 }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,

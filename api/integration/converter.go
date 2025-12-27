@@ -47,8 +47,8 @@ func toOptionDto(option *integration.DriverOption) *integrationOptionResponse {
 	}
 }
 
-func toAvailableDriverDto(data *integration.AvailableDriver) *integrationDriverResponse {
-	return &integrationDriverResponse{
+func toAvailableDriverDto(data *integration.AvailableDriver) integrationDriverResponse {
+	return integrationDriverResponse{
 		ID:                  data.ID,
 		Name:                data.Name,
 		Description:         data.Description,

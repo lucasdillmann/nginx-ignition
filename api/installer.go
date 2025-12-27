@@ -3,6 +3,7 @@ package api
 import (
 	"dillmann.com.br/nginx-ignition/api/accesslist"
 	"dillmann.com.br/nginx-ignition/api/backup"
+	"dillmann.com.br/nginx-ignition/api/cache"
 	"dillmann.com.br/nginx-ignition/api/certificate"
 	"dillmann.com.br/nginx-ignition/api/common/server"
 	"dillmann.com.br/nginx-ignition/api/frontend"
@@ -23,6 +24,7 @@ func Install() error {
 		healthcheck.Install,
 		settings.Install,
 		accesslist.Install,
+		cache.Install,
 		certificate.Install,
 		user.Install,
 		host.Install,

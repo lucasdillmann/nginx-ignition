@@ -18,14 +18,14 @@ type Driver interface {
 	ID() string
 	Name() string
 	Description() string
-	ConfigurationFields() []*dynamicfields.DynamicField
+	ConfigurationFields() []dynamicfields.DynamicField
 	GetAvailableOptions(
 		ctx context.Context,
 		parameters map[string]any,
 		pageNumber, pageSize int,
 		searchTerms *string,
 		tcpOnly bool,
-	) (*pagination.Page[*DriverOption], error)
+	) (*pagination.Page[DriverOption], error)
 	GetAvailableOptionById(
 		ctx context.Context,
 		parameters map[string]any,
@@ -39,10 +39,10 @@ type Driver interface {
 }
 
 type DriverOption struct {
+	Qualifier    *string
 	ID           string
 	Name         string
-	Port         int
-	Qualifier    *string
 	Protocol     Protocol
 	DNSResolvers []string
+	Port         int
 }

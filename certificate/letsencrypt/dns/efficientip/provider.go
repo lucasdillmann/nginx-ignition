@@ -25,7 +25,7 @@ func (p *Provider) ID() string { return "EFFICIENTIP" }
 
 func (p *Provider) Name() string { return "EfficientIP" }
 
-func (p *Provider) DynamicFields() []*dynamicfields.DynamicField {
+func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,

@@ -7,18 +7,15 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
-	"dillmann.com.br/nginx-ignition/core/host"
 )
 
 type service struct {
-	accessListRepository Repository
-	hostRepository       host.Repository
+	repository Repository
 }
 
-func newService(accessListRepository Repository, hostRepository host.Repository) *service {
+func newService(repository Repository) *service {
 	return &service{
-		accessListRepository: accessListRepository,
-		hostRepository:       hostRepository,
+		repository: repository,
 	}
 }
 
@@ -27,11 +24,11 @@ func (s *service) save(ctx context.Context, accessList *AccessList) error {
 		return err
 	}
 
-	return s.accessListRepository.Save(ctx, accessList)
+	return s.repository.Save(ctx, accessList)
 }
 
 func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
-	inUse, err := s.hostRepository.ExistsByAccessListID(ctx, id)
+	inUse, err := s.repository.InUseByID(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -40,15 +37,11 @@ func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
 		return coreerror.New("Access list is in use by one or more hosts", true)
 	}
 
-	return s.accessListRepository.DeleteByID(ctx, id)
+	return s.repository.DeleteByID(ctx, id)
 }
 
 func (s *service) findById(ctx context.Context, id uuid.UUID) (*AccessList, error) {
-	return s.accessListRepository.FindByID(ctx, id)
-}
-
-func (s *service) findAll(ctx context.Context) ([]*AccessList, error) {
-	return s.accessListRepository.FindAll(ctx)
+	return s.repository.FindByID(ctx, id)
 }
 
 func (s *service) list(
@@ -56,6 +49,10 @@ func (s *service) list(
 	pageSize,
 	pageNumber int,
 	searchTerms *string,
-) (*pagination.Page[*AccessList], error) {
-	return s.accessListRepository.FindPage(ctx, pageNumber, pageSize, searchTerms)
+) (*pagination.Page[AccessList], error) {
+	return s.repository.FindPage(ctx, pageNumber, pageSize, searchTerms)
+}
+
+func (s *service) existsByID(ctx context.Context, id uuid.UUID) (bool, error) {
+	return s.repository.ExistsByID(ctx, id)
 }
