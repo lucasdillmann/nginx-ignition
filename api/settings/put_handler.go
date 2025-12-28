@@ -14,7 +14,7 @@ type putHandler struct {
 }
 
 func (h putHandler) handle(ctx *gin.Context) {
-	payload := &settingsDto{}
+	payload := &settingsDTO{}
 	if err := ctx.BindJSON(payload); err != nil {
 		panic(err)
 	}

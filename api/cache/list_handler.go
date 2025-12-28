@@ -24,6 +24,6 @@ func (h listHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	response := pagination.Convert(page, toResponseDto)
+	response := pagination.Convert(page, toResponseDTO)
 	ctx.JSON(http.StatusOK, response)
 }

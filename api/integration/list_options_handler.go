@@ -44,5 +44,5 @@ func (h listOptionsHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, pagination.Convert(page, toOptionDto))
+	ctx.JSON(http.StatusOK, pagination.Convert(page, toOptionDTO))
 }

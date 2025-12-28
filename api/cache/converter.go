@@ -6,7 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/cache"
 )
 
-func toDomain(id uuid.UUID, dto *cacheRequestDto) *cache.Cache {
+func toDomain(id uuid.UUID, dto *cacheRequestDTO) *cache.Cache {
 	durations := make([]cache.Duration, len(dto.Durations))
 	for index, duration := range dto.Durations {
 		durations[index] = cache.Duration{
@@ -40,16 +40,16 @@ func toDomain(id uuid.UUID, dto *cacheRequestDto) *cache.Cache {
 	}
 }
 
-func toResponseDto(domain *cache.Cache) cacheResponseDto {
-	durations := make([]durationDto, len(domain.Durations))
+func toResponseDTO(domain *cache.Cache) cacheResponseDTO {
+	durations := make([]durationDTO, len(domain.Durations))
 	for index, duration := range domain.Durations {
-		durations[index] = durationDto{
+		durations[index] = durationDTO{
 			StatusCodes:      duration.StatusCodes,
 			ValidTimeSeconds: duration.ValidTimeSeconds,
 		}
 	}
 
-	return cacheResponseDto{
+	return cacheResponseDTO{
 		ID:                               domain.ID,
 		Name:                             domain.Name,
 		StoragePath:                      domain.StoragePath,
@@ -66,7 +66,7 @@ func toResponseDto(domain *cache.Cache) cacheResponseDto {
 		IgnoreUpstreamCacheHeaders:       domain.IgnoreUpstreamCacheHeaders,
 		CacheStatusResponseHeaderEnabled: domain.CacheStatusResponseHeaderEnabled,
 		Durations:                        durations,
-		ConcurrencyLock: concurrencyLockDto{
+		ConcurrencyLock: concurrencyLockDTO{
 			Enabled:        domain.ConcurrencyLock.Enabled,
 			TimeoutSeconds: domain.ConcurrencyLock.TimeoutSeconds,
 			AgeSeconds:     domain.ConcurrencyLock.AgeSeconds,

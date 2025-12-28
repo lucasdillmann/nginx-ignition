@@ -26,5 +26,5 @@ func (h listHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	ctx.JSON(http.StatusOK, pagination.Convert(page, toDto))
+	ctx.JSON(http.StatusOK, pagination.Convert(page, toDTO))
 }

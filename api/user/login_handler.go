@@ -15,7 +15,7 @@ type loginHandler struct {
 }
 
 func (h loginHandler) handle(ctx *gin.Context) {
-	requestPayload := &userLoginRequestDto{}
+	requestPayload := &userLoginRequestDTO{}
 	if err := ctx.BindJSON(&requestPayload); err != nil {
 		panic(err)
 	}
@@ -30,6 +30,6 @@ func (h loginHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	responsePayload := &userLoginResponseDto{*token}
+	responsePayload := &userLoginResponseDTO{*token}
 	ctx.JSON(http.StatusOK, responsePayload)
 }

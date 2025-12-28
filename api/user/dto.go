@@ -4,41 +4,41 @@ import (
 	"github.com/google/uuid"
 )
 
-type userLoginRequestDto struct {
+type userLoginRequestDTO struct {
 	Username *string `json:"username"`
 	Password *string `json:"password"`
 }
 
-type userLoginResponseDto struct {
+type userLoginResponseDTO struct {
 	Token string `json:"token"`
 }
 
-type userOnboardingStatusResponseDto struct {
+type userOnboardingStatusResponseDTO struct {
 	Finished bool `json:"finished"`
 }
 
-type userPasswordUpdateRequestDto struct {
+type userPasswordUpdateRequestDTO struct {
 	CurrentPassword *string `json:"currentPassword"`
 	NewPassword     *string `json:"newPassword"`
 }
 
-type userRequestDto struct {
+type userRequestDTO struct {
 	Enabled     *bool              `json:"enabled"`
 	Name        *string            `json:"name"`
 	Username    *string            `json:"username"`
 	Password    *string            `json:"password,omitempty"`
-	Permissions userPermissionsDto `json:"permissions"`
+	Permissions userPermissionsDTO `json:"permissions"`
 }
 
-type userResponseDto struct {
-	Permissions userPermissionsDto `json:"permissions"`
+type userResponseDTO struct {
+	Permissions userPermissionsDTO `json:"permissions"`
 	Name        string             `json:"name"`
 	Username    string             `json:"username"`
 	ID          uuid.UUID          `json:"id"`
 	Enabled     bool               `json:"enabled"`
 }
 
-type userPermissionsDto struct {
+type userPermissionsDTO struct {
 	Hosts        string `json:"hosts"`
 	Streams      string `json:"streams"`
 	Certificates string `json:"certificates"`

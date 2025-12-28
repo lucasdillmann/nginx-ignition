@@ -15,7 +15,7 @@ type createHandler struct {
 }
 
 func (h createHandler) handle(ctx *gin.Context) {
-	var dto cacheRequestDto
+	var dto cacheRequestDTO
 	if err := ctx.BindJSON(&dto); err != nil {
 		panic(err)
 	}
@@ -26,5 +26,5 @@ func (h createHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	ctx.JSON(http.StatusCreated, toResponseDto(domain))
+	ctx.JSON(http.StatusCreated, toResponseDTO(domain))
 }

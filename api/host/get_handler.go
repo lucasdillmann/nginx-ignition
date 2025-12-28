@@ -39,5 +39,5 @@ func (h getHandler) handle(ctx *gin.Context) {
 		globalSettings = nil
 	}
 
-	ctx.JSON(http.StatusOK, toDto(data, globalSettings))
+	ctx.JSON(http.StatusOK, toDTO(data, globalSettings))
 }

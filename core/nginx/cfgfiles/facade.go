@@ -19,12 +19,12 @@ import (
 )
 
 type Facade struct {
-	hostCommands     *host.Commands
-	streamCommands   *stream.Commands
-	cacheCommands    *cache.Commands
-	configuration    *configuration.Configuration
-	settingsCommands *settings.Commands
-	providers        []fileProvider
+	hostCommands          *host.Commands
+	streamCommands        *stream.Commands
+	cacheCommands         *cache.Commands
+	configurationCommands *configuration.Configuration
+	settingsCommands      *settings.Commands
+	providers             []fileProvider
 }
 
 func newFacade(
@@ -32,7 +32,7 @@ func newFacade(
 	streamCommands *stream.Commands,
 	cacheCommands *cache.Commands,
 	integrationCommands *integration.Commands,
-	configuration *configuration.Configuration,
+	configurationCommands *configuration.Configuration,
 	accessListCommands *accesslist.Commands,
 	certificateCommands *certificate.Commands,
 	settingsCommands *settings.Commands,
@@ -49,12 +49,12 @@ func newFacade(
 	}
 
 	return &Facade{
-		hostCommands:     hostCommands,
-		streamCommands:   streamCommands,
-		cacheCommands:    cacheCommands,
-		providers:        providers,
-		configuration:    configuration,
-		settingsCommands: settingsCommands,
+		hostCommands:          hostCommands,
+		streamCommands:        streamCommands,
+		cacheCommands:         cacheCommands,
+		providers:             providers,
+		configurationCommands: configurationCommands,
+		settingsCommands:      settingsCommands,
 	}
 }
 
@@ -111,7 +111,7 @@ func (f *Facade) ReplaceConfigurationFiles(
 	ctx context.Context,
 	supportedFeatures *SupportedFeatures,
 ) ([]host.Host, []stream.Stream, error) {
-	configDir, err := f.configuration.Get("nginx-ignition.nginx.config-path")
+	configDir, err := f.configurationCommands.Get("nginx-ignition.nginx.config-path")
 	if err != nil {
 		return nil, nil, err
 	}

@@ -23,13 +23,13 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 
 	moduleLines := strings.Builder{}
 	if ctx.supportedFeatures.RunCodeType == DynamicSupportType {
-		moduleLines.WriteString("load_module modules/ndk_http_module.so;\n")
-		moduleLines.WriteString("load_module modules/ngx_http_js_module.so;\n")
-		moduleLines.WriteString("load_module modules/ngx_http_lua_module.so;\n")
+		_, _ = moduleLines.WriteString("load_module modules/ndk_http_module.so;\n")
+		_, _ = moduleLines.WriteString("load_module modules/ngx_http_js_module.so;\n")
+		_, _ = moduleLines.WriteString("load_module modules/ngx_http_lua_module.so;\n")
 	}
 
 	streamBlock := p.getStreamBlock(ctx, &moduleLines)
-	mainHttpBlock := p.getMainHttpBlock(ctx, &moduleLines)
+	mainHTTPBlock := p.getMainHTTPBlock(ctx, &moduleLines)
 
 	contents := fmt.Sprintf(
 		`
@@ -53,7 +53,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		ctx.paths.Base,
 		p.getErrorLogPath(ctx.paths, &cfg.Nginx.Logs),
 		cfg.Nginx.WorkerConnections,
-		mainHttpBlock,
+		mainHTTPBlock,
 		streamBlock,
 	)
 
@@ -74,7 +74,7 @@ func (p *mainConfigurationFileProvider) getStreamBlock(
 	}
 
 	if ctx.supportedFeatures.StreamType == DynamicSupportType {
-		modules.WriteString("load_module modules/ngx_stream_module.so;\n")
+		_, _ = modules.WriteString("load_module modules/ngx_stream_module.so;\n")
 	}
 
 	streamIncludes := p.getStreamIncludes(ctx.paths, ctx.streams)
@@ -102,9 +102,10 @@ func (p *mainConfigurationFileProvider) getStatusServerBlock(
 	}
 
 	switch ctx.supportedFeatures.API {
+	case StaticSupportType:
 	case DynamicSupportType:
-		modules.WriteString("load_module modules/ngx_http_api_module.so;\n")
-	case NoneSupportType:
+		_, _ = modules.WriteString("load_module modules/ngx_http_api_module.so;\n")
+	default:
 		log.Warnf("Nginx API cannot be enabled: API module is not available")
 		return ""
 	}
@@ -124,7 +125,7 @@ func (p *mainConfigurationFileProvider) getStatusServerBlock(
 	)
 }
 
-func (p *mainConfigurationFileProvider) getMainHttpBlock(
+func (p *mainConfigurationFileProvider) getMainHTTPBlock(
 	ctx *providerContext,
 	modules *strings.Builder,
 ) string {
@@ -165,7 +166,7 @@ func (p *mainConfigurationFileProvider) getMainHttpBlock(
 		`,
 		statusFlag(cfg.Nginx.SendfileEnabled),
 		statusFlag(cfg.Nginx.ServerTokensEnabled),
-		statusFlag(cfg.Nginx.TcpNoDelayEnabled),
+		statusFlag(cfg.Nginx.TCPNoDelayEnabled),
 		cfg.Nginx.Timeouts.Keepalive,
 		cfg.Nginx.Timeouts.Connect,
 		cfg.Nginx.Timeouts.Read,
