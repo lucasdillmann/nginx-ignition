@@ -128,8 +128,8 @@ func (s *service) isRunning(_ context.Context) bool {
 	return s.semaphore.currentState() == runningState
 }
 
-func (s *service) getHostLogs(ctx context.Context, hostId uuid.UUID, qualifier string, lines int) ([]string, error) {
-	return s.logReader.read(ctx, "host-"+hostId.String()+"."+qualifier+".log", lines)
+func (s *service) getHostLogs(ctx context.Context, hostID uuid.UUID, qualifier string, lines int) ([]string, error) {
+	return s.logReader.read(ctx, "host-"+hostID.String()+"."+qualifier+".log", lines)
 }
 
 func (s *service) getMainLogs(ctx context.Context, lines int) ([]string, error) {

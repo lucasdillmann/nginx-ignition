@@ -7,7 +7,7 @@ import (
 
 const (
 	authKeyFieldName        = "authKey"
-	coordinatorUrlFieldName = "coordinatorUrl"
+	coordinatorURLFieldName = "coordinatorUrl"
 )
 
 var configurationFields = []dynamicfields.DynamicField{
@@ -20,7 +20,7 @@ var configurationFields = []dynamicfields.DynamicField{
 		Type:        dynamicfields.SingleLineTextType,
 	},
 	{
-		ID:          coordinatorUrlFieldName,
+		ID:          coordinatorURLFieldName,
 		Priority:    1,
 		Description: "Tailnet coordinator URL",
 		Required:    false,

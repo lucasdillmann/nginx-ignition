@@ -44,12 +44,12 @@ func (p *Provider) ChallengeProvider(
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
-	teamId, _ := parameters[teamFieldID].(string)
+	teamID, _ := parameters[teamFieldID].(string)
 	token, _ := parameters[tokenFieldID].(string)
 
 	cfg := &vercel.Config{
 		AuthToken:          token,
-		TeamID:             teamId,
+		TeamID:             teamID,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
 		PollingInterval:    dns.PollingInterval,

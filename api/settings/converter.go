@@ -46,7 +46,7 @@ func toDto(set *settings.Settings) *settingsDto {
 		MaximumBodySizeMb:   &set.Nginx.MaximumBodySizeMb,
 		SendfileEnabled:     &set.Nginx.SendfileEnabled,
 		GzipEnabled:         &set.Nginx.GzipEnabled,
-		TcpNoDelayEnabled:   &set.Nginx.TcpNoDelayEnabled,
+		TCPNoDelayEnabled:   &set.Nginx.TCPNoDelayEnabled,
 		RuntimeUser:         &set.Nginx.RuntimeUser,
 		Custom:              set.Nginx.Custom,
 	}
@@ -126,7 +126,7 @@ func toDomain(input *settingsDto) *settings.Settings {
 		MaximumBodySizeMb:   *nginx.MaximumBodySizeMb,
 		SendfileEnabled:     *nginx.SendfileEnabled,
 		GzipEnabled:         *nginx.GzipEnabled,
-		TcpNoDelayEnabled:   *nginx.TcpNoDelayEnabled,
+		TCPNoDelayEnabled:   *nginx.TCPNoDelayEnabled,
 		RuntimeUser:         *nginx.RuntimeUser,
 		Custom:              nginx.Custom,
 	}

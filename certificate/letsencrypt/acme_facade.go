@@ -110,7 +110,7 @@ func parseResult(
 		ProductionEnvironment: productionEnvironment,
 	}
 
-	metadataJson, err := jsoniter.MarshalToString(metadata)
+	metadataJSON, err := jsoniter.MarshalToString(metadata)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +142,7 @@ func parseResult(
 
 	output := certificate.Certificate{
 		ID:                 id,
-		ProviderID:         certificateProviderId,
+		ProviderID:         certificateProviderID,
 		DomainNames:        domainNames,
 		IssuedAt:           time.Now(),
 		ValidUntil:         *notAfter,
@@ -152,7 +152,7 @@ func parseResult(
 		PublicKey:          base64.StdEncoding.EncodeToString(pemBlock.Bytes),
 		CertificationChain: []string{*encodedCertificationChain},
 		Parameters:         parameters,
-		Metadata:           &metadataJson,
+		Metadata:           &metadataJSON,
 	}
 
 	return &output, nil

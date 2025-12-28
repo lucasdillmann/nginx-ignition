@@ -21,8 +21,8 @@ func (h deleteHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	currentUserId := authorization.CurrentSubject(ctx).User.ID
-	if id == currentUserId {
+	currentUserID := authorization.CurrentSubject(ctx).User.ID
+	if id == currentUserID {
 		ctx.JSON(
 			http.StatusBadRequest,
 			gin.H{

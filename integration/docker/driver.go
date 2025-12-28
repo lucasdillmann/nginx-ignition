@@ -59,7 +59,7 @@ func (a *Driver) GetAvailableOptions(
 	return pagination.New(0, totalItems, totalItems, driverOptions), nil
 }
 
-func (a *Driver) GetAvailableOptionById(
+func (a *Driver) GetAvailableOptionByID(
 	ctx context.Context,
 	parameters map[string]any,
 	id string,

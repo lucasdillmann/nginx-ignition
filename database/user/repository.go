@@ -27,7 +27,7 @@ func New(db *database.Database) user.Repository {
 func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*user.User, error) {
 	var model userModel
 
-	err := r.database.Select().Model(&model).Where(constants.ByIdFilter, id).Scan(ctx)
+	err := r.database.Select().Model(&model).Where(constants.ByIDFilter, id).Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -51,7 +51,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*userModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -123,7 +123,7 @@ func (r *repository) IsEnabledByID(ctx context.Context, id uuid.UUID) (bool, err
 
 	err := r.database.Select().
 		Model(&model).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -155,14 +155,14 @@ func (r *repository) Save(ctx context.Context, u *user.User) error {
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Where(constants.ByIdFilter, u.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Where(constants.ByIDFilter, u.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}
 
 	model := toModel(u)
 	if exists {
-		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIdFilter, u.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIDFilter, u.ID).Exec(ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 	}

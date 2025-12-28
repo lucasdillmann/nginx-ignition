@@ -6,7 +6,7 @@ type configurationDto struct {
 }
 
 type codeEditorDto struct {
-	ApiKey *string `json:"apiKey"`
+	APIKey *string `json:"apiKey"`
 }
 
 type versionDto struct {

@@ -84,7 +84,7 @@ func (d Driver) doStart(
 	}
 
 	var serverURL string
-	if value, casted := parameters[coordinatorUrlFieldName].(string); casted {
+	if value, casted := parameters[coordinatorURLFieldName].(string); casted {
 		serverURL = value
 	}
 

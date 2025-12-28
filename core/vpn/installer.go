@@ -15,10 +15,10 @@ func buildCommands(cfg *configuration.Configuration, repository Repository) *Com
 	})
 
 	return &Commands{
-		Get:                 serviceInstance.getById,
+		Get:                 serviceInstance.getByID,
 		Save:                serviceInstance.save,
-		Delete:              serviceInstance.deleteById,
-		Exists:              serviceInstance.existsById,
+		Delete:              serviceInstance.deleteByID,
+		Exists:              serviceInstance.existsByID,
 		List:                serviceInstance.list,
 		GetAvailableDrivers: serviceInstance.getAvailableDrivers,
 		Start:               serviceInstance.start,

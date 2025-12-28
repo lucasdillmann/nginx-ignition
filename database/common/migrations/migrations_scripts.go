@@ -12,6 +12,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/log"
 
+	// Loads the file driver to be dynamically used by gomigrate
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 

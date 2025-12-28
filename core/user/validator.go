@@ -25,9 +25,9 @@ func (v *validator) validate(
 	updatedState *User,
 	currentState *User,
 	request *SaveRequest,
-	currentUserId *uuid.UUID,
+	currentUserID *uuid.UUID,
 ) error {
-	if !updatedState.Enabled && currentState != nil && currentUserId != nil && currentState.ID == *currentUserId {
+	if !updatedState.Enabled && currentState != nil && currentUserID != nil && currentState.ID == *currentUserID {
 		v.delegate.Add("enabled", "You cannot disable your own user")
 	}
 

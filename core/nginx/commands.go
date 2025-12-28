@@ -14,7 +14,7 @@ type GetConfigFilesInput struct {
 }
 
 type Commands struct {
-	GetHostLogs    func(ctx context.Context, hostId uuid.UUID, qualifier string, lines int) ([]string, error)
+	GetHostLogs    func(ctx context.Context, hostID uuid.UUID, qualifier string, lines int) ([]string, error)
 	GetMainLogs    func(ctx context.Context, lines int) ([]string, error)
 	GetStatus      func(ctx context.Context) bool
 	GetConfigFiles func(ctx context.Context, input GetConfigFilesInput) ([]byte, error)

@@ -17,7 +17,7 @@ import (
 
 type swarmAdapter struct {
 	client         *client.Client
-	publicUrl      string
+	publicURL      string
 	dnsResolvers   []string
 	useServiceMesh bool
 }
@@ -122,18 +122,18 @@ func (s *swarmAdapter) buildServiceOptionURL(
 			dnsResolvers = []string{defaultDockerDNSIP}
 		}
 
-		fullUrl := fmt.Sprintf("http://%s:%d", service.Spec.Name, option.privatePort)
-		return &fullUrl, dnsResolvers, nil
+		fullURL := fmt.Sprintf("http://%s:%d", service.Spec.Name, option.privatePort)
+		return &fullURL, dnsResolvers, nil
 	}
 
-	if s.publicUrl != "" {
-		uri, err := url.Parse(s.publicUrl)
+	if s.publicURL != "" {
+		uri, err := url.Parse(s.publicURL)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		fullUrl := fmt.Sprintf("http://%s:%d", uri.Hostname(), option.Port)
-		return &fullUrl, nil, nil
+		fullURL := fmt.Sprintf("http://%s:%d", uri.Hostname(), option.Port)
+		return &fullURL, nil, nil
 	}
 
 	nodeAddress, err := s.findNodeAddress(ctx, service)
@@ -141,8 +141,8 @@ func (s *swarmAdapter) buildServiceOptionURL(
 		return nil, nil, err
 	}
 
-	fullUrl := fmt.Sprintf("http://%s:%d", *nodeAddress, option.Port)
-	return &fullUrl, nil, err
+	fullURL := fmt.Sprintf("http://%s:%d", *nodeAddress, option.Port)
+	return &fullURL, nil, err
 }
 
 func (s *swarmAdapter) findNodeAddress(ctx context.Context, service *swarm.Service) (*string, error) {

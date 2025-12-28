@@ -27,7 +27,7 @@ func (s *service) save(ctx context.Context, accessList *AccessList) error {
 	return s.repository.Save(ctx, accessList)
 }
 
-func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
+func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
 	inUse, err := s.repository.InUseByID(ctx, id)
 	if err != nil {
 		return err
@@ -40,7 +40,7 @@ func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
 	return s.repository.DeleteByID(ctx, id)
 }
 
-func (s *service) findById(ctx context.Context, id uuid.UUID) (*AccessList, error) {
+func (s *service) findByID(ctx context.Context, id uuid.UUID) (*AccessList, error) {
 	return s.repository.FindByID(ctx, id)
 }
 

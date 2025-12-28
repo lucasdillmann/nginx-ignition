@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	byCacheIdFilter = "cache_id = ?"
+	byCacheIDFilter = "cache_id = ?"
 )
 
 type repository struct {
@@ -35,7 +35,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*cache.Cache, 
 	err := r.database.Select().
 		Model(&model).
 		Relation("Durations").
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -52,7 +52,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*cache.Cache, 
 func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	hostExists, err := r.database.Select().
 		Table("host").
-		Where(byCacheIdFilter, id).
+		Where(byCacheIDFilter, id).
 		Exists(ctx)
 	if err != nil || hostExists {
 		return hostExists, err
@@ -60,14 +60,14 @@ func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) 
 
 	return r.database.Select().
 		Table("host_route").
-		Where(byCacheIdFilter, id).
+		Where(byCacheIDFilter, id).
 		Exists(ctx)
 }
 
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	return r.database.Select().
 		Model((*cacheModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exists(ctx)
 }
 
@@ -87,7 +87,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*cacheModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -174,7 +174,7 @@ func (r *repository) Save(ctx context.Context, domain *cache.Cache) error {
 
 	exists, err := transaction.NewSelect().
 		Model((*cacheModel)(nil)).
-		Where(constants.ByIdFilter, domain.ID).
+		Where(constants.ByIDFilter, domain.ID).
 		Exists(ctx)
 	if err != nil {
 		return err
@@ -206,7 +206,7 @@ func (r *repository) performInsert(ctx context.Context, transaction bun.Tx, mode
 func (r *repository) performUpdate(ctx context.Context, transaction bun.Tx, model *cacheModel) error {
 	_, err := transaction.NewUpdate().
 		Model(model).
-		Where(constants.ByIdFilter, model.ID).
+		Where(constants.ByIDFilter, model.ID).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -236,7 +236,7 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, m
 func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx, id uuid.UUID) error {
 	_, err := transaction.NewDelete().
 		Table("cache_duration").
-		Where(byCacheIdFilter, id).
+		Where(byCacheIDFilter, id).
 		Exec(ctx)
 
 	return err

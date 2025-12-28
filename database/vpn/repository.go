@@ -29,7 +29,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*vpn.VPN, erro
 
 	err := r.database.Select().
 		Model(&model).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -63,7 +63,7 @@ func (r *repository) ExistsByName(ctx context.Context, name string) (*bool, erro
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (*bool, error) {
 	exists, err := r.database.Select().
 		Model((*vpnModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exists(ctx)
 
 	return &exists, err
@@ -95,7 +95,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	//nolint:errcheck
 	defer tx.Rollback()
 
-	_, err = tx.NewDelete().Model((*vpnModel)(nil)).Where(constants.ByIdFilter, id).Exec(ctx)
+	_, err = tx.NewDelete().Model((*vpnModel)(nil)).Where(constants.ByIDFilter, id).Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -117,13 +117,13 @@ func (r *repository) Save(ctx context.Context, values *vpn.VPN) error {
 		return err
 	}
 
-	exists, err := transaction.NewSelect().Model((*vpnModel)(nil)).Where(constants.ByIdFilter, values.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().Model((*vpnModel)(nil)).Where(constants.ByIDFilter, values.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, values.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIDFilter, values.ID).Exec(ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(model).Exec(ctx)
 	}

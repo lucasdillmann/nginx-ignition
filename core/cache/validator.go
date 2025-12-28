@@ -106,8 +106,8 @@ func (v *validator) validateMethod(index int, method Method) {
 func (v *validator) validateUseStaleOption(index int, option UseStaleOption) {
 	switch option {
 	case ErrorUseStale, TimeoutUseStale, InvalidHeaderUseStale, UpdatingUseStale,
-		Http500UseStale, Http502UseStale, Http503UseStale, Http504UseStale,
-		Http403UseStale, Http404UseStale, Http429UseStale:
+		HTTP500UseStale, HTTP502UseStale, HTTP503UseStale, HTTP504UseStale,
+		HTTP403UseStale, HTTP404UseStale, HTTP429UseStale:
 		// Valid
 	default:
 		path := fmt.Sprintf("useStale[%d]", index)

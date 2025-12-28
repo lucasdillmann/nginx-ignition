@@ -50,8 +50,6 @@ linters:
       severity: warning
       enable-all-rules: true
       rules:
-        - name: blank-imports
-          disabled: true
         - name: line-length-limit
           disabled: true
         - name: cognitive-complexity
@@ -61,8 +59,6 @@ linters:
         - name: unused-receiver
           disabled: true
         - name: flag-parameter
-          disabled: true
-        - name: var-naming
           disabled: true
         - name: unsecure-url-scheme
           disabled: true
@@ -75,12 +71,6 @@ linters:
         - name: function-result-limit
           disabled: true
         - name: max-public-structs
-          disabled: true
-        - name: unhandled-error
-          disabled: true
-        - name: context-as-argument
-          disabled: true
-        - name: dot-imports
           disabled: true
         - name: exported
           arguments:

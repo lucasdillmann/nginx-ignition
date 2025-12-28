@@ -88,7 +88,7 @@ func resolveErrorMessage(field DynamicField, value any) *string {
 		}
 
 	case URLType:
-		if !isAnUrl(value) {
+		if !isAnURL(value) {
 			return ptr.Of("Not a valid URL")
 		}
 
@@ -117,7 +117,7 @@ func isAnEmail(value any) bool {
 	return err == nil
 }
 
-func isAnUrl(value any) bool {
+func isAnURL(value any) bool {
 	if value == nil {
 		return false
 	}

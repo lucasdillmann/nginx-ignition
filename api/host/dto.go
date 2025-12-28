@@ -26,7 +26,7 @@ type routeDto struct {
 	Type         *host.RouteType       `json:"type"`
 	SourcePath   *string               `json:"sourcePath"`
 	Settings     *routeSettingsDto     `json:"settings"`
-	TargetUri    *string               `json:"targetUri"`
+	TargetURI    *string               `json:"targetUri"`
 	RedirectCode *int                  `json:"redirectCode"`
 	Response     *staticResponseDto    `json:"response"`
 	Integration  *integrationConfigDto `json:"integration"`
@@ -50,8 +50,8 @@ type routeSettingsDto struct {
 }
 
 type integrationConfigDto struct {
-	IntegrationId *uuid.UUID `json:"integrationId"`
-	OptionId      *string    `json:"optionId"`
+	IntegrationID *uuid.UUID `json:"integrationId"`
+	OptionID      *string    `json:"optionId"`
 }
 
 type staticResponseDto struct {
@@ -62,15 +62,15 @@ type staticResponseDto struct {
 
 type featureSetDto struct {
 	WebsocketsSupport   *bool `json:"websocketsSupport"`
-	Http2Support        *bool `json:"http2Support"`
-	RedirectHttpToHttps *bool `json:"redirectHttpToHttps"`
+	HTTP2Support        *bool `json:"http2Support"`
+	RedirectHTTPToHTTPS *bool `json:"redirectHttpToHttps"`
 }
 
 type bindingDto struct {
 	Type          *binding.Type `json:"type"`
-	Ip            *string       `json:"ip"`
+	IP            *string       `json:"ip"`
 	Port          *int          `json:"port"`
-	CertificateId *uuid.UUID    `json:"certificateId"`
+	CertificateID *uuid.UUID    `json:"certificateId"`
 }
 
 type vpnDto struct {

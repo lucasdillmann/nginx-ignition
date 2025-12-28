@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	byHostIdFilter       = "host_id = ?"
-	byAccessListIdFilter = "access_list_id = ?"
+	byHostIDFilter       = "host_id = ?"
+	byAccessListIDFilter = "access_list_id = ?"
 )
 
 type repository struct {
@@ -37,7 +37,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*host.Host, er
 		Relation("Bindings").
 		Relation("Routes").
 		Relation("VPNs").
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -62,7 +62,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*hostBindingModel)(nil)).
-		Where(byHostIdFilter, id).
+		Where(byHostIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*hostRouteModel)(nil)).
-		Where(byHostIdFilter, id).
+		Where(byHostIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -78,7 +78,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*hostVpnModel)(nil)).
-		Where(byHostIdFilter, id).
+		Where(byHostIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*hostModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -109,7 +109,7 @@ func (r *repository) Save(ctx context.Context, h *host.Host) error {
 		return err
 	}
 
-	exists, err := transaction.NewSelect().Model((*hostModel)(nil)).Where(constants.ByIdFilter, h.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().Model((*hostModel)(nil)).Where(constants.ByIDFilter, h.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}
@@ -137,22 +137,22 @@ func (r *repository) performInsert(ctx context.Context, model *hostModel, transa
 }
 
 func (r *repository) performUpdate(ctx context.Context, model *hostModel, transaction bun.Tx) error {
-	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
+	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIDFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
 	}
 
-	_, err = transaction.NewDelete().Table("host_binding").Where(byHostIdFilter, model.ID).Exec(ctx)
+	_, err = transaction.NewDelete().Table("host_binding").Where(byHostIDFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
 	}
 
-	_, err = transaction.NewDelete().Table("host_route").Where(byHostIdFilter, model.ID).Exec(ctx)
+	_, err = transaction.NewDelete().Table("host_route").Where(byHostIDFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
 	}
 
-	_, err = transaction.NewDelete().Table("host_vpn").Where(byHostIdFilter, model.ID).Exec(ctx)
+	_, err = transaction.NewDelete().Table("host_vpn").Where(byHostIDFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -286,6 +286,6 @@ func (r *repository) FindDefault(ctx context.Context) (*host.Host, error) {
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	return r.database.Select().
 		Model((*hostModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exists(ctx)
 }

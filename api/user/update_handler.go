@@ -29,9 +29,9 @@ func (h updateHandler) handle(ctx *gin.Context) {
 
 	domainModel := converter.Wrap(toDomain, payload)
 	domainModel.ID = id
-	currentUserId := authorization.CurrentSubject(ctx).User.ID
+	currentUserID := authorization.CurrentSubject(ctx).User.ID
 
-	if err := h.commands.Save(ctx.Request.Context(), domainModel, &currentUserId); err != nil {
+	if err := h.commands.Save(ctx.Request.Context(), domainModel, &currentUserID); err != nil {
 		panic(err)
 	}
 

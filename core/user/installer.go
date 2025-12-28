@@ -24,8 +24,8 @@ func buildCommands(
 	serviceInstance := &service{repository, cfg}
 	commands := &Commands{
 		Authenticate:        serviceInstance.authenticate,
-		Delete:              serviceInstance.deleteById,
-		Get:                 serviceInstance.getById,
+		Delete:              serviceInstance.deleteByID,
+		Get:                 serviceInstance.getByID,
 		GetCount:            serviceInstance.count,
 		GetStatus:           serviceInstance.isEnabled,
 		List:                serviceInstance.list,

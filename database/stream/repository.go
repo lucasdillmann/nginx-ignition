@@ -15,10 +15,10 @@ import (
 )
 
 const (
-	byStreamIdFilter           = "stream_id = ?"
-	byStreamRouteIdFilter      = "stream_route_id = ?"
-	byStreamRouteIdArrayFilter = "stream_route_id in (?)"
-	byIdArrayFilter            = "id in (?)"
+	byStreamIDFilter           = "stream_id = ?"
+	byStreamRouteIDFilter      = "stream_route_id = ?"
+	byStreamRouteIDArrayFilter = "stream_route_id in (?)"
+	byIDArrayFilter            = "id in (?)"
 )
 
 type repository struct {
@@ -36,7 +36,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*stream.Stream
 
 	err := r.database.Select().
 		Model(&model).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -73,7 +73,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	_, err = transaction.
 		NewDelete().
 		Model((*streamModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -99,7 +99,7 @@ func (r *repository) Save(ctx context.Context, strm *stream.Stream) error {
 	model := toModel(strm)
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIDFilter, model.ID).Exec(ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 	}
@@ -184,7 +184,7 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]stream.Stream, error
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	return r.database.Select().
 		Model((*streamModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exists(ctx)
 }
 
@@ -192,7 +192,7 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 	_, err := transaction.
 		NewDelete().
 		Table("stream_backend").
-		Where(byStreamIdFilter, id).
+		Where(byStreamIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -203,7 +203,7 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 		NewSelect().
 		Table("stream_route").
 		Column("id").
-		Where(byStreamIdFilter, id).
+		Where(byStreamIDFilter, id).
 		Scan(ctx, &routeIDs)
 
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
@@ -214,7 +214,7 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 		_, err = transaction.
 			NewDelete().
 			Table("stream_backend").
-			Where(byStreamRouteIdArrayFilter, bun.In(routeIDs)).
+			Where(byStreamRouteIDArrayFilter, bun.In(routeIDs)).
 			Exec(ctx)
 		if err != nil {
 			return err
@@ -223,7 +223,7 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 		_, err = transaction.
 			NewDelete().
 			Table("stream_route").
-			Where(byIdArrayFilter, bun.In(routeIDs)).
+			Where(byIDArrayFilter, bun.In(routeIDs)).
 			Exec(ctx)
 	}
 
@@ -264,7 +264,7 @@ func (r *repository) fillLinkedModels(ctx context.Context, strm *stream.Stream) 
 	routeModels := make([]streamRouteModel, 0)
 	err := r.database.Select().
 		Model(&routeModels).
-		Where(byStreamIdFilter, strm.ID).
+		Where(byStreamIDFilter, strm.ID).
 		Scan(ctx)
 	if err != nil {
 		return err
@@ -275,7 +275,7 @@ func (r *repository) fillLinkedModels(ctx context.Context, strm *stream.Stream) 
 		err = r.database.
 			Select().
 			Model(&backendModels).
-			Where(byStreamRouteIdFilter, routeModel.ID).
+			Where(byStreamRouteIDFilter, routeModel.ID).
 			Scan(ctx)
 		if err != nil {
 			return err
@@ -288,7 +288,7 @@ func (r *repository) fillLinkedModels(ctx context.Context, strm *stream.Stream) 
 	err = r.database.
 		Select().
 		Model(&defaultBackendModel).
-		Where(byStreamIdFilter, strm.ID).
+		Where(byStreamIDFilter, strm.ID).
 		Scan(ctx)
 	if err != nil {
 		return err

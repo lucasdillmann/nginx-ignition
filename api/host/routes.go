@@ -25,11 +25,11 @@ func Install(
 	basePath.GET("", listHandler{settingsCommands, hostCommands}.handle)
 	basePath.POST("", createHandler{hostCommands}.handle)
 
-	byIdPath := basePath.Group("/:id")
-	byIdPath.GET("", getHandler{settingsCommands, hostCommands}.handle)
-	byIdPath.PUT("", updateHandler{hostCommands}.handle)
-	byIdPath.DELETE("", deleteHandler{hostCommands}.handle)
-	byIdPath.POST("/toggle-enabled", toggleEnabledHandler{hostCommands}.handle)
+	byIDPath := basePath.Group("/:id")
+	byIDPath.GET("", getHandler{settingsCommands, hostCommands}.handle)
+	byIDPath.PUT("", updateHandler{hostCommands}.handle)
+	byIDPath.DELETE("", deleteHandler{hostCommands}.handle)
+	byIDPath.POST("/toggle-enabled", toggleEnabledHandler{hostCommands}.handle)
 
 	logsPath := authorizer.ConfigureGroup(
 		router,

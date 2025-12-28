@@ -13,7 +13,7 @@ var (
 		Type: dynamicfields.URLType,
 	}
 
-	proxyUrlField = dynamicfields.DynamicField{
+	proxyURLField = dynamicfields.DynamicField{
 		ID:          "proxyUrl",
 		Description: "Apps URL",
 		Priority:    2,

@@ -58,7 +58,7 @@ func (p *Provider) ChallengeProvider(
 	accessKey, _ := parameters[accessKeyFieldID].(string)
 	secretKey, _ := parameters[secretKeyFieldID].(string)
 
-	hostedZoneId, err := resolveHostedZoneID(ctx, accessKey, secretKey, domainNames)
+	hostedZoneID, err := resolveHostedZoneID(ctx, accessKey, secretKey, domainNames)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (p *Provider) ChallengeProvider(
 	cfg := &route53.Config{
 		AccessKeyID:        accessKey,
 		SecretAccessKey:    secretKey,
-		HostedZoneID:       *hostedZoneId,
+		HostedZoneID:       *hostedZoneID,
 		Region:             region,
 		MaxRetries:         dns.MaxRetries,
 		TTL:                dns.TTL,

@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	certificateProviderId = "LETS_ENCRYPT"
+	certificateProviderID = "LETS_ENCRYPT"
 	privateKeySize        = 2048
 )
 
@@ -35,7 +35,7 @@ func New(cfg *configuration.Configuration) *Provider {
 }
 
 func (p *Provider) ID() string {
-	return certificateProviderId
+	return certificateProviderID
 }
 
 func (p *Provider) Name() string {

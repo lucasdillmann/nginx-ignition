@@ -7,8 +7,8 @@ import (
 type Type string
 
 const (
-	HttpBindingType  Type = "HTTP"
-	HttpsBindingType Type = "HTTPS"
+	HTTPBindingType  Type = "HTTP"
+	HTTPSBindingType Type = "HTTPS"
 )
 
 type Binding struct {

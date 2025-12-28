@@ -19,9 +19,9 @@ func (h updatePasswordHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	currentUserId := authorization.CurrentSubject(ctx).User.ID
+	currentUserID := authorization.CurrentSubject(ctx).User.ID
 
-	if err := h.commands.UpdatePassword(ctx.Request.Context(), currentUserId, *payload.CurrentPassword, *payload.NewPassword); err != nil {
+	if err := h.commands.UpdatePassword(ctx.Request.Context(), currentUserID, *payload.CurrentPassword, *payload.NewPassword); err != nil {
 		panic(err)
 	}
 

@@ -13,7 +13,7 @@ import (
 //nolint:gosec
 const (
 	apiKeyFieldID       = "porkbunApiKey"
-	secretApiKeyFieldID = "porkbunSecretApiKey"
+	secretAPIKeyFieldID = "porkbunSecretApiKey"
 )
 
 type Provider struct{}
@@ -35,7 +35,7 @@ func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
-			ID:          secretApiKeyFieldID,
+			ID:          secretAPIKeyFieldID,
 			Description: "Porkbun secret API key",
 			Required:    true,
 			Sensitive:   true,
@@ -50,11 +50,11 @@ func (p *Provider) ChallengeProvider(
 	parameters map[string]any,
 ) (challenge.Provider, error) {
 	apiKey, _ := parameters[apiKeyFieldID].(string)
-	secretApiKey, _ := parameters[secretApiKeyFieldID].(string)
+	secretAPIKey, _ := parameters[secretAPIKeyFieldID].(string)
 
 	cfg := &porkbun.Config{
 		APIKey:             apiKey,
-		SecretAPIKey:       secretApiKey,
+		SecretAPIKey:       secretAPIKey,
 		TTL:                dns.TTL,
 		PropagationTimeout: dns.PropagationTimeout,
 		PollingInterval:    dns.PollingInterval,

@@ -91,9 +91,9 @@ func (p *Provider) ChallengeProvider(
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
-	tenantId, _ := parameters[tenantFieldID].(string)
-	subscriptionId, _ := parameters[subscriptionFieldID].(string)
-	clientId, _ := parameters[clientFieldID].(string)
+	tenantID, _ := parameters[tenantFieldID].(string)
+	subscriptionID, _ := parameters[subscriptionFieldID].(string)
+	clientID, _ := parameters[clientFieldID].(string)
 	clientSecret, _ := parameters[clientSecretFieldID].(string)
 	environment, _ := parameters[environmentFieldID].(string)
 
@@ -110,9 +110,9 @@ func (p *Provider) ChallengeProvider(
 	}
 
 	cfg := &azuredns.Config{
-		TenantID:           tenantId,
-		SubscriptionID:     subscriptionId,
-		ClientID:           clientId,
+		TenantID:           tenantID,
+		SubscriptionID:     subscriptionID,
+		ClientID:           clientID,
 		ClientSecret:       clientSecret,
 		Environment:        env,
 		TTL:                dns.TTL,

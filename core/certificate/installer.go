@@ -20,9 +20,9 @@ func buildCommands(repository Repository) (*Commands, *service) {
 	serviceInstance := newService(repository, providers)
 	commands := &Commands{
 		AvailableProviders: serviceInstance.availableProviders,
-		Delete:             serviceInstance.deleteById,
-		Get:                serviceInstance.getById,
-		Exists:             serviceInstance.existsById,
+		Delete:             serviceInstance.deleteByID,
+		Get:                serviceInstance.getByID,
+		Exists:             serviceInstance.existsByID,
 		List:               serviceInstance.list,
 		Renew:              serviceInstance.renew,
 		Issue:              serviceInstance.issue,

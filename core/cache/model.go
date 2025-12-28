@@ -23,13 +23,13 @@ const (
 	TimeoutUseStale       UseStaleOption = "TIMEOUT"
 	InvalidHeaderUseStale UseStaleOption = "INVALID_HEADER"
 	UpdatingUseStale      UseStaleOption = "UPDATING"
-	Http500UseStale       UseStaleOption = "HTTP_500"
-	Http502UseStale       UseStaleOption = "HTTP_502"
-	Http503UseStale       UseStaleOption = "HTTP_503"
-	Http504UseStale       UseStaleOption = "HTTP_504"
-	Http403UseStale       UseStaleOption = "HTTP_403"
-	Http404UseStale       UseStaleOption = "HTTP_404"
-	Http429UseStale       UseStaleOption = "HTTP_429"
+	HTTP500UseStale       UseStaleOption = "HTTP_500"
+	HTTP502UseStale       UseStaleOption = "HTTP_502"
+	HTTP503UseStale       UseStaleOption = "HTTP_503"
+	HTTP504UseStale       UseStaleOption = "HTTP_504"
+	HTTP403UseStale       UseStaleOption = "HTTP_403"
+	HTTP404UseStale       UseStaleOption = "HTTP_404"
+	HTTP429UseStale       UseStaleOption = "HTTP_429"
 )
 
 type Cache struct {

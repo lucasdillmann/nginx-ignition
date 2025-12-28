@@ -63,12 +63,12 @@ func (s *service) existsByID(ctx context.Context, id uuid.UUID) (*bool, error) {
 
 func (s *service) listOptions(
 	ctx context.Context,
-	integrationId uuid.UUID,
+	integrationID uuid.UUID,
 	pageNumber, pageSize int,
 	searchTerms *string,
 	tcpOnly bool,
 ) (*pagination.Page[DriverOption], error) {
-	data, err := s.repository.FindByID(ctx, integrationId)
+	data, err := s.repository.FindByID(ctx, integrationID)
 	if err != nil {
 		return nil, err
 	}
@@ -98,8 +98,8 @@ func (s *service) listOptions(
 	return options, nil
 }
 
-func (s *service) getOptionByID(ctx context.Context, integrationId uuid.UUID, optionId string) (*DriverOption, error) {
-	data, err := s.repository.FindByID(ctx, integrationId)
+func (s *service) getOptionByID(ctx context.Context, integrationID uuid.UUID, optionID string) (*DriverOption, error) {
+	data, err := s.repository.FindByID(ctx, integrationID)
 	if err != nil {
 		return nil, err
 	}
@@ -117,15 +117,15 @@ func (s *service) getOptionByID(ctx context.Context, integrationId uuid.UUID, op
 		return nil, ErrIntegrationDisabled
 	}
 
-	return driver.GetAvailableOptionById(ctx, data.Parameters, optionId)
+	return driver.GetAvailableOptionByID(ctx, data.Parameters, optionID)
 }
 
 func (s *service) getOptionURL(
 	ctx context.Context,
-	integrationId uuid.UUID,
-	optionId string,
+	integrationID uuid.UUID,
+	optionID string,
 ) (*string, []string, error) {
-	data, err := s.repository.FindByID(ctx, integrationId)
+	data, err := s.repository.FindByID(ctx, integrationID)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -143,7 +143,7 @@ func (s *service) getOptionURL(
 		return nil, nil, ErrIntegrationDisabled
 	}
 
-	return driver.GetOptionProxyURL(ctx, data.Parameters, optionId)
+	return driver.GetOptionProxyURL(ctx, data.Parameters, optionID)
 }
 
 func (s *service) getAvailableDrivers(_ context.Context) ([]AvailableDriver, error) {

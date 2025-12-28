@@ -69,7 +69,7 @@ func toRouteDto(route *host.Route) routeDto {
 		Type:         &route.Type,
 		SourcePath:   &route.SourcePath,
 		Settings:     toRouteSettingsDto(&route.Settings),
-		TargetUri:    route.TargetURI,
+		TargetURI:    route.TargetURI,
 		RedirectCode: route.RedirectCode,
 		Response:     toStaticResponseDto(route.Response),
 		Integration:  toIntegrationConfigDto(route.Integration),
@@ -84,9 +84,9 @@ func toBindingDtoSlice(bindings []binding.Binding) []bindingDto {
 	for index, b := range bindings {
 		result[index] = bindingDto{
 			Type:          &b.Type,
-			Ip:            &b.IP,
+			IP:            &b.IP,
 			Port:          &b.Port,
-			CertificateId: b.CertificateID,
+			CertificateID: b.CertificateID,
 		}
 	}
 
@@ -113,8 +113,8 @@ func toFeatureSetDto(featureSet *host.FeatureSet) *featureSetDto {
 
 	return &featureSetDto{
 		WebsocketsSupport:   &featureSet.WebsocketSupport,
-		Http2Support:        &featureSet.HTTP2Support,
-		RedirectHttpToHttps: &featureSet.RedirectHTTPToHTTPS,
+		HTTP2Support:        &featureSet.HTTP2Support,
+		RedirectHTTPToHTTPS: &featureSet.RedirectHTTPToHTTPS,
 	}
 }
 
@@ -150,8 +150,8 @@ func toIntegrationConfigDto(config *host.RouteIntegrationConfig) *integrationCon
 	}
 
 	return &integrationConfigDto{
-		IntegrationId: &config.IntegrationID,
-		OptionId:      &config.OptionID,
+		IntegrationID: &config.IntegrationID,
+		OptionID:      &config.OptionID,
 	}
 }
 
@@ -183,7 +183,7 @@ func toRouteSlice(routes []routeDto) []host.Route {
 			Type:         *route.Type,
 			SourcePath:   getStringValue(route.SourcePath),
 			Settings:     toRouteSettings(route.Settings),
-			TargetURI:    route.TargetUri,
+			TargetURI:    route.TargetURI,
 			RedirectCode: route.RedirectCode,
 			Response:     toRouteStaticResponse(route.Response),
 			Integration:  toRouteIntegrationConfig(route.Integration),
@@ -201,9 +201,9 @@ func toBindingSlice(bindings []bindingDto) []binding.Binding {
 	for index, b := range bindings {
 		result[index] = binding.Binding{
 			Type:          *b.Type,
-			IP:            getStringValue(b.Ip),
+			IP:            getStringValue(b.IP),
 			Port:          getIntValue(b.Port),
-			CertificateID: b.CertificateId,
+			CertificateID: b.CertificateID,
 		}
 	}
 
@@ -214,7 +214,7 @@ func toVPNsSlice(vpns []vpnDto) []host.VPN {
 	result := make([]host.VPN, len(vpns))
 	for index, vpn := range vpns {
 		result[index] = host.VPN{
-			VPNID: getUuidValue(vpn.VPNID),
+			VPNID: getUUIDValue(vpn.VPNID),
 			Name:  getStringValue(vpn.Name),
 			Host:  vpn.Host,
 		}
@@ -251,8 +251,8 @@ func toRouteIntegrationConfig(input *integrationConfigDto) *host.RouteIntegratio
 	}
 
 	return &host.RouteIntegrationConfig{
-		IntegrationID: getUuidValue(input.IntegrationId),
-		OptionID:      getStringValue(input.OptionId),
+		IntegrationID: getUUIDValue(input.IntegrationID),
+		OptionID:      getStringValue(input.OptionID),
 	}
 }
 
@@ -275,8 +275,8 @@ func toFeatureSet(input *featureSetDto) *host.FeatureSet {
 
 	return &host.FeatureSet{
 		WebsocketSupport:    getBoolValue(input.WebsocketsSupport),
-		HTTP2Support:        getBoolValue(input.Http2Support),
-		RedirectHTTPToHTTPS: getBoolValue(input.RedirectHttpToHttps),
+		HTTP2Support:        getBoolValue(input.HTTP2Support),
+		RedirectHTTPToHTTPS: getBoolValue(input.RedirectHTTPToHTTPS),
 	}
 }
 
@@ -294,7 +294,7 @@ func getStringValue(value *string) string {
 	return *value
 }
 
-func getUuidValue(value *uuid.UUID) uuid.UUID {
+func getUUIDValue(value *uuid.UUID) uuid.UUID {
 	if value == nil {
 		return uuid.Nil
 	}

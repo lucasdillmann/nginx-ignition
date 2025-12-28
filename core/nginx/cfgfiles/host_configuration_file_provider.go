@@ -113,9 +113,9 @@ func (p *hostConfigurationFileProvider) buildBinding(
 ) (string, error) {
 	listen := ""
 	switch b.Type {
-	case binding.HttpBindingType:
+	case binding.HTTPBindingType:
 		listen = fmt.Sprintf("listen %s:%d %s;", b.IP, b.Port, p.buildBindingAdditionalParams(h))
-	case binding.HttpsBindingType:
+	case binding.HTTPSBindingType:
 		listen = fmt.Sprintf(
 			`
 				listen %s:%d ssl %s;
@@ -136,9 +136,9 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		return "", fmt.Errorf("invalid binding type: %s", b.Type)
 	}
 
-	conditionalHttpsRedirect := ""
-	if b.Type == binding.HttpBindingType {
-		conditionalHttpsRedirect = httpsRedirect
+	conditionalHTTPSRedirect := ""
+	if b.Type == binding.HTTPBindingType {
+		conditionalHTTPSRedirect = httpsRedirect
 	}
 
 	cfg, err := p.settingsRepository.Get(ctx.context)
@@ -169,7 +169,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		cfg.Nginx.MaximumBodySizeMb,
 		flag(h.AccessListID != nil, fmt.Sprintf("include %saccess-list-%s.conf;", ctx.paths.Config, h.AccessListID), ""),
 		p.buildCacheConfig(ctx.caches, h.CacheID),
-		conditionalHttpsRedirect,
+		conditionalHTTPSRedirect,
 		http2,
 		listen,
 		serverNames,
@@ -297,12 +297,12 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	r *host.Route,
 	features host.FeatureSet,
 ) (string, error) {
-	proxyUrl, dnsResolvers, err := p.integrationCommands.GetOptionURL(ctx.context, r.Integration.IntegrationID, r.Integration.OptionID)
+	proxyURL, dnsResolvers, err := p.integrationCommands.GetOptionURL(ctx.context, r.Integration.IntegrationID, r.Integration.OptionID)
 	if err != nil {
 		return "", err
 	}
 
-	if proxyUrl == nil {
+	if proxyURL == nil {
 		msg := fmt.Sprintf("Integration option not found: %s", r.Integration.OptionID)
 		return "", coreerror.New(msg, false)
 	}
@@ -322,7 +322,7 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 		}`,
 		r.SourcePath,
 		dnsConfig,
-		p.buildProxyPass(r, *proxyUrl),
+		p.buildProxyPass(r, *proxyURL),
 		p.buildRouteFeatures(features),
 		p.buildRouteSettings(ctx, r),
 	), nil
@@ -392,21 +392,21 @@ func (p *hostConfigurationFileProvider) buildRouteFeatures(features host.Feature
 }
 
 func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...string) string {
-	targetUri := r.TargetURI
+	targetURI := r.TargetURI
 	if len(uri) > 0 {
-		targetUri = &uri[0]
+		targetURI = &uri[0]
 	}
 
-	if targetUri == nil {
+	if targetURI == nil {
 		return ""
 	}
 
 	builder := strings.Builder{}
-	fmt.Fprintf(&builder, "proxy_pass %s;", *targetUri)
+	_, _ = fmt.Fprintf(&builder, "proxy_pass %s;", *targetURI)
 
 	if r.Settings.KeepOriginalDomainName {
-		u, _ := url.Parse(*targetUri)
-		fmt.Fprintf(&builder, "\nproxy_set_header Host %s;", u.Host)
+		u, _ := url.Parse(*targetURI)
+		_, _ = fmt.Fprintf(&builder, "\nproxy_set_header Host %s;", u.Host)
 	}
 
 	return builder.String()
@@ -415,11 +415,11 @@ func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...str
 func (p *hostConfigurationFileProvider) buildRouteSettings(ctx *providerContext, r *host.Route) string {
 	builder := strings.Builder{}
 	if r.Settings.ProxySSLServerName {
-		builder.WriteString("proxy_ssl_server_name on;")
+		_, _ = builder.WriteString("proxy_ssl_server_name on;")
 	}
 
 	if r.Settings.IncludeForwardHeaders {
-		builder.WriteString(`
+		_, _ = builder.WriteString(`
 			proxy_set_header x-forwarded-for $proxy_add_x_forwarded_for;
 			proxy_set_header x-forwarded-host $host;
 			proxy_set_header x-forwarded-proto $scheme;
@@ -430,15 +430,15 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(ctx *providerContext,
 	}
 
 	if r.Settings.Custom != nil {
-		builder.WriteString("\n")
-		builder.WriteString(*r.Settings.Custom)
+		_, _ = builder.WriteString("\n")
+		_, _ = builder.WriteString(*r.Settings.Custom)
 	}
 
 	if r.AccessListID != nil {
-		fmt.Fprintf(&builder, "\ninclude %saccess-list-%s.conf;", ctx.paths.Config, *r.AccessListID)
+		_, _ = fmt.Fprintf(&builder, "\ninclude %saccess-list-%s.conf;", ctx.paths.Config, *r.AccessListID)
 	}
 
-	builder.WriteString(p.buildCacheConfig(ctx.caches, r.CacheID))
+	_, _ = builder.WriteString(p.buildCacheConfig(ctx.caches, r.CacheID))
 
 	return builder.String()
 }
@@ -461,10 +461,10 @@ func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, c
 	}
 
 	builder := strings.Builder{}
-	builder.WriteString("\n")
+	_, _ = builder.WriteString("\n")
 
 	cacheIDNoDashes := strings.ReplaceAll(c.ID.String(), "-", "")
-	fmt.Fprintf(&builder, "proxy_cache cache_%s;", cacheIDNoDashes)
+	_, _ = fmt.Fprintf(&builder, "proxy_cache cache_%s;", cacheIDNoDashes)
 
 	p.appendCacheDurations(&builder, c)
 	p.appendCacheMethods(&builder, c)
@@ -478,7 +478,7 @@ func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, c
 
 func (p *hostConfigurationFileProvider) appendCacheDurations(builder *strings.Builder, c *cache.Cache) {
 	for _, d := range c.Durations {
-		fmt.Fprintf(
+		_, _ = fmt.Fprintf(
 			builder,
 			"\nproxy_cache_valid %s %ds;",
 			strings.Join(d.StatusCodes, " "),
@@ -494,21 +494,21 @@ func (p *hostConfigurationFileProvider) appendCacheMethods(builder *strings.Buil
 			methods[index] = strings.ToLower(string(method))
 		}
 
-		fmt.Fprintf(builder, "\nproxy_cache_methods %s;", strings.Join(methods, " "))
+		_, _ = fmt.Fprintf(builder, "\nproxy_cache_methods %s;", strings.Join(methods, " "))
 	}
 }
 
 func (p *hostConfigurationFileProvider) appendCacheStandardOptions(builder *strings.Builder, c *cache.Cache) {
-	fmt.Fprintf(builder, "\nproxy_cache_min_uses %d;", c.MinimumUsesBeforeCaching)
-	fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", statusFlag(c.BackgroundUpdate))
-	fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", statusFlag(c.Revalidate))
+	_, _ = fmt.Fprintf(builder, "\nproxy_cache_min_uses %d;", c.MinimumUsesBeforeCaching)
+	_, _ = fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", statusFlag(c.BackgroundUpdate))
+	_, _ = fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", statusFlag(c.Revalidate))
 
 	if c.IgnoreUpstreamCacheHeaders {
-		builder.WriteString("\nproxy_ignore_headers Cache-Control Expires;")
+		_, _ = builder.WriteString("\nproxy_ignore_headers Cache-Control Expires;")
 	}
 
 	if c.CacheStatusResponseHeaderEnabled {
-		builder.WriteString("\nadd_header X-Cache-Status $upstream_cache_status;")
+		_, _ = builder.WriteString("\nadd_header X-Cache-Status $upstream_cache_status;")
 	}
 
 	staleConfig := offFlag
@@ -522,28 +522,28 @@ func (p *hostConfigurationFileProvider) appendCacheStandardOptions(builder *stri
 		staleConfig = strings.Join(staleOptions, " ")
 	}
 
-	fmt.Fprintf(builder, "\nproxy_cache_use_stale %s;", staleConfig)
+	_, _ = fmt.Fprintf(builder, "\nproxy_cache_use_stale %s;", staleConfig)
 }
 
 func (p *hostConfigurationFileProvider) appendCacheLock(builder *strings.Builder, c *cache.Cache) {
 	if c.ConcurrencyLock.Enabled {
-		builder.WriteString("\nproxy_cache_lock on;")
+		_, _ = builder.WriteString("\nproxy_cache_lock on;")
 		if c.ConcurrencyLock.TimeoutSeconds != nil {
-			fmt.Fprintf(builder, "\nproxy_cache_lock_timeout %ds;", *c.ConcurrencyLock.TimeoutSeconds)
+			_, _ = fmt.Fprintf(builder, "\nproxy_cache_lock_timeout %ds;", *c.ConcurrencyLock.TimeoutSeconds)
 		}
 		if c.ConcurrencyLock.AgeSeconds != nil {
-			fmt.Fprintf(builder, "\nproxy_cache_lock_age %ds;", *c.ConcurrencyLock.AgeSeconds)
+			_, _ = fmt.Fprintf(builder, "\nproxy_cache_lock_age %ds;", *c.ConcurrencyLock.AgeSeconds)
 		}
 	}
 }
 
 func (p *hostConfigurationFileProvider) appendCacheBypassRules(builder *strings.Builder, c *cache.Cache) {
 	for _, rule := range c.BypassRules {
-		fmt.Fprintf(builder, "\nproxy_cache_bypass %s;", rule)
+		_, _ = fmt.Fprintf(builder, "\nproxy_cache_bypass %s;", rule)
 	}
 
 	for _, rule := range c.NoCacheRules {
-		fmt.Fprintf(builder, "\nproxy_no_cache %s;", rule)
+		_, _ = fmt.Fprintf(builder, "\nproxy_no_cache %s;", rule)
 	}
 }
 
@@ -560,8 +560,8 @@ func (p *hostConfigurationFileProvider) appendCacheFileExtensions(builder *strin
 		)
 	}
 
-	builder.WriteString("\n")
-	fmt.Fprintf(
+	_, _ = builder.WriteString("\n")
+	_, _ = fmt.Fprintf(
 		builder,
 		`
 			if ($uri !~* "%s") { 
