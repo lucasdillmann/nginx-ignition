@@ -12,21 +12,17 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
-	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 type hostConfigurationFileProvider struct {
 	integrationCommands *integration.Commands
-	settingsRepository  settings.Repository
 }
 
 func newHostConfigurationFileProvider(
-	settingsRepository settings.Repository,
 	integrationCommands *integration.Commands,
 ) *hostConfigurationFileProvider {
 	return &hostConfigurationFileProvider{
 		integrationCommands: integrationCommands,
-		settingsRepository:  settingsRepository,
 	}
 }
 
@@ -73,21 +69,13 @@ func (p *hostConfigurationFileProvider) buildHost(ctx *providerContext, h *host.
 
 	bindings := h.Bindings
 	if h.UseGlobalBindings {
-		cfg, err := p.settingsRepository.Get(ctx.context)
-		if err != nil {
-			return nil, err
-		}
-
-		bindings = cfg.GlobalBindings
+		bindings = ctx.settings.GlobalBindings
 	}
 
 	contents := make([]string, 0)
 	for _, b := range bindings {
-		b, err := p.buildBinding(ctx, h, &b, routes, serverNames, httpsRedirect, http2)
-		if err != nil {
-			return nil, err
-		}
-		contents = append(contents, b)
+		instructions := p.buildBinding(ctx, h, &b, routes, serverNames, httpsRedirect, http2)
+		contents = append(contents, instructions)
 	}
 
 	return &File{
@@ -110,12 +98,12 @@ func (p *hostConfigurationFileProvider) buildBinding(
 	b *binding.Binding,
 	routes []string,
 	serverNames, httpsRedirect, http2 string,
-) (string, error) {
+) string {
 	listen := ""
 	switch b.Type {
-	case binding.HTTPBindingType:
+	case binding.HttpBindingType:
 		listen = fmt.Sprintf("listen %s:%d %s;", b.IP, b.Port, p.buildBindingAdditionalParams(h))
-	case binding.HTTPSBindingType:
+	case binding.HttpsBindingType:
 		listen = fmt.Sprintf(
 			`
 				listen %s:%d ssl %s;
@@ -132,21 +120,14 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			ctx.paths.Config,
 			b.CertificateID,
 		)
-	default:
-		return "", fmt.Errorf("invalid binding type: %s", b.Type)
 	}
 
-	conditionalHTTPSRedirect := ""
-	if b.Type == binding.HTTPBindingType {
-		conditionalHTTPSRedirect = httpsRedirect
+	conditionalHttpsRedirect := ""
+	if b.Type == binding.HttpBindingType {
+		conditionalHttpsRedirect = httpsRedirect
 	}
 
-	cfg, err := p.settingsRepository.Get(ctx.context)
-	if err != nil {
-		return "", err
-	}
-
-	logs := cfg.Nginx.Logs
+	logs := ctx.settings.Nginx.Logs
 
 	return fmt.Sprintf(
 		`server {
@@ -165,16 +146,16 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		}`,
 		flag(logs.AccessLogsEnabled, fmt.Sprintf("%shost-%s.access.log", ctx.paths.Logs, h.ID), "off"),
 		flag(logs.ErrorLogsEnabled, fmt.Sprintf("%shost-%s.error.log %s", ctx.paths.Logs, h.ID, strings.ToLower(string(logs.ErrorLogsLevel))), "off"),
-		statusFlag(cfg.Nginx.GzipEnabled),
-		cfg.Nginx.MaximumBodySizeMb,
+		statusFlag(ctx.settings.Nginx.GzipEnabled),
+		ctx.settings.Nginx.MaximumBodySizeMb,
 		flag(h.AccessListID != nil, fmt.Sprintf("include %saccess-list-%s.conf;", ctx.paths.Config, h.AccessListID), ""),
 		p.buildCacheConfig(ctx.caches, h.CacheID),
-		conditionalHTTPSRedirect,
+		conditionalHttpsRedirect,
 		http2,
 		listen,
 		serverNames,
 		strings.Join(routes, "\n"),
-	), nil
+	)
 }
 
 func (p *hostConfigurationFileProvider) buildBindingAdditionalParams(h *host.Host) string {
@@ -200,7 +181,7 @@ func (p *hostConfigurationFileProvider) buildRoute(
 	case host.IntegrationRouteType:
 		return p.buildIntegrationRoute(ctx, r, h.FeatureSet)
 	case host.ExecuteCodeRouteType:
-		return p.buildExecuteCodeRoute(ctx, h, r)
+		return p.buildExecuteCodeRoute(ctx, h, r), nil
 	case host.StaticFilesRouteType:
 		return p.buildStaticFilesRoute(ctx, r), nil
 	default:
@@ -297,12 +278,12 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	r *host.Route,
 	features host.FeatureSet,
 ) (string, error) {
-	proxyURL, dnsResolvers, err := p.integrationCommands.GetOptionURL(ctx.context, r.Integration.IntegrationID, r.Integration.OptionID)
+	proxyUrl, dnsResolvers, err := p.integrationCommands.GetOptionURL(ctx.context, r.Integration.IntegrationID, r.Integration.OptionID)
 	if err != nil {
 		return "", err
 	}
 
-	if proxyURL == nil {
+	if proxyUrl == nil {
 		msg := fmt.Sprintf("Integration option not found: %s", r.Integration.OptionID)
 		return "", coreerror.New(msg, false)
 	}
@@ -322,7 +303,7 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 		}`,
 		r.SourcePath,
 		dnsConfig,
-		p.buildProxyPass(r, *proxyURL),
+		p.buildProxyPass(r, *proxyUrl),
 		p.buildRouteFeatures(features),
 		p.buildRouteSettings(ctx, r),
 	), nil
@@ -347,7 +328,7 @@ func (p *hostConfigurationFileProvider) buildRedirectRoute(
 	)
 }
 
-func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(ctx *providerContext, h *host.Host, r *host.Route) (string, error) {
+func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(ctx *providerContext, h *host.Host, r *host.Route) string {
 	var headerBlock, routeBlock string
 	switch r.SourceCode.Language {
 	case host.JavascriptCodeLanguage:
@@ -360,8 +341,6 @@ func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(ctx *providerConte
 			}`,
 			r.SourceCode.Contents,
 		)
-	default:
-		return "", fmt.Errorf("invalid language: %s", r.SourceCode.Language)
 	}
 
 	return fmt.Sprintf(
@@ -376,7 +355,7 @@ func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(ctx *providerConte
 		routeBlock,
 		p.buildRouteFeatures(h.FeatureSet),
 		p.buildRouteSettings(ctx, r),
-	), nil
+	)
 }
 
 func (p *hostConfigurationFileProvider) buildRouteFeatures(features host.FeatureSet) string {
@@ -392,21 +371,21 @@ func (p *hostConfigurationFileProvider) buildRouteFeatures(features host.Feature
 }
 
 func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...string) string {
-	targetURI := r.TargetURI
+	targetUri := r.TargetURI
 	if len(uri) > 0 {
-		targetURI = &uri[0]
+		targetUri = &uri[0]
 	}
 
-	if targetURI == nil {
+	if targetUri == nil {
 		return ""
 	}
 
 	builder := strings.Builder{}
-	_, _ = fmt.Fprintf(&builder, "proxy_pass %s;", *targetURI)
+	fmt.Fprintf(&builder, "proxy_pass %s;", *targetUri)
 
 	if r.Settings.KeepOriginalDomainName {
-		u, _ := url.Parse(*targetURI)
-		_, _ = fmt.Fprintf(&builder, "\nproxy_set_header Host %s;", u.Host)
+		u, _ := url.Parse(*targetUri)
+		fmt.Fprintf(&builder, "\nproxy_set_header Host %s;", u.Host)
 	}
 
 	return builder.String()
@@ -415,11 +394,11 @@ func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...str
 func (p *hostConfigurationFileProvider) buildRouteSettings(ctx *providerContext, r *host.Route) string {
 	builder := strings.Builder{}
 	if r.Settings.ProxySSLServerName {
-		_, _ = builder.WriteString("proxy_ssl_server_name on;")
+		builder.WriteString("proxy_ssl_server_name on;")
 	}
 
 	if r.Settings.IncludeForwardHeaders {
-		_, _ = builder.WriteString(`
+		builder.WriteString(`
 			proxy_set_header x-forwarded-for $proxy_add_x_forwarded_for;
 			proxy_set_header x-forwarded-host $host;
 			proxy_set_header x-forwarded-proto $scheme;
@@ -430,15 +409,15 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(ctx *providerContext,
 	}
 
 	if r.Settings.Custom != nil {
-		_, _ = builder.WriteString("\n")
-		_, _ = builder.WriteString(*r.Settings.Custom)
+		builder.WriteString("\n")
+		builder.WriteString(*r.Settings.Custom)
 	}
 
 	if r.AccessListID != nil {
-		_, _ = fmt.Fprintf(&builder, "\ninclude %saccess-list-%s.conf;", ctx.paths.Config, *r.AccessListID)
+		fmt.Fprintf(&builder, "\ninclude %saccess-list-%s.conf;", ctx.paths.Config, *r.AccessListID)
 	}
 
-	_, _ = builder.WriteString(p.buildCacheConfig(ctx.caches, r.CacheID))
+	builder.WriteString(p.buildCacheConfig(ctx.caches, r.CacheID))
 
 	return builder.String()
 }
@@ -461,10 +440,10 @@ func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, c
 	}
 
 	builder := strings.Builder{}
-	_, _ = builder.WriteString("\n")
+	builder.WriteString("\n")
 
 	cacheIDNoDashes := strings.ReplaceAll(c.ID.String(), "-", "")
-	_, _ = fmt.Fprintf(&builder, "proxy_cache cache_%s;", cacheIDNoDashes)
+	fmt.Fprintf(&builder, "proxy_cache cache_%s;", cacheIDNoDashes)
 
 	p.appendCacheDurations(&builder, c)
 	p.appendCacheMethods(&builder, c)
@@ -478,7 +457,7 @@ func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, c
 
 func (p *hostConfigurationFileProvider) appendCacheDurations(builder *strings.Builder, c *cache.Cache) {
 	for _, d := range c.Durations {
-		_, _ = fmt.Fprintf(
+		fmt.Fprintf(
 			builder,
 			"\nproxy_cache_valid %s %ds;",
 			strings.Join(d.StatusCodes, " "),
@@ -494,21 +473,21 @@ func (p *hostConfigurationFileProvider) appendCacheMethods(builder *strings.Buil
 			methods[index] = strings.ToLower(string(method))
 		}
 
-		_, _ = fmt.Fprintf(builder, "\nproxy_cache_methods %s;", strings.Join(methods, " "))
+		fmt.Fprintf(builder, "\nproxy_cache_methods %s;", strings.Join(methods, " "))
 	}
 }
 
 func (p *hostConfigurationFileProvider) appendCacheStandardOptions(builder *strings.Builder, c *cache.Cache) {
-	_, _ = fmt.Fprintf(builder, "\nproxy_cache_min_uses %d;", c.MinimumUsesBeforeCaching)
-	_, _ = fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", statusFlag(c.BackgroundUpdate))
-	_, _ = fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", statusFlag(c.Revalidate))
+	fmt.Fprintf(builder, "\nproxy_cache_min_uses %d;", c.MinimumUsesBeforeCaching)
+	fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", statusFlag(c.BackgroundUpdate))
+	fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", statusFlag(c.Revalidate))
 
 	if c.IgnoreUpstreamCacheHeaders {
-		_, _ = builder.WriteString("\nproxy_ignore_headers Cache-Control Expires;")
+		builder.WriteString("\nproxy_ignore_headers Cache-Control Expires;")
 	}
 
 	if c.CacheStatusResponseHeaderEnabled {
-		_, _ = builder.WriteString("\nadd_header X-Cache-Status $upstream_cache_status;")
+		builder.WriteString("\nadd_header X-Cache-Status $upstream_cache_status;")
 	}
 
 	staleConfig := offFlag
@@ -522,28 +501,28 @@ func (p *hostConfigurationFileProvider) appendCacheStandardOptions(builder *stri
 		staleConfig = strings.Join(staleOptions, " ")
 	}
 
-	_, _ = fmt.Fprintf(builder, "\nproxy_cache_use_stale %s;", staleConfig)
+	fmt.Fprintf(builder, "\nproxy_cache_use_stale %s;", staleConfig)
 }
 
 func (p *hostConfigurationFileProvider) appendCacheLock(builder *strings.Builder, c *cache.Cache) {
 	if c.ConcurrencyLock.Enabled {
-		_, _ = builder.WriteString("\nproxy_cache_lock on;")
+		builder.WriteString("\nproxy_cache_lock on;")
 		if c.ConcurrencyLock.TimeoutSeconds != nil {
-			_, _ = fmt.Fprintf(builder, "\nproxy_cache_lock_timeout %ds;", *c.ConcurrencyLock.TimeoutSeconds)
+			fmt.Fprintf(builder, "\nproxy_cache_lock_timeout %ds;", *c.ConcurrencyLock.TimeoutSeconds)
 		}
 		if c.ConcurrencyLock.AgeSeconds != nil {
-			_, _ = fmt.Fprintf(builder, "\nproxy_cache_lock_age %ds;", *c.ConcurrencyLock.AgeSeconds)
+			fmt.Fprintf(builder, "\nproxy_cache_lock_age %ds;", *c.ConcurrencyLock.AgeSeconds)
 		}
 	}
 }
 
 func (p *hostConfigurationFileProvider) appendCacheBypassRules(builder *strings.Builder, c *cache.Cache) {
 	for _, rule := range c.BypassRules {
-		_, _ = fmt.Fprintf(builder, "\nproxy_cache_bypass %s;", rule)
+		fmt.Fprintf(builder, "\nproxy_cache_bypass %s;", rule)
 	}
 
 	for _, rule := range c.NoCacheRules {
-		_, _ = fmt.Fprintf(builder, "\nproxy_no_cache %s;", rule)
+		fmt.Fprintf(builder, "\nproxy_no_cache %s;", rule)
 	}
 }
 
@@ -560,8 +539,8 @@ func (p *hostConfigurationFileProvider) appendCacheFileExtensions(builder *strin
 		)
 	}
 
-	_, _ = builder.WriteString("\n")
-	_, _ = fmt.Fprintf(
+	builder.WriteString("\n")
+	fmt.Fprintf(
 		builder,
 		`
 			if ($uri !~* "%s") { 

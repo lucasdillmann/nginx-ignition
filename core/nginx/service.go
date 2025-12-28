@@ -205,5 +205,6 @@ func (s *service) resolveSupportedFeatures(ctx context.Context) (*cfgfiles.Suppo
 		TLSSNI:      cfgfiles.SupportType(metadata.SNISupportType()),
 		RunCodeType: cfgfiles.SupportType(metadata.RunCodeSupportType()),
 		StreamType:  cfgfiles.SupportType(metadata.StreamSupportType()),
+		API:         cfgfiles.SupportType(metadata.APISupportType()),
 	}, nil
 }

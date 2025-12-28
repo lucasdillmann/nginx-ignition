@@ -11,18 +11,15 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 type hostCertificateFileProvider struct {
-	certificateRepository certificate.Repository
-	settingsRepository    settings.Repository
+	certificateCommands *certificate.Commands
 }
 
-func newHostCertificateFileProvider(certificateRepository certificate.Repository, settingsRepository settings.Repository) *hostCertificateFileProvider {
+func newHostCertificateFileProvider(certificateCommands *certificate.Commands) *hostCertificateFileProvider {
 	return &hostCertificateFileProvider{
-		certificateRepository: certificateRepository,
-		settingsRepository:    settingsRepository,
+		certificateCommands: certificateCommands,
 	}
 }
 
@@ -32,21 +29,16 @@ func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, err
 		bindings = append(bindings, h.Bindings...)
 	}
 
-	cgf, err := p.settingsRepository.Get(ctx.context)
-	if err != nil {
-		return nil, err
-	}
-
-	bindings = append(bindings, cgf.GlobalBindings...)
+	bindings = append(bindings, ctx.settings.GlobalBindings...)
 
 	outputs := make([]File, 0)
-	uniqueCertIDs := map[string]bool{}
+	uniqueCertIds := map[string]bool{}
 
 	for _, b := range bindings {
-		if b.Type == binding.HTTPSBindingType && b.CertificateID != nil {
-			certID := b.CertificateID.String()
-			if !uniqueCertIDs[certID] {
-				uniqueCertIDs[certID] = true
+		if b.Type == binding.HttpsBindingType && b.CertificateID != nil {
+			certId := b.CertificateID.String()
+			if !uniqueCertIds[certId] {
+				uniqueCertIds[certId] = true
 
 				output, err := p.buildCertificateFile(ctx.context, *b.CertificateID)
 				if err != nil {
@@ -63,9 +55,9 @@ func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, err
 
 func (p *hostCertificateFileProvider) buildCertificateFile(
 	ctx context.Context,
-	certificateID uuid.UUID,
+	certificateId uuid.UUID,
 ) (*File, error) {
-	cert, err := p.certificateRepository.FindByID(ctx, certificateID)
+	cert, err := p.certificateCommands.Get(ctx, certificateId)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +82,7 @@ func (p *hostCertificateFileProvider) buildCertificateFile(
 	}
 
 	return &File{
-		Name:     fmt.Sprintf("certificate-%s.pem", certificateID),
+		Name:     fmt.Sprintf("certificate-%s.pem", certificateId),
 		Contents: contents,
 	}, nil
 }

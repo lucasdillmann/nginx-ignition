@@ -38,9 +38,9 @@ func newValidator(commands *binding.Commands) *validator {
 }
 
 func (v *validator) validate(ctx context.Context, settings *Settings) error {
-	v.validateNginx(settings.Nginx)
-	v.validateLogRotation(settings.LogRotation)
-	v.validateCertificateAutoRenew(settings.CertificateAutoRenew)
+	v.validateNginx(&settings.Nginx)
+	v.validateLogRotation(&settings.LogRotation)
+	v.validateCertificateAutoRenew(&settings.CertificateAutoRenew)
 
 	if err := v.validateGlobalBindings(ctx, settings.GlobalBindings); err != nil {
 		return err

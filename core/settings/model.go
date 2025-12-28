@@ -5,19 +5,20 @@ import (
 )
 
 type Settings struct {
-	Nginx                *NginxSettings
-	LogRotation          *LogRotationSettings
-	CertificateAutoRenew *CertificateAutoRenewSettings
 	GlobalBindings       []binding.Binding
+	CertificateAutoRenew CertificateAutoRenewSettings
+	LogRotation          LogRotationSettings
+	Nginx                NginxSettings
 }
 
 type NginxSettings struct {
-	Timeouts            *NginxTimeoutsSettings
-	Buffers             *NginxBuffersSettings
-	Logs                *NginxLogsSettings
 	Custom              *string
-	RuntimeUser         string
 	DefaultContentType  string
+	RuntimeUser         string
+	Logs                NginxLogsSettings
+	API                 NginxAPI
+	Buffers             NginxBuffersSettings
+	Timeouts            NginxTimeoutsSettings
 	WorkerProcesses     int
 	WorkerConnections   int
 	MaximumBodySizeMb   int
@@ -49,8 +50,8 @@ type NginxTimeoutsSettings struct {
 }
 
 type NginxBuffersSettings struct {
-	LargeClientHeader *NginxBufferSize
-	Output            *NginxBufferSize
+	LargeClientHeader NginxBufferSize
+	Output            NginxBufferSize
 	ClientBodyKb      int
 	ClientHeaderKb    int
 }
@@ -66,6 +67,13 @@ type NginxLogsSettings struct {
 	ServerLogsEnabled bool
 	AccessLogsEnabled bool
 	ErrorLogsEnabled  bool
+}
+
+type NginxAPI struct {
+	Address      string
+	Port         int
+	Enabled      bool
+	WriteEnabled bool
 }
 
 type LogLevel string

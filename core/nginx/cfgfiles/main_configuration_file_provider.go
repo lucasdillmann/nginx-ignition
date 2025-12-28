@@ -5,50 +5,31 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
-type mainConfigurationFileProvider struct {
-	settingsRepository settings.Repository
-}
+type mainConfigurationFileProvider struct{}
 
-func newMainConfigurationFileProvider(settingsRepository settings.Repository) *mainConfigurationFileProvider {
-	return &mainConfigurationFileProvider{settingsRepository: settingsRepository}
+func newMainConfigurationFileProvider() *mainConfigurationFileProvider {
+	return &mainConfigurationFileProvider{}
 }
 
 func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, error) {
-	cfg, err := p.settingsRepository.Get(ctx.context)
-	if err != nil {
-		return nil, err
-	}
+	cfg := ctx.settings
 
-	logs := cfg.Nginx.Logs
 	moduleLines := strings.Builder{}
-	streamLines := strings.Builder{}
-
-	if ctx.supportedFeatures.StreamType != NoneSupportType {
-		if ctx.supportedFeatures.StreamType == DynamicSupportType {
-			_, _ = moduleLines.WriteString("load_module modules/ngx_stream_module.so;\n")
-		}
-
-		_, _ = streamLines.WriteString("stream {\n")
-		_, _ = streamLines.WriteString(p.getStreamIncludes(ctx.paths, ctx.streams))
-		_, _ = streamLines.WriteString("}\n")
-	}
-
 	if ctx.supportedFeatures.RunCodeType == DynamicSupportType {
-		_, _ = moduleLines.WriteString("load_module modules/ndk_http_module.so;\n")
-		_, _ = moduleLines.WriteString("load_module modules/ngx_http_js_module.so;\n")
-		_, _ = moduleLines.WriteString("load_module modules/ngx_http_lua_module.so;\n")
+		moduleLines.WriteString("load_module modules/ndk_http_module.so;\n")
+		moduleLines.WriteString("load_module modules/ngx_http_js_module.so;\n")
+		moduleLines.WriteString("load_module modules/ngx_http_lua_module.so;\n")
 	}
 
-	var customCfg string
-	if cfg.Nginx.Custom != nil {
-		customCfg = fmt.Sprintf("\n%s\n", *cfg.Nginx.Custom)
-	}
+	streamBlock := p.getStreamBlock(ctx, &moduleLines)
+	mainHttpBlock := p.getMainHttpBlock(ctx, &moduleLines)
 
 	contents := fmt.Sprintf(
 		`
@@ -62,6 +43,100 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				worker_connections %d;
 			}
 			
+			%s
+			%s
+		`,
+		cfg.Nginx.RuntimeUser,
+		cfg.Nginx.RuntimeUser,
+		moduleLines.String(),
+		cfg.Nginx.WorkerProcesses,
+		ctx.paths.Base,
+		p.getErrorLogPath(ctx.paths, &cfg.Nginx.Logs),
+		cfg.Nginx.WorkerConnections,
+		mainHttpBlock,
+		streamBlock,
+	)
+
+	return []File{
+		{
+			Name:     "nginx.conf",
+			Contents: contents,
+		},
+	}, nil
+}
+
+func (p *mainConfigurationFileProvider) getStreamBlock(
+	ctx *providerContext,
+	modules *strings.Builder,
+) string {
+	if ctx.supportedFeatures.StreamType == NoneSupportType {
+		return ""
+	}
+
+	if ctx.supportedFeatures.StreamType == DynamicSupportType {
+		modules.WriteString("load_module modules/ngx_stream_module.so;\n")
+	}
+
+	streamIncludes := p.getStreamIncludes(ctx.paths, ctx.streams)
+	if streamIncludes == "" {
+		return ""
+	}
+
+	return fmt.Sprintf(
+		`
+			stream {
+				%s
+			}
+		`,
+		streamIncludes,
+	)
+}
+
+func (p *mainConfigurationFileProvider) getStatusServerBlock(
+	ctx *providerContext,
+	modules *strings.Builder,
+) string {
+	cfg := ctx.settings.Nginx.API
+	if !cfg.Enabled {
+		return ""
+	}
+
+	switch ctx.supportedFeatures.API {
+	case DynamicSupportType:
+		modules.WriteString("load_module modules/ngx_http_api_module.so;\n")
+	case NoneSupportType:
+		log.Warnf("Nginx API cannot be enabled: API module is not available")
+		return ""
+	}
+
+	return fmt.Sprintf(
+		`
+			server {
+				listen %s:%d;
+				location / {
+					api write=%s;
+				}
+			}
+		`,
+		cfg.Address,
+		cfg.Port,
+		statusFlag(cfg.WriteEnabled),
+	)
+}
+
+func (p *mainConfigurationFileProvider) getMainHttpBlock(
+	ctx *providerContext,
+	modules *strings.Builder,
+) string {
+	cfg := ctx.settings
+
+	var customCfg string
+	if cfg.Nginx.Custom != nil {
+		customCfg = fmt.Sprintf("\n%s\n", *cfg.Nginx.Custom)
+	}
+
+	return fmt.Sprintf(
+		`
 			http {
 				sendfile %s;
 				server_tokens %s;
@@ -85,20 +160,12 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				%s
 				%s
 				%s
+				%s
 			}
-			
-			%s
 		`,
-		cfg.Nginx.RuntimeUser,
-		cfg.Nginx.RuntimeUser,
-		moduleLines.String(),
-		cfg.Nginx.WorkerProcesses,
-		ctx.paths.Base,
-		p.getErrorLogPath(ctx.paths, logs),
-		cfg.Nginx.WorkerConnections,
 		statusFlag(cfg.Nginx.SendfileEnabled),
 		statusFlag(cfg.Nginx.ServerTokensEnabled),
-		statusFlag(cfg.Nginx.TCPNoDelayEnabled),
+		statusFlag(cfg.Nginx.TcpNoDelayEnabled),
 		cfg.Nginx.Timeouts.Keepalive,
 		cfg.Nginx.Timeouts.Connect,
 		cfg.Nginx.Timeouts.Read,
@@ -117,15 +184,8 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		customCfg,
 		p.getCacheDefinitions(ctx.paths, ctx.caches),
 		p.getHostIncludes(ctx.paths, ctx.hosts),
-		streamLines.String(),
+		p.getStatusServerBlock(ctx, modules),
 	)
-
-	return []File{
-		{
-			Name:     "nginx.conf",
-			Contents: contents,
-		},
-	}, nil
 }
 
 func (p *mainConfigurationFileProvider) getErrorLogPath(paths *Paths, logs *settings.NginxLogsSettings) string {

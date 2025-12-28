@@ -24,6 +24,7 @@ func (h metadataHandler) handle(ctx *gin.Context) {
 			"streams": metadata.StreamSupportType(),
 			"runCode": metadata.RunCodeSupportType(),
 			"tlsSni":  metadata.SNISupportType(),
+			"api":     metadata.APISupportType(),
 		},
 	})
 }

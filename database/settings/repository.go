@@ -65,15 +65,15 @@ func (r *repository) Save(ctx context.Context, set *settings.Settings) error {
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	if _, err = transaction.NewTruncateTable().Model(nginx).Exec(ctx); err != nil {
+	if _, err = transaction.NewTruncateTable().Model(&nginx).Exec(ctx); err != nil {
 		return err
 	}
 
-	if _, err = transaction.NewTruncateTable().Model(certificate).Exec(ctx); err != nil {
+	if _, err = transaction.NewTruncateTable().Model(&certificate).Exec(ctx); err != nil {
 		return err
 	}
 
-	if _, err = transaction.NewTruncateTable().Model(logRotation).Exec(ctx); err != nil {
+	if _, err = transaction.NewTruncateTable().Model(&logRotation).Exec(ctx); err != nil {
 		return err
 	}
 
@@ -81,19 +81,19 @@ func (r *repository) Save(ctx context.Context, set *settings.Settings) error {
 		return err
 	}
 
-	if _, err = transaction.NewTruncateTable().Model(buffers).Exec(ctx); err != nil {
+	if _, err = transaction.NewTruncateTable().Model(&buffers).Exec(ctx); err != nil {
 		return err
 	}
 
-	if _, err = transaction.NewInsert().Model(nginx).Exec(ctx); err != nil {
+	if _, err = transaction.NewInsert().Model(&nginx).Exec(ctx); err != nil {
 		return err
 	}
 
-	if _, err = transaction.NewInsert().Model(certificate).Exec(ctx); err != nil {
+	if _, err = transaction.NewInsert().Model(&certificate).Exec(ctx); err != nil {
 		return err
 	}
 
-	if _, err = transaction.NewInsert().Model(logRotation).Exec(ctx); err != nil {
+	if _, err = transaction.NewInsert().Model(&logRotation).Exec(ctx); err != nil {
 		return err
 	}
 
@@ -101,7 +101,7 @@ func (r *repository) Save(ctx context.Context, set *settings.Settings) error {
 		return err
 	}
 
-	if _, err = transaction.NewInsert().Model(buffers).Exec(ctx); err != nil {
+	if _, err = transaction.NewInsert().Model(&buffers).Exec(ctx); err != nil {
 		return err
 	}
 

@@ -19,11 +19,12 @@ import (
 )
 
 type Facade struct {
-	hostCommands   *host.Commands
-	streamCommands *stream.Commands
-	cacheCommands  *cache.Commands
-	configuration  *configuration.Configuration
-	providers      []fileProvider
+	hostCommands     *host.Commands
+	streamCommands   *stream.Commands
+	cacheCommands    *cache.Commands
+	configuration    *configuration.Configuration
+	settingsCommands *settings.Commands
+	providers        []fileProvider
 }
 
 func newFacade(
@@ -31,28 +32,29 @@ func newFacade(
 	streamCommands *stream.Commands,
 	cacheCommands *cache.Commands,
 	integrationCommands *integration.Commands,
-	cfg *configuration.Configuration,
-	accessListRepository accesslist.Repository,
-	certificateRepository certificate.Repository,
-	settingsRepository settings.Repository,
+	configuration *configuration.Configuration,
+	accessListCommands *accesslist.Commands,
+	certificateCommands *certificate.Commands,
+	settingsCommands *settings.Commands,
 ) *Facade {
 	providers := []fileProvider{
-		newAccessListFileProvider(accessListRepository),
-		newHostCertificateFileProvider(certificateRepository, settingsRepository),
-		newHostConfigurationFileProvider(settingsRepository, integrationCommands),
+		newAccessListFileProvider(accessListCommands),
+		newHostCertificateFileProvider(certificateCommands),
+		newHostConfigurationFileProvider(integrationCommands),
 		newHostRouteStaticResponseFileProvider(),
 		newHostRouteSourceCodeFileProvider(),
-		newMainConfigurationFileProvider(settingsRepository),
+		newMainConfigurationFileProvider(),
 		newMimeTypesFileProvider(),
 		newStreamFileProvider(),
 	}
 
 	return &Facade{
-		hostCommands:   hostCommands,
-		streamCommands: streamCommands,
-		cacheCommands:  cacheCommands,
-		providers:      providers,
-		configuration:  cfg,
+		hostCommands:     hostCommands,
+		streamCommands:   streamCommands,
+		cacheCommands:    cacheCommands,
+		providers:        providers,
+		configuration:    configuration,
+		settingsCommands: settingsCommands,
 	}
 }
 
@@ -77,6 +79,11 @@ func (f *Facade) GetConfigurationFiles(ctx context.Context, paths *Paths, suppor
 		return nil, nil, nil, err
 	}
 
+	cfg, err := f.settingsCommands.Get(ctx)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
 	providerCtx := &providerContext{
 		context:           ctx,
 		paths:             paths,
@@ -84,6 +91,7 @@ func (f *Facade) GetConfigurationFiles(ctx context.Context, paths *Paths, suppor
 		streams:           enabledStreams,
 		caches:            enabledCaches,
 		supportedFeatures: supportedFeatures,
+		settings:          cfg,
 	}
 
 	configFiles = make([]File, 0)
@@ -125,7 +133,7 @@ func (f *Facade) ReplaceConfigurationFiles(
 		return nil, nil, err
 	}
 
-	log.Infof("Rebuilding nginx configuration files for %d hosts and %d streams", len(hosts), len(streams))
+	log.Infof("Rebuilding nginx settings files for %d hosts and %d streams", len(hosts), len(streams))
 	if err := f.emptyConfigFolder(paths); err != nil {
 		return nil, nil, err
 	}

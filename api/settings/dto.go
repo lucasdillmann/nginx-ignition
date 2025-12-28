@@ -8,72 +8,80 @@ import (
 )
 
 type settingsDto struct {
-	Nginx                *nginxSettingsDto                `json:"nginx"`
-	LogRotation          *logRotationSettingsDto          `json:"logRotation"`
-	CertificateAutoRenew *certificateAutoRenewSettingsDto `json:"certificateAutoRenew"`
-	GlobalBindings       []bindingDto                     `json:"globalBindings"`
+	GlobalBindings       []bindingDto                    `json:"globalBindings"`
+	CertificateAutoRenew certificateAutoRenewSettingsDto `json:"certificateAutoRenew"`
+	LogRotation          logRotationSettingsDto          `json:"logRotation"`
+	Nginx                nginxSettingsDto                `json:"nginx"`
 }
 
 type nginxSettingsDto struct {
-	Logs                *nginxLogsSettingsDto     `json:"logs"`
-	Timeouts            *nginxTimeoutsSettingsDto `json:"timeouts"`
-	Buffers             *nginxBuffersSettingsDto  `json:"buffers"`
-	WorkerProcesses     *int                      `json:"workerProcesses"`
-	WorkerConnections   *int                      `json:"workerConnections"`
-	DefaultContentType  *string                   `json:"defaultContentType"`
-	ServerTokensEnabled *bool                     `json:"serverTokensEnabled"`
-	MaximumBodySizeMb   *int                      `json:"maximumBodySizeMb"`
-	SendfileEnabled     *bool                     `json:"sendfileEnabled"`
-	GzipEnabled         *bool                     `json:"gzipEnabled"`
-	TCPNoDelayEnabled   *bool                     `json:"tcpNoDelayEnabled"`
-	RuntimeUser         *string                   `json:"runtimeUser"`
-	Custom              *string                   `json:"custom"`
+	Custom              *string                  `json:"custom"`
+	Logs                nginxLogsSettingsDto     `json:"logs"`
+	DefaultContentType  string                   `json:"defaultContentType"`
+	RuntimeUser         string                   `json:"runtimeUser"`
+	API                 nginxApiDto              `json:"api"`
+	Buffers             nginxBuffersSettingsDto  `json:"buffers"`
+	Timeouts            nginxTimeoutsSettingsDto `json:"timeouts"`
+	WorkerConnections   int                      `json:"workerConnections"`
+	WorkerProcesses     int                      `json:"workerProcesses"`
+	MaximumBodySizeMb   int                      `json:"maximumBodySizeMb"`
+	ServerTokensEnabled bool                     `json:"serverTokensEnabled"`
+	SendfileEnabled     bool                     `json:"sendfileEnabled"`
+	GzipEnabled         bool                     `json:"gzipEnabled"`
+	TcpNoDelayEnabled   bool                     `json:"tcpNoDelayEnabled"`
 }
 
 type logRotationSettingsDto struct {
-	Enabled           *bool              `json:"enabled"`
-	MaximumLines      *int               `json:"maximumLines"`
-	IntervalUnit      *settings.TimeUnit `json:"intervalUnit"`
-	IntervalUnitCount *int               `json:"intervalUnitCount"`
+	IntervalUnit      settings.TimeUnit `json:"intervalUnit"`
+	MaximumLines      int               `json:"maximumLines"`
+	IntervalUnitCount int               `json:"intervalUnitCount"`
+	Enabled           bool              `json:"enabled"`
 }
 
 type certificateAutoRenewSettingsDto struct {
-	Enabled           *bool              `json:"enabled"`
-	IntervalUnit      *settings.TimeUnit `json:"intervalUnit"`
-	IntervalUnitCount *int               `json:"intervalUnitCount"`
+	IntervalUnit      settings.TimeUnit `json:"intervalUnit"`
+	IntervalUnitCount int               `json:"intervalUnitCount"`
+	Enabled           bool              `json:"enabled"`
 }
 
 type nginxTimeoutsSettingsDto struct {
-	Read       *int `json:"read"`
-	Connect    *int `json:"connect"`
-	Send       *int `json:"send"`
-	Keepalive  *int `json:"keepalive"`
-	ClientBody *int `json:"clientBody"`
+	Read       int `json:"read"`
+	Connect    int `json:"connect"`
+	Send       int `json:"send"`
+	Keepalive  int `json:"keepalive"`
+	ClientBody int `json:"clientBody"`
 }
 
 type nginxBuffersSettingsDto struct {
-	ClientBodyKb      *int                `json:"clientBodyKb"`
-	ClientHeaderKb    *int                `json:"clientHeaderKb"`
-	LargeClientHeader *nginxBufferSizeDto `json:"largeClientHeader"`
-	Output            *nginxBufferSizeDto `json:"output"`
+	ClientBodyKb      int                `json:"clientBodyKb"`
+	ClientHeaderKb    int                `json:"clientHeaderKb"`
+	LargeClientHeader nginxBufferSizeDto `json:"largeClientHeader"`
+	Output            nginxBufferSizeDto `json:"output"`
 }
 
 type nginxBufferSizeDto struct {
-	SizeKb *int `json:"sizeKb"`
-	Amount *int `json:"amount"`
+	SizeKb int `json:"sizeKb"`
+	Amount int `json:"amount"`
 }
 
 type nginxLogsSettingsDto struct {
-	ServerLogsEnabled *bool              `json:"serverLogsEnabled"`
-	ServerLogsLevel   *settings.LogLevel `json:"serverLogsLevel"`
-	AccessLogsEnabled *bool              `json:"accessLogsEnabled"`
-	ErrorLogsEnabled  *bool              `json:"errorLogsEnabled"`
-	ErrorLogsLevel    *settings.LogLevel `json:"errorLogsLevel"`
+	ServerLogsLevel   settings.LogLevel `json:"serverLogsLevel"`
+	ErrorLogsLevel    settings.LogLevel `json:"errorLogsLevel"`
+	ServerLogsEnabled bool              `json:"serverLogsEnabled"`
+	AccessLogsEnabled bool              `json:"accessLogsEnabled"`
+	ErrorLogsEnabled  bool              `json:"errorLogsEnabled"`
+}
+
+type nginxApiDto struct {
+	Address      string `json:"address"`
+	Port         int    `json:"port"`
+	Enabled      bool   `json:"enabled"`
+	WriteEnabled bool   `json:"writeEnabled"`
 }
 
 type bindingDto struct {
-	Type          *binding.Type `json:"type"`
-	IP            *string       `json:"ip"`
-	Port          *int          `json:"port"`
-	CertificateID *uuid.UUID    `json:"certificateId"`
+	CertificateID *uuid.UUID   `json:"certificateId"`
+	Type          binding.Type `json:"type"`
+	IP            string       `json:"ip"`
+	Port          int          `json:"port"`
 }
