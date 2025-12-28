@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
@@ -50,19 +49,12 @@ func CanHandle(err error) bool {
 
 	httpError := &APIError{}
 	consistencyError := &validation.ConsistencyError{}
-	validationError := &validator.ValidationErrors{}
 	coreError := &coreerror.CoreError{}
 
-	switch {
-	case errors.As(err, &httpError),
-		errors.As(err, &consistencyError),
-		errors.As(err, &validationError),
-		errors.As(err, &coreError),
-		errors.Is(err, jwt.ErrSignatureInvalid):
-		return true
-	default:
-		return false
-	}
+	return errors.As(err, &httpError) ||
+		errors.As(err, &consistencyError) ||
+		errors.As(err, &coreError) ||
+		errors.Is(err, jwt.ErrSignatureInvalid)
 }
 
 func handleGenericError(ctx *gin.Context, err error) {

@@ -32,6 +32,8 @@ func loadConfigFileValues() (map[string]string, error) {
 
 func resolveConfigFilePath() string {
 	customPathPtr := flag.String("config", "", "Path to the configuration properties file")
+
+	//nolint:revive
 	flag.Parse()
 
 	if customPathPtr != nil && *customPathPtr != "" {

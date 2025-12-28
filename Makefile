@@ -107,6 +107,7 @@ update-dependencies:
 	cd database && go get -u all
 	cd integration/docker && go get -u all
 	cd integration/truenas && go get -u all
+	cd tools && go get -u all
 	cd vpn/tailscale && go get -u all
 	go work sync
 	cd frontend && npm update
