@@ -146,7 +146,7 @@ func (s *simpleAdapter) buildOptionURL(option *Option, summary *container.Summar
 		}
 	}
 
-	result := fmt.Sprintf("http://%s:%d", targetHost, option.Port)
+	result := fmt.Sprintf(httpURLTemplate, targetHost, option.Port)
 	return &result, nil, nil
 }
 

@@ -9,6 +9,7 @@ const (
 	hostQualifier      = "host"
 	containerQualifier = "container"
 	ingressQualifier   = "ingress"
+	httpURLTemplate    = "http://%s:%d"
 )
 
 var (

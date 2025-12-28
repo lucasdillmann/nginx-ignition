@@ -122,7 +122,7 @@ func (s *swarmAdapter) buildServiceOptionURL(
 			dnsResolvers = []string{defaultDockerDNSIP}
 		}
 
-		fullURL := fmt.Sprintf("http://%s:%d", service.Spec.Name, option.privatePort)
+		fullURL := fmt.Sprintf(httpURLTemplate, service.Spec.Name, option.privatePort)
 		return &fullURL, dnsResolvers, nil
 	}
 
@@ -132,7 +132,7 @@ func (s *swarmAdapter) buildServiceOptionURL(
 			return nil, nil, err
 		}
 
-		fullURL := fmt.Sprintf("http://%s:%d", uri.Hostname(), option.Port)
+		fullURL := fmt.Sprintf(httpURLTemplate, uri.Hostname(), option.Port)
 		return &fullURL, nil, nil
 	}
 
@@ -141,7 +141,7 @@ func (s *swarmAdapter) buildServiceOptionURL(
 		return nil, nil, err
 	}
 
-	fullURL := fmt.Sprintf("http://%s:%d", *nodeAddress, option.Port)
+	fullURL := fmt.Sprintf(httpURLTemplate, *nodeAddress, option.Port)
 	return &fullURL, nil, err
 }
 
