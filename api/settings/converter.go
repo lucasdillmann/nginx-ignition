@@ -7,34 +7,34 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func toDto(set *settings.Settings) *settingsDto {
+func toDTO(set *settings.Settings) *settingsDTO {
 	if set == nil {
 		return nil
 	}
 
-	nginxModel := &nginxSettingsDto{
-		Logs: &nginxLogsSettingsDto{
+	nginxModel := &nginxSettingsDTO{
+		Logs: &nginxLogsSettingsDTO{
 			ServerLogsEnabled: &set.Nginx.Logs.ServerLogsEnabled,
 			ServerLogsLevel:   &set.Nginx.Logs.ServerLogsLevel,
 			AccessLogsEnabled: &set.Nginx.Logs.AccessLogsEnabled,
 			ErrorLogsEnabled:  &set.Nginx.Logs.ErrorLogsEnabled,
 			ErrorLogsLevel:    &set.Nginx.Logs.ErrorLogsLevel,
 		},
-		Timeouts: &nginxTimeoutsSettingsDto{
+		Timeouts: &nginxTimeoutsSettingsDTO{
 			Read:       &set.Nginx.Timeouts.Read,
 			Connect:    &set.Nginx.Timeouts.Connect,
 			Send:       &set.Nginx.Timeouts.Send,
 			Keepalive:  &set.Nginx.Timeouts.Keepalive,
 			ClientBody: &set.Nginx.Timeouts.ClientBody,
 		},
-		Buffers: &nginxBuffersSettingsDto{
+		Buffers: &nginxBuffersSettingsDTO{
 			ClientBodyKb:   &set.Nginx.Buffers.ClientBodyKb,
 			ClientHeaderKb: &set.Nginx.Buffers.ClientHeaderKb,
-			LargeClientHeader: &nginxBufferSizeDto{
+			LargeClientHeader: &nginxBufferSizeDTO{
 				SizeKb: &set.Nginx.Buffers.LargeClientHeader.SizeKb,
 				Amount: &set.Nginx.Buffers.LargeClientHeader.Amount,
 			},
-			Output: &nginxBufferSizeDto{
+			Output: &nginxBufferSizeDTO{
 				SizeKb: &set.Nginx.Buffers.Output.SizeKb,
 				Amount: &set.Nginx.Buffers.Output.Amount,
 			},
@@ -51,22 +51,22 @@ func toDto(set *settings.Settings) *settingsDto {
 		Custom:              set.Nginx.Custom,
 	}
 
-	logRotationModel := &logRotationSettingsDto{
+	logRotationModel := &logRotationSettingsDTO{
 		Enabled:           &set.LogRotation.Enabled,
 		MaximumLines:      &set.LogRotation.MaximumLines,
 		IntervalUnit:      &set.LogRotation.IntervalUnit,
 		IntervalUnitCount: &set.LogRotation.IntervalUnitCount,
 	}
 
-	certificateModel := &certificateAutoRenewSettingsDto{
+	certificateModel := &certificateAutoRenewSettingsDTO{
 		Enabled:           &set.CertificateAutoRenew.Enabled,
 		IntervalUnit:      &set.CertificateAutoRenew.IntervalUnit,
 		IntervalUnitCount: &set.CertificateAutoRenew.IntervalUnitCount,
 	}
 
-	bindingsModel := make([]bindingDto, 0)
+	bindingsModel := make([]bindingDTO, 0)
 	for _, b := range set.GlobalBindings {
-		bindingsModel = append(bindingsModel, bindingDto{
+		bindingsModel = append(bindingsModel, bindingDTO{
 			Type:          &b.Type,
 			IP:            &b.IP,
 			Port:          &b.Port,
@@ -74,7 +74,7 @@ func toDto(set *settings.Settings) *settingsDto {
 		})
 	}
 
-	return &settingsDto{
+	return &settingsDTO{
 		Nginx:                nginxModel,
 		LogRotation:          logRotationModel,
 		CertificateAutoRenew: certificateModel,
@@ -82,7 +82,7 @@ func toDto(set *settings.Settings) *settingsDto {
 	}
 }
 
-func toDomain(input *settingsDto) *settings.Settings {
+func toDomain(input *settingsDTO) *settings.Settings {
 	nginx := input.Nginx
 	logRotation := input.LogRotation
 	certificate := input.CertificateAutoRenew

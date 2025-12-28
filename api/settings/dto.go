@@ -7,17 +7,17 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-type settingsDto struct {
-	Nginx                *nginxSettingsDto                `json:"nginx"`
-	LogRotation          *logRotationSettingsDto          `json:"logRotation"`
-	CertificateAutoRenew *certificateAutoRenewSettingsDto `json:"certificateAutoRenew"`
-	GlobalBindings       []bindingDto                     `json:"globalBindings"`
+type settingsDTO struct {
+	Nginx                *nginxSettingsDTO                `json:"nginx"`
+	LogRotation          *logRotationSettingsDTO          `json:"logRotation"`
+	CertificateAutoRenew *certificateAutoRenewSettingsDTO `json:"certificateAutoRenew"`
+	GlobalBindings       []bindingDTO                     `json:"globalBindings"`
 }
 
-type nginxSettingsDto struct {
-	Logs                *nginxLogsSettingsDto     `json:"logs"`
-	Timeouts            *nginxTimeoutsSettingsDto `json:"timeouts"`
-	Buffers             *nginxBuffersSettingsDto  `json:"buffers"`
+type nginxSettingsDTO struct {
+	Logs                *nginxLogsSettingsDTO     `json:"logs"`
+	Timeouts            *nginxTimeoutsSettingsDTO `json:"timeouts"`
+	Buffers             *nginxBuffersSettingsDTO  `json:"buffers"`
 	WorkerProcesses     *int                      `json:"workerProcesses"`
 	WorkerConnections   *int                      `json:"workerConnections"`
 	DefaultContentType  *string                   `json:"defaultContentType"`
@@ -30,20 +30,20 @@ type nginxSettingsDto struct {
 	Custom              *string                   `json:"custom"`
 }
 
-type logRotationSettingsDto struct {
+type logRotationSettingsDTO struct {
 	Enabled           *bool              `json:"enabled"`
 	MaximumLines      *int               `json:"maximumLines"`
 	IntervalUnit      *settings.TimeUnit `json:"intervalUnit"`
 	IntervalUnitCount *int               `json:"intervalUnitCount"`
 }
 
-type certificateAutoRenewSettingsDto struct {
+type certificateAutoRenewSettingsDTO struct {
 	Enabled           *bool              `json:"enabled"`
 	IntervalUnit      *settings.TimeUnit `json:"intervalUnit"`
 	IntervalUnitCount *int               `json:"intervalUnitCount"`
 }
 
-type nginxTimeoutsSettingsDto struct {
+type nginxTimeoutsSettingsDTO struct {
 	Read       *int `json:"read"`
 	Connect    *int `json:"connect"`
 	Send       *int `json:"send"`
@@ -51,19 +51,19 @@ type nginxTimeoutsSettingsDto struct {
 	ClientBody *int `json:"clientBody"`
 }
 
-type nginxBuffersSettingsDto struct {
+type nginxBuffersSettingsDTO struct {
 	ClientBodyKb      *int                `json:"clientBodyKb"`
 	ClientHeaderKb    *int                `json:"clientHeaderKb"`
-	LargeClientHeader *nginxBufferSizeDto `json:"largeClientHeader"`
-	Output            *nginxBufferSizeDto `json:"output"`
+	LargeClientHeader *nginxBufferSizeDTO `json:"largeClientHeader"`
+	Output            *nginxBufferSizeDTO `json:"output"`
 }
 
-type nginxBufferSizeDto struct {
+type nginxBufferSizeDTO struct {
 	SizeKb *int `json:"sizeKb"`
 	Amount *int `json:"amount"`
 }
 
-type nginxLogsSettingsDto struct {
+type nginxLogsSettingsDTO struct {
 	ServerLogsEnabled *bool              `json:"serverLogsEnabled"`
 	ServerLogsLevel   *settings.LogLevel `json:"serverLogsLevel"`
 	AccessLogsEnabled *bool              `json:"accessLogsEnabled"`
@@ -71,7 +71,7 @@ type nginxLogsSettingsDto struct {
 	ErrorLogsLevel    *settings.LogLevel `json:"errorLogsLevel"`
 }
 
-type bindingDto struct {
+type bindingDTO struct {
 	Type          *binding.Type `json:"type"`
 	IP            *string       `json:"ip"`
 	Port          *int          `json:"port"`

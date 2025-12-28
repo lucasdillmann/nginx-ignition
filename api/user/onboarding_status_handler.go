@@ -18,6 +18,6 @@ func (h onboardingStatusHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	payload := &userOnboardingStatusResponseDto{finished}
+	payload := &userOnboardingStatusResponseDTO{finished}
 	ctx.JSON(http.StatusOK, payload)
 }

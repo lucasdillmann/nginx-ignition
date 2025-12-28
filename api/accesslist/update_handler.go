@@ -15,7 +15,7 @@ type updateHandler struct {
 }
 
 func (h updateHandler) handle(ctx *gin.Context) {
-	payload := &accessListRequestDto{}
+	payload := &accessListRequestDTO{}
 	if err := ctx.BindJSON(payload); err != nil {
 		panic(err)
 	}

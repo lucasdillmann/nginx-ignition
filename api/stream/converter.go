@@ -5,24 +5,24 @@ import (
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
-func toDto(input *stream.Stream) *streamResponseDto {
+func toDTO(input *stream.Stream) *streamResponseDTO {
 	if input == nil {
 		return nil
 	}
 
-	return &streamResponseDto{
+	return &streamResponseDTO{
 		ID:             &input.ID,
 		Enabled:        &input.Enabled,
 		Name:           &input.Name,
 		Type:           ptr.Of(string(input.Type)),
-		FeatureSet:     toFeatureSetDto(&input.FeatureSet),
-		DefaultBackend: toBackendDto(&input.DefaultBackend),
-		Binding:        toAddressDto(&input.Binding),
-		Routes:         toRouteDtos(input.Routes),
+		FeatureSet:     toFeatureSetDTO(&input.FeatureSet),
+		DefaultBackend: toBackendDTO(&input.DefaultBackend),
+		Binding:        toAddressDTO(&input.Binding),
+		Routes:         toRouteDTOs(input.Routes),
 	}
 }
 
-func toDomain(input *streamRequestDto) *stream.Stream {
+func toDomain(input *streamRequestDTO) *stream.Stream {
 	if input == nil {
 		return nil
 	}
@@ -38,12 +38,12 @@ func toDomain(input *streamRequestDto) *stream.Stream {
 	}
 }
 
-func toFeatureSetDto(featureSet *stream.FeatureSet) *featureSetDto {
+func toFeatureSetDTO(featureSet *stream.FeatureSet) *featureSetDTO {
 	if featureSet == nil {
 		return nil
 	}
 
-	return &featureSetDto{
+	return &featureSetDTO{
 		UseProxyProtocol: &featureSet.UseProxyProtocol,
 		SocketKeepAlive:  &featureSet.SocketKeepAlive,
 		TCPKeepAlive:     &featureSet.TCPKeepAlive,
@@ -52,19 +52,19 @@ func toFeatureSetDto(featureSet *stream.FeatureSet) *featureSetDto {
 	}
 }
 
-func toAddressDto(address *stream.Address) *addressDto {
+func toAddressDTO(address *stream.Address) *addressDTO {
 	if address == nil {
 		return nil
 	}
 
-	return &addressDto{
+	return &addressDTO{
 		Protocol: address.Protocol,
 		Address:  &address.Address,
 		Port:     address.Port,
 	}
 }
 
-func toBackend(backend *backendDto) *stream.Backend {
+func toBackend(backend *backendDTO) *stream.Backend {
 	if backend == nil {
 		return nil
 	}
@@ -76,7 +76,7 @@ func toBackend(backend *backendDto) *stream.Backend {
 	}
 }
 
-func toCircuitBreaker(input *circuitBreakerDto) *stream.CircuitBreaker {
+func toCircuitBreaker(input *circuitBreakerDTO) *stream.CircuitBreaker {
 	if input == nil {
 		return nil
 	}
@@ -87,51 +87,51 @@ func toCircuitBreaker(input *circuitBreakerDto) *stream.CircuitBreaker {
 	}
 }
 
-func toCircuitBreakerDto(input *stream.CircuitBreaker) *circuitBreakerDto {
+func toCircuitBreakerDTO(input *stream.CircuitBreaker) *circuitBreakerDTO {
 	if input == nil {
 		return nil
 	}
 
-	return &circuitBreakerDto{
+	return &circuitBreakerDTO{
 		MaxFailures: &input.MaxFailures,
 		OpenSeconds: &input.OpenSeconds,
 	}
 }
 
-func toBackendDto(input *stream.Backend) *backendDto {
+func toBackendDTO(input *stream.Backend) *backendDTO {
 	if input == nil {
 		return nil
 	}
 
-	return &backendDto{
+	return &backendDTO{
 		Weight:         input.Weight,
-		Target:         toAddressDto(&input.Address),
-		CircuitBreaker: toCircuitBreakerDto(input.CircuitBreaker),
+		Target:         toAddressDTO(&input.Address),
+		CircuitBreaker: toCircuitBreakerDTO(input.CircuitBreaker),
 	}
 }
 
-func toRouteDtos(input []stream.Route) []routeDto {
-	output := make([]routeDto, len(input))
+func toRouteDTOs(input []stream.Route) []routeDTO {
+	output := make([]routeDTO, len(input))
 	for index := range input {
-		output[index] = routeDto{
+		output[index] = routeDTO{
 			DomainNames: input[index].DomainNames,
-			Backends:    toBackendDtos(input[index].Backends),
+			Backends:    toBackendDTOs(input[index].Backends),
 		}
 	}
 
 	return output
 }
 
-func toBackendDtos(input []stream.Backend) []backendDto {
-	output := make([]backendDto, len(input))
+func toBackendDTOs(input []stream.Backend) []backendDTO {
+	output := make([]backendDTO, len(input))
 	for index := range input {
-		output[index] = *toBackendDto(&input[index])
+		output[index] = *toBackendDTO(&input[index])
 	}
 
 	return output
 }
 
-func toRoutes(input []routeDto) []stream.Route {
+func toRoutes(input []routeDTO) []stream.Route {
 	output := make([]stream.Route, len(input))
 	for index := range input {
 		output[index] = stream.Route{
@@ -143,7 +143,7 @@ func toRoutes(input []routeDto) []stream.Route {
 	return output
 }
 
-func toBackends(input []backendDto) []stream.Backend {
+func toBackends(input []backendDTO) []stream.Backend {
 	output := make([]stream.Backend, len(input))
 	for index := range input {
 		output[index] = *toBackend(&input[index])
@@ -152,7 +152,7 @@ func toBackends(input []backendDto) []stream.Backend {
 	return output
 }
 
-func toFeatureSet(input *featureSetDto) *stream.FeatureSet {
+func toFeatureSet(input *featureSetDTO) *stream.FeatureSet {
 	if input == nil {
 		return nil
 	}
@@ -166,7 +166,7 @@ func toFeatureSet(input *featureSetDto) *stream.FeatureSet {
 	}
 }
 
-func toAddress(input *addressDto) *stream.Address {
+func toAddress(input *addressDTO) *stream.Address {
 	if input == nil {
 		return nil
 	}

@@ -14,7 +14,7 @@ type updatePasswordHandler struct {
 }
 
 func (h updatePasswordHandler) handle(ctx *gin.Context) {
-	payload := &userPasswordUpdateRequestDto{}
+	payload := &userPasswordUpdateRequestDTO{}
 	if err := ctx.BindJSON(payload); err != nil {
 		panic(err)
 	}

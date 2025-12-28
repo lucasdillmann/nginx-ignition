@@ -6,34 +6,34 @@ import (
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 )
 
-type accessListRequestDto struct {
+type accessListRequestDTO struct {
 	Name                        *string             `json:"name"`
 	Realm                       *string             `json:"realm"`
 	SatisfyAll                  *bool               `json:"satisfyAll"`
 	DefaultOutcome              *accesslist.Outcome `json:"defaultOutcome"`
-	Entries                     []entrySetDto       `json:"entries"`
+	Entries                     []entrySetDTO       `json:"entries"`
 	ForwardAuthenticationHeader *bool               `json:"forwardAuthenticationHeader"`
-	Credentials                 []credentialsDto    `json:"credentials"`
+	Credentials                 []credentialsDTO    `json:"credentials"`
 }
 
-type accessListResponseDto struct {
+type accessListResponseDTO struct {
 	Realm                       *string            `json:"realm"`
 	Name                        string             `json:"name"`
 	DefaultOutcome              accesslist.Outcome `json:"defaultOutcome"`
-	Entries                     []entrySetDto      `json:"entries"`
-	Credentials                 []credentialsDto   `json:"credentials"`
+	Entries                     []entrySetDTO      `json:"entries"`
+	Credentials                 []credentialsDTO   `json:"credentials"`
 	ID                          uuid.UUID          `json:"id"`
 	SatisfyAll                  bool               `json:"satisfyAll"`
 	ForwardAuthenticationHeader bool               `json:"forwardAuthenticationHeader"`
 }
 
-type entrySetDto struct {
+type entrySetDTO struct {
 	Priority        *int                `json:"priority"`
 	Outcome         *accesslist.Outcome `json:"outcome"`
 	SourceAddresses []string            `json:"sourceAddresses"`
 }
 
-type credentialsDto struct {
+type credentialsDTO struct {
 	Username *string `json:"username"`
 	Password *string `json:"password"`
 }

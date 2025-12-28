@@ -15,7 +15,7 @@ type createHandler struct {
 }
 
 func (h createHandler) handle(ctx *gin.Context) {
-	payload := &streamRequestDto{}
+	payload := &streamRequestDTO{}
 	if err := ctx.BindJSON(payload); err != nil {
 		panic(err)
 	}

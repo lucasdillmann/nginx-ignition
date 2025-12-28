@@ -42,5 +42,5 @@ func (h getOptionHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, toOptionDto(data))
+	ctx.JSON(http.StatusOK, toOptionDTO(data))
 }

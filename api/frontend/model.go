@@ -1,15 +1,15 @@
 package frontend
 
-type configurationDto struct {
-	CodeEditor codeEditorDto `json:"codeEditor"`
-	Version    versionDto    `json:"version"`
+type configurationDTO struct {
+	CodeEditor codeEditorDTO `json:"codeEditor"`
+	Version    versionDTO    `json:"version"`
 }
 
-type codeEditorDto struct {
+type codeEditorDTO struct {
 	APIKey *string `json:"apiKey"`
 }
 
-type versionDto struct {
+type versionDTO struct {
 	Current *string `json:"current"`
 	Latest  *string `json:"latest"`
 }

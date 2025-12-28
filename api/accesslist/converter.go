@@ -6,29 +6,29 @@ import (
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 )
 
-func toDto(accessList *accesslist.AccessList) *accessListResponseDto {
+func toDTO(accessList *accesslist.AccessList) *accessListResponseDTO {
 	if accessList == nil {
 		return nil
 	}
 
-	entries := make([]entrySetDto, 0)
+	entries := make([]entrySetDTO, 0)
 	for _, entry := range accessList.Entries {
-		entries = append(entries, entrySetDto{
+		entries = append(entries, entrySetDTO{
 			Priority:        &entry.Priority,
 			Outcome:         &entry.Outcome,
 			SourceAddresses: entry.SourceAddress,
 		})
 	}
 
-	credentials := make([]credentialsDto, 0)
+	credentials := make([]credentialsDTO, 0)
 	for _, credential := range accessList.Credentials {
-		credentials = append(credentials, credentialsDto{
+		credentials = append(credentials, credentialsDTO{
 			Username: &credential.Username,
 			Password: &credential.Password,
 		})
 	}
 
-	return &accessListResponseDto{
+	return &accessListResponseDTO{
 		ID:                          accessList.ID,
 		Name:                        accessList.Name,
 		Realm:                       &accessList.Realm,
@@ -40,7 +40,7 @@ func toDto(accessList *accesslist.AccessList) *accessListResponseDto {
 	}
 }
 
-func toDomain(request *accessListRequestDto) *accesslist.AccessList {
+func toDomain(request *accessListRequestDTO) *accesslist.AccessList {
 	if request == nil {
 		return nil
 	}

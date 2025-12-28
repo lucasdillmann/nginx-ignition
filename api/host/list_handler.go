@@ -35,8 +35,8 @@ func (h listHandler) handle(ctx *gin.Context) {
 
 	ctx.JSON(
 		http.StatusOK,
-		pagination.Convert(page, func(item *host.Host) *hostResponseDto {
-			return toDto(item, globalSettings)
+		pagination.Convert(page, func(item *host.Host) *hostResponseDTO {
+			return toDTO(item, globalSettings)
 		}),
 	)
 }
