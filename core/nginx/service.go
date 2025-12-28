@@ -27,13 +27,13 @@ type service struct {
 }
 
 func newService(
-	configuration *configuration.Configuration,
+	cfg *configuration.Configuration,
 	hostRepository host.Repository,
 	configFilesManager *cfgfiles.Facade,
 	vpnCommands *vpn.Commands,
 	settingsCommands *settings.Commands,
 ) (*service, error) {
-	pManager, err := newProcessManager(configuration)
+	pManager, err := newProcessManager(cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -45,8 +45,8 @@ func newService(
 		processManager:     pManager,
 		vpnManager:         vManager,
 		semaphore:          newSemaphore(),
-		logReader:          newLogReader(configuration),
-		logRotator:         newLogRotator(configuration, settingsCommands, hostRepository, pManager),
+		logReader:          newLogReader(cfg),
+		logRotator:         newLogRotator(cfg, settingsCommands, hostRepository, pManager),
 	}, nil
 }
 
@@ -128,8 +128,8 @@ func (s *service) isRunning(_ context.Context) bool {
 	return s.semaphore.currentState() == runningState
 }
 
-func (s *service) getHostLogs(ctx context.Context, hostId uuid.UUID, qualifier string, lines int) ([]string, error) {
-	return s.logReader.read(ctx, "host-"+hostId.String()+"."+qualifier+".log", lines)
+func (s *service) getHostLogs(ctx context.Context, hostID uuid.UUID, qualifier string, lines int) ([]string, error) {
+	return s.logReader.read(ctx, "host-"+hostID.String()+"."+qualifier+".log", lines)
 }
 
 func (s *service) getMainLogs(ctx context.Context, lines int) ([]string, error) {

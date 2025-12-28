@@ -18,8 +18,8 @@ func Install(router *gin.Engine, commands *certificate.Commands, authorizer *aut
 	basePath.POST("/issue", issueHandler{commands}.handle)
 	basePath.GET("/available-providers", availableProvidersHandler{commands}.handle)
 
-	byIdPath := basePath.Group("/:id")
-	byIdPath.GET("", getHandler{commands}.handle)
-	byIdPath.DELETE("", deleteHandler{commands}.handle)
-	byIdPath.POST("/renew", renewHandler{commands}.handle)
+	byIDPath := basePath.Group("/:id")
+	byIDPath.GET("", getHandler{commands}.handle)
+	byIDPath.DELETE("", deleteHandler{commands}.handle)
+	byIDPath.POST("/renew", renewHandler{commands}.handle)
 }

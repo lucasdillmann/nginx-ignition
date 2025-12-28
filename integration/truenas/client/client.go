@@ -10,14 +10,14 @@ import (
 type Client struct {
 	delegate *http.Client
 	cache    *apiCache[[]byte]
-	baseUrl  string
+	baseURL  string
 	username string
 	password string
 }
 
-func New(baseUrl, username, password string, cacheTimeoutSeconds int) *Client {
+func New(baseURL, username, password string, cacheTimeoutSeconds int) *Client {
 	return &Client{
-		baseUrl:  baseUrl,
+		baseURL:  baseURL,
 		username: username,
 		password: password,
 		delegate: &http.Client{
@@ -27,8 +27,8 @@ func New(baseUrl, username, password string, cacheTimeoutSeconds int) *Client {
 	}
 }
 
-func (c *Client) UpdateCredentials(baseUrl, username, password string) {
-	c.baseUrl = baseUrl
+func (c *Client) UpdateCredentials(baseURL, username, password string) {
+	c.baseURL = baseURL
 	c.username = username
 	c.password = password
 }
@@ -61,7 +61,7 @@ func (c *Client) get(endpoint string, result any) error {
 }
 
 func (c *Client) executeGetRequest(endpoint string, result any) ([]byte, error) {
-	req, err := http.NewRequest("GET", c.baseUrl+"/api/v2.0/"+endpoint, nil)
+	req, err := http.NewRequest("GET", c.baseURL+"/api/v2.0/"+endpoint, nil)
 	if err != nil {
 		return nil, err
 	}

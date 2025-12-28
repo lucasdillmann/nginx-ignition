@@ -11,8 +11,8 @@ type startup struct {
 	scheduler *Scheduler
 }
 
-func registerStartup(lifecycle *lifecycle.Lifecycle, scheduler *Scheduler) {
-	lifecycle.RegisterStartup(startup{scheduler})
+func registerStartup(lc *lifecycle.Lifecycle, sched *Scheduler) {
+	lc.RegisterStartup(startup{sched})
 }
 
 func (s startup) Run(ctx context.Context) error {

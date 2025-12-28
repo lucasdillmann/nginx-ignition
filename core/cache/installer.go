@@ -12,9 +12,9 @@ func buildCommands(repository Repository) *Commands {
 	serviceInstance := newService(repository)
 	return &Commands{
 		Save:        serviceInstance.save,
-		Delete:      serviceInstance.deleteById,
+		Delete:      serviceInstance.deleteByID,
 		List:        serviceInstance.list,
-		Get:         serviceInstance.findById,
+		Get:         serviceInstance.findByID,
 		Exists:      serviceInstance.existsByID,
 		GetAllInUse: serviceInstance.findAllInUse,
 	}

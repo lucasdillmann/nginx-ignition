@@ -26,7 +26,7 @@ type Driver interface {
 		searchTerms *string,
 		tcpOnly bool,
 	) (*pagination.Page[DriverOption], error)
-	GetAvailableOptionById(
+	GetAvailableOptionByID(
 		ctx context.Context,
 		parameters map[string]any,
 		id string,

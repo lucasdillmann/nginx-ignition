@@ -16,16 +16,16 @@ import (
 )
 
 const (
-	byAccessListIdFilter = "access_list_id = ?"
+	byAccessListIDFilter = "access_list_id = ?"
 )
 
 type repository struct {
 	database *database.Database
 }
 
-func New(database *database.Database) accesslist.Repository {
+func New(db *database.Database) accesslist.Repository {
 	return &repository{
-		database: database,
+		database: db,
 	}
 }
 
@@ -36,7 +36,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*accesslist.Ac
 		Model(&model).
 		Relation("Credentials").
 		Relation("EntrySets").
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -53,14 +53,14 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*accesslist.Ac
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	return r.database.Select().
 		Model((*accessListModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exists(ctx)
 }
 
 func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	hostExists, err := r.database.Select().
 		Table("host").
-		Where(byAccessListIdFilter, id).
+		Where(byAccessListIDFilter, id).
 		Exists(ctx)
 	if err != nil || hostExists {
 		return hostExists, err
@@ -68,7 +68,7 @@ func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) 
 
 	return r.database.Select().
 		Table("host_route").
-		Where(byAccessListIdFilter, id).
+		Where(byAccessListIDFilter, id).
 		Exists(ctx)
 }
 
@@ -88,7 +88,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*accessListModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -162,7 +162,7 @@ func (r *repository) Save(ctx context.Context, accessList *accesslist.AccessList
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	exists, err := transaction.NewSelect().Model((*accessListModel)(nil)).Where(constants.ByIdFilter, accessList.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().Model((*accessListModel)(nil)).Where(constants.ByIDFilter, accessList.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}
@@ -187,7 +187,7 @@ func (r *repository) Save(ctx context.Context, accessList *accesslist.AccessList
 }
 
 func (r *repository) performUpdate(ctx context.Context, model *accessListModel, transaction bun.Tx) error {
-	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
+	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIDFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -228,7 +228,7 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 	_, err := transaction.
 		NewDelete().
 		Table("access_list_credentials").
-		Where(byAccessListIdFilter, id).
+		Where(byAccessListIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -237,7 +237,7 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 	_, err = transaction.
 		NewDelete().
 		Table("access_list_entry_set").
-		Where(byAccessListIdFilter, id).
+		Where(byAccessListIDFilter, id).
 		Exec(ctx)
 
 	return err

@@ -16,8 +16,8 @@ type processManager struct {
 	configPath string
 }
 
-func newProcessManager(configuration *configuration.Configuration) (*processManager, error) {
-	prefixedConfiguration := configuration.WithPrefix("nginx-ignition.nginx")
+func newProcessManager(cfg *configuration.Configuration) (*processManager, error) {
+	prefixedConfiguration := cfg.WithPrefix("nginx-ignition.nginx")
 	binaryPath, err := prefixedConfiguration.Get("binary-path")
 	if err != nil {
 		return nil, err

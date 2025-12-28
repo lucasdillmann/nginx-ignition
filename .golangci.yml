@@ -48,55 +48,34 @@ linters:
       max-open-files: 2048
       confidence: 0.8
       severity: warning
-      enable-all-rules: false
+      enable-all-rules: true
       rules:
-        - name: blank-imports
+        - name: line-length-limit
           disabled: true
-        - name: context-as-argument
+        - name: cognitive-complexity
           disabled: true
-        - name: dot-imports
+        - name: add-constant
           disabled: true
-        - name: error-return
-          disabled: false
-        - name: error-strings
-          disabled: false
-        - name: error-naming
-          disabled: false
+        - name: unused-receiver
+          disabled: true
+        - name: flag-parameter
+          disabled: true
+        - name: unsecure-url-scheme
+          disabled: true
+        - name: unchecked-type-assertion
+          disabled: true
+        - name: cyclomatic
+          disabled: true
+        - name: function-length
+          disabled: true
+        - name: function-result-limit
+          disabled: true
+        - name: max-public-structs
+          disabled: true
         - name: exported
           arguments:
             - checkPrivateReceivers
             - sayRepetitiveInsteadOfStutters
-          disabled: false
-        - name: if-return
-          disabled: false
-        - name: increment-decrement
-          disabled: false
-        - name: var-declaration
-          disabled: false
-        - name: package-comments
-          disabled: false
-        - name: range
-          disabled: false
-        - name: receiver-naming
-          disabled: false
-        - name: time-naming
-          disabled: false
-        - name: unexported-return
-          disabled: false
-        - name: indent-error-flow
-          disabled: false
-        - name: errorf
-          disabled: false
-        - name: empty-block
-          disabled: false
-        - name: superfluous-else
-          disabled: false
-        - name: unused-parameter
-          disabled: false
-        - name: unreachable-code
-          disabled: false
-        - name: redefines-builtin-id
-          disabled: false
     unparam:
       check-exported: false
   exclusions:

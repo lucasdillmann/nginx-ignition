@@ -25,13 +25,13 @@ func Handler(ctx *gin.Context, outcome any) {
 		err = fmt.Errorf("%s", outcome)
 	}
 
-	httpError := &ApiError{}
+	httpError := &APIError{}
 	consistencyError := &validation.ConsistencyError{}
 	coreError := &coreerror.CoreError{}
 
 	switch {
 	case errors.As(err, &httpError):
-		handleHttpError(ctx, httpError)
+		handleHTTPError(ctx, httpError)
 	case errors.As(err, &consistencyError):
 		handleConsistencyError(ctx, consistencyError)
 	case errors.As(err, &coreError):
@@ -48,7 +48,7 @@ func CanHandle(err error) bool {
 		return false
 	}
 
-	httpError := &ApiError{}
+	httpError := &APIError{}
 	consistencyError := &validation.ConsistencyError{}
 	validationError := &validator.ValidationErrors{}
 	coreError := &coreerror.CoreError{}
@@ -75,7 +75,7 @@ func handleInvalidTokenError(ctx *gin.Context) {
 	ctx.Status(http.StatusUnauthorized)
 }
 
-func handleHttpError(ctx *gin.Context, err *ApiError) {
+func handleHTTPError(ctx *gin.Context, err *APIError) {
 	ctx.JSON(err.StatusCode, gin.H{"message": err.Message})
 }
 

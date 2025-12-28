@@ -327,10 +327,10 @@ var providers = []dns.Provider{
 }
 
 func resolveProviderChallenge(ctx context.Context, domainNames []string, parameters map[string]any) (challenge.Provider, error) {
-	providerId, _ := parameters[dnsProvider.ID].(string)
+	providerID, _ := parameters[dnsProvider.ID].(string)
 
 	for _, provider := range providers {
-		if provider.ID() == providerId {
+		if provider.ID() == providerID {
 			return provider.ChallengeProvider(ctx, domainNames, parameters)
 		}
 	}

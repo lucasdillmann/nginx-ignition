@@ -18,9 +18,9 @@ type repository struct {
 	database *database.Database
 }
 
-func New(database *database.Database) certificate.Repository {
+func New(db *database.Database) certificate.Repository {
 	return &repository{
-		database: database,
+		database: db,
 	}
 }
 
@@ -29,7 +29,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*certificate.C
 
 	err := r.database.Select().
 		Model(&model).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -51,7 +51,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*certificate.C
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	return r.database.Select().
 		Model((*certificateModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exists(ctx)
 }
 
@@ -106,7 +106,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*certificateModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -115,7 +115,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r *repository) Save(ctx context.Context, certificate *certificate.Certificate) error {
+func (r *repository) Save(ctx context.Context, cert *certificate.Certificate) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -124,18 +124,18 @@ func (r *repository) Save(ctx context.Context, certificate *certificate.Certific
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	model, err := toModel(certificate)
+	model, err := toModel(cert)
 	if err != nil {
 		return err
 	}
 
-	exists, err := transaction.NewSelect().Model((*certificateModel)(nil)).Where(constants.ByIdFilter, certificate.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().Model((*certificateModel)(nil)).Where(constants.ByIDFilter, cert.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIDFilter, model.ID).Exec(ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(model).Exec(ctx)
 	}

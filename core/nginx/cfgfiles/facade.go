@@ -31,7 +31,7 @@ func newFacade(
 	streamCommands *stream.Commands,
 	cacheCommands *cache.Commands,
 	integrationCommands *integration.Commands,
-	configuration *configuration.Configuration,
+	cfg *configuration.Configuration,
 	accessListRepository accesslist.Repository,
 	certificateRepository certificate.Repository,
 	settingsRepository settings.Repository,
@@ -52,7 +52,7 @@ func newFacade(
 		streamCommands: streamCommands,
 		cacheCommands:  cacheCommands,
 		providers:      providers,
-		configuration:  configuration,
+		configuration:  cfg,
 	}
 }
 

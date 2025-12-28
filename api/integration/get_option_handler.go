@@ -14,25 +14,25 @@ type getOptionHandler struct {
 }
 
 func (h getOptionHandler) handle(ctx *gin.Context) {
-	integrationId := ctx.Param("id")
-	if integrationId == "" {
+	integrationID := ctx.Param("id")
+	if integrationID == "" {
 		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	integrationUuid, err := uuid.Parse(integrationId)
+	integrationUUID, err := uuid.Parse(integrationID)
 	if err != nil {
 		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	optionId := ctx.Param("optionId")
-	if optionId == "" {
+	optionID := ctx.Param("optionID")
+	if optionID == "" {
 		ctx.Status(http.StatusNotFound)
 		return
 	}
 
-	data, err := h.commands.GetOption(ctx.Request.Context(), integrationUuid, optionId)
+	data, err := h.commands.GetOption(ctx.Request.Context(), integrationUUID, optionID)
 	if err != nil {
 		panic(err)
 	}

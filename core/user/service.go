@@ -79,11 +79,11 @@ func (s *service) changePassword(ctx context.Context, id uuid.UUID, currentPassw
 	return s.repository.Save(ctx, databaseState)
 }
 
-func (s *service) getById(ctx context.Context, id uuid.UUID) (*User, error) {
+func (s *service) getByID(ctx context.Context, id uuid.UUID) (*User, error) {
 	return s.repository.FindByID(ctx, id)
 }
 
-func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
+func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
 	return s.repository.DeleteByID(ctx, id)
 }
 
@@ -100,7 +100,7 @@ func (s *service) isOnboardingCompleted(ctx context.Context) (bool, error) {
 	return count > 0, nil
 }
 
-func (s *service) save(ctx context.Context, request *SaveRequest, currentUserId *uuid.UUID) error {
+func (s *service) save(ctx context.Context, request *SaveRequest, currentUserID *uuid.UUID) error {
 	var passwordHash, passwordSalt string
 	var databaseState *User
 	var err error
@@ -130,7 +130,7 @@ func (s *service) save(ctx context.Context, request *SaveRequest, currentUserId 
 		Permissions:  request.Permissions,
 	}
 
-	if err := newValidator(s.repository).validate(ctx, updatedState, databaseState, request, currentUserId); err != nil {
+	if err := newValidator(s.repository).validate(ctx, updatedState, databaseState, request, currentUserID); err != nil {
 		return err
 	}
 

@@ -16,9 +16,9 @@ type Database struct {
 	connectionString string
 }
 
-func newDatabase(configuration *configuration.Configuration) *Database {
+func newDatabase(cfg *configuration.Configuration) *Database {
 	return &Database{
-		configuration: configuration.WithPrefix("nginx-ignition.database"),
+		configuration: cfg.WithPrefix("nginx-ignition.database"),
 		db:            nil,
 		bun:           nil,
 	}

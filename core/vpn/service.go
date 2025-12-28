@@ -34,7 +34,7 @@ func (s *service) list(
 	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms, enabledOnly)
 }
 
-func (s *service) getById(ctx context.Context, id uuid.UUID) (*VPN, error) {
+func (s *service) getByID(ctx context.Context, id uuid.UUID) (*VPN, error) {
 	return s.repository.FindByID(ctx, id)
 }
 
@@ -47,7 +47,7 @@ func (s *service) save(ctx context.Context, data *VPN) error {
 	return s.repository.Save(ctx, data)
 }
 
-func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
+func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
 	inUse, err := s.repository.InUseByID(ctx, id)
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
 	return s.repository.DeleteByID(ctx, id)
 }
 
-func (s *service) existsById(ctx context.Context, id uuid.UUID) (*bool, error) {
+func (s *service) existsByID(ctx context.Context, id uuid.UUID) (*bool, error) {
 	return s.repository.ExistsByID(ctx, id)
 }
 
@@ -111,7 +111,7 @@ func (s *service) stop(ctx context.Context, endpoint Endpoint) error {
 }
 
 func (s *service) resolveValues(ctx context.Context, id uuid.UUID) (*VPN, Driver, *string, error) {
-	data, err := s.getById(ctx, id)
+	data, err := s.getByID(ctx, id)
 	if err != nil {
 		return nil, nil, nil, err
 	}

@@ -17,6 +17,6 @@ type WorkloadPortDTO struct {
 }
 
 type HostPortDTO struct {
-	HostIp   string `json:"host_ip"`
+	HostIP   string `json:"host_ip"`
 	HostPort int    `json:"host_port"`
 }

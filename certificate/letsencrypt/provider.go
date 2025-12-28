@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	certificateProviderId = "LETS_ENCRYPT"
+	certificateProviderID = "LETS_ENCRYPT"
 	privateKeySize        = 2048
 )
 
@@ -26,16 +26,16 @@ type Provider struct {
 	configuration *configuration.Configuration
 }
 
-func New(configuration *configuration.Configuration) *Provider {
+func New(cfg *configuration.Configuration) *Provider {
 	acmelog.Logger = logAdapterInstance
 
 	return &Provider{
-		configuration: configuration,
+		configuration: cfg,
 	}
 }
 
 func (p *Provider) ID() string {
-	return certificateProviderId
+	return certificateProviderID
 }
 
 func (p *Provider) Name() string {

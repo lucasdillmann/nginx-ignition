@@ -19,8 +19,8 @@ type Driver struct {
 	cacheDuration int
 }
 
-func newDriver(configuration *configuration.Configuration) (*Driver, error) {
-	cacheDuration, err := configuration.GetInt("nginx-ignition.integration.truenas.api-cache-timeout-seconds")
+func newDriver(cfg *configuration.Configuration) (*Driver, error) {
+	cacheDuration, err := cfg.GetInt("nginx-ignition.integration.truenas.api-cache-timeout-seconds")
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (a *Driver) Description() string {
 func (a *Driver) ConfigurationFields() []dynamicfields.DynamicField {
 	return []dynamicfields.DynamicField{
 		urlField,
-		proxyUrlField,
+		proxyURLField,
 		usernameField,
 		passwordField,
 	}
@@ -80,16 +80,16 @@ func (a *Driver) GetAvailableOptions(
 	return pagination.New(0, resultSize, resultSize, options), nil
 }
 
-func (a *Driver) GetAvailableOptionById(
+func (a *Driver) GetAvailableOptionByID(
 	_ context.Context,
 	parameters map[string]any,
 	id string,
 ) (*integration.DriverOption, error) {
 	parts := strings.Split(id, ":")
-	appId := parts[0]
+	appID := parts[0]
 	containerPort := parts[1]
 
-	app, port, err := a.getWorkloadPort(parameters, appId, containerPort)
+	app, port, err := a.getWorkloadPort(parameters, appID, containerPort)
 	if err != nil {
 		return nil, err
 	}
@@ -111,13 +111,13 @@ func (a *Driver) GetOptionProxyURL(
 	parameters map[string]any,
 	id string,
 ) (*string, []string, error) {
-	baseUrl := parameters[urlField.ID].(string)
-	proxyUrl := parameters[proxyUrlField.ID].(string)
+	baseURL := parameters[urlField.ID].(string)
+	proxyURL := parameters[proxyURLField.ID].(string)
 	parts := strings.Split(id, ":")
-	appId := parts[0]
+	appID := parts[0]
 	containerPort := parts[1]
 
-	_, port, err := a.getWorkloadPort(parameters, appId, containerPort)
+	_, port, err := a.getWorkloadPort(parameters, appID, containerPort)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -127,20 +127,20 @@ func (a *Driver) GetOptionProxyURL(
 	}
 
 	hostPort := port.HostPorts[0].HostPort
-	hostIp := port.HostPorts[0].HostIp
+	hostIP := port.HostPorts[0].HostIP
 
 	var endpoint string
 	switch {
-	case proxyUrl != "":
-		parseResult, err := url.Parse(proxyUrl)
+	case proxyURL != "":
+		parseResult, err := url.Parse(proxyURL)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		endpoint = parseResult.Host
 
-	case hostIp == "0.0.0.0":
-		parseResult, err := url.Parse(baseUrl)
+	case hostIP == "0.0.0.0":
+		parseResult, err := url.Parse(baseURL)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -148,7 +148,7 @@ func (a *Driver) GetOptionProxyURL(
 		endpoint = parseResult.Host
 
 	default:
-		endpoint = hostIp
+		endpoint = hostIP
 	}
 
 	output := fmt.Sprintf("http://%s:%d", endpoint, hostPort)
@@ -157,7 +157,7 @@ func (a *Driver) GetOptionProxyURL(
 
 func (a *Driver) getWorkloadPort(
 	parameters map[string]any,
-	appId, containerPort string,
+	appID, containerPort string,
 ) (*client.AvailableAppDTO, *client.WorkloadPortDTO, error) {
 	apps, err := a.getAvailableApps(parameters)
 	if err != nil {
@@ -165,7 +165,7 @@ func (a *Driver) getWorkloadPort(
 	}
 
 	for _, app := range apps {
-		if app.ID == appId {
+		if app.ID == appID {
 			for _, port := range app.ActiveWorkloads.UsedPorts {
 				if strconv.Itoa(port.ContainerPort) == containerPort {
 					return &app, &port, nil
@@ -183,7 +183,7 @@ func (a *Driver) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []int
 	for _, app := range apps {
 		for _, port := range app.ActiveWorkloads.UsedPorts {
 			for _, hostPort := range port.HostPorts {
-				if strings.Contains(hostPort.HostIp, ":") {
+				if strings.Contains(hostPort.HostIP, ":") {
 					continue
 				}
 
@@ -206,14 +206,14 @@ func (a *Driver) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []int
 }
 
 func (a *Driver) getAvailableApps(parameters map[string]any) ([]client.AvailableAppDTO, error) {
-	baseUrl := parameters[urlField.ID].(string)
+	baseURL := parameters[urlField.ID].(string)
 	username := parameters[usernameField.ID].(string)
 	password := parameters[passwordField.ID].(string)
 
 	if a.client == nil {
-		a.client = client.New(baseUrl, username, password, a.cacheDuration)
+		a.client = client.New(baseURL, username, password, a.cacheDuration)
 	} else {
-		a.client.UpdateCredentials(baseUrl, username, password)
+		a.client.UpdateCredentials(baseURL, username, password)
 	}
 
 	return a.client.GetAvailableApps()

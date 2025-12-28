@@ -11,8 +11,8 @@ type shutdown struct {
 	commands *Commands
 }
 
-func registerShutdown(lifecycle *lifecycle.Lifecycle, commands *Commands) {
-	lifecycle.RegisterShutdown(shutdown{commands})
+func registerShutdown(lc *lifecycle.Lifecycle, commands *Commands) {
+	lc.RegisterShutdown(shutdown{commands})
 }
 
 func (s shutdown) Priority() int {

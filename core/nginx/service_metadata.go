@@ -22,7 +22,7 @@ func (s *service) getMetadata(ctx context.Context) (*Metadata, error) {
 	output := string(rawOutput)
 	version := s.extractVersion(output)
 	buildDetails := s.extractBuildDetails(output)
-	tlsSniEnabled := s.extractTlsSniEnabled(output)
+	tlsSniEnabled := s.extractTLSSNIEnabled(output)
 	configureArgs := s.extractConfigureArguments(output)
 	staticModules := s.extractStaticModules(configureArgs)
 	dynamicModules := s.extractDynamicModules(configureArgs)
@@ -63,7 +63,7 @@ func (s *service) extractBuildDetails(output string) string {
 	return strings.Join(buildLines, "; ")
 }
 
-func (s *service) extractTlsSniEnabled(output string) bool {
+func (s *service) extractTLSSNIEnabled(output string) bool {
 	return strings.Contains(output, "TLS SNI support enabled")
 }
 

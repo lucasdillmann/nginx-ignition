@@ -17,10 +17,10 @@ type migrations struct {
 	configuration *configuration.Configuration
 }
 
-func newMigrations(database *database.Database, configuration *configuration.Configuration) *migrations {
+func newMigrations(db *database.Database, cfg *configuration.Configuration) *migrations {
 	return &migrations{
-		database:      database,
-		configuration: configuration.WithPrefix("nginx-ignition.database"),
+		database:      db,
+		configuration: cfg.WithPrefix("nginx-ignition.database"),
 	}
 }
 

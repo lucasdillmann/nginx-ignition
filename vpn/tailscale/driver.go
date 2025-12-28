@@ -2,7 +2,7 @@ package tailscale
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/vpn"
@@ -64,7 +64,7 @@ func (d Driver) Stop(ctx context.Context, endpoint vpn.Endpoint) error {
 
 	tEndpoint, ok := value.(*tailnetEndpoint)
 	if !ok {
-		return fmt.Errorf("invalid endpoint type in state")
+		return errors.New("invalid endpoint type in state")
 	}
 
 	tEndpoint.stop(ctx)
@@ -80,11 +80,11 @@ func (d Driver) doStart(
 ) error {
 	authKey, ok := parameters[authKeyFieldName].(string)
 	if !ok || authKey == "" {
-		return fmt.Errorf("authKey parameter is required and must be a non-empty string")
+		return errors.New("authKey parameter is required and must be a non-empty string")
 	}
 
 	var serverURL string
-	if value, casted := parameters[coordinatorUrlFieldName].(string); casted {
+	if value, casted := parameters[coordinatorURLFieldName].(string); casted {
 		serverURL = value
 	}
 

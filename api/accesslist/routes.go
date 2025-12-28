@@ -17,8 +17,8 @@ func Install(router *gin.Engine, commands *accesslist.Commands, authorizer *auth
 	basePath.GET("", listHandler{commands}.handle)
 	basePath.POST("", createHandler{commands}.handle)
 
-	byIdPath := basePath.Group("/:id")
-	byIdPath.GET("", getHandler{commands}.handle)
-	byIdPath.PUT("", updateHandler{commands}.handle)
-	byIdPath.DELETE("", deleteHandler{commands}.handle)
+	byIDPath := basePath.Group("/:id")
+	byIDPath.GET("", getHandler{commands}.handle)
+	byIDPath.PUT("", updateHandler{commands}.handle)
+	byIDPath.DELETE("", deleteHandler{commands}.handle)
 }

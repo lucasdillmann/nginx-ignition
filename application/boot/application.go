@@ -25,8 +25,8 @@ func StartApplication() error {
 	})
 }
 
-func runLifecycle(ctx context.Context, lifecycle *lifecycle.Lifecycle, startTime int64) error {
-	if err := lifecycle.FireStartup(ctx); err != nil {
+func runLifecycle(ctx context.Context, lc *lifecycle.Lifecycle, startTime int64) error {
+	if err := lc.FireStartup(ctx); err != nil {
 		return err
 	}
 
@@ -36,7 +36,7 @@ func runLifecycle(ctx context.Context, lifecycle *lifecycle.Lifecycle, startTime
 	receivedSignal := waitForShutdownSignal()
 
 	log.Infof("Application shutdown signal received (%s). Starting graceful shutdown.", receivedSignal)
-	lifecycle.FireShutdown(ctx)
+	lc.FireShutdown(ctx)
 
 	log.Infof("Shutdown complete")
 	return nil

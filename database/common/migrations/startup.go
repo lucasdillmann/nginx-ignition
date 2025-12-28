@@ -10,9 +10,9 @@ type startup struct {
 	migrations *migrations
 }
 
-func registerStartup(lifecycle *lifecycle.Lifecycle, migrations *migrations) {
-	command := &startup{migrations}
-	lifecycle.RegisterStartup(command)
+func registerStartup(lc *lifecycle.Lifecycle, mig *migrations) {
+	command := &startup{mig}
+	lc.RegisterStartup(command)
 }
 
 func (d startup) Priority() int {

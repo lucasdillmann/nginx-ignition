@@ -23,12 +23,12 @@ func Install(
 
 	basePath.GET("/available-drivers", availableDriversHandler{commands}.handle)
 
-	byIdPath := basePath.Group("/:id")
-	byIdPath.GET("", getHandler{commands}.handle)
-	byIdPath.PUT("", putHandler{commands}.handle)
-	byIdPath.DELETE("", deleteHandler{commands}.handle)
+	byIDPath := basePath.Group("/:id")
+	byIDPath.GET("", getHandler{commands}.handle)
+	byIDPath.PUT("", putHandler{commands}.handle)
+	byIDPath.DELETE("", deleteHandler{commands}.handle)
 
-	optionsPath := byIdPath.Group("/options")
+	optionsPath := byIDPath.Group("/options")
 	optionsPath.GET("", listOptionsHandler{commands}.handle)
-	optionsPath.GET("/:optionId", getOptionHandler{commands}.handle)
+	optionsPath.GET("/:optionID", getOptionHandler{commands}.handle)
 }

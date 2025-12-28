@@ -176,7 +176,7 @@ func (a *endpointAdapter) Targets() []vpn.EndpointTarget {
 		output[index].Host = targetHost
 		output[index].IP = b.IP
 		output[index].Port = b.Port
-		output[index].HTTPS = b.Type == binding.HttpsBindingType
+		output[index].HTTPS = b.Type == binding.HTTPSBindingType
 	}
 
 	return output

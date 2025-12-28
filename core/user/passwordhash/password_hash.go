@@ -14,11 +14,15 @@ type PasswordHash struct {
 	configuration *configuration.Configuration
 }
 
-func New(configuration *configuration.Configuration) *PasswordHash {
-	return &PasswordHash{configuration}
+func New(cfg *configuration.Configuration) *PasswordHash {
+	return &PasswordHash{cfg}
 }
 
-func (h *PasswordHash) Hash(password string) (string, string, error) {
+func (h *PasswordHash) Hash(password string) (
+	encodedHash string,
+	encodedSalt string,
+	err error,
+) {
 	saltSize, hashIterations, err := readConfigValues(h.configuration)
 	if err != nil {
 		return "", "", err
@@ -76,14 +80,18 @@ func (h *PasswordHash) hashValue(password, salt []byte, hashIterations int) ([]b
 	return output, nil
 }
 
-func readConfigValues(configuration *configuration.Configuration) (int, int, error) {
-	prefixedConfiguration := configuration.WithPrefix("nginx-ignition.security.user-password-hashing")
-	saltSize, err := prefixedConfiguration.GetInt("salt-size")
+func readConfigValues(cfg *configuration.Configuration) (
+	saltSize int,
+	iterations int,
+	err error,
+) {
+	prefixedConfiguration := cfg.WithPrefix("nginx-ignition.security.user-password-hashing")
+	saltSize, err = prefixedConfiguration.GetInt("salt-size")
 	if err != nil {
 		return 0, 0, err
 	}
 
-	iterations, err := prefixedConfiguration.GetInt("iterations")
+	iterations, err = prefixedConfiguration.GetInt("iterations")
 	if err != nil {
 		return 0, 0, err
 	}

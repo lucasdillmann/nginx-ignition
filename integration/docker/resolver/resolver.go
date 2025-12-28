@@ -12,28 +12,28 @@ import (
 
 type Resolver interface {
 	ResolveOptions(ctx context.Context, tcpOnly bool, searchTerms *string) ([]Option, error)
-	ResolveOptionByID(ctx context.Context, optionId string) (*Option, error)
+	ResolveOptionByID(ctx context.Context, optionID string) (*Option, error)
 }
 
 func For(parameters map[string]any) (Resolver, error) {
-	var connectionUrl string
+	var connectionURL string
 	switch parameters[fields.ConnectionMode.ID].(string) {
 	case fields.SocketConnectionMode:
 		socketPath := parameters[fields.SocketPath.ID].(string)
-		connectionUrl = "unix://" + socketPath
+		connectionURL = "unix://" + socketPath
 	case fields.TCPConnectionMode:
-		hostUrl := parameters[fields.HostURL.ID].(string)
-		connectionUrl = hostUrl
+		hostURL := parameters[fields.HostURL.ID].(string)
+		connectionURL = hostURL
 	default:
 		return nil, coreerror.New("Invalid connection mode", false)
 	}
 
-	dockerClient, err := client.NewClientWithOpts(client.WithHost(connectionUrl), client.WithAPIVersionNegotiation())
+	dockerClient, err := client.NewClientWithOpts(client.WithHost(connectionURL), client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
 	}
 
-	publicUrl, _ := parameters[fields.ProxyURL.ID].(string)
+	publicURL, _ := parameters[fields.ProxyURL.ID].(string)
 	swarmEnabled, useServiceMesh, dnsResolvers := extractSwarmParams(parameters)
 
 	if swarmEnabled {
@@ -41,7 +41,7 @@ func For(parameters map[string]any) (Resolver, error) {
 			client:         dockerClient,
 			useServiceMesh: useServiceMesh,
 			dnsResolvers:   dnsResolvers,
-			publicUrl:      publicUrl,
+			publicURL:      publicURL,
 		}, nil
 	}
 
@@ -52,16 +52,16 @@ func For(parameters map[string]any) (Resolver, error) {
 
 	return &simpleAdapter{
 		client:      dockerClient,
-		publicUrl:   publicUrl,
+		publicURL:   publicURL,
 		useNameAsID: useNameAsID,
 	}, nil
 }
 
-func extractSwarmParams(parameters map[string]any) (bool, bool, []string) {
-	swarmMode := false
-	useServiceMesh := false
-	dnsResolvers := make([]string, 0)
-
+func extractSwarmParams(parameters map[string]any) (
+	swarmMode bool,
+	useServiceMesh bool,
+	dnsResolvers []string,
+) {
 	if rawValue, exists := parameters[fields.SwarmMode.ID]; exists {
 		swarmMode = rawValue.(bool)
 	}

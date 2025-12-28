@@ -27,7 +27,7 @@ func newService(
 	}
 }
 
-func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
+func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
 	inUse, err := s.repository.InUseByID(ctx, id)
 	if err != nil {
 		return err
@@ -43,7 +43,7 @@ func (s *service) deleteById(ctx context.Context, id uuid.UUID) error {
 	return s.repository.DeleteByID(ctx, id)
 }
 
-func (s *service) getById(ctx context.Context, id uuid.UUID) (*Certificate, error) {
+func (s *service) getByID(ctx context.Context, id uuid.UUID) (*Certificate, error) {
 	cert, err := s.repository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -55,14 +55,14 @@ func (s *service) getById(ctx context.Context, id uuid.UUID) (*Certificate, erro
 			return nil, err
 		}
 
-		provider := providerById(availableProviders, cert.ProviderID)
+		provider := providerByID(availableProviders, cert.ProviderID)
 		dynamicfields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields())
 	}
 
 	return cert, nil
 }
 
-func (s *service) existsById(ctx context.Context, id uuid.UUID) (bool, error) {
+func (s *service) existsByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	return s.repository.ExistsByID(ctx, id)
 }
 
@@ -78,7 +78,7 @@ func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerm
 	}
 
 	for _, cert := range certs.Contents {
-		provider := providerById(availableProviders, cert.ProviderID)
+		provider := providerByID(availableProviders, cert.ProviderID)
 		dynamicfields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields())
 	}
 
@@ -123,8 +123,8 @@ func (s *service) renewAllDue(ctx context.Context) error {
 	return nil
 }
 
-func (s *service) renew(ctx context.Context, certificateId uuid.UUID) error {
-	certificate, err := s.repository.FindByID(ctx, certificateId)
+func (s *service) renew(ctx context.Context, certificateID uuid.UUID) error {
+	certificate, err := s.repository.FindByID(ctx, certificateID)
 	if err != nil {
 		return err
 	}
@@ -134,7 +134,7 @@ func (s *service) renew(ctx context.Context, certificateId uuid.UUID) error {
 		return err
 	}
 
-	provider := providerById(providers, certificate.ProviderID)
+	provider := providerByID(providers, certificate.ProviderID)
 	if provider == nil {
 		return coreerror.New("Provider not found", true)
 	}
@@ -144,7 +144,7 @@ func (s *service) renew(ctx context.Context, certificateId uuid.UUID) error {
 		return err
 	}
 
-	certificate.ID = certificateId
+	certificate.ID = certificateID
 	return s.repository.Save(ctx, certificate)
 }
 
@@ -154,7 +154,7 @@ func (s *service) issue(ctx context.Context, request *IssueRequest) (*Certificat
 		return nil, err
 	}
 
-	provider := providerById(providers, request.ProviderID)
+	provider := providerByID(providers, request.ProviderID)
 	if provider == nil {
 		return nil, coreerror.New("Provider not found", true)
 	}
@@ -176,7 +176,7 @@ func (s *service) autoRenewSettings(ctx context.Context) (*AutoRenewSettings, er
 	return s.repository.GetAutoRenewSettings(ctx)
 }
 
-func providerById(availableProviders []AvailableProvider, id string) Provider {
+func providerByID(availableProviders []AvailableProvider, id string) Provider {
 	for _, p := range availableProviders {
 		if p.provider.ID() == id {
 			return p.provider

@@ -25,7 +25,7 @@ type nginxSettingsDto struct {
 	MaximumBodySizeMb   *int                      `json:"maximumBodySizeMb"`
 	SendfileEnabled     *bool                     `json:"sendfileEnabled"`
 	GzipEnabled         *bool                     `json:"gzipEnabled"`
-	TcpNoDelayEnabled   *bool                     `json:"tcpNoDelayEnabled"`
+	TCPNoDelayEnabled   *bool                     `json:"tcpNoDelayEnabled"`
 	RuntimeUser         *string                   `json:"runtimeUser"`
 	Custom              *string                   `json:"custom"`
 }

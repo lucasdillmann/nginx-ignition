@@ -13,9 +13,9 @@ func Install() error {
 func buildCommands(
 	repository Repository,
 	bindingCommands *binding.Commands,
-	scheduler *scheduler.Scheduler,
+	sched *scheduler.Scheduler,
 ) *Commands {
-	serviceInstance := newService(repository, bindingCommands, scheduler)
+	serviceInstance := newService(repository, bindingCommands, sched)
 	return &Commands{
 		Get:  serviceInstance.get,
 		Save: serviceInstance.save,

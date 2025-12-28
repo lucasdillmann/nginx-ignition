@@ -39,23 +39,23 @@ func (v *validator) validate(ctx context.Context, pathPrefix string, binding *Bi
 		)
 	}
 
-	certificateIdField := fmt.Sprintf("%s[%d].certificateId", pathPrefix, index)
+	certificateIDField := fmt.Sprintf("%s[%d].certificateId", pathPrefix, index)
 
 	switch {
-	case binding.Type == HttpBindingType && binding.CertificateID != nil:
-		v.delegate.Add(certificateIdField, "Value cannot be informed for a HTTP binding")
-	case binding.Type == HttpBindingType && binding.CertificateID == nil:
+	case binding.Type == HTTPBindingType && binding.CertificateID != nil:
+		v.delegate.Add(certificateIDField, "Value cannot be informed for a HTTP binding")
+	case binding.Type == HTTPBindingType && binding.CertificateID == nil:
 		return nil
-	case binding.Type == HttpsBindingType && binding.CertificateID == nil:
-		v.delegate.Add(certificateIdField, "Value must be informed for a HTTPS binding")
-	case binding.Type == HttpsBindingType:
+	case binding.Type == HTTPSBindingType && binding.CertificateID == nil:
+		v.delegate.Add(certificateIDField, "Value must be informed for a HTTPS binding")
+	case binding.Type == HTTPSBindingType:
 		exists, err := v.certificateCommands.Exists(ctx, *binding.CertificateID)
 		if err != nil {
 			return err
 		}
 
 		if !exists {
-			v.delegate.Add(certificateIdField, "No SSL certificate found with provided ID")
+			v.delegate.Add(certificateIDField, "No SSL certificate found with provided ID")
 		}
 	default:
 		v.delegate.Add(

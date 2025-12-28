@@ -1,5 +1,5 @@
 package constants
 
 const (
-	ByIdFilter = "id = ?"
+	ByIDFilter = "id = ?"
 )

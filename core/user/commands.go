@@ -15,7 +15,7 @@ type Commands struct {
 	GetCount            func(ctx context.Context) (int, error)
 	GetStatus           func(ctx context.Context, id uuid.UUID) (bool, error)
 	List                func(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[User], error)
-	Save                func(ctx context.Context, user *SaveRequest, currentUserId *uuid.UUID) error
+	Save                func(ctx context.Context, user *SaveRequest, currentUserID *uuid.UUID) error
 	UpdatePassword      func(ctx context.Context, id uuid.UUID, oldPassword, newPassword string) error
 	OnboardingCompleted func(ctx context.Context) (bool, error)
 }

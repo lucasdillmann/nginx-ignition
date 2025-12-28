@@ -11,8 +11,8 @@ type shutdown struct {
 	scheduler *Scheduler
 }
 
-func registerShutdown(lifecycle *lifecycle.Lifecycle, scheduler *Scheduler) {
-	lifecycle.RegisterShutdown(shutdown{scheduler})
+func registerShutdown(lc *lifecycle.Lifecycle, sched *Scheduler) {
+	lc.RegisterShutdown(shutdown{sched})
 }
 
 func (s shutdown) Priority() int {

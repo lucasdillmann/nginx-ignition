@@ -26,7 +26,7 @@ type nginxModel struct {
 	ServerLogsEnabled   bool      `bun:"server_logs_enabled"`
 	AccessLogsEnabled   bool      `bun:"access_logs_enabled"`
 	ErrorLogsEnabled    bool      `bun:"error_logs_enabled"`
-	TcpNoDelayEnabled   bool      `bun:"tcp_nodelay_enabled"`
+	TCPNoDelayEnabled   bool      `bun:"tcp_nodelay_enabled"`
 	GzipEnabled         bool      `bun:"gzip_enabled"`
 	ServerTokensEnabled bool      `bun:"server_tokens_enabled"`
 }

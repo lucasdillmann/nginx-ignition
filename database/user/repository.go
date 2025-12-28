@@ -18,16 +18,16 @@ type repository struct {
 	database *database.Database
 }
 
-func New(database *database.Database) user.Repository {
+func New(db *database.Database) user.Repository {
 	return &repository{
-		database: database,
+		database: db,
 	}
 }
 
 func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*user.User, error) {
 	var model userModel
 
-	err := r.database.Select().Model(&model).Where(constants.ByIdFilter, id).Scan(ctx)
+	err := r.database.Select().Model(&model).Where(constants.ByIDFilter, id).Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -51,7 +51,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*userModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -123,7 +123,7 @@ func (r *repository) IsEnabledByID(ctx context.Context, id uuid.UUID) (bool, err
 
 	err := r.database.Select().
 		Model(&model).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -146,7 +146,7 @@ func (r *repository) Count(ctx context.Context) (int, error) {
 	return count, nil
 }
 
-func (r *repository) Save(ctx context.Context, user *user.User) error {
+func (r *repository) Save(ctx context.Context, u *user.User) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -155,14 +155,14 @@ func (r *repository) Save(ctx context.Context, user *user.User) error {
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Where(constants.ByIdFilter, user.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Where(constants.ByIDFilter, u.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}
 
-	model := toModel(user)
+	model := toModel(u)
 	if exists {
-		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIdFilter, user.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIDFilter, u.ID).Exec(ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 	}

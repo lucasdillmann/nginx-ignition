@@ -13,7 +13,9 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 
+	// Loads the PostgreSQL driver to be dynamically used by bun
 	_ "github.com/lib/pq"
+	// Loads the SQLite driver to be dynamically used by bun
 	_ "modernc.org/sqlite"
 )
 

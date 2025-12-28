@@ -28,12 +28,12 @@ var errInvalidToken = apierror.New(http.StatusUnauthorized, "Invalid access toke
 type Jwt struct {
 	configuration *configuration.Configuration
 	repository    user.Repository
-	revokedIds    []string
+	revokedIDs    []string
 	secretKey     []byte
 }
 
-func newJwt(configuration *configuration.Configuration, repository user.Repository) (*Jwt, error) {
-	prefixedConfiguration := configuration.WithPrefix("nginx-ignition.security.jwt")
+func newJwt(cfg *configuration.Configuration, repository user.Repository) (*Jwt, error) {
+	prefixedConfiguration := cfg.WithPrefix("nginx-ignition.security.jwt")
 
 	secretKey, err := initializeSecret(prefixedConfiguration)
 	if err != nil {
@@ -44,12 +44,12 @@ func newJwt(configuration *configuration.Configuration, repository user.Reposito
 		configuration: prefixedConfiguration,
 		repository:    repository,
 		secretKey:     secretKey,
-		revokedIds:    []string{},
+		revokedIDs:    []string{},
 	}, nil
 }
 
-func (j *Jwt) RevokeToken(tokenId string) {
-	j.revokedIds = append(j.revokedIds, tokenId)
+func (j *Jwt) RevokeToken(tokenID string) {
+	j.revokedIDs = append(j.revokedIDs, tokenID)
 }
 
 func (j *Jwt) GenerateToken(usr *user.User) (*string, error) {
@@ -96,28 +96,28 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		id := claims["sub"].(string)
-		userId, err := uuid.Parse(id)
+		userID, err := uuid.Parse(id)
 		if err != nil {
 			return nil, err
 		}
 
-		usr, err := j.repository.FindByID(ctx, userId)
+		usr, err := j.repository.FindByID(ctx, userID)
 		if err != nil {
 			return nil, err
 		}
 
-		tokenId := claims["jti"].(string)
+		tokenID := claims["jti"].(string)
 		if !usr.Enabled {
-			j.RevokeToken(tokenId)
+			j.RevokeToken(tokenID)
 			return nil, errInvalidToken
 		}
 
-		if j.isRevoked(tokenId) {
+		if j.isRevoked(tokenID) {
 			return nil, errInvalidToken
 		}
 
 		return &Subject{
-			TokenID: tokenId,
+			TokenID: tokenID,
 			User:    usr,
 			claims:  &claims,
 		}, nil
@@ -154,9 +154,9 @@ func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
 	return nil, nil
 }
 
-func (j *Jwt) isRevoked(tokenId string) bool {
-	for _, id := range j.revokedIds {
-		if id == tokenId {
+func (j *Jwt) isRevoked(tokenID string) bool {
+	for _, id := range j.revokedIDs {
+		if id == tokenID {
 			return true
 		}
 	}

@@ -134,7 +134,6 @@ func (v *validator) validateCircuitBreaker(prefix string, circuitBreaker *Circui
 func (v *validator) validateAddress(fieldPrefix string, address Address) {
 	switch address.Protocol {
 	case UDPProtocol, TCPProtocol, SocketProtocol:
-		break
 	default:
 		v.delegate.Add(fieldPrefix+".protocol", invalidValue)
 	}

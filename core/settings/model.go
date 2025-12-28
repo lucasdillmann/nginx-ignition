@@ -22,7 +22,7 @@ type NginxSettings struct {
 	WorkerConnections   int
 	MaximumBodySizeMb   int
 	ServerTokensEnabled bool
-	TcpNoDelayEnabled   bool
+	TCPNoDelayEnabled   bool
 	GzipEnabled         bool
 	SendfileEnabled     bool
 }

@@ -16,10 +16,10 @@ type autoRenewTask struct {
 func registerScheduledTask(
 	ctx context.Context,
 	service *service,
-	scheduler *scheduler.Scheduler,
+	sched *scheduler.Scheduler,
 ) error {
 	task := autoRenewTask{service}
-	return scheduler.Register(ctx, &task)
+	return sched.Register(ctx, &task)
 }
 
 func (t autoRenewTask) Run(ctx context.Context) error {

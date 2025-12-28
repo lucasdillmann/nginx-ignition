@@ -210,35 +210,35 @@ func (v *validator) validateRoute(ctx context.Context, route *Route, index int, 
 }
 
 func (v *validator) validateStaticFilesRoute(route *Route, index int) {
-	targetUriField := buildIndexedRoutePath(index, "targetUri")
+	targetURIField := buildIndexedRoutePath(index, "targetUri")
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
-		v.delegate.Add(targetUriField, "Value is required when the type of the route is directory")
+		v.delegate.Add(targetURIField, "Value is required when the type of the route is directory")
 		return
 	}
 
 	if !strings.HasPrefix(*route.TargetURI, "/") {
-		v.delegate.Add(targetUriField, "Value must start with a /")
+		v.delegate.Add(targetURIField, "Value must start with a /")
 	}
 }
 
 func (v *validator) validateProxyRoute(route *Route, index int) {
-	targetUriField := buildIndexedRoutePath(index, "targetUri")
+	targetURIField := buildIndexedRoutePath(index, "targetUri")
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
-		v.delegate.Add(targetUriField, "Value is required when the type of the route is proxy")
+		v.delegate.Add(targetURIField, "Value is required when the type of the route is proxy")
 	} else {
 		if _, err := url.Parse(*route.TargetURI); err != nil {
-			v.delegate.Add(targetUriField, "Value is not a valid URL")
+			v.delegate.Add(targetURIField, "Value is not a valid URL")
 		}
 	}
 }
 
 func (v *validator) validateRedirectRoute(route *Route, index int) {
-	targetUriField := buildIndexedRoutePath(index, "targetUri")
+	targetURIField := buildIndexedRoutePath(index, "targetUri")
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
-		v.delegate.Add(targetUriField, "Value is required when the type of the route is redirect")
+		v.delegate.Add(targetURIField, "Value is required when the type of the route is redirect")
 	} else {
 		if _, err := url.ParseRequestURI(*route.TargetURI); err != nil {
-			v.delegate.Add(targetUriField, "Value is not a valid URI")
+			v.delegate.Add(targetURIField, "Value is not a valid URI")
 		}
 	}
 
@@ -324,7 +324,7 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 
 	for index, value := range host.VPNs {
 		basePath := fmt.Sprintf("vpns[%d]", index)
-		vpnIdPath := basePath + ".vpnId"
+		vpnIDPath := basePath + ".vpnId"
 		namePath := basePath + ".name"
 
 		if strings.TrimSpace(value.Name) == "" {
@@ -332,7 +332,7 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 		}
 
 		if value.VPNID == uuid.Nil {
-			v.delegate.Add(vpnIdPath, validation.ValueMissingMessage)
+			v.delegate.Add(vpnIDPath, validation.ValueMissingMessage)
 			continue
 		}
 
@@ -352,12 +352,12 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 		}
 
 		if vpnData == nil {
-			v.delegate.Add(vpnIdPath, "No VPN connection was found using the provided ID")
+			v.delegate.Add(vpnIDPath, "No VPN connection was found using the provided ID")
 			continue
 		}
 
 		if !vpnData.Enabled {
-			v.delegate.Add(vpnIdPath, "Selected VPN is disabled")
+			v.delegate.Add(vpnIDPath, "Selected VPN is disabled")
 		}
 	}
 

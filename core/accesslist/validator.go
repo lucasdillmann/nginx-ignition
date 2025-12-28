@@ -57,7 +57,7 @@ func (v *validator) validateEntry(
 	}
 
 	for addressIndex, address := range entry.SourceAddress {
-		if singleIp := net.ParseIP(address); singleIp != nil {
+		if singleIP := net.ParseIP(address); singleIP != nil {
 			continue
 		}
 

@@ -31,18 +31,18 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 
 	if ctx.supportedFeatures.StreamType != NoneSupportType {
 		if ctx.supportedFeatures.StreamType == DynamicSupportType {
-			moduleLines.WriteString("load_module modules/ngx_stream_module.so;\n")
+			_, _ = moduleLines.WriteString("load_module modules/ngx_stream_module.so;\n")
 		}
 
-		streamLines.WriteString("stream {\n")
-		streamLines.WriteString(p.getStreamIncludes(ctx.paths, ctx.streams))
-		streamLines.WriteString("}\n")
+		_, _ = streamLines.WriteString("stream {\n")
+		_, _ = streamLines.WriteString(p.getStreamIncludes(ctx.paths, ctx.streams))
+		_, _ = streamLines.WriteString("}\n")
 	}
 
 	if ctx.supportedFeatures.RunCodeType == DynamicSupportType {
-		moduleLines.WriteString("load_module modules/ndk_http_module.so;\n")
-		moduleLines.WriteString("load_module modules/ngx_http_js_module.so;\n")
-		moduleLines.WriteString("load_module modules/ngx_http_lua_module.so;\n")
+		_, _ = moduleLines.WriteString("load_module modules/ndk_http_module.so;\n")
+		_, _ = moduleLines.WriteString("load_module modules/ngx_http_js_module.so;\n")
+		_, _ = moduleLines.WriteString("load_module modules/ngx_http_lua_module.so;\n")
 	}
 
 	var customCfg string
@@ -98,7 +98,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		cfg.Nginx.WorkerConnections,
 		statusFlag(cfg.Nginx.SendfileEnabled),
 		statusFlag(cfg.Nginx.ServerTokensEnabled),
-		statusFlag(cfg.Nginx.TcpNoDelayEnabled),
+		statusFlag(cfg.Nginx.TCPNoDelayEnabled),
 		cfg.Nginx.Timeouts.Keepalive,
 		cfg.Nginx.Timeouts.Connect,
 		cfg.Nginx.Timeouts.Read,

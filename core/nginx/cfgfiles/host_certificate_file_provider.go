@@ -40,13 +40,13 @@ func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, err
 	bindings = append(bindings, cgf.GlobalBindings...)
 
 	outputs := make([]File, 0)
-	uniqueCertIds := map[string]bool{}
+	uniqueCertIDs := map[string]bool{}
 
 	for _, b := range bindings {
-		if b.Type == binding.HttpsBindingType && b.CertificateID != nil {
-			certId := b.CertificateID.String()
-			if !uniqueCertIds[certId] {
-				uniqueCertIds[certId] = true
+		if b.Type == binding.HTTPSBindingType && b.CertificateID != nil {
+			certID := b.CertificateID.String()
+			if !uniqueCertIDs[certID] {
+				uniqueCertIDs[certID] = true
 
 				output, err := p.buildCertificateFile(ctx.context, *b.CertificateID)
 				if err != nil {
@@ -63,9 +63,9 @@ func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, err
 
 func (p *hostCertificateFileProvider) buildCertificateFile(
 	ctx context.Context,
-	certificateId uuid.UUID,
+	certificateID uuid.UUID,
 ) (*File, error) {
-	cert, err := p.certificateRepository.FindByID(ctx, certificateId)
+	cert, err := p.certificateRepository.FindByID(ctx, certificateID)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (p *hostCertificateFileProvider) buildCertificateFile(
 	}
 
 	return &File{
-		Name:     fmt.Sprintf("certificate-%s.pem", certificateId),
+		Name:     fmt.Sprintf("certificate-%s.pem", certificateID),
 		Contents: contents,
 	}, nil
 }

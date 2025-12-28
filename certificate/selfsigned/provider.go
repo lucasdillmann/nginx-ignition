@@ -89,19 +89,23 @@ func (p *Provider) Renew(_ context.Context, current *certificate.Certificate) (*
 	return cert, nil
 }
 
-func buildPEMs(domainNames []string) (*string, *string, error) {
+func buildPEMs(domainNames []string) (
+	cert *string,
+	key *string,
+	err error,
+) {
 	factory, err := newFactory()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	cert, key, err := factory.build(domainNames)
+	certData, keyData, err := factory.build(domainNames)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	certBase64 := base64.StdEncoding.EncodeToString(cert.Raw)
-	keyBase64 := base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PrivateKey(key))
+	certBase64 := base64.StdEncoding.EncodeToString(certData.Raw)
+	keyBase64 := base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PrivateKey(keyData))
 
 	return &certBase64, &keyBase64, nil
 }

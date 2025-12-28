@@ -77,7 +77,7 @@ func toModel(domain *stream.Stream) streamModel {
 	}
 }
 
-func toBackendModel(backend *stream.Backend, streamId, routeId *uuid.UUID) streamBackendModel {
+func toBackendModel(backend *stream.Backend, streamID, routeID *uuid.UUID) streamBackendModel {
 	var maxFailures, openSeconds *int
 	if backend.CircuitBreaker != nil {
 		maxFailures = &backend.CircuitBreaker.MaxFailures
@@ -86,8 +86,8 @@ func toBackendModel(backend *stream.Backend, streamId, routeId *uuid.UUID) strea
 
 	return streamBackendModel{
 		ID:            uuid.New(),
-		StreamID:      streamId,
-		StreamRouteID: routeId,
+		StreamID:      streamID,
+		StreamRouteID: routeID,
 		Protocol:      string(backend.Address.Protocol),
 		Address:       backend.Address.Address,
 		Port:          backend.Address.Port,
@@ -97,10 +97,10 @@ func toBackendModel(backend *stream.Backend, streamId, routeId *uuid.UUID) strea
 	}
 }
 
-func toRouteModel(route *stream.Route, streamId uuid.UUID) streamRouteModel {
+func toRouteModel(route *stream.Route, streamID uuid.UUID) streamRouteModel {
 	return streamRouteModel{
 		ID:          uuid.New(),
-		StreamID:    streamId,
+		StreamID:    streamID,
 		DomainNames: route.DomainNames,
 	}
 }

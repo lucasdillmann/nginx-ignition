@@ -21,8 +21,8 @@ type Commands struct {
 	Delete              func(ctx context.Context, id uuid.UUID) error
 	Save                func(ctx context.Context, data *Integration) error
 	Exists              func(ctx context.Context, id uuid.UUID) (*bool, error)
-	GetOption           func(ctx context.Context, integrationId uuid.UUID, optionId string) (*DriverOption, error)
-	GetOptionURL        func(ctx context.Context, integrationId uuid.UUID, optionId string) (*string, []string, error)
+	GetOption           func(ctx context.Context, integrationID uuid.UUID, optionID string) (*DriverOption, error)
+	GetOptionURL        func(ctx context.Context, integrationID uuid.UUID, optionID string) (*string, []string, error)
 	GetAvailableDrivers func(ctx context.Context) ([]AvailableDriver, error)
 	List                func(
 		ctx context.Context,
@@ -32,7 +32,7 @@ type Commands struct {
 	) (*pagination.Page[Integration], error)
 	ListOptions func(
 		ctx context.Context,
-		integrationId uuid.UUID,
+		integrationID uuid.UUID,
 		pageNumber, pageSize int,
 		searchTerms *string,
 		tcpOnly bool,

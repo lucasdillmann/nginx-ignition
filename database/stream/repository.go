@@ -15,19 +15,19 @@ import (
 )
 
 const (
-	byStreamIdFilter           = "stream_id = ?"
-	byStreamRouteIdFilter      = "stream_route_id = ?"
-	byStreamRouteIdArrayFilter = "stream_route_id in (?)"
-	byIdArrayFilter            = "id in (?)"
+	byStreamIDFilter           = "stream_id = ?"
+	byStreamRouteIDFilter      = "stream_route_id = ?"
+	byStreamRouteIDArrayFilter = "stream_route_id in (?)"
+	byIDArrayFilter            = "id in (?)"
 )
 
 type repository struct {
 	database *database.Database
 }
 
-func New(database *database.Database) stream.Repository {
+func New(db *database.Database) stream.Repository {
 	return &repository{
-		database: database,
+		database: db,
 	}
 }
 
@@ -36,7 +36,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*stream.Stream
 
 	err := r.database.Select().
 		Model(&model).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -73,7 +73,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	_, err = transaction.
 		NewDelete().
 		Model((*streamModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -82,8 +82,8 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r *repository) Save(ctx context.Context, stream *stream.Stream) error {
-	exists, err := r.ExistsByID(ctx, stream.ID)
+func (r *repository) Save(ctx context.Context, strm *stream.Stream) error {
+	exists, err := r.ExistsByID(ctx, strm.ID)
 	if err != nil {
 		return err
 	}
@@ -96,10 +96,10 @@ func (r *repository) Save(ctx context.Context, stream *stream.Stream) error {
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	model := toModel(stream)
+	model := toModel(strm)
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIdFilter, model.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIDFilter, model.ID).Exec(ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 	}
@@ -108,7 +108,7 @@ func (r *repository) Save(ctx context.Context, stream *stream.Stream) error {
 		return err
 	}
 
-	err = r.saveLinkedModels(ctx, transaction, stream)
+	err = r.saveLinkedModels(ctx, transaction, strm)
 	if err != nil {
 		return err
 	}
@@ -184,7 +184,7 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]stream.Stream, error
 func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	return r.database.Select().
 		Model((*streamModel)(nil)).
-		Where(constants.ByIdFilter, id).
+		Where(constants.ByIDFilter, id).
 		Exists(ctx)
 }
 
@@ -192,7 +192,7 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 	_, err := transaction.
 		NewDelete().
 		Table("stream_backend").
-		Where(byStreamIdFilter, id).
+		Where(byStreamIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -203,7 +203,7 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 		NewSelect().
 		Table("stream_route").
 		Column("id").
-		Where(byStreamIdFilter, id).
+		Where(byStreamIDFilter, id).
 		Scan(ctx, &routeIDs)
 
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
@@ -214,7 +214,7 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 		_, err = transaction.
 			NewDelete().
 			Table("stream_backend").
-			Where(byStreamRouteIdArrayFilter, bun.In(routeIDs)).
+			Where(byStreamRouteIDArrayFilter, bun.In(routeIDs)).
 			Exec(ctx)
 		if err != nil {
 			return err
@@ -223,21 +223,21 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 		_, err = transaction.
 			NewDelete().
 			Table("stream_route").
-			Where(byIdArrayFilter, bun.In(routeIDs)).
+			Where(byIDArrayFilter, bun.In(routeIDs)).
 			Exec(ctx)
 	}
 
 	return err
 }
 
-func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, stream *stream.Stream) error {
-	err := r.cleanupLinkedModels(ctx, transaction, stream.ID)
+func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, strm *stream.Stream) error {
+	err := r.cleanupLinkedModels(ctx, transaction, strm.ID)
 	if err != nil {
 		return err
 	}
 
-	for _, route := range stream.Routes {
-		routeModel := toRouteModel(&route, stream.ID)
+	for _, route := range strm.Routes {
+		routeModel := toRouteModel(&route, strm.ID)
 
 		_, err = transaction.NewInsert().Model(&routeModel).Exec(ctx)
 		if err != nil {
@@ -254,17 +254,17 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, s
 		}
 	}
 
-	defaultBackendModel := toBackendModel(&stream.DefaultBackend, &stream.ID, nil)
+	defaultBackendModel := toBackendModel(&strm.DefaultBackend, &strm.ID, nil)
 	_, err = transaction.NewInsert().Model(&defaultBackendModel).Exec(ctx)
 
 	return err
 }
 
-func (r *repository) fillLinkedModels(ctx context.Context, stream *stream.Stream) error {
+func (r *repository) fillLinkedModels(ctx context.Context, strm *stream.Stream) error {
 	routeModels := make([]streamRouteModel, 0)
 	err := r.database.Select().
 		Model(&routeModels).
-		Where(byStreamIdFilter, stream.ID).
+		Where(byStreamIDFilter, strm.ID).
 		Scan(ctx)
 	if err != nil {
 		return err
@@ -275,25 +275,25 @@ func (r *repository) fillLinkedModels(ctx context.Context, stream *stream.Stream
 		err = r.database.
 			Select().
 			Model(&backendModels).
-			Where(byStreamRouteIdFilter, routeModel.ID).
+			Where(byStreamRouteIDFilter, routeModel.ID).
 			Scan(ctx)
 		if err != nil {
 			return err
 		}
 
-		stream.Routes = append(stream.Routes, toDomainRoute(&routeModel, backendModels))
+		strm.Routes = append(strm.Routes, toDomainRoute(&routeModel, backendModels))
 	}
 
 	var defaultBackendModel streamBackendModel
 	err = r.database.
 		Select().
 		Model(&defaultBackendModel).
-		Where(byStreamIdFilter, stream.ID).
+		Where(byStreamIDFilter, strm.ID).
 		Scan(ctx)
 	if err != nil {
 		return err
 	}
 
-	stream.DefaultBackend = toDomainBackend(&defaultBackendModel)
+	strm.DefaultBackend = toDomainBackend(&defaultBackendModel)
 	return nil
 }

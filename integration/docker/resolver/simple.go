@@ -15,7 +15,7 @@ import (
 
 type simpleAdapter struct {
 	client      *client.Client
-	publicUrl   string
+	publicURL   string
 	useNameAsID bool
 }
 
@@ -126,8 +126,8 @@ func (s *simpleAdapter) buildOption(port *container.Port, item *container.Summar
 
 func (s *simpleAdapter) buildOptionURL(option *Option, summary *container.Summary) (*string, []string, error) {
 	var targetHost string
-	if s.publicUrl != "" && *option.Qualifier == hostQualifier {
-		uri, err := url.Parse(s.publicUrl)
+	if s.publicURL != "" && *option.Qualifier == hostQualifier {
+		uri, err := url.Parse(s.publicURL)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -146,13 +146,13 @@ func (s *simpleAdapter) buildOptionURL(option *Option, summary *container.Summar
 		}
 	}
 
-	result := fmt.Sprintf("http://%s:%d", targetHost, option.Port)
+	result := fmt.Sprintf(httpURLTemplate, targetHost, option.Port)
 	return &result, nil, nil
 }
 
-func normalizeContainerName(name, containerId string) string {
+func normalizeContainerName(name, containerID string) string {
 	if strings.TrimSpace(name) == "" {
-		return containerId
+		return containerID
 	}
 
 	name = strings.TrimSpace(name)
@@ -161,7 +161,7 @@ func normalizeContainerName(name, containerId string) string {
 	name = containerNameUnderscoreNormalizationRegex.ReplaceAllString(name, "_")
 
 	if name == "" {
-		return containerId
+		return containerID
 	}
 
 	return name

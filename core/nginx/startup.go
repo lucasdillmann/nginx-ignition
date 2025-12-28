@@ -16,14 +16,14 @@ type startup struct {
 	retryDelay    time.Duration
 }
 
-func registerStartup(lifecycle *lifecycle.Lifecycle, service *service) {
+func registerStartup(lc *lifecycle.Lifecycle, service *service) {
 	instance := startup{
 		service:       service,
 		retryAttempts: 15,
 		retryDelay:    time.Second * 5,
 	}
 
-	lifecycle.RegisterStartup(instance)
+	lc.RegisterStartup(instance)
 }
 
 func (s startup) Run(ctx context.Context) error {

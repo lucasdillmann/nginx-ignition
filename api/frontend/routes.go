@@ -12,15 +12,15 @@ import (
 
 func Install(
 	router *gin.Engine,
-	configuration *configuration.Configuration,
+	cfg *configuration.Configuration,
 	authorizer *authorization.ABAC,
 ) {
-	settingsHandlerInstance := &configurationHandler{configuration}
+	settingsHandlerInstance := &configurationHandler{cfg}
 	router.Handle(http.MethodGet, "/api/frontend/configuration", settingsHandlerInstance.handle)
 	authorizer.AllowAllUsers(http.MethodGet, "/api/frontend/configuration")
 
 	var staticHandler staticFilesHandler
-	basePath, err := configuration.Get("nginx-ignition.server.frontend-path")
+	basePath, err := cfg.Get("nginx-ignition.server.frontend-path")
 
 	if err != nil || basePath == "" {
 		log.Warnf("Frontend path is not defined. Every request to it will be rejected with not found status.")
