@@ -6,7 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-func toDomain(dto *userRequestDto) *user.SaveRequest {
+func toDomain(dto *userRequestDTO) *user.SaveRequest {
 	return &user.SaveRequest{
 		ID:       uuid.New(),
 		Enabled:  *dto.Enabled,
@@ -30,13 +30,13 @@ func toDomain(dto *userRequestDto) *user.SaveRequest {
 	}
 }
 
-func toDto(domain *user.User) *userResponseDto {
-	return &userResponseDto{
+func toDTO(domain *user.User) *userResponseDTO {
+	return &userResponseDTO{
 		ID:       domain.ID,
 		Enabled:  domain.Enabled,
 		Name:     domain.Name,
 		Username: domain.Username,
-		Permissions: userPermissionsDto{
+		Permissions: userPermissionsDTO{
 			Hosts:        string(domain.Permissions.Hosts),
 			Streams:      string(domain.Permissions.Streams),
 			Certificates: string(domain.Permissions.Certificates),

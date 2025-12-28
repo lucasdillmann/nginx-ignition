@@ -6,18 +6,18 @@ import (
 	"dillmann.com.br/nginx-ignition/core/cache"
 )
 
-type cacheRequestDto struct {
+type cacheRequestDTO struct {
 	StoragePath                      *string                `json:"storagePath"`
 	InactiveSeconds                  *int                   `json:"inactiveSeconds"`
 	MaximumSizeMB                    *int                   `json:"maximumSizeMb"`
-	ConcurrencyLock                  concurrencyLockDto     `json:"concurrencyLock"`
+	ConcurrencyLock                  concurrencyLockDTO     `json:"concurrencyLock"`
 	Name                             string                 `json:"name"`
 	UseStale                         []cache.UseStaleOption `json:"useStale"`
 	AllowedMethods                   []cache.Method         `json:"allowedMethods"`
 	BypassRules                      []string               `json:"bypassRules"`
 	NoCacheRules                     []string               `json:"noCacheRules"`
 	FileExtensions                   []string               `json:"fileExtensions"`
-	Durations                        []durationDto          `json:"durations"`
+	Durations                        []durationDTO          `json:"durations"`
 	MinimumUsesBeforeCaching         int                    `json:"minimumUsesBeforeCaching"`
 	BackgroundUpdate                 bool                   `json:"backgroundUpdate"`
 	Revalidate                       bool                   `json:"revalidate"`
@@ -25,18 +25,18 @@ type cacheRequestDto struct {
 	CacheStatusResponseHeaderEnabled bool                   `json:"cacheStatusResponseHeaderEnabled"`
 }
 
-type cacheResponseDto struct {
+type cacheResponseDTO struct {
 	InactiveSeconds                  *int                   `json:"inactiveSeconds"`
 	StoragePath                      *string                `json:"storagePath"`
 	MaximumSizeMB                    *int                   `json:"maximumSizeMb"`
-	ConcurrencyLock                  concurrencyLockDto     `json:"concurrencyLock"`
+	ConcurrencyLock                  concurrencyLockDTO     `json:"concurrencyLock"`
 	Name                             string                 `json:"name"`
 	UseStale                         []cache.UseStaleOption `json:"useStale"`
 	AllowedMethods                   []cache.Method         `json:"allowedMethods"`
 	BypassRules                      []string               `json:"bypassRules"`
 	NoCacheRules                     []string               `json:"noCacheRules"`
 	FileExtensions                   []string               `json:"fileExtensions"`
-	Durations                        []durationDto          `json:"durations"`
+	Durations                        []durationDTO          `json:"durations"`
 	MinimumUsesBeforeCaching         int                    `json:"minimumUsesBeforeCaching"`
 	ID                               uuid.UUID              `json:"id"`
 	Revalidate                       bool                   `json:"revalidate"`
@@ -45,13 +45,13 @@ type cacheResponseDto struct {
 	CacheStatusResponseHeaderEnabled bool                   `json:"cacheStatusResponseHeaderEnabled"`
 }
 
-type concurrencyLockDto struct {
+type concurrencyLockDTO struct {
 	TimeoutSeconds *int `json:"timeoutSeconds"`
 	AgeSeconds     *int `json:"ageSeconds"`
 	Enabled        bool `json:"enabled"`
 }
 
-type durationDto struct {
+type durationDTO struct {
 	StatusCodes      []string `json:"statusCodes"`
 	ValidTimeSeconds int      `json:"validTimeSeconds"`
 }

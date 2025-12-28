@@ -15,7 +15,7 @@ type livenessHandler struct {
 func (h livenessHandler) handle(ctx *gin.Context) {
 	status := h.healthCheck.Status(ctx.Request.Context())
 
-	payload := toDto(status)
+	payload := toDTO(status)
 	statusCode := http.StatusOK
 
 	if !status.Healthy {

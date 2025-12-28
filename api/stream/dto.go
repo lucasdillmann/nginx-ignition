@@ -6,17 +6,17 @@ import (
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
-type streamRequestDto struct {
+type streamRequestDTO struct {
 	Enabled        *bool          `json:"enabled"`
 	Name           *string        `json:"name"`
 	Type           *string        `json:"type"`
-	FeatureSet     *featureSetDto `json:"featureSet"`
-	DefaultBackend *backendDto    `json:"defaultBackend"`
-	Binding        *addressDto    `json:"binding"`
-	Routes         []routeDto     `json:"routes"`
+	FeatureSet     *featureSetDTO `json:"featureSet"`
+	DefaultBackend *backendDTO    `json:"defaultBackend"`
+	Binding        *addressDTO    `json:"binding"`
+	Routes         []routeDTO     `json:"routes"`
 }
 
-type featureSetDto struct {
+type featureSetDTO struct {
 	UseProxyProtocol *bool `json:"useProxyProtocol"`
 	SocketKeepAlive  *bool `json:"socketKeepAlive"`
 	TCPKeepAlive     *bool `json:"tcpKeepAlive"`
@@ -24,35 +24,35 @@ type featureSetDto struct {
 	TCPDeferred      *bool `json:"tcpDeferred"`
 }
 
-type addressDto struct {
+type addressDTO struct {
 	Address  *string         `json:"address"`
 	Port     *int            `json:"port"`
 	Protocol stream.Protocol `json:"protocol"`
 }
 
-type backendDto struct {
+type backendDTO struct {
 	Weight         *int               `json:"weight"`
-	Target         *addressDto        `json:"target"`
-	CircuitBreaker *circuitBreakerDto `json:"circuitBreaker"`
+	Target         *addressDTO        `json:"target"`
+	CircuitBreaker *circuitBreakerDTO `json:"circuitBreaker"`
 }
 
-type circuitBreakerDto struct {
+type circuitBreakerDTO struct {
 	MaxFailures *int `json:"maxFailures"`
 	OpenSeconds *int `json:"openSeconds"`
 }
 
-type routeDto struct {
+type routeDTO struct {
 	DomainNames []string     `json:"domainNames"`
-	Backends    []backendDto `json:"backends"`
+	Backends    []backendDTO `json:"backends"`
 }
 
-type streamResponseDto struct {
+type streamResponseDTO struct {
 	ID             *uuid.UUID     `json:"id"`
 	Enabled        *bool          `json:"enabled"`
 	Name           *string        `json:"name"`
 	Type           *string        `json:"type"`
-	FeatureSet     *featureSetDto `json:"featureSet"`
-	DefaultBackend *backendDto    `json:"defaultBackend"`
-	Binding        *addressDto    `json:"binding"`
-	Routes         []routeDto     `json:"routes"`
+	FeatureSet     *featureSetDTO `json:"featureSet"`
+	DefaultBackend *backendDTO    `json:"defaultBackend"`
+	Binding        *addressDTO    `json:"binding"`
+	Routes         []routeDTO     `json:"routes"`
 }

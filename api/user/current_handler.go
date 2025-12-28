@@ -17,5 +17,5 @@ func (h currentHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, toDto(currentSubject.User))
+	ctx.JSON(http.StatusOK, toDTO(currentSubject.User))
 }

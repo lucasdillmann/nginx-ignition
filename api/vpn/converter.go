@@ -7,7 +7,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
-func toDto(data *vpn.VPN) *vpnResponse {
+func toDTO(data *vpn.VPN) *vpnResponse {
 	return &vpnResponse{
 		ID:         data.ID,
 		Driver:     data.Driver,
@@ -27,7 +27,7 @@ func toDomain(data *vpnRequest, id uuid.UUID) *vpn.VPN {
 	}
 }
 
-func fromDto(id uuid.UUID, data *vpnRequest) *vpn.VPN {
+func fromDTO(id uuid.UUID, data *vpnRequest) *vpn.VPN {
 	return &vpn.VPN{
 		ID:         id,
 		Driver:     data.Driver,
@@ -37,7 +37,7 @@ func fromDto(id uuid.UUID, data *vpnRequest) *vpn.VPN {
 	}
 }
 
-func toAvailableDriverDto(data *vpn.AvailableDriver) vpnDriverResponse {
+func toAvailableDriverDTO(data *vpn.AvailableDriver) vpnDriverResponse {
 	return vpnDriverResponse{
 		ID:                    data.ID,
 		Name:                  data.Name,

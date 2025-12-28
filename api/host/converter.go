@@ -8,33 +8,33 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func toDto(input *host.Host, globalSettings *settings.Settings) *hostResponseDto {
+func toDTO(input *host.Host, globalSettings *settings.Settings) *hostResponseDTO {
 	if input == nil {
 		return nil
 	}
 
-	globalBindings := make([]bindingDto, 0)
+	globalBindings := make([]bindingDTO, 0)
 	if input.UseGlobalBindings && globalSettings != nil && len(globalSettings.GlobalBindings) > 0 {
-		globalBindings = toBindingDtoSlice(globalSettings.GlobalBindings)
+		globalBindings = toBindingDTOSlice(globalSettings.GlobalBindings)
 	}
 
-	return &hostResponseDto{
+	return &hostResponseDTO{
 		ID:                &input.ID,
 		Enabled:           &input.Enabled,
 		DefaultServer:     &input.DefaultServer,
 		UseGlobalBindings: &input.UseGlobalBindings,
 		DomainNames:       input.DomainNames,
-		Routes:            toRouteDtoSlice(input.Routes),
-		Bindings:          toBindingDtoSlice(input.Bindings),
+		Routes:            toRouteDTOSlice(input.Routes),
+		Bindings:          toBindingDTOSlice(input.Bindings),
 		GlobalBindings:    globalBindings,
-		VPNs:              toVpnDtoSlice(input.VPNs),
-		FeatureSet:        toFeatureSetDto(&input.FeatureSet),
+		VPNs:              toVpnDTOSlice(input.VPNs),
+		FeatureSet:        toFeatureSetDTO(&input.FeatureSet),
 		AccessListID:      input.AccessListID,
 		CacheID:           input.CacheID,
 	}
 }
 
-func toDomain(input *hostRequestDto) *host.Host {
+func toDomain(input *hostRequestDTO) *host.Host {
 	if input == nil {
 		return nil
 	}
@@ -53,36 +53,36 @@ func toDomain(input *hostRequestDto) *host.Host {
 	}
 }
 
-func toRouteDtoSlice(routes []host.Route) []routeDto {
-	result := make([]routeDto, len(routes))
+func toRouteDTOSlice(routes []host.Route) []routeDTO {
+	result := make([]routeDTO, len(routes))
 	for index, route := range routes {
-		result[index] = toRouteDto(&route)
+		result[index] = toRouteDTO(&route)
 	}
 
 	return result
 }
 
-func toRouteDto(route *host.Route) routeDto {
-	return routeDto{
+func toRouteDTO(route *host.Route) routeDTO {
+	return routeDTO{
 		Priority:     &route.Priority,
 		Enabled:      &route.Enabled,
 		Type:         &route.Type,
 		SourcePath:   &route.SourcePath,
-		Settings:     toRouteSettingsDto(&route.Settings),
+		Settings:     toRouteSettingsDTO(&route.Settings),
 		TargetURI:    route.TargetURI,
 		RedirectCode: route.RedirectCode,
-		Response:     toStaticResponseDto(route.Response),
-		Integration:  toIntegrationConfigDto(route.Integration),
+		Response:     toStaticResponseDTO(route.Response),
+		Integration:  toIntegrationConfigDTO(route.Integration),
 		AccessListID: route.AccessListID,
 		CacheID:      route.CacheID,
-		SourceCode:   toRouteSourceCodeDto(route.SourceCode),
+		SourceCode:   toRouteSourceCodeDTO(route.SourceCode),
 	}
 }
 
-func toBindingDtoSlice(bindings []binding.Binding) []bindingDto {
-	result := make([]bindingDto, len(bindings))
+func toBindingDTOSlice(bindings []binding.Binding) []bindingDTO {
+	result := make([]bindingDTO, len(bindings))
 	for index, b := range bindings {
-		result[index] = bindingDto{
+		result[index] = bindingDTO{
 			Type:          &b.Type,
 			IP:            &b.IP,
 			Port:          &b.Port,
@@ -93,10 +93,10 @@ func toBindingDtoSlice(bindings []binding.Binding) []bindingDto {
 	return result
 }
 
-func toVpnDtoSlice(vpns []host.VPN) []vpnDto {
-	result := make([]vpnDto, len(vpns))
+func toVpnDTOSlice(vpns []host.VPN) []vpnDTO {
+	result := make([]vpnDTO, len(vpns))
 	for index, vpn := range vpns {
-		result[index] = vpnDto{
+		result[index] = vpnDTO{
 			VPNID: &vpn.VPNID,
 			Name:  &vpn.Name,
 			Host:  vpn.Host,
@@ -106,24 +106,24 @@ func toVpnDtoSlice(vpns []host.VPN) []vpnDto {
 	return result
 }
 
-func toFeatureSetDto(featureSet *host.FeatureSet) *featureSetDto {
+func toFeatureSetDTO(featureSet *host.FeatureSet) *featureSetDTO {
 	if featureSet == nil {
 		return nil
 	}
 
-	return &featureSetDto{
+	return &featureSetDTO{
 		WebsocketsSupport:   &featureSet.WebsocketSupport,
 		HTTP2Support:        &featureSet.HTTP2Support,
 		RedirectHTTPToHTTPS: &featureSet.RedirectHTTPToHTTPS,
 	}
 }
 
-func toRouteSettingsDto(set *host.RouteSettings) *routeSettingsDto {
+func toRouteSettingsDTO(set *host.RouteSettings) *routeSettingsDTO {
 	if set == nil {
 		return nil
 	}
 
-	return &routeSettingsDto{
+	return &routeSettingsDTO{
 		IncludeForwardHeaders:   &set.IncludeForwardHeaders,
 		ProxySslServerName:      &set.ProxySSLServerName,
 		KeepOriginalDomainName:  &set.KeepOriginalDomainName,
@@ -132,35 +132,35 @@ func toRouteSettingsDto(set *host.RouteSettings) *routeSettingsDto {
 	}
 }
 
-func toStaticResponseDto(response *host.RouteStaticResponse) *staticResponseDto {
+func toStaticResponseDTO(response *host.RouteStaticResponse) *staticResponseDTO {
 	if response == nil {
 		return nil
 	}
 
-	return &staticResponseDto{
+	return &staticResponseDTO{
 		StatusCode: &response.StatusCode,
 		Payload:    response.Payload,
 		Headers:    &response.Headers,
 	}
 }
 
-func toIntegrationConfigDto(config *host.RouteIntegrationConfig) *integrationConfigDto {
+func toIntegrationConfigDTO(config *host.RouteIntegrationConfig) *integrationConfigDTO {
 	if config == nil {
 		return nil
 	}
 
-	return &integrationConfigDto{
+	return &integrationConfigDTO{
 		IntegrationID: &config.IntegrationID,
 		OptionID:      &config.OptionID,
 	}
 }
 
-func toRouteSourceCodeDto(sourceCode *host.RouteSourceCode) *routeSourceCodeDto {
+func toRouteSourceCodeDTO(sourceCode *host.RouteSourceCode) *routeSourceCodeDTO {
 	if sourceCode == nil {
 		return nil
 	}
 
-	return &routeSourceCodeDto{
+	return &routeSourceCodeDTO{
 		Language:     &sourceCode.Language,
 		Code:         &sourceCode.Contents,
 		MainFunction: sourceCode.MainFunction,
@@ -174,7 +174,7 @@ func getBoolValue(value *bool) bool {
 	return *value
 }
 
-func toRouteSlice(routes []routeDto) []host.Route {
+func toRouteSlice(routes []routeDTO) []host.Route {
 	result := make([]host.Route, len(routes))
 	for index, route := range routes {
 		result[index] = host.Route{
@@ -196,7 +196,7 @@ func toRouteSlice(routes []routeDto) []host.Route {
 	return result
 }
 
-func toBindingSlice(bindings []bindingDto) []binding.Binding {
+func toBindingSlice(bindings []bindingDTO) []binding.Binding {
 	result := make([]binding.Binding, len(bindings))
 	for index, b := range bindings {
 		result[index] = binding.Binding{
@@ -210,7 +210,7 @@ func toBindingSlice(bindings []bindingDto) []binding.Binding {
 	return result
 }
 
-func toVPNsSlice(vpns []vpnDto) []host.VPN {
+func toVPNsSlice(vpns []vpnDTO) []host.VPN {
 	result := make([]host.VPN, len(vpns))
 	for index, vpn := range vpns {
 		result[index] = host.VPN{
@@ -223,7 +223,7 @@ func toVPNsSlice(vpns []vpnDto) []host.VPN {
 	return result
 }
 
-func toRouteSettings(input *routeSettingsDto) host.RouteSettings {
+func toRouteSettings(input *routeSettingsDTO) host.RouteSettings {
 	return host.RouteSettings{
 		IncludeForwardHeaders:   getBoolValue(input.IncludeForwardHeaders),
 		ProxySSLServerName:      getBoolValue(input.ProxySslServerName),
@@ -233,7 +233,7 @@ func toRouteSettings(input *routeSettingsDto) host.RouteSettings {
 	}
 }
 
-func toRouteStaticResponse(input *staticResponseDto) *host.RouteStaticResponse {
+func toRouteStaticResponse(input *staticResponseDTO) *host.RouteStaticResponse {
 	if input == nil {
 		return nil
 	}
@@ -245,7 +245,7 @@ func toRouteStaticResponse(input *staticResponseDto) *host.RouteStaticResponse {
 	}
 }
 
-func toRouteIntegrationConfig(input *integrationConfigDto) *host.RouteIntegrationConfig {
+func toRouteIntegrationConfig(input *integrationConfigDTO) *host.RouteIntegrationConfig {
 	if input == nil {
 		return nil
 	}
@@ -256,7 +256,7 @@ func toRouteIntegrationConfig(input *integrationConfigDto) *host.RouteIntegratio
 	}
 }
 
-func toRouteSourceCode(input *routeSourceCodeDto) *host.RouteSourceCode {
+func toRouteSourceCode(input *routeSourceCodeDTO) *host.RouteSourceCode {
 	if input == nil {
 		return nil
 	}
@@ -268,7 +268,7 @@ func toRouteSourceCode(input *routeSourceCodeDto) *host.RouteSourceCode {
 	}
 }
 
-func toFeatureSet(input *featureSetDto) *host.FeatureSet {
+func toFeatureSet(input *featureSetDTO) *host.FeatureSet {
 	if input == nil {
 		return nil
 	}

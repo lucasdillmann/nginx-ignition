@@ -32,7 +32,7 @@ func (h putHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	data := converter.Wrap2(fromDto, uuidValue, payload)
+	data := converter.Wrap2(fromDTO, uuidValue, payload)
 
 	if err := h.commands.Save(ctx.Request.Context(), data); err != nil {
 		panic(err)

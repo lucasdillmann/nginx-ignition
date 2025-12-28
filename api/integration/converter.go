@@ -7,7 +7,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
-func toDto(data *integration.Integration) *integrationResponse {
+func toDTO(data *integration.Integration) *integrationResponse {
 	return &integrationResponse{
 		ID:         data.ID,
 		Driver:     data.Driver,
@@ -27,7 +27,7 @@ func toDomain(data *integrationRequest, id uuid.UUID) *integration.Integration {
 	}
 }
 
-func fromDto(id uuid.UUID, data *integrationRequest) *integration.Integration {
+func fromDTO(id uuid.UUID, data *integrationRequest) *integration.Integration {
 	return &integration.Integration{
 		ID:         id,
 		Driver:     data.Driver,
@@ -37,7 +37,7 @@ func fromDto(id uuid.UUID, data *integrationRequest) *integration.Integration {
 	}
 }
 
-func toOptionDto(option *integration.DriverOption) *integrationOptionResponse {
+func toOptionDTO(option *integration.DriverOption) *integrationOptionResponse {
 	return &integrationOptionResponse{
 		ID:        option.ID,
 		Name:      option.Name,
@@ -47,7 +47,7 @@ func toOptionDto(option *integration.DriverOption) *integrationOptionResponse {
 	}
 }
 
-func toAvailableDriverDto(data *integration.AvailableDriver) integrationDriverResponse {
+func toAvailableDriverDTO(data *integration.AvailableDriver) integrationDriverResponse {
 	return integrationDriverResponse{
 		ID:                  data.ID,
 		Name:                data.Name,

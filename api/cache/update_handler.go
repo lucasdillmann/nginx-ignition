@@ -21,7 +21,7 @@ func (h updateHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	var dto cacheRequestDto
+	var dto cacheRequestDTO
 	if err := ctx.BindJSON(&dto); err != nil {
 		panic(err)
 	}

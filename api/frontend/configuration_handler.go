@@ -30,12 +30,12 @@ func (h *configurationHandler) handle(ctx *gin.Context) {
 		versionString = &version.Number
 	}
 
-	output := &configurationDto{
-		Version: versionDto{
+	output := &configurationDTO{
+		Version: versionDTO{
 			Current: versionString,
 			Latest:  resolveLatestAvailableVersion(),
 		},
-		CodeEditor: codeEditorDto{
+		CodeEditor: codeEditorDTO{
 			APIKey: apiKey,
 		},
 	}

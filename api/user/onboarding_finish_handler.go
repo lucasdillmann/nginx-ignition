@@ -27,7 +27,7 @@ func (h onboardingFinishHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	requestPayload := &userRequestDto{}
+	requestPayload := &userRequestDTO{}
 	if err = ctx.BindJSON(requestPayload); err != nil {
 		panic(err)
 	}
@@ -64,6 +64,6 @@ func (h onboardingFinishHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	responsePayload := &userLoginResponseDto{*token}
+	responsePayload := &userLoginResponseDTO{*token}
 	ctx.JSON(http.StatusOK, responsePayload)
 }
