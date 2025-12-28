@@ -1,17 +1,11 @@
 alter table settings_nginx
-    add column api_enabled boolean,
-    add column api_address varchar(32),
-    add column api_port integer,
-    add column api_write_enabled boolean;
-
-update settings_nginx set
-    api_enabled = true,
-    api_address = '127.0.0.1',
-    api_port = 8091,
-    api_write_enabled = false;
+    add column api_enabled boolean not null default true,
+    add column api_address varchar(32) not null default '127.0.0.1',
+    add column api_port integer not null default 8091,
+    add column api_write_enabled boolean not null default false;
 
 alter table settings_nginx
-    alter column api_enabled set not null,
-    alter column api_address set not null,
-    alter column api_port set not null,
-    alter column api_write_enabled set not null;
+    alter column api_enabled drop default,
+    alter column api_address drop default,
+    alter column api_port drop default,
+    alter column api_write_enabled drop default;
