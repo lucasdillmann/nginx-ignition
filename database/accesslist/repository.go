@@ -23,9 +23,9 @@ type repository struct {
 	database *database.Database
 }
 
-func New(database *database.Database) accesslist.Repository {
+func New(db *database.Database) accesslist.Repository {
 	return &repository{
-		database: database,
+		database: db,
 	}
 }
 

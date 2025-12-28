@@ -83,11 +83,11 @@ func (p *hostConfigurationFileProvider) buildHost(ctx *providerContext, h *host.
 
 	contents := make([]string, 0)
 	for _, b := range bindings {
-		binding, err := p.buildBinding(ctx, h, &b, routes, serverNames, httpsRedirect, http2)
+		b, err := p.buildBinding(ctx, h, &b, routes, serverNames, httpsRedirect, http2)
 		if err != nil {
 			return nil, err
 		}
-		contents = append(contents, binding)
+		contents = append(contents, b)
 	}
 
 	return &File{
@@ -132,6 +132,8 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			ctx.paths.Config,
 			b.CertificateID,
 		)
+	default:
+		return "", fmt.Errorf("invalid binding type: %s", b.Type)
 	}
 
 	conditionalHttpsRedirect := ""
@@ -198,7 +200,7 @@ func (p *hostConfigurationFileProvider) buildRoute(
 	case host.IntegrationRouteType:
 		return p.buildIntegrationRoute(ctx, r, h.FeatureSet)
 	case host.ExecuteCodeRouteType:
-		return p.buildExecuteCodeRoute(ctx, h, r), nil
+		return p.buildExecuteCodeRoute(ctx, h, r)
 	case host.StaticFilesRouteType:
 		return p.buildStaticFilesRoute(ctx, r), nil
 	default:
@@ -345,7 +347,7 @@ func (p *hostConfigurationFileProvider) buildRedirectRoute(
 	)
 }
 
-func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(ctx *providerContext, h *host.Host, r *host.Route) string {
+func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(ctx *providerContext, h *host.Host, r *host.Route) (string, error) {
 	var headerBlock, routeBlock string
 	switch r.SourceCode.Language {
 	case host.JavascriptCodeLanguage:
@@ -358,6 +360,8 @@ func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(ctx *providerConte
 			}`,
 			r.SourceCode.Contents,
 		)
+	default:
+		return "", fmt.Errorf("invalid language: %s", r.SourceCode.Language)
 	}
 
 	return fmt.Sprintf(
@@ -372,7 +376,7 @@ func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(ctx *providerConte
 		routeBlock,
 		p.buildRouteFeatures(h.FeatureSet),
 		p.buildRouteSettings(ctx, r),
-	)
+	), nil
 }
 
 func (p *hostConfigurationFileProvider) buildRouteFeatures(features host.FeatureSet) string {

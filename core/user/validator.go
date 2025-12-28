@@ -87,7 +87,6 @@ func (v *validator) validatePermissions(permissions Permissions) {
 func (v *validator) validatePermission(key string, value AccessLevel) {
 	switch value {
 	case NoAccessAccessLevel, ReadOnlyAccessLevel, ReadWriteAccessLevel:
-		break
 	default:
 		v.delegate.Add(fmt.Sprintf("permissions.%s", key), "Invalid access level")
 	}

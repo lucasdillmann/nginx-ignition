@@ -23,9 +23,9 @@ type repository struct {
 	database *database.Database
 }
 
-func New(database *database.Database) cache.Repository {
+func New(db *database.Database) cache.Repository {
 	return &repository{
-		database: database,
+		database: db,
 	}
 }
 

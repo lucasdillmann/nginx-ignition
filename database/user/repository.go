@@ -18,9 +18,9 @@ type repository struct {
 	database *database.Database
 }
 
-func New(database *database.Database) user.Repository {
+func New(db *database.Database) user.Repository {
 	return &repository{
-		database: database,
+		database: db,
 	}
 }
 
@@ -146,7 +146,7 @@ func (r *repository) Count(ctx context.Context) (int, error) {
 	return count, nil
 }
 
-func (r *repository) Save(ctx context.Context, user *user.User) error {
+func (r *repository) Save(ctx context.Context, u *user.User) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -155,14 +155,14 @@ func (r *repository) Save(ctx context.Context, user *user.User) error {
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Where(constants.ByIdFilter, user.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Where(constants.ByIdFilter, u.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}
 
-	model := toModel(user)
+	model := toModel(u)
 	if exists {
-		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIdFilter, user.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIdFilter, u.ID).Exec(ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 	}

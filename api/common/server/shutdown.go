@@ -11,8 +11,8 @@ type shutdown struct {
 	state *state
 }
 
-func registerShutdown(lifecycle *lifecycle.Lifecycle, state *state) {
-	lifecycle.RegisterShutdown(shutdown{state})
+func registerShutdown(lc *lifecycle.Lifecycle, state *state) {
+	lc.RegisterShutdown(shutdown{state})
 }
 
 func (s shutdown) Run(_ context.Context) {

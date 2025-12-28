@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -162,7 +163,7 @@ func (s *swarmAdapter) findNodeAddress(ctx context.Context, service *swarm.Servi
 	}
 
 	if len(nodes) == 0 {
-		return nil, fmt.Errorf("unable to resolve node IPs: no nodes found")
+		return nil, errors.New("unable to resolve node IPs: no nodes found")
 	}
 
 	for _, task := range tasks {

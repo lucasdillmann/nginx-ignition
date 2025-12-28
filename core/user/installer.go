@@ -16,12 +16,12 @@ func Install() error {
 
 func buildCommands(
 	repository Repository,
-	configuration *configuration.Configuration,
+	cfg *configuration.Configuration,
 ) (
 	*service,
 	*Commands,
 ) {
-	serviceInstance := &service{repository, configuration}
+	serviceInstance := &service{repository, cfg}
 	commands := &Commands{
 		Authenticate:        serviceInstance.authenticate,
 		Delete:              serviceInstance.deleteById,

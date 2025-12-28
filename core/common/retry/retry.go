@@ -1,6 +1,7 @@
 package retry
 
 import (
+	"errors"
 	"fmt"
 	"runtime/debug"
 	"time"
@@ -15,15 +16,15 @@ type Retry struct {
 
 func (r *Retry) Start() error {
 	if r.Action == nil {
-		return fmt.Errorf("action must be set")
+		return errors.New("action must be set")
 	}
 
 	if r.Attempts < 1 {
-		return fmt.Errorf("attempts must be greater than 0")
+		return errors.New("attempts must be greater than 0")
 	}
 
 	if r.DelayBetweenAttempts < 0 {
-		return fmt.Errorf("delay between attempts must be greater than or equal to 0")
+		return errors.New("delay between attempts must be greater than or equal to 0")
 	}
 
 	go func() {

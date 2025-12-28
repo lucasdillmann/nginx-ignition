@@ -19,14 +19,14 @@ type ABAC struct {
 	allowedForAllUsers      []string
 }
 
-func New(configuration *configuration.Configuration, repository user.Repository) (*ABAC, error) {
-	jwt, err := newJwt(configuration, repository)
+func New(cfg *configuration.Configuration, repository user.Repository) (*ABAC, error) {
+	jwt, err := newJwt(cfg, repository)
 	if err != nil {
 		return nil, err
 	}
 
 	return &ABAC{
-		configuration:           configuration,
+		configuration:           cfg,
 		anonymousPaths:          []string{},
 		pathPermissionResolvers: map[string]PermissionResolver{},
 		jwt:                     jwt,

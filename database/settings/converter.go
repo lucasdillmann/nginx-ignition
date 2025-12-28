@@ -82,7 +82,7 @@ func toBindingDomain(bindings []bindingModel) []binding.Binding {
 	return result
 }
 
-func toModel(settings *settings.Settings) (
+func toModel(set *settings.Settings) (
 	*nginxModel,
 	*logRotationModel,
 	*certificateModel,
@@ -90,50 +90,50 @@ func toModel(settings *settings.Settings) (
 	*buffersModel,
 ) {
 	nginx := &nginxModel{
-		ServerLogsEnabled:   settings.Nginx.Logs.ServerLogsEnabled,
-		ServerLogsLevel:     string(settings.Nginx.Logs.ServerLogsLevel),
-		AccessLogsEnabled:   settings.Nginx.Logs.AccessLogsEnabled,
-		ErrorLogsEnabled:    settings.Nginx.Logs.ErrorLogsEnabled,
-		ErrorLogsLevel:      string(settings.Nginx.Logs.ErrorLogsLevel),
-		ReadTimeout:         settings.Nginx.Timeouts.Read,
-		ConnectTimeout:      settings.Nginx.Timeouts.Connect,
-		SendTimeout:         settings.Nginx.Timeouts.Send,
-		KeepaliveTimeout:    settings.Nginx.Timeouts.Keepalive,
-		ClientBodyTimeout:   settings.Nginx.Timeouts.ClientBody,
-		WorkerProcesses:     settings.Nginx.WorkerProcesses,
-		WorkerConnections:   settings.Nginx.WorkerConnections,
-		DefaultContentType:  settings.Nginx.DefaultContentType,
-		ServerTokensEnabled: settings.Nginx.ServerTokensEnabled,
-		MaximumBodySizeMb:   settings.Nginx.MaximumBodySizeMb,
-		SendfileEnabled:     settings.Nginx.SendfileEnabled,
-		GzipEnabled:         settings.Nginx.GzipEnabled,
-		TcpNoDelayEnabled:   settings.Nginx.TcpNoDelayEnabled,
-		RuntimeUser:         settings.Nginx.RuntimeUser,
-		Custom:              settings.Nginx.Custom,
+		ServerLogsEnabled:   set.Nginx.Logs.ServerLogsEnabled,
+		ServerLogsLevel:     string(set.Nginx.Logs.ServerLogsLevel),
+		AccessLogsEnabled:   set.Nginx.Logs.AccessLogsEnabled,
+		ErrorLogsEnabled:    set.Nginx.Logs.ErrorLogsEnabled,
+		ErrorLogsLevel:      string(set.Nginx.Logs.ErrorLogsLevel),
+		ReadTimeout:         set.Nginx.Timeouts.Read,
+		ConnectTimeout:      set.Nginx.Timeouts.Connect,
+		SendTimeout:         set.Nginx.Timeouts.Send,
+		KeepaliveTimeout:    set.Nginx.Timeouts.Keepalive,
+		ClientBodyTimeout:   set.Nginx.Timeouts.ClientBody,
+		WorkerProcesses:     set.Nginx.WorkerProcesses,
+		WorkerConnections:   set.Nginx.WorkerConnections,
+		DefaultContentType:  set.Nginx.DefaultContentType,
+		ServerTokensEnabled: set.Nginx.ServerTokensEnabled,
+		MaximumBodySizeMb:   set.Nginx.MaximumBodySizeMb,
+		SendfileEnabled:     set.Nginx.SendfileEnabled,
+		GzipEnabled:         set.Nginx.GzipEnabled,
+		TcpNoDelayEnabled:   set.Nginx.TcpNoDelayEnabled,
+		RuntimeUser:         set.Nginx.RuntimeUser,
+		Custom:              set.Nginx.Custom,
 	}
 
 	logRotation := &logRotationModel{
-		Enabled:           settings.LogRotation.Enabled,
-		MaximumLines:      settings.LogRotation.MaximumLines,
-		IntervalUnit:      string(settings.LogRotation.IntervalUnit),
-		IntervalUnitCount: settings.LogRotation.IntervalUnitCount,
+		Enabled:           set.LogRotation.Enabled,
+		MaximumLines:      set.LogRotation.MaximumLines,
+		IntervalUnit:      string(set.LogRotation.IntervalUnit),
+		IntervalUnitCount: set.LogRotation.IntervalUnitCount,
 	}
 
 	certificate := &certificateModel{
-		Enabled:           settings.CertificateAutoRenew.Enabled,
-		IntervalUnit:      string(settings.CertificateAutoRenew.IntervalUnit),
-		IntervalUnitCount: settings.CertificateAutoRenew.IntervalUnitCount,
+		Enabled:           set.CertificateAutoRenew.Enabled,
+		IntervalUnit:      string(set.CertificateAutoRenew.IntervalUnit),
+		IntervalUnitCount: set.CertificateAutoRenew.IntervalUnitCount,
 	}
 
-	bindings := toBindingModel(settings.GlobalBindings)
+	bindings := toBindingModel(set.GlobalBindings)
 
 	buffers := &buffersModel{
-		ClientBodyKb:            settings.Nginx.Buffers.ClientBodyKb,
-		ClientHeaderKb:          settings.Nginx.Buffers.ClientHeaderKb,
-		LargeClientHeaderSizeKb: settings.Nginx.Buffers.LargeClientHeader.SizeKb,
-		LargeClientHeaderAmount: settings.Nginx.Buffers.LargeClientHeader.Amount,
-		OutputSizeKb:            settings.Nginx.Buffers.Output.SizeKb,
-		OutputAmount:            settings.Nginx.Buffers.Output.Amount,
+		ClientBodyKb:            set.Nginx.Buffers.ClientBodyKb,
+		ClientHeaderKb:          set.Nginx.Buffers.ClientHeaderKb,
+		LargeClientHeaderSizeKb: set.Nginx.Buffers.LargeClientHeader.SizeKb,
+		LargeClientHeaderAmount: set.Nginx.Buffers.LargeClientHeader.Amount,
+		OutputSizeKb:            set.Nginx.Buffers.Output.SizeKb,
+		OutputAmount:            set.Nginx.Buffers.Output.Amount,
 	}
 
 	return nginx, logRotation, certificate, bindings, buffers

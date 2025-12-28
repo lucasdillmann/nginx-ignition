@@ -18,9 +18,9 @@ type repository struct {
 	database *database.Database
 }
 
-func New(database *database.Database) integration.Repository {
+func New(db *database.Database) integration.Repository {
 	return &repository{
-		database: database,
+		database: db,
 	}
 }
 

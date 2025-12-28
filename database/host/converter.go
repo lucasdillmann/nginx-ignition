@@ -107,14 +107,14 @@ func toDomain(model *hostModel) (*host.Host, error) {
 
 func toModel(domain *host.Host) (*hostModel, error) {
 	bindings := make([]hostBindingModel, len(domain.Bindings))
-	for index, binding := range domain.Bindings {
+	for index, b := range domain.Bindings {
 		bindings[index] = hostBindingModel{
-			ID:            binding.ID,
+			ID:            b.ID,
 			HostID:        domain.ID,
-			Type:          string(binding.Type),
-			IP:            binding.IP,
-			Port:          binding.Port,
-			CertificateID: binding.CertificateID,
+			Type:          string(b.Type),
+			IP:            b.IP,
+			Port:          b.Port,
+			CertificateID: b.CertificateID,
 		}
 	}
 

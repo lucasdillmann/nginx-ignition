@@ -23,9 +23,9 @@ type repository struct {
 	database *database.Database
 }
 
-func New(database *database.Database) host.Repository {
+func New(db *database.Database) host.Repository {
 	return &repository{
-		database: database,
+		database: db,
 	}
 }
 
@@ -95,7 +95,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r *repository) Save(ctx context.Context, host *host.Host) error {
+func (r *repository) Save(ctx context.Context, h *host.Host) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -104,12 +104,12 @@ func (r *repository) Save(ctx context.Context, host *host.Host) error {
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	model, err := toModel(host)
+	model, err := toModel(h)
 	if err != nil {
 		return err
 	}
 
-	exists, err := transaction.NewSelect().Model((*hostModel)(nil)).Where(constants.ByIdFilter, host.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().Model((*hostModel)(nil)).Where(constants.ByIdFilter, h.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}

@@ -17,11 +17,11 @@ func (l *logAdapter) Fatal(args ...any) {
 }
 
 func (l *logAdapter) Fatalln(args ...any) {
-	log.Fatalf("%v", args...)
+	log.Errorf("%v", args...)
 }
 
 func (l *logAdapter) Fatalf(format string, args ...any) {
-	log.Fatalf(format, args...)
+	log.Errorf(format, args...)
 }
 
 func (l *logAdapter) Print(args ...any) {
@@ -41,6 +41,14 @@ func (l *logAdapter) Printf(format string, args ...any) {
 	case strings.HasPrefix(format, "[WARN] "):
 		format = strings.Replace(format, "[WARN] ", "", 1)
 		log.Warnf(format, args...)
+
+	case strings.HasPrefix(format, "[ERROR] "):
+		format = strings.Replace(format, "[ERROR] ", "", 1)
+		log.Errorf(format, args...)
+
+	case strings.HasPrefix(format, "[FATAL] "):
+		format = strings.Replace(format, "[FATAL] ", "", 1)
+		log.Errorf(format, args...)
 
 	default:
 		log.Infof(format, args...)

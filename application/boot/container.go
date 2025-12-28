@@ -71,9 +71,9 @@ func installIntegrationDriverAggregation(
 }
 
 func installVpnDriverAggregation(
-	tailscale *tailscale.Driver,
+	ts *tailscale.Driver,
 ) error {
 	return container.Singleton([]vpn.Driver{
-		tailscale,
+		ts,
 	})
 }

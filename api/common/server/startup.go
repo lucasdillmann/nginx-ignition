@@ -18,11 +18,11 @@ type startup struct {
 }
 
 func registerStartup(
-	lifecycle *lifecycle.Lifecycle,
-	configuration *configuration.Configuration,
+	lc *lifecycle.Lifecycle,
+	cfg *configuration.Configuration,
 	state *state,
 ) {
-	lifecycle.RegisterStartup(startup{configuration, state})
+	lc.RegisterStartup(startup{cfg, state})
 }
 
 func (s startup) Run(_ context.Context) error {

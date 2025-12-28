@@ -18,9 +18,9 @@ type repository struct {
 	database *database.Database
 }
 
-func New(database *database.Database) certificate.Repository {
+func New(db *database.Database) certificate.Repository {
 	return &repository{
-		database: database,
+		database: db,
 	}
 }
 
@@ -115,7 +115,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r *repository) Save(ctx context.Context, certificate *certificate.Certificate) error {
+func (r *repository) Save(ctx context.Context, cert *certificate.Certificate) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -124,12 +124,12 @@ func (r *repository) Save(ctx context.Context, certificate *certificate.Certific
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	model, err := toModel(certificate)
+	model, err := toModel(cert)
 	if err != nil {
 		return err
 	}
 
-	exists, err := transaction.NewSelect().Model((*certificateModel)(nil)).Where(constants.ByIdFilter, certificate.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().Model((*certificateModel)(nil)).Where(constants.ByIdFilter, cert.ID).Exists(ctx)
 	if err != nil {
 		return err
 	}

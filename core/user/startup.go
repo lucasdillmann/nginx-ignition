@@ -14,9 +14,9 @@ type startup struct {
 	configuration *configuration.Configuration
 }
 
-func registerStartup(lifecycle *lifecycle.Lifecycle, service *service, configuration *configuration.Configuration) {
-	commandInstance := &startup{service, configuration}
-	lifecycle.RegisterStartup(commandInstance)
+func registerStartup(lc *lifecycle.Lifecycle, service *service, cfg *configuration.Configuration) {
+	commandInstance := &startup{service, cfg}
+	lc.RegisterStartup(commandInstance)
 }
 
 func (s startup) Run(ctx context.Context) error {

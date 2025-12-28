@@ -8,8 +8,8 @@ import (
 
 type shutdown struct{}
 
-func registerShutdown(lifecycle *lifecycle.Lifecycle) {
-	lifecycle.RegisterShutdown(shutdown{})
+func registerShutdown(lc *lifecycle.Lifecycle) {
+	lc.RegisterShutdown(shutdown{})
 }
 
 func (s shutdown) Priority() int {

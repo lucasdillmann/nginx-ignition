@@ -19,10 +19,10 @@ func registerScheduledTask(
 	ctx context.Context,
 	service *service,
 	settingsRepository settings.Repository,
-	scheduler *scheduler.Scheduler,
+	sched *scheduler.Scheduler,
 ) error {
 	task := logRotationTask{service, settingsRepository}
-	return scheduler.Register(ctx, &task)
+	return sched.Register(ctx, &task)
 }
 
 func (t logRotationTask) Run(ctx context.Context) error {

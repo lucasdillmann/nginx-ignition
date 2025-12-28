@@ -21,7 +21,7 @@ func toAvailableProviderResponse(input []certificate.AvailableProvider) []availa
 	return responses
 }
 
-func toIssueCertificateResponse(certificate *certificate.Certificate, err error) *issueCertificateResponse {
+func toIssueCertificateResponse(cert *certificate.Certificate, err error) *issueCertificateResponse {
 	var errorReason *string
 	if err != nil {
 		errorStr := err.Error()
@@ -29,8 +29,8 @@ func toIssueCertificateResponse(certificate *certificate.Certificate, err error)
 	}
 
 	var certificateId *uuid.UUID
-	if certificate != nil {
-		certificateId = &certificate.ID
+	if cert != nil {
+		certificateId = &cert.ID
 	}
 
 	return &issueCertificateResponse{

@@ -32,8 +32,8 @@ type Jwt struct {
 	secretKey     []byte
 }
 
-func newJwt(configuration *configuration.Configuration, repository user.Repository) (*Jwt, error) {
-	prefixedConfiguration := configuration.WithPrefix("nginx-ignition.security.jwt")
+func newJwt(cfg *configuration.Configuration, repository user.Repository) (*Jwt, error) {
+	prefixedConfiguration := cfg.WithPrefix("nginx-ignition.security.jwt")
 
 	secretKey, err := initializeSecret(prefixedConfiguration)
 	if err != nil {

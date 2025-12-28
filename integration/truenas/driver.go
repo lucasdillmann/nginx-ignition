@@ -19,8 +19,8 @@ type Driver struct {
 	cacheDuration int
 }
 
-func newDriver(configuration *configuration.Configuration) (*Driver, error) {
-	cacheDuration, err := configuration.GetInt("nginx-ignition.integration.truenas.api-cache-timeout-seconds")
+func newDriver(cfg *configuration.Configuration) (*Driver, error) {
+	cacheDuration, err := cfg.GetInt("nginx-ignition.integration.truenas.api-cache-timeout-seconds")
 	if err != nil {
 		return nil, err
 	}

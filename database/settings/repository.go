@@ -13,9 +13,9 @@ type repository struct {
 	database *database.Database
 }
 
-func New(database *database.Database) settings.Repository {
+func New(db *database.Database) settings.Repository {
 	return &repository{
-		database: database,
+		database: db,
 	}
 }
 
@@ -54,8 +54,8 @@ func (r *repository) Get(ctx context.Context) (*settings.Settings, error) {
 	return toDomain(&nginx, &logRotation, &certificate, bindings, &buffers), nil
 }
 
-func (r *repository) Save(ctx context.Context, settings *settings.Settings) error {
-	nginx, logRotation, certificate, bindings, buffers := toModel(settings)
+func (r *repository) Save(ctx context.Context, set *settings.Settings) error {
+	nginx, logRotation, certificate, bindings, buffers := toModel(set)
 
 	transaction, err := r.database.Begin()
 	if err != nil {

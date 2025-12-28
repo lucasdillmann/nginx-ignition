@@ -14,12 +14,17 @@ import (
 
 var pageSizeRange = valuerange.New(1, 1000)
 
-func ExtractPaginationParameters(ctx *gin.Context) (int, int, *string, error) {
-	pageSize := ctx.DefaultQuery("pageSize", "25")
-	pageNumber := ctx.DefaultQuery("pageNumber", "0")
-	searchTerms := ctx.Query("searchTerms")
+func ExtractPaginationParameters(ctx *gin.Context) (
+	pageSize int,
+	pageNumber int,
+	searchTerms *string,
+	err error,
+) {
+	pageSizeStr := ctx.DefaultQuery("pageSize", "25")
+	pageNumberStr := ctx.DefaultQuery("pageNumber", "0")
+	searchTermsStr := ctx.Query("searchTerms")
 
-	pageSizeInt, err := strconv.Atoi(pageSize)
+	pageSize, err = strconv.Atoi(pageSizeStr)
 	if err != nil {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
@@ -27,14 +32,14 @@ func ExtractPaginationParameters(ctx *gin.Context) (int, int, *string, error) {
 		)
 	}
 
-	if !pageSizeRange.Contains(pageSizeInt) {
+	if !pageSizeRange.Contains(pageSize) {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
 			fmt.Sprintf("Page size must be between %d and %d", pageSizeRange.Min, pageSizeRange.Max),
 		)
 	}
 
-	pageNumberInt, err := strconv.Atoi(pageNumber)
+	pageNumber, err = strconv.Atoi(pageNumberStr)
 	if err != nil {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
@@ -42,17 +47,17 @@ func ExtractPaginationParameters(ctx *gin.Context) (int, int, *string, error) {
 		)
 	}
 
-	if pageNumberInt < 0 {
+	if pageNumber < 0 {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
 			"Page number must be greater than or equal to 0",
 		)
 	}
 
-	searchTermsPtr := &searchTerms
-	if strings.TrimSpace(searchTerms) == "" {
+	searchTermsPtr := &searchTermsStr
+	if strings.TrimSpace(searchTermsStr) == "" {
 		searchTermsPtr = nil
 	}
 
-	return pageSizeInt, pageNumberInt, searchTermsPtr, nil
+	return pageSize, pageNumber, searchTermsPtr, nil
 }

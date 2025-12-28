@@ -31,6 +31,8 @@ func (m *migrations) runScripts(db *sql.DB, driverName string) error {
 		driverInstance, err = sqlite3.WithInstance(db, &sqlite3.Config{
 			MigrationsTable: tableName,
 		})
+	default:
+		return fmt.Errorf("unsupported driver: %s", driverName)
 	}
 
 	if err != nil {

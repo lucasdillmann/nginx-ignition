@@ -7,65 +7,65 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func toDto(settings *settings.Settings) *settingsDto {
-	if settings == nil {
+func toDto(set *settings.Settings) *settingsDto {
+	if set == nil {
 		return nil
 	}
 
 	nginxModel := &nginxSettingsDto{
 		Logs: &nginxLogsSettingsDto{
-			ServerLogsEnabled: &settings.Nginx.Logs.ServerLogsEnabled,
-			ServerLogsLevel:   &settings.Nginx.Logs.ServerLogsLevel,
-			AccessLogsEnabled: &settings.Nginx.Logs.AccessLogsEnabled,
-			ErrorLogsEnabled:  &settings.Nginx.Logs.ErrorLogsEnabled,
-			ErrorLogsLevel:    &settings.Nginx.Logs.ErrorLogsLevel,
+			ServerLogsEnabled: &set.Nginx.Logs.ServerLogsEnabled,
+			ServerLogsLevel:   &set.Nginx.Logs.ServerLogsLevel,
+			AccessLogsEnabled: &set.Nginx.Logs.AccessLogsEnabled,
+			ErrorLogsEnabled:  &set.Nginx.Logs.ErrorLogsEnabled,
+			ErrorLogsLevel:    &set.Nginx.Logs.ErrorLogsLevel,
 		},
 		Timeouts: &nginxTimeoutsSettingsDto{
-			Read:       &settings.Nginx.Timeouts.Read,
-			Connect:    &settings.Nginx.Timeouts.Connect,
-			Send:       &settings.Nginx.Timeouts.Send,
-			Keepalive:  &settings.Nginx.Timeouts.Keepalive,
-			ClientBody: &settings.Nginx.Timeouts.ClientBody,
+			Read:       &set.Nginx.Timeouts.Read,
+			Connect:    &set.Nginx.Timeouts.Connect,
+			Send:       &set.Nginx.Timeouts.Send,
+			Keepalive:  &set.Nginx.Timeouts.Keepalive,
+			ClientBody: &set.Nginx.Timeouts.ClientBody,
 		},
 		Buffers: &nginxBuffersSettingsDto{
-			ClientBodyKb:   &settings.Nginx.Buffers.ClientBodyKb,
-			ClientHeaderKb: &settings.Nginx.Buffers.ClientHeaderKb,
+			ClientBodyKb:   &set.Nginx.Buffers.ClientBodyKb,
+			ClientHeaderKb: &set.Nginx.Buffers.ClientHeaderKb,
 			LargeClientHeader: &nginxBufferSizeDto{
-				SizeKb: &settings.Nginx.Buffers.LargeClientHeader.SizeKb,
-				Amount: &settings.Nginx.Buffers.LargeClientHeader.Amount,
+				SizeKb: &set.Nginx.Buffers.LargeClientHeader.SizeKb,
+				Amount: &set.Nginx.Buffers.LargeClientHeader.Amount,
 			},
 			Output: &nginxBufferSizeDto{
-				SizeKb: &settings.Nginx.Buffers.Output.SizeKb,
-				Amount: &settings.Nginx.Buffers.Output.Amount,
+				SizeKb: &set.Nginx.Buffers.Output.SizeKb,
+				Amount: &set.Nginx.Buffers.Output.Amount,
 			},
 		},
-		WorkerProcesses:     &settings.Nginx.WorkerProcesses,
-		WorkerConnections:   &settings.Nginx.WorkerConnections,
-		DefaultContentType:  &settings.Nginx.DefaultContentType,
-		ServerTokensEnabled: &settings.Nginx.ServerTokensEnabled,
-		MaximumBodySizeMb:   &settings.Nginx.MaximumBodySizeMb,
-		SendfileEnabled:     &settings.Nginx.SendfileEnabled,
-		GzipEnabled:         &settings.Nginx.GzipEnabled,
-		TcpNoDelayEnabled:   &settings.Nginx.TcpNoDelayEnabled,
-		RuntimeUser:         &settings.Nginx.RuntimeUser,
-		Custom:              settings.Nginx.Custom,
+		WorkerProcesses:     &set.Nginx.WorkerProcesses,
+		WorkerConnections:   &set.Nginx.WorkerConnections,
+		DefaultContentType:  &set.Nginx.DefaultContentType,
+		ServerTokensEnabled: &set.Nginx.ServerTokensEnabled,
+		MaximumBodySizeMb:   &set.Nginx.MaximumBodySizeMb,
+		SendfileEnabled:     &set.Nginx.SendfileEnabled,
+		GzipEnabled:         &set.Nginx.GzipEnabled,
+		TcpNoDelayEnabled:   &set.Nginx.TcpNoDelayEnabled,
+		RuntimeUser:         &set.Nginx.RuntimeUser,
+		Custom:              set.Nginx.Custom,
 	}
 
 	logRotationModel := &logRotationSettingsDto{
-		Enabled:           &settings.LogRotation.Enabled,
-		MaximumLines:      &settings.LogRotation.MaximumLines,
-		IntervalUnit:      &settings.LogRotation.IntervalUnit,
-		IntervalUnitCount: &settings.LogRotation.IntervalUnitCount,
+		Enabled:           &set.LogRotation.Enabled,
+		MaximumLines:      &set.LogRotation.MaximumLines,
+		IntervalUnit:      &set.LogRotation.IntervalUnit,
+		IntervalUnitCount: &set.LogRotation.IntervalUnitCount,
 	}
 
 	certificateModel := &certificateAutoRenewSettingsDto{
-		Enabled:           &settings.CertificateAutoRenew.Enabled,
-		IntervalUnit:      &settings.CertificateAutoRenew.IntervalUnit,
-		IntervalUnitCount: &settings.CertificateAutoRenew.IntervalUnitCount,
+		Enabled:           &set.CertificateAutoRenew.Enabled,
+		IntervalUnit:      &set.CertificateAutoRenew.IntervalUnit,
+		IntervalUnitCount: &set.CertificateAutoRenew.IntervalUnitCount,
 	}
 
 	bindingsModel := make([]bindingDto, 0)
-	for _, b := range settings.GlobalBindings {
+	for _, b := range set.GlobalBindings {
 		bindingsModel = append(bindingsModel, bindingDto{
 			Type:          &b.Type,
 			IP:            &b.IP,

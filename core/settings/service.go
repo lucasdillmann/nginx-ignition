@@ -16,12 +16,12 @@ type service struct {
 func newService(
 	repository Repository,
 	bindingCommands *binding.Commands,
-	scheduler *scheduler.Scheduler,
+	sched *scheduler.Scheduler,
 ) *service {
 	return &service{
 		repository:      repository,
 		bindingCommands: bindingCommands,
-		scheduler:       scheduler,
+		scheduler:       sched,
 	}
 }
 

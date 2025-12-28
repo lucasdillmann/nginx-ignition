@@ -18,9 +18,9 @@ type repository struct {
 	database *database.Database
 }
 
-func New(database *database.Database) vpn.Repository {
+func New(db *database.Database) vpn.Repository {
 	return &repository{
-		database: database,
+		database: db,
 	}
 }
 

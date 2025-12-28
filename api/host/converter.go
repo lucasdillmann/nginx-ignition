@@ -118,17 +118,17 @@ func toFeatureSetDto(featureSet *host.FeatureSet) *featureSetDto {
 	}
 }
 
-func toRouteSettingsDto(settings *host.RouteSettings) *routeSettingsDto {
-	if settings == nil {
+func toRouteSettingsDto(set *host.RouteSettings) *routeSettingsDto {
+	if set == nil {
 		return nil
 	}
 
 	return &routeSettingsDto{
-		IncludeForwardHeaders:   &settings.IncludeForwardHeaders,
-		ProxySslServerName:      &settings.ProxySSLServerName,
-		KeepOriginalDomainName:  &settings.KeepOriginalDomainName,
-		DirectoryListingEnabled: &settings.DirectoryListingEnabled,
-		Custom:                  settings.Custom,
+		IncludeForwardHeaders:   &set.IncludeForwardHeaders,
+		ProxySslServerName:      &set.ProxySSLServerName,
+		KeepOriginalDomainName:  &set.KeepOriginalDomainName,
+		DirectoryListingEnabled: &set.DirectoryListingEnabled,
+		Custom:                  set.Custom,
 	}
 }
 

@@ -26,11 +26,11 @@ type Provider struct {
 	configuration *configuration.Configuration
 }
 
-func New(configuration *configuration.Configuration) *Provider {
+func New(cfg *configuration.Configuration) *Provider {
 	acmelog.Logger = logAdapterInstance
 
 	return &Provider{
-		configuration: configuration,
+		configuration: cfg,
 	}
 }
 
