@@ -45,6 +45,22 @@ func TestAccessListFileProvider_Provide(t *testing.T) {
 	assert.Len(t, files, 2)
 	assert.Equal(t, fmt.Sprintf("access-list-%s.conf", id), files[0].Name)
 	assert.Equal(t, fmt.Sprintf("access-list-%s.htpasswd", id), files[1].Name)
+
+	t.Run("returns error when commands.GetAll fails", func(t *testing.T) {
+		p.commands = &accesslist.Commands{
+			GetAll: func(_ context.Context) ([]accesslist.AccessList, error) {
+				return nil, assert.AnError
+			},
+		}
+		_, err := p.provide(ctx)
+		assert.ErrorIs(t, err, assert.AnError)
+	})
+}
+
+func TestToNginxOperation(t *testing.T) {
+	assert.Equal(t, "allow", toNginxOperation(accesslist.AllowOutcome))
+	assert.Equal(t, "deny", toNginxOperation(accesslist.DenyOutcome))
+	assert.Equal(t, "", toNginxOperation("INVALID"))
 }
 
 func TestAccessListFileProvider_BuildConfFile(t *testing.T) {

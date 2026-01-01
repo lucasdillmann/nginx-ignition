@@ -119,7 +119,8 @@ format: .prerequisites
 	done
 
 test: .backend-prerequisites .generate-test-mocks
-	go test ./api/... \
+	go test -v \
+		./api/... \
 		./application/... \
 		./certificate/commons/... \
 		./certificate/custom/... \

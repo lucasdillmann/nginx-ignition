@@ -130,6 +130,141 @@ func TestHostConfigurationFileProvider_BuildProxyPass(t *testing.T) {
 	})
 }
 
+func TestHostConfigurationFileProvider_BuildRedirectRoute(t *testing.T) {
+	p := &hostConfigurationFileProvider{}
+	ctx := &providerContext{}
+
+	t.Run("generates redirect route config", func(t *testing.T) {
+		r := &host.Route{
+			SourcePath:   "/old",
+			RedirectCode: ptr.Of(301),
+			TargetURI:    ptr.Of("http://new.example.com"),
+		}
+		result := p.buildRedirectRoute(ctx, r, host.FeatureSet{})
+		assert.Contains(t, result, "location /old {")
+		assert.Contains(t, result, "return 301 http://new.example.com;")
+	})
+}
+
+func TestHostConfigurationFileProvider_BuildIntegrationRoute(t *testing.T) {
+	p := &hostConfigurationFileProvider{}
+	ctx := &providerContext{
+		context: context.Background(),
+	}
+
+	t.Run("generates integration route config with dns resolvers", func(t *testing.T) {
+		integrationID := uuid.New()
+		r := &host.Route{
+			SourcePath: "/api",
+			Integration: &host.RouteIntegrationConfig{
+				IntegrationID: integrationID,
+				OptionID:      "opt-1",
+			},
+		}
+
+		p.integrationCommands = &integration.Commands{
+			GetOptionURL: func(_ context.Context, iID uuid.UUID, oID string) (*string, []string, error) {
+				assert.Equal(t, integrationID, iID)
+				assert.Equal(t, "opt-1", oID)
+				return ptr.Of("http://1.2.3.4:80"), []string{"8.8.8.8", "8.8.4.4"}, nil
+			},
+		}
+
+		result, err := p.buildIntegrationRoute(ctx, r, host.FeatureSet{})
+		assert.NoError(t, err)
+		assert.Contains(t, result, "location /api {")
+		assert.Contains(t, result, "resolver 8.8.8.8 8.8.4.4 valid=5s;")
+		assert.Contains(t, result, "proxy_pass http://1.2.3.4:80;")
+	})
+
+	t.Run("returns error when integration option not found", func(t *testing.T) {
+		r := &host.Route{
+			Integration: &host.RouteIntegrationConfig{},
+		}
+		p.integrationCommands = &integration.Commands{
+			GetOptionURL: func(_ context.Context, _ uuid.UUID, _ string) (*string, []string, error) {
+				return nil, nil, nil
+			},
+		}
+		_, err := p.buildIntegrationRoute(ctx, r, host.FeatureSet{})
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "Integration option not found")
+	})
+}
+
+func TestHostConfigurationFileProvider_BuildExecuteCodeRoute(t *testing.T) {
+	p := &hostConfigurationFileProvider{}
+	ctx := &providerContext{
+		paths: &Paths{Config: "/etc/nginx/"},
+	}
+	h := &host.Host{ID: uuid.New()}
+
+	t.Run("generates javascript route config", func(t *testing.T) {
+		r := &host.Route{
+			Priority:   1,
+			SourcePath: "/js",
+			SourceCode: &host.RouteSourceCode{
+				Language:     host.JavascriptCodeLanguage,
+				MainFunction: ptr.Of("handler"),
+			},
+		}
+		result, err := p.buildExecuteCodeRoute(ctx, h, r)
+		assert.NoError(t, err)
+		assert.Contains(t, result, fmt.Sprintf("js_import route_1 from /etc/nginx/host-%s-route-1.js;", h.ID))
+		assert.Contains(t, result, "js_content route_1.handler;")
+	})
+
+	t.Run("generates lua route config", func(t *testing.T) {
+		r := &host.Route{
+			SourcePath: "/lua",
+			SourceCode: &host.RouteSourceCode{
+				Language: host.LuaCodeLanguage,
+				Contents: "ngx.say('hello')",
+			},
+		}
+		result, err := p.buildExecuteCodeRoute(ctx, h, r)
+		assert.NoError(t, err)
+		assert.Contains(t, result, "content_by_lua_block")
+		assert.Contains(t, result, "ngx.say('hello')")
+	})
+
+	t.Run("returns error for invalid language", func(t *testing.T) {
+		r := &host.Route{
+			SourceCode: &host.RouteSourceCode{
+				Language: "FORTRAN",
+			},
+		}
+		_, err := p.buildExecuteCodeRoute(ctx, h, r)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid language")
+	})
+}
+
+func TestHostConfigurationFileProvider_BuildStaticResponseRoute(t *testing.T) {
+	p := &hostConfigurationFileProvider{}
+	ctx := &providerContext{
+		paths: &Paths{Config: "/etc/nginx/"},
+	}
+	h := &host.Host{ID: uuid.New()}
+
+	t.Run("generates static response route config", func(t *testing.T) {
+		r := &host.Route{
+			Priority:   2,
+			SourcePath: "/static",
+			Response: &host.RouteStaticResponse{
+				StatusCode: 200,
+				Headers: map[string]string{
+					"Content-Type": "application/json",
+				},
+			},
+		}
+		result := p.buildStaticResponseRoute(ctx, h, r)
+		assert.Contains(t, result, "location @route_2/static_payload {")
+		assert.Contains(t, result, "add_header \"Content-Type\" \"application/json\" always;")
+		assert.Contains(t, result, "try_files /host-"+h.ID.String()+"-route-2.payload =200;")
+	})
+}
+
 func TestHostConfigurationFileProvider_BuildRouteFeatures(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 
@@ -190,6 +325,107 @@ func TestHostConfigurationFileProvider_BuildRouteSettings(t *testing.T) {
 	})
 }
 
+func TestHostConfigurationFileProvider_BuildBinding(t *testing.T) {
+	p := &hostConfigurationFileProvider{}
+	paths := &Paths{
+		Config: "/etc/nginx/",
+		Logs:   "/var/log/nginx/",
+	}
+	ctx := &providerContext{
+		context: context.Background(),
+		paths:   paths,
+	}
+	h := &host.Host{ID: uuid.New()}
+	p.settingsCommands = &settings.Commands{
+		Get: func(_ context.Context) (*settings.Settings, error) {
+			return &settings.Settings{
+				Nginx: &settings.NginxSettings{
+					Logs: &settings.NginxLogsSettings{
+						AccessLogsEnabled: true,
+						ErrorLogsEnabled:  true,
+						ErrorLogsLevel:    settings.WarnLogLevel,
+					},
+				},
+			}, nil
+		},
+	}
+
+	t.Run("generates HTTP binding", func(t *testing.T) {
+		b := &binding.Binding{
+			Type: binding.HTTPBindingType,
+			IP:   "127.0.0.1",
+			Port: 8080,
+		}
+		result, err := p.buildBinding(ctx, h, b, []string{}, "server_name example.com;", "", "")
+		assert.NoError(t, err)
+		assert.Contains(t, result, "listen 127.0.0.1:8080 ;")
+	})
+
+	t.Run("generates HTTPS binding", func(t *testing.T) {
+		certID := uuid.New()
+		b := &binding.Binding{
+			Type:          binding.HTTPSBindingType,
+			IP:            "0.0.0.0",
+			Port:          443,
+			CertificateID: &certID,
+		}
+		result, err := p.buildBinding(ctx, h, b, []string{}, "server_name example.com;", "", "")
+		assert.NoError(t, err)
+		assert.Contains(t, result, "listen 0.0.0.0:443 ssl ;")
+		assert.Contains(t, result, fmt.Sprintf("ssl_certificate /etc/nginx/certificate-%s.pem;", certID))
+	})
+
+	t.Run("includes HTTP to HTTPS redirect in HTTP binding", func(t *testing.T) {
+		b := &binding.Binding{Type: binding.HTTPBindingType}
+		redirect := "return 301 https://$server_name$request_uri;"
+		result, err := p.buildBinding(ctx, h, b, []string{}, "", redirect, "")
+		assert.NoError(t, err)
+		assert.Contains(t, result, redirect)
+	})
+
+	t.Run("includes HTTP2 in HTTPS binding", func(t *testing.T) {
+		certID := uuid.New()
+		b := &binding.Binding{
+			Type:          binding.HTTPSBindingType,
+			CertificateID: &certID,
+		}
+		result, err := p.buildBinding(ctx, h, b, []string{}, "", "", "http2 on;")
+		assert.NoError(t, err)
+		assert.Contains(t, result, "http2 on;")
+	})
+
+	t.Run("returns error for invalid binding type", func(t *testing.T) {
+		b := &binding.Binding{Type: "INVALID"}
+		_, err := p.buildBinding(ctx, h, b, []string{}, "", "", "")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid binding type")
+	})
+
+	t.Run("returns error when settingsCommands fails", func(t *testing.T) {
+		p.settingsCommands = &settings.Commands{
+			Get: func(_ context.Context) (*settings.Settings, error) {
+				return nil, assert.AnError
+			},
+		}
+		b := &binding.Binding{Type: binding.HTTPBindingType}
+		_, err := p.buildBinding(ctx, h, b, []string{}, "", "", "")
+		assert.ErrorIs(t, err, assert.AnError)
+	})
+}
+
+func TestHostConfigurationFileProvider_BuildRoute(t *testing.T) {
+	p := &hostConfigurationFileProvider{}
+	ctx := &providerContext{}
+	h := &host.Host{}
+
+	t.Run("returns error for invalid route type", func(t *testing.T) {
+		r := &host.Route{Type: "INVALID"}
+		_, err := p.buildRoute(ctx, h, r)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid route type")
+	})
+}
+
 func TestHostConfigurationFileProvider_BuildCacheConfig(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 	cacheID := uuid.New()
@@ -209,6 +445,20 @@ func TestHostConfigurationFileProvider_BuildCacheConfig(t *testing.T) {
 				cache.GetMethod,
 				cache.HeadMethod,
 			},
+			IgnoreUpstreamCacheHeaders:       true,
+			CacheStatusResponseHeaderEnabled: true,
+			UseStale: []cache.UseStaleOption{
+				cache.ErrorUseStale,
+				cache.TimeoutUseStale,
+			},
+			ConcurrencyLock: cache.ConcurrencyLock{
+				Enabled:        true,
+				TimeoutSeconds: ptr.Of(5),
+				AgeSeconds:     ptr.Of(10),
+			},
+			BypassRules:    []string{"$cookie_nocache"},
+			NoCacheRules:   []string{"$arg_nocache"},
+			FileExtensions: []string{"jpg", "png"},
 		},
 	}
 
@@ -221,6 +471,26 @@ func TestHostConfigurationFileProvider_BuildCacheConfig(t *testing.T) {
 		assert.Contains(t, result, "proxy_cache_revalidate on;")
 		assert.Contains(t, result, "proxy_cache_valid 200 302 600s;")
 		assert.Contains(t, result, "proxy_cache_methods get head;")
+		assert.Contains(t, result, "proxy_ignore_headers Cache-Control Expires;")
+		assert.Contains(t, result, "add_header X-Cache-Status $upstream_cache_status;")
+		assert.Contains(t, result, "proxy_cache_use_stale error timeout;")
+		assert.Contains(t, result, "proxy_cache_lock on;")
+		assert.Contains(t, result, "proxy_cache_lock_timeout 5s;")
+		assert.Contains(t, result, "proxy_cache_lock_age 10s;")
+		assert.Contains(t, result, "proxy_cache_bypass $cookie_nocache;")
+		assert.Contains(t, result, "proxy_no_cache $arg_nocache;")
+		assert.Contains(t, result, "if ($uri !~* \"\\.(jpg|png)$\")")
+	})
+
+	t.Run("returns empty string when cache not found", func(t *testing.T) {
+		unknownID := uuid.New()
+		result := p.buildCacheConfig(caches, &unknownID)
+		assert.Equal(t, "", result)
+	})
+
+	t.Run("returns empty string when cacheID is nil", func(t *testing.T) {
+		result := p.buildCacheConfig(caches, nil)
+		assert.Equal(t, "", result)
 	})
 }
 

@@ -44,6 +44,21 @@ func TestStreamFileProvider_Provide(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, files, 1)
 	assert.Equal(t, fmt.Sprintf("stream-%s.conf", id), files[0].Name)
+
+	t.Run("returns error when streams present but not supported", func(t *testing.T) {
+		ctx.supportedFeatures.StreamType = NoneSupportType
+		_, err := p.provide(ctx)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "Support for streams is not enabled")
+	})
+
+	t.Run("returns error for unknown stream type", func(t *testing.T) {
+		ctx.supportedFeatures.StreamType = StaticSupportType
+		ctx.streams[0].Type = "UNKNOWN"
+		_, err := p.provide(ctx)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "unknown stream type")
+	})
 }
 
 func TestStreamFileProvider_BuildBinding(t *testing.T) {
@@ -95,6 +110,17 @@ func TestStreamFileProvider_BuildBinding(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "listen unix:/tmp/nginx.sock reuseport;", *result)
 	})
+
+	t.Run("returns error for unknown protocol", func(t *testing.T) {
+		s := &stream.Stream{
+			Binding: stream.Address{
+				Protocol: "GOPHER",
+			},
+		}
+		_, err := p.buildBinding(s)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "unknown binding protocol")
+	})
 }
 
 func TestStreamFileProvider_BuildUpstream(t *testing.T) {
@@ -127,6 +153,17 @@ func TestStreamFileProvider_BuildUpstream(t *testing.T) {
 		assert.Contains(t, *result, "upstream test_upstream {")
 		assert.Contains(t, *result, "server 10.0.0.1:8080 weight=5 max_fails=3 fail_timeout=30s;")
 		assert.Contains(t, *result, "server unix:/var/run/backend.sock;")
+	})
+
+	t.Run("returns error for unknown backend protocol", func(t *testing.T) {
+		backends := []stream.Backend{
+			{
+				Address: stream.Address{Protocol: "GOPHER"},
+			},
+		}
+		_, err := p.buildUpstream(backends, "test")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "unknown backend protocol")
 	})
 }
 
@@ -179,5 +216,17 @@ func TestStreamFileProvider_BuildRoutedStream(t *testing.T) {
 		assert.Contains(t, *result, fmt.Sprintf("default stream_%s_default;", idStr))
 		assert.Contains(t, *result, "ssl_preread on;")
 		assert.Contains(t, *result, fmt.Sprintf("proxy_pass $stream_%s_router;", idStr))
+	})
+
+	t.Run("returns error when TLSSNI not supported", func(t *testing.T) {
+		ctx := &providerContext{
+			supportedFeatures: &SupportedFeatures{
+				TLSSNI: NoneSupportType,
+			},
+		}
+		s := &stream.Stream{Type: stream.SNIRouterType}
+		_, err := p.buildRoutedStream(ctx, s)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "Support for TLS SNI is not enabled")
 	})
 }

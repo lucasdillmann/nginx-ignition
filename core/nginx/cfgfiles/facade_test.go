@@ -78,6 +78,44 @@ func TestFacade_GetConfigurationFiles(t *testing.T) {
 		assert.ErrorIs(t, err, assert.AnError)
 	})
 
+	t.Run("returns error when streamCommands fails", func(t *testing.T) {
+		hostCmds := &host.Commands{
+			GetAllEnabled: func(_ context.Context) ([]host.Host, error) { return []host.Host{}, nil },
+		}
+		streamCmds := &stream.Commands{
+			GetAllEnabled: func(_ context.Context) ([]stream.Stream, error) {
+				return nil, assert.AnError
+			},
+		}
+		f := &Facade{
+			hostCommands:   hostCmds,
+			streamCommands: streamCmds,
+		}
+		_, _, _, err := f.GetConfigurationFiles(ctx, paths, features)
+		assert.ErrorIs(t, err, assert.AnError)
+	})
+
+	t.Run("returns error when cacheCommands fails", func(t *testing.T) {
+		hostCmds := &host.Commands{
+			GetAllEnabled: func(_ context.Context) ([]host.Host, error) { return []host.Host{}, nil },
+		}
+		streamCmds := &stream.Commands{
+			GetAllEnabled: func(_ context.Context) ([]stream.Stream, error) { return []stream.Stream{}, nil },
+		}
+		cacheCmds := &cache.Commands{
+			GetAllInUse: func(_ context.Context) ([]cache.Cache, error) {
+				return nil, assert.AnError
+			},
+		}
+		f := &Facade{
+			hostCommands:   hostCmds,
+			streamCommands: streamCmds,
+			cacheCommands:  cacheCmds,
+		}
+		_, _, _, err := f.GetConfigurationFiles(ctx, paths, features)
+		assert.ErrorIs(t, err, assert.AnError)
+	})
+
 	t.Run("returns error when provider fails", func(t *testing.T) {
 		hostCmds := &host.Commands{
 			GetAllEnabled: func(_ context.Context) ([]host.Host, error) { return []host.Host{}, nil },
@@ -101,6 +139,34 @@ func TestFacade_GetConfigurationFiles(t *testing.T) {
 
 		_, _, _, err := f.GetConfigurationFiles(ctx, paths, features)
 		assert.ErrorIs(t, err, assert.AnError)
+	})
+
+	t.Run("collects files from multiple providers", func(t *testing.T) {
+		hostCmds := &host.Commands{
+			GetAllEnabled: func(_ context.Context) ([]host.Host, error) { return []host.Host{}, nil },
+		}
+		streamCmds := &stream.Commands{
+			GetAllEnabled: func(_ context.Context) ([]stream.Stream, error) { return []stream.Stream{}, nil },
+		}
+		cacheCmds := &cache.Commands{
+			GetAllInUse: func(_ context.Context) ([]cache.Cache, error) { return []cache.Cache{}, nil },
+		}
+
+		p1 := NewMockfileProvider(ctrl)
+		p1.EXPECT().provide(gomock.Any()).Return([]File{{Name: "f1.conf"}}, nil)
+		p2 := NewMockfileProvider(ctrl)
+		p2.EXPECT().provide(gomock.Any()).Return([]File{{Name: "f2.conf"}}, nil)
+
+		f := &Facade{
+			hostCommands:   hostCmds,
+			streamCommands: streamCmds,
+			cacheCommands:  cacheCmds,
+			providers:      []fileProvider{p1, p2},
+		}
+
+		files, _, _, err := f.GetConfigurationFiles(ctx, paths, features)
+		assert.NoError(t, err)
+		assert.Len(t, files, 2)
 	})
 }
 

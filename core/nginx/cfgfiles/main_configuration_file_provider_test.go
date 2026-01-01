@@ -19,61 +19,111 @@ func TestMainConfigurationFileProvider_Provide(t *testing.T) {
 	p := &mainConfigurationFileProvider{}
 	paths := &Paths{
 		Base:   "/",
-		Config: "/etc/nginx",
-		Logs:   "/var/log/nginx",
-		Cache:  "/var/cache/nginx",
+		Config: "/etc/nginx/",
+		Logs:   "/var/log/nginx/",
+		Cache:  "/var/cache/nginx/",
 	}
-	ctx := &providerContext{
-		context: context.Background(),
-		paths:   paths,
-		hosts:   []host.Host{},
-		supportedFeatures: &SupportedFeatures{
-			StreamType:  NoneSupportType,
-			RunCodeType: NoneSupportType,
+
+	mockSettings := &settings.Settings{
+		Nginx: &settings.NginxSettings{
+			RuntimeUser:       "nginx",
+			WorkerProcesses:   1,
+			WorkerConnections: 1024,
+			Timeouts: &settings.NginxTimeoutsSettings{
+				Keepalive:  65,
+				Connect:    60,
+				Read:       60,
+				Send:       60,
+				ClientBody: 60,
+			},
+			Buffers: &settings.NginxBuffersSettings{
+				ClientBodyKb:   16,
+				ClientHeaderKb: 1,
+				LargeClientHeader: &settings.NginxBufferSize{
+					Amount: 4,
+					SizeKb: 8,
+				},
+				Output: &settings.NginxBufferSize{
+					Amount: 2,
+					SizeKb: 32,
+				},
+			},
+			Logs: &settings.NginxLogsSettings{
+				ServerLogsEnabled: true,
+				ServerLogsLevel:   settings.WarnLogLevel,
+			},
 		},
 	}
 
 	p.settingsCommands = &settings.Commands{
 		Get: func(_ context.Context) (*settings.Settings, error) {
-			return &settings.Settings{
-				Nginx: &settings.NginxSettings{
-					RuntimeUser:       "nginx",
-					WorkerProcesses:   1,
-					WorkerConnections: 1024,
-					Timeouts: &settings.NginxTimeoutsSettings{
-						Keepalive:  65,
-						Connect:    60,
-						Read:       60,
-						Send:       60,
-						ClientBody: 60,
-					},
-					Buffers: &settings.NginxBuffersSettings{
-						ClientBodyKb:   16,
-						ClientHeaderKb: 1,
-						LargeClientHeader: &settings.NginxBufferSize{
-							Amount: 4,
-							SizeKb: 8,
-						},
-						Output: &settings.NginxBufferSize{
-							Amount: 2,
-							SizeKb: 32,
-						},
-					},
-					Logs: &settings.NginxLogsSettings{
-						ServerLogsEnabled: true,
-						ServerLogsLevel:   settings.WarnLogLevel,
-					},
-				},
-			}, nil
+			return mockSettings, nil
 		},
 	}
 
-	files, err := p.provide(ctx)
-	assert.NoError(t, err)
-	assert.Len(t, files, 1)
-	assert.Equal(t, "nginx.conf", files[0].Name)
-	assert.Contains(t, files[0].Contents, "worker_processes 1;")
-	assert.Contains(t, files[0].Contents, "include /etc/nginxmime.types;")
+	t.Run("successfully generates basic config", func(t *testing.T) {
+		ctx := &providerContext{
+			context: context.Background(),
+			paths:   paths,
+			supportedFeatures: &SupportedFeatures{
+				StreamType:  NoneSupportType,
+				RunCodeType: NoneSupportType,
+			},
+		}
+
+		files, err := p.provide(ctx)
+		assert.NoError(t, err)
+		assert.Len(t, files, 1)
+		assert.Contains(t, files[0].Contents, "worker_processes 1;")
+		assert.NotContains(t, files[0].Contents, "load_module")
+		assert.NotContains(t, files[0].Contents, "stream {")
+	})
+
+	t.Run("includes dynamic modules and stream block when enabled", func(t *testing.T) {
+		ctx := &providerContext{
+			context: context.Background(),
+			paths:   paths,
+			supportedFeatures: &SupportedFeatures{
+				StreamType:  DynamicSupportType,
+				RunCodeType: DynamicSupportType,
+			},
+			streams: []stream.Stream{{ID: uuid.New()}},
+		}
+
+		files, err := p.provide(ctx)
+		assert.NoError(t, err)
+		assert.Contains(t, files[0].Contents, "load_module modules/ngx_stream_module.so;")
+		assert.Contains(t, files[0].Contents, "load_module modules/ngx_http_js_module.so;")
+		assert.Contains(t, files[0].Contents, "stream {")
+		assert.Contains(t, files[0].Contents, "include /etc/nginx/stream-")
+	})
+
+	t.Run("includes custom configuration", func(t *testing.T) {
+		mockSettings.Nginx.Custom = ptr.Of("custom_directive on;")
+		ctx := &providerContext{
+			context: context.Background(),
+			paths:   paths,
+			supportedFeatures: &SupportedFeatures{
+				StreamType:  NoneSupportType,
+				RunCodeType: NoneSupportType,
+			},
+		}
+
+		files, err := p.provide(ctx)
+		assert.NoError(t, err)
+		assert.Contains(t, files[0].Contents, "custom_directive on;")
+	})
+
+	t.Run("returns error when settingsCommands fails", func(t *testing.T) {
+		p.settingsCommands = &settings.Commands{
+			Get: func(_ context.Context) (*settings.Settings, error) {
+				return nil, assert.AnError
+			},
+		}
+		ctx := &providerContext{context: context.Background()}
+		_, err := p.provide(ctx)
+		assert.ErrorIs(t, err, assert.AnError)
+	})
 }
 
 func TestMainConfigurationFileProvider_GetErrorLogPath(t *testing.T) {
@@ -175,5 +225,17 @@ func TestMainConfigurationFileProvider_GetCacheDefinitions(t *testing.T) {
 		}
 		result := p.getCacheDefinitions(paths, caches)
 		assert.Contains(t, result, "proxy_cache_path /mnt/ssd/cache")
+	})
+
+	t.Run("generates basic config when optional fields are nil", func(t *testing.T) {
+		caches := []cache.Cache{
+			{
+				ID: id1,
+			},
+		}
+		result := p.getCacheDefinitions(paths, caches)
+		assert.Contains(t, result, "proxy_cache_path /var/cache/nginx/")
+		assert.NotContains(t, result, "inactive=")
+		assert.NotContains(t, result, "max_size=")
 	})
 }

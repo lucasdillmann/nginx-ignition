@@ -73,6 +73,50 @@ func TestHostCertificateFileProvider_Provide(t *testing.T) {
 	assert.Contains(t, files[0].Contents, base64.StdEncoding.EncodeToString([]byte("chain-data")))
 	assert.Contains(t, files[0].Contents, "-----BEGIN PRIVATE KEY-----")
 	assert.Contains(t, files[0].Contents, base64.StdEncoding.EncodeToString([]byte("key-data")))
+
+	t.Run("returns error when settingsCommands fails", func(t *testing.T) {
+		p.settingsCommands = &settings.Commands{
+			Get: func(_ context.Context) (*settings.Settings, error) {
+				return nil, assert.AnError
+			},
+		}
+		_, err := p.provide(ctx)
+		assert.ErrorIs(t, err, assert.AnError)
+	})
+
+	t.Run("returns error when certificateCommands fails", func(t *testing.T) {
+		p.settingsCommands = &settings.Commands{
+			Get: func(_ context.Context) (*settings.Settings, error) {
+				return &settings.Settings{Nginx: &settings.NginxSettings{}}, nil
+			},
+		}
+		p.certificateCommands = &certificate.Commands{
+			Get: func(_ context.Context, _ uuid.UUID) (*certificate.Certificate, error) {
+				return nil, assert.AnError
+			},
+		}
+		_, err := p.provide(ctx)
+		assert.ErrorIs(t, err, assert.AnError)
+	})
+
+	t.Run("deduplicates certificates", func(t *testing.T) {
+		p.certificateCommands = &certificate.Commands{
+			Get: func(_ context.Context, _ uuid.UUID) (*certificate.Certificate, error) {
+				return &certificate.Certificate{PublicKey: "data", PrivateKey: "data"}, nil
+			},
+		}
+		ctx.hosts = []host.Host{
+			{
+				Bindings: []binding.Binding{
+					{Type: binding.HTTPSBindingType, CertificateID: &certID},
+					{Type: binding.HTTPSBindingType, CertificateID: &certID},
+				},
+			},
+		}
+		files, err := p.provide(ctx)
+		assert.NoError(t, err)
+		assert.Len(t, files, 1)
+	})
 }
 
 func TestHostCertificateFileProvider_PemEncoding(t *testing.T) {
