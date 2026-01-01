@@ -2,7 +2,6 @@ package configuration
 
 import (
 	"fmt"
-	"os"
 	"sync"
 	"testing"
 
@@ -34,8 +33,7 @@ func TestConfiguration_Get(t *testing.T) {
 		key := "test.config.key"
 		formattedKey := "TEST_CONFIG_KEY"
 		expectedValue := "formatted-value"
-		os.Setenv(formattedKey, expectedValue)
-		defer os.Unsetenv(formattedKey)
+		t.Setenv(formattedKey, expectedValue)
 
 		value, err := cfg.Get(key)
 
@@ -62,8 +60,7 @@ func TestConfiguration_GetInt(t *testing.T) {
 
 	t.Run("returns integer value", func(t *testing.T) {
 		key := "TEST_INT_KEY"
-		os.Setenv(key, "42")
-		defer os.Unsetenv(key)
+		t.Setenv(key, "42")
 
 		value, err := cfg.GetInt(key)
 
@@ -73,8 +70,7 @@ func TestConfiguration_GetInt(t *testing.T) {
 
 	t.Run("returns error for invalid integer", func(t *testing.T) {
 		key := "TEST_INVALID_INT_KEY"
-		os.Setenv(key, "not-a-number")
-		defer os.Unsetenv(key)
+		t.Setenv(key, "not-a-number")
 
 		_, err := cfg.GetInt(key)
 
@@ -87,8 +83,7 @@ func TestConfiguration_GetBoolean(t *testing.T) {
 
 	t.Run("returns boolean value", func(t *testing.T) {
 		key := "TEST_BOOL_KEY"
-		os.Setenv(key, "true")
-		defer os.Unsetenv(key)
+		t.Setenv(key, "true")
 
 		value, err := cfg.GetBoolean(key)
 
@@ -98,8 +93,7 @@ func TestConfiguration_GetBoolean(t *testing.T) {
 
 	t.Run("returns error for invalid boolean", func(t *testing.T) {
 		key := "TEST_INVALID_BOOL_KEY"
-		os.Setenv(key, "not-a-boolean")
-		defer os.Unsetenv(key)
+		t.Setenv(key, "not-a-boolean")
 
 		_, err := cfg.GetBoolean(key)
 
@@ -114,8 +108,7 @@ func TestConfiguration_WithPrefix(t *testing.T) {
 		key := "TEST_PREFIX_KEY"
 		expectedValue := "prefixed-value"
 		envKey := fmt.Sprintf("prefix.%s", key)
-		os.Setenv(envKey, expectedValue)
-		defer os.Unsetenv(envKey)
+		t.Setenv(envKey, expectedValue)
 
 		prefixedCfg := cfg.WithPrefix("prefix")
 		value, err := prefixedCfg.Get(key)
@@ -128,8 +121,7 @@ func TestConfiguration_WithPrefix(t *testing.T) {
 		key := "TEST_CHAINED_KEY"
 		expectedValue := "chained-value"
 		envKey := fmt.Sprintf("parent.child.%s", key)
-		os.Setenv(envKey, expectedValue)
-		defer os.Unsetenv(envKey)
+		t.Setenv(envKey, expectedValue)
 
 		prefixedCfg := cfg.WithPrefix("parent").WithPrefix("child")
 		value, err := prefixedCfg.Get(key)

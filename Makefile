@@ -4,9 +4,13 @@ PR_ID ?= 0
 SNAPSHOT_TAG_SUFFIX := $(if $(filter-out ,$(PR_ID)),$(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,snapshot),snapshot)
 LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSION)'
 
-.prerequisites:
+.backend-prerequisites:
 	go work sync
+
+.frontend-prerequisites:
 	cd frontend/ && npm ci
+
+.prerequisites: .backend-prerequisites .frontend-prerequisites
 
 .frontend-check:
 	cd frontend/ && npm run check
@@ -114,7 +118,7 @@ format: .prerequisites
 			-self_package "$$(cd $$dir && go list)" || true; \
 	done
 
-test: .prerequisites .generate-test-mocks
+test: .backend-prerequisites .generate-test-mocks
 	go test ./api/... \
 		./application/... \
 		./certificate/commons/... \

@@ -1,7 +1,6 @@
-package passwordhash_test
+package passwordhash
 
 import (
-	"os"
 	"strconv"
 	"testing"
 
@@ -10,110 +9,111 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/log"
-	"dillmann.com.br/nginx-ignition/core/user/passwordhash"
 )
 
 func init() {
-	log.Init()
+	_ = log.Init()
 }
 
-func setupConfigForTest(t *testing.T, saltSize, iterations int) (*configuration.Configuration, func()) {
+func setupConfigForTest(t *testing.T, saltSize, iterations int) *PasswordHash {
 	t.Helper()
-
 	saltKey := "NGINX_IGNITION_SECURITY_USER_PASSWORD_HASHING_SALT_SIZE"
 	iterationsKey := "NGINX_IGNITION_SECURITY_USER_PASSWORD_HASHING_ITERATIONS"
 
-	os.Setenv(saltKey, strconv.Itoa(saltSize))
-	os.Setenv(iterationsKey, strconv.Itoa(iterations))
-
-	cfg := configuration.New()
-
-	cleanup := func() {
-		os.Unsetenv(saltKey)
-		os.Unsetenv(iterationsKey)
+	if saltSize > 0 {
+		t.Setenv(saltKey, strconv.Itoa(saltSize))
+	} else {
+		t.Setenv(saltKey, "invalid")
 	}
 
-	return cfg, cleanup
+	if iterations > 0 {
+		t.Setenv(iterationsKey, strconv.Itoa(iterations))
+	} else {
+		t.Setenv(iterationsKey, "invalid")
+	}
+
+	cfg := configuration.New()
+	passwordHash := New(cfg)
+
+	return passwordHash
 }
 
-func TestPasswordHash_HashAndVerify(t *testing.T) {
-	t.Run("valid password", func(t *testing.T) {
-		cfg, cleanup := setupConfigForTest(t, 32, 1)
-		defer cleanup()
-
-		h := passwordhash.New(cfg)
+func TestPasswordHash_Hash(t *testing.T) {
+	t.Run("creates a valid hash", func(t *testing.T) {
+		passwordHash := setupConfigForTest(t, 32, 1)
 		password := "plain-text-password"
 
-		hash, salt, err := h.Hash(password)
+		hash, salt, err := passwordHash.Hash(password)
+		require.NoError(t, err)
+		assert.NotEmpty(t, hash)
+		assert.NotEmpty(t, salt)
+	})
+
+	t.Run("fails when config is invalid", func(t *testing.T) {
+		passwordHash := setupConfigForTest(t, 0, 1)
+		password := "plain-text-password"
+
+		hash, salt, err := passwordHash.Hash(password)
+		assert.Error(t, err)
+		assert.Empty(t, hash)
+		assert.Empty(t, salt)
+	})
+}
+
+func TestPasswordHash_Verify(t *testing.T) {
+	t.Run("verifies a valid password", func(t *testing.T) {
+		passwordHash := setupConfigForTest(t, 64, 2)
+		password := "plain-text-password"
+
+		hash, salt, err := passwordHash.Hash(password)
 		require.NoError(t, err)
 
-		ok, err := h.Verify(password, hash, salt)
+		ok, err := passwordHash.Verify(password, hash, salt)
 		require.NoError(t, err)
 		assert.True(t, ok)
 	})
 
-	t.Run("wrong password", func(t *testing.T) {
-		cfg, cleanup := setupConfigForTest(t, 32, 1)
-		defer cleanup()
-
-		h := passwordhash.New(cfg)
+	t.Run("fails on wrong password", func(t *testing.T) {
+		passwordHash := setupConfigForTest(t, 32, 1)
 		password := "plain-text-password"
 
-		hash, salt, err := h.Hash(password)
+		hash, salt, err := passwordHash.Hash(password)
 		require.NoError(t, err)
 
-		ok, err := h.Verify(password+"-wrong", hash, salt)
+		ok, err := passwordHash.Verify(password+"-wrong", hash, salt)
 		require.NoError(t, err)
 		assert.False(t, ok)
 	})
 
-	t.Run("invalid hash", func(t *testing.T) {
-		cfg, cleanup := setupConfigForTest(t, 32, 1)
-		defer cleanup()
-
-		h := passwordhash.New(cfg)
+	t.Run("fails on invalid hash", func(t *testing.T) {
+		passwordHash := setupConfigForTest(t, 32, 1)
 		password := "plain-text-password"
 
-		_, salt, err := h.Hash(password)
+		_, salt, err := passwordHash.Hash(password)
 		require.NoError(t, err)
 
-		ok, err := h.Verify(password, "invalid-hash", salt)
+		ok, err := passwordHash.Verify(password, "invalid-hash", salt)
 		assert.Error(t, err)
 		assert.False(t, ok)
 	})
 
-	t.Run("invalid salt", func(t *testing.T) {
-		cfg, cleanup := setupConfigForTest(t, 32, 1)
-		defer cleanup()
-
-		h := passwordhash.New(cfg)
+	t.Run("fails on invalid salt", func(t *testing.T) {
+		passwordHash := setupConfigForTest(t, 32, 1)
 		password := "plain-text-password"
 
-		hash, _, err := h.Hash(password)
+		hash, _, err := passwordHash.Hash(password)
 		require.NoError(t, err)
 
-		ok, err := h.Verify(password, hash, "invalid-salt")
+		ok, err := passwordHash.Verify(password, hash, "invalid-salt")
 		assert.Error(t, err)
 		assert.False(t, ok)
 	})
-}
 
-func TestPasswordHash_ErrorOnMissingConfig(t *testing.T) {
-	saltKey := "NGINX_IGNITION_SECURITY_USER_PASSWORD_HASHING_SALT_SIZE"
-	iterationsKey := "NGINX_IGNITION_SECURITY_USER_PASSWORD_HASHING_ITERATIONS"
+	t.Run("fails when config is invalid", func(t *testing.T) {
+		passwordHash := setupConfigForTest(t, 32, 0)
 
-	os.Unsetenv(saltKey)
-	os.Unsetenv(iterationsKey)
-
-	h := passwordhash.New(configuration.New())
-	password := "plain-text-password"
-
-	hash, salt, err := h.Hash(password)
-	assert.Error(t, err)
-	assert.Empty(t, hash)
-	assert.Empty(t, salt)
-
-	ok, err := h.Verify(password, "hash", "salt")
-	assert.Error(t, err)
-	assert.False(t, ok)
+		ok, err := passwordHash.Verify("password", "hash", "salt")
+		assert.Error(t, err)
+		assert.False(t, ok)
+	})
 }
