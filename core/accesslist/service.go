@@ -44,6 +44,10 @@ func (s *service) findByID(ctx context.Context, id uuid.UUID) (*AccessList, erro
 	return s.repository.FindByID(ctx, id)
 }
 
+func (s *service) findAll(ctx context.Context) ([]AccessList, error) {
+	return s.repository.FindAll(ctx)
+}
+
 func (s *service) list(
 	ctx context.Context,
 	pageSize,

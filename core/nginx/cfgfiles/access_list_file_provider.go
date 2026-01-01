@@ -10,17 +10,17 @@ import (
 )
 
 type accessListFileProvider struct {
-	repository accesslist.Repository
+	commands *accesslist.Commands
 }
 
-func newAccessListFileProvider(repository accesslist.Repository) *accessListFileProvider {
+func newAccessListFileProvider(commands *accesslist.Commands) *accessListFileProvider {
 	return &accessListFileProvider{
-		repository: repository,
+		commands: commands,
 	}
 }
 
 func (p *accessListFileProvider) provide(ctx *providerContext) ([]File, error) {
-	accessLists, err := p.repository.FindAll(ctx.context)
+	accessLists, err := p.commands.GetAll(ctx.context)
 	if err != nil {
 		return nil, err
 	}

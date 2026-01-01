@@ -23,12 +23,12 @@ func Install() error {
 
 func buildCommands(
 	cfg *configuration.Configuration,
-	hostRepository host.Repository,
+	hostCommands *host.Commands,
 	configFilesManager *cfgfiles.Facade,
 	vpnCommands *vpn.Commands,
 	settingsCommands *settings.Commands,
 ) (*service, *Commands, error) {
-	serviceInstance, err := newService(cfg, hostRepository, configFilesManager, vpnCommands, settingsCommands)
+	serviceInstance, err := newService(cfg, hostCommands, configFilesManager, vpnCommands, settingsCommands)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -20,7 +20,7 @@ func Install() error {
 
 func build(
 	cfg *configuration.Configuration,
-	repository user.Repository,
+	commands *user.Commands,
 ) (
 	*gin.Engine,
 	*state,
@@ -32,7 +32,7 @@ func build(
 	engine := gin.New()
 	engine.Use(gin.CustomRecoveryWithWriter(nil, apierror.Handler))
 
-	authorizer, err := authorization.New(cfg, repository)
+	authorizer, err := authorization.New(cfg, commands)
 	if err != nil {
 		return nil, nil, nil, err
 	}

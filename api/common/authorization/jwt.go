@@ -27,12 +27,12 @@ var errInvalidToken = apierror.New(http.StatusUnauthorized, "Invalid access toke
 
 type Jwt struct {
 	configuration *configuration.Configuration
-	repository    user.Repository
+	commands      *user.Commands
 	revokedIDs    []string
 	secretKey     []byte
 }
 
-func newJwt(cfg *configuration.Configuration, repository user.Repository) (*Jwt, error) {
+func newJwt(cfg *configuration.Configuration, commands *user.Commands) (*Jwt, error) {
 	prefixedConfiguration := cfg.WithPrefix("nginx-ignition.security.jwt")
 
 	secretKey, err := initializeSecret(prefixedConfiguration)
@@ -42,7 +42,7 @@ func newJwt(cfg *configuration.Configuration, repository user.Repository) (*Jwt,
 
 	return &Jwt{
 		configuration: prefixedConfiguration,
-		repository:    repository,
+		commands:      commands,
 		secretKey:     secretKey,
 		revokedIDs:    []string{},
 	}, nil
@@ -101,7 +101,7 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 			return nil, err
 		}
 
-		usr, err := j.repository.FindByID(ctx, userID)
+		usr, err := j.commands.Get(ctx, userID)
 		if err != nil {
 			return nil, err
 		}
