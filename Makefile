@@ -105,7 +105,7 @@ format: .prerequisites
 	@find api application certificate core database integration vpn -type f -name "*_mock_test.go" -delete;
 	@find api application certificate core database integration vpn -type f -name "*.go" \
 		-not -name "*_test.go" \
-		-exec sh -c 'grep -q "^type [A-Z][a-zA-Z0-9_]* interface" "$$1" && echo "$$1"' _ {} \; | \
+		-exec sh -c 'grep -q "^type [a-zA-Z0-9_]* interface" "$$1" && echo "$$1"' _ {} \; | \
 	while read -r file; do \
 		dir=$$(dirname "$$file"); \
 		base=$$(basename "$$file" .go); \
