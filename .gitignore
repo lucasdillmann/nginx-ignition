@@ -19,3 +19,8 @@ vendor/
 .idea/
 .qodo
 build/
+test/mocks/**
+!test/mocks/README.md
+
+# Generated mock files
+*_mock_test.go
