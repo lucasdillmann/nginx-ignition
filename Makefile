@@ -4,26 +4,30 @@ PR_ID ?= 0
 SNAPSHOT_TAG_SUFFIX := $(if $(filter-out ,$(PR_ID)),$(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,snapshot),snapshot)
 LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSION)'
 
-.prerequisites:
+.backend-prerequisites:
 	go work sync
+
+.frontend-prerequisites:
 	cd frontend/ && npm ci
+
+.prerequisites: .backend-prerequisites .frontend-prerequisites
 
 .frontend-check:
 	cd frontend/ && npm run check
 
 .backend-check:
 	go tool golangci-lint run \
-    		./api/... \
-    		./application/... \
-    		./certificate/commons/... \
-    		./certificate/custom/... \
-    		./certificate/letsencrypt/... \
-    		./certificate/selfsigned/... \
-    		./core/... \
-    		./database/... \
-    		./integration/docker/... \
-    		./integration/truenas/... \
-    		./vpn/tailscale/...
+		./api/... \
+		./application/... \
+		./certificate/commons/... \
+		./certificate/custom/... \
+		./certificate/letsencrypt/... \
+		./certificate/selfsigned/... \
+		./core/... \
+		./database/... \
+		./integration/docker/... \
+		./integration/truenas/... \
+		./vpn/tailscale/...
 
 .build-frontend:
 	cd frontend/ && npm run build
@@ -84,17 +88,49 @@ format: .prerequisites
 	cd frontend/ && npx prettier --write .
 	go tool gofumpt -w .
 	go tool fieldalignment -fix \
-    		./api/... \
-    		./application/... \
-    		./certificate/commons/... \
-    		./certificate/custom/... \
-    		./certificate/letsencrypt/... \
-    		./certificate/selfsigned/... \
-    		./core/... \
-    		./database/... \
-    		./integration/docker/... \
-    		./integration/truenas/... \
-    		./vpn/tailscale/...
+		./api/... \
+		./application/... \
+		./certificate/commons/... \
+		./certificate/custom/... \
+		./certificate/letsencrypt/... \
+		./certificate/selfsigned/... \
+		./core/... \
+		./database/... \
+		./integration/docker/... \
+		./integration/truenas/... \
+		./vpn/tailscale/...
+
+.generate-test-mocks:
+	@echo "Generating mock files..."
+	@find api application certificate core database integration vpn -type f -name "*_mock_test.go" -delete;
+	@find api application certificate core database integration vpn -type f -name "*.go" \
+		-not -name "*_test.go" \
+		-exec sh -c 'grep -q "^type [a-zA-Z0-9_]* interface" "$$1" && echo "$$1"' _ {} \; | \
+	while read -r file; do \
+		dir=$$(dirname "$$file"); \
+		base=$$(basename "$$file" .go); \
+		mock_file="$$dir/$${base}_mock_test.go"; \
+		package_name=$$(basename "$$dir"); \
+		go tool go.uber.org/mock/mockgen \
+			-source "$$file" \
+			-package "$$package_name" \
+			-destination "$$mock_file" \
+			-self_package "$$(cd $$dir && go list)" || true; \
+	done
+
+test: .backend-prerequisites .generate-test-mocks
+	go test -v \
+		./api/... \
+		./application/... \
+		./certificate/commons/... \
+		./certificate/custom/... \
+		./certificate/letsencrypt/... \
+		./certificate/selfsigned/... \
+		./core/... \
+		./database/... \
+		./integration/docker/... \
+		./integration/truenas/... \
+		./vpn/tailscale/...
 
 update-dependencies:
 	cd api && go get -u all

@@ -12,15 +12,15 @@ import (
 )
 
 type mainConfigurationFileProvider struct {
-	settingsRepository settings.Repository
+	settingsCommands *settings.Commands
 }
 
-func newMainConfigurationFileProvider(settingsRepository settings.Repository) *mainConfigurationFileProvider {
-	return &mainConfigurationFileProvider{settingsRepository: settingsRepository}
+func newMainConfigurationFileProvider(settingsCommands *settings.Commands) *mainConfigurationFileProvider {
+	return &mainConfigurationFileProvider{settingsCommands: settingsCommands}
 }
 
 func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, error) {
-	cfg, err := p.settingsRepository.Get(ctx.context)
+	cfg, err := p.settingsCommands.Get(ctx.context)
 	if err != nil {
 		return nil, err
 	}

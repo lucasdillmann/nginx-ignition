@@ -17,16 +17,16 @@ import (
 
 type hostConfigurationFileProvider struct {
 	integrationCommands *integration.Commands
-	settingsRepository  settings.Repository
+	settingsCommands    *settings.Commands
 }
 
 func newHostConfigurationFileProvider(
-	settingsRepository settings.Repository,
+	settingsCommands *settings.Commands,
 	integrationCommands *integration.Commands,
 ) *hostConfigurationFileProvider {
 	return &hostConfigurationFileProvider{
 		integrationCommands: integrationCommands,
-		settingsRepository:  settingsRepository,
+		settingsCommands:    settingsCommands,
 	}
 }
 
@@ -73,7 +73,7 @@ func (p *hostConfigurationFileProvider) buildHost(ctx *providerContext, h *host.
 
 	bindings := h.Bindings
 	if h.UseGlobalBindings {
-		cfg, err := p.settingsRepository.Get(ctx.context)
+		cfg, err := p.settingsCommands.Get(ctx.context)
 		if err != nil {
 			return nil, err
 		}
@@ -141,7 +141,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		conditionalHTTPSRedirect = httpsRedirect
 	}
 
-	cfg, err := p.settingsRepository.Get(ctx.context)
+	cfg, err := p.settingsCommands.Get(ctx.context)
 	if err != nil {
 		return "", err
 	}

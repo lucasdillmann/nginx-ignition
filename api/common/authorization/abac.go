@@ -19,8 +19,8 @@ type ABAC struct {
 	allowedForAllUsers      []string
 }
 
-func New(cfg *configuration.Configuration, repository user.Repository) (*ABAC, error) {
-	jwt, err := newJwt(cfg, repository)
+func New(cfg *configuration.Configuration, commands *user.Commands) (*ABAC, error) {
+	jwt, err := newJwt(cfg, commands)
 	if err != nil {
 		return nil, err
 	}

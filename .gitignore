@@ -19,3 +19,6 @@ vendor/
 .idea/
 .qodo
 build/
+
+# Generated mock files
+*_mock_test.go

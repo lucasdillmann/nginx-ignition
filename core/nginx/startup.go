@@ -70,8 +70,7 @@ func (s startup) handleRetryCallback(err error, attempt int, completed bool) {
 		)
 	}
 
-	//nolint:govet
-	log.Warnf(msg)
+	log.Warn(msg)
 }
 
 func (s startup) Priority() int {

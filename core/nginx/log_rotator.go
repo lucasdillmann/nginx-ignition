@@ -16,20 +16,20 @@ import (
 type logRotator struct {
 	configProvider   *configuration.Configuration
 	settingsCommands *settings.Commands
-	hostRepository   host.Repository
+	hostCommands     *host.Commands
 	processManager   *processManager
 }
 
 func newLogRotator(
 	configProvider *configuration.Configuration,
 	settingsCommands *settings.Commands,
-	hostRepository host.Repository,
+	hostCommands *host.Commands,
 	processManager *processManager,
 ) *logRotator {
 	return &logRotator{
 		configProvider:   configProvider,
 		settingsCommands: settingsCommands,
-		hostRepository:   hostRepository,
+		hostCommands:     hostCommands,
 		processManager:   processManager,
 	}
 }
@@ -112,7 +112,7 @@ func (r *logRotator) readTail(file *os.File, size int) ([]string, error) {
 }
 
 func (r *logRotator) getLogFiles(ctx context.Context) ([]string, error) {
-	hosts, err := r.hostRepository.FindAllEnabled(ctx)
+	hosts, err := r.hostCommands.GetAllEnabled(ctx)
 	if err != nil {
 		return nil, err
 	}

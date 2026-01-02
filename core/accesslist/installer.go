@@ -13,6 +13,7 @@ func buildCommands(repository Repository) *Commands {
 	return &Commands{
 		Delete: serviceInstance.deleteByID,
 		Get:    serviceInstance.findByID,
+		GetAll: serviceInstance.findAll,
 		List:   serviceInstance.list,
 		Save:   serviceInstance.save,
 		Exists: serviceInstance.existsByID,

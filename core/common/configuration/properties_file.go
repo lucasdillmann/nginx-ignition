@@ -4,6 +4,12 @@ import (
 	"flag"
 	"os"
 	"strings"
+	"sync"
+)
+
+var (
+	resolvedConfigFilePath string
+	runOnce                sync.Once
 )
 
 func loadConfigFileValues() (map[string]string, error) {
@@ -31,18 +37,22 @@ func loadConfigFileValues() (map[string]string, error) {
 }
 
 func resolveConfigFilePath() string {
-	customPathPtr := flag.String("config", "", "Path to the configuration properties file")
+	runOnce.Do(func() {
+		customPathPtr := flag.String("config", "", "Path to the configuration properties file")
 
-	//nolint:revive
-	flag.Parse()
+		//nolint:revive
+		flag.Parse()
 
-	if customPathPtr != nil && *customPathPtr != "" {
-		return *customPathPtr
-	}
+		if customPathPtr != nil && *customPathPtr != "" {
+			resolvedConfigFilePath = *customPathPtr
+		}
 
-	if customPath := os.Getenv("NGINX_IGNITION_CONFIG_FILE_PATH"); customPath != "" {
-		return customPath
-	}
+		if customPath := os.Getenv("NGINX_IGNITION_CONFIG_FILE_PATH"); customPath != "" {
+			resolvedConfigFilePath = customPath
+		}
 
-	return "nginx-ignition.properties"
+		resolvedConfigFilePath = "nginx-ignition.properties"
+	})
+
+	return resolvedConfigFilePath
 }

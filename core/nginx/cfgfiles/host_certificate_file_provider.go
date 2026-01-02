@@ -15,14 +15,17 @@ import (
 )
 
 type hostCertificateFileProvider struct {
-	certificateRepository certificate.Repository
-	settingsRepository    settings.Repository
+	certificateCommands *certificate.Commands
+	settingsCommands    *settings.Commands
 }
 
-func newHostCertificateFileProvider(certificateRepository certificate.Repository, settingsRepository settings.Repository) *hostCertificateFileProvider {
+func newHostCertificateFileProvider(
+	certificateCommands *certificate.Commands,
+	settingsCommands *settings.Commands,
+) *hostCertificateFileProvider {
 	return &hostCertificateFileProvider{
-		certificateRepository: certificateRepository,
-		settingsRepository:    settingsRepository,
+		certificateCommands: certificateCommands,
+		settingsCommands:    settingsCommands,
 	}
 }
 
@@ -32,7 +35,7 @@ func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, err
 		bindings = append(bindings, h.Bindings...)
 	}
 
-	cgf, err := p.settingsRepository.Get(ctx.context)
+	cgf, err := p.settingsCommands.Get(ctx.context)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +68,7 @@ func (p *hostCertificateFileProvider) buildCertificateFile(
 	ctx context.Context,
 	certificateID uuid.UUID,
 ) (*File, error) {
-	cert, err := p.certificateRepository.FindByID(ctx, certificateID)
+	cert, err := p.certificateCommands.Get(ctx, certificateID)
 	if err != nil {
 		return nil, err
 	}

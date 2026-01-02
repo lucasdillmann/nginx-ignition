@@ -28,7 +28,7 @@ type service struct {
 
 func newService(
 	cfg *configuration.Configuration,
-	hostRepository host.Repository,
+	hostCommands *host.Commands,
 	configFilesManager *cfgfiles.Facade,
 	vpnCommands *vpn.Commands,
 	settingsCommands *settings.Commands,
@@ -46,7 +46,7 @@ func newService(
 		vpnManager:         vManager,
 		semaphore:          newSemaphore(),
 		logReader:          newLogReader(cfg),
-		logRotator:         newLogRotator(cfg, settingsCommands, hostRepository, pManager),
+		logRotator:         newLogRotator(cfg, settingsCommands, hostCommands, pManager),
 	}, nil
 }
 
