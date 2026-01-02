@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestConsistencyValidator_Result(t *testing.T) {
+func Test_ConsistencyValidator_Result(t *testing.T) {
 	t.Run("returns nil when no violations", func(t *testing.T) {
 		val := NewValidator()
 

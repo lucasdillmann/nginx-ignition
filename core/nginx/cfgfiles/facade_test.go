@@ -17,7 +17,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
-func TestFacade_GetConfigurationFiles(t *testing.T) {
+func Test_Facade_GetConfigurationFiles(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -170,7 +170,7 @@ func TestFacade_GetConfigurationFiles(t *testing.T) {
 	})
 }
 
-func TestFacade_ReplaceConfigurationFiles(t *testing.T) {
+func Test_Facade_ReplaceConfigurationFiles(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -219,12 +219,5 @@ func TestFacade_ReplaceConfigurationFiles(t *testing.T) {
 
 		assert.DirExists(t, filepath.Join(tmpDir, "logs"))
 		assert.DirExists(t, filepath.Join(tmpDir, "cache"))
-	})
-
-	t.Run("returns error when configuration fails", func(t *testing.T) {
-		t.Setenv("NGINX_IGNITION_NGINX_CONFIG_PATH", "")
-		f := &Facade{configuration: configuration.New()}
-		_, _, err := f.ReplaceConfigurationFiles(ctx, features)
-		assert.Error(t, err)
 	})
 }

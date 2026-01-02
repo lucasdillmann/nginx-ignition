@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFile_FormattedContents(t *testing.T) {
+func Test_File_FormattedContents(t *testing.T) {
 	t.Run("indents content correctly", func(t *testing.T) {
 		f := File{
 			Contents: `

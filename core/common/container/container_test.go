@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInit(t *testing.T) {
+func Test_Init(t *testing.T) {
 	t.Run("initializes container", func(t *testing.T) {
 		ctx := context.Background()
 		Init(ctx)
@@ -17,7 +17,7 @@ func TestInit(t *testing.T) {
 	})
 }
 
-func TestProvide(t *testing.T) {
+func Test_Provide(t *testing.T) {
 	t.Run("provides function", func(t *testing.T) {
 		ctx := context.Background()
 		Init(ctx)
@@ -41,7 +41,7 @@ func TestProvide(t *testing.T) {
 	})
 }
 
-func TestSingleton(t *testing.T) {
+func Test_Singleton(t *testing.T) {
 	t.Run("provides singleton value", func(t *testing.T) {
 		ctx := context.Background()
 		Init(ctx)
@@ -56,7 +56,7 @@ func TestSingleton(t *testing.T) {
 	})
 }
 
-func TestRun(t *testing.T) {
+func Test_Run(t *testing.T) {
 	t.Run("invokes function", func(t *testing.T) {
 		ctx := context.Background()
 		Init(ctx)
@@ -86,7 +86,7 @@ func TestRun(t *testing.T) {
 	})
 }
 
-func TestGet(t *testing.T) {
+func Test_Get(t *testing.T) {
 	t.Run("retrieves provided value", func(t *testing.T) {
 		ctx := context.Background()
 		Init(ctx)

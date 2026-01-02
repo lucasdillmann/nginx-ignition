@@ -57,7 +57,7 @@ func validUser() (*User, *SaveRequest) {
 	return user, request
 }
 
-func TestValidator_Validate(t *testing.T) {
+func Test_Validator_Validate(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("valid user passes", func(t *testing.T) {

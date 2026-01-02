@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNew(t *testing.T) {
+func Test_New(t *testing.T) {
 	t.Run("creates page with all fields set correctly", func(t *testing.T) {
 		pageNumber := 1
 		pageSize := 10

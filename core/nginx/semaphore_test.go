@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSemaphore_ChangeState(t *testing.T) {
+func Test_Semaphore_ChangeState(t *testing.T) {
 	t.Run("updates state when action succeeds", func(t *testing.T) {
 		s := newSemaphore()
 		err := s.changeState(runningState, func() error {
@@ -30,7 +30,7 @@ func TestSemaphore_ChangeState(t *testing.T) {
 	})
 }
 
-func TestSemaphore_CurrentState(t *testing.T) {
+func Test_Semaphore_CurrentState(t *testing.T) {
 	t.Run("returns initial state", func(t *testing.T) {
 		s := newSemaphore()
 		assert.Equal(t, stoppedState, s.currentState())

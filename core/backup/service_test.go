@@ -9,7 +9,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestService_Get(t *testing.T) {
+func Test_Service_Get(t *testing.T) {
 	t.Run("returns backup when found", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

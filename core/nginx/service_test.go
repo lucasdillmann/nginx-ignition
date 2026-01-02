@@ -17,7 +17,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func TestService_GetMainLogs(t *testing.T) {
+func Test_Service_GetMainLogs(t *testing.T) {
 	ctx := context.Background()
 	tmpDir := t.TempDir()
 	logsDir := filepath.Join(tmpDir, "logs")
@@ -41,7 +41,7 @@ func TestService_GetMainLogs(t *testing.T) {
 	})
 }
 
-func TestService_GetHostLogs(t *testing.T) {
+func Test_Service_GetHostLogs(t *testing.T) {
 	ctx := context.Background()
 	tmpDir := t.TempDir()
 	logsDir := filepath.Join(tmpDir, "logs")
@@ -66,7 +66,7 @@ func TestService_GetHostLogs(t *testing.T) {
 	})
 }
 
-func TestService_RotateLogs(t *testing.T) {
+func Test_Service_RotateLogs(t *testing.T) {
 	ctx := context.Background()
 	tmpDir := t.TempDir()
 	logsDir := filepath.Join(tmpDir, "logs")
@@ -113,7 +113,7 @@ func TestService_RotateLogs(t *testing.T) {
 	assert.Equal(t, "line2\nline3\n", string(content))
 }
 
-func TestService_Reload(t *testing.T) {
+func Test_Service_Reload(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("returns error when not running and failIfNotRunning is true", func(t *testing.T) {
@@ -131,7 +131,7 @@ func TestService_Reload(t *testing.T) {
 	})
 }
 
-func TestService_Start(t *testing.T) {
+func Test_Service_Start(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("returns nil if already running", func(t *testing.T) {
@@ -146,7 +146,7 @@ func TestService_Start(t *testing.T) {
 	})
 }
 
-func TestService_Stop(t *testing.T) {
+func Test_Service_Stop(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("returns nil if already stopped", func(t *testing.T) {
@@ -161,7 +161,7 @@ func TestService_Stop(t *testing.T) {
 	})
 }
 
-func TestService_IsRunning(t *testing.T) {
+func Test_Service_IsRunning(t *testing.T) {
 	t.Run("returns true when running", func(t *testing.T) {
 		s := &service{
 			semaphore: &semaphore{

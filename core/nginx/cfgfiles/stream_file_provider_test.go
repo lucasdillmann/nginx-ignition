@@ -12,7 +12,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
-func TestStreamFileProvider_Provide(t *testing.T) {
+func Test_StreamFileProvider_Provide(t *testing.T) {
 	p := &streamFileProvider{}
 	id := uuid.New()
 	ctx := &providerContext{
@@ -61,7 +61,7 @@ func TestStreamFileProvider_Provide(t *testing.T) {
 	})
 }
 
-func TestStreamFileProvider_BuildBinding(t *testing.T) {
+func Test_StreamFileProvider_BuildBinding(t *testing.T) {
 	p := &streamFileProvider{}
 
 	t.Run("TCP binding with all flags", func(t *testing.T) {
@@ -123,7 +123,7 @@ func TestStreamFileProvider_BuildBinding(t *testing.T) {
 	})
 }
 
-func TestStreamFileProvider_BuildUpstream(t *testing.T) {
+func Test_StreamFileProvider_BuildUpstream(t *testing.T) {
 	p := &streamFileProvider{}
 
 	t.Run("generates upstream with circuit breaker and weight", func(t *testing.T) {
@@ -167,7 +167,7 @@ func TestStreamFileProvider_BuildUpstream(t *testing.T) {
 	})
 }
 
-func TestStreamFileProvider_BuildRoutedStream(t *testing.T) {
+func Test_StreamFileProvider_BuildRoutedStream(t *testing.T) {
 	p := &streamFileProvider{}
 	id := uuid.New()
 	idStr := nginxID(&stream.Stream{ID: id})

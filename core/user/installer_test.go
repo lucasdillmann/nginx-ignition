@@ -9,7 +9,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 )
 
-func TestBuildCommands(t *testing.T) {
+func Test_BuildCommands(t *testing.T) {
 	t.Run("builds commands and service with all methods", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

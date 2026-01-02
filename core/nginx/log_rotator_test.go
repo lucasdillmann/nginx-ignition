@@ -16,7 +16,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func TestLogRotator_ReadTail(t *testing.T) {
+func Test_LogRotator_ReadTail(t *testing.T) {
 	r := &logRotator{}
 
 	t.Run("returns all lines when count is less than max", func(t *testing.T) {
@@ -48,7 +48,7 @@ func TestLogRotator_ReadTail(t *testing.T) {
 	})
 }
 
-func TestLogRotator_GetLogFiles(t *testing.T) {
+func Test_LogRotator_GetLogFiles(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("returns main log and host logs", func(t *testing.T) {
@@ -82,7 +82,7 @@ func TestLogRotator_GetLogFiles(t *testing.T) {
 	})
 }
 
-func TestLogRotator_Rotate(t *testing.T) {
+func Test_LogRotator_Rotate(t *testing.T) {
 	ctx := context.Background()
 
 	tmpDir := t.TempDir()

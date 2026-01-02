@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMimeTypesFileProvider_Provide(t *testing.T) {
+func Test_MimeTypesFileProvider_Provide(t *testing.T) {
 	p := &mimeTypesFileProvider{}
 	ctx := &providerContext{
 		context: context.Background(),

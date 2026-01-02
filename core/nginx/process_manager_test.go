@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestProcessManager_CurrentPid(t *testing.T) {
+func Test_ProcessManager_CurrentPid(t *testing.T) {
 	tmpDir, _ := os.MkdirTemp("", "nginx-test")
 	defer os.RemoveAll(tmpDir)
 

@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMetadata_SNISupportType(t *testing.T) {
+func Test_Metadata_SNISupportType(t *testing.T) {
 	t.Run("returns StaticSupportType when tlsSniEnabled is true", func(t *testing.T) {
 		m := &Metadata{
 			tlsSniEnabled: true,
@@ -22,7 +22,7 @@ func TestMetadata_SNISupportType(t *testing.T) {
 	})
 }
 
-func TestMetadata_StreamSupportType(t *testing.T) {
+func Test_Metadata_StreamSupportType(t *testing.T) {
 	t.Run("returns StaticSupportType when stream module is present", func(t *testing.T) {
 		m := &Metadata{
 			Modules: []string{
@@ -51,7 +51,7 @@ func TestMetadata_StreamSupportType(t *testing.T) {
 	})
 }
 
-func TestMetadata_RunCodeSupportType(t *testing.T) {
+func Test_Metadata_RunCodeSupportType(t *testing.T) {
 	t.Run("returns DynamicSupportType when all required modules are present", func(t *testing.T) {
 		m := &Metadata{
 			Modules: []string{

@@ -10,7 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func TestLogRotationTask_Schedule(t *testing.T) {
+func Test_LogRotationTask_Schedule(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("converts minutes to duration correctly", func(t *testing.T) {

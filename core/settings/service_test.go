@@ -17,7 +17,7 @@ func buildScheduler() *scheduler.Scheduler {
 	return s
 }
 
-func TestService_Get(t *testing.T) {
+func Test_Service_Get(t *testing.T) {
 	t.Run("returns settings when found", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -60,7 +60,7 @@ func TestService_Get(t *testing.T) {
 	})
 }
 
-func TestService_Save(t *testing.T) {
+func Test_Service_Save(t *testing.T) {
 	t.Run("invalid settings returns validation error", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

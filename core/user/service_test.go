@@ -15,7 +15,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
-func TestService_GetByID(t *testing.T) {
+func Test_Service_GetByID(t *testing.T) {
 	t.Run("returns user when found", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -65,7 +65,7 @@ func TestService_GetByID(t *testing.T) {
 	})
 }
 
-func TestService_DeleteByID(t *testing.T) {
+func Test_Service_DeleteByID(t *testing.T) {
 	t.Run("deletes successfully", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -87,7 +87,7 @@ func TestService_DeleteByID(t *testing.T) {
 	})
 }
 
-func TestService_List(t *testing.T) {
+func Test_Service_List(t *testing.T) {
 	t.Run("returns paginated results", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -113,7 +113,7 @@ func TestService_List(t *testing.T) {
 	})
 }
 
-func TestService_Count(t *testing.T) {
+func Test_Service_Count(t *testing.T) {
 	t.Run("returns count", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -136,7 +136,7 @@ func TestService_Count(t *testing.T) {
 	})
 }
 
-func TestService_IsOnboardingCompleted(t *testing.T) {
+func Test_Service_IsOnboardingCompleted(t *testing.T) {
 	t.Run("returns true when users exist", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -178,7 +178,7 @@ func TestService_IsOnboardingCompleted(t *testing.T) {
 	})
 }
 
-func TestService_Authenticate(t *testing.T) {
+func Test_Service_Authenticate(t *testing.T) {
 	t.Run("returns error when user not found", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -203,7 +203,7 @@ func TestService_Authenticate(t *testing.T) {
 	})
 }
 
-func TestService_IsEnabled(t *testing.T) {
+func Test_Service_IsEnabled(t *testing.T) {
 	t.Run("returns true when enabled", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

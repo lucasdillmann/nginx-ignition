@@ -15,7 +15,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
-func TestMainConfigurationFileProvider_Provide(t *testing.T) {
+func Test_MainConfigurationFileProvider_Provide(t *testing.T) {
 	p := &mainConfigurationFileProvider{}
 	paths := &Paths{
 		Base:   "/",
@@ -126,7 +126,7 @@ func TestMainConfigurationFileProvider_Provide(t *testing.T) {
 	})
 }
 
-func TestMainConfigurationFileProvider_GetErrorLogPath(t *testing.T) {
+func Test_MainConfigurationFileProvider_GetErrorLogPath(t *testing.T) {
 	p := &mainConfigurationFileProvider{}
 	paths := &Paths{
 		Logs: "/var/log/nginx/",
@@ -148,7 +148,7 @@ func TestMainConfigurationFileProvider_GetErrorLogPath(t *testing.T) {
 	})
 }
 
-func TestMainConfigurationFileProvider_GetHostIncludes(t *testing.T) {
+func Test_MainConfigurationFileProvider_GetHostIncludes(t *testing.T) {
 	p := &mainConfigurationFileProvider{}
 	paths := &Paths{
 		Config: "/etc/nginx/",
@@ -175,7 +175,7 @@ func TestMainConfigurationFileProvider_GetHostIncludes(t *testing.T) {
 	})
 }
 
-func TestMainConfigurationFileProvider_GetStreamIncludes(t *testing.T) {
+func Test_MainConfigurationFileProvider_GetStreamIncludes(t *testing.T) {
 	p := &mainConfigurationFileProvider{}
 	paths := &Paths{
 		Config: "/etc/nginx/",
@@ -193,7 +193,7 @@ func TestMainConfigurationFileProvider_GetStreamIncludes(t *testing.T) {
 	})
 }
 
-func TestMainConfigurationFileProvider_GetCacheDefinitions(t *testing.T) {
+func Test_MainConfigurationFileProvider_GetCacheDefinitions(t *testing.T) {
 	p := &mainConfigurationFileProvider{}
 	paths := &Paths{
 		Cache: "/var/cache/nginx/",

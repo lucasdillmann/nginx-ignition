@@ -17,7 +17,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func TestHostConfigurationFileProvider_Provide(t *testing.T) {
+func Test_HostConfigurationFileProvider_Provide(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 	paths := &Paths{
 		Config: "/etc/nginx/",
@@ -78,7 +78,7 @@ func TestHostConfigurationFileProvider_Provide(t *testing.T) {
 	assert.Contains(t, files[0].Contents, "proxy_pass http://backend:8080;")
 }
 
-func TestHostConfigurationFileProvider_BuildServerNames(t *testing.T) {
+func Test_HostConfigurationFileProvider_BuildServerNames(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 
 	t.Run("returns underscore for default server", func(t *testing.T) {
@@ -99,7 +99,7 @@ func TestHostConfigurationFileProvider_BuildServerNames(t *testing.T) {
 	})
 }
 
-func TestHostConfigurationFileProvider_BuildProxyPass(t *testing.T) {
+func Test_HostConfigurationFileProvider_BuildProxyPass(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 
 	t.Run("returns simple proxy_pass", func(t *testing.T) {
@@ -130,7 +130,7 @@ func TestHostConfigurationFileProvider_BuildProxyPass(t *testing.T) {
 	})
 }
 
-func TestHostConfigurationFileProvider_BuildRedirectRoute(t *testing.T) {
+func Test_HostConfigurationFileProvider_BuildRedirectRoute(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 	ctx := &providerContext{}
 
@@ -146,7 +146,7 @@ func TestHostConfigurationFileProvider_BuildRedirectRoute(t *testing.T) {
 	})
 }
 
-func TestHostConfigurationFileProvider_BuildIntegrationRoute(t *testing.T) {
+func Test_HostConfigurationFileProvider_BuildIntegrationRoute(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 	ctx := &providerContext{
 		context: context.Background(),
@@ -192,7 +192,7 @@ func TestHostConfigurationFileProvider_BuildIntegrationRoute(t *testing.T) {
 	})
 }
 
-func TestHostConfigurationFileProvider_BuildExecuteCodeRoute(t *testing.T) {
+func Test_HostConfigurationFileProvider_BuildExecuteCodeRoute(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 	ctx := &providerContext{
 		paths: &Paths{Config: "/etc/nginx/"},
@@ -240,7 +240,7 @@ func TestHostConfigurationFileProvider_BuildExecuteCodeRoute(t *testing.T) {
 	})
 }
 
-func TestHostConfigurationFileProvider_BuildStaticResponseRoute(t *testing.T) {
+func Test_HostConfigurationFileProvider_BuildStaticResponseRoute(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 	ctx := &providerContext{
 		paths: &Paths{Config: "/etc/nginx/"},
@@ -265,7 +265,7 @@ func TestHostConfigurationFileProvider_BuildStaticResponseRoute(t *testing.T) {
 	})
 }
 
-func TestHostConfigurationFileProvider_BuildRouteFeatures(t *testing.T) {
+func Test_HostConfigurationFileProvider_BuildRouteFeatures(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 
 	t.Run("returns websocket config when enabled", func(t *testing.T) {
@@ -286,7 +286,7 @@ func TestHostConfigurationFileProvider_BuildRouteFeatures(t *testing.T) {
 	})
 }
 
-func TestHostConfigurationFileProvider_BuildRouteSettings(t *testing.T) {
+func Test_HostConfigurationFileProvider_BuildRouteSettings(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 	ctx := &providerContext{
 		paths: &Paths{
@@ -325,7 +325,7 @@ func TestHostConfigurationFileProvider_BuildRouteSettings(t *testing.T) {
 	})
 }
 
-func TestHostConfigurationFileProvider_BuildBinding(t *testing.T) {
+func Test_HostConfigurationFileProvider_BuildBinding(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 	paths := &Paths{
 		Config: "/etc/nginx/",
@@ -413,7 +413,7 @@ func TestHostConfigurationFileProvider_BuildBinding(t *testing.T) {
 	})
 }
 
-func TestHostConfigurationFileProvider_BuildRoute(t *testing.T) {
+func Test_HostConfigurationFileProvider_BuildRoute(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 	ctx := &providerContext{}
 	h := &host.Host{}
@@ -426,7 +426,7 @@ func TestHostConfigurationFileProvider_BuildRoute(t *testing.T) {
 	})
 }
 
-func TestHostConfigurationFileProvider_BuildCacheConfig(t *testing.T) {
+func Test_HostConfigurationFileProvider_BuildCacheConfig(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 	cacheID := uuid.New()
 	caches := []cache.Cache{
@@ -494,7 +494,7 @@ func TestHostConfigurationFileProvider_BuildCacheConfig(t *testing.T) {
 	})
 }
 
-func TestHostConfigurationFileProvider_BuildStaticFilesRoute(t *testing.T) {
+func Test_HostConfigurationFileProvider_BuildStaticFilesRoute(t *testing.T) {
 	p := &hostConfigurationFileProvider{}
 	ctx := &providerContext{}
 

@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInit(t *testing.T) {
+func Test_Init(t *testing.T) {
 	t.Run("initializes logger", func(t *testing.T) {
 		err := Init()
 
@@ -15,7 +15,7 @@ func TestInit(t *testing.T) {
 	})
 }
 
-func TestStd(t *testing.T) {
+func Test_Std(t *testing.T) {
 	t.Run("returns standard logger", func(t *testing.T) {
 		_ = Init()
 

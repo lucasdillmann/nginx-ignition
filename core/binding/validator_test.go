@@ -45,7 +45,7 @@ func certCommandsNotExists() *certificate.Commands {
 	}
 }
 
-func TestValidator_Validate(t *testing.T) {
+func Test_Validator_Validate(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("valid HTTP binding passes", func(t *testing.T) {

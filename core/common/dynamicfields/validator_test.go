@@ -8,7 +8,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
-func TestValidate(t *testing.T) {
+func Test_Validate(t *testing.T) {
 	t.Run("reports missing required field", func(t *testing.T) {
 		fields := []DynamicField{
 			{

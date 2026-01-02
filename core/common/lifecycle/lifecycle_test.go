@@ -10,7 +10,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestLifecycle_RegisterStartup(t *testing.T) {
+func Test_Lifecycle_RegisterStartup(t *testing.T) {
 	t.Run("registers startup command", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -30,7 +30,7 @@ func TestLifecycle_RegisterStartup(t *testing.T) {
 	})
 }
 
-func TestLifecycle_RegisterShutdown(t *testing.T) {
+func Test_Lifecycle_RegisterShutdown(t *testing.T) {
 	t.Run("registers shutdown command", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -48,7 +48,7 @@ func TestLifecycle_RegisterShutdown(t *testing.T) {
 	})
 }
 
-func TestLifecycle_FireStartup(t *testing.T) {
+func Test_Lifecycle_FireStartup(t *testing.T) {
 	t.Run("executes commands in priority order", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -112,7 +112,7 @@ func TestLifecycle_FireStartup(t *testing.T) {
 	})
 }
 
-func TestLifecycle_FireShutdown(t *testing.T) {
+func Test_Lifecycle_FireShutdown(t *testing.T) {
 	t.Run("executes shutdown commands in priority order", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

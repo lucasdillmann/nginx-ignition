@@ -21,7 +21,7 @@ func validIntegration() *Integration {
 	}
 }
 
-func TestValidator_Validate(t *testing.T) {
+func Test_Validator_Validate(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("valid integration with driver passes", func(t *testing.T) {

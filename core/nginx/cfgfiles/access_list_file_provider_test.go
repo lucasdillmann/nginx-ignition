@@ -12,7 +12,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
-func TestAccessListFileProvider_Provide(t *testing.T) {
+func Test_AccessListFileProvider_Provide(t *testing.T) {
 	p := &accessListFileProvider{}
 	paths := &Paths{Config: "/etc/nginx/"}
 	id := uuid.New()
@@ -57,13 +57,13 @@ func TestAccessListFileProvider_Provide(t *testing.T) {
 	})
 }
 
-func TestToNginxOperation(t *testing.T) {
+func Test_ToNginxOperation(t *testing.T) {
 	assert.Equal(t, "allow", toNginxOperation(accesslist.AllowOutcome))
 	assert.Equal(t, "deny", toNginxOperation(accesslist.DenyOutcome))
 	assert.Equal(t, "", toNginxOperation("INVALID"))
 }
 
-func TestAccessListFileProvider_BuildConfFile(t *testing.T) {
+func Test_AccessListFileProvider_BuildConfFile(t *testing.T) {
 	id := uuid.New()
 	paths := &Paths{
 		Config: "/etc/nginx/",
@@ -173,7 +173,7 @@ func TestAccessListFileProvider_BuildConfFile(t *testing.T) {
 	})
 }
 
-func TestAccessListFileProvider_BuildHtpasswdFile(t *testing.T) {
+func Test_AccessListFileProvider_BuildHtpasswdFile(t *testing.T) {
 	p := &accessListFileProvider{}
 
 	t.Run("returns nil for no credentials", func(t *testing.T) {

@@ -15,7 +15,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func TestHostCertificateFileProvider_Provide(t *testing.T) {
+func Test_HostCertificateFileProvider_Provide(t *testing.T) {
 	p := &hostCertificateFileProvider{}
 	paths := &Paths{
 		Config: "/etc/nginx/",
@@ -119,7 +119,7 @@ func TestHostCertificateFileProvider_Provide(t *testing.T) {
 	})
 }
 
-func TestHostCertificateFileProvider_PemEncoding(t *testing.T) {
+func Test_HostCertificateFileProvider_PemEncoding(t *testing.T) {
 	t.Run("convertToPemEncodedCertificateString wraps raw bytes in PEM", func(t *testing.T) {
 		raw := []byte("fake-cert")
 		encoded := convertToPemEncodedCertificateString(raw)

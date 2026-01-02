@@ -13,7 +13,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
-func TestEndpointAdapter_Hash(t *testing.T) {
+func Test_EndpointAdapter_Hash(t *testing.T) {
 	id := uuid.New()
 	name := "test"
 	domain := "example.com"
@@ -37,7 +37,7 @@ func TestEndpointAdapter_Hash(t *testing.T) {
 	})
 }
 
-func TestEndpointAdapter_Targets(t *testing.T) {
+func Test_EndpointAdapter_Targets(t *testing.T) {
 	domain := "example.com"
 	bindings := []binding.Binding{
 		{
@@ -75,7 +75,7 @@ func TestEndpointAdapter_Targets(t *testing.T) {
 	})
 }
 
-func TestVpnManager_BuildEndpoints(t *testing.T) {
+func Test_VpnManager_BuildEndpoints(t *testing.T) {
 	ctx := context.Background()
 	vpnID := uuid.New()
 	globalBindings := []binding.Binding{
@@ -165,7 +165,7 @@ func TestVpnManager_BuildEndpoints(t *testing.T) {
 	})
 }
 
-func TestVpnManager_StopObsoleteEndpoints(t *testing.T) {
+func Test_VpnManager_StopObsoleteEndpoints(t *testing.T) {
 	ctx := context.Background()
 	vpnID := uuid.New()
 	ep1 := &endpointAdapter{
@@ -197,7 +197,7 @@ func TestVpnManager_StopObsoleteEndpoints(t *testing.T) {
 	})
 }
 
-func TestVpnManager_StartNewEndpoints(t *testing.T) {
+func Test_VpnManager_StartNewEndpoints(t *testing.T) {
 	ctx := context.Background()
 	vpnID := uuid.New()
 	ep1 := &endpointAdapter{

@@ -11,7 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
-func TestHostRouteStaticResponseFileProvider_Provide(t *testing.T) {
+func Test_HostRouteStaticResponseFileProvider_Provide(t *testing.T) {
 	p := &hostRouteStaticResponseFileProvider{}
 	hostID := uuid.New()
 	ctx := &providerContext{
@@ -38,7 +38,7 @@ func TestHostRouteStaticResponseFileProvider_Provide(t *testing.T) {
 	assert.Equal(t, fmt.Sprintf("host-%s-route-10.payload", hostID), files[0].Name)
 }
 
-func TestHostRouteStaticResponseFileProvider_BuildStaticResponseFiles(t *testing.T) {
+func Test_HostRouteStaticResponseFileProvider_BuildStaticResponseFiles(t *testing.T) {
 	p := &hostRouteStaticResponseFileProvider{}
 	hostID := uuid.New()
 

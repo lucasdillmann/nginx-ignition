@@ -10,7 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
-func TestHostRouteSourceCodeFileProvider_Provide(t *testing.T) {
+func Test_HostRouteSourceCodeFileProvider_Provide(t *testing.T) {
 	p := &hostRouteSourceCodeFileProvider{}
 	hostID := uuid.New()
 	ctx := &providerContext{
@@ -41,7 +41,7 @@ func TestHostRouteSourceCodeFileProvider_Provide(t *testing.T) {
 	assert.Equal(t, fmt.Sprintf("host-%s-route-10.js", hostID), files[0].Name)
 }
 
-func TestHostRouteSourceCodeFileProvider_BuildSourceCodeFiles(t *testing.T) {
+func Test_HostRouteSourceCodeFileProvider_BuildSourceCodeFiles(t *testing.T) {
 	p := &hostRouteSourceCodeFileProvider{}
 	hostID := uuid.New()
 

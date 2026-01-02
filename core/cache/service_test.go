@@ -14,7 +14,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
-func TestService_Save(t *testing.T) {
+func Test_Service_Save(t *testing.T) {
 	t.Run("valid cache saves successfully", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -71,7 +71,7 @@ func TestService_Save(t *testing.T) {
 	})
 }
 
-func TestService_DeleteByID(t *testing.T) {
+func Test_Service_DeleteByID(t *testing.T) {
 	t.Run("deletes successfully when not in use", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -126,7 +126,7 @@ func TestService_DeleteByID(t *testing.T) {
 	})
 }
 
-func TestService_FindByID(t *testing.T) {
+func Test_Service_FindByID(t *testing.T) {
 	t.Run("returns cache when found", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -169,7 +169,7 @@ func TestService_FindByID(t *testing.T) {
 	})
 }
 
-func TestService_List(t *testing.T) {
+func Test_Service_List(t *testing.T) {
 	t.Run("returns paginated results", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -191,7 +191,7 @@ func TestService_List(t *testing.T) {
 	})
 }
 
-func TestService_ExistsByID(t *testing.T) {
+func Test_Service_ExistsByID(t *testing.T) {
 	t.Run("returns true when exists", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -227,7 +227,7 @@ func TestService_ExistsByID(t *testing.T) {
 	})
 }
 
-func TestService_FindAllInUse(t *testing.T) {
+func Test_Service_FindAllInUse(t *testing.T) {
 	t.Run("returns all in use caches", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

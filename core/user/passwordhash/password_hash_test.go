@@ -38,7 +38,7 @@ func setupConfigForTest(t *testing.T, saltSize, iterations int) *PasswordHash {
 	return passwordHash
 }
 
-func TestPasswordHash_Hash(t *testing.T) {
+func Test_PasswordHash_Hash(t *testing.T) {
 	t.Run("creates a valid hash", func(t *testing.T) {
 		passwordHash := setupConfigForTest(t, 32, 1)
 		password := "plain-text-password"
@@ -60,7 +60,7 @@ func TestPasswordHash_Hash(t *testing.T) {
 	})
 }
 
-func TestPasswordHash_Verify(t *testing.T) {
+func Test_PasswordHash_Verify(t *testing.T) {
 	t.Run("verifies a valid password", func(t *testing.T) {
 		passwordHash := setupConfigForTest(t, 64, 2)
 		password := "plain-text-password"

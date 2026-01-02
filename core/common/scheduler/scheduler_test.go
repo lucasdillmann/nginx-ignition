@@ -10,7 +10,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestBuildScheduler(t *testing.T) {
+func Test_BuildScheduler(t *testing.T) {
 	t.Run("builds scheduler", func(t *testing.T) {
 		sched := buildScheduler()
 
@@ -21,7 +21,7 @@ func TestBuildScheduler(t *testing.T) {
 	})
 }
 
-func TestScheduler_Register(t *testing.T) {
+func Test_Scheduler_Register(t *testing.T) {
 	t.Run("registers task when not started", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -66,7 +66,7 @@ func TestScheduler_Register(t *testing.T) {
 	})
 }
 
-func TestScheduler_start(t *testing.T) {
+func Test_Scheduler_start(t *testing.T) {
 	t.Run("starts all registered tasks", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -125,7 +125,7 @@ func TestScheduler_start(t *testing.T) {
 	})
 }
 
-func TestScheduler_stop(t *testing.T) {
+func Test_Scheduler_stop(t *testing.T) {
 	t.Run("stops all tasks", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -141,7 +141,7 @@ func TestScheduler_stop(t *testing.T) {
 	})
 }
 
-func TestScheduler_Reload(t *testing.T) {
+func Test_Scheduler_Reload(t *testing.T) {
 	t.Run("reloads all tasks", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

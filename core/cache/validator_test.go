@@ -13,7 +13,7 @@ func validCache() *Cache {
 	}
 }
 
-func TestValidator_Validate(t *testing.T) {
+func Test_Validator_Validate(t *testing.T) {
 	t.Run("valid cache passes", func(t *testing.T) {
 		cache := validCache()
 		val := newValidator()

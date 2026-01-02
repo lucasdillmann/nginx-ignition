@@ -8,7 +8,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
-func TestBuildCommands(t *testing.T) {
+func Test_BuildCommands(t *testing.T) {
 	t.Run("builds commands with all service methods", func(t *testing.T) {
 		certCommands := &certificate.Commands{}
 		commands := buildCommands(certCommands)

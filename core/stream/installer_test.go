@@ -7,7 +7,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestBuildCommands(t *testing.T) {
+func Test_BuildCommands(t *testing.T) {
 	t.Run("builds commands with all service methods", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

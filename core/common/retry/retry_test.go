@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRetry_Start(t *testing.T) {
+func Test_Retry_Start(t *testing.T) {
 	t.Run("returns error when action is nil", func(t *testing.T) {
 		retry := &Retry{
 			Action:               nil,
@@ -69,7 +69,7 @@ func TestRetry_Start(t *testing.T) {
 	})
 }
 
-func TestRetry_executeAttempts(t *testing.T) {
+func Test_Retry_executeAttempts(t *testing.T) {
 	t.Run("succeeds on first attempt", func(t *testing.T) {
 		var callbackCalled bool
 		var callbackAttempt int
@@ -168,7 +168,7 @@ func TestRetry_executeAttempts(t *testing.T) {
 	})
 }
 
-func TestRetry_sendCallback(t *testing.T) {
+func Test_Retry_sendCallback(t *testing.T) {
 	t.Run("calls callback when set", func(t *testing.T) {
 		var callbackCalled bool
 		var callbackErr error

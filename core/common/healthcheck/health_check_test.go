@@ -9,7 +9,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestHealthCheck_Register(t *testing.T) {
+func Test_HealthCheck_Register(t *testing.T) {
 	t.Run("registers provider", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -27,7 +27,7 @@ func TestHealthCheck_Register(t *testing.T) {
 	})
 }
 
-func TestHealthCheck_Status(t *testing.T) {
+func Test_HealthCheck_Status(t *testing.T) {
 	t.Run("returns healthy when all providers healthy", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

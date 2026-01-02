@@ -14,7 +14,7 @@ func init() {
 	_ = log.Init()
 }
 
-func TestListen(t *testing.T) {
+func Test_Listen(t *testing.T) {
 	t.Run("creates channel for new qualifier", func(t *testing.T) {
 		qualifier := "test-qualifier-1"
 		ch := Listen(qualifier)
@@ -31,7 +31,7 @@ func TestListen(t *testing.T) {
 	})
 }
 
-func TestSendSignal(t *testing.T) {
+func Test_SendSignal(t *testing.T) {
 	t.Run("sends context to listening channel", func(t *testing.T) {
 		qualifier := "test-qualifier-3"
 		ch := Listen(qualifier)
@@ -53,7 +53,7 @@ func TestSendSignal(t *testing.T) {
 	})
 }
 
-func TestShutdown_Run(t *testing.T) {
+func Test_Shutdown_Run(t *testing.T) {
 	t.Run("closes all channels", func(t *testing.T) {
 		ch1 := Listen("test-shutdown-1")
 		ch2 := Listen("test-shutdown-2")

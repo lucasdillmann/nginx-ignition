@@ -21,7 +21,7 @@ func validVPN() *VPN {
 	}
 }
 
-func TestValidator_Validate(t *testing.T) {
+func Test_Validator_Validate(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("valid VPN with driver passes", func(t *testing.T) {

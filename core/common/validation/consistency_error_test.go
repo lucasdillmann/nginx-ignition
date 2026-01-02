@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestConsistencyError_Error(t *testing.T) {
+func Test_ConsistencyError_Error(t *testing.T) {
 	t.Run("returns consistent error message", func(t *testing.T) {
 		err := NewError([]ConsistencyViolation{
 			{
@@ -19,7 +19,7 @@ func TestConsistencyError_Error(t *testing.T) {
 	})
 }
 
-func TestSingleFieldError(t *testing.T) {
+func Test_SingleFieldError(t *testing.T) {
 	t.Run("creates error with single violation", func(t *testing.T) {
 		err := SingleFieldError("field1", "error message")
 

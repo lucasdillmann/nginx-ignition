@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestService_ExtractVersion(t *testing.T) {
+func Test_Service_ExtractVersion(t *testing.T) {
 	svc := &service{}
 
 	t.Run("extracts version correctly", func(t *testing.T) {
@@ -15,7 +15,7 @@ func TestService_ExtractVersion(t *testing.T) {
 	})
 }
 
-func TestService_ExtractBuildDetails(t *testing.T) {
+func Test_Service_ExtractBuildDetails(t *testing.T) {
 	svc := &service{}
 
 	t.Run("extracts build details correctly", func(t *testing.T) {
@@ -24,7 +24,7 @@ func TestService_ExtractBuildDetails(t *testing.T) {
 	})
 }
 
-func TestService_ExtractTLSSNIEnabled(t *testing.T) {
+func Test_Service_ExtractTLSSNIEnabled(t *testing.T) {
 	svc := &service{}
 
 	t.Run("detects SNI support", func(t *testing.T) {
@@ -33,7 +33,7 @@ func TestService_ExtractTLSSNIEnabled(t *testing.T) {
 	})
 }
 
-func TestService_ExtractStaticModules(t *testing.T) {
+func Test_Service_ExtractStaticModules(t *testing.T) {
 	svc := &service{}
 
 	t.Run("extracts static modules from configure arguments", func(t *testing.T) {
@@ -47,7 +47,7 @@ func TestService_ExtractStaticModules(t *testing.T) {
 	})
 }
 
-func TestService_ExtractDynamicModules(t *testing.T) {
+func Test_Service_ExtractDynamicModules(t *testing.T) {
 	svc := &service{}
 
 	t.Run("extracts dynamic modules from configure arguments", func(t *testing.T) {
@@ -60,7 +60,7 @@ func TestService_ExtractDynamicModules(t *testing.T) {
 	})
 }
 
-func TestService_MergeModules(t *testing.T) {
+func Test_Service_MergeModules(t *testing.T) {
 	svc := &service{}
 
 	t.Run("merges and deduplicates modules", func(t *testing.T) {

@@ -41,7 +41,7 @@ func validCredentials() *Credentials {
 	}
 }
 
-func TestValidator_Validate(t *testing.T) {
+func Test_Validator_Validate(t *testing.T) {
 	t.Run("valid access list passes", func(t *testing.T) {
 		accessList := validAccessList()
 		val := newValidator()
@@ -72,7 +72,7 @@ func TestValidator_Validate(t *testing.T) {
 	})
 }
 
-func TestValidator_ValidateEntry(t *testing.T) {
+func Test_Validator_ValidateEntry(t *testing.T) {
 	t.Run("valid entry passes", func(t *testing.T) {
 		entry := validEntry()
 		knownPriorities := map[int]bool{}
@@ -185,7 +185,7 @@ func TestValidator_ValidateEntry(t *testing.T) {
 	})
 }
 
-func TestValidator_ValidateCredentials(t *testing.T) {
+func Test_Validator_ValidateCredentials(t *testing.T) {
 	t.Run("valid credentials pass", func(t *testing.T) {
 		credentials := validCredentials()
 		knownUsernames := map[string]bool{}

@@ -26,7 +26,7 @@ func init() {
 	_ = log.Init()
 }
 
-func TestConfiguration_Get(t *testing.T) {
+func Test_Configuration_Get(t *testing.T) {
 	cfg := getTestConfig()
 
 	t.Run("returns value from formatted environment variable", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestConfiguration_Get(t *testing.T) {
 	})
 }
 
-func TestConfiguration_GetInt(t *testing.T) {
+func Test_Configuration_GetInt(t *testing.T) {
 	cfg := getTestConfig()
 
 	t.Run("returns integer value", func(t *testing.T) {
@@ -78,7 +78,7 @@ func TestConfiguration_GetInt(t *testing.T) {
 	})
 }
 
-func TestConfiguration_GetBoolean(t *testing.T) {
+func Test_Configuration_GetBoolean(t *testing.T) {
 	cfg := getTestConfig()
 
 	t.Run("returns boolean value", func(t *testing.T) {
@@ -101,7 +101,7 @@ func TestConfiguration_GetBoolean(t *testing.T) {
 	})
 }
 
-func TestConfiguration_WithPrefix(t *testing.T) {
+func Test_Configuration_WithPrefix(t *testing.T) {
 	cfg := getTestConfig()
 
 	t.Run("adds prefix to key lookup", func(t *testing.T) {

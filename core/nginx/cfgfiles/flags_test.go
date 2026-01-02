@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFlag(t *testing.T) {
+func Test_Flag(t *testing.T) {
 	t.Run("returns trueValue when enabled is true", func(t *testing.T) {
 		assert.Equal(t, "on", flag(true, "on", "off"))
 	})
@@ -16,7 +16,7 @@ func TestFlag(t *testing.T) {
 	})
 }
 
-func TestStatusFlag(t *testing.T) {
+func Test_StatusFlag(t *testing.T) {
 	t.Run("returns on when true", func(t *testing.T) {
 		assert.Equal(t, "on", statusFlag(true))
 	})

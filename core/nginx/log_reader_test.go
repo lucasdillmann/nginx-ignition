@@ -11,7 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 )
 
-func TestLogReader_Read(t *testing.T) {
+func Test_LogReader_Read(t *testing.T) {
 	ctx := context.Background()
 	tmpDir, _ := os.MkdirTemp("", "logs")
 	defer os.RemoveAll(tmpDir)

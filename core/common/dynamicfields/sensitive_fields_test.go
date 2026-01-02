@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRemoveSensitiveFields(t *testing.T) {
+func Test_RemoveSensitiveFields(t *testing.T) {
 	t.Run("removes sensitive fields from map", func(t *testing.T) {
 		values := map[string]any{
 			"field1": "value1",
