@@ -77,9 +77,9 @@ export default class StreamAddressInput extends React.Component<StreamAddressInp
                                 placeholder={backendSocket ? "Unix socket path" : "Address"}
                             />
                             <If condition={!backendSocket}>
+                                <Space.Addon>:</Space.Addon>
                                 <InputNumber
                                     placeholder="Port"
-                                    addonBefore=":"
                                     style={INPUT_STYLE}
                                     value={address.port}
                                     onChange={value => this.handleChange("port", value)}
