@@ -27,7 +27,6 @@ jobs:
       GOMODCACHE: /data/cache/go/pkg/mod
       GOTOOLCHAIN: ""
       NPM_CONFIG_CACHE: /data/cache/npm
-      TEST_POSTGRES_HOST: postgres
     steps:
       - uses: actions/checkout@v5
         with:
@@ -39,6 +38,11 @@ jobs:
         with:
           go-version: 1.25.5
       - name: Unit tests
+        env:
+          TEST_POSTGRES_HOST: postgres
+          TEST_POSTGRES_USER: postgres
+          TEST_POSTGRES_PASSWORD: postgres
+          TEST_POSTGRES_DBNAME: nginx_ignition_tests
         run: make test
       - name: Lint
         run: make lint
