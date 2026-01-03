@@ -6,16 +6,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_ConsistencyError_Error(t *testing.T) {
-	t.Run("returns consistent error message", func(t *testing.T) {
-		err := NewError([]ConsistencyViolation{
-			{
-				Path:    "field1",
-				Message: "error 1",
-			},
-		})
+func Test_ConsistencyError(t *testing.T) {
+	t.Run("Error", func(t *testing.T) {
+		t.Run("returns consistent error message", func(t *testing.T) {
+			err := NewError([]ConsistencyViolation{
+				{
+					Path:    "field1",
+					Message: "error 1",
+				},
+			})
 
-		assert.Equal(t, "One or more problems where found in the provided value", err.Error())
+			assert.Equal(t, "One or more problems where found in the provided value", err.Error())
+		})
 	})
 }
 

@@ -10,10 +10,10 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 .frontend-prerequisites:
 	cd frontend/ && npm ci
 
-.frontend-check: .frontend-prerequisites
+.frontend-lint: .frontend-prerequisites
 	cd frontend/ && npm run check
 
-.backend-check: .backend-prerequisites
+.backend-lint: .backend-prerequisites
 	go tool golangci-lint run \
 		./api/... \
 		./application/... \
@@ -163,7 +163,7 @@ update-dependencies: .backend-prerequisites .frontend-prerequisites
 	go work sync
 	cd frontend && npm update
 
-check: .frontend-check .backend-check
+lint: .frontend-lint .backend-lint
 
 format: .frontend-format .backend-format
 

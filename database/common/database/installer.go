@@ -5,7 +5,7 @@ import (
 )
 
 func Install() error {
-	if err := container.Provide(newDatabase); err != nil {
+	if err := container.Provide(New); err != nil {
 		return err
 	}
 

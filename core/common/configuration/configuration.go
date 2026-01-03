@@ -25,6 +25,22 @@ func New() *Configuration {
 	}
 }
 
+func NewWithOverrides(overrides map[string]string) *Configuration {
+	values, err := loadConfigFileValues()
+	if err != nil {
+		log.Warnf("Unable to read configuration properties file: %s", err)
+		values = make(map[string]string)
+	}
+
+	for key, value := range overrides {
+		values[key] = value
+	}
+
+	return &Configuration{
+		configFileValues: values,
+	}
+}
+
 func (c *Configuration) Get(key string) (string, error) {
 	var fullKey string
 	if c.prefix != "" {

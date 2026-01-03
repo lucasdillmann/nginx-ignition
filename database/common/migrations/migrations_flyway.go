@@ -6,7 +6,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
-func (m *migrations) migrateFromFlyway(db *sql.DB, driver string) error {
+func (m *Migrations) migrateFromFlyway(db *sql.DB, driver string) error {
 	if driver != "postgres" {
 		return nil
 	}
@@ -32,7 +32,7 @@ func (m *migrations) migrateFromFlyway(db *sql.DB, driver string) error {
 	return nil
 }
 
-func (m *migrations) convertFlywayTable(db *sql.DB) error {
+func (m *Migrations) convertFlywayTable(db *sql.DB) error {
 	var err error
 
 	_, err = db.Exec("ALTER TABLE schema_version RENAME TO schema_version_backup")

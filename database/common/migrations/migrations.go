@@ -12,19 +12,19 @@ const (
 	tableName = "schema_version"
 )
 
-type migrations struct {
+type Migrations struct {
 	database      *database.Database
 	configuration *configuration.Configuration
 }
 
-func newMigrations(db *database.Database, cfg *configuration.Configuration) *migrations {
-	return &migrations{
+func New(db *database.Database, cfg *configuration.Configuration) *Migrations {
+	return &Migrations{
 		database:      db,
 		configuration: cfg.WithPrefix("nginx-ignition.database"),
 	}
 }
 
-func (m *migrations) migrate() error {
+func (m *Migrations) Migrate() error {
 	driverName, err := m.configuration.Get("driver")
 	if err != nil {
 		return err
@@ -40,7 +40,7 @@ func (m *migrations) migrate() error {
 	return m.runScripts(db, driverName)
 }
 
-func (m *migrations) unsetDirtyStatus(db *sql.DB) {
+func (m *Migrations) unsetDirtyStatus(db *sql.DB) {
 	rows, err := db.Query("select version, dirty from schema_version limit 1")
 	if err != nil {
 		return

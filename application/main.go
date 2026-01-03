@@ -7,10 +7,6 @@ import (
 )
 
 func main() {
-	if err := log.Init(); err != nil {
-		panic(err)
-	}
-
 	log.Infof("Welcome to nginx ignition %s", version.Number)
 
 	if err := boot.StartApplication(); err != nil {

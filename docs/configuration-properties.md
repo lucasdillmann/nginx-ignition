@@ -69,6 +69,7 @@ nginx ignition to suit you better, if needed.
 | NGINX_IGNITION_DATABASE_SSL_MODE                         | Definition if the connection to the database should be encrypted, being either `require` or `disable` | disable      | require                   |
 | NGINX_IGNITION_DATABASE_USERNAME                         | Database username                                                                                     | postgres     |                           |
 | NGINX_IGNITION_DATABASE_PASSWORD                         | Database username                                                                                     | postgres     |                           |
+| NGINX_IGNITION_DATABASE_SCHEMA                           | Schema name (PostgreSQL only)                                                                         | example      | public                    |
 | NGINX_IGNITION_DATABASE_DATA_PATH                        | Folder on where the database file should be stored. Applicable only for the `sqlite` database.        | /opt/example | /tmp/nginx-ignition/data  |
 | NGINX_IGNITION_SECURITY_JWT_SECRET                       | Secret key (64 chars long) for the authentication tokens                                              |              |                           |
 | NGINX_IGNITION_SECURITY_JWT_TTL_SECONDS                  | Amount of seconds that an authentication token will be valid before logout by inactivity              | 3600         | 3600                      |

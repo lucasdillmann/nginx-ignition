@@ -106,7 +106,7 @@ func (r *repository) FindPage(
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil {
-		query = query.Where("name ILIKE ?", "%"+*searchTerms+"%")
+		query = query.Where("LOWER(name) LIKE LOWER(?)", "%"+*searchTerms+"%")
 	}
 
 	count, err := query.Count(ctx)
@@ -140,6 +140,7 @@ func (r *repository) FindAll(ctx context.Context) ([]accesslist.AccessList, erro
 		Model(&models).
 		Relation("Credentials").
 		Relation("EntrySets").
+		Order("name").
 		Scan(ctx)
 	if err != nil {
 		return nil, err

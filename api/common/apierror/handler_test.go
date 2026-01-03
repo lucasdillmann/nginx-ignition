@@ -11,13 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
-
-func init() {
-	_ = log.Init()
-}
 
 func Test_Handler(t *testing.T) {
 	gin.SetMode(gin.TestMode)

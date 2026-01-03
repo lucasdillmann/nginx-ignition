@@ -16,7 +16,7 @@ type Database struct {
 	connectionString string
 }
 
-func newDatabase(cfg *configuration.Configuration) *Database {
+func New(cfg *configuration.Configuration) *Database {
 	return &Database{
 		configuration: cfg.WithPrefix("nginx-ignition.database"),
 		db:            nil,
@@ -36,11 +36,23 @@ func (d *Database) Select() *bun.SelectQuery {
 	return d.bun.NewSelect()
 }
 
+func (d *Database) Insert() *bun.InsertQuery {
+	return d.bun.NewInsert()
+}
+
+func (d *Database) Update() *bun.UpdateQuery {
+	return d.bun.NewUpdate()
+}
+
+func (d *Database) Delete() *bun.DeleteQuery {
+	return d.bun.NewDelete()
+}
+
 func (d *Database) ConnectionString() string {
 	return d.connectionString
 }
 
-func (d *Database) close() {
+func (d *Database) Close() {
 	log.Infof("Closing the database connection")
 
 	if d.db == nil {

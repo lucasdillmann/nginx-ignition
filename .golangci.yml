@@ -24,7 +24,7 @@ linters:
     forbidigo:
       analyze-types: true
       forbid:
-        - pattern: ^ NewMocked.*$
+        - pattern: ^NewMocked.*$
           msg: "Do not use shared mocks in production code"
     govet:
       enable-all: true

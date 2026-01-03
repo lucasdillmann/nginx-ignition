@@ -6,7 +6,10 @@ type CoreError struct {
 }
 
 func New(message string, blameUser bool) *CoreError {
-	return &CoreError{Message: message, UserRelated: blameUser}
+	return &CoreError{
+		Message:     message,
+		UserRelated: blameUser,
+	}
 }
 
 func (e CoreError) Error() string {

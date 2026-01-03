@@ -10,11 +10,25 @@ on:
 jobs:
   quality-checks:
     runs-on: self-hosted
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: nginx_ignition_tests
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     env:
       GOPATH: /data/cache/go
       GOMODCACHE: /data/cache/go/pkg/mod
       GOTOOLCHAIN: ""
-      npm_config_cache: /data/cache/npm
+      NPM_CONFIG_CACHE: /data/cache/npm
     steps:
       - uses: actions/checkout@v5
         with:
@@ -28,7 +42,7 @@ jobs:
       - name: Unit tests
         run: make test
       - name: Lint
-        run: make check
+        run: make lint
       - name: Sonarqube
         uses: SonarSource/sonarqube-scan-action@v6
         env:
