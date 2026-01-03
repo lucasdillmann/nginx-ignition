@@ -19,7 +19,14 @@ type service struct {
 	configuration *configuration.Configuration
 }
 
-func (s *service) authenticate(ctx context.Context, username, password string) (*User, error) {
+func newService(repository Repository, cfg *configuration.Configuration) *service {
+	return &service{
+		repository:    repository,
+		configuration: cfg,
+	}
+}
+
+func (s *service) Authenticate(ctx context.Context, username, password string) (*User, error) {
 	usr, err := s.repository.FindByUsername(ctx, username)
 	if err != nil {
 		return nil, err
@@ -29,7 +36,8 @@ func (s *service) authenticate(ctx context.Context, username, password string) (
 		return nil, invalidCredentialsError
 	}
 
-	passwordMatches, err := passwordhash.New(s.configuration).Verify(password, usr.PasswordHash, usr.PasswordSalt)
+	passwordMatches, err := passwordhash.New(s.configuration).
+		Verify(password, usr.PasswordHash, usr.PasswordSalt)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +49,11 @@ func (s *service) authenticate(ctx context.Context, username, password string) (
 	return usr, nil
 }
 
-func (s *service) changePassword(ctx context.Context, id uuid.UUID, currentPassword, newPassword string) error {
+func (s *service) UpdatePassword(
+	ctx context.Context,
+	id uuid.UUID,
+	currentPassword, newPassword string,
+) error {
 	hash := passwordhash.New(s.configuration)
 	databaseState, err := s.repository.FindByID(ctx, id)
 	if err != nil {
@@ -79,19 +91,19 @@ func (s *service) changePassword(ctx context.Context, id uuid.UUID, currentPassw
 	return s.repository.Save(ctx, databaseState)
 }
 
-func (s *service) getByID(ctx context.Context, id uuid.UUID) (*User, error) {
+func (s *service) Get(ctx context.Context, id uuid.UUID) (*User, error) {
 	return s.repository.FindByID(ctx, id)
 }
 
-func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	return s.repository.DeleteByID(ctx, id)
 }
 
-func (s *service) count(ctx context.Context) (int, error) {
+func (s *service) GetCount(ctx context.Context) (int, error) {
 	return s.repository.Count(ctx)
 }
 
-func (s *service) isOnboardingCompleted(ctx context.Context) (bool, error) {
+func (s *service) OnboardingCompleted(ctx context.Context) (bool, error) {
 	count, err := s.repository.Count(ctx)
 	if err != nil {
 		return false, err
@@ -100,7 +112,7 @@ func (s *service) isOnboardingCompleted(ctx context.Context) (bool, error) {
 	return count > 0, nil
 }
 
-func (s *service) save(ctx context.Context, request *SaveRequest, currentUserID *uuid.UUID) error {
+func (s *service) Save(ctx context.Context, request *SaveRequest, currentUserID *uuid.UUID) error {
 	var passwordHash, passwordSalt string
 	var databaseState *User
 	var err error
@@ -137,11 +149,15 @@ func (s *service) save(ctx context.Context, request *SaveRequest, currentUserID 
 	return s.repository.Save(ctx, updatedState)
 }
 
-func (s *service) isEnabled(ctx context.Context, id uuid.UUID) (bool, error) {
+func (s *service) GetStatus(ctx context.Context, id uuid.UUID) (bool, error) {
 	return s.repository.IsEnabledByID(ctx, id)
 }
 
-func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[User], error) {
+func (s *service) List(
+	ctx context.Context,
+	pageSize, pageNumber int,
+	searchTerms *string,
+) (*pagination.Page[User], error) {
 	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms)
 }
 

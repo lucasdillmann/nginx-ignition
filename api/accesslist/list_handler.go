@@ -10,7 +10,7 @@ import (
 )
 
 type listHandler struct {
-	commands *accesslist.Commands
+	commands accesslist.Commands
 }
 
 func (h listHandler) handle(ctx *gin.Context) {

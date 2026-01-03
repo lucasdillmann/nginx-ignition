@@ -12,11 +12,11 @@ type service struct {
 	streamRepository Repository
 }
 
-func newService(streamRepository Repository) *service {
+func newCommands(streamRepository Repository) Commands {
 	return &service{streamRepository}
 }
 
-func (s *service) save(ctx context.Context, input *Stream) error {
+func (s *service) Save(ctx context.Context, input *Stream) error {
 	if err := newValidator().validate(ctx, input); err != nil {
 		return err
 	}
@@ -24,22 +24,26 @@ func (s *service) save(ctx context.Context, input *Stream) error {
 	return s.streamRepository.Save(ctx, input)
 }
 
-func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	return s.streamRepository.DeleteByID(ctx, id)
 }
 
-func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[Stream], error) {
+func (s *service) List(
+	ctx context.Context,
+	pageSize, pageNumber int,
+	searchTerms *string,
+) (*pagination.Page[Stream], error) {
 	return s.streamRepository.FindPage(ctx, pageSize, pageNumber, searchTerms)
 }
 
-func (s *service) getByID(ctx context.Context, id uuid.UUID) (*Stream, error) {
+func (s *service) Get(ctx context.Context, id uuid.UUID) (*Stream, error) {
 	return s.streamRepository.FindByID(ctx, id)
 }
 
-func (s *service) getAllEnabled(ctx context.Context) ([]Stream, error) {
+func (s *service) GetAllEnabled(ctx context.Context) ([]Stream, error) {
 	return s.streamRepository.FindAllEnabled(ctx)
 }
 
-func (s *service) existsByID(ctx context.Context, id uuid.UUID) (bool, error) {
+func (s *service) Exists(ctx context.Context, id uuid.UUID) (bool, error) {
 	return s.streamRepository.ExistsByID(ctx, id)
 }

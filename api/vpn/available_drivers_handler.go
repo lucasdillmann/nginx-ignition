@@ -9,7 +9,7 @@ import (
 )
 
 type availableDriversHandler struct {
-	commands *vpn.Commands
+	commands vpn.Commands
 }
 
 func (h availableDriversHandler) handle(ctx *gin.Context) {

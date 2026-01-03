@@ -104,9 +104,13 @@ func parseResult(
 	}
 
 	metadata := certificateMetadata{
-		UserMail:              usr.email,
-		UserPrivateKey:        base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PrivateKey(usr.privateKey)),
-		UserPublicKey:         base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PublicKey(&usr.privateKey.PublicKey)),
+		UserMail: usr.email,
+		UserPrivateKey: base64.StdEncoding.EncodeToString(
+			x509.MarshalPKCS1PrivateKey(usr.privateKey),
+		),
+		UserPublicKey: base64.StdEncoding.EncodeToString(
+			x509.MarshalPKCS1PublicKey(&usr.privateKey.PublicKey),
+		),
 		ProductionEnvironment: productionEnvironment,
 	}
 

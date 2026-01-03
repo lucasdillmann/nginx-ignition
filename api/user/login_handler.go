@@ -10,7 +10,7 @@ import (
 )
 
 type loginHandler struct {
-	commands   *user.Commands
+	commands   user.Commands
 	authorizer *authorization.ABAC
 }
 
@@ -20,9 +20,18 @@ func (h loginHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	usr, err := h.commands.Authenticate(ctx.Request.Context(), *requestPayload.Username, *requestPayload.Password)
+	usr, err := h.commands.Authenticate(
+		ctx.Request.Context(),
+		*requestPayload.Username,
+		*requestPayload.Password,
+	)
 	if err != nil {
 		panic(err)
+	}
+
+	if usr == nil {
+		ctx.Status(http.StatusUnauthorized)
+		return
 	}
 
 	token, err := h.authorizer.Jwt().GenerateToken(usr)

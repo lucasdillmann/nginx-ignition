@@ -35,7 +35,10 @@ func (p *Provider) Priority() int {
 	return 3
 }
 
-func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (*certificate.Certificate, error) {
+func (p *Provider) Issue(
+	_ context.Context,
+	request *certificate.IssueRequest,
+) (*certificate.Certificate, error) {
 	if err := commons.Validate(request, validationRules{}); err != nil {
 		return nil, err
 	}
@@ -64,7 +67,10 @@ func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (
 	return cert, nil
 }
 
-func (p *Provider) Renew(_ context.Context, current *certificate.Certificate) (*certificate.Certificate, error) {
+func (p *Provider) Renew(
+	_ context.Context,
+	current *certificate.Certificate,
+) (*certificate.Certificate, error) {
 	certPEM, keyPEM, err := buildPEMs(current.DomainNames)
 	if err != nil {
 		return nil, err

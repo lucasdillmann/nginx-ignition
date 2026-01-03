@@ -11,7 +11,7 @@ import (
 )
 
 type putHandler struct {
-	commands *integration.Commands
+	commands integration.Commands
 }
 
 func (h putHandler) handle(ctx *gin.Context) {

@@ -13,13 +13,13 @@ type service struct {
 	repository Repository
 }
 
-func newService(repository Repository) *service {
+func newCommands(repository Repository) Commands {
 	return &service{
 		repository: repository,
 	}
 }
 
-func (s *service) save(ctx context.Context, c *Cache) error {
+func (s *service) Save(ctx context.Context, c *Cache) error {
 	if err := newValidator().validate(c); err != nil {
 		return err
 	}
@@ -27,7 +27,7 @@ func (s *service) save(ctx context.Context, c *Cache) error {
 	return s.repository.Save(ctx, c)
 }
 
-func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	inUse, err := s.repository.InUseByID(ctx, id)
 	if err != nil {
 		return err
@@ -40,15 +40,15 @@ func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
 	return s.repository.DeleteByID(ctx, id)
 }
 
-func (s *service) findByID(ctx context.Context, id uuid.UUID) (*Cache, error) {
+func (s *service) Get(ctx context.Context, id uuid.UUID) (*Cache, error) {
 	return s.repository.FindByID(ctx, id)
 }
 
-func (s *service) existsByID(ctx context.Context, id uuid.UUID) (bool, error) {
+func (s *service) Exists(ctx context.Context, id uuid.UUID) (bool, error) {
 	return s.repository.ExistsByID(ctx, id)
 }
 
-func (s *service) list(
+func (s *service) List(
 	ctx context.Context,
 	pageSize,
 	pageNumber int,
@@ -57,6 +57,6 @@ func (s *service) list(
 	return s.repository.FindPage(ctx, pageNumber, pageSize, searchTerms)
 }
 
-func (s *service) findAllInUse(ctx context.Context) ([]Cache, error) {
+func (s *service) GetAllInUse(ctx context.Context) ([]Cache, error) {
 	return s.repository.FindAllInUse(ctx)
 }

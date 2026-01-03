@@ -19,7 +19,13 @@ linters:
     - unconvert
     - unparam
     - govet
+    - forbidigo
   settings:
+    forbidigo:
+      analyze-types: true
+      forbid:
+        - pattern: ^ NewMocked.*$
+          msg: "Do not use shared mocks in production code"
     govet:
       enable-all: true
     dupl:
@@ -93,6 +99,7 @@ linters:
           - goconst
           - gocyclo
           - gosec
+          - forbidigo
         path: _test\.go
     paths:
       - vendor
@@ -108,6 +115,7 @@ formatters:
   enable:
     - goimports
     - gofumpt
+    - golines
   settings:
     goimports:
       local-prefixes:

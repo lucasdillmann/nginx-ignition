@@ -26,7 +26,9 @@ var configurationFields = []dynamicfields.DynamicField{
 		Required:    false,
 		Sensitive:   false,
 		Type:        dynamicfields.URLType,
-		HelpText:    ptr.Of("Custom coordinator server URL. Leave empty to use the default (tailscale.com)."),
+		HelpText: ptr.Of(
+			"Custom coordinator server URL. Leave empty to use the default (tailscale.com).",
+		),
 	},
 }
 

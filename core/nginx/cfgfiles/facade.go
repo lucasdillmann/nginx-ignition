@@ -19,22 +19,22 @@ import (
 )
 
 type Facade struct {
-	hostCommands   *host.Commands
-	streamCommands *stream.Commands
-	cacheCommands  *cache.Commands
+	hostCommands   host.Commands
+	streamCommands stream.Commands
+	cacheCommands  cache.Commands
 	configuration  *configuration.Configuration
 	providers      []fileProvider
 }
 
 func newFacade(
-	hostCommands *host.Commands,
-	streamCommands *stream.Commands,
-	cacheCommands *cache.Commands,
-	integrationCommands *integration.Commands,
+	hostCommands host.Commands,
+	streamCommands stream.Commands,
+	cacheCommands cache.Commands,
+	integrationCommands integration.Commands,
 	cfg *configuration.Configuration,
-	accessListCommands *accesslist.Commands,
-	certificateCommands *certificate.Commands,
-	settingsCommands *settings.Commands,
+	accessListCommands accesslist.Commands,
+	certificateCommands certificate.Commands,
+	settingsCommands settings.Commands,
 ) *Facade {
 	providers := []fileProvider{
 		newAccessListFileProvider(accessListCommands),
@@ -56,7 +56,11 @@ func newFacade(
 	}
 }
 
-func (f *Facade) GetConfigurationFiles(ctx context.Context, paths *Paths, supportedFeatures *SupportedFeatures) (
+func (f *Facade) GetConfigurationFiles(
+	ctx context.Context,
+	paths *Paths,
+	supportedFeatures *SupportedFeatures,
+) (
 	configFiles []File,
 	hosts []host.Host,
 	streams []stream.Stream,
@@ -125,7 +129,11 @@ func (f *Facade) ReplaceConfigurationFiles(
 		return nil, nil, err
 	}
 
-	log.Infof("Rebuilding nginx configuration files for %d hosts and %d streams", len(hosts), len(streams))
+	log.Infof(
+		"Rebuilding nginx configuration files for %d hosts and %d streams",
+		len(hosts),
+		len(streams),
+	)
 	if err := f.emptyConfigFolder(paths); err != nil {
 		return nil, nil, err
 	}

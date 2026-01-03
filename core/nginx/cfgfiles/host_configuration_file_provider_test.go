@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
@@ -52,22 +53,24 @@ func Test_HostConfigurationFileProvider_Provide(t *testing.T) {
 		},
 	}
 
-	p.settingsCommands = &settings.Commands{
-		Get: func(_ context.Context) (*settings.Settings, error) {
-			return &settings.Settings{
-				Nginx: &settings.NginxSettings{
-					WorkerProcesses: 1,
-					Logs: &settings.NginxLogsSettings{
-						AccessLogsEnabled: true,
-						ErrorLogsEnabled:  true,
-						ErrorLogsLevel:    settings.WarnLogLevel,
-					},
-				},
-			}, nil
-		},
-	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	p.integrationCommands = &integration.Commands{}
+	settingsCmds := settings.NewMockedCommands(ctrl)
+	settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(&settings.Settings{
+		Nginx: &settings.NginxSettings{
+			WorkerProcesses: 1,
+			Logs: &settings.NginxLogsSettings{
+				AccessLogsEnabled: true,
+				ErrorLogsEnabled:  true,
+				ErrorLogsLevel:    settings.WarnLogLevel,
+			},
+		},
+	}, nil)
+	p.settingsCommands = settingsCmds
+
+	integrationCmds := integration.NewMockedCommands(ctrl)
+	p.integrationCommands = integrationCmds
 
 	files, err := p.provide(ctx)
 	assert.NoError(t, err)
@@ -162,13 +165,14 @@ func Test_HostConfigurationFileProvider_BuildIntegrationRoute(t *testing.T) {
 			},
 		}
 
-		p.integrationCommands = &integration.Commands{
-			GetOptionURL: func(_ context.Context, iID uuid.UUID, oID string) (*string, []string, error) {
-				assert.Equal(t, integrationID, iID)
-				assert.Equal(t, "opt-1", oID)
-				return ptr.Of("http://1.2.3.4:80"), []string{"8.8.8.8", "8.8.4.4"}, nil
-			},
-		}
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		integrationCmds := integration.NewMockedCommands(ctrl)
+		integrationCmds.EXPECT().
+			GetOptionURL(gomock.Any(), integrationID, "opt-1").
+			Return(ptr.Of("http://1.2.3.4:80"), []string{"8.8.8.8", "8.8.4.4"}, nil)
+		p.integrationCommands = integrationCmds
 
 		result, err := p.buildIntegrationRoute(ctx, r, host.FeatureSet{})
 		assert.NoError(t, err)
@@ -181,11 +185,14 @@ func Test_HostConfigurationFileProvider_BuildIntegrationRoute(t *testing.T) {
 		r := &host.Route{
 			Integration: &host.RouteIntegrationConfig{},
 		}
-		p.integrationCommands = &integration.Commands{
-			GetOptionURL: func(_ context.Context, _ uuid.UUID, _ string) (*string, []string, error) {
-				return nil, nil, nil
-			},
-		}
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		integrationCmds := integration.NewMockedCommands(ctrl)
+		integrationCmds.EXPECT().
+			GetOptionURL(gomock.Any(), gomock.Any(), gomock.Any()).
+			Return(nil, nil, nil)
+		p.integrationCommands = integrationCmds
 		_, err := p.buildIntegrationRoute(ctx, r, host.FeatureSet{})
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "Integration option not found")
@@ -210,7 +217,11 @@ func Test_HostConfigurationFileProvider_BuildExecuteCodeRoute(t *testing.T) {
 		}
 		result, err := p.buildExecuteCodeRoute(ctx, h, r)
 		assert.NoError(t, err)
-		assert.Contains(t, result, fmt.Sprintf("js_import route_1 from /etc/nginx/host-%s-route-1.js;", h.ID))
+		assert.Contains(
+			t,
+			result,
+			fmt.Sprintf("js_import route_1 from /etc/nginx/host-%s-route-1.js;", h.ID),
+		)
 		assert.Contains(t, result, "js_content route_1.handler;")
 	})
 
@@ -336,19 +347,20 @@ func Test_HostConfigurationFileProvider_BuildBinding(t *testing.T) {
 		paths:   paths,
 	}
 	h := &host.Host{ID: uuid.New()}
-	p.settingsCommands = &settings.Commands{
-		Get: func(_ context.Context) (*settings.Settings, error) {
-			return &settings.Settings{
-				Nginx: &settings.NginxSettings{
-					Logs: &settings.NginxLogsSettings{
-						AccessLogsEnabled: true,
-						ErrorLogsEnabled:  true,
-						ErrorLogsLevel:    settings.WarnLogLevel,
-					},
-				},
-			}, nil
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	settingsCmds := settings.NewMockedCommands(ctrl)
+	settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(&settings.Settings{
+		Nginx: &settings.NginxSettings{
+			Logs: &settings.NginxLogsSettings{
+				AccessLogsEnabled: true,
+				ErrorLogsEnabled:  true,
+				ErrorLogsLevel:    settings.WarnLogLevel,
+			},
 		},
-	}
+	}, nil)
+	p.settingsCommands = settingsCmds
 
 	t.Run("generates HTTP binding", func(t *testing.T) {
 		b := &binding.Binding{
@@ -372,7 +384,11 @@ func Test_HostConfigurationFileProvider_BuildBinding(t *testing.T) {
 		result, err := p.buildBinding(ctx, h, b, []string{}, "server_name example.com;", "", "")
 		assert.NoError(t, err)
 		assert.Contains(t, result, "listen 0.0.0.0:443 ssl ;")
-		assert.Contains(t, result, fmt.Sprintf("ssl_certificate /etc/nginx/certificate-%s.pem;", certID))
+		assert.Contains(
+			t,
+			result,
+			fmt.Sprintf("ssl_certificate /etc/nginx/certificate-%s.pem;", certID),
+		)
 	})
 
 	t.Run("includes HTTP to HTTPS redirect in HTTP binding", func(t *testing.T) {
@@ -402,11 +418,9 @@ func Test_HostConfigurationFileProvider_BuildBinding(t *testing.T) {
 	})
 
 	t.Run("returns error when settingsCommands fails", func(t *testing.T) {
-		p.settingsCommands = &settings.Commands{
-			Get: func(_ context.Context) (*settings.Settings, error) {
-				return nil, assert.AnError
-			},
-		}
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().Get(gomock.Any()).Return(nil, assert.AnError)
+		p.settingsCommands = settingsCmds
 		b := &binding.Binding{Type: binding.HTTPBindingType}
 		_, err := p.buildBinding(ctx, h, b, []string{}, "", "", "")
 		assert.ErrorIs(t, err, assert.AnError)

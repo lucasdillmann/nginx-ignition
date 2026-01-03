@@ -8,10 +8,10 @@ import (
 )
 
 type shutdown struct {
-	commands *Commands
+	commands Commands
 }
 
-func registerShutdown(lc *lifecycle.Lifecycle, commands *Commands) {
+func registerShutdown(lc *lifecycle.Lifecycle, commands Commands) {
 	lc.RegisterShutdown(shutdown{commands})
 }
 

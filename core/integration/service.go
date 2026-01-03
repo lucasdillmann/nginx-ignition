@@ -15,14 +15,14 @@ type service struct {
 	drivers    func() []Driver
 }
 
-func newService(repository Repository, drivers func() []Driver) *service {
+func newService(repository Repository, drivers func() []Driver) Commands {
 	return &service{
 		repository: repository,
 		drivers:    drivers,
 	}
 }
 
-func (s *service) list(
+func (s *service) List(
 	ctx context.Context,
 	pageSize, pageNumber int,
 	searchTerms *string,
@@ -31,11 +31,11 @@ func (s *service) list(
 	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms, enabledOnly)
 }
 
-func (s *service) getByID(ctx context.Context, id uuid.UUID) (*Integration, error) {
+func (s *service) Get(ctx context.Context, id uuid.UUID) (*Integration, error) {
 	return s.repository.FindByID(ctx, id)
 }
 
-func (s *service) save(ctx context.Context, data *Integration) error {
+func (s *service) Save(ctx context.Context, data *Integration) error {
 	driver := s.findDriver(data)
 	if err := newValidator(s.repository, driver).validate(ctx, data); err != nil {
 		return err
@@ -44,7 +44,7 @@ func (s *service) save(ctx context.Context, data *Integration) error {
 	return s.repository.Save(ctx, data)
 }
 
-func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	inUse, err := s.repository.InUseByID(ctx, id)
 	if err != nil {
 		return err
@@ -57,11 +57,11 @@ func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
 	return s.repository.DeleteByID(ctx, id)
 }
 
-func (s *service) existsByID(ctx context.Context, id uuid.UUID) (*bool, error) {
+func (s *service) Exists(ctx context.Context, id uuid.UUID) (*bool, error) {
 	return s.repository.ExistsByID(ctx, id)
 }
 
-func (s *service) listOptions(
+func (s *service) ListOptions(
 	ctx context.Context,
 	integrationID uuid.UUID,
 	pageNumber, pageSize int,
@@ -86,7 +86,14 @@ func (s *service) listOptions(
 		return nil, ErrIntegrationNotFound
 	}
 
-	options, err := driver.GetAvailableOptions(ctx, data.Parameters, pageNumber, pageSize, searchTerms, tcpOnly)
+	options, err := driver.GetAvailableOptions(
+		ctx,
+		data.Parameters,
+		pageNumber,
+		pageSize,
+		searchTerms,
+		tcpOnly,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +105,11 @@ func (s *service) listOptions(
 	return options, nil
 }
 
-func (s *service) getOptionByID(ctx context.Context, integrationID uuid.UUID, optionID string) (*DriverOption, error) {
+func (s *service) GetOption(
+	ctx context.Context,
+	integrationID uuid.UUID,
+	optionID string,
+) (*DriverOption, error) {
 	data, err := s.repository.FindByID(ctx, integrationID)
 	if err != nil {
 		return nil, err
@@ -120,7 +131,7 @@ func (s *service) getOptionByID(ctx context.Context, integrationID uuid.UUID, op
 	return driver.GetAvailableOptionByID(ctx, data.Parameters, optionID)
 }
 
-func (s *service) getOptionURL(
+func (s *service) GetOptionURL(
 	ctx context.Context,
 	integrationID uuid.UUID,
 	optionID string,
@@ -146,7 +157,7 @@ func (s *service) getOptionURL(
 	return driver.GetOptionProxyURL(ctx, data.Parameters, optionID)
 }
 
-func (s *service) getAvailableDrivers(_ context.Context) ([]AvailableDriver, error) {
+func (s *service) GetAvailableDrivers(_ context.Context) ([]AvailableDriver, error) {
 	drivers := s.drivers()
 	sort.Slice(drivers, func(left, right int) bool {
 		return drivers[left].Name() < drivers[right].Name()

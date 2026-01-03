@@ -19,7 +19,7 @@ type ABAC struct {
 	allowedForAllUsers      []string
 }
 
-func New(cfg *configuration.Configuration, commands *user.Commands) (*ABAC, error) {
+func New(cfg *configuration.Configuration, commands user.Commands) (*ABAC, error) {
 	jwt, err := newJwt(cfg, commands)
 	if err != nil {
 		return nil, err
@@ -85,7 +85,8 @@ func (m *ABAC) isAccessGranted(method, path string, permissions *user.Permission
 
 	switch method {
 	case "GET":
-		return currentAccessLevel == user.ReadOnlyAccessLevel || currentAccessLevel == user.ReadWriteAccessLevel
+		return currentAccessLevel == user.ReadOnlyAccessLevel ||
+			currentAccessLevel == user.ReadWriteAccessLevel
 	case "POST", "PUT", "DELETE", "PATCH":
 		return currentAccessLevel == user.ReadWriteAccessLevel
 	default:

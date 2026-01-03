@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/certificate"
@@ -16,7 +17,6 @@ import (
 )
 
 func Test_HostCertificateFileProvider_Provide(t *testing.T) {
-	p := &hostCertificateFileProvider{}
 	paths := &Paths{
 		Config: "/etc/nginx/",
 	}
@@ -40,80 +40,121 @@ func Test_HostCertificateFileProvider_Provide(t *testing.T) {
 		},
 	}
 
-	p.settingsCommands = &settings.Commands{
-		Get: func(_ context.Context) (*settings.Settings, error) {
-			return &settings.Settings{
-				Nginx: &settings.NginxSettings{
-					Logs: &settings.NginxLogsSettings{},
-				},
-			}, nil
-		},
-	}
+	t.Run("successfully provides certificates", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
 
-	p.certificateCommands = &certificate.Commands{
-		Get: func(_ context.Context, _ uuid.UUID) (*certificate.Certificate, error) {
-			return &certificate.Certificate{
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(&settings.Settings{
+			Nginx: &settings.NginxSettings{
+				Logs: &settings.NginxLogsSettings{},
+			},
+		}, nil)
+
+		certificateCmds := certificate.NewMockedCommands(ctrl)
+		certificateCmds.EXPECT().
+			Get(gomock.Any(), certID).
+			AnyTimes().
+			Return(&certificate.Certificate{
 				ID:         certID,
 				PublicKey:  base64.StdEncoding.EncodeToString([]byte("cert-data")),
 				PrivateKey: base64.StdEncoding.EncodeToString([]byte("key-data")),
 				CertificationChain: []string{
 					base64.StdEncoding.EncodeToString([]byte("chain-data")),
 				},
-			}, nil
-		},
-	}
+			}, nil)
 
-	files, err := p.provide(ctx)
-	assert.NoError(t, err)
-	assert.Len(t, files, 1)
+		p := &hostCertificateFileProvider{
+			settingsCommands:    settingsCmds,
+			certificateCommands: certificateCmds,
+		}
 
-	assert.Equal(t, fmt.Sprintf("certificate-%s.pem", certID), files[0].Name)
-	assert.Contains(t, files[0].Contents, "-----BEGIN CERTIFICATE-----")
-	assert.Contains(t, files[0].Contents, base64.StdEncoding.EncodeToString([]byte("cert-data")))
-	assert.Contains(t, files[0].Contents, base64.StdEncoding.EncodeToString([]byte("chain-data")))
-	assert.Contains(t, files[0].Contents, "-----BEGIN PRIVATE KEY-----")
-	assert.Contains(t, files[0].Contents, base64.StdEncoding.EncodeToString([]byte("key-data")))
+		files, err := p.provide(ctx)
+		assert.NoError(t, err)
+		assert.Len(t, files, 1)
+
+		assert.Equal(t, fmt.Sprintf("certificate-%s.pem", certID), files[0].Name)
+		assert.Contains(t, files[0].Contents, "-----BEGIN CERTIFICATE-----")
+		assert.Contains(
+			t,
+			files[0].Contents,
+			base64.StdEncoding.EncodeToString([]byte("cert-data")),
+		)
+		assert.Contains(
+			t,
+			files[0].Contents,
+			base64.StdEncoding.EncodeToString([]byte("chain-data")),
+		)
+		assert.Contains(t, files[0].Contents, "-----BEGIN PRIVATE KEY-----")
+		assert.Contains(t, files[0].Contents, base64.StdEncoding.EncodeToString([]byte("key-data")))
+	})
 
 	t.Run("returns error when settingsCommands fails", func(t *testing.T) {
-		p.settingsCommands = &settings.Commands{
-			Get: func(_ context.Context) (*settings.Settings, error) {
-				return nil, assert.AnError
-			},
-		}
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().Get(gomock.Any()).Return(nil, assert.AnError)
+
+		p := &hostCertificateFileProvider{settingsCommands: settingsCmds}
 		_, err := p.provide(ctx)
 		assert.ErrorIs(t, err, assert.AnError)
 	})
 
 	t.Run("returns error when certificateCommands fails", func(t *testing.T) {
-		p.settingsCommands = &settings.Commands{
-			Get: func(_ context.Context) (*settings.Settings, error) {
-				return &settings.Settings{Nginx: &settings.NginxSettings{}}, nil
-			},
-		}
-		p.certificateCommands = &certificate.Commands{
-			Get: func(_ context.Context, _ uuid.UUID) (*certificate.Certificate, error) {
-				return nil, assert.AnError
-			},
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().
+			Get(gomock.Any()).
+			Return(&settings.Settings{Nginx: &settings.NginxSettings{}}, nil)
+
+		certificateCmds := certificate.NewMockedCommands(ctrl)
+		certificateCmds.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil, assert.AnError)
+
+		p := &hostCertificateFileProvider{
+			settingsCommands:    settingsCmds,
+			certificateCommands: certificateCmds,
 		}
 		_, err := p.provide(ctx)
 		assert.ErrorIs(t, err, assert.AnError)
 	})
 
 	t.Run("deduplicates certificates", func(t *testing.T) {
-		p.certificateCommands = &certificate.Commands{
-			Get: func(_ context.Context, _ uuid.UUID) (*certificate.Certificate, error) {
-				return &certificate.Certificate{PublicKey: "data", PrivateKey: "data"}, nil
-			},
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().
+			Get(gomock.Any()).
+			AnyTimes().
+			Return(&settings.Settings{Nginx: &settings.NginxSettings{}}, nil)
+
+		certificateCmds := certificate.NewMockedCommands(ctrl)
+		certificateCmds.EXPECT().
+			Get(gomock.Any(), gomock.Any()).
+			Return(&certificate.Certificate{PublicKey: "data", PrivateKey: "data"}, nil)
+
+		p := &hostCertificateFileProvider{
+			settingsCommands:    settingsCmds,
+			certificateCommands: certificateCmds,
 		}
-		ctx.hosts = []host.Host{
-			{
-				Bindings: []binding.Binding{
-					{Type: binding.HTTPSBindingType, CertificateID: &certID},
-					{Type: binding.HTTPSBindingType, CertificateID: &certID},
+
+		subCtx := &providerContext{
+			context: context.Background(),
+			paths:   paths,
+			hosts: []host.Host{
+				{
+					Bindings: []binding.Binding{
+						{Type: binding.HTTPSBindingType, CertificateID: &certID},
+						{Type: binding.HTTPSBindingType, CertificateID: &certID},
+					},
 				},
 			},
 		}
-		files, err := p.provide(ctx)
+
+		files, err := p.provide(subCtx)
 		assert.NoError(t, err)
 		assert.Len(t, files, 1)
 	})

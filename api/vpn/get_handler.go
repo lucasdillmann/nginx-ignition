@@ -10,7 +10,7 @@ import (
 )
 
 type getHandler struct {
-	commands *vpn.Commands
+	commands vpn.Commands
 }
 
 func (h getHandler) handle(ctx *gin.Context) {

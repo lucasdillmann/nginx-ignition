@@ -6,8 +6,8 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
-type Commands struct {
-	Validate func(
+type Commands interface {
+	Validate(
 		ctx context.Context,
 		path string,
 		index int,

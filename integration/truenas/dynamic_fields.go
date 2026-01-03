@@ -18,8 +18,10 @@ var (
 		Description: "Apps URL",
 		Priority:    2,
 		Required:    false,
-		HelpText: stringPtr("The URL to be used when proxying a request to a TrueNAS app. Use this if the apps " +
-			"are exposed in another address that isn't the same as the main URL above."),
+		HelpText: stringPtr(
+			"The URL to be used when proxying a request to a TrueNAS app. Use this if the apps " +
+				"are exposed in another address that isn't the same as the main URL above.",
+		),
 		Type: dynamicfields.URLType,
 	}
 

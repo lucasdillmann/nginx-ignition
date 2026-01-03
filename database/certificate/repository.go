@@ -73,7 +73,9 @@ func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) 
 		Exists(ctx)
 }
 
-func (r *repository) GetAutoRenewSettings(ctx context.Context) (*certificate.AutoRenewSettings, error) {
+func (r *repository) GetAutoRenewSettings(
+	ctx context.Context,
+) (*certificate.AutoRenewSettings, error) {
 	var enabled bool
 	var intervalUnit string
 	var intervalUnitCount int
@@ -129,13 +131,19 @@ func (r *repository) Save(ctx context.Context, cert *certificate.Certificate) er
 		return err
 	}
 
-	exists, err := transaction.NewSelect().Model((*certificateModel)(nil)).Where(constants.ByIDFilter, cert.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().
+		Model((*certificateModel)(nil)).
+		Where(constants.ByIDFilter, cert.ID).
+		Exists(ctx)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIDFilter, model.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().
+			Model(model).
+			Where(constants.ByIDFilter, model.ID).
+			Exec(ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(model).Exec(ctx)
 	}

@@ -12,10 +12,12 @@ import (
 )
 
 type mainConfigurationFileProvider struct {
-	settingsCommands *settings.Commands
+	settingsCommands settings.Commands
 }
 
-func newMainConfigurationFileProvider(settingsCommands *settings.Commands) *mainConfigurationFileProvider {
+func newMainConfigurationFileProvider(
+	settingsCommands settings.Commands,
+) *mainConfigurationFileProvider {
 	return &mainConfigurationFileProvider{settingsCommands: settingsCommands}
 }
 
@@ -128,9 +130,16 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 	}, nil
 }
 
-func (p *mainConfigurationFileProvider) getErrorLogPath(paths *Paths, logs *settings.NginxLogsSettings) string {
+func (p *mainConfigurationFileProvider) getErrorLogPath(
+	paths *Paths,
+	logs *settings.NginxLogsSettings,
+) string {
 	if logs.ServerLogsEnabled {
-		return fmt.Sprintf("%smain.log %s", paths.Logs, strings.ToLower(string(logs.ServerLogsLevel)))
+		return fmt.Sprintf(
+			"%smain.log %s",
+			paths.Logs,
+			strings.ToLower(string(logs.ServerLogsLevel)),
+		)
 	}
 
 	return "off"
@@ -145,7 +154,10 @@ func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []ho
 	return strings.Join(includes, "\n")
 }
 
-func (p *mainConfigurationFileProvider) getStreamIncludes(paths *Paths, streams []stream.Stream) string {
+func (p *mainConfigurationFileProvider) getStreamIncludes(
+	paths *Paths,
+	streams []stream.Stream,
+) string {
 	includes := make([]string, 0)
 
 	for _, s := range streams {
@@ -155,7 +167,10 @@ func (p *mainConfigurationFileProvider) getStreamIncludes(paths *Paths, streams 
 	return strings.Join(includes, "\n")
 }
 
-func (p *mainConfigurationFileProvider) getCacheDefinitions(paths *Paths, caches []cache.Cache) string {
+func (p *mainConfigurationFileProvider) getCacheDefinitions(
+	paths *Paths,
+	caches []cache.Cache,
+) string {
 	if len(caches) == 0 {
 		return ""
 	}

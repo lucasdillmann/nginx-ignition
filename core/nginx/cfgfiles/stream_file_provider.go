@@ -41,7 +41,10 @@ func (p *streamFileProvider) provide(ctx *providerContext) ([]File, error) {
 	return files, nil
 }
 
-func (p *streamFileProvider) buildConfigFileContents(ctx *providerContext, s *stream.Stream) (*string, error) {
+func (p *streamFileProvider) buildConfigFileContents(
+	ctx *providerContext,
+	s *stream.Stream,
+) (*string, error) {
 	switch s.Type {
 	case stream.SimpleType:
 		return p.buildSimpleStream(s)
@@ -97,7 +100,10 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 	return ptr.Of(instruction.String()), nil
 }
 
-func (p *streamFileProvider) buildUpstream(backends []stream.Backend, name string) (*string, error) {
+func (p *streamFileProvider) buildUpstream(
+	backends []stream.Backend,
+	name string,
+) (*string, error) {
 	instructions := strings.Builder{}
 	_, _ = fmt.Fprintf(&instructions, "upstream %s {\n", name)
 
@@ -134,7 +140,10 @@ func (p *streamFileProvider) buildUpstream(backends []stream.Backend, name strin
 	return ptr.Of(instructions.String()), nil
 }
 
-func (p *streamFileProvider) buildRoutedStream(ctx *providerContext, s *stream.Stream) (*string, error) {
+func (p *streamFileProvider) buildRoutedStream(
+	ctx *providerContext,
+	s *stream.Stream,
+) (*string, error) {
 	if ctx.supportedFeatures.TLSSNI == NoneSupportType {
 		return nil, coreerror.New(
 			"Unable to generate the stream configuration file: Support for TLS SNI is not enabled in the "+
@@ -180,7 +189,10 @@ func (p *streamFileProvider) buildRoutedStream(ctx *providerContext, s *stream.S
 	return p.buildStream(s, upstreams.String()+mapping.String(), instructions)
 }
 
-func (p *streamFileProvider) buildStream(s *stream.Stream, upstreams, instructions string) (*string, error) {
+func (p *streamFileProvider) buildStream(
+	s *stream.Stream,
+	upstreams, instructions string,
+) (*string, error) {
 	binding, err := p.buildBinding(s)
 	if err != nil {
 		return nil, err

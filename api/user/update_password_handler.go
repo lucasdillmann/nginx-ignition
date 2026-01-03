@@ -10,7 +10,7 @@ import (
 )
 
 type updatePasswordHandler struct {
-	commands *user.Commands
+	commands user.Commands
 }
 
 func (h updatePasswordHandler) handle(ctx *gin.Context) {

@@ -10,7 +10,7 @@ import (
 )
 
 type getOptionHandler struct {
-	commands *integration.Commands
+	commands integration.Commands
 }
 
 func (h getOptionHandler) handle(ctx *gin.Context) {

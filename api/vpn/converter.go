@@ -8,6 +8,10 @@ import (
 )
 
 func toDTO(data *vpn.VPN) *vpnResponse {
+	if data == nil {
+		return nil
+	}
+
 	return &vpnResponse{
 		ID:         data.ID,
 		Driver:     data.Driver,

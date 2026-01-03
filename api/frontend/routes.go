@@ -23,7 +23,9 @@ func Install(
 	basePath, err := cfg.Get("nginx-ignition.server.frontend-path")
 
 	if err != nil || basePath == "" {
-		log.Warnf("Frontend path is not defined. Every request to it will be rejected with not found status.")
+		log.Warnf(
+			"Frontend path is not defined. Every request to it will be rejected with not found status.",
+		)
 		staticHandler = staticFilesHandler{}
 	} else {
 		log.Infof("Serving frontend files from %s", basePath)

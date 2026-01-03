@@ -10,7 +10,7 @@ import (
 )
 
 type reloadHandler struct {
-	commands *nginx.Commands
+	commands nginx.Commands
 }
 
 func (h reloadHandler) handle(ctx *gin.Context) {

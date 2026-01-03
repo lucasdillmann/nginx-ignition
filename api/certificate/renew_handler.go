@@ -11,7 +11,7 @@ import (
 )
 
 type renewHandler struct {
-	commands *certificate.Commands
+	commands certificate.Commands
 }
 
 func (h renewHandler) handle(ctx *gin.Context) {

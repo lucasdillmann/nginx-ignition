@@ -27,7 +27,7 @@ func Test_Service_GetByID(t *testing.T) {
 			Username: "testuser",
 		}
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().FindByID(ctx, id).Return(expected, nil)
 
 		cfg := &configuration.Configuration{}
@@ -35,7 +35,7 @@ func Test_Service_GetByID(t *testing.T) {
 			repository:    repo,
 			configuration: cfg,
 		}
-		result, err := svc.getByID(ctx, id)
+		result, err := svc.Get(ctx, id)
 
 		assert.NoError(t, err)
 		assert.Equal(t, expected, result)
@@ -49,7 +49,7 @@ func Test_Service_GetByID(t *testing.T) {
 		id := uuid.New()
 		expectedErr := errors.New("not found")
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().FindByID(ctx, id).Return(nil, expectedErr)
 
 		cfg := &configuration.Configuration{}
@@ -57,7 +57,7 @@ func Test_Service_GetByID(t *testing.T) {
 			repository:    repo,
 			configuration: cfg,
 		}
-		result, err := svc.getByID(ctx, id)
+		result, err := svc.Get(ctx, id)
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -73,7 +73,7 @@ func Test_Service_DeleteByID(t *testing.T) {
 		ctx := context.Background()
 		id := uuid.New()
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().DeleteByID(ctx, id).Return(nil)
 
 		cfg := &configuration.Configuration{}
@@ -81,7 +81,7 @@ func Test_Service_DeleteByID(t *testing.T) {
 			repository:    repo,
 			configuration: cfg,
 		}
-		err := svc.deleteByID(ctx, id)
+		err := svc.Delete(ctx, id)
 
 		assert.NoError(t, err)
 	})
@@ -98,7 +98,7 @@ func Test_Service_List(t *testing.T) {
 		})
 		searchTerms := "test"
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().FindPage(ctx, 10, 1, &searchTerms).Return(expectedPage, nil)
 
 		cfg := &configuration.Configuration{}
@@ -106,7 +106,7 @@ func Test_Service_List(t *testing.T) {
 			repository:    repo,
 			configuration: cfg,
 		}
-		result, err := svc.list(ctx, 10, 1, &searchTerms)
+		result, err := svc.List(ctx, 10, 1, &searchTerms)
 
 		assert.NoError(t, err)
 		assert.Equal(t, expectedPage, result)
@@ -121,7 +121,7 @@ func Test_Service_Count(t *testing.T) {
 		ctx := context.Background()
 		expectedCount := 5
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().Count(ctx).Return(expectedCount, nil)
 
 		cfg := &configuration.Configuration{}
@@ -129,7 +129,7 @@ func Test_Service_Count(t *testing.T) {
 			repository:    repo,
 			configuration: cfg,
 		}
-		count, err := svc.count(ctx)
+		count, err := svc.GetCount(ctx)
 
 		assert.NoError(t, err)
 		assert.Equal(t, expectedCount, count)
@@ -143,7 +143,7 @@ func Test_Service_IsOnboardingCompleted(t *testing.T) {
 
 		ctx := context.Background()
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().Count(ctx).Return(1, nil)
 
 		cfg := &configuration.Configuration{}
@@ -151,7 +151,7 @@ func Test_Service_IsOnboardingCompleted(t *testing.T) {
 			repository:    repo,
 			configuration: cfg,
 		}
-		completed, err := svc.isOnboardingCompleted(ctx)
+		completed, err := svc.OnboardingCompleted(ctx)
 
 		assert.NoError(t, err)
 		assert.True(t, completed)
@@ -163,7 +163,7 @@ func Test_Service_IsOnboardingCompleted(t *testing.T) {
 
 		ctx := context.Background()
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().Count(ctx).Return(0, nil)
 
 		cfg := &configuration.Configuration{}
@@ -171,7 +171,7 @@ func Test_Service_IsOnboardingCompleted(t *testing.T) {
 			repository:    repo,
 			configuration: cfg,
 		}
-		completed, err := svc.isOnboardingCompleted(ctx)
+		completed, err := svc.OnboardingCompleted(ctx)
 
 		assert.NoError(t, err)
 		assert.False(t, completed)
@@ -185,7 +185,7 @@ func Test_Service_Authenticate(t *testing.T) {
 
 		ctx := context.Background()
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().FindByUsername(ctx, "nonexistent").Return(nil, nil)
 
 		cfg := &configuration.Configuration{}
@@ -193,7 +193,7 @@ func Test_Service_Authenticate(t *testing.T) {
 			repository:    repo,
 			configuration: cfg,
 		}
-		result, err := svc.authenticate(ctx, "nonexistent", "password")
+		result, err := svc.Authenticate(ctx, "nonexistent", "password")
 
 		require.Error(t, err)
 		assert.Nil(t, result)
@@ -211,7 +211,7 @@ func Test_Service_IsEnabled(t *testing.T) {
 		ctx := context.Background()
 		id := uuid.New()
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().IsEnabledByID(ctx, id).Return(true, nil)
 
 		cfg := &configuration.Configuration{}
@@ -219,7 +219,7 @@ func Test_Service_IsEnabled(t *testing.T) {
 			repository:    repo,
 			configuration: cfg,
 		}
-		enabled, err := svc.isEnabled(ctx, id)
+		enabled, err := svc.GetStatus(ctx, id)
 
 		assert.NoError(t, err)
 		assert.True(t, enabled)

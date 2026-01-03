@@ -50,8 +50,10 @@ func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 		{
 			ID:          tsigAlgorithmFieldID,
 			Description: "TSIG algorithm",
-			HelpText:    ptr.Of("e.g., hmac-sha256., defaults to hmac-sha1. Leave empty to disable TSIG authentication."),
-			Type:        dynamicfields.SingleLineTextType,
+			HelpText: ptr.Of(
+				"e.g., hmac-sha256., defaults to hmac-sha1. Leave empty to disable TSIG authentication.",
+			),
+			Type: dynamicfields.SingleLineTextType,
 		},
 	})
 }

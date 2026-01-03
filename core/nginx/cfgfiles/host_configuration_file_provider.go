@@ -16,13 +16,13 @@ import (
 )
 
 type hostConfigurationFileProvider struct {
-	integrationCommands *integration.Commands
-	settingsCommands    *settings.Commands
+	integrationCommands integration.Commands
+	settingsCommands    settings.Commands
 }
 
 func newHostConfigurationFileProvider(
-	settingsCommands *settings.Commands,
-	integrationCommands *integration.Commands,
+	settingsCommands settings.Commands,
+	integrationCommands integration.Commands,
 ) *hostConfigurationFileProvider {
 	return &hostConfigurationFileProvider{
 		integrationCommands: integrationCommands,
@@ -46,7 +46,10 @@ func (p *hostConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 	return outputs, nil
 }
 
-func (p *hostConfigurationFileProvider) buildHost(ctx *providerContext, h *host.Host) (*File, error) {
+func (p *hostConfigurationFileProvider) buildHost(
+	ctx *providerContext,
+	h *host.Host,
+) (*File, error) {
 	routes := make([]string, 0)
 	for _, r := range h.Routes {
 		if r.Enabled {
@@ -163,11 +166,28 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			%s
 			%s
 		}`,
-		flag(logs.AccessLogsEnabled, fmt.Sprintf("%shost-%s.access.log", ctx.paths.Logs, h.ID), "off"),
-		flag(logs.ErrorLogsEnabled, fmt.Sprintf("%shost-%s.error.log %s", ctx.paths.Logs, h.ID, strings.ToLower(string(logs.ErrorLogsLevel))), "off"),
+		flag(
+			logs.AccessLogsEnabled,
+			fmt.Sprintf("%shost-%s.access.log", ctx.paths.Logs, h.ID),
+			"off",
+		),
+		flag(
+			logs.ErrorLogsEnabled,
+			fmt.Sprintf(
+				"%shost-%s.error.log %s",
+				ctx.paths.Logs,
+				h.ID,
+				strings.ToLower(string(logs.ErrorLogsLevel)),
+			),
+			"off",
+		),
 		statusFlag(cfg.Nginx.GzipEnabled),
 		cfg.Nginx.MaximumBodySizeMb,
-		flag(h.AccessListID != nil, fmt.Sprintf("include %saccess-list-%s.conf;", ctx.paths.Config, h.AccessListID), ""),
+		flag(
+			h.AccessListID != nil,
+			fmt.Sprintf("include %saccess-list-%s.conf;", ctx.paths.Config, h.AccessListID),
+			"",
+		),
 		p.buildCacheConfig(ctx.caches, h.CacheID),
 		conditionalHTTPSRedirect,
 		http2,
@@ -208,7 +228,10 @@ func (p *hostConfigurationFileProvider) buildRoute(
 	}
 }
 
-func (p *hostConfigurationFileProvider) buildStaticFilesRoute(ctx *providerContext, r *host.Route) string {
+func (p *hostConfigurationFileProvider) buildStaticFilesRoute(
+	ctx *providerContext,
+	r *host.Route,
+) string {
 	normalizedSourcePath := r.SourcePath
 	if !strings.HasSuffix(normalizedSourcePath, "/") {
 		normalizedSourcePath += "/"
@@ -297,7 +320,11 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	r *host.Route,
 	features host.FeatureSet,
 ) (string, error) {
-	proxyURL, dnsResolvers, err := p.integrationCommands.GetOptionURL(ctx.context, r.Integration.IntegrationID, r.Integration.OptionID)
+	proxyURL, dnsResolvers, err := p.integrationCommands.GetOptionURL(
+		ctx.context,
+		r.Integration.IntegrationID,
+		r.Integration.OptionID,
+	)
 	if err != nil {
 		return "", err
 	}
@@ -347,11 +374,21 @@ func (p *hostConfigurationFileProvider) buildRedirectRoute(
 	)
 }
 
-func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(ctx *providerContext, h *host.Host, r *host.Route) (string, error) {
+func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(
+	ctx *providerContext,
+	h *host.Host,
+	r *host.Route,
+) (string, error) {
 	var headerBlock, routeBlock string
 	switch r.SourceCode.Language {
 	case host.JavascriptCodeLanguage:
-		headerBlock = fmt.Sprintf("js_import route_%d from %shost-%s-route-%d.js;", r.Priority, ctx.paths.Config, h.ID, r.Priority)
+		headerBlock = fmt.Sprintf(
+			"js_import route_%d from %shost-%s-route-%d.js;",
+			r.Priority,
+			ctx.paths.Config,
+			h.ID,
+			r.Priority,
+		)
 		routeBlock = fmt.Sprintf("js_content route_%d.%s;", r.Priority, *r.SourceCode.MainFunction)
 	case host.LuaCodeLanguage:
 		routeBlock = fmt.Sprintf(
@@ -412,7 +449,10 @@ func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...str
 	return builder.String()
 }
 
-func (p *hostConfigurationFileProvider) buildRouteSettings(ctx *providerContext, r *host.Route) string {
+func (p *hostConfigurationFileProvider) buildRouteSettings(
+	ctx *providerContext,
+	r *host.Route,
+) string {
 	builder := strings.Builder{}
 	if r.Settings.ProxySSLServerName {
 		_, _ = builder.WriteString("proxy_ssl_server_name on;")
@@ -435,7 +475,12 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(ctx *providerContext,
 	}
 
 	if r.AccessListID != nil {
-		_, _ = fmt.Fprintf(&builder, "\ninclude %saccess-list-%s.conf;", ctx.paths.Config, *r.AccessListID)
+		_, _ = fmt.Fprintf(
+			&builder,
+			"\ninclude %saccess-list-%s.conf;",
+			ctx.paths.Config,
+			*r.AccessListID,
+		)
 	}
 
 	_, _ = builder.WriteString(p.buildCacheConfig(ctx.caches, r.CacheID))
@@ -443,7 +488,10 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(ctx *providerContext,
 	return builder.String()
 }
 
-func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, cacheID *uuid.UUID) string {
+func (p *hostConfigurationFileProvider) buildCacheConfig(
+	caches []cache.Cache,
+	cacheID *uuid.UUID,
+) string {
 	if cacheID == nil || len(caches) == 0 {
 		return ""
 	}
@@ -476,7 +524,10 @@ func (p *hostConfigurationFileProvider) buildCacheConfig(caches []cache.Cache, c
 	return builder.String()
 }
 
-func (p *hostConfigurationFileProvider) appendCacheDurations(builder *strings.Builder, c *cache.Cache) {
+func (p *hostConfigurationFileProvider) appendCacheDurations(
+	builder *strings.Builder,
+	c *cache.Cache,
+) {
 	for _, d := range c.Durations {
 		_, _ = fmt.Fprintf(
 			builder,
@@ -487,7 +538,10 @@ func (p *hostConfigurationFileProvider) appendCacheDurations(builder *strings.Bu
 	}
 }
 
-func (p *hostConfigurationFileProvider) appendCacheMethods(builder *strings.Builder, c *cache.Cache) {
+func (p *hostConfigurationFileProvider) appendCacheMethods(
+	builder *strings.Builder,
+	c *cache.Cache,
+) {
 	if len(c.AllowedMethods) > 0 {
 		methods := make([]string, len(c.AllowedMethods))
 		for index, method := range c.AllowedMethods {
@@ -498,9 +552,16 @@ func (p *hostConfigurationFileProvider) appendCacheMethods(builder *strings.Buil
 	}
 }
 
-func (p *hostConfigurationFileProvider) appendCacheStandardOptions(builder *strings.Builder, c *cache.Cache) {
+func (p *hostConfigurationFileProvider) appendCacheStandardOptions(
+	builder *strings.Builder,
+	c *cache.Cache,
+) {
 	_, _ = fmt.Fprintf(builder, "\nproxy_cache_min_uses %d;", c.MinimumUsesBeforeCaching)
-	_, _ = fmt.Fprintf(builder, "\nproxy_cache_background_update %s;", statusFlag(c.BackgroundUpdate))
+	_, _ = fmt.Fprintf(
+		builder,
+		"\nproxy_cache_background_update %s;",
+		statusFlag(c.BackgroundUpdate),
+	)
 	_, _ = fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", statusFlag(c.Revalidate))
 
 	if c.IgnoreUpstreamCacheHeaders {
@@ -529,15 +590,26 @@ func (p *hostConfigurationFileProvider) appendCacheLock(builder *strings.Builder
 	if c.ConcurrencyLock.Enabled {
 		_, _ = builder.WriteString("\nproxy_cache_lock on;")
 		if c.ConcurrencyLock.TimeoutSeconds != nil {
-			_, _ = fmt.Fprintf(builder, "\nproxy_cache_lock_timeout %ds;", *c.ConcurrencyLock.TimeoutSeconds)
+			_, _ = fmt.Fprintf(
+				builder,
+				"\nproxy_cache_lock_timeout %ds;",
+				*c.ConcurrencyLock.TimeoutSeconds,
+			)
 		}
 		if c.ConcurrencyLock.AgeSeconds != nil {
-			_, _ = fmt.Fprintf(builder, "\nproxy_cache_lock_age %ds;", *c.ConcurrencyLock.AgeSeconds)
+			_, _ = fmt.Fprintf(
+				builder,
+				"\nproxy_cache_lock_age %ds;",
+				*c.ConcurrencyLock.AgeSeconds,
+			)
 		}
 	}
 }
 
-func (p *hostConfigurationFileProvider) appendCacheBypassRules(builder *strings.Builder, c *cache.Cache) {
+func (p *hostConfigurationFileProvider) appendCacheBypassRules(
+	builder *strings.Builder,
+	c *cache.Cache,
+) {
 	for _, rule := range c.BypassRules {
 		_, _ = fmt.Fprintf(builder, "\nproxy_cache_bypass %s;", rule)
 	}
@@ -547,7 +619,10 @@ func (p *hostConfigurationFileProvider) appendCacheBypassRules(builder *strings.
 	}
 }
 
-func (p *hostConfigurationFileProvider) appendCacheFileExtensions(builder *strings.Builder, c *cache.Cache) {
+func (p *hostConfigurationFileProvider) appendCacheFileExtensions(
+	builder *strings.Builder,
+	c *cache.Cache,
+) {
 	if len(c.FileExtensions) == 0 {
 		return
 	}

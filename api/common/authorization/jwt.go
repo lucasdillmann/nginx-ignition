@@ -27,12 +27,12 @@ var errInvalidToken = apierror.New(http.StatusUnauthorized, "Invalid access toke
 
 type Jwt struct {
 	configuration *configuration.Configuration
-	commands      *user.Commands
+	commands      user.Commands
 	revokedIDs    []string
 	secretKey     []byte
 }
 
-func newJwt(cfg *configuration.Configuration, commands *user.Commands) (*Jwt, error) {
+func newJwt(cfg *configuration.Configuration, commands user.Commands) (*Jwt, error) {
 	prefixedConfiguration := cfg.WithPrefix("nginx-ignition.security.jwt")
 
 	secretKey, err := initializeSecret(prefixedConfiguration)

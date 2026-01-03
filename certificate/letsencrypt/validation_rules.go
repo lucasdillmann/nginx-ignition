@@ -16,7 +16,9 @@ func (r validationRules) DynamicFields() []dynamicfields.DynamicField {
 	return r.dynamicFields
 }
 
-func (r validationRules) Validate(request *certificate.IssueRequest) []validation.ConsistencyViolation {
+func (r validationRules) Validate(
+	request *certificate.IssueRequest,
+) []validation.ConsistencyViolation {
 	output := make([]validation.ConsistencyViolation, 0)
 
 	termsOfServiceAccepted, casted := request.Parameters[termsOfService.ID].(bool)

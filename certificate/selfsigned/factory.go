@@ -33,7 +33,9 @@ func newFactory() (*certificateFactory, error) {
 	}, nil
 }
 
-func (f *certificateFactory) build(domainNames []string) (*x509.Certificate, *rsa.PrivateKey, error) {
+func (f *certificateFactory) build(
+	domainNames []string,
+) (*x509.Certificate, *rsa.PrivateKey, error) {
 	mainDomainName := domainNames[0]
 	keyPair, err := rsa.GenerateKey(rand.Reader, keySize)
 	if err != nil {
@@ -78,7 +80,13 @@ func buildCertificate(
 		template.DNSNames = altNames
 	}
 
-	certBytes, err := x509.CreateCertificate(rand.Reader, &template, &template, &keyPair.PublicKey, caPrivateKey)
+	certBytes, err := x509.CreateCertificate(
+		rand.Reader,
+		&template,
+		&template,
+		&keyPair.PublicKey,
+		caPrivateKey,
+	)
 	if err != nil {
 		return nil, err
 	}

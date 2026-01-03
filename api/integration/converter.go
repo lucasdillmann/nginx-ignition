@@ -8,6 +8,10 @@ import (
 )
 
 func toDTO(data *integration.Integration) *integrationResponse {
+	if data == nil {
+		return nil
+	}
+
 	return &integrationResponse{
 		ID:         data.ID,
 		Driver:     data.Driver,

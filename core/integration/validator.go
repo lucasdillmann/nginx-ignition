@@ -29,7 +29,10 @@ func (v *validator) validate(ctx context.Context, data *Integration) error {
 	}
 
 	if *inUse && !data.Enabled {
-		v.delegate.Add("enabled", "Integration is in use by one or more hosts. It cannot be disabled.")
+		v.delegate.Add(
+			"enabled",
+			"Integration is in use by one or more hosts. It cannot be disabled.",
+		)
 	}
 
 	if strings.TrimSpace(data.Name) == "" {

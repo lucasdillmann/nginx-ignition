@@ -16,16 +16,16 @@ type AvailableDriver struct {
 	ConfigurationFields   []dynamicfields.DynamicField
 }
 
-type Commands struct {
-	Get                 func(ctx context.Context, id uuid.UUID) (*VPN, error)
-	Delete              func(ctx context.Context, id uuid.UUID) error
-	Save                func(ctx context.Context, data *VPN) error
-	Exists              func(ctx context.Context, id uuid.UUID) (*bool, error)
-	GetAvailableDrivers func(ctx context.Context) ([]AvailableDriver, error)
-	Start               func(ctx context.Context, endpoint Endpoint) error
-	Reload              func(ctx context.Context, endpoint Endpoint) error
-	Stop                func(ctx context.Context, endpoint Endpoint) error
-	List                func(
+type Commands interface {
+	Get(ctx context.Context, id uuid.UUID) (*VPN, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	Save(ctx context.Context, data *VPN) error
+	Exists(ctx context.Context, id uuid.UUID) (*bool, error)
+	GetAvailableDrivers(ctx context.Context) ([]AvailableDriver, error)
+	Start(ctx context.Context, endpoint Endpoint) error
+	Reload(ctx context.Context, endpoint Endpoint) error
+	Stop(ctx context.Context, endpoint Endpoint) error
+	List(
 		ctx context.Context,
 		pageSize, pageNumber int,
 		searchTerms *string,

@@ -11,7 +11,7 @@ import (
 )
 
 type issueHandler struct {
-	commands *certificate.Commands
+	commands certificate.Commands
 }
 
 func (h issueHandler) handle(ctx *gin.Context) {

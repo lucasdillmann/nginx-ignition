@@ -10,7 +10,7 @@ import (
 )
 
 type toggleEnabledHandler struct {
-	commands *host.Commands
+	commands host.Commands
 }
 
 func (h toggleEnabledHandler) handle(ctx *gin.Context) {

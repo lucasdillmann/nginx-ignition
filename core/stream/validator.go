@@ -178,14 +178,23 @@ func (v *validator) validateFeatureSet(stream *Stream) {
 	}
 
 	if stream.FeatureSet.TCPKeepAlive {
-		v.delegate.Add("featureSet.tcpKeepAlive", "TCP Keep Alive can be enabled only when binding uses the TCP protocol")
+		v.delegate.Add(
+			"featureSet.tcpKeepAlive",
+			"TCP Keep Alive can be enabled only when binding uses the TCP protocol",
+		)
 	}
 
 	if stream.FeatureSet.TCPNoDelay {
-		v.delegate.Add("featureSet.tcpNoDelay", "TCP No Delay can be enabled only when binding uses the TCP protocol")
+		v.delegate.Add(
+			"featureSet.tcpNoDelay",
+			"TCP No Delay can be enabled only when binding uses the TCP protocol",
+		)
 	}
 
 	if stream.FeatureSet.TCPDeferred {
-		v.delegate.Add("featureSet.tcpDeferred", "TCP Deferred can be enabled only when binding uses the TCP protocol")
+		v.delegate.Add(
+			"featureSet.tcpDeferred",
+			"TCP Deferred can be enabled only when binding uses the TCP protocol",
+		)
 	}
 }

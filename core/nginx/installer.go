@@ -14,35 +14,30 @@ func Install() error {
 		return err
 	}
 
-	if err := container.Provide(buildCommands); err != nil {
+	if err := container.Provide(newCommands); err != nil {
 		return err
 	}
 
 	return container.Run(registerStartup, registerScheduledTask, registerShutdown)
 }
 
-func buildCommands(
+func newCommands(
 	cfg *configuration.Configuration,
-	hostCommands *host.Commands,
+	hostCommands host.Commands,
 	configFilesManager *cfgfiles.Facade,
-	vpnCommands *vpn.Commands,
-	settingsCommands *settings.Commands,
-) (*service, *Commands, error) {
-	serviceInstance, err := newService(cfg, hostCommands, configFilesManager, vpnCommands, settingsCommands)
+	vpnCommands vpn.Commands,
+	settingsCommands settings.Commands,
+) (*service, Commands, error) {
+	serviceInstance, err := newService(
+		cfg,
+		hostCommands,
+		configFilesManager,
+		vpnCommands,
+		settingsCommands,
+	)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	commands := &Commands{
-		GetHostLogs:    serviceInstance.getHostLogs,
-		GetMainLogs:    serviceInstance.getMainLogs,
-		GetStatus:      serviceInstance.isRunning,
-		GetConfigFiles: serviceInstance.getConfigFilesZipFile,
-		GetMetadata:    serviceInstance.getMetadata,
-		Reload:         serviceInstance.reload,
-		Stop:           serviceInstance.stop,
-		Start:          serviceInstance.start,
-	}
-
-	return serviceInstance, commands, nil
+	return serviceInstance, serviceInstance, nil
 }

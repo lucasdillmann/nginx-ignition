@@ -20,7 +20,7 @@ func Install() error {
 
 func build(
 	cfg *configuration.Configuration,
-	commands *user.Commands,
+	commands user.Commands,
 ) (
 	*gin.Engine,
 	*state,

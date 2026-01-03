@@ -38,7 +38,11 @@ func (h *PasswordHash) Hash(password string) (
 		return "", "", err
 	}
 
-	return base64.StdEncoding.EncodeToString(hashResult), base64.StdEncoding.EncodeToString(salt), nil
+	return base64.StdEncoding.EncodeToString(
+			hashResult,
+		), base64.StdEncoding.EncodeToString(
+			salt,
+		), nil
 }
 
 func (h *PasswordHash) Verify(password, hash, salt string) (bool, error) {

@@ -11,7 +11,7 @@ import (
 )
 
 type updateHandler struct {
-	commands *accesslist.Commands
+	commands accesslist.Commands
 }
 
 func (h updateHandler) handle(ctx *gin.Context) {

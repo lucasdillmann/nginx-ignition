@@ -11,7 +11,7 @@ import (
 )
 
 type createHandler struct {
-	commands *vpn.Commands
+	commands vpn.Commands
 }
 
 func (h createHandler) handle(ctx *gin.Context) {

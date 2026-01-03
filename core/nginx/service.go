@@ -28,10 +28,10 @@ type service struct {
 
 func newService(
 	cfg *configuration.Configuration,
-	hostCommands *host.Commands,
+	hostCommands host.Commands,
 	configFilesManager *cfgfiles.Facade,
-	vpnCommands *vpn.Commands,
-	settingsCommands *settings.Commands,
+	vpnCommands vpn.Commands,
+	settingsCommands settings.Commands,
 ) (*service, error) {
 	pManager, err := newProcessManager(cfg)
 	if err != nil {
@@ -50,7 +50,7 @@ func newService(
 	}, nil
 }
 
-func (s *service) reload(ctx context.Context, failIfNotRunning bool) error {
+func (s *service) Reload(ctx context.Context, failIfNotRunning bool) error {
 	if failIfNotRunning && s.semaphore.currentState() != runningState {
 		return coreerror.New("nginx is not running", false)
 	}
@@ -75,7 +75,7 @@ func (s *service) reload(ctx context.Context, failIfNotRunning bool) error {
 	})
 }
 
-func (s *service) start(ctx context.Context) error {
+func (s *service) Start(ctx context.Context) error {
 	if s.semaphore.currentState() == runningState {
 		return nil
 	}
@@ -87,7 +87,7 @@ func (s *service) start(ctx context.Context) error {
 
 	if pid != 0 {
 		log.Warnf("nginx seems to be already running with PID %d, trying to reload it instead", pid)
-		return s.reload(ctx, false)
+		return s.Reload(ctx, false)
 	}
 
 	supportedFeatures, err := s.resolveSupportedFeatures(ctx)
@@ -110,7 +110,7 @@ func (s *service) start(ctx context.Context) error {
 	})
 }
 
-func (s *service) stop(ctx context.Context) error {
+func (s *service) Stop(ctx context.Context) error {
 	if s.semaphore.currentState() == stoppedState {
 		return nil
 	}
@@ -124,15 +124,20 @@ func (s *service) stop(ctx context.Context) error {
 	})
 }
 
-func (s *service) isRunning(_ context.Context) bool {
+func (s *service) GetStatus(_ context.Context) bool {
 	return s.semaphore.currentState() == runningState
 }
 
-func (s *service) getHostLogs(ctx context.Context, hostID uuid.UUID, qualifier string, lines int) ([]string, error) {
+func (s *service) GetHostLogs(
+	ctx context.Context,
+	hostID uuid.UUID,
+	qualifier string,
+	lines int,
+) ([]string, error) {
 	return s.logReader.read(ctx, "host-"+hostID.String()+"."+qualifier+".log", lines)
 }
 
-func (s *service) getMainLogs(ctx context.Context, lines int) ([]string, error) {
+func (s *service) GetMainLogs(ctx context.Context, lines int) ([]string, error) {
 	return s.logReader.read(ctx, "main.log", lines)
 }
 
@@ -143,14 +148,14 @@ func (s *service) rotateLogs(ctx context.Context) error {
 func (s *service) attachListeners() {
 	channel := broadcast.Listen("core:nginx:reload")
 	for range channel {
-		err := s.reload(<-channel, false)
+		err := s.Reload(<-channel, false)
 		if err != nil {
 			log.Warnf("Failed to reload nginx: %v", err)
 		}
 	}
 }
 
-func (s *service) getConfigFilesZipFile(
+func (s *service) GetConfigFiles(
 	ctx context.Context,
 	input GetConfigFilesInput,
 ) ([]byte, error) {
@@ -166,7 +171,11 @@ func (s *service) getConfigFilesZipFile(
 		return nil, err
 	}
 
-	configFiles, _, _, err := s.configFilesManager.GetConfigurationFiles(ctx, paths, supportedFeatures)
+	configFiles, _, _, err := s.configFilesManager.GetConfigurationFiles(
+		ctx,
+		paths,
+		supportedFeatures,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -195,8 +204,10 @@ func (s *service) getConfigFilesZipFile(
 	return buffer.Bytes(), nil
 }
 
-func (s *service) resolveSupportedFeatures(ctx context.Context) (*cfgfiles.SupportedFeatures, error) {
-	metadata, err := s.getMetadata(ctx)
+func (s *service) resolveSupportedFeatures(
+	ctx context.Context,
+) (*cfgfiles.SupportedFeatures, error) {
+	metadata, err := s.GetMetadata(ctx)
 	if err != nil {
 		return nil, err
 	}

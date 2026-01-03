@@ -19,12 +19,12 @@ type endpointAdapter struct {
 }
 
 type vpnManager struct {
-	vpnCommands      *vpn.Commands
-	settingsCommands *settings.Commands
+	vpnCommands      vpn.Commands
+	settingsCommands settings.Commands
 	currentEndpoints []vpn.Endpoint
 }
 
-func newVpnManager(vpnCommands *vpn.Commands, settingsCommands *settings.Commands) *vpnManager {
+func newVpnManager(vpnCommands vpn.Commands, settingsCommands settings.Commands) *vpnManager {
 	return &vpnManager{
 		vpnCommands:      vpnCommands,
 		settingsCommands: settingsCommands,
@@ -105,7 +105,10 @@ func (m *vpnManager) startNewEndpoints(ctx context.Context, newEndpoints []vpn.E
 	return nil
 }
 
-func (m *vpnManager) buildEndpoints(ctx context.Context, hosts []host.Host) ([]vpn.Endpoint, error) {
+func (m *vpnManager) buildEndpoints(
+	ctx context.Context,
+	hosts []host.Host,
+) ([]vpn.Endpoint, error) {
 	setts, err := m.settingsCommands.Get(ctx)
 	if err != nil {
 		return nil, err

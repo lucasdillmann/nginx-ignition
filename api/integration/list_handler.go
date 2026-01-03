@@ -10,7 +10,7 @@ import (
 )
 
 type listHandler struct {
-	commands *integration.Commands
+	commands integration.Commands
 }
 
 func (h listHandler) handle(ctx *gin.Context) {
@@ -21,7 +21,13 @@ func (h listHandler) handle(ctx *gin.Context) {
 
 	enabledOnly := ctx.Query("enabledOnly") == "true"
 
-	page, err := h.commands.List(ctx.Request.Context(), pageSize, pageNumber, searchTerms, enabledOnly)
+	page, err := h.commands.List(
+		ctx.Request.Context(),
+		pageSize,
+		pageNumber,
+		searchTerms,
+		enabledOnly,
+	)
 	if err != nil {
 		panic(err)
 	}

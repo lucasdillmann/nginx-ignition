@@ -48,7 +48,9 @@ func resolveLatestAvailableVersion() *string {
 		Timeout: 1 * time.Second,
 	}
 
-	resp, err := client.Get("https://api.github.com/repos/lucasdillmann/nginx-ignition/releases?per_page=1&page=0")
+	resp, err := client.Get(
+		"https://api.github.com/repos/lucasdillmann/nginx-ignition/releases?per_page=1&page=0",
+	)
 	if err != nil {
 		log.Warnf("Failed to fetch latest available version: %s", err)
 		return nil

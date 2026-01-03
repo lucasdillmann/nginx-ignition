@@ -10,7 +10,7 @@ import (
 )
 
 type deleteHandler struct {
-	commands *vpn.Commands
+	commands vpn.Commands
 }
 
 func (h deleteHandler) handle(ctx *gin.Context) {

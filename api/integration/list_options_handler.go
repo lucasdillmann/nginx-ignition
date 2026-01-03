@@ -11,7 +11,7 @@ import (
 )
 
 type listOptionsHandler struct {
-	commands *integration.Commands
+	commands integration.Commands
 }
 
 func (h listOptionsHandler) handle(ctx *gin.Context) {
@@ -34,7 +34,14 @@ func (h listOptionsHandler) handle(ctx *gin.Context) {
 
 	tcpOnly := ctx.Query("tcpOnly") == "true"
 
-	page, err := h.commands.ListOptions(ctx.Request.Context(), uuidValue, pageSize, pageNumber, searchTerms, tcpOnly)
+	page, err := h.commands.ListOptions(
+		ctx.Request.Context(),
+		uuidValue,
+		pageSize,
+		pageNumber,
+		searchTerms,
+		tcpOnly,
+	)
 	if err != nil {
 		panic(err)
 	}

@@ -8,12 +8,12 @@ type service struct {
 	repository Repository
 }
 
-func newService(repository Repository) *service {
+func newCommands(repository Repository) Commands {
 	return &service{
 		repository: repository,
 	}
 }
 
-func (s *service) get(ctx context.Context) (*Backup, error) {
+func (s *service) Get(ctx context.Context) (*Backup, error) {
 	return s.repository.Get(ctx)
 }

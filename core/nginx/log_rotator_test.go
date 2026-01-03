@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/host"
@@ -55,18 +56,18 @@ func Test_LogRotator_GetLogFiles(t *testing.T) {
 		id1 := uuid.New()
 		id2 := uuid.New()
 
-		repo := &host.Commands{
-			GetAllEnabled: func(_ context.Context) ([]host.Host, error) {
-				return []host.Host{
-					{
-						ID: id1,
-					},
-					{
-						ID: id2,
-					},
-				}, nil
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		repo := host.NewMockedCommands(ctrl)
+		repo.EXPECT().GetAllEnabled(ctx).Return([]host.Host{
+			{
+				ID: id1,
 			},
-		}
+			{
+				ID: id2,
+			},
+		}, nil)
 
 		r := &logRotator{
 			hostCommands: repo,
@@ -101,22 +102,19 @@ func Test_LogRotator_Rotate(t *testing.T) {
 	err = os.WriteFile(mainLogPath, []byte("line1\nline2\nline3\n"), 0o644)
 	require.NoError(t, err)
 
-	settingsCmds := &settings.Commands{
-		Get: func(_ context.Context) (*settings.Settings, error) {
-			return &settings.Settings{
-				LogRotation: &settings.LogRotationSettings{
-					Enabled:      true,
-					MaximumLines: 2,
-				},
-			}, nil
-		},
-	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	hostCmds := &host.Commands{
-		GetAllEnabled: func(_ context.Context) ([]host.Host, error) {
-			return []host.Host{}, nil
+	settingsCmds := settings.NewMockedCommands(ctrl)
+	settingsCmds.EXPECT().Get(ctx).Return(&settings.Settings{
+		LogRotation: &settings.LogRotationSettings{
+			Enabled:      true,
+			MaximumLines: 2,
 		},
-	}
+	}, nil)
+
+	hostCmds := host.NewMockedCommands(ctrl)
+	hostCmds.EXPECT().GetAllEnabled(ctx).Return([]host.Host{}, nil)
 
 	pm := &processManager{
 		binaryPath: fakeNginx,

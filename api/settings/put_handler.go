@@ -10,7 +10,7 @@ import (
 )
 
 type putHandler struct {
-	commands *settings.Commands
+	commands settings.Commands
 }
 
 func (h putHandler) handle(ctx *gin.Context) {

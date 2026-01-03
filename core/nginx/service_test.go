@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
@@ -35,7 +36,7 @@ func Test_Service_GetMainLogs(t *testing.T) {
 	}
 
 	t.Run("returns requested number of lines in reverse order", func(t *testing.T) {
-		lines, err := s.getMainLogs(ctx, 2)
+		lines, err := s.GetMainLogs(ctx, 2)
 		assert.NoError(t, err)
 		assert.Equal(t, []string{"line3", "line2"}, lines)
 	})
@@ -60,7 +61,7 @@ func Test_Service_GetHostLogs(t *testing.T) {
 	}
 
 	t.Run("returns host specific logs", func(t *testing.T) {
-		lines, err := s.getHostLogs(ctx, hostID, "access", 1)
+		lines, err := s.GetHostLogs(ctx, hostID, "access", 1)
 		assert.NoError(t, err)
 		assert.Equal(t, []string{"access2"}, lines)
 	})
@@ -84,25 +85,27 @@ func Test_Service_RotateLogs(t *testing.T) {
 	err = os.WriteFile(mainLogPath, []byte("line1\nline2\nline3\n"), 0o644)
 	require.NoError(t, err)
 
-	settingsCmds := &settings.Commands{
-		Get: func(_ context.Context) (*settings.Settings, error) {
-			return &settings.Settings{
-				LogRotation: &settings.LogRotationSettings{
-					Enabled:      true,
-					MaximumLines: 2,
-				},
-			}, nil
-		},
-	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	hostCmds := &host.Commands{
-		GetAllEnabled: func(_ context.Context) ([]host.Host, error) {
-			return []host.Host{}, nil
+	settingsCmds := settings.NewMockedCommands(ctrl)
+	settingsCmds.EXPECT().Get(ctx).Return(&settings.Settings{
+		LogRotation: &settings.LogRotationSettings{
+			Enabled:      true,
+			MaximumLines: 2,
 		},
-	}
+	}, nil)
+
+	hostCmds := host.NewMockedCommands(ctrl)
+	hostCmds.EXPECT().GetAllEnabled(ctx).Return([]host.Host{}, nil)
 
 	s := &service{
-		logRotator: newLogRotator(cfg, settingsCmds, hostCmds, &processManager{binaryPath: fakeNginx, configPath: tmpDir}),
+		logRotator: newLogRotator(
+			cfg,
+			settingsCmds,
+			hostCmds,
+			&processManager{binaryPath: fakeNginx, configPath: tmpDir},
+		),
 	}
 
 	err = s.rotateLogs(ctx)
@@ -123,7 +126,7 @@ func Test_Service_Reload(t *testing.T) {
 			},
 		}
 
-		err := s.reload(ctx, true)
+		err := s.Reload(ctx, true)
 		assert.Error(t, err)
 		var coreErr *coreerror.CoreError
 		assert.ErrorAs(t, err, &coreErr)
@@ -141,7 +144,7 @@ func Test_Service_Start(t *testing.T) {
 			},
 		}
 
-		err := s.start(ctx)
+		err := s.Start(ctx)
 		assert.NoError(t, err)
 	})
 }
@@ -156,7 +159,7 @@ func Test_Service_Stop(t *testing.T) {
 			},
 		}
 
-		err := s.stop(ctx)
+		err := s.Stop(ctx)
 		assert.NoError(t, err)
 	})
 }
@@ -168,7 +171,7 @@ func Test_Service_IsRunning(t *testing.T) {
 				state: runningState,
 			},
 		}
-		assert.True(t, s.isRunning(context.Background()))
+		assert.True(t, s.GetStatus(context.Background()))
 	})
 
 	t.Run("returns false when stopped", func(t *testing.T) {
@@ -177,6 +180,6 @@ func Test_Service_IsRunning(t *testing.T) {
 				state: stoppedState,
 			},
 		}
-		assert.False(t, s.isRunning(context.Background()))
+		assert.False(t, s.GetStatus(context.Background()))
 	})
 }

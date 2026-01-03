@@ -10,7 +10,7 @@ import (
 )
 
 type stopHandler struct {
-	commands *nginx.Commands
+	commands nginx.Commands
 }
 
 func (h stopHandler) handle(ctx *gin.Context) {

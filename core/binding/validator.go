@@ -14,17 +14,25 @@ var portRange = valuerange.New(1, 65535)
 
 type validator struct {
 	delegate            *validation.ConsistencyValidator
-	certificateCommands *certificate.Commands
+	certificateCommands certificate.Commands
 }
 
-func newValidator(validationCtx *validation.ConsistencyValidator, certificateCommands *certificate.Commands) *validator {
+func newValidator(
+	validationCtx *validation.ConsistencyValidator,
+	certificateCommands certificate.Commands,
+) *validator {
 	return &validator{
 		delegate:            validationCtx,
 		certificateCommands: certificateCommands,
 	}
 }
 
-func (v *validator) validate(ctx context.Context, pathPrefix string, binding *Binding, index int) error {
+func (v *validator) validate(
+	ctx context.Context,
+	pathPrefix string,
+	binding *Binding,
+	index int,
+) error {
 	if net.ParseIP(binding.IP) == nil {
 		v.delegate.Add(
 			fmt.Sprintf("%s[%d].ip", pathPrefix, index),

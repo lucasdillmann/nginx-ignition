@@ -11,7 +11,7 @@ import (
 )
 
 type createHandler struct {
-	commands *stream.Commands
+	commands stream.Commands
 }
 
 func (h createHandler) handle(ctx *gin.Context) {

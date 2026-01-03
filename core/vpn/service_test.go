@@ -27,12 +27,12 @@ func Test_Service_GetByID(t *testing.T) {
 			Driver: "tailscale",
 		}
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().FindByID(ctx, id).Return(expected, nil)
 
 		cfg := &configuration.Configuration{}
 		svc := newService(cfg, repo, func() []Driver { return nil })
-		result, err := svc.getByID(ctx, id)
+		result, err := svc.Get(ctx, id)
 
 		assert.NoError(t, err)
 		assert.Equal(t, expected, result)
@@ -48,13 +48,13 @@ func Test_Service_DeleteByID(t *testing.T) {
 		id := uuid.New()
 		inUse := false
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().InUseByID(ctx, id).Return(&inUse, nil)
 		repo.EXPECT().DeleteByID(ctx, id).Return(nil)
 
 		cfg := &configuration.Configuration{}
 		svc := newService(cfg, repo, func() []Driver { return nil })
-		err := svc.deleteByID(ctx, id)
+		err := svc.Delete(ctx, id)
 
 		assert.NoError(t, err)
 	})
@@ -67,12 +67,12 @@ func Test_Service_DeleteByID(t *testing.T) {
 		id := uuid.New()
 		inUse := true
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().InUseByID(ctx, id).Return(&inUse, nil)
 
 		cfg := &configuration.Configuration{}
 		svc := newService(cfg, repo, func() []Driver { return nil })
-		err := svc.deleteByID(ctx, id)
+		err := svc.Delete(ctx, id)
 
 		require.Error(t, err)
 		var coreErr *coreerror.CoreError
@@ -92,12 +92,12 @@ func Test_Service_List(t *testing.T) {
 		})
 		searchTerms := "test"
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().FindPage(ctx, 10, 1, &searchTerms, false).Return(expectedPage, nil)
 
 		cfg := &configuration.Configuration{}
 		svc := newService(cfg, repo, func() []Driver { return nil })
-		result, err := svc.list(ctx, 10, 1, &searchTerms, false)
+		result, err := svc.List(ctx, 10, 1, &searchTerms, false)
 
 		assert.NoError(t, err)
 		assert.Equal(t, expectedPage, result)
@@ -113,12 +113,12 @@ func Test_Service_ExistsByID(t *testing.T) {
 		id := uuid.New()
 		exists := true
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().ExistsByID(ctx, id).Return(&exists, nil)
 
 		cfg := &configuration.Configuration{}
 		svc := newService(cfg, repo, func() []Driver { return nil })
-		result, err := svc.existsByID(ctx, id)
+		result, err := svc.Exists(ctx, id)
 
 		assert.NoError(t, err)
 		assert.True(t, *result)
@@ -136,12 +136,12 @@ func Test_Service_Save(t *testing.T) {
 		}
 		inUse := false
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
 
 		cfg := &configuration.Configuration{}
 		svc := newService(cfg, repo, func() []Driver { return nil })
-		err := svc.save(ctx, vpn)
+		err := svc.Save(ctx, vpn)
 
 		assert.Error(t, err)
 	})

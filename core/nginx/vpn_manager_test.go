@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/host"
@@ -91,13 +92,13 @@ func Test_VpnManager_BuildEndpoints(t *testing.T) {
 		},
 	}
 
-	settingsCmds := &settings.Commands{
-		Get: func(_ context.Context) (*settings.Settings, error) {
-			return &settings.Settings{
-				GlobalBindings: globalBindings,
-			}, nil
-		},
-	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	settingsCmds := settings.NewMockedCommands(ctrl)
+	settingsCmds.EXPECT().Get(ctx).AnyTimes().Return(&settings.Settings{
+		GlobalBindings: globalBindings,
+	}, nil)
 
 	m := newVpnManager(nil, settingsCmds)
 
@@ -178,13 +179,11 @@ func Test_VpnManager_StopObsoleteEndpoints(t *testing.T) {
 	}
 
 	t.Run("stops endpoints not present in the new list", func(t *testing.T) {
-		stopped := make([]string, 0)
-		vpnCmds := &vpn.Commands{
-			Stop: func(_ context.Context, e vpn.Endpoint) error {
-				stopped = append(stopped, e.SourceName())
-				return nil
-			},
-		}
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		vpnCmds := vpn.NewMockedCommands(ctrl)
+		vpnCmds.EXPECT().Stop(ctx, ep2).Return(nil)
 
 		m := &vpnManager{
 			vpnCommands:      vpnCmds,
@@ -193,7 +192,6 @@ func Test_VpnManager_StopObsoleteEndpoints(t *testing.T) {
 
 		err := m.stopObsoleteEndpoints(ctx, []vpn.Endpoint{ep1})
 		assert.NoError(t, err)
-		assert.Equal(t, []string{"ep2"}, stopped)
 	})
 }
 
@@ -210,13 +208,11 @@ func Test_VpnManager_StartNewEndpoints(t *testing.T) {
 	}
 
 	t.Run("starts only endpoints not currently running", func(t *testing.T) {
-		started := make([]string, 0)
-		vpnCmds := &vpn.Commands{
-			Start: func(_ context.Context, e vpn.Endpoint) error {
-				started = append(started, e.SourceName())
-				return nil
-			},
-		}
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		vpnCmds := vpn.NewMockedCommands(ctrl)
+		vpnCmds.EXPECT().Start(ctx, ep2).Return(nil)
 
 		m := &vpnManager{
 			vpnCommands:      vpnCmds,
@@ -225,6 +221,5 @@ func Test_VpnManager_StartNewEndpoints(t *testing.T) {
 
 		err := m.startNewEndpoints(ctx, []vpn.Endpoint{ep1, ep2})
 		assert.NoError(t, err)
-		assert.Equal(t, []string{"ep2"}, started)
 	})
 }

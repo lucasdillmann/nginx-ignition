@@ -11,7 +11,7 @@ import (
 )
 
 type createHandler struct {
-	commands *accesslist.Commands
+	commands accesslist.Commands
 }
 
 func (h createHandler) handle(ctx *gin.Context) {

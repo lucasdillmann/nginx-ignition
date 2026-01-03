@@ -16,7 +16,7 @@ func Test_Lifecycle_RegisterStartup(t *testing.T) {
 		defer ctrl.Finish()
 
 		lc := New()
-		command := NewMockStartupCommand(ctrl)
+		command := NewMockedStartupCommand(ctrl)
 
 		lc.RegisterStartup(command)
 
@@ -36,7 +36,7 @@ func Test_Lifecycle_RegisterShutdown(t *testing.T) {
 		defer ctrl.Finish()
 
 		lc := New()
-		command := NewMockShutdownCommand(ctrl)
+		command := NewMockedShutdownCommand(ctrl)
 
 		lc.RegisterShutdown(command)
 
@@ -56,12 +56,12 @@ func Test_Lifecycle_FireStartup(t *testing.T) {
 		lc := New()
 		ctx := context.Background()
 
-		command1 := NewMockStartupCommand(ctrl)
+		command1 := NewMockedStartupCommand(ctrl)
 		command1.EXPECT().Priority().Return(2).AnyTimes()
 		command1.EXPECT().Async().Return(false)
 		command1.EXPECT().Run(ctx).Return(nil)
 
-		command2 := NewMockStartupCommand(ctrl)
+		command2 := NewMockedStartupCommand(ctrl)
 		command2.EXPECT().Priority().Return(1).AnyTimes()
 		command2.EXPECT().Async().Return(false)
 		command2.EXPECT().Run(ctx).Return(nil)
@@ -80,7 +80,7 @@ func Test_Lifecycle_FireStartup(t *testing.T) {
 		lc := New()
 		ctx := context.Background()
 
-		command := NewMockStartupCommand(ctrl)
+		command := NewMockedStartupCommand(ctrl)
 		command.EXPECT().Priority().Return(1).AnyTimes()
 		command.EXPECT().Async().Return(false)
 		command.EXPECT().Run(ctx).Return(errors.New("startup error"))
@@ -98,7 +98,7 @@ func Test_Lifecycle_FireStartup(t *testing.T) {
 		lc := New()
 		ctx := context.Background()
 
-		command := NewMockStartupCommand(ctrl)
+		command := NewMockedStartupCommand(ctrl)
 		command.EXPECT().Priority().Return(1).AnyTimes()
 		command.EXPECT().Async().Return(true)
 		command.EXPECT().Run(ctx).Return(nil)
@@ -120,11 +120,11 @@ func Test_Lifecycle_FireShutdown(t *testing.T) {
 		lc := New()
 		ctx := context.Background()
 
-		command1 := NewMockShutdownCommand(ctrl)
+		command1 := NewMockedShutdownCommand(ctrl)
 		command1.EXPECT().Priority().Return(2).AnyTimes()
 		command1.EXPECT().Run(ctx)
 
-		command2 := NewMockShutdownCommand(ctrl)
+		command2 := NewMockedShutdownCommand(ctrl)
 		command2.EXPECT().Priority().Return(1).AnyTimes()
 		command2.EXPECT().Run(ctx)
 

@@ -27,7 +27,7 @@ func Test_Scheduler_Register(t *testing.T) {
 		defer ctrl.Finish()
 
 		sched := buildScheduler()
-		task := NewMockTask(ctrl)
+		task := NewMockedTask(ctrl)
 
 		err := sched.Register(context.Background(), task)
 
@@ -43,7 +43,7 @@ func Test_Scheduler_Register(t *testing.T) {
 		sched := buildScheduler()
 		sched.started = true
 
-		task := NewMockTask(ctrl)
+		task := NewMockedTask(ctrl)
 		task.EXPECT().Schedule(ctx).Return(&Schedule{
 			Enabled:  true,
 			Interval: time.Second,
@@ -58,7 +58,7 @@ func Test_Scheduler_Register(t *testing.T) {
 	t.Run("returns error when stopped", func(t *testing.T) {
 		sched := buildScheduler()
 		sched.stopped = true
-		task := NewMockTask(gomock.NewController(t))
+		task := NewMockedTask(gomock.NewController(t))
 
 		err := sched.Register(context.Background(), task)
 
@@ -74,7 +74,7 @@ func Test_Scheduler_start(t *testing.T) {
 		ctx := context.Background()
 		sched := buildScheduler()
 
-		task := NewMockTask(ctrl)
+		task := NewMockedTask(ctrl)
 		task.EXPECT().Schedule(ctx).Return(&Schedule{
 			Enabled:  true,
 			Interval: time.Second,
@@ -114,7 +114,7 @@ func Test_Scheduler_start(t *testing.T) {
 		ctx := context.Background()
 		sched := buildScheduler()
 
-		task := NewMockTask(ctrl)
+		task := NewMockedTask(ctrl)
 		task.EXPECT().Schedule(ctx).Return(nil, errors.New("schedule error"))
 
 		sched.tickers[task] = time.NewTicker(time.Hour)
@@ -131,7 +131,7 @@ func Test_Scheduler_stop(t *testing.T) {
 		defer ctrl.Finish()
 
 		sched := buildScheduler()
-		task := NewMockTask(ctrl)
+		task := NewMockedTask(ctrl)
 		sched.tickers[task] = time.NewTicker(time.Second)
 
 		sched.stop()
@@ -149,7 +149,7 @@ func Test_Scheduler_Reload(t *testing.T) {
 		ctx := context.Background()
 		sched := buildScheduler()
 
-		task := NewMockTask(ctrl)
+		task := NewMockedTask(ctrl)
 		task.EXPECT().Schedule(ctx).Return(&Schedule{
 			Enabled:  true,
 			Interval: time.Minute,
@@ -179,7 +179,7 @@ func Test_Scheduler_Reload(t *testing.T) {
 		ctx := context.Background()
 		sched := buildScheduler()
 
-		task := NewMockTask(ctrl)
+		task := NewMockedTask(ctrl)
 		task.EXPECT().Schedule(ctx).Return(nil, errors.New("schedule error"))
 
 		sched.tickers[task] = time.NewTicker(time.Hour)

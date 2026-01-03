@@ -99,7 +99,10 @@ func (r *repository) Save(ctx context.Context, strm *stream.Stream) error {
 	model := toModel(strm)
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIDFilter, model.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().
+			Model(&model).
+			Where(constants.ByIDFilter, model.ID).
+			Exec(ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 	}
@@ -188,7 +191,11 @@ func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error)
 		Exists(ctx)
 }
 
-func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx, id uuid.UUID) error {
+func (r *repository) cleanupLinkedModels(
+	ctx context.Context,
+	transaction bun.Tx,
+	id uuid.UUID,
+) error {
 	_, err := transaction.
 		NewDelete().
 		Table("stream_backend").
@@ -230,7 +237,11 @@ func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx
 	return err
 }
 
-func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, strm *stream.Stream) error {
+func (r *repository) saveLinkedModels(
+	ctx context.Context,
+	transaction bun.Tx,
+	strm *stream.Stream,
+) error {
 	err := r.cleanupLinkedModels(ctx, transaction, strm.ID)
 	if err != nil {
 		return err

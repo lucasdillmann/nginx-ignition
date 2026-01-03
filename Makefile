@@ -10,12 +10,10 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 .frontend-prerequisites:
 	cd frontend/ && npm ci
 
-.prerequisites: .backend-prerequisites .frontend-prerequisites
-
-.frontend-check:
+.frontend-check: .frontend-prerequisites
 	cd frontend/ && npm run check
 
-.backend-check:
+.backend-check: .backend-prerequisites
 	go tool golangci-lint run \
 		./api/... \
 		./application/... \
@@ -29,10 +27,10 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./integration/truenas/... \
 		./vpn/tailscale/...
 
-.build-frontend:
+.frontend-build: .frontend-prerequisites
 	cd frontend/ && npm run build
 
-.build-backend:
+.backend-build: .backend-prerequisites
 	GOARCH=amd64 CGO_ENABLED="0" GOOS="linux" go build -ldflags "$(LDFLAGS)" -o build/linux/amd64 application/main.go
 	GOARCH=arm64 CGO_ENABLED="0" GOOS="linux" go build -ldflags "$(LDFLAGS)" -o build/linux/arm64 application/main.go
 	GOARCH=arm64 CGO_ENABLED="0" GOOS="darwin" go build -ldflags "$(LDFLAGS)" -o build/macos/arm64 application/main.go
@@ -82,11 +80,10 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	nfpm package --config build/nfpm.yaml --packager ipk --target build/nginx-ignition-$(VERSION).$(ARCH).ipk
 	rm -Rf build/nfpm.yaml
 
-check: .prerequisites .frontend-check .backend-check
-
-format: .prerequisites
+.frontend-format: .frontend-prerequisites
 	cd frontend/ && npx prettier --write .
-	go tool gofumpt -w .
+
+.backend-format: .backend-prerequisites
 	go tool fieldalignment -fix \
 		./api/... \
 		./application/... \
@@ -99,26 +96,44 @@ format: .prerequisites
 		./integration/docker/... \
 		./integration/truenas/... \
 		./vpn/tailscale/...
+	go tool golangci-lint run --fix \
+		./api/... \
+		./application/... \
+		./certificate/commons/... \
+		./certificate/custom/... \
+		./certificate/letsencrypt/... \
+		./certificate/selfsigned/... \
+		./core/... \
+		./database/... \
+		./integration/docker/... \
+		./integration/truenas/... \
+		./vpn/tailscale/...
 
-.generate-test-mocks:
+.backend-test-mocks: .backend-prerequisites
 	@echo "Generating mock files..."
-	@find api application certificate core database integration vpn -type f -name "*_mock_test.go" -delete;
+	@find api application certificate core database integration vpn -type f -name "*_mock.go" -delete;
 	@find api application certificate core database integration vpn -type f -name "*.go" \
 		-not -name "*_test.go" \
 		-exec sh -c 'grep -q "^type [a-zA-Z0-9_]* interface" "$$1" && echo "$$1"' _ {} \; | \
 	while read -r file; do \
 		dir=$$(dirname "$$file"); \
 		base=$$(basename "$$file" .go); \
-		mock_file="$$dir/$${base}_mock_test.go"; \
+		mock_file="$$dir/$${base}_mock.go"; \
 		package_name=$$(basename "$$dir"); \
+		interfaces=$$(grep -oE "^type [a-zA-Z0-9_]+ interface" "$$file" | awk '{print $$2}'); \
+		mock_names_flag=""; \
+		for i in $$interfaces; do \
+			mock_names_flag="$$mock_names_flag,$$i=Mocked$$i"; \
+		done; \
 		go tool go.uber.org/mock/mockgen \
 			-source "$$file" \
 			-package "$$package_name" \
 			-destination "$$mock_file" \
+			-mock_names "$${mock_names_flag#,}" \
 			-self_package "$$(cd $$dir && go list)" || true; \
 	done
 
-test: .backend-prerequisites .generate-test-mocks
+.backend-test: .backend-test-mocks
 	go test -v \
 		./api/... \
 		./application/... \
@@ -132,7 +147,7 @@ test: .backend-prerequisites .generate-test-mocks
 		./integration/truenas/... \
 		./vpn/tailscale/...
 
-update-dependencies:
+update-dependencies: .backend-prerequisites .frontend-prerequisites
 	cd api && go get -u all
 	cd application && go get -u all
 	cd certificate/commons && go get -u all
@@ -148,8 +163,12 @@ update-dependencies:
 	go work sync
 	cd frontend && npm update
 
-.build-prerequisites: .prerequisites .build-frontend .build-backend
+check: .frontend-check .backend-check
 
-build-release: .build-prerequisites .build-release-docker-image .build-distribution-files
+format: .frontend-format .backend-format
 
-build-snapshot: .build-prerequisites .build-snapshot-docker-image .build-distribution-files
+test: .backend-prerequisites .backend-test
+
+build-release: .frontend-build .backend-build .build-release-docker-image .build-distribution-files
+
+build-snapshot: .frontend-build .backend-build .build-snapshot-docker-image .build-distribution-files
