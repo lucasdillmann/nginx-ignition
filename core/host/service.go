@@ -15,21 +15,21 @@ import (
 
 type service struct {
 	repository          Repository
-	integrationCommands *integration.Commands
-	vpnCommands         *vpn.Commands
-	accessListCommands  *accesslist.Commands
-	cacheCommands       *cache.Commands
-	bindingCommands     *binding.Commands
+	integrationCommands integration.Commands
+	vpnCommands         vpn.Commands
+	accessListCommands  accesslist.Commands
+	cacheCommands       cache.Commands
+	bindingCommands     binding.Commands
 }
 
-func newService(
+func newCommands(
 	repository Repository,
-	integrationCommands *integration.Commands,
-	vpnCommands *vpn.Commands,
-	accessListCommands *accesslist.Commands,
-	cacheCommands *cache.Commands,
-	bindingCommands *binding.Commands,
-) *service {
+	integrationCommands integration.Commands,
+	vpnCommands vpn.Commands,
+	accessListCommands accesslist.Commands,
+	cacheCommands cache.Commands,
+	bindingCommands binding.Commands,
+) Commands {
 	return &service{
 		repository:          repository,
 		integrationCommands: integrationCommands,
@@ -40,7 +40,7 @@ func newService(
 	}
 }
 
-func (s *service) save(ctx context.Context, input *Host) error {
+func (s *service) Save(ctx context.Context, input *Host) error {
 	validatorInstance := newValidator(
 		s.repository,
 		s.integrationCommands,
@@ -57,22 +57,26 @@ func (s *service) save(ctx context.Context, input *Host) error {
 	return s.repository.Save(ctx, input)
 }
 
-func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	return s.repository.DeleteByID(ctx, id)
 }
 
-func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[Host], error) {
+func (s *service) List(
+	ctx context.Context,
+	pageSize, pageNumber int,
+	searchTerms *string,
+) (*pagination.Page[Host], error) {
 	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms)
 }
 
-func (s *service) getByID(ctx context.Context, id uuid.UUID) (*Host, error) {
+func (s *service) Get(ctx context.Context, id uuid.UUID) (*Host, error) {
 	return s.repository.FindByID(ctx, id)
 }
 
-func (s *service) getAllEnabled(ctx context.Context) ([]Host, error) {
+func (s *service) GetAllEnabled(ctx context.Context) ([]Host, error) {
 	return s.repository.FindAllEnabled(ctx)
 }
 
-func (s *service) existsByID(ctx context.Context, id uuid.UUID) (bool, error) {
+func (s *service) Exists(ctx context.Context, id uuid.UUID) (bool, error) {
 	return s.repository.ExistsByID(ctx, id)
 }

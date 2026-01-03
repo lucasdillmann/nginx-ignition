@@ -10,7 +10,7 @@ import (
 )
 
 type getHandler struct {
-	commands *certificate.Commands
+	commands certificate.Commands
 }
 
 func (h getHandler) handle(ctx *gin.Context) {

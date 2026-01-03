@@ -9,7 +9,7 @@ import (
 )
 
 type statusHandler struct {
-	commands *nginx.Commands
+	commands nginx.Commands
 }
 
 func (h statusHandler) handle(ctx *gin.Context) {

@@ -9,15 +9,15 @@ import (
 
 type service struct {
 	repository      Repository
-	bindingCommands *binding.Commands
+	bindingCommands binding.Commands
 	scheduler       *scheduler.Scheduler
 }
 
-func newService(
+func newCommands(
 	repository Repository,
-	bindingCommands *binding.Commands,
+	bindingCommands binding.Commands,
 	sched *scheduler.Scheduler,
-) *service {
+) Commands {
 	return &service{
 		repository:      repository,
 		bindingCommands: bindingCommands,
@@ -25,11 +25,11 @@ func newService(
 	}
 }
 
-func (s *service) get(ctx context.Context) (*Settings, error) {
+func (s *service) Get(ctx context.Context) (*Settings, error) {
 	return s.repository.Get(ctx)
 }
 
-func (s *service) save(ctx context.Context, settings *Settings) error {
+func (s *service) Save(ctx context.Context, settings *Settings) error {
 	if err := newValidator(s.bindingCommands).validate(ctx, settings); err != nil {
 		return err
 	}

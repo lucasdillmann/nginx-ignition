@@ -13,13 +13,18 @@ type GetConfigFilesInput struct {
 	CachePath  string
 }
 
-type Commands struct {
-	GetHostLogs    func(ctx context.Context, hostID uuid.UUID, qualifier string, lines int) ([]string, error)
-	GetMainLogs    func(ctx context.Context, lines int) ([]string, error)
-	GetStatus      func(ctx context.Context) bool
-	GetConfigFiles func(ctx context.Context, input GetConfigFilesInput) ([]byte, error)
-	GetMetadata    func(ctx context.Context) (*Metadata, error)
-	Reload         func(ctx context.Context, failIfNotRunning bool) error
-	Start          func(ctx context.Context) error
-	Stop           func(ctx context.Context) error
+type Commands interface {
+	GetHostLogs(
+		ctx context.Context,
+		hostID uuid.UUID,
+		qualifier string,
+		lines int,
+	) ([]string, error)
+	GetMainLogs(ctx context.Context, lines int) ([]string, error)
+	GetStatus(ctx context.Context) bool
+	GetConfigFiles(ctx context.Context, input GetConfigFilesInput) ([]byte, error)
+	GetMetadata(ctx context.Context) (*Metadata, error)
+	Reload(ctx context.Context, failIfNotRunning bool) error
+	Start(ctx context.Context) error
+	Stop(ctx context.Context) error
 }

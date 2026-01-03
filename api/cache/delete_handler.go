@@ -10,7 +10,7 @@ import (
 )
 
 type deleteHandler struct {
-	commands *cache.Commands
+	commands cache.Commands
 }
 
 func (h deleteHandler) handle(ctx *gin.Context) {

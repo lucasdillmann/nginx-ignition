@@ -8,11 +8,15 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
-type Commands struct {
-	Delete func(ctx context.Context, id uuid.UUID) error
-	Get    func(ctx context.Context, id uuid.UUID) (*AccessList, error)
-	GetAll func(ctx context.Context) ([]AccessList, error)
-	Exists func(ctx context.Context, id uuid.UUID) (bool, error)
-	List   func(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[AccessList], error)
-	Save   func(ctx context.Context, accessList *AccessList) error
+type Commands interface {
+	Delete(ctx context.Context, id uuid.UUID) error
+	Get(ctx context.Context, id uuid.UUID) (*AccessList, error)
+	GetAll(ctx context.Context) ([]AccessList, error)
+	Exists(ctx context.Context, id uuid.UUID) (bool, error)
+	List(
+		ctx context.Context,
+		pageSize, pageNumber int,
+		searchTerms *string,
+	) (*pagination.Page[AccessList], error)
+	Save(ctx context.Context, accessList *AccessList) error
 }

@@ -35,7 +35,11 @@ func ExtractPaginationParameters(ctx *gin.Context) (
 	if !pageSizeRange.Contains(pageSize) {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
-			fmt.Sprintf("Page size must be between %d and %d", pageSizeRange.Min, pageSizeRange.Max),
+			fmt.Sprintf(
+				"Page size must be between %d and %d",
+				pageSizeRange.Min,
+				pageSizeRange.Max,
+			),
 		)
 	}
 

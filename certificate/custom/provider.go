@@ -46,7 +46,10 @@ func (p *Provider) Priority() int {
 	return 2
 }
 
-func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (*certificate.Certificate, error) {
+func (p *Provider) Issue(
+	_ context.Context,
+	request *certificate.IssueRequest,
+) (*certificate.Certificate, error) {
 	if err := commons.Validate(request, validationRules{p.DynamicFields()}); err != nil {
 		return nil, err
 	}
@@ -101,7 +104,10 @@ func (p *Provider) Issue(_ context.Context, request *certificate.IssueRequest) (
 	}, nil
 }
 
-func (p *Provider) Renew(_ context.Context, cert *certificate.Certificate) (*certificate.Certificate, error) {
+func (p *Provider) Renew(
+	_ context.Context,
+	cert *certificate.Certificate,
+) (*certificate.Certificate, error) {
 	return cert, nil
 }
 

@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/host"
@@ -26,19 +27,23 @@ func Test_AccessListFileProvider_Provide(t *testing.T) {
 		},
 	}
 
-	p.commands = &accesslist.Commands{
-		GetAll: func(_ context.Context) ([]accesslist.AccessList, error) {
-			return []accesslist.AccessList{
-				{
-					ID:             id,
-					DefaultOutcome: accesslist.DenyOutcome,
-					Credentials: []accesslist.Credentials{
-						{Username: "user", Password: "pwd"},
-					},
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	commands := accesslist.NewMockedCommands(ctrl)
+	commands.EXPECT().
+		GetAll(gomock.Any()).
+		Return([]accesslist.AccessList{
+			{
+				ID:             id,
+				DefaultOutcome: accesslist.DenyOutcome,
+				Credentials: []accesslist.Credentials{
+					{Username: "user", Password: "pwd"},
 				},
-			}, nil
-		},
-	}
+			},
+		}, nil)
+
+	p.commands = commands
 
 	files, err := p.provide(ctx)
 	assert.NoError(t, err)
@@ -47,11 +52,15 @@ func Test_AccessListFileProvider_Provide(t *testing.T) {
 	assert.Equal(t, fmt.Sprintf("access-list-%s.htpasswd", id), files[1].Name)
 
 	t.Run("returns error when commands.GetAll fails", func(t *testing.T) {
-		p.commands = &accesslist.Commands{
-			GetAll: func(_ context.Context) ([]accesslist.AccessList, error) {
-				return nil, assert.AnError
-			},
-		}
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		commands := accesslist.NewMockedCommands(ctrl)
+		commands.EXPECT().
+			GetAll(gomock.Any()).
+			Return(nil, assert.AnError)
+
+		p.commands = commands
 		_, err := p.provide(ctx)
 		assert.ErrorIs(t, err, assert.AnError)
 	})
@@ -107,7 +116,11 @@ func Test_AccessListFileProvider_BuildConfFile(t *testing.T) {
 
 		file := p.buildConfFile(al, paths)
 		assert.Contains(t, file.Contents, `auth_basic "Restricted";`)
-		assert.Contains(t, file.Contents, fmt.Sprintf("auth_basic_user_file /etc/nginx/access-list-%s.htpasswd;", id))
+		assert.Contains(
+			t,
+			file.Contents,
+			fmt.Sprintf("auth_basic_user_file /etc/nginx/access-list-%s.htpasswd;", id),
+		)
 	})
 
 	t.Run("handles satisfy all mode", func(t *testing.T) {

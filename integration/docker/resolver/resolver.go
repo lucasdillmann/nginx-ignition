@@ -28,7 +28,10 @@ func For(parameters map[string]any) (Resolver, error) {
 		return nil, coreerror.New("Invalid connection mode", false)
 	}
 
-	dockerClient, err := client.NewClientWithOpts(client.WithHost(connectionURL), client.WithAPIVersionNegotiation())
+	dockerClient, err := client.NewClientWithOpts(
+		client.WithHost(connectionURL),
+		client.WithAPIVersionNegotiation(),
+	)
 	if err != nil {
 		return nil, err
 	}

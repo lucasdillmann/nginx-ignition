@@ -31,7 +31,11 @@ func (s startup) Run(ctx context.Context) error {
 		return err
 	}
 
-	log.Infof("Password reset completed successfully for the user %s. New password: %s", username, newPassword)
+	log.Infof(
+		"Password reset completed successfully for the user %s. New password: %s",
+		username,
+		newPassword,
+	)
 	return coreerror.New(
 		"Application was started using the password reset procedure. Please disable it in order to continue.",
 		true,

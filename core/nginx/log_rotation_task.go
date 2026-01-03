@@ -12,13 +12,13 @@ import (
 
 type logRotationTask struct {
 	service          *service
-	settingsCommands *settings.Commands
+	settingsCommands settings.Commands
 }
 
 func registerScheduledTask(
 	ctx context.Context,
 	service *service,
-	settingsCommands *settings.Commands,
+	settingsCommands settings.Commands,
 	sched *scheduler.Scheduler,
 ) error {
 	task := logRotationTask{service, settingsCommands}

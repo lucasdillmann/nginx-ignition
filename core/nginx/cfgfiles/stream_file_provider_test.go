@@ -81,7 +81,11 @@ func Test_StreamFileProvider_BuildBinding(t *testing.T) {
 
 		result, err := p.buildBinding(s)
 		assert.NoError(t, err)
-		assert.Equal(t, "listen 0.0.0.0:80 proxy_protocol deferred so_keepalive=on reuseport;", *result)
+		assert.Equal(
+			t,
+			"listen 0.0.0.0:80 proxy_protocol deferred so_keepalive=on reuseport;",
+			*result,
+		)
 	})
 
 	t.Run("UDP binding", func(t *testing.T) {
@@ -211,7 +215,11 @@ func Test_StreamFileProvider_BuildRoutedStream(t *testing.T) {
 
 		result, err := p.buildRoutedStream(ctx, s)
 		assert.NoError(t, err)
-		assert.Contains(t, *result, fmt.Sprintf("map $ssl_preread_server_name $stream_%s_router {", idStr))
+		assert.Contains(
+			t,
+			*result,
+			fmt.Sprintf("map $ssl_preread_server_name $stream_%s_router {", idStr),
+		)
 		assert.Contains(t, *result, fmt.Sprintf("example.com stream_%s_route_0;", idStr))
 		assert.Contains(t, *result, fmt.Sprintf("default stream_%s_default;", idStr))
 		assert.Contains(t, *result, "ssl_preread on;")

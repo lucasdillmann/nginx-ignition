@@ -8,14 +8,14 @@ import (
 )
 
 type service struct {
-	certificateCommands *certificate.Commands
+	certificateCommands certificate.Commands
 }
 
-func newService(certificateCommands *certificate.Commands) *service {
+func newCommands(certificateCommands certificate.Commands) Commands {
 	return &service{certificateCommands}
 }
 
-func (s *service) validateBinding(
+func (s *service) Validate(
 	ctx context.Context,
 	path string,
 	index int,

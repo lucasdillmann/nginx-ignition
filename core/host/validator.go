@@ -20,21 +20,21 @@ import (
 
 type validator struct {
 	hostRepository      Repository
-	integrationCommands *integration.Commands
-	vpnCommands         *vpn.Commands
-	accessListCommands  *accesslist.Commands
-	cacheCommands       *cache.Commands
-	bindingCommands     *binding.Commands
+	integrationCommands integration.Commands
+	vpnCommands         vpn.Commands
+	accessListCommands  accesslist.Commands
+	cacheCommands       cache.Commands
+	bindingCommands     binding.Commands
 	delegate            *validation.ConsistencyValidator
 }
 
 func newValidator(
 	hostRepository Repository,
-	integrationCommands *integration.Commands,
-	vpnCommands *vpn.Commands,
-	accessListCommands *accesslist.Commands,
-	cacheCommands *cache.Commands,
-	bindingCommands *binding.Commands,
+	integrationCommands integration.Commands,
+	vpnCommands vpn.Commands,
+	accessListCommands accesslist.Commands,
+	cacheCommands cache.Commands,
+	bindingCommands binding.Commands,
 ) *validator {
 	return &validator{
 		hostRepository:      hostRepository,
@@ -171,7 +171,12 @@ func (v *validator) validateRoutes(ctx context.Context, host *Host) error {
 	return nil
 }
 
-func (v *validator) validateRoute(ctx context.Context, route *Route, index int, distinctPaths *map[string]bool) error {
+func (v *validator) validateRoute(
+	ctx context.Context,
+	route *Route,
+	index int,
+	distinctPaths *map[string]bool,
+) error {
 	if (*distinctPaths)[route.SourcePath] {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "sourcePath"),
@@ -303,7 +308,8 @@ func (v *validator) validateExecuteCodeRoute(route *Route, index int) {
 		v.delegate.Add(buildIndexedRoutePath(index, "sourceCode.code"), requiredMessage)
 	}
 
-	if route.SourceCode.Language != JavascriptCodeLanguage && route.SourceCode.Language != LuaCodeLanguage {
+	if route.SourceCode.Language != JavascriptCodeLanguage &&
+		route.SourceCode.Language != LuaCodeLanguage {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "sourceCode.language"),
 			invalidValue,
@@ -372,7 +378,11 @@ func buildIndexedRoutePath(index int, childPath string) string {
 	return fmt.Sprintf("routes[%d].%s", index, childPath)
 }
 
-func (v *validator) validateAccessList(ctx context.Context, accessListID *uuid.UUID, path string) error {
+func (v *validator) validateAccessList(
+	ctx context.Context,
+	accessListID *uuid.UUID,
+	path string,
+) error {
 	if accessListID == nil {
 		return nil
 	}

@@ -35,7 +35,10 @@ func runLifecycle(ctx context.Context, lc *lifecycle.Lifecycle, startTime int64)
 
 	receivedSignal := waitForShutdownSignal()
 
-	log.Infof("Application shutdown signal received (%s). Starting graceful shutdown.", receivedSignal)
+	log.Infof(
+		"Application shutdown signal received (%s). Starting graceful shutdown.",
+		receivedSignal,
+	)
 	lc.FireShutdown(ctx)
 
 	log.Infof("Shutdown complete")
@@ -44,7 +47,14 @@ func runLifecycle(ctx context.Context, lc *lifecycle.Lifecycle, startTime int64)
 
 func waitForShutdownSignal() os.Signal {
 	channel := make(chan os.Signal, 1)
-	signal.Notify(channel, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGSEGV)
+	signal.Notify(
+		channel,
+		syscall.SIGHUP,
+		syscall.SIGQUIT,
+		syscall.SIGTERM,
+		syscall.SIGINT,
+		syscall.SIGSEGV,
+	)
 
 	return <-channel
 }

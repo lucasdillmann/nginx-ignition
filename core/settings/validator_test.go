@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
 )
@@ -37,9 +38,14 @@ func validSettings() *Settings {
 func Test_Validator_Validate(t *testing.T) {
 	ctx := context.Background()
 
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	bindingCommands := binding.NewMockedCommands(ctrl)
+
 	t.Run("valid settings pass", func(t *testing.T) {
 		settings := validSettings()
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -49,7 +55,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("empty default content type fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.DefaultContentType = ""
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -59,7 +65,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("default content type exceeds maximum length fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.DefaultContentType = string(make([]byte, 129))
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -69,7 +75,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("empty runtime user fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.RuntimeUser = ""
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -79,7 +85,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("whitespace-only runtime user fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.RuntimeUser = "   "
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -89,7 +95,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("runtime user exceeds maximum length fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.RuntimeUser = string(make([]byte, 33))
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -99,7 +105,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("runtime user at maximum length passes", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.RuntimeUser = string(make([]byte, 32))
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -109,7 +115,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("default content type at maximum length passes", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.DefaultContentType = string(make([]byte, 128))
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -119,7 +125,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("timeout read below range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.Timeouts.Read = 0
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -129,7 +135,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("timeout send below range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.Timeouts.Send = 0
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -139,7 +145,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("timeout connect below range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.Timeouts.Connect = 0
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -149,7 +155,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("timeout keepalive below range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.Timeouts.Keepalive = 0
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -159,7 +165,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("worker processes below range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.WorkerProcesses = 0
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -169,7 +175,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("worker processes above range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.WorkerProcesses = 101
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -179,7 +185,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("worker connections below range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.WorkerConnections = 31
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -189,7 +195,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("worker connections above range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.WorkerConnections = 4097
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -199,7 +205,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("maximum body size below range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.Nginx.MaximumBodySizeMb = 0
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -209,7 +215,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("log rotation interval unit count below range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.LogRotation.IntervalUnitCount = 0
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -219,7 +225,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("log rotation maximum lines below range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.LogRotation.MaximumLines = -1
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -229,7 +235,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("log rotation maximum lines above range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.LogRotation.MaximumLines = 10001
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 
@@ -239,7 +245,7 @@ func Test_Validator_Validate(t *testing.T) {
 	t.Run("certificate auto renew interval unit count below range fails", func(t *testing.T) {
 		settings := validSettings()
 		settings.CertificateAutoRenew.IntervalUnitCount = 0
-		val := newValidator(&binding.Commands{})
+		val := newValidator(bindingCommands)
 
 		err := val.validate(ctx, settings)
 

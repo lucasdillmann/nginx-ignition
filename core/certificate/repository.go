@@ -14,7 +14,11 @@ type Repository interface {
 	InUseByID(ctx context.Context, id uuid.UUID) (bool, error)
 	DeleteByID(ctx context.Context, id uuid.UUID) error
 	Save(ctx context.Context, certificate *Certificate) error
-	FindPage(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[Certificate], error)
+	FindPage(
+		ctx context.Context,
+		pageSize, pageNumber int,
+		searchTerms *string,
+	) (*pagination.Page[Certificate], error)
 	FindAllDueToRenew(ctx context.Context) ([]Certificate, error)
 	GetAutoRenewSettings(ctx context.Context) (*AutoRenewSettings, error)
 }

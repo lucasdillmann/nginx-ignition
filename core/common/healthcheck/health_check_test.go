@@ -16,7 +16,7 @@ func Test_HealthCheck_Register(t *testing.T) {
 
 		ctx := context.Background()
 		hc := New()
-		provider := NewMockProvider(ctrl)
+		provider := NewMockedProvider(ctrl)
 		provider.EXPECT().ID().Return("test-provider")
 		provider.EXPECT().Check(ctx).Return(nil)
 
@@ -35,11 +35,11 @@ func Test_HealthCheck_Status(t *testing.T) {
 		ctx := context.Background()
 		hc := New()
 
-		provider1 := NewMockProvider(ctrl)
+		provider1 := NewMockedProvider(ctrl)
 		provider1.EXPECT().ID().Return("provider1")
 		provider1.EXPECT().Check(ctx).Return(nil)
 
-		provider2 := NewMockProvider(ctrl)
+		provider2 := NewMockedProvider(ctrl)
 		provider2.EXPECT().ID().Return("provider2")
 		provider2.EXPECT().Check(ctx).Return(nil)
 
@@ -61,11 +61,11 @@ func Test_HealthCheck_Status(t *testing.T) {
 		ctx := context.Background()
 		hc := New()
 
-		provider1 := NewMockProvider(ctrl)
+		provider1 := NewMockedProvider(ctrl)
 		provider1.EXPECT().ID().Return("provider1")
 		provider1.EXPECT().Check(ctx).Return(nil)
 
-		provider2 := NewMockProvider(ctrl)
+		provider2 := NewMockedProvider(ctrl)
 		provider2.EXPECT().ID().Return("provider2")
 		provider2.EXPECT().Check(ctx).Return(errors.New("provider error"))
 

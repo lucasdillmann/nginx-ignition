@@ -27,13 +27,28 @@ func toDomain(input *streamRequestDTO) *stream.Stream {
 		return nil
 	}
 
+	var featureSet stream.FeatureSet
+	if input.FeatureSet != nil {
+		featureSet = *toFeatureSet(input.FeatureSet)
+	}
+
+	var defaultBackend stream.Backend
+	if input.DefaultBackend != nil {
+		defaultBackend = *toBackend(input.DefaultBackend)
+	}
+
+	var binding stream.Address
+	if input.Binding != nil {
+		binding = *toAddress(input.Binding)
+	}
+
 	return &stream.Stream{
 		Enabled:        getBoolValue(input.Enabled),
 		Name:           getStringValue(input.Name),
 		Type:           stream.Type(getStringValue(input.Type)),
-		FeatureSet:     *toFeatureSet(input.FeatureSet),
-		DefaultBackend: *toBackend(input.DefaultBackend),
-		Binding:        *toAddress(input.Binding),
+		FeatureSet:     featureSet,
+		DefaultBackend: defaultBackend,
+		Binding:        binding,
 		Routes:         toRoutes(input.Routes),
 	}
 }
@@ -69,9 +84,14 @@ func toBackend(backend *backendDTO) *stream.Backend {
 		return nil
 	}
 
+	var address stream.Address
+	if backend.Target != nil {
+		address = *toAddress(backend.Target)
+	}
+
 	return &stream.Backend{
 		Weight:         backend.Weight,
-		Address:        *toAddress(backend.Target),
+		Address:        address,
 		CircuitBreaker: toCircuitBreaker(backend.CircuitBreaker),
 	}
 }

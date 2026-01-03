@@ -25,14 +25,14 @@ func Test_Service_Get(t *testing.T) {
 		ctx := context.Background()
 		expected := &Settings{}
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().Get(ctx).Return(expected, nil)
 
-		bindingCommands := &binding.Commands{}
+		bindingCommands := binding.NewMockedCommands(ctrl)
 		sched := buildScheduler()
 
-		svc := newService(repo, bindingCommands, sched)
-		result, err := svc.get(ctx)
+		svc := newCommands(repo, bindingCommands, sched)
+		result, err := svc.Get(ctx)
 
 		assert.NoError(t, err)
 		assert.Equal(t, expected, result)
@@ -45,14 +45,14 @@ func Test_Service_Get(t *testing.T) {
 		ctx := context.Background()
 		expectedErr := errors.New("repository error")
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().Get(ctx).Return(nil, expectedErr)
 
-		bindingCommands := &binding.Commands{}
+		bindingCommands := binding.NewMockedCommands(ctrl)
 		sched := buildScheduler()
 
-		svc := newService(repo, bindingCommands, sched)
-		result, err := svc.get(ctx)
+		svc := newCommands(repo, bindingCommands, sched)
+		result, err := svc.Get(ctx)
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -89,12 +89,12 @@ func Test_Service_Save(t *testing.T) {
 			},
 		}
 
-		repo := NewMockRepository(ctrl)
-		bindingCommands := &binding.Commands{}
+		repo := NewMockedRepository(ctrl)
+		bindingCommands := binding.NewMockedCommands(ctrl)
 		sched := buildScheduler()
 
-		svc := newService(repo, bindingCommands, sched)
-		err := svc.save(ctx, settings)
+		svc := newCommands(repo, bindingCommands, sched)
+		err := svc.Save(ctx, settings)
 
 		assert.Error(t, err)
 	})

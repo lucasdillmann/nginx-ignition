@@ -15,15 +15,15 @@ import (
 
 type logRotator struct {
 	configProvider   *configuration.Configuration
-	settingsCommands *settings.Commands
-	hostCommands     *host.Commands
+	settingsCommands settings.Commands
+	hostCommands     host.Commands
 	processManager   *processManager
 }
 
 func newLogRotator(
 	configProvider *configuration.Configuration,
-	settingsCommands *settings.Commands,
-	hostCommands *host.Commands,
+	settingsCommands settings.Commands,
+	hostCommands host.Commands,
 	processManager *processManager,
 ) *logRotator {
 	return &logRotator{
@@ -66,11 +66,19 @@ func (r *logRotator) rotate(ctx context.Context) error {
 		return err
 	}
 
-	log.Infof("Log rotation finished with %d files trimmed to up to %d lines", len(logFiles), maximumLines)
+	log.Infof(
+		"Log rotation finished with %d files trimmed to up to %d lines",
+		len(logFiles),
+		maximumLines,
+	)
 	return nil
 }
 
-func (r *logRotator) rotateFile(_ context.Context, basePath, fileName string, maximumLines int) error {
+func (r *logRotator) rotateFile(
+	_ context.Context,
+	basePath, fileName string,
+	maximumLines int,
+) error {
 	filePath := filepath.Join(basePath, fileName)
 	file, err := os.Open(filePath)
 	if err != nil {

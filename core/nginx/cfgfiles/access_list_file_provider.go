@@ -10,10 +10,10 @@ import (
 )
 
 type accessListFileProvider struct {
-	commands *accesslist.Commands
+	commands accesslist.Commands
 }
 
-func newAccessListFileProvider(commands *accesslist.Commands) *accessListFileProvider {
+func newAccessListFileProvider(commands accesslist.Commands) *accessListFileProvider {
 	return &accessListFileProvider{
 		commands: commands,
 	}
@@ -47,7 +47,10 @@ func (p *accessListFileProvider) build(accessList *accesslist.AccessList, paths 
 	return outputs
 }
 
-func (p *accessListFileProvider) buildConfFile(accessList *accesslist.AccessList, paths *Paths) *File {
+func (p *accessListFileProvider) buildConfFile(
+	accessList *accesslist.AccessList,
+	paths *Paths,
+) *File {
 	entriesContents := make([]string, 0)
 	for _, entry := range accessList.Entries {
 		for _, sourceAddress := range entry.SourceAddress {

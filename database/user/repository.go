@@ -88,7 +88,11 @@ func (r *repository) FindPage(
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil {
-		query = query.Where("name ILIKE ? OR username ILIKE ?", "%"+*searchTerms+"%", "%"+*searchTerms+"%")
+		query = query.Where(
+			"name ILIKE ? OR username ILIKE ?",
+			"%"+*searchTerms+"%",
+			"%"+*searchTerms+"%",
+		)
 	}
 
 	count, err := query.Count(ctx)
@@ -98,7 +102,11 @@ func (r *repository) FindPage(
 
 	query = r.database.Select().Model(&models)
 	if searchTerms != nil {
-		query = query.Where("name ILIKE ? OR username ILIKE ?", "%"+*searchTerms+"%", "%"+*searchTerms+"%")
+		query = query.Where(
+			"name ILIKE ? OR username ILIKE ?",
+			"%"+*searchTerms+"%",
+			"%"+*searchTerms+"%",
+		)
 	}
 
 	err = query.
@@ -155,7 +163,10 @@ func (r *repository) Save(ctx context.Context, u *user.User) error {
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Where(constants.ByIDFilter, u.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().
+		Model((*userModel)(nil)).
+		Where(constants.ByIDFilter, u.ID).
+		Exists(ctx)
 	if err != nil {
 		return err
 	}

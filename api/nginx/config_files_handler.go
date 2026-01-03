@@ -10,7 +10,7 @@ import (
 )
 
 type configFilesHandler struct {
-	commands *nginx.Commands
+	commands nginx.Commands
 }
 
 func (h configFilesHandler) handle(ctx *gin.Context) {

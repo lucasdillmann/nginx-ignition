@@ -21,4 +21,4 @@ vendor/
 build/
 
 # Generated mock files
-*_mock_test.go
+**/*_mock.go

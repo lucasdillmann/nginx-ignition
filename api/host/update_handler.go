@@ -11,7 +11,7 @@ import (
 )
 
 type updateHandler struct {
-	commands *host.Commands
+	commands host.Commands
 }
 
 func (h updateHandler) handle(ctx *gin.Context) {

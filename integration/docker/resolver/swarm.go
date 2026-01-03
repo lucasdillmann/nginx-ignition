@@ -37,7 +37,11 @@ func (s *swarmAdapter) ResolveOptionByID(ctx context.Context, id string) (*Optio
 	return nil, nil
 }
 
-func (s *swarmAdapter) ResolveOptions(ctx context.Context, tcpOnly bool, searchTerms *string) ([]Option, error) {
+func (s *swarmAdapter) ResolveOptions(
+	ctx context.Context,
+	tcpOnly bool,
+	searchTerms *string,
+) ([]Option, error) {
 	services, err := s.client.ServiceList(ctx, swarm.ServiceListOptions{})
 	if err != nil {
 		return nil, err
@@ -73,7 +77,8 @@ func (s *swarmAdapter) buildServiceOptions(services []swarm.Service, tcpOnly boo
 				continue
 			}
 
-			if option := s.buildServiceOption(&port, &service); option != nil && !optionIDs[option.ID] {
+			if option := s.buildServiceOption(&port, &service); option != nil &&
+				!optionIDs[option.ID] {
 				options = append(options, *option)
 				optionIDs[option.ID] = true
 			}
@@ -145,7 +150,10 @@ func (s *swarmAdapter) buildServiceOptionURL(
 	return &fullURL, nil, err
 }
 
-func (s *swarmAdapter) findNodeAddress(ctx context.Context, service *swarm.Service) (*string, error) {
+func (s *swarmAdapter) findNodeAddress(
+	ctx context.Context,
+	service *swarm.Service,
+) (*string, error) {
 	tasks, err := s.client.TaskList(ctx, swarm.TaskListOptions{
 		Filters: filters.NewArgs(filters.Arg("service", service.ID)),
 	})
@@ -154,7 +162,10 @@ func (s *swarmAdapter) findNodeAddress(ctx context.Context, service *swarm.Servi
 	}
 
 	if len(tasks) == 0 {
-		return nil, fmt.Errorf("unable to resolve node IPs: no running tasks found for service %s", service.ID)
+		return nil, fmt.Errorf(
+			"unable to resolve node IPs: no running tasks found for service %s",
+			service.ID,
+		)
 	}
 
 	nodes, err := s.client.NodeList(ctx, swarm.NodeListOptions{})

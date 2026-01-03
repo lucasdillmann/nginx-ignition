@@ -39,7 +39,9 @@ var (
 		Required:     true,
 		Type:         dynamicfields.URLType,
 		DefaultValue: "",
-		HelpText:     ptr.Of("The URL to be used to connect to Docker (such as tcp://example.com:2375)"),
+		HelpText: ptr.Of(
+			"The URL to be used to connect to Docker (such as tcp://example.com:2375)",
+		),
 		Conditions: []dynamicfields.Condition{{
 			ParentField: ConnectionMode.ID,
 			Value:       TCPConnectionMode,
@@ -53,8 +55,10 @@ var (
 		Required:     true,
 		Type:         dynamicfields.BooleanType,
 		DefaultValue: false,
-		HelpText: ptr.Of("When enabled, ignition will retrieve the available options by looking for the " +
-			"deployed Swarm services instead of resolving available containers"),
+		HelpText: ptr.Of(
+			"When enabled, ignition will retrieve the available options by looking for the " +
+				"deployed Swarm services instead of resolving available containers",
+		),
 	}
 
 	SwarmServiceMesh = dynamicfields.DynamicField{
@@ -64,8 +68,10 @@ var (
 		Required:     true,
 		Type:         dynamicfields.BooleanType,
 		DefaultValue: false,
-		HelpText: ptr.Of("When enabled, nginx will be configured to reach Swarm services using the service mesh " +
-			"(internal DNS names) when an ingress is selected as the proxy target"),
+		HelpText: ptr.Of(
+			"When enabled, nginx will be configured to reach Swarm services using the service mesh " +
+				"(internal DNS names) when an ingress is selected as the proxy target",
+		),
 		Conditions: []dynamicfields.Condition{{
 			ParentField: SwarmMode.ID,
 			Value:       true,
@@ -79,8 +85,10 @@ var (
 		Required:     false,
 		Type:         dynamicfields.MultiLineTextType,
 		DefaultValue: "",
-		HelpText: ptr.Of("Overrides the default DNS resolvers used by nginx when resolving Swarm services. " +
-			"One IP address per line."),
+		HelpText: ptr.Of(
+			"Overrides the default DNS resolvers used by nginx when resolving Swarm services. " +
+				"One IP address per line.",
+		),
 		Conditions: []dynamicfields.Condition{
 			{
 				ParentField: SwarmMode.ID,
@@ -100,9 +108,11 @@ var (
 		Required:     true,
 		Type:         dynamicfields.BooleanType,
 		DefaultValue: false,
-		HelpText: ptr.Of("When enabled, ignition will use the container name as the ID instead of the " +
-			"container's actual ID. Use this option when the containers are recreated constantly and/or managed " +
-			"by a third-party tool."),
+		HelpText: ptr.Of(
+			"When enabled, ignition will use the container name as the ID instead of the " +
+				"container's actual ID. Use this option when the containers are recreated constantly and/or managed " +
+				"by a third-party tool.",
+		),
 		Conditions: []dynamicfields.Condition{{
 			ParentField: SwarmMode.ID,
 			Value:       false,
@@ -116,8 +126,10 @@ var (
 		Required:     false,
 		Type:         dynamicfields.URLType,
 		DefaultValue: "",
-		HelpText: ptr.Of("The URL to be used when proxying a request to a Docker container using a port " +
-			"exposed on the host. If not set, the container IP will be used instead."),
+		HelpText: ptr.Of(
+			"The URL to be used when proxying a request to a Docker container using a port " +
+				"exposed on the host. If not set, the container IP will be used instead.",
+		),
 		Conditions: []dynamicfields.Condition{{
 			ParentField: SwarmMode.ID,
 			Value:       false,

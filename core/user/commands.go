@@ -8,14 +8,18 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
-type Commands struct {
-	Authenticate        func(ctx context.Context, username, password string) (*User, error)
-	Delete              func(ctx context.Context, id uuid.UUID) error
-	Get                 func(ctx context.Context, id uuid.UUID) (*User, error)
-	GetCount            func(ctx context.Context) (int, error)
-	GetStatus           func(ctx context.Context, id uuid.UUID) (bool, error)
-	List                func(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[User], error)
-	Save                func(ctx context.Context, user *SaveRequest, currentUserID *uuid.UUID) error
-	UpdatePassword      func(ctx context.Context, id uuid.UUID, oldPassword, newPassword string) error
-	OnboardingCompleted func(ctx context.Context) (bool, error)
+type Commands interface {
+	Authenticate(ctx context.Context, username, password string) (*User, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	Get(ctx context.Context, id uuid.UUID) (*User, error)
+	GetCount(ctx context.Context) (int, error)
+	GetStatus(ctx context.Context, id uuid.UUID) (bool, error)
+	List(
+		ctx context.Context,
+		pageSize, pageNumber int,
+		searchTerms *string,
+	) (*pagination.Page[User], error)
+	Save(ctx context.Context, user *SaveRequest, currentUserID *uuid.UUID) error
+	UpdatePassword(ctx context.Context, id uuid.UUID, oldPassword, newPassword string) error
+	OnboardingCompleted(ctx context.Context) (bool, error)
 }

@@ -162,7 +162,10 @@ func (r *repository) Save(ctx context.Context, accessList *accesslist.AccessList
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	exists, err := transaction.NewSelect().Model((*accessListModel)(nil)).Where(constants.ByIDFilter, accessList.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().
+		Model((*accessListModel)(nil)).
+		Where(constants.ByIDFilter, accessList.ID).
+		Exists(ctx)
 	if err != nil {
 		return err
 	}
@@ -186,7 +189,11 @@ func (r *repository) Save(ctx context.Context, accessList *accesslist.AccessList
 	return transaction.Commit()
 }
 
-func (r *repository) performUpdate(ctx context.Context, model *accessListModel, transaction bun.Tx) error {
+func (r *repository) performUpdate(
+	ctx context.Context,
+	model *accessListModel,
+	transaction bun.Tx,
+) error {
 	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIDFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
@@ -200,7 +207,11 @@ func (r *repository) performUpdate(ctx context.Context, model *accessListModel, 
 	return r.saveLinkedModels(ctx, transaction, model)
 }
 
-func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, model *accessListModel) error {
+func (r *repository) saveLinkedModels(
+	ctx context.Context,
+	transaction bun.Tx,
+	model *accessListModel,
+) error {
 	for _, credentials := range model.Credentials {
 		credentials.ID = uuid.New()
 		credentials.AccessListID = model.ID
@@ -224,7 +235,11 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, m
 	return nil
 }
 
-func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx, id uuid.UUID) error {
+func (r *repository) cleanupLinkedModels(
+	ctx context.Context,
+	transaction bun.Tx,
+	id uuid.UUID,
+) error {
 	_, err := transaction.
 		NewDelete().
 		Table("access_list_credentials").

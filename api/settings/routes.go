@@ -15,7 +15,7 @@ const (
 func Install(
 	router *gin.Engine,
 	authorizer *authorization.ABAC,
-	commands *settings.Commands,
+	commands settings.Commands,
 ) {
 	basePath := authorizer.ConfigureGroup(
 		router,

@@ -34,7 +34,11 @@ func (s *simpleAdapter) ResolveOptionByID(ctx context.Context, id string) (*Opti
 	return nil, nil
 }
 
-func (s *simpleAdapter) ResolveOptions(ctx context.Context, tcpOnly bool, searchTerms *string) ([]Option, error) {
+func (s *simpleAdapter) ResolveOptions(
+	ctx context.Context,
+	tcpOnly bool,
+	searchTerms *string,
+) ([]Option, error) {
 	containers, err := s.client.ContainerList(ctx, container.ListOptions{})
 	if err != nil {
 		return nil, err
@@ -80,7 +84,8 @@ func (s *simpleAdapter) buildOptions(containers []container.Summary, tcpOnly boo
 				optionIDs[option.ID] = true
 			}
 
-			if option := s.buildOption(&port, &item, false); option != nil && !optionIDs[option.ID] {
+			if option := s.buildOption(&port, &item, false); option != nil &&
+				!optionIDs[option.ID] {
 				options = append(options, *option)
 				optionIDs[option.ID] = true
 			}
@@ -90,7 +95,11 @@ func (s *simpleAdapter) buildOptions(containers []container.Summary, tcpOnly boo
 	return options
 }
 
-func (s *simpleAdapter) buildOption(port *container.Port, item *container.Summary, usePublicPort bool) *Option {
+func (s *simpleAdapter) buildOption(
+	port *container.Port,
+	item *container.Summary,
+	usePublicPort bool,
+) *Option {
 	portNumber := port.PrivatePort
 	qualifierType := containerQualifier
 
@@ -124,7 +133,10 @@ func (s *simpleAdapter) buildOption(port *container.Port, item *container.Summar
 	}
 }
 
-func (s *simpleAdapter) buildOptionURL(option *Option, summary *container.Summary) (*string, []string, error) {
+func (s *simpleAdapter) buildOptionURL(
+	option *Option,
+	summary *container.Summary,
+) (*string, []string, error) {
 	var targetHost string
 	if s.publicURL != "" && *option.Qualifier == hostQualifier {
 		uri, err := url.Parse(s.publicURL)

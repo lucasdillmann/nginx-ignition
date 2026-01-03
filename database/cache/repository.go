@@ -194,7 +194,11 @@ func (r *repository) Save(ctx context.Context, domain *cache.Cache) error {
 	return transaction.Commit()
 }
 
-func (r *repository) performInsert(ctx context.Context, transaction bun.Tx, model *cacheModel) error {
+func (r *repository) performInsert(
+	ctx context.Context,
+	transaction bun.Tx,
+	model *cacheModel,
+) error {
 	_, err := transaction.NewInsert().Model(model).Exec(ctx)
 	if err != nil {
 		return err
@@ -203,7 +207,11 @@ func (r *repository) performInsert(ctx context.Context, transaction bun.Tx, mode
 	return r.saveLinkedModels(ctx, transaction, model)
 }
 
-func (r *repository) performUpdate(ctx context.Context, transaction bun.Tx, model *cacheModel) error {
+func (r *repository) performUpdate(
+	ctx context.Context,
+	transaction bun.Tx,
+	model *cacheModel,
+) error {
 	_, err := transaction.NewUpdate().
 		Model(model).
 		Where(constants.ByIDFilter, model.ID).
@@ -220,7 +228,11 @@ func (r *repository) performUpdate(ctx context.Context, transaction bun.Tx, mode
 	return r.saveLinkedModels(ctx, transaction, model)
 }
 
-func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, model *cacheModel) error {
+func (r *repository) saveLinkedModels(
+	ctx context.Context,
+	transaction bun.Tx,
+	model *cacheModel,
+) error {
 	for index := range model.Durations {
 		_, err := transaction.NewInsert().
 			Model(&model.Durations[index]).
@@ -233,7 +245,11 @@ func (r *repository) saveLinkedModels(ctx context.Context, transaction bun.Tx, m
 	return nil
 }
 
-func (r *repository) cleanupLinkedModels(ctx context.Context, transaction bun.Tx, id uuid.UUID) error {
+func (r *repository) cleanupLinkedModels(
+	ctx context.Context,
+	transaction bun.Tx,
+	id uuid.UUID,
+) error {
 	_, err := transaction.NewDelete().
 		Table("cache_duration").
 		Where(byCacheIDFilter, id).

@@ -11,7 +11,7 @@ import (
 func Install(
 	router *gin.Engine,
 	authorizer *authorization.ABAC,
-	commands *integration.Commands,
+	commands integration.Commands,
 ) {
 	basePath := authorizer.ConfigureGroup(
 		router,

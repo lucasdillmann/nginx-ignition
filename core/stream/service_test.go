@@ -36,11 +36,11 @@ func Test_Service_Save(t *testing.T) {
 			},
 		}
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().Save(ctx, stream).Return(nil)
 
-		svc := newService(repo)
-		err := svc.save(ctx, stream)
+		svc := newCommands(repo)
+		err := svc.Save(ctx, stream)
 
 		assert.NoError(t, err)
 	})
@@ -54,9 +54,9 @@ func Test_Service_Save(t *testing.T) {
 			Name: "",
 		}
 
-		repo := NewMockRepository(ctrl)
-		svc := newService(repo)
-		err := svc.save(ctx, stream)
+		repo := NewMockedRepository(ctrl)
+		svc := newCommands(repo)
+		err := svc.Save(ctx, stream)
 
 		assert.Error(t, err)
 	})
@@ -85,11 +85,11 @@ func Test_Service_Save(t *testing.T) {
 		}
 
 		expectedErr := errors.New("repository error")
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().Save(ctx, stream).Return(expectedErr)
 
-		svc := newService(repo)
-		err := svc.save(ctx, stream)
+		svc := newCommands(repo)
+		err := svc.Save(ctx, stream)
 
 		assert.Equal(t, expectedErr, err)
 	})
@@ -103,11 +103,11 @@ func Test_Service_DeleteByID(t *testing.T) {
 		ctx := context.Background()
 		id := uuid.New()
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().DeleteByID(ctx, id).Return(nil)
 
-		svc := newService(repo)
-		err := svc.deleteByID(ctx, id)
+		svc := newCommands(repo)
+		err := svc.Delete(ctx, id)
 
 		assert.NoError(t, err)
 	})
@@ -120,11 +120,11 @@ func Test_Service_DeleteByID(t *testing.T) {
 		id := uuid.New()
 		expectedErr := errors.New("delete failed")
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().DeleteByID(ctx, id).Return(expectedErr)
 
-		svc := newService(repo)
-		err := svc.deleteByID(ctx, id)
+		svc := newCommands(repo)
+		err := svc.Delete(ctx, id)
 
 		assert.Equal(t, expectedErr, err)
 	})
@@ -142,11 +142,11 @@ func Test_Service_GetByID(t *testing.T) {
 			Name: "test",
 		}
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().FindByID(ctx, id).Return(expected, nil)
 
-		svc := newService(repo)
-		result, err := svc.getByID(ctx, id)
+		svc := newCommands(repo)
+		result, err := svc.Get(ctx, id)
 
 		assert.NoError(t, err)
 		assert.Equal(t, expected, result)
@@ -164,11 +164,11 @@ func Test_Service_List(t *testing.T) {
 		})
 		searchTerms := "test"
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().FindPage(ctx, 10, 1, &searchTerms).Return(expectedPage, nil)
 
-		svc := newService(repo)
-		result, err := svc.list(ctx, 10, 1, &searchTerms)
+		svc := newCommands(repo)
+		result, err := svc.List(ctx, 10, 1, &searchTerms)
 
 		assert.NoError(t, err)
 		assert.Equal(t, expectedPage, result)
@@ -183,11 +183,11 @@ func Test_Service_ExistsByID(t *testing.T) {
 		ctx := context.Background()
 		id := uuid.New()
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().ExistsByID(ctx, id).Return(true, nil)
 
-		svc := newService(repo)
-		exists, err := svc.existsByID(ctx, id)
+		svc := newCommands(repo)
+		exists, err := svc.Exists(ctx, id)
 
 		assert.NoError(t, err)
 		assert.True(t, exists)

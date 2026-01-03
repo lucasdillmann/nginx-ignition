@@ -9,7 +9,7 @@ import (
 )
 
 type onboardingStatusHandler struct {
-	commands *user.Commands
+	commands user.Commands
 }
 
 func (h onboardingStatusHandler) handle(ctx *gin.Context) {

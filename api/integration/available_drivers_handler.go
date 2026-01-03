@@ -9,7 +9,7 @@ import (
 )
 
 type availableDriversHandler struct {
-	commands *integration.Commands
+	commands integration.Commands
 }
 
 func (h availableDriversHandler) handle(ctx *gin.Context) {

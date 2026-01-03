@@ -12,7 +12,7 @@ import (
 )
 
 type updateHandler struct {
-	commands *user.Commands
+	commands user.Commands
 }
 
 func (h updateHandler) handle(ctx *gin.Context) {

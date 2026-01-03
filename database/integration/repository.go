@@ -95,7 +95,10 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	//nolint:errcheck
 	defer tx.Rollback()
 
-	_, err = tx.NewDelete().Model((*integrationModel)(nil)).Where(constants.ByIDFilter, id).Exec(ctx)
+	_, err = tx.NewDelete().
+		Model((*integrationModel)(nil)).
+		Where(constants.ByIDFilter, id).
+		Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -117,13 +120,19 @@ func (r *repository) Save(ctx context.Context, values *integration.Integration) 
 		return err
 	}
 
-	exists, err := transaction.NewSelect().Model((*integrationModel)(nil)).Where(constants.ByIDFilter, values.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().
+		Model((*integrationModel)(nil)).
+		Where(constants.ByIDFilter, values.ID).
+		Exists(ctx)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIDFilter, values.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().
+			Model(model).
+			Where(constants.ByIDFilter, values.ID).
+			Exec(ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(model).Exec(ctx)
 	}

@@ -10,7 +10,7 @@ import (
 func Install(
 	router *gin.Engine,
 	authorizer *authorization.ABAC,
-	commands *user.Commands,
+	commands user.Commands,
 ) {
 	basePath := authorizer.ConfigureGroup(
 		router,

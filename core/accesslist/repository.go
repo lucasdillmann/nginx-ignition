@@ -13,7 +13,11 @@ type Repository interface {
 	ExistsByID(ctx context.Context, id uuid.UUID) (bool, error)
 	InUseByID(ctx context.Context, id uuid.UUID) (bool, error)
 	DeleteByID(ctx context.Context, id uuid.UUID) error
-	FindPage(ctx context.Context, pageNumber, pageSize int, searchTerms *string) (*pagination.Page[AccessList], error)
+	FindPage(
+		ctx context.Context,
+		pageNumber, pageSize int,
+		searchTerms *string,
+	) (*pagination.Page[AccessList], error)
 	FindAll(ctx context.Context) ([]AccessList, error)
 	Save(ctx context.Context, accessList *AccessList) error
 }

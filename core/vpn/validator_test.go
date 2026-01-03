@@ -30,9 +30,9 @@ func Test_Validator_Validate(t *testing.T) {
 
 		vpn := validVPN()
 		inUse := false
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
-		driverMock := NewMockDriver(ctrl)
+		driverMock := NewMockedDriver(ctrl)
 		driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
 		val := newValidator(repo, driverMock)
 
@@ -48,7 +48,7 @@ func Test_Validator_Validate(t *testing.T) {
 		vpn := validVPN()
 		vpn.Name = ""
 		inUse := false
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
 		val := newValidator(repo, nil)
 
@@ -64,7 +64,7 @@ func Test_Validator_Validate(t *testing.T) {
 		vpn := validVPN()
 		vpn.Name = "   "
 		inUse := false
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
 		val := newValidator(repo, nil)
 
@@ -80,7 +80,7 @@ func Test_Validator_Validate(t *testing.T) {
 		vpn := validVPN()
 		vpn.Driver = ""
 		inUse := false
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
 		val := newValidator(repo, nil)
 
@@ -96,7 +96,7 @@ func Test_Validator_Validate(t *testing.T) {
 		vpn := validVPN()
 		vpn.Driver = "   "
 		inUse := false
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
 		val := newValidator(repo, nil)
 
@@ -112,7 +112,7 @@ func Test_Validator_Validate(t *testing.T) {
 		vpn := validVPN()
 		vpn.Driver = "nonexistent"
 		inUse := false
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
 		val := newValidator(repo, nil)
 
@@ -128,9 +128,9 @@ func Test_Validator_Validate(t *testing.T) {
 		vpn := validVPN()
 		vpn.Enabled = false
 		inUse := true
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
-		driverMock := NewMockDriver(ctrl)
+		driverMock := NewMockedDriver(ctrl)
 		driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
 		val := newValidator(repo, driverMock)
 
@@ -146,9 +146,9 @@ func Test_Validator_Validate(t *testing.T) {
 		vpn := validVPN()
 		vpn.Enabled = false
 		inUse := false
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
-		driverMock := NewMockDriver(ctrl)
+		driverMock := NewMockedDriver(ctrl)
 		driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
 		val := newValidator(repo, driverMock)
 
@@ -166,9 +166,9 @@ func Test_Validator_Validate(t *testing.T) {
 			"requiredField": "",
 		}
 		inUse := false
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
-		driverMock := NewMockDriver(ctrl)
+		driverMock := NewMockedDriver(ctrl)
 		driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{
 			{
 				ID:       "requiredField",

@@ -17,7 +17,11 @@ type service struct {
 	drivers    func() []Driver
 }
 
-func newService(cfg *configuration.Configuration, repository Repository, drivers func() []Driver) *service {
+func newService(
+	cfg *configuration.Configuration,
+	repository Repository,
+	drivers func() []Driver,
+) *service {
 	return &service{
 		cfg:        cfg,
 		repository: repository,
@@ -25,7 +29,7 @@ func newService(cfg *configuration.Configuration, repository Repository, drivers
 	}
 }
 
-func (s *service) list(
+func (s *service) List(
 	ctx context.Context,
 	pageSize, pageNumber int,
 	searchTerms *string,
@@ -34,11 +38,11 @@ func (s *service) list(
 	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms, enabledOnly)
 }
 
-func (s *service) getByID(ctx context.Context, id uuid.UUID) (*VPN, error) {
+func (s *service) Get(ctx context.Context, id uuid.UUID) (*VPN, error) {
 	return s.repository.FindByID(ctx, id)
 }
 
-func (s *service) save(ctx context.Context, data *VPN) error {
+func (s *service) Save(ctx context.Context, data *VPN) error {
 	driver := s.findDriver(data)
 	if err := newValidator(s.repository, driver).validate(ctx, data); err != nil {
 		return err
@@ -47,7 +51,7 @@ func (s *service) save(ctx context.Context, data *VPN) error {
 	return s.repository.Save(ctx, data)
 }
 
-func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	inUse, err := s.repository.InUseByID(ctx, id)
 	if err != nil {
 		return err
@@ -60,11 +64,11 @@ func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
 	return s.repository.DeleteByID(ctx, id)
 }
 
-func (s *service) existsByID(ctx context.Context, id uuid.UUID) (*bool, error) {
+func (s *service) Exists(ctx context.Context, id uuid.UUID) (*bool, error) {
 	return s.repository.ExistsByID(ctx, id)
 }
 
-func (s *service) getAvailableDrivers(_ context.Context) ([]AvailableDriver, error) {
+func (s *service) GetAvailableDrivers(_ context.Context) ([]AvailableDriver, error) {
 	drivers := s.drivers()
 	sort.Slice(drivers, func(left, right int) bool {
 		return drivers[left].Name() < drivers[right].Name()
@@ -83,7 +87,7 @@ func (s *service) getAvailableDrivers(_ context.Context) ([]AvailableDriver, err
 	return output, nil
 }
 
-func (s *service) start(ctx context.Context, endpoint Endpoint) error {
+func (s *service) Start(ctx context.Context, endpoint Endpoint) error {
 	data, driver, configDir, err := s.resolveValues(ctx, endpoint.VPNID())
 	if err != nil {
 		return err
@@ -92,7 +96,7 @@ func (s *service) start(ctx context.Context, endpoint Endpoint) error {
 	return driver.Start(ctx, *configDir, endpoint, data.Parameters)
 }
 
-func (s *service) reload(ctx context.Context, endpoint Endpoint) error {
+func (s *service) Reload(ctx context.Context, endpoint Endpoint) error {
 	data, driver, configDir, err := s.resolveValues(ctx, endpoint.VPNID())
 	if err != nil {
 		return err
@@ -101,7 +105,7 @@ func (s *service) reload(ctx context.Context, endpoint Endpoint) error {
 	return driver.Reload(ctx, *configDir, endpoint, data.Parameters)
 }
 
-func (s *service) stop(ctx context.Context, endpoint Endpoint) error {
+func (s *service) Stop(ctx context.Context, endpoint Endpoint) error {
 	_, driver, _, err := s.resolveValues(ctx, endpoint.VPNID())
 	if err != nil {
 		return err
@@ -111,7 +115,7 @@ func (s *service) stop(ctx context.Context, endpoint Endpoint) error {
 }
 
 func (s *service) resolveValues(ctx context.Context, id uuid.UUID) (*VPN, Driver, *string, error) {
-	data, err := s.getByID(ctx, id)
+	data, err := s.Get(ctx, id)
 	if err != nil {
 		return nil, nil, nil, err
 	}

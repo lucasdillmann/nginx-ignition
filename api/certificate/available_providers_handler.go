@@ -9,7 +9,7 @@ import (
 )
 
 type availableProvidersHandler struct {
-	commands *certificate.Commands
+	commands certificate.Commands
 }
 
 func (h availableProvidersHandler) handle(ctx *gin.Context) {

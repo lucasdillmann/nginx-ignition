@@ -8,7 +8,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-func Install(router *gin.Engine, commands *accesslist.Commands, authorizer *authorization.ABAC) {
+func Install(router *gin.Engine, commands accesslist.Commands, authorizer *authorization.ABAC) {
 	basePath := authorizer.ConfigureGroup(
 		router,
 		"/api/access-lists",

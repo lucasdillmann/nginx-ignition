@@ -12,7 +12,7 @@ import (
 )
 
 type onboardingFinishHandler struct {
-	commands   *user.Commands
+	commands   user.Commands
 	authorizer *authorization.ABAC
 }
 
@@ -54,9 +54,18 @@ func (h onboardingFinishHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	usr, err := h.commands.Authenticate(ctx.Request.Context(), domainModel.Username, *domainModel.Password)
+	usr, err := h.commands.Authenticate(
+		ctx.Request.Context(),
+		domainModel.Username,
+		*domainModel.Password,
+	)
 	if err != nil {
 		panic(err)
+	}
+
+	if usr == nil {
+		ctx.Status(http.StatusUnauthorized)
+		return
 	}
 
 	token, err := h.authorizer.Jwt().GenerateToken(usr)

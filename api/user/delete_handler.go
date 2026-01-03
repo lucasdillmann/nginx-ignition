@@ -11,7 +11,7 @@ import (
 )
 
 type deleteHandler struct {
-	commands *user.Commands
+	commands user.Commands
 }
 
 func (h deleteHandler) handle(ctx *gin.Context) {

@@ -12,7 +12,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
-func (s *service) getMetadata(ctx context.Context) (*Metadata, error) {
+func (s *service) GetMetadata(ctx context.Context) (*Metadata, error) {
 	cmd := exec.CommandContext(ctx, s.processManager.binaryPath, "-V")
 	rawOutput, err := cmd.CombinedOutput()
 	if err != nil {

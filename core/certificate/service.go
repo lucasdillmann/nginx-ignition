@@ -27,7 +27,7 @@ func newService(
 	}
 }
 
-func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	inUse, err := s.repository.InUseByID(ctx, id)
 	if err != nil {
 		return err
@@ -43,14 +43,14 @@ func (s *service) deleteByID(ctx context.Context, id uuid.UUID) error {
 	return s.repository.DeleteByID(ctx, id)
 }
 
-func (s *service) getByID(ctx context.Context, id uuid.UUID) (*Certificate, error) {
+func (s *service) Get(ctx context.Context, id uuid.UUID) (*Certificate, error) {
 	cert, err := s.repository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
 	if cert != nil {
-		availableProviders, err := s.availableProviders(ctx)
+		availableProviders, err := s.AvailableProviders(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -62,17 +62,21 @@ func (s *service) getByID(ctx context.Context, id uuid.UUID) (*Certificate, erro
 	return cert, nil
 }
 
-func (s *service) existsByID(ctx context.Context, id uuid.UUID) (bool, error) {
+func (s *service) Exists(ctx context.Context, id uuid.UUID) (bool, error) {
 	return s.repository.ExistsByID(ctx, id)
 }
 
-func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerms *string) (*pagination.Page[Certificate], error) {
+func (s *service) List(
+	ctx context.Context,
+	pageSize, pageNumber int,
+	searchTerms *string,
+) (*pagination.Page[Certificate], error) {
 	certs, err := s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms)
 	if err != nil {
 		return nil, err
 	}
 
-	availableProviders, err := s.availableProviders(ctx)
+	availableProviders, err := s.AvailableProviders(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +89,7 @@ func (s *service) list(ctx context.Context, pageSize, pageNumber int, searchTerm
 	return certs, nil
 }
 
-func (s *service) availableProviders(_ context.Context) ([]AvailableProvider, error) {
+func (s *service) AvailableProviders(_ context.Context) ([]AvailableProvider, error) {
 	availableProviders := make([]AvailableProvider, 0)
 	for _, provider := range s.providers() {
 		availableProviders = append(availableProviders, AvailableProvider{
@@ -103,12 +107,14 @@ func (s *service) renewAllDue(ctx context.Context) error {
 	}
 
 	if len(certificates) == 0 {
-		log.Infof("Certificates auto-renew triggered, but no certificates are due to be renewed yet")
+		log.Infof(
+			"Certificates auto-renew triggered, but no certificates are due to be renewed yet",
+		)
 		return nil
 	}
 
 	for _, certificate := range certificates {
-		err = s.renew(ctx, certificate.ID)
+		err = s.Renew(ctx, certificate.ID)
 		if err != nil {
 			log.Warnf("Error renewing certificate %s: %s", certificate.ID, err)
 			continue
@@ -123,13 +129,13 @@ func (s *service) renewAllDue(ctx context.Context) error {
 	return nil
 }
 
-func (s *service) renew(ctx context.Context, certificateID uuid.UUID) error {
+func (s *service) Renew(ctx context.Context, certificateID uuid.UUID) error {
 	certificate, err := s.repository.FindByID(ctx, certificateID)
 	if err != nil {
 		return err
 	}
 
-	providers, err := s.availableProviders(ctx)
+	providers, err := s.AvailableProviders(ctx)
 	if err != nil {
 		return err
 	}
@@ -148,8 +154,8 @@ func (s *service) renew(ctx context.Context, certificateID uuid.UUID) error {
 	return s.repository.Save(ctx, certificate)
 }
 
-func (s *service) issue(ctx context.Context, request *IssueRequest) (*Certificate, error) {
-	providers, err := s.availableProviders(ctx)
+func (s *service) Issue(ctx context.Context, request *IssueRequest) (*Certificate, error) {
+	providers, err := s.AvailableProviders(ctx)
 	if err != nil {
 		return nil, err
 	}

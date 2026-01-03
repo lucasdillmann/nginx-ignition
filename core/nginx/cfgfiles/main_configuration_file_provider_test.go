@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
@@ -55,11 +56,12 @@ func Test_MainConfigurationFileProvider_Provide(t *testing.T) {
 		},
 	}
 
-	p.settingsCommands = &settings.Commands{
-		Get: func(_ context.Context) (*settings.Settings, error) {
-			return mockSettings, nil
-		},
-	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	settingsCmds := settings.NewMockedCommands(ctrl)
+	settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(mockSettings, nil)
+	p.settingsCommands = settingsCmds
 
 	t.Run("successfully generates basic config", func(t *testing.T) {
 		ctx := &providerContext{
@@ -115,11 +117,9 @@ func Test_MainConfigurationFileProvider_Provide(t *testing.T) {
 	})
 
 	t.Run("returns error when settingsCommands fails", func(t *testing.T) {
-		p.settingsCommands = &settings.Commands{
-			Get: func(_ context.Context) (*settings.Settings, error) {
-				return nil, assert.AnError
-			},
-		}
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().Get(gomock.Any()).Return(nil, assert.AnError)
+		p.settingsCommands = settingsCmds
 		ctx := &providerContext{context: context.Background()}
 		_, err := p.provide(ctx)
 		assert.ErrorIs(t, err, assert.AnError)

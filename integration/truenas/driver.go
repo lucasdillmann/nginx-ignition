@@ -123,7 +123,10 @@ func (a *Driver) GetOptionProxyURL(
 	}
 
 	if port == nil || len(port.HostPorts) == 0 {
-		return nil, nil, fmt.Errorf("unable to resolve proxy URL for %s: service is probably offline/stopped", id)
+		return nil, nil, fmt.Errorf(
+			"unable to resolve proxy URL for %s: service is probably offline/stopped",
+			id,
+		)
 	}
 
 	hostPort := port.HostPorts[0].HostPort
@@ -177,7 +180,10 @@ func (a *Driver) getWorkloadPort(
 	return nil, nil, nil
 }
 
-func (a *Driver) buildOptions(apps []client.AvailableAppDTO, tcpOnly bool) []integration.DriverOption {
+func (a *Driver) buildOptions(
+	apps []client.AvailableAppDTO,
+	tcpOnly bool,
+) []integration.DriverOption {
 	options := make([]integration.DriverOption, 0)
 
 	for _, app := range apps {

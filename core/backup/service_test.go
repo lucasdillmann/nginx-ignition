@@ -21,11 +21,11 @@ func Test_Service_Get(t *testing.T) {
 			Contents:    []byte("test content"),
 		}
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().Get(ctx).Return(expected, nil)
 
-		svc := newService(repo)
-		result, err := svc.get(ctx)
+		svc := newCommands(repo)
+		result, err := svc.Get(ctx)
 
 		assert.NoError(t, err)
 		assert.Equal(t, expected, result)
@@ -38,11 +38,11 @@ func Test_Service_Get(t *testing.T) {
 		ctx := context.Background()
 		expectedErr := errors.New("repository error")
 
-		repo := NewMockRepository(ctrl)
+		repo := NewMockedRepository(ctrl)
 		repo.EXPECT().Get(ctx).Return(nil, expectedErr)
 
-		svc := newService(repo)
-		result, err := svc.get(ctx)
+		svc := newCommands(repo)
+		result, err := svc.Get(ctx)
 
 		assert.Error(t, err)
 		assert.Nil(t, result)

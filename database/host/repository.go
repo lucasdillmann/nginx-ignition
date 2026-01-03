@@ -109,7 +109,10 @@ func (r *repository) Save(ctx context.Context, h *host.Host) error {
 		return err
 	}
 
-	exists, err := transaction.NewSelect().Model((*hostModel)(nil)).Where(constants.ByIDFilter, h.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().
+		Model((*hostModel)(nil)).
+		Where(constants.ByIDFilter, h.ID).
+		Exists(ctx)
 	if err != nil {
 		return err
 	}
@@ -127,7 +130,11 @@ func (r *repository) Save(ctx context.Context, h *host.Host) error {
 	return transaction.Commit()
 }
 
-func (r *repository) performInsert(ctx context.Context, model *hostModel, transaction bun.Tx) error {
+func (r *repository) performInsert(
+	ctx context.Context,
+	model *hostModel,
+	transaction bun.Tx,
+) error {
 	_, err := transaction.NewInsert().Model(model).Exec(ctx)
 	if err != nil {
 		return err
@@ -136,7 +143,11 @@ func (r *repository) performInsert(ctx context.Context, model *hostModel, transa
 	return r.saveLinkedModels(ctx, model, transaction)
 }
 
-func (r *repository) performUpdate(ctx context.Context, model *hostModel, transaction bun.Tx) error {
+func (r *repository) performUpdate(
+	ctx context.Context,
+	model *hostModel,
+	transaction bun.Tx,
+) error {
 	_, err := transaction.NewUpdate().Model(model).Where(constants.ByIDFilter, model.ID).Exec(ctx)
 	if err != nil {
 		return err
@@ -160,7 +171,11 @@ func (r *repository) performUpdate(ctx context.Context, model *hostModel, transa
 	return r.saveLinkedModels(ctx, model, transaction)
 }
 
-func (r *repository) saveLinkedModels(ctx context.Context, model *hostModel, transaction bun.Tx) error {
+func (r *repository) saveLinkedModels(
+	ctx context.Context,
+	model *hostModel,
+	transaction bun.Tx,
+) error {
 	for _, binding := range model.Bindings {
 		binding.ID = uuid.New()
 		binding.HostID = model.ID

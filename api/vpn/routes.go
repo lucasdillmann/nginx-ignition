@@ -11,7 +11,7 @@ import (
 func Install(
 	router *gin.Engine,
 	authorizer *authorization.ABAC,
-	commands *vpn.Commands,
+	commands vpn.Commands,
 ) {
 	basePath := authorizer.ConfigureGroup(
 		router,

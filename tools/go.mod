@@ -7,6 +7,7 @@ tool (
 	go.uber.org/mock/mockgen
 	golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment
 	mvdan.cc/gofumpt
+	github.com/segmentio/golines
 )
 
 replace (

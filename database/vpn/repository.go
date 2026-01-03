@@ -117,13 +117,19 @@ func (r *repository) Save(ctx context.Context, values *vpn.VPN) error {
 		return err
 	}
 
-	exists, err := transaction.NewSelect().Model((*vpnModel)(nil)).Where(constants.ByIDFilter, values.ID).Exists(ctx)
+	exists, err := transaction.NewSelect().
+		Model((*vpnModel)(nil)).
+		Where(constants.ByIDFilter, values.ID).
+		Exists(ctx)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		_, err = transaction.NewUpdate().Model(model).Where(constants.ByIDFilter, values.ID).Exec(ctx)
+		_, err = transaction.NewUpdate().
+			Model(model).
+			Where(constants.ByIDFilter, values.ID).
+			Exec(ctx)
 	} else {
 		_, err = transaction.NewInsert().Model(model).Exec(ctx)
 	}

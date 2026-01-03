@@ -12,8 +12,8 @@ import (
 )
 
 type getHandler struct {
-	settingsCommands *settings.Commands
-	hostCommands     *host.Commands
+	settingsCommands settings.Commands
+	hostCommands     host.Commands
 }
 
 func (h getHandler) handle(ctx *gin.Context) {
@@ -35,7 +35,10 @@ func (h getHandler) handle(ctx *gin.Context) {
 
 	globalSettings, err := h.settingsCommands.Get(ctx.Request.Context())
 	if err != nil {
-		log.Warnf("Unable to get global settings (%v). Proceeding without the global bindings filled for now.", err)
+		log.Warnf(
+			"Unable to get global settings (%v). Proceeding without the global bindings filled for now.",
+			err,
+		)
 		globalSettings = nil
 	}
 

@@ -7,11 +7,15 @@ import (
 )
 
 func toDomain(dto *userRequestDTO) *user.SaveRequest {
+	if dto == nil {
+		return nil
+	}
+
 	return &user.SaveRequest{
 		ID:       uuid.New(),
-		Enabled:  *dto.Enabled,
-		Name:     *dto.Name,
-		Username: *dto.Username,
+		Enabled:  getBoolValue(dto.Enabled),
+		Name:     getStringValue(dto.Name),
+		Username: getStringValue(dto.Username),
 		Password: dto.Password,
 		Permissions: user.Permissions{
 			Hosts:        user.AccessLevel(dto.Permissions.Hosts),
@@ -31,6 +35,10 @@ func toDomain(dto *userRequestDTO) *user.SaveRequest {
 }
 
 func toDTO(domain *user.User) *userResponseDTO {
+	if domain == nil {
+		return nil
+	}
+
 	return &userResponseDTO{
 		ID:       domain.ID,
 		Enabled:  domain.Enabled,
@@ -51,4 +59,20 @@ func toDTO(domain *user.User) *userResponseDTO {
 			Caches:       string(domain.Permissions.Caches),
 		},
 	}
+}
+
+func getBoolValue(value *bool) bool {
+	if value == nil {
+		return false
+	}
+
+	return *value
+}
+
+func getStringValue(value *string) string {
+	if value == nil {
+		return ""
+	}
+
+	return *value
 }

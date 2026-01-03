@@ -26,11 +26,11 @@ var (
 )
 
 type validator struct {
-	commands *binding.Commands
+	commands binding.Commands
 	delegate *validation.ConsistencyValidator
 }
 
-func newValidator(commands *binding.Commands) *validator {
+func newValidator(commands binding.Commands) *validator {
 	return &validator{
 		commands,
 		validation.NewValidator(),
@@ -81,7 +81,11 @@ func (v *validator) validateLogRotation(settings *LogRotationSettings) {
 }
 
 func (v *validator) validateCertificateAutoRenew(settings *CertificateAutoRenewSettings) {
-	v.checkRange(settings.IntervalUnitCount, intervalRange, "certificateAutoRenew.intervalUnitCount")
+	v.checkRange(
+		settings.IntervalUnitCount,
+		intervalRange,
+		"certificateAutoRenew.intervalUnitCount",
+	)
 }
 
 func (v *validator) validateGlobalBindings(ctx context.Context, settings []binding.Binding) error {

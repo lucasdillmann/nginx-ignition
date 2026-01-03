@@ -7,7 +7,9 @@ import (
 	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
-func toAvailableProviderResponse(input []certificate.AvailableProvider) []availableProviderResponse {
+func toAvailableProviderResponse(
+	input []certificate.AvailableProvider,
+) []availableProviderResponse {
 	responses := make([]availableProviderResponse, 0)
 	for _, provider := range input {
 		responses = append(responses, availableProviderResponse{
@@ -21,7 +23,10 @@ func toAvailableProviderResponse(input []certificate.AvailableProvider) []availa
 	return responses
 }
 
-func toIssueCertificateResponse(cert *certificate.Certificate, err error) *issueCertificateResponse {
+func toIssueCertificateResponse(
+	cert *certificate.Certificate,
+	err error,
+) *issueCertificateResponse {
 	var errorReason *string
 	if err != nil {
 		errorStr := err.Error()

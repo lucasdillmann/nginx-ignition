@@ -6,7 +6,7 @@ import (
 )
 
 func Install() error {
-	err := container.Provide(buildCommands)
+	err := container.Provide(newCommands)
 	if err != nil {
 		return err
 	}
@@ -14,25 +14,10 @@ func Install() error {
 	return container.Run(registerStartup)
 }
 
-func buildCommands(
+func newCommands(
 	repository Repository,
 	cfg *configuration.Configuration,
-) (
-	*service,
-	*Commands,
-) {
-	serviceInstance := &service{repository, cfg}
-	commands := &Commands{
-		Authenticate:        serviceInstance.authenticate,
-		Delete:              serviceInstance.deleteByID,
-		Get:                 serviceInstance.getByID,
-		GetCount:            serviceInstance.count,
-		GetStatus:           serviceInstance.isEnabled,
-		List:                serviceInstance.list,
-		Save:                serviceInstance.save,
-		UpdatePassword:      serviceInstance.changePassword,
-		OnboardingCompleted: serviceInstance.isOnboardingCompleted,
-	}
-
-	return serviceInstance, commands
+) (*service, Commands) {
+	serviceInstance := newService(repository, cfg)
+	return serviceInstance, serviceInstance
 }

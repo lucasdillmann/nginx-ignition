@@ -326,7 +326,11 @@ var providers = []dns.Provider{
 	&zonomi.Provider{},
 }
 
-func resolveProviderChallenge(ctx context.Context, domainNames []string, parameters map[string]any) (challenge.Provider, error) {
+func resolveProviderChallenge(
+	ctx context.Context,
+	domainNames []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
 	providerID, _ := parameters[dnsProvider.ID].(string)
 
 	for _, provider := range providers {

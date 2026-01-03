@@ -50,7 +50,10 @@ func (p *Provider) Priority() int {
 	return 1
 }
 
-func (p *Provider) Issue(ctx context.Context, request *certificate.IssueRequest) (*certificate.Certificate, error) {
+func (p *Provider) Issue(
+	ctx context.Context,
+	request *certificate.IssueRequest,
+) (*certificate.Certificate, error) {
 	if err := commons.Validate(request, validationRules{p.DynamicFields()}); err != nil {
 		return nil, err
 	}
@@ -82,7 +85,10 @@ func (p *Provider) Issue(ctx context.Context, request *certificate.IssueRequest)
 	)
 }
 
-func (p *Provider) Renew(ctx context.Context, cert *certificate.Certificate) (*certificate.Certificate, error) {
+func (p *Provider) Renew(
+	ctx context.Context,
+	cert *certificate.Certificate,
+) (*certificate.Certificate, error) {
 	var metadata *certificateMetadata
 	if err := json.Unmarshal([]byte(*cert.Metadata), &metadata); err != nil {
 		return nil, coreerror.New("Failed to parse metadata", false)
@@ -104,7 +110,13 @@ func (p *Provider) Renew(ctx context.Context, cert *certificate.Certificate) (*c
 		newAccount: false,
 	}
 
-	return issueCertificate(ctx, user, cert.DomainNames, cert.Parameters, metadata.ProductionEnvironment)
+	return issueCertificate(
+		ctx,
+		user,
+		cert.DomainNames,
+		cert.Parameters,
+		metadata.ProductionEnvironment,
+	)
 }
 
 func (p *Provider) isProductionEnvironment() (bool, error) {

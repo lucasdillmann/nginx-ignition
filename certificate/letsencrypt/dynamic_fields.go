@@ -10,10 +10,12 @@ import (
 
 var (
 	termsOfService = dynamicfields.DynamicField{
-		ID:           "acceptTheTermsOfService",
-		Priority:     99,
-		Description:  "Terms of service",
-		HelpText:     ptr.Of("I agree to the Let's Encrypt terms of service available at theirs website"),
+		ID:          "acceptTheTermsOfService",
+		Priority:    99,
+		Description: "Terms of service",
+		HelpText: ptr.Of(
+			"I agree to the Let's Encrypt terms of service available at theirs website",
+		),
 		Required:     true,
 		DefaultValue: false,
 		Type:         dynamicfields.BooleanType,

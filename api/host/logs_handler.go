@@ -13,7 +13,7 @@ import (
 )
 
 type logsHandler struct {
-	commands *nginx.Commands
+	commands nginx.Commands
 }
 
 const (

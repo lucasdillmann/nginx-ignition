@@ -9,7 +9,7 @@ import (
 )
 
 type metadataHandler struct {
-	commands *nginx.Commands
+	commands nginx.Commands
 }
 
 func (h metadataHandler) handle(ctx *gin.Context) {

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
@@ -14,17 +15,17 @@ func Test_LogRotationTask_Schedule(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("converts minutes to duration correctly", func(t *testing.T) {
-		repo := &settings.Commands{
-			Get: func(_ context.Context) (*settings.Settings, error) {
-				return &settings.Settings{
-					LogRotation: &settings.LogRotationSettings{
-						Enabled:           true,
-						IntervalUnit:      settings.MinutesTimeUnit,
-						IntervalUnitCount: 30,
-					},
-				}, nil
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		repo := settings.NewMockedCommands(ctrl)
+		repo.EXPECT().Get(ctx).Return(&settings.Settings{
+			LogRotation: &settings.LogRotationSettings{
+				Enabled:           true,
+				IntervalUnit:      settings.MinutesTimeUnit,
+				IntervalUnitCount: 30,
 			},
-		}
+		}, nil)
 
 		task := &logRotationTask{
 			settingsCommands: repo,
@@ -37,17 +38,17 @@ func Test_LogRotationTask_Schedule(t *testing.T) {
 	})
 
 	t.Run("converts hours to duration correctly", func(t *testing.T) {
-		repo := &settings.Commands{
-			Get: func(_ context.Context) (*settings.Settings, error) {
-				return &settings.Settings{
-					LogRotation: &settings.LogRotationSettings{
-						Enabled:           true,
-						IntervalUnit:      settings.HoursTimeUnit,
-						IntervalUnitCount: 2,
-					},
-				}, nil
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		repo := settings.NewMockedCommands(ctrl)
+		repo.EXPECT().Get(ctx).Return(&settings.Settings{
+			LogRotation: &settings.LogRotationSettings{
+				Enabled:           true,
+				IntervalUnit:      settings.HoursTimeUnit,
+				IntervalUnitCount: 2,
 			},
-		}
+		}, nil)
 
 		task := &logRotationTask{
 			settingsCommands: repo,
@@ -59,17 +60,17 @@ func Test_LogRotationTask_Schedule(t *testing.T) {
 	})
 
 	t.Run("converts days to duration correctly", func(t *testing.T) {
-		repo := &settings.Commands{
-			Get: func(_ context.Context) (*settings.Settings, error) {
-				return &settings.Settings{
-					LogRotation: &settings.LogRotationSettings{
-						Enabled:           false,
-						IntervalUnit:      settings.DaysTimeUnit,
-						IntervalUnitCount: 1,
-					},
-				}, nil
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		repo := settings.NewMockedCommands(ctrl)
+		repo.EXPECT().Get(ctx).Return(&settings.Settings{
+			LogRotation: &settings.LogRotationSettings{
+				Enabled:           false,
+				IntervalUnit:      settings.DaysTimeUnit,
+				IntervalUnitCount: 1,
 			},
-		}
+		}, nil)
 
 		task := &logRotationTask{
 			settingsCommands: repo,
@@ -82,15 +83,15 @@ func Test_LogRotationTask_Schedule(t *testing.T) {
 	})
 
 	t.Run("returns error for invalid unit", func(t *testing.T) {
-		repo := &settings.Commands{
-			Get: func(_ context.Context) (*settings.Settings, error) {
-				return &settings.Settings{
-					LogRotation: &settings.LogRotationSettings{
-						IntervalUnit: "invalid",
-					},
-				}, nil
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		repo := settings.NewMockedCommands(ctrl)
+		repo.EXPECT().Get(ctx).Return(&settings.Settings{
+			LogRotation: &settings.LogRotationSettings{
+				IntervalUnit: "invalid",
 			},
-		}
+		}, nil)
 
 		task := &logRotationTask{
 			settingsCommands: repo,
@@ -101,11 +102,11 @@ func Test_LogRotationTask_Schedule(t *testing.T) {
 	})
 
 	t.Run("returns error when settings retrieval fails", func(t *testing.T) {
-		repo := &settings.Commands{
-			Get: func(_ context.Context) (*settings.Settings, error) {
-				return nil, assert.AnError
-			},
-		}
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		repo := settings.NewMockedCommands(ctrl)
+		repo.EXPECT().Get(ctx).Return(nil, assert.AnError)
 
 		task := &logRotationTask{
 			settingsCommands: repo,

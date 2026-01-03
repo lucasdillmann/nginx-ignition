@@ -12,9 +12,9 @@ import (
 
 func Install(
 	router *gin.Engine,
-	hostCommands *host.Commands,
-	nginxCommands *nginx.Commands,
-	settingsCommands *settings.Commands,
+	hostCommands host.Commands,
+	nginxCommands nginx.Commands,
+	settingsCommands settings.Commands,
 	authorizer *authorization.ABAC,
 ) {
 	basePath := authorizer.ConfigureGroup(

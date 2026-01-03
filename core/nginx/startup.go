@@ -29,7 +29,7 @@ func registerStartup(lc *lifecycle.Lifecycle, service *service) {
 func (s startup) Run(ctx context.Context) error {
 	go s.service.attachListeners()
 
-	metadata, err := s.service.getMetadata(ctx)
+	metadata, err := s.service.GetMetadata(ctx)
 	if err != nil || metadata == nil {
 		log.Warnf("Unable to detect nginx binary details: %v", err)
 	} else {
@@ -43,7 +43,7 @@ func (s startup) Run(ctx context.Context) error {
 	}
 
 	autoRetry := &retry.Retry{
-		Action:               func() error { return s.service.start(ctx) },
+		Action:               func() error { return s.service.Start(ctx) },
 		Callback:             s.handleRetryCallback,
 		Attempts:             s.retryAttempts,
 		DelayBetweenAttempts: s.retryDelay,

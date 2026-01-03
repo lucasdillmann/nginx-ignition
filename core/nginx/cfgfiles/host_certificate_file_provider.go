@@ -15,13 +15,13 @@ import (
 )
 
 type hostCertificateFileProvider struct {
-	certificateCommands *certificate.Commands
-	settingsCommands    *settings.Commands
+	certificateCommands certificate.Commands
+	settingsCommands    settings.Commands
 }
 
 func newHostCertificateFileProvider(
-	certificateCommands *certificate.Commands,
-	settingsCommands *settings.Commands,
+	certificateCommands certificate.Commands,
+	settingsCommands settings.Commands,
 ) *hostCertificateFileProvider {
 	return &hostCertificateFileProvider{
 		certificateCommands: certificateCommands,
