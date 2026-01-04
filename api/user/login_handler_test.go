@@ -17,26 +17,27 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-func Test_LoginHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_loginHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with token on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			payload := &userLoginRequestDTO{
+			payload := userLoginRequestDTO{
 				Username: ptr.Of("johndoe"),
 				Password: ptr.Of("password"),
 			}
 
-			mockUser := &user.User{
-				Username: "johndoe",
-			}
-			commands := user.NewMockedCommands(ctrl)
+			subject := newUser()
+			subject.Username = "johndoe"
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				Authenticate(gomock.Any(), *payload.Username, *payload.Password).
-				Return(mockUser, nil)
+				Return(subject, nil)
 
 			cfg := configuration.NewWithOverrides(map[string]string{
 				"nginx-ignition.security.jwt.secret": "1234567890123456789012345678901234567890123456789012345678901234",
@@ -46,30 +47,30 @@ func Test_LoginHandler(t *testing.T) {
 				commands:   commands,
 				authorizer: authorizer,
 			}
-			r := gin.New()
-			r.POST("/api/users/login", handler.handle)
+			engine := gin.New()
+			engine.POST("/api/users/login", handler.handle)
 
-			jsonPayload, _ := json.Marshal(payload)
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/users/login", bytes.NewBuffer(jsonPayload))
-			r.ServeHTTP(w, req)
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("POST", "/api/users/login", bytes.NewBuffer(body))
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp userLoginResponseDTO
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.NotEmpty(t, resp.Token)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response userLoginResponseDTO
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.NotEmpty(t, response.Token)
 		})
 
 		t.Run("returns 401 Unauthorized on authentication failure", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			payload := &userLoginRequestDTO{
+			payload := userLoginRequestDTO{
 				Username: ptr.Of("johndoe"),
 				Password: ptr.Of("password"),
 			}
 
-			commands := user.NewMockedCommands(ctrl)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				Authenticate(gomock.Any(), *payload.Username, *payload.Password).
 				Return(nil, nil)
@@ -82,15 +83,15 @@ func Test_LoginHandler(t *testing.T) {
 				commands:   commands,
 				authorizer: authorizer,
 			}
-			r := gin.New()
-			r.POST("/api/users/login", handler.handle)
+			engine := gin.New()
+			engine.POST("/api/users/login", handler.handle)
 
-			jsonPayload, _ := json.Marshal(payload)
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/users/login", bytes.NewBuffer(jsonPayload))
-			r.ServeHTTP(w, req)
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("POST", "/api/users/login", bytes.NewBuffer(body))
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusUnauthorized, w.Code)
+			assert.Equal(t, http.StatusUnauthorized, recorder.Code)
 		})
 	})
 }

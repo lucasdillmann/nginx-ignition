@@ -13,32 +13,39 @@ import (
 	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
-func Test_AvailableProvidersHandler(t *testing.T) {
-	t.Run("Handle", func(t *testing.T) {
+func init() {
+	gin.SetMode(gin.TestMode)
+}
+
+func Test_availableProvidersHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with providers list on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			mockProviders := []certificate.AvailableProvider{}
-
-			commands := certificate.NewMockedCommands(ctrl)
+			providers := []certificate.AvailableProvider{}
+			commands := certificate.NewMockedCommands(controller)
 			commands.EXPECT().
 				AvailableProviders(gomock.Any()).
-				Return(mockProviders, nil)
+				Return(providers, nil)
 
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("GET", "/api/certificates/available-providers", nil)
+			recorder := httptest.NewRecorder()
+			ginContext, _ := gin.CreateTestContext(recorder)
+			ginContext.Request = httptest.NewRequest(
+				"GET",
+				"/api/certificates/available-providers",
+				nil,
+			)
 
 			handler := availableProvidersHandler{
 				commands: commands,
 			}
-			handler.handle(ctx)
+			handler.handle(ginContext)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp []availableProviderResponse
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.Len(t, resp, 0)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response []availableProviderResponse
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.Len(t, response, 0)
 		})
 	})
 }

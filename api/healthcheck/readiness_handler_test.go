@@ -10,20 +10,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_ReadinessHandler(t *testing.T) {
-	t.Run("Handle", func(t *testing.T) {
+func init() {
+	gin.SetMode(gin.TestMode)
+}
+
+func Test_readinessHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK", func(t *testing.T) {
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("GET", "/health/readiness", nil)
+			recorder := httptest.NewRecorder()
+			ginContext, _ := gin.CreateTestContext(recorder)
+			ginContext.Request = httptest.NewRequest("GET", "/health/readiness", nil)
 
 			handler := readinessHandler{}
-			handler.handle(ctx)
+			handler.handle(ginContext)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp map[string]any
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.Equal(t, true, resp["ready"])
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response map[string]any
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.Equal(t, true, response["ready"])
 		})
 	})
 }

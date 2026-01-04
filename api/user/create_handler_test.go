@@ -13,25 +13,21 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-func Test_CreateHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_createHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 201 Created on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			payload := &userRequestDTO{
-				Name:     ptr.Of("John Doe"),
-				Username: ptr.Of("johndoe"),
-				Enabled:  ptr.Of(true),
-			}
-
-			commands := user.NewMockedCommands(ctrl)
+			payload := newUserRequest()
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil)
@@ -39,36 +35,34 @@ func Test_CreateHandler(t *testing.T) {
 			handler := createHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.Use(func(c *gin.Context) {
-				c.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: uuid.New()}})
-				c.Next()
+			engine := gin.New()
+			engine.Use(func(ginContext *gin.Context) {
+				ginContext.Set(
+					"ABAC:Subject",
+					&authorization.Subject{User: &user.User{ID: uuid.New()}},
+				)
+				ginContext.Next()
 			})
-			r.POST("/api/users", handler.handle)
+			engine.POST("/api/users", handler.handle)
 
-			jsonPayload, _ := json.Marshal(payload)
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/users", bytes.NewBuffer(jsonPayload))
-			r.ServeHTTP(w, req)
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("POST", "/api/users", bytes.NewBuffer(body))
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusCreated, w.Code)
-			var resp map[string]uuid.UUID
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.NotEqual(t, uuid.Nil, resp["id"])
+			assert.Equal(t, http.StatusCreated, recorder.Code)
+			var response map[string]uuid.UUID
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.NotEqual(t, uuid.Nil, response["id"])
 		})
 
 		t.Run("panics on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			payload := &userRequestDTO{
-				Name:     ptr.Of("John Doe"),
-				Username: ptr.Of("johndoe"),
-				Enabled:  ptr.Of(true),
-			}
-
+			payload := newUserRequest()
 			expectedErr := assert.AnError
-			commands := user.NewMockedCommands(ctrl)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(expectedErr)
@@ -76,27 +70,30 @@ func Test_CreateHandler(t *testing.T) {
 			handler := createHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.Use(func(c *gin.Context) {
-				c.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: uuid.New()}})
-				c.Next()
+			engine := gin.New()
+			engine.Use(func(ginContext *gin.Context) {
+				ginContext.Set(
+					"ABAC:Subject",
+					&authorization.Subject{User: &user.User{ID: uuid.New()}},
+				)
+				ginContext.Next()
 			})
-			r.POST("/api/users", func(c *gin.Context) {
+			engine.POST("/api/users", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			jsonPayload, _ := json.Marshal(payload)
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/users", bytes.NewBuffer(jsonPayload))
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("POST", "/api/users", bytes.NewBuffer(body))
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

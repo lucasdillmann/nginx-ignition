@@ -14,66 +14,68 @@ import (
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
-func Test_GetOptionHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_getOptionHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with option data on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
 			optionID := "opt-1"
-			mockOption := &integration.DriverOption{
+			option := &integration.DriverOption{
 				ID:   optionID,
 				Name: "Option 1",
 			}
-			commands := integration.NewMockedCommands(ctrl)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetOption(gomock.Any(), id, optionID).
-				Return(mockOption, nil)
+				Return(option, nil)
 
 			handler := getOptionHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/integrations/:id/options/:optionID", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/integrations/:id/options/:optionID", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest(
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
 				"GET",
 				"/api/integrations/"+id.String()+"/options/"+optionID,
 				nil,
 			)
-			r.ServeHTTP(w, req)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp integrationOptionResponse
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.Equal(t, optionID, resp.ID)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response integrationOptionResponse
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.Equal(t, optionID, response.ID)
 		})
 
 		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
 			handler := getOptionHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.GET("/api/integrations/:id/options/:optionID", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/integrations/:id/options/:optionID", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/integrations/invalid/options/opt-1", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/integrations/invalid/options/opt-1", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("returns 404 Not Found when option does not exist", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
 			optionID := "opt-1"
-			commands := integration.NewMockedCommands(ctrl)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetOption(gomock.Any(), id, optionID).
 				Return(nil, nil)
@@ -81,28 +83,28 @@ func Test_GetOptionHandler(t *testing.T) {
 			handler := getOptionHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/integrations/:id/options/:optionID", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/integrations/:id/options/:optionID", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest(
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
 				"GET",
 				"/api/integrations/"+id.String()+"/options/"+optionID,
 				nil,
 			)
-			r.ServeHTTP(w, req)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("panics on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
 			optionID := "opt-1"
 			expectedErr := assert.AnError
-			commands := integration.NewMockedCommands(ctrl)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetOption(gomock.Any(), id, optionID).
 				Return(nil, expectedErr)
@@ -110,26 +112,26 @@ func Test_GetOptionHandler(t *testing.T) {
 			handler := getOptionHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/integrations/:id/options/:optionID", func(c *gin.Context) {
+			engine := gin.New()
+			engine.GET("/api/integrations/:id/options/:optionID", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest(
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
 				"GET",
 				"/api/integrations/"+id.String()+"/options/"+optionID,
 				nil,
 			)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

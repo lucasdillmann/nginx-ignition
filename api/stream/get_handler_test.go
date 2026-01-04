@@ -14,60 +14,58 @@ import (
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
-func Test_GetHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_getHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with stream data on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			id := uuid.New()
-			mockStream := &stream.Stream{
-				ID:   id,
-				Name: "stream-1",
-			}
-			commands := stream.NewMockedCommands(ctrl)
+			subject := newStream()
+			commands := stream.NewMockedCommands(controller)
 			commands.EXPECT().
-				Get(gomock.Any(), id).
-				Return(mockStream, nil)
+				Get(gomock.Any(), subject.ID).
+				Return(subject, nil)
 
 			handler := getHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/streams/:id", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/streams/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/streams/"+id.String(), nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/streams/"+subject.ID.String(), nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp streamResponseDTO
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.Equal(t, id, *resp.ID)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response streamResponseDTO
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.Equal(t, subject.ID, *response.ID)
 		})
 
 		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
 			handler := getHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.GET("/api/streams/:id", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/streams/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/streams/invalid", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/streams/invalid", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("returns 404 Not Found when stream does not exist", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
-			commands := stream.NewMockedCommands(ctrl)
+			commands := stream.NewMockedCommands(controller)
 			commands.EXPECT().
 				Get(gomock.Any(), id).
 				Return(nil, nil)
@@ -75,23 +73,23 @@ func Test_GetHandler(t *testing.T) {
 			handler := getHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/streams/:id", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/streams/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/streams/"+id.String(), nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/streams/"+id.String(), nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("panics on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
 			expectedErr := assert.AnError
-			commands := stream.NewMockedCommands(ctrl)
+			commands := stream.NewMockedCommands(controller)
 			commands.EXPECT().
 				Get(gomock.Any(), id).
 				Return(nil, expectedErr)
@@ -99,22 +97,22 @@ func Test_GetHandler(t *testing.T) {
 			handler := getHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/streams/:id", func(c *gin.Context) {
+			engine := gin.New()
+			engine.GET("/api/streams/:id", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/streams/"+id.String(), nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/streams/"+id.String(), nil)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

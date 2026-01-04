@@ -160,7 +160,7 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expectedPage := pagination.New(1, 10, 1, []Stream{
+			expectedPage := pagination.Of([]Stream{
 				{
 					Name: "test",
 				},

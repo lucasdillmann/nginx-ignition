@@ -8,7 +8,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
-func Test_ToResponse(t *testing.T) {
+func Test_toResponse(t *testing.T) {
 	t.Run("converts domain model to DTO", func(t *testing.T) {
 		input := []dynamicfields.DynamicField{
 			{
@@ -18,7 +18,11 @@ func Test_ToResponse(t *testing.T) {
 				Priority:    1,
 				Description: "Desc 1",
 			},
-			{ID: "field2", Type: dynamicfields.BooleanType, DefaultValue: "10"},
+			{
+				ID:           "field2",
+				Type:         dynamicfields.BooleanType,
+				DefaultValue: "10",
+			},
 			{
 				ID:   "field3",
 				Type: dynamicfields.EnumType,

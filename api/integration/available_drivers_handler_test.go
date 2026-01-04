@@ -13,15 +13,17 @@ import (
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
-func Test_AvailableDriversHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_availableDriversHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with available drivers", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			mockDrivers := []integration.AvailableDriver{
+			drivers := []integration.AvailableDriver{
 				{
 					ID:   "docker",
 					Name: "Docker",
@@ -32,34 +34,34 @@ func Test_AvailableDriversHandler(t *testing.T) {
 				},
 			}
 
-			commands := integration.NewMockedCommands(ctrl)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetAvailableDrivers(gomock.Any()).
-				Return(mockDrivers, nil)
+				Return(drivers, nil)
 
 			handler := availableDriversHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/integrations/available-drivers", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/integrations/available-drivers", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/integrations/available-drivers", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/integrations/available-drivers", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp []integrationDriverResponse
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.Len(t, resp, 2)
-			assert.Equal(t, "docker", resp[0].ID)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response []integrationDriverResponse
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.Len(t, response, 2)
+			assert.Equal(t, "docker", response[0].ID)
 		})
 
 		t.Run("panics on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			expectedErr := assert.AnError
-			commands := integration.NewMockedCommands(ctrl)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetAvailableDrivers(gomock.Any()).
 				Return(nil, expectedErr)
@@ -67,22 +69,22 @@ func Test_AvailableDriversHandler(t *testing.T) {
 			handler := availableDriversHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/integrations/available-drivers", func(c *gin.Context) {
+			engine := gin.New()
+			engine.GET("/api/integrations/available-drivers", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/integrations/available-drivers", nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/integrations/available-drivers", nil)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

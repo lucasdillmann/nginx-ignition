@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Wrap(t *testing.T) {
+func Test_wrap(t *testing.T) {
 	t.Run("returns converted value when input is not nil", func(t *testing.T) {
 		convertFunc := func(_ *int) string {
 			return "value"
@@ -27,7 +27,7 @@ func Test_Wrap(t *testing.T) {
 	})
 }
 
-func Test_Wrap2(t *testing.T) {
+func Test_wrap2(t *testing.T) {
 	t.Run("returns converted value when inputs are valid", func(t *testing.T) {
 		convertFunc := func(_, _ int) string {
 			return "value"

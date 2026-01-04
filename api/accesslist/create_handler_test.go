@@ -16,89 +16,90 @@ import (
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 )
 
-func Test_CreateHandler(t *testing.T) {
-	name := "New List"
-	realm := "Realm"
-	satisfyAll := true
-	defaultOutcome := accesslist.AllowOutcome
-	forwardAuth := true
+func init() {
+	gin.SetMode(gin.TestMode)
+}
 
-	payload := accessListRequestDTO{
-		Name:                        &name,
-		Realm:                       &realm,
-		SatisfyAll:                  &satisfyAll,
-		DefaultOutcome:              &defaultOutcome,
-		ForwardAuthenticationHeader: &forwardAuth,
-	}
-	body, _ := json.Marshal(payload)
-
-	t.Run("Handle", func(t *testing.T) {
+func Test_createHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 201 Created on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := accesslist.NewMockedCommands(ctrl)
+			payload := newAccessListRequestDTO()
+			commands := accesslist.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
-				DoAndReturn(func(_ context.Context, al *accesslist.AccessList) error {
-					assert.Equal(t, name, al.Name)
+				DoAndReturn(func(_ context.Context, accessList *accesslist.AccessList) error {
+					assert.Equal(t, *payload.Name, accessList.Name)
 					return nil
 				})
 
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("POST", "/api/access-lists", bytes.NewBuffer(body))
-			ctx.Request.Header.Set("Content-Type", "application/json")
+			recorder := httptest.NewRecorder()
+			ginContext, _ := gin.CreateTestContext(recorder)
+			body, _ := json.Marshal(payload)
+			ginContext.Request = httptest.NewRequest(
+				"POST",
+				"/api/access-lists",
+				bytes.NewBuffer(body),
+			)
+			ginContext.Request.Header.Set("Content-Type", "application/json")
 
 			handler := createHandler{
 				commands: commands,
 			}
-			handler.handle(ctx)
+			handler.handle(ginContext)
 
-			assert.Equal(t, http.StatusCreated, w.Code)
-			var resp map[string]string
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.NotEmpty(t, resp["id"])
+			assert.Equal(t, http.StatusCreated, recorder.Code)
+			var response map[string]string
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.NotEmpty(t, response["id"])
 		})
 
 		t.Run("panics on invalid JSON", func(t *testing.T) {
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest(
+			recorder := httptest.NewRecorder()
+			ginContext, _ := gin.CreateTestContext(recorder)
+			ginContext.Request = httptest.NewRequest(
 				"POST",
 				"/api/access-lists",
 				bytes.NewBufferString("invalid json"),
 			)
-			ctx.Request.Header.Set("Content-Type", "application/json")
+			ginContext.Request.Header.Set("Content-Type", "application/json")
 
 			handler := createHandler{
 				commands: nil,
 			}
 			assert.Panics(t, func() {
-				handler.handle(ctx)
+				handler.handle(ginContext)
 			})
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
 			expectedErr := errors.New("command error")
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := accesslist.NewMockedCommands(ctrl)
+			payload := newAccessListRequestDTO()
+			commands := accesslist.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(expectedErr)
 
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("POST", "/api/access-lists", bytes.NewBuffer(body))
-			ctx.Request.Header.Set("Content-Type", "application/json")
+			recorder := httptest.NewRecorder()
+			ginContext, _ := gin.CreateTestContext(recorder)
+			body, _ := json.Marshal(payload)
+			ginContext.Request = httptest.NewRequest(
+				"POST",
+				"/api/access-lists",
+				bytes.NewBuffer(body),
+			)
+			ginContext.Request.Header.Set("Content-Type", "application/json")
 
 			handler := createHandler{
 				commands: commands,
 			}
 			assert.PanicsWithValue(t, expectedErr, func() {
-				handler.handle(ctx)
+				handler.handle(ginContext)
 			})
 		})
 	})

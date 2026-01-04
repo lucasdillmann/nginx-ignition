@@ -14,16 +14,18 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-func Test_DeleteHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_deleteHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 204 No Content on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
-			commands := user.NewMockedCommands(ctrl)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				Delete(gomock.Any(), id).
 				Return(nil)
@@ -31,63 +33,66 @@ func Test_DeleteHandler(t *testing.T) {
 			handler := deleteHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.Use(func(c *gin.Context) {
-				c.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: uuid.New()}})
-				c.Next()
+			engine := gin.New()
+			engine.Use(func(ginContext *gin.Context) {
+				ginContext.Set(
+					"ABAC:Subject",
+					&authorization.Subject{User: &user.User{ID: uuid.New()}},
+				)
+				ginContext.Next()
 			})
-			r.DELETE("/api/users/:id", handler.handle)
+			engine.DELETE("/api/users/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("DELETE", "/api/users/"+id.String(), nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("DELETE", "/api/users/"+id.String(), nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNoContent, w.Code)
+			assert.Equal(t, http.StatusNoContent, recorder.Code)
 		})
 
 		t.Run("returns 400 Bad Request when deleting own user", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
 			handler := deleteHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.Use(func(c *gin.Context) {
-				c.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: id}})
-				c.Next()
+			engine := gin.New()
+			engine.Use(func(ginContext *gin.Context) {
+				ginContext.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: id}})
+				ginContext.Next()
 			})
-			r.DELETE("/api/users/:id", handler.handle)
+			engine.DELETE("/api/users/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("DELETE", "/api/users/"+id.String(), nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("DELETE", "/api/users/"+id.String(), nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusBadRequest, w.Code)
+			assert.Equal(t, http.StatusBadRequest, recorder.Code)
 		})
 
 		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
 			handler := deleteHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.DELETE("/api/users/:id", handler.handle)
+			engine := gin.New()
+			engine.DELETE("/api/users/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("DELETE", "/api/users/invalid", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("DELETE", "/api/users/invalid", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("panics on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
 			expectedErr := assert.AnError
-			commands := user.NewMockedCommands(ctrl)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				Delete(gomock.Any(), id).
 				Return(expectedErr)
@@ -95,26 +100,29 @@ func Test_DeleteHandler(t *testing.T) {
 			handler := deleteHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.Use(func(c *gin.Context) {
-				c.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: uuid.New()}})
-				c.Next()
+			engine := gin.New()
+			engine.Use(func(ginContext *gin.Context) {
+				ginContext.Set(
+					"ABAC:Subject",
+					&authorization.Subject{User: &user.User{ID: uuid.New()}},
+				)
+				ginContext.Next()
 			})
-			r.DELETE("/api/users/:id", func(c *gin.Context) {
+			engine.DELETE("/api/users/:id", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("DELETE", "/api/users/"+id.String(), nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("DELETE", "/api/users/"+id.String(), nil)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

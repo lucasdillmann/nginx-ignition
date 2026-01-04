@@ -11,31 +11,21 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/api/common/pagination"
-	corepagination "dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
-func Test_ListHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_listHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with integration list on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			mockIntegrations := []integration.Integration{
-				{
-					Name: "integration-1",
-				},
-				{
-					Name: "integration-2",
-				},
-			}
-			page := &corepagination.Page[integration.Integration]{
-				Contents: mockIntegrations,
-			}
-
-			commands := integration.NewMockedCommands(ctrl)
+			page := newIntegrationPage()
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				List(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(page, nil)
@@ -43,25 +33,25 @@ func Test_ListHandler(t *testing.T) {
 			handler := listHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/integrations", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/integrations", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/integrations?pageSize=10&pageNumber=1", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/integrations?pageSize=10&pageNumber=1", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp pagination.PageDTO[integrationResponse]
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.Len(t, resp.Contents, 2)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response pagination.PageDTO[integrationResponse]
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.Len(t, response.Contents, 1)
 		})
 
 		t.Run("panics on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			expectedErr := assert.AnError
-			commands := integration.NewMockedCommands(ctrl)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				List(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil, expectedErr)
@@ -69,22 +59,22 @@ func Test_ListHandler(t *testing.T) {
 			handler := listHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/integrations", func(c *gin.Context) {
+			engine := gin.New()
+			engine.GET("/api/integrations", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/integrations", nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/integrations", nil)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

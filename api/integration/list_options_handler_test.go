@@ -16,16 +16,18 @@ import (
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
-func Test_ListOptionsHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_listOptionsHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with options list on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
-			mockOptions := []integration.DriverOption{
+			options := []integration.DriverOption{
 				{
 					ID:   "opt-1",
 					Name: "Option 1",
@@ -35,11 +37,9 @@ func Test_ListOptionsHandler(t *testing.T) {
 					Name: "Option 2",
 				},
 			}
-			page := &corepagination.Page[integration.DriverOption]{
-				Contents: mockOptions,
-			}
+			page := corepagination.Of(options)
 
-			commands := integration.NewMockedCommands(ctrl)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				ListOptions(gomock.Any(), id, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(page, nil)
@@ -47,40 +47,40 @@ func Test_ListOptionsHandler(t *testing.T) {
 			handler := listOptionsHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/integrations/:id/options", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/integrations/:id/options", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/integrations/"+id.String()+"/options", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/integrations/"+id.String()+"/options", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp pagination.PageDTO[integrationOptionResponse]
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.Len(t, resp.Contents, 2)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response pagination.PageDTO[integrationOptionResponse]
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.Len(t, response.Contents, 2)
 		})
 
 		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
 			handler := listOptionsHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.GET("/api/integrations/:id/options", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/integrations/:id/options", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/integrations/invalid/options", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/integrations/invalid/options", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("panics on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
 			expectedErr := assert.AnError
-			commands := integration.NewMockedCommands(ctrl)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				ListOptions(gomock.Any(), id, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil, expectedErr)
@@ -88,22 +88,22 @@ func Test_ListOptionsHandler(t *testing.T) {
 			handler := listOptionsHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/integrations/:id/options", func(c *gin.Context) {
+			engine := gin.New()
+			engine.GET("/api/integrations/:id/options", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/integrations/"+id.String()+"/options", nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/integrations/"+id.String()+"/options", nil)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

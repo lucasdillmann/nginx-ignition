@@ -13,31 +13,20 @@ import (
 
 	"dillmann.com.br/nginx-ignition/api/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/cache"
-	corepagination "dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
-func Test_ListHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_listHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with cache list on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			mockCaches := []cache.Cache{
-				{
-					Name: "Cache 1",
-				},
-				{
-					Name: "Cache 2",
-				},
-			}
-
-			page := &corepagination.Page[cache.Cache]{
-				Contents: mockCaches,
-			}
-
-			commands := cache.NewMockedCommands(ctrl)
+			page := newCachePage()
+			commands := cache.NewMockedCommands(controller)
 			commands.EXPECT().
 				List(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(page, nil)
@@ -45,25 +34,25 @@ func Test_ListHandler(t *testing.T) {
 			handler := listHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/caches", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/caches", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/caches?pageSize=10&pageNumber=1", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/caches?pageSize=10&pageNumber=1", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp pagination.PageDTO[cacheResponseDTO]
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.Len(t, resp.Contents, 2)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response pagination.PageDTO[cacheResponseDTO]
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.Len(t, response.Contents, 1)
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			expectedErr := errors.New("list error")
-			commands := cache.NewMockedCommands(ctrl)
+			commands := cache.NewMockedCommands(controller)
 			commands.EXPECT().
 				List(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil, expectedErr)
@@ -71,22 +60,22 @@ func Test_ListHandler(t *testing.T) {
 			handler := listHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/caches", func(c *gin.Context) {
+			engine := gin.New()
+			engine.GET("/api/caches", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/caches", nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/caches", nil)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

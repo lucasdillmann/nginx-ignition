@@ -14,16 +14,18 @@ import (
 	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
-func Test_RenewHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_renewHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with success flag on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
-			commands := certificate.NewMockedCommands(ctrl)
+			commands := certificate.NewMockedCommands(controller)
 			commands.EXPECT().
 				Renew(gomock.Any(), id).
 				Return(nil)
@@ -31,40 +33,40 @@ func Test_RenewHandler(t *testing.T) {
 			handler := renewHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.POST("/api/certificates/:id/renew", handler.handle)
+			engine := gin.New()
+			engine.POST("/api/certificates/:id/renew", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/certificates/"+id.String()+"/renew", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("POST", "/api/certificates/"+id.String()+"/renew", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp renewCertificateResponse
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.True(t, resp.Success)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response renewCertificateResponse
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.True(t, response.Success)
 		})
 
 		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
 			handler := renewHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.POST("/api/certificates/:id/renew", handler.handle)
+			engine := gin.New()
+			engine.POST("/api/certificates/:id/renew", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/certificates/invalid/renew", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("POST", "/api/certificates/invalid/renew", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("returns 200 OK with error reasoning on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
 			expectedErr := assert.AnError
-			commands := certificate.NewMockedCommands(ctrl)
+			commands := certificate.NewMockedCommands(controller)
 			commands.EXPECT().
 				Renew(gomock.Any(), id).
 				Return(expectedErr)
@@ -72,18 +74,18 @@ func Test_RenewHandler(t *testing.T) {
 			handler := renewHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.POST("/api/certificates/:id/renew", handler.handle)
+			engine := gin.New()
+			engine.POST("/api/certificates/:id/renew", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/certificates/"+id.String()+"/renew", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("POST", "/api/certificates/"+id.String()+"/renew", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp renewCertificateResponse
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.False(t, resp.Success)
-			assert.Equal(t, expectedErr.Error(), *resp.ErrorReason)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response renewCertificateResponse
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.False(t, response.Success)
+			assert.Equal(t, expectedErr.Error(), *response.ErrorReason)
 		})
 	})
 }

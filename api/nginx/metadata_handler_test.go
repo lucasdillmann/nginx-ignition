@@ -13,44 +13,44 @@ import (
 	"dillmann.com.br/nginx-ignition/core/nginx"
 )
 
-func Test_MetadataHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_metadataHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with metadata", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			mockMetadata := &nginx.Metadata{
-				Version: "1.21.0",
-			}
-			commands := nginx.NewMockedCommands(ctrl)
+			metadataData := newMetadata()
+			commands := nginx.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetMetadata(gomock.Any()).
-				Return(mockMetadata, nil)
+				Return(metadataData, nil)
 
 			handler := metadataHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/nginx/metadata", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/nginx/metadata", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/nginx/metadata", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/nginx/metadata", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp map[string]any
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.Equal(t, "1.21.0", resp["version"])
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response map[string]any
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.Equal(t, metadataData.Version, response["version"])
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			expectedErr := assert.AnError
-			commands := nginx.NewMockedCommands(ctrl)
+			commands := nginx.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetMetadata(gomock.Any()).
 				Return(nil, expectedErr)
@@ -58,22 +58,22 @@ func Test_MetadataHandler(t *testing.T) {
 			handler := metadataHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/nginx/metadata", func(c *gin.Context) {
+			engine := gin.New()
+			engine.GET("/api/nginx/metadata", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/nginx/metadata", nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/nginx/metadata", nil)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

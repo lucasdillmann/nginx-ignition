@@ -11,15 +11,17 @@ import (
 	"dillmann.com.br/nginx-ignition/api/common/apierror"
 )
 
-func Test_ExtractPaginationParameters(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
+func Test_extractPaginationParameters(t *testing.T) {
 	t.Run("returns defaults when no params provided", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		c, _ := gin.CreateTestContext(w)
-		c.Request = httptest.NewRequest("GET", "/", nil)
+		recorder := httptest.NewRecorder()
+		ginContext, _ := gin.CreateTestContext(recorder)
+		ginContext.Request = httptest.NewRequest("GET", "/", nil)
 
-		pageSize, pageNumber, searchTerms, err := ExtractPaginationParameters(c)
+		pageSize, pageNumber, searchTerms, err := ExtractPaginationParameters(ginContext)
 
 		assert.NoError(t, err)
 		assert.Equal(t, 25, pageSize)
@@ -28,11 +30,15 @@ func Test_ExtractPaginationParameters(t *testing.T) {
 	})
 
 	t.Run("returns values when valid params provided", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		c, _ := gin.CreateTestContext(w)
-		c.Request = httptest.NewRequest("GET", "/?pageSize=50&pageNumber=2&searchTerms=test", nil)
+		recorder := httptest.NewRecorder()
+		ginContext, _ := gin.CreateTestContext(recorder)
+		ginContext.Request = httptest.NewRequest(
+			"GET",
+			"/?pageSize=50&pageNumber=2&searchTerms=test",
+			nil,
+		)
 
-		pageSize, pageNumber, searchTerms, err := ExtractPaginationParameters(c)
+		pageSize, pageNumber, searchTerms, err := ExtractPaginationParameters(ginContext)
 
 		assert.NoError(t, err)
 		assert.Equal(t, 50, pageSize)
@@ -42,22 +48,22 @@ func Test_ExtractPaginationParameters(t *testing.T) {
 	})
 
 	t.Run("returns empty searchTerms as nil", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		c, _ := gin.CreateTestContext(w)
-		c.Request = httptest.NewRequest("GET", "/?searchTerms=+++++", nil)
+		recorder := httptest.NewRecorder()
+		ginContext, _ := gin.CreateTestContext(recorder)
+		ginContext.Request = httptest.NewRequest("GET", "/?searchTerms=+++++", nil)
 
-		_, _, searchTerms, err := ExtractPaginationParameters(c)
+		_, _, searchTerms, err := ExtractPaginationParameters(ginContext)
 
 		assert.NoError(t, err)
 		assert.Nil(t, searchTerms)
 	})
 
 	t.Run("returns error when pageSize is invalid int", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		c, _ := gin.CreateTestContext(w)
-		c.Request = httptest.NewRequest("GET", "/?pageSize=invalid", nil)
+		recorder := httptest.NewRecorder()
+		ginContext, _ := gin.CreateTestContext(recorder)
+		ginContext.Request = httptest.NewRequest("GET", "/?pageSize=invalid", nil)
 
-		_, _, _, err := ExtractPaginationParameters(c)
+		_, _, _, err := ExtractPaginationParameters(ginContext)
 
 		assert.Error(t, err)
 		var apiErr *apierror.APIError
@@ -66,11 +72,11 @@ func Test_ExtractPaginationParameters(t *testing.T) {
 	})
 
 	t.Run("returns error when pageSize is out of range", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		c, _ := gin.CreateTestContext(w)
-		c.Request = httptest.NewRequest("GET", "/?pageSize=10001", nil)
+		recorder := httptest.NewRecorder()
+		ginContext, _ := gin.CreateTestContext(recorder)
+		ginContext.Request = httptest.NewRequest("GET", "/?pageSize=10001", nil)
 
-		_, _, _, err := ExtractPaginationParameters(c)
+		_, _, _, err := ExtractPaginationParameters(ginContext)
 
 		assert.Error(t, err)
 		var apiErr *apierror.APIError
@@ -79,11 +85,11 @@ func Test_ExtractPaginationParameters(t *testing.T) {
 	})
 
 	t.Run("returns error when pageNumber is invalid int", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		c, _ := gin.CreateTestContext(w)
-		c.Request = httptest.NewRequest("GET", "/?pageNumber=invalid", nil)
+		recorder := httptest.NewRecorder()
+		ginContext, _ := gin.CreateTestContext(recorder)
+		ginContext.Request = httptest.NewRequest("GET", "/?pageNumber=invalid", nil)
 
-		_, _, _, err := ExtractPaginationParameters(c)
+		_, _, _, err := ExtractPaginationParameters(ginContext)
 
 		assert.Error(t, err)
 		var apiErr *apierror.APIError
@@ -92,11 +98,11 @@ func Test_ExtractPaginationParameters(t *testing.T) {
 	})
 
 	t.Run("returns error when pageNumber is negative", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		c, _ := gin.CreateTestContext(w)
-		c.Request = httptest.NewRequest("GET", "/?pageNumber=-1", nil)
+		recorder := httptest.NewRecorder()
+		ginContext, _ := gin.CreateTestContext(recorder)
+		ginContext.Request = httptest.NewRequest("GET", "/?pageNumber=-1", nil)
 
-		_, _, _, err := ExtractPaginationParameters(c)
+		_, _, _, err := ExtractPaginationParameters(ginContext)
 
 		assert.Error(t, err)
 		var apiErr *apierror.APIError

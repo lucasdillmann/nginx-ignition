@@ -207,7 +207,7 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expectedPage := pagination.New(1, 10, 1, []AccessList{
+			expectedPage := pagination.Of([]AccessList{
 				{
 					Name: "test",
 				},

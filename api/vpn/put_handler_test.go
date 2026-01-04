@@ -15,20 +15,19 @@ import (
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
-func Test_PutHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_putHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 204 No Content on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
-			payload := &vpnRequest{
-				Name: "updated-vpn",
-			}
-
-			commands := vpn.NewMockedCommands(ctrl)
+			payload := newVPNRequest()
+			commands := vpn.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(nil)
@@ -36,46 +35,39 @@ func Test_PutHandler(t *testing.T) {
 			handler := putHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.PUT("/api/vpns/:id", handler.handle)
+			engine := gin.New()
+			engine.PUT("/api/vpns/:id", handler.handle)
 
-			jsonPayload, _ := json.Marshal(payload)
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest(
-				"PUT",
-				"/api/vpns/"+id.String(),
-				bytes.NewBuffer(jsonPayload),
-			)
-			r.ServeHTTP(w, req)
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("PUT", "/api/vpns/"+id.String(), bytes.NewBuffer(body))
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNoContent, w.Code)
+			assert.Equal(t, http.StatusNoContent, recorder.Code)
 		})
 
 		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
 			handler := putHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.PUT("/api/vpns/:id", handler.handle)
+			engine := gin.New()
+			engine.PUT("/api/vpns/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("PUT", "/api/vpns/invalid", bytes.NewBufferString("{}"))
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("PUT", "/api/vpns/invalid", bytes.NewBufferString("{}"))
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("panics on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
-			payload := &vpnRequest{
-				Name: "updated-vpn",
-			}
-
+			payload := newVPNRequest()
 			expectedErr := assert.AnError
-			commands := vpn.NewMockedCommands(ctrl)
+			commands := vpn.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(expectedErr)
@@ -83,27 +75,23 @@ func Test_PutHandler(t *testing.T) {
 			handler := putHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.PUT("/api/vpns/:id", func(c *gin.Context) {
+			engine := gin.New()
+			engine.PUT("/api/vpns/:id", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			jsonPayload, _ := json.Marshal(payload)
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest(
-				"PUT",
-				"/api/vpns/"+id.String(),
-				bytes.NewBuffer(jsonPayload),
-			)
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("PUT", "/api/vpns/"+id.String(), bytes.NewBuffer(body))
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})
