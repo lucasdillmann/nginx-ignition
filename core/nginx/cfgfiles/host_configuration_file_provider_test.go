@@ -495,5 +495,17 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			assert.Contains(t, result, "root /var/www/static;")
 			assert.Contains(t, result, "autoindex on;")
 		})
+
+		t.Run("generates static files config with index file", func(t *testing.T) {
+			r := &host.Route{
+				SourcePath: "/static",
+				TargetURI:  ptr.Of("/var/www/static"),
+				Settings: host.RouteSettings{
+					IndexFile: ptr.Of("home.html"),
+				},
+			}
+			result := provider.buildStaticFilesRoute(ctx, r)
+			assert.Contains(t, result, "index home.html;")
+		})
 	})
 }

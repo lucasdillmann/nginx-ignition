@@ -54,6 +54,7 @@ func newHost() *host.Host {
 					ProxySSLServerName:      false,
 					KeepOriginalDomainName:  true,
 					DirectoryListingEnabled: false,
+					IndexFile:               ptr.Of("index.html"),
 					Custom:                  ptr.Of("# Custom config"),
 				},
 				Response: &host.RouteStaticResponse{
