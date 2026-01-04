@@ -11,7 +11,7 @@ jobs:
   quality-checks:
     runs-on: self-hosted
     services:
-      postgres:
+      unit-tests-db:
         image: postgres:18
         env:
           POSTGRES_DB: nginx_ignition_tests
@@ -40,22 +40,15 @@ jobs:
       - name: Debug Network
         run: |
           echo "--- DNS Resolution ---"
-          getent hosts postgres || echo "postgres not found in hosts/DNS"
-          
-          echo "--- Routing Table ---"
-          ip route || route -n
+          getent hosts unit-tests-db || echo "unit-tests-db not found in hosts/DNS"
           
           echo "--- Connection Test ---"
           # Try to connect to port 5432 with a 2-second timeout
-          nc -zv -w 2 postgres 5432 || echo "FAILED: Cannot reach postgres:5432"
-          
-          echo "--- Local Postgres Check ---"
-          # See if something is already listening on the host's 5432
-          ss -tunlp | grep :5432 || echo "Nothing listening on host port 5432"
+          nc -zv -w 2 unit-tests-db 5432 || echo "FAILED: Cannot reach unit-tests-db:5432"
 
       - name: Unit tests
         env:
-          TEST_POSTGRES_HOST: postgres
+          TEST_POSTGRES_HOST: unit-tests-db
           TEST_POSTGRES_USER: postgres
           TEST_POSTGRES_PASSWORD: postgres
           TEST_POSTGRES_DBNAME: nginx_ignition_tests
