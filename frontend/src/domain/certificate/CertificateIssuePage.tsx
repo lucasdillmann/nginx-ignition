@@ -129,6 +129,23 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
         }))
     }
 
+    private fillDynamicFieldsDefaultValues(
+        availableProviders: AvailableProviderResponse[],
+        formValues: IssueCertificateRequest,
+    ): IssueCertificateRequest {
+        const { providerId, parameters } = formValues
+        const provider = availableProviders.find(item => item.id === providerId)
+        if (provider === undefined) return formValues
+
+        const currentParameters = parameters ?? {}
+        const updatedParameters = provider.dynamicFields?.reduce(
+            (acc, { id, defaultValue }) => ({ [id]: defaultValue, ...acc }),
+            currentParameters,
+        )
+
+        return { ...formValues, parameters: updatedParameters ?? currentParameters }
+    }
+
     private renderDynamicFields() {
         const { formValues, availableProviders, validationResult } = this.state
         const provider = availableProviders.find(item => item.id === formValues.providerId)
@@ -190,11 +207,11 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
                 this.setState({
                     availableProviders: sortedProviders,
                     loading: false,
-                    formValues: {
+                    formValues: this.fillDynamicFieldsDefaultValues(sortedProviders, {
                         providerId: providers[0].id,
                         domainNames: [""],
                         parameters: {},
-                    },
+                    }),
                 })
 
                 this.updateShellConfig(true)
