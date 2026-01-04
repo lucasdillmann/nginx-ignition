@@ -44,7 +44,8 @@ type hostVpnModel struct {
 }
 
 type hostRouteModel struct {
-	bun.BaseModel           `bun:"host_route"`
+	bun.BaseModel `bun:"host_route"`
+
 	RedirectCode            *int       `bun:"redirect_code"`
 	CustomSettings          *string    `bun:"custom_settings"`
 	CodeMainFunction        *string    `bun:"code_main_function"`

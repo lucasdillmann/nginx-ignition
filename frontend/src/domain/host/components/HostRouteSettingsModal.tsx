@@ -10,11 +10,10 @@ import PageResponse from "../../../core/pagination/PageResponse"
 import AccessListService from "../../accesslist/AccessListService"
 import { HostRouteType } from "../model/HostRequest"
 import { HostFormRoute } from "../model/HostFormValues"
-import HideableFormInput from "../../../core/components/form/HideableFormInput"
 import CacheResponse from "../../cache/model/CacheResponse"
 import CacheService from "../../cache/CacheService"
+import HostRouteConditionalConfig from "./HostRouteConditionalConfig"
 
-const NOT_AVAILABLE_REASON = "Not available for this route type"
 const PROXY_ROUTE_TYPES: HostRouteType[] = [HostRouteType.INTEGRATION, HostRouteType.PROXY]
 const ACCESS_LIST_SUPPORTED_ROUTE_TYPES: HostRouteType[] = [
     HostRouteType.INTEGRATION,
@@ -103,21 +102,8 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
         return this.cacheService.list(pageSize, pageNumber, searchTerms)
     }
 
-    private renderConditionally(props: { types: HostRouteType[]; children: any }) {
-        const { route } = this.props
-        const { types } = props
-
-        return (
-            <HideableFormInput hidden={!types.includes(route.type)} reason={NOT_AVAILABLE_REASON}>
-                {props.children}
-            </HideableFormInput>
-        )
-    }
-
-    Conditional = this.renderConditionally.bind(this)
-
     private renderMainTab() {
-        const { index, validationResult, fieldPath } = this.props
+        const { index, validationResult, fieldPath, route } = this.props
 
         return (
             <>
@@ -137,7 +123,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         allowEmpty
                     />
                 </Form.Item>
-                <this.Conditional types={ACCESS_LIST_SUPPORTED_ROUTE_TYPES}>
+                <HostRouteConditionalConfig route={route} types={ACCESS_LIST_SUPPORTED_ROUTE_TYPES}>
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "accessList"]}
@@ -154,8 +140,8 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                             allowEmpty
                         />
                     </Form.Item>
-                </this.Conditional>
-                <this.Conditional types={[HostRouteType.STATIC_FILES]}>
+                </HostRouteConditionalConfig>
+                <HostRouteConditionalConfig route={route} types={[HostRouteType.STATIC_FILES]}>
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "directoryListingEnabled"]}
@@ -169,8 +155,8 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     >
                         <Switch />
                     </Form.Item>
-                </this.Conditional>
-                <this.Conditional types={[HostRouteType.STATIC_FILES]}>
+                </HostRouteConditionalConfig>
+                <HostRouteConditionalConfig route={route} types={[HostRouteType.STATIC_FILES]}>
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "indexFile"]}
@@ -183,8 +169,8 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     >
                         <Input />
                     </Form.Item>
-                </this.Conditional>
-                <this.Conditional types={PROXY_ROUTE_TYPES}>
+                </HostRouteConditionalConfig>
+                <HostRouteConditionalConfig route={route} types={PROXY_ROUTE_TYPES}>
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "keepOriginalDomainName"]}
@@ -198,8 +184,8 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     >
                         <Switch />
                     </Form.Item>
-                </this.Conditional>
-                <this.Conditional types={PROXY_ROUTE_TYPES}>
+                </HostRouteConditionalConfig>
+                <HostRouteConditionalConfig route={route} types={PROXY_ROUTE_TYPES}>
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "proxySslServerName"]}
@@ -213,8 +199,8 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     >
                         <Switch />
                     </Form.Item>
-                </this.Conditional>
-                <this.Conditional types={PROXY_ROUTE_TYPES}>
+                </HostRouteConditionalConfig>
+                <HostRouteConditionalConfig route={route} types={PROXY_ROUTE_TYPES}>
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "includeForwardHeaders"]}
@@ -228,7 +214,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     >
                         <Switch />
                     </Form.Item>
-                </this.Conditional>
+                </HostRouteConditionalConfig>
             </>
         )
     }
