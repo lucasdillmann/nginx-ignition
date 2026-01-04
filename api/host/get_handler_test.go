@@ -16,100 +16,107 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func Test_GetHandler_Handle(t *testing.T) {
-	gin.SetMode(gin.TestMode)
+func Test_GetHandler(t *testing.T) {
+	id := uuid.New()
+	hostRecord := &host.Host{
+		ID:          id,
+		DomainNames: []string{"test.com"},
+	}
 
-	t.Run("returns 200 OK with host data on success", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
+	t.Run("Handle", func(t *testing.T) {
+		t.Run("returns 200 OK when host is found", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
 
-		id := uuid.New()
-		mockHost := &host.Host{ID: id, DomainNames: []string{"example.com"}}
-		hostCommands := host.NewMockedCommands(ctrl)
-		hostCommands.EXPECT().
-			Get(gomock.Any(), id).
-			Return(mockHost, nil)
+			commands := host.NewMockedCommands(ctrl)
+			commands.EXPECT().
+				Get(gomock.Any(), gomock.Any()).
+				Return(hostRecord, nil)
 
-		settingsCommands := settings.NewMockedCommands(ctrl)
-		settingsCommands.EXPECT().
-			Get(gomock.Any()).
-			Return(nil, nil)
+			settingsCommands := settings.NewMockedCommands(ctrl)
+			settingsCommands.EXPECT().
+				Get(gomock.Any()).
+				Return(&settings.Settings{}, nil)
 
-		handler := getHandler{settingsCommands, hostCommands}
-		r := gin.New()
-		r.GET("/api/hosts/:id", handler.handle)
+			router := gin.New()
+			handler := getHandler{
+				hostCommands:     commands,
+				settingsCommands: settingsCommands,
+			}
+			router.GET("/api/hosts/:id", handler.handle)
 
-		w := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", "/api/hosts/"+id.String(), nil)
-		r.ServeHTTP(w, req)
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest("GET", "/api/hosts/"+id.String(), nil)
+			router.ServeHTTP(w, req)
 
-		assert.Equal(t, http.StatusOK, w.Code)
-		var resp hostResponseDTO
-		json.Unmarshal(w.Body.Bytes(), &resp)
-		assert.Equal(t, id, *resp.ID)
-	})
-
-	t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
-		handler := getHandler{nil, nil}
-		r := gin.New()
-		r.GET("/api/hosts/:id", handler.handle)
-
-		w := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", "/api/hosts/invalid", nil)
-		r.ServeHTTP(w, req)
-
-		assert.Equal(t, http.StatusNotFound, w.Code)
-	})
-
-	t.Run("returns 404 Not Found when host does not exist", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		id := uuid.New()
-		hostCommands := host.NewMockedCommands(ctrl)
-		hostCommands.EXPECT().
-			Get(gomock.Any(), id).
-			Return(nil, nil)
-
-		handler := getHandler{nil, hostCommands}
-		r := gin.New()
-		r.GET("/api/hosts/:id", handler.handle)
-
-		w := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", "/api/hosts/"+id.String(), nil)
-		r.ServeHTTP(w, req)
-
-		assert.Equal(t, http.StatusNotFound, w.Code)
-	})
-
-	t.Run("panics when command returns error", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		id := uuid.New()
-		expectedErr := errors.New("get error")
-		hostCommands := host.NewMockedCommands(ctrl)
-		hostCommands.EXPECT().
-			Get(gomock.Any(), id).
-			Return(nil, expectedErr)
-
-		handler := getHandler{nil, hostCommands}
-		r := gin.New()
-		r.GET("/api/hosts/:id", func(c *gin.Context) {
-			defer func() {
-				if r := recover(); r != nil {
-					assert.Equal(t, expectedErr, r)
-					panic(r)
-				}
-			}()
-			handler.handle(c)
+			assert.Equal(t, http.StatusOK, w.Code)
+			var response hostResponseDTO
+			err := json.Unmarshal(w.Body.Bytes(), &response)
+			assert.NoError(t, err)
+			assert.Equal(t, hostRecord.DomainNames, response.DomainNames)
 		})
 
-		w := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", "/api/hosts/"+id.String(), nil)
+		t.Run("returns 404 Not Found when ID is invalid", func(t *testing.T) {
+			router := gin.New()
+			handler := getHandler{
+				hostCommands:     nil,
+				settingsCommands: nil,
+			}
+			router.GET("/api/hosts/:id", handler.handle)
 
-		assert.Panics(t, func() {
-			r.ServeHTTP(w, req)
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest("GET", "/api/hosts/invalid-uuid", nil)
+			router.ServeHTTP(w, req)
+
+			assert.Equal(t, http.StatusNotFound, w.Code)
+		})
+
+		t.Run("returns 404 Not Found when record does not exist", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			commands := host.NewMockedCommands(ctrl)
+			commands.EXPECT().
+				Get(gomock.Any(), gomock.Any()).
+				Return(nil, nil)
+
+			router := gin.New()
+			handler := getHandler{
+				hostCommands:     commands,
+				settingsCommands: nil,
+			}
+			router.GET("/api/hosts/:id", handler.handle)
+
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest("GET", "/api/hosts/"+id.String(), nil)
+			router.ServeHTTP(w, req)
+
+			assert.Equal(t, http.StatusNotFound, w.Code)
+		})
+
+		t.Run("panics when command returns error", func(t *testing.T) {
+			expectedErr := errors.New("command error")
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			commands := host.NewMockedCommands(ctrl)
+			commands.EXPECT().
+				Get(gomock.Any(), gomock.Any()).
+				Return(nil, expectedErr)
+
+			router := gin.New()
+			handler := getHandler{
+				hostCommands:     commands,
+				settingsCommands: nil,
+			}
+			router.GET("/api/hosts/:id", handler.handle)
+
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest("GET", "/api/hosts/"+id.String(), nil)
+
+			assert.PanicsWithValue(t, expectedErr, func() {
+				router.ServeHTTP(w, req)
+			})
 		})
 	})
 }

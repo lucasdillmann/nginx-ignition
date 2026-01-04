@@ -18,26 +18,28 @@ func Test_New(t *testing.T) {
 	})
 }
 
-func Test_ValueRange_Contains(t *testing.T) {
-	t.Run("returns true for value within range", func(t *testing.T) {
-		vr := New(1, 100)
+func Test_ValueRange(t *testing.T) {
+	t.Run("Contains", func(t *testing.T) {
+		t.Run("returns true for value within range", func(t *testing.T) {
+			vr := New(1, 100)
 
-		assert.True(t, vr.Contains(50))
-		assert.True(t, vr.Contains(1))
-		assert.True(t, vr.Contains(100))
-	})
+			assert.True(t, vr.Contains(50))
+			assert.True(t, vr.Contains(1))
+			assert.True(t, vr.Contains(100))
+		})
 
-	t.Run("returns false for value below range", func(t *testing.T) {
-		vr := New(1, 100)
+		t.Run("returns false for value below range", func(t *testing.T) {
+			vr := New(1, 100)
 
-		assert.False(t, vr.Contains(0))
-		assert.False(t, vr.Contains(-1))
-	})
+			assert.False(t, vr.Contains(0))
+			assert.False(t, vr.Contains(-1))
+		})
 
-	t.Run("returns false for value above range", func(t *testing.T) {
-		vr := New(1, 100)
+		t.Run("returns false for value above range", func(t *testing.T) {
+			vr := New(1, 100)
 
-		assert.False(t, vr.Contains(101))
-		assert.False(t, vr.Contains(200))
+			assert.False(t, vr.Contains(101))
+			assert.False(t, vr.Contains(200))
+		})
 	})
 }

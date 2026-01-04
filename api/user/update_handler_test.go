@@ -17,50 +17,60 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-func Test_UpdateHandler_Handle(t *testing.T) {
+func Test_UpdateHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	t.Run("returns 204 No Content on success", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
+	t.Run("Handle", func(t *testing.T) {
+		t.Run("returns 204 No Content on success", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
 
-		id := uuid.New()
-		payload := &userRequestDTO{
-			Name:     ptr.Of("Updated Name"),
-			Username: ptr.Of("updateduser"),
-			Enabled:  ptr.Of(true),
-		}
+			id := uuid.New()
+			payload := &userRequestDTO{
+				Name:     ptr.Of("Updated Name"),
+				Username: ptr.Of("updateduser"),
+				Enabled:  ptr.Of(true),
+			}
 
-		commands := user.NewMockedCommands(ctrl)
-		commands.EXPECT().
-			Save(gomock.Any(), gomock.Any(), gomock.Any()).
-			Return(nil)
+			commands := user.NewMockedCommands(ctrl)
+			commands.EXPECT().
+				Save(gomock.Any(), gomock.Any(), gomock.Any()).
+				Return(nil)
 
-		handler := updateHandler{commands}
-		r := gin.New()
-		r.Use(func(c *gin.Context) {
-			c.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: uuid.New()}})
-			c.Next()
+			handler := updateHandler{
+				commands: commands,
+			}
+			r := gin.New()
+			r.Use(func(c *gin.Context) {
+				c.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: uuid.New()}})
+				c.Next()
+			})
+			r.PUT("/api/users/:id", handler.handle)
+
+			jsonPayload, _ := json.Marshal(payload)
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest(
+				"PUT",
+				"/api/users/"+id.String(),
+				bytes.NewBuffer(jsonPayload),
+			)
+			r.ServeHTTP(w, req)
+
+			assert.Equal(t, http.StatusNoContent, w.Code)
 		})
-		r.PUT("/api/users/:id", handler.handle)
 
-		jsonPayload, _ := json.Marshal(payload)
-		w := httptest.NewRecorder()
-		req := httptest.NewRequest("PUT", "/api/users/"+id.String(), bytes.NewBuffer(jsonPayload))
-		r.ServeHTTP(w, req)
+		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
+			handler := updateHandler{
+				commands: nil,
+			}
+			r := gin.New()
+			r.PUT("/api/users/:id", handler.handle)
 
-		assert.Equal(t, http.StatusNoContent, w.Code)
-	})
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest("PUT", "/api/users/invalid", bytes.NewBufferString("{}"))
+			r.ServeHTTP(w, req)
 
-	t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
-		handler := updateHandler{nil}
-		r := gin.New()
-		r.PUT("/api/users/:id", handler.handle)
-
-		w := httptest.NewRecorder()
-		req := httptest.NewRequest("PUT", "/api/users/invalid", bytes.NewBufferString("{}"))
-		r.ServeHTTP(w, req)
-
-		assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, w.Code)
+		})
 	})
 }

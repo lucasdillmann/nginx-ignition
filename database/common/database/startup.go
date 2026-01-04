@@ -23,5 +23,5 @@ func (d startup) Async() bool {
 }
 
 func (d startup) Run(_ context.Context) error {
-	return d.database.init()
+	return d.database.Init()
 }

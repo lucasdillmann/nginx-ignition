@@ -16,7 +16,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-func (m *migrations) runScripts(db *sql.DB, driverName string) error {
+func (m *Migrations) runScripts(db *sql.DB, driverName string) error {
 	scriptsPath, err := m.configuration.Get("migrations-path")
 	if err != nil {
 		return err

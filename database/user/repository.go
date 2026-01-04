@@ -89,7 +89,7 @@ func (r *repository) FindPage(
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil {
 		query = query.Where(
-			"name ILIKE ? OR username ILIKE ?",
+			"LOWER(name) LIKE LOWER(?) OR LOWER(username) LIKE LOWER(?)",
 			"%"+*searchTerms+"%",
 			"%"+*searchTerms+"%",
 		)
@@ -103,7 +103,7 @@ func (r *repository) FindPage(
 	query = r.database.Select().Model(&models)
 	if searchTerms != nil {
 		query = query.Where(
-			"name ILIKE ? OR username ILIKE ?",
+			"LOWER(name) LIKE LOWER(?) OR LOWER(username) LIKE LOWER(?)",
 			"%"+*searchTerms+"%",
 			"%"+*searchTerms+"%",
 		)

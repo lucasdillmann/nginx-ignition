@@ -7,10 +7,10 @@ import (
 )
 
 type startup struct {
-	migrations *migrations
+	migrations *Migrations
 }
 
-func registerStartup(lc *lifecycle.Lifecycle, mig *migrations) {
+func registerStartup(lc *lifecycle.Lifecycle, mig *Migrations) {
 	command := &startup{mig}
 	lc.RegisterStartup(command)
 }
@@ -24,5 +24,5 @@ func (d startup) Async() bool {
 }
 
 func (d startup) Run(_ context.Context) error {
-	return d.migrations.migrate()
+	return d.migrations.Migrate()
 }

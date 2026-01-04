@@ -9,7 +9,7 @@ import (
 
 var delegate *zap.Logger
 
-func Init() error {
+func init() {
 	config := zap.Config{
 		Level:            zap.NewAtomicLevelAt(zap.InfoLevel),
 		Development:      false,
@@ -23,7 +23,9 @@ func Init() error {
 	loggerInstance, err := config.Build()
 	delegate = loggerInstance
 
-	return err
+	if err != nil {
+		panic(err)
+	}
 }
 
 func Info(message string) {

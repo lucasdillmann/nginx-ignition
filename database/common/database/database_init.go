@@ -19,7 +19,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func (d *Database) init() error {
+func (d *Database) Init() error {
 	var driver string
 	var err error
 
@@ -40,7 +40,7 @@ func (d *Database) init() error {
 func (d *Database) initPostgres() error {
 	cfg := *d.configuration
 
-	var host, port, username, password, sslMode, name string
+	var host, port, username, password, sslMode, name, schemaName string
 	var err error
 
 	if host, err = cfg.Get("host"); err != nil {
@@ -67,14 +67,18 @@ func (d *Database) initPostgres() error {
 		return err
 	}
 
+	if schemaName, err = cfg.Get("schema"); err != nil {
+		schemaName = "public"
+	}
+
 	log.Infof(
-		"Starting database connection to %s on %s:%s using username %s and SSL mode %s",
-		name, host, port, username, sslMode,
+		"Starting database connection to %s on %s:%s using username %s, schema %s and SSL mode %s",
+		name, host, port, username, schemaName, sslMode,
 	)
 
 	connectionParams := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s sslmode=%s dbname=%s",
-		host, port, username, password, sslMode, name,
+		"host=%s port=%s user=%s password=%s sslmode=%s dbname=%s search_path=%s",
+		host, port, username, password, sslMode, name, schemaName,
 	)
 
 	return d.initBun("postgres", connectionParams, pgdialect.New())

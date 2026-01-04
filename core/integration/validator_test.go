@@ -21,165 +21,167 @@ func validIntegration() *Integration {
 	}
 }
 
-func Test_Validator_Validate(t *testing.T) {
+func Test_Validator(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("valid integration with driver passes", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
+	t.Run("validate", func(t *testing.T) {
+		t.Run("valid integration with driver passes", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
 
-		integration := validIntegration()
-		inUse := false
-		repo := NewMockedRepository(ctrl)
-		repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-		driverMock := NewMockedDriver(ctrl)
-		driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
-		val := newValidator(repo, driverMock)
+			integration := validIntegration()
+			inUse := false
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			driverMock := NewMockedDriver(ctrl)
+			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
+			val := newValidator(repo, driverMock)
 
-		err := val.validate(ctx, integration)
+			err := val.validate(ctx, integration)
 
-		assert.NoError(t, err)
-	})
-
-	t.Run("empty name fails", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		integration := validIntegration()
-		integration.Name = ""
-		inUse := false
-		repo := NewMockedRepository(ctrl)
-		repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-		val := newValidator(repo, nil)
-
-		err := val.validate(ctx, integration)
-
-		assert.Error(t, err)
-	})
-
-	t.Run("whitespace-only name fails", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		integration := validIntegration()
-		integration.Name = "   "
-		inUse := false
-		repo := NewMockedRepository(ctrl)
-		repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-		val := newValidator(repo, nil)
-
-		err := val.validate(ctx, integration)
-
-		assert.Error(t, err)
-	})
-
-	t.Run("empty driver fails", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		integration := validIntegration()
-		integration.Driver = ""
-		inUse := false
-		repo := NewMockedRepository(ctrl)
-		repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-		val := newValidator(repo, nil)
-
-		err := val.validate(ctx, integration)
-
-		assert.Error(t, err)
-	})
-
-	t.Run("whitespace-only driver fails", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		integration := validIntegration()
-		integration.Driver = "   "
-		inUse := false
-		repo := NewMockedRepository(ctrl)
-		repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-		val := newValidator(repo, nil)
-
-		err := val.validate(ctx, integration)
-
-		assert.Error(t, err)
-	})
-
-	t.Run("invalid driver fails", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		integration := validIntegration()
-		integration.Driver = "nonexistent"
-		inUse := false
-		repo := NewMockedRepository(ctrl)
-		repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-		val := newValidator(repo, nil)
-
-		err := val.validate(ctx, integration)
-
-		assert.Error(t, err)
-	})
-
-	t.Run("cannot disable when in use", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		integration := validIntegration()
-		integration.Enabled = false
-		inUse := true
-		repo := NewMockedRepository(ctrl)
-		repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-		driverMock := NewMockedDriver(ctrl)
-		driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
-		val := newValidator(repo, driverMock)
-
-		err := val.validate(ctx, integration)
-
-		assert.Error(t, err)
-	})
-
-	t.Run("can disable when not in use", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		integration := validIntegration()
-		integration.Enabled = false
-		inUse := false
-		repo := NewMockedRepository(ctrl)
-		repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-		driverMock := NewMockedDriver(ctrl)
-		driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
-		val := newValidator(repo, driverMock)
-
-		err := val.validate(ctx, integration)
-
-		assert.NoError(t, err)
-	})
-
-	t.Run("dynamicfields validation errors are propagated", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		integration := validIntegration()
-		integration.Parameters = map[string]any{
-			"requiredField": "",
-		}
-		inUse := false
-		repo := NewMockedRepository(ctrl)
-		repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-		driverMock := NewMockedDriver(ctrl)
-		driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{
-			{
-				ID:       "requiredField",
-				Type:     dynamicfields.SingleLineTextType,
-				Required: true,
-			},
+			assert.NoError(t, err)
 		})
-		val := newValidator(repo, driverMock)
 
-		err := val.validate(ctx, integration)
+		t.Run("empty name fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
 
-		assert.Error(t, err)
+			integration := validIntegration()
+			integration.Name = ""
+			inUse := false
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			val := newValidator(repo, nil)
+
+			err := val.validate(ctx, integration)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("whitespace-only name fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			integration := validIntegration()
+			integration.Name = "   "
+			inUse := false
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			val := newValidator(repo, nil)
+
+			err := val.validate(ctx, integration)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("empty driver fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			integration := validIntegration()
+			integration.Driver = ""
+			inUse := false
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			val := newValidator(repo, nil)
+
+			err := val.validate(ctx, integration)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("whitespace-only driver fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			integration := validIntegration()
+			integration.Driver = "   "
+			inUse := false
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			val := newValidator(repo, nil)
+
+			err := val.validate(ctx, integration)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("invalid driver fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			integration := validIntegration()
+			integration.Driver = "nonexistent"
+			inUse := false
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			val := newValidator(repo, nil)
+
+			err := val.validate(ctx, integration)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("cannot disable when in use", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			integration := validIntegration()
+			integration.Enabled = false
+			inUse := true
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			driverMock := NewMockedDriver(ctrl)
+			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
+			val := newValidator(repo, driverMock)
+
+			err := val.validate(ctx, integration)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("can disable when not in use", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			integration := validIntegration()
+			integration.Enabled = false
+			inUse := false
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			driverMock := NewMockedDriver(ctrl)
+			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
+			val := newValidator(repo, driverMock)
+
+			err := val.validate(ctx, integration)
+
+			assert.NoError(t, err)
+		})
+
+		t.Run("dynamicfields validation errors are propagated", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			integration := validIntegration()
+			integration.Parameters = map[string]any{
+				"requiredField": "",
+			}
+			inUse := false
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			driverMock := NewMockedDriver(ctrl)
+			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{
+				{
+					ID:       "requiredField",
+					Type:     dynamicfields.SingleLineTextType,
+					Required: true,
+				},
+			})
+			val := newValidator(repo, driverMock)
+
+			err := val.validate(ctx, integration)
+
+			assert.Error(t, err)
+		})
 	})
 }

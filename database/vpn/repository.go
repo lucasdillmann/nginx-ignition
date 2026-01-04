@@ -151,7 +151,7 @@ func (r *repository) FindPage(
 
 	query := r.database.Select().Model(&models)
 	if searchTerms != nil && *searchTerms != "" {
-		query = query.Where("name ILIKE ?", "%"+*searchTerms+"%")
+		query = query.Where("LOWER(name) LIKE LOWER(?)", "%"+*searchTerms+"%")
 	}
 
 	if enabledOnly {

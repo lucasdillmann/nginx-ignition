@@ -19,5 +19,5 @@ func (d shutdown) Priority() int {
 }
 
 func (d shutdown) Run(_ context.Context) {
-	d.database.close()
+	d.database.Close()
 }

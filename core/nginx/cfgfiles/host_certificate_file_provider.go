@@ -103,7 +103,10 @@ func convertToPemEncodedCertificateString(bytes []byte) string {
 		return string(bytes)
 	}
 
-	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: bytes})
+	certPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "CERTIFICATE",
+		Bytes: bytes,
+	})
 	return string(certPEM)
 }
 
@@ -112,6 +115,9 @@ func convertToPemEncodedPrivateKeyString(bytes []byte) string {
 		return string(bytes)
 	}
 
-	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: bytes})
+	keyPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "PRIVATE KEY",
+		Bytes: bytes,
+	})
 	return string(keyPEM)
 }

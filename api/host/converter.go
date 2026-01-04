@@ -39,6 +39,11 @@ func toDomain(input *hostRequestDTO) *host.Host {
 		return nil
 	}
 
+	var featureSet host.FeatureSet
+	if fs := toFeatureSet(input.FeatureSet); fs != nil {
+		featureSet = *fs
+	}
+
 	return &host.Host{
 		Enabled:           getBoolValue(input.Enabled),
 		DefaultServer:     getBoolValue(input.DefaultServer),
@@ -47,7 +52,7 @@ func toDomain(input *hostRequestDTO) *host.Host {
 		Routes:            toRouteSlice(input.Routes),
 		Bindings:          toBindingSlice(input.Bindings),
 		VPNs:              toVPNsSlice(input.VPNs),
-		FeatureSet:        *toFeatureSet(input.FeatureSet),
+		FeatureSet:        featureSet,
 		AccessListID:      input.AccessListID,
 		CacheID:           input.CacheID,
 	}
