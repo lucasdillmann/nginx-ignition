@@ -17,9 +17,9 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func Test_LogRotator(t *testing.T) {
+func Test_logRotator(t *testing.T) {
 	t.Run("readTail", func(t *testing.T) {
-		r := &logRotator{}
+		rotator := &logRotator{}
 
 		t.Run("returns all lines when count is less than max", func(t *testing.T) {
 			tmpFile, _ := os.CreateTemp("", "test")
@@ -27,7 +27,7 @@ func Test_LogRotator(t *testing.T) {
 			_, _ = tmpFile.WriteString("line1\nline2\n")
 			_, _ = tmpFile.Seek(0, 0)
 
-			lines, err := r.readTail(tmpFile, 5)
+			lines, err := rotator.readTail(tmpFile, 5)
 			assert.NoError(t, err)
 			assert.Equal(t, []string{
 				"line1",
@@ -41,7 +41,7 @@ func Test_LogRotator(t *testing.T) {
 			_, _ = tmpFile.WriteString("line1\nline2\nline3\n")
 			_, _ = tmpFile.Seek(0, 0)
 
-			lines, err := r.readTail(tmpFile, 2)
+			lines, err := rotator.readTail(tmpFile, 2)
 			assert.NoError(t, err)
 			assert.Equal(t, []string{
 				"line2",
@@ -70,10 +70,10 @@ func Test_LogRotator(t *testing.T) {
 				},
 			}, nil)
 
-			r := &logRotator{
+			rotator := &logRotator{
 				hostCommands: repo,
 			}
-			files, err := r.getLogFiles(ctx)
+			files, err := rotator.getLogFiles(ctx)
 
 			assert.NoError(t, err)
 			assert.Contains(t, files, "main.log")

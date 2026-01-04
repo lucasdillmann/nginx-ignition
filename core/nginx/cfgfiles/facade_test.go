@@ -55,14 +55,14 @@ func Test_Facade(t *testing.T) {
 					},
 				}, nil)
 
-			f := &Facade{
+			facade := &Facade{
 				hostCommands:   hostCmds,
 				streamCommands: streamCmds,
 				cacheCommands:  cacheCmds,
 				providers:      []fileProvider{provider},
 			}
 
-			configFiles, hosts, streams, err := f.GetConfigurationFiles(ctx, paths, features)
+			configFiles, hosts, streams, err := facade.GetConfigurationFiles(ctx, paths, features)
 
 			assert.NoError(t, err)
 			assert.Len(t, configFiles, 1)
@@ -74,8 +74,8 @@ func Test_Facade(t *testing.T) {
 		t.Run("returns error when hostCommands fails", func(t *testing.T) {
 			hostCmds := host.NewMockedCommands(ctrl)
 			hostCmds.EXPECT().GetAllEnabled(ctx).Return(nil, assert.AnError)
-			f := &Facade{hostCommands: hostCmds}
-			_, _, _, err := f.GetConfigurationFiles(ctx, paths, features)
+			facade := &Facade{hostCommands: hostCmds}
+			_, _, _, err := facade.GetConfigurationFiles(ctx, paths, features)
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 
@@ -84,11 +84,11 @@ func Test_Facade(t *testing.T) {
 			hostCmds.EXPECT().GetAllEnabled(ctx).Return([]host.Host{}, nil)
 			streamCmds := stream.NewMockedCommands(ctrl)
 			streamCmds.EXPECT().GetAllEnabled(ctx).Return(nil, assert.AnError)
-			f := &Facade{
+			facade := &Facade{
 				hostCommands:   hostCmds,
 				streamCommands: streamCmds,
 			}
-			_, _, _, err := f.GetConfigurationFiles(ctx, paths, features)
+			_, _, _, err := facade.GetConfigurationFiles(ctx, paths, features)
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 
@@ -99,12 +99,12 @@ func Test_Facade(t *testing.T) {
 			streamCmds.EXPECT().GetAllEnabled(ctx).Return([]stream.Stream{}, nil)
 			cacheCmds := cache.NewMockedCommands(ctrl)
 			cacheCmds.EXPECT().GetAllInUse(ctx).Return(nil, assert.AnError)
-			f := &Facade{
+			facade := &Facade{
 				hostCommands:   hostCmds,
 				streamCommands: streamCmds,
 				cacheCommands:  cacheCmds,
 			}
-			_, _, _, err := f.GetConfigurationFiles(ctx, paths, features)
+			_, _, _, err := facade.GetConfigurationFiles(ctx, paths, features)
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 
@@ -119,14 +119,14 @@ func Test_Facade(t *testing.T) {
 			provider := NewMockedfileProvider(ctrl)
 			provider.EXPECT().provide(gomock.Any()).Return(nil, assert.AnError)
 
-			f := &Facade{
+			facade := &Facade{
 				hostCommands:   hostCmds,
 				streamCommands: streamCmds,
 				cacheCommands:  cacheCmds,
 				providers:      []fileProvider{provider},
 			}
 
-			_, _, _, err := f.GetConfigurationFiles(ctx, paths, features)
+			_, _, _, err := facade.GetConfigurationFiles(ctx, paths, features)
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 
@@ -143,14 +143,14 @@ func Test_Facade(t *testing.T) {
 			p2 := NewMockedfileProvider(ctrl)
 			p2.EXPECT().provide(gomock.Any()).Return([]File{{Name: "f2.conf"}}, nil)
 
-			f := &Facade{
+			facade := &Facade{
 				hostCommands:   hostCmds,
 				streamCommands: streamCmds,
 				cacheCommands:  cacheCmds,
 				providers:      []fileProvider{p1, p2},
 			}
 
-			files, _, _, err := f.GetConfigurationFiles(ctx, paths, features)
+			files, _, _, err := facade.GetConfigurationFiles(ctx, paths, features)
 			assert.NoError(t, err)
 			assert.Len(t, files, 2)
 		})
@@ -188,7 +188,7 @@ func Test_Facade(t *testing.T) {
 					},
 				}, nil)
 
-			f := &Facade{
+			facade := &Facade{
 				hostCommands:   hostCmds,
 				streamCommands: streamCmds,
 				cacheCommands:  cacheCmds,
@@ -196,7 +196,7 @@ func Test_Facade(t *testing.T) {
 				providers:      []fileProvider{provider},
 			}
 
-			hosts, streams, err := f.ReplaceConfigurationFiles(ctx, features)
+			hosts, streams, err := facade.ReplaceConfigurationFiles(ctx, features)
 
 			assert.NoError(t, err)
 			assert.Empty(t, hosts)

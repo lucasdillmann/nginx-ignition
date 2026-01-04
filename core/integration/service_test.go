@@ -13,25 +13,20 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
-func Test_Service(t *testing.T) {
+func Test_service(t *testing.T) {
 	t.Run("Get", func(t *testing.T) {
 		t.Run("returns integration when found", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			id := uuid.New()
-			expected := &Integration{
-				ID:     id,
-				Name:   "test",
-				Driver: "docker",
-			}
+			expected := newIntegration()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByID(ctx, id).Return(expected, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().FindByID(ctx, expected.ID).Return(expected, nil)
 
-			svc := newService(repo, func() []Driver { return nil })
-			result, err := svc.Get(ctx, id)
+			integrationService := newService(repository, func() []Driver { return nil })
+			result, err := integrationService.Get(ctx, expected.ID)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -47,12 +42,12 @@ func Test_Service(t *testing.T) {
 			id := uuid.New()
 			inUse := false
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, id).Return(&inUse, nil)
-			repo.EXPECT().DeleteByID(ctx, id).Return(nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, id).Return(&inUse, nil)
+			repository.EXPECT().DeleteByID(ctx, id).Return(nil)
 
-			svc := newService(repo, func() []Driver { return nil })
-			err := svc.Delete(ctx, id)
+			integrationService := newService(repository, func() []Driver { return nil })
+			err := integrationService.Delete(ctx, id)
 
 			assert.NoError(t, err)
 		})
@@ -65,11 +60,11 @@ func Test_Service(t *testing.T) {
 			id := uuid.New()
 			inUse := true
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, id).Return(&inUse, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, id).Return(&inUse, nil)
 
-			svc := newService(repo, func() []Driver { return nil })
-			err := svc.Delete(ctx, id)
+			integrationService := newService(repository, func() []Driver { return nil })
+			err := integrationService.Delete(ctx, id)
 
 			require.Error(t, err)
 			var coreErr *coreerror.CoreError
@@ -84,18 +79,14 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expectedPage := pagination.Of([]Integration{
-				{
-					Name: "test",
-				},
-			})
+			expectedPage := pagination.Of([]Integration{*newIntegration()})
 			searchTerms := "test"
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindPage(ctx, 10, 1, &searchTerms, false).Return(expectedPage, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().FindPage(ctx, 10, 1, &searchTerms, false).Return(expectedPage, nil)
 
-			svc := newService(repo, func() []Driver { return nil })
-			result, err := svc.List(ctx, 10, 1, &searchTerms, false)
+			integrationService := newService(repository, func() []Driver { return nil })
+			result, err := integrationService.List(ctx, 10, 1, &searchTerms, false)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expectedPage, result)
@@ -111,11 +102,11 @@ func Test_Service(t *testing.T) {
 			id := uuid.New()
 			exists := true
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().ExistsByID(ctx, id).Return(&exists, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().ExistsByID(ctx, id).Return(&exists, nil)
 
-			svc := newService(repo, func() []Driver { return nil })
-			result, err := svc.Exists(ctx, id)
+			integrationService := newService(repository, func() []Driver { return nil })
+			result, err := integrationService.Exists(ctx, id)
 
 			assert.NoError(t, err)
 			assert.True(t, *result)
@@ -128,16 +119,15 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			integration := &Integration{
-				Name: "",
-			}
+			integration := newIntegration()
+			integration.Name = ""
 			inUse := false
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
 
-			svc := newService(repo, func() []Driver { return nil })
-			err := svc.Save(ctx, integration)
+			integrationService := newService(repository, func() []Driver { return nil })
+			err := integrationService.Save(ctx, integration)
 
 			assert.Error(t, err)
 		})

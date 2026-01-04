@@ -4,24 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
-func validVPN() *VPN {
-	return &VPN{
-		ID:         uuid.New(),
-		Name:       "test",
-		Driver:     "tailscale",
-		Enabled:    true,
-		Parameters: map[string]any{},
-	}
-}
-
-func Test_Validator(t *testing.T) {
+func Test_validator(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Validate", func(t *testing.T) {
@@ -29,15 +18,17 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			vpn := validVPN()
+			vpn := newVPN()
 			inUse := false
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
+
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
-			val := newValidator(repo, driverMock)
 
-			err := val.validate(ctx, vpn)
+			vpnValidator := newValidator(repo, driverMock)
+			err := vpnValidator.validate(ctx, vpn)
 
 			assert.NoError(t, err)
 		})
@@ -46,14 +37,15 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			vpn := validVPN()
+			vpn := newVPN()
 			vpn.Name = ""
 			inUse := false
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
-			val := newValidator(repo, nil)
 
-			err := val.validate(ctx, vpn)
+			vpnValidator := newValidator(repo, nil)
+			err := vpnValidator.validate(ctx, vpn)
 
 			assert.Error(t, err)
 		})
@@ -62,14 +54,15 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			vpn := validVPN()
+			vpn := newVPN()
 			vpn.Name = "   "
 			inUse := false
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
-			val := newValidator(repo, nil)
 
-			err := val.validate(ctx, vpn)
+			vpnValidator := newValidator(repo, nil)
+			err := vpnValidator.validate(ctx, vpn)
 
 			assert.Error(t, err)
 		})
@@ -78,14 +71,15 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			vpn := validVPN()
+			vpn := newVPN()
 			vpn.Driver = ""
 			inUse := false
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
-			val := newValidator(repo, nil)
 
-			err := val.validate(ctx, vpn)
+			vpnValidator := newValidator(repo, nil)
+			err := vpnValidator.validate(ctx, vpn)
 
 			assert.Error(t, err)
 		})
@@ -94,14 +88,15 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			vpn := validVPN()
+			vpn := newVPN()
 			vpn.Driver = "   "
 			inUse := false
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
-			val := newValidator(repo, nil)
 
-			err := val.validate(ctx, vpn)
+			vpnValidator := newValidator(repo, nil)
+			err := vpnValidator.validate(ctx, vpn)
 
 			assert.Error(t, err)
 		})
@@ -110,14 +105,15 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			vpn := validVPN()
+			vpn := newVPN()
 			vpn.Driver = "nonexistent"
 			inUse := false
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
-			val := newValidator(repo, nil)
 
-			err := val.validate(ctx, vpn)
+			vpnValidator := newValidator(repo, nil)
+			err := vpnValidator.validate(ctx, vpn)
 
 			assert.Error(t, err)
 		})
@@ -126,16 +122,18 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			vpn := validVPN()
+			vpn := newVPN()
 			vpn.Enabled = false
 			inUse := true
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
+
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
-			val := newValidator(repo, driverMock)
 
-			err := val.validate(ctx, vpn)
+			vpnValidator := newValidator(repo, driverMock)
+			err := vpnValidator.validate(ctx, vpn)
 
 			assert.Error(t, err)
 		})
@@ -144,16 +142,18 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			vpn := validVPN()
+			vpn := newVPN()
 			vpn.Enabled = false
 			inUse := false
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
+
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
-			val := newValidator(repo, driverMock)
 
-			err := val.validate(ctx, vpn)
+			vpnValidator := newValidator(repo, driverMock)
+			err := vpnValidator.validate(ctx, vpn)
 
 			assert.NoError(t, err)
 		})
@@ -162,13 +162,15 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			vpn := validVPN()
+			vpn := newVPN()
 			vpn.Parameters = map[string]any{
 				"requiredField": "",
 			}
 			inUse := false
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
+
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{
 				{
@@ -177,9 +179,9 @@ func Test_Validator(t *testing.T) {
 					Required: true,
 				},
 			})
-			val := newValidator(repo, driverMock)
 
-			err := val.validate(ctx, vpn)
+			vpnValidator := newValidator(repo, driverMock)
+			err := vpnValidator.validate(ctx, vpn)
 
 			assert.Error(t, err)
 		})

@@ -14,23 +14,20 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
-func Test_Service(t *testing.T) {
+func Test_service(t *testing.T) {
 	t.Run("Save", func(t *testing.T) {
 		t.Run("valid cache saves successfully", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			cache := &Cache{
-				Name:                     "test",
-				MinimumUsesBeforeCaching: 1,
-			}
+			cache := newCache()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Save(ctx, cache).Return(nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().Save(ctx, cache).Return(nil)
 
-			svc := newCommands(repo)
-			err := svc.Save(ctx, cache)
+			cacheService := newCommands(repository)
+			err := cacheService.Save(ctx, cache)
 
 			assert.NoError(t, err)
 		})
@@ -40,13 +37,12 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			cache := &Cache{
-				Name: "",
-			}
+			cache := newCache()
+			cache.Name = ""
 
-			repo := NewMockedRepository(ctrl)
-			svc := newCommands(repo)
-			err := svc.Save(ctx, cache)
+			repository := NewMockedRepository(ctrl)
+			cacheService := newCommands(repository)
+			err := cacheService.Save(ctx, cache)
 
 			assert.Error(t, err)
 		})
@@ -56,17 +52,14 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			cache := &Cache{
-				Name:                     "test",
-				MinimumUsesBeforeCaching: 1,
-			}
-
+			cache := newCache()
 			expectedErr := errors.New("repository error")
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Save(ctx, cache).Return(expectedErr)
 
-			svc := newCommands(repo)
-			err := svc.Save(ctx, cache)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().Save(ctx, cache).Return(expectedErr)
+
+			cacheService := newCommands(repository)
+			err := cacheService.Save(ctx, cache)
 
 			assert.Equal(t, expectedErr, err)
 		})
@@ -80,12 +73,12 @@ func Test_Service(t *testing.T) {
 			ctx := context.Background()
 			id := uuid.New()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, id).Return(false, nil)
-			repo.EXPECT().DeleteByID(ctx, id).Return(nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, id).Return(false, nil)
+			repository.EXPECT().DeleteByID(ctx, id).Return(nil)
 
-			svc := newCommands(repo)
-			err := svc.Delete(ctx, id)
+			cacheService := newCommands(repository)
+			err := cacheService.Delete(ctx, id)
 
 			assert.NoError(t, err)
 		})
@@ -97,11 +90,11 @@ func Test_Service(t *testing.T) {
 			ctx := context.Background()
 			id := uuid.New()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, id).Return(true, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, id).Return(true, nil)
 
-			svc := newCommands(repo)
-			err := svc.Delete(ctx, id)
+			cacheService := newCommands(repository)
+			err := cacheService.Delete(ctx, id)
 
 			require.Error(t, err)
 			var coreErr *coreerror.CoreError
@@ -117,11 +110,11 @@ func Test_Service(t *testing.T) {
 			id := uuid.New()
 			expectedErr := errors.New("check failed")
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, id).Return(false, expectedErr)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, id).Return(false, expectedErr)
 
-			svc := newCommands(repo)
-			err := svc.Delete(ctx, id)
+			cacheService := newCommands(repository)
+			err := cacheService.Delete(ctx, id)
 
 			assert.Equal(t, expectedErr, err)
 		})
@@ -133,18 +126,13 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			id := uuid.New()
-			expected := &Cache{
-				ID:                       id,
-				Name:                     "test",
-				MinimumUsesBeforeCaching: 1,
-			}
+			expected := newCache()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByID(ctx, id).Return(expected, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().FindByID(ctx, expected.ID).Return(expected, nil)
 
-			svc := newCommands(repo)
-			result, err := svc.Get(ctx, id)
+			cacheService := newCommands(repository)
+			result, err := cacheService.Get(ctx, expected.ID)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -158,11 +146,11 @@ func Test_Service(t *testing.T) {
 			id := uuid.New()
 			expectedErr := errors.New("not found")
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByID(ctx, id).Return(nil, expectedErr)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().FindByID(ctx, id).Return(nil, expectedErr)
 
-			svc := newCommands(repo)
-			result, err := svc.Get(ctx, id)
+			cacheService := newCommands(repository)
+			result, err := cacheService.Get(ctx, id)
 
 			assert.Error(t, err)
 			assert.Nil(t, result)
@@ -176,18 +164,14 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expectedPage := pagination.Of([]Cache{
-				{
-					Name: "test",
-				},
-			})
+			expectedPage := pagination.Of([]Cache{*newCache()})
 			searchTerms := "test"
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindPage(ctx, 1, 10, &searchTerms).Return(expectedPage, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().FindPage(ctx, 1, 10, &searchTerms).Return(expectedPage, nil)
 
-			svc := newCommands(repo)
-			result, err := svc.List(ctx, 10, 1, &searchTerms)
+			cacheService := newCommands(repository)
+			result, err := cacheService.List(ctx, 10, 1, &searchTerms)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expectedPage, result)
@@ -202,11 +186,11 @@ func Test_Service(t *testing.T) {
 			ctx := context.Background()
 			id := uuid.New()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().ExistsByID(ctx, id).Return(true, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().ExistsByID(ctx, id).Return(true, nil)
 
-			svc := newCommands(repo)
-			exists, err := svc.Exists(ctx, id)
+			cacheService := newCommands(repository)
+			exists, err := cacheService.Exists(ctx, id)
 
 			assert.NoError(t, err)
 			assert.True(t, exists)
@@ -219,11 +203,11 @@ func Test_Service(t *testing.T) {
 			ctx := context.Background()
 			id := uuid.New()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().ExistsByID(ctx, id).Return(false, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().ExistsByID(ctx, id).Return(false, nil)
 
-			svc := newCommands(repo)
-			exists, err := svc.Exists(ctx, id)
+			cacheService := newCommands(repository)
+			exists, err := cacheService.Exists(ctx, id)
 
 			assert.NoError(t, err)
 			assert.False(t, exists)
@@ -236,20 +220,13 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expected := []Cache{
-				{
-					Name: "cache1",
-				},
-				{
-					Name: "cache2",
-				},
-			}
+			expected := []Cache{*newCache(), *newCache()}
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindAllInUse(ctx).Return(expected, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().FindAllInUse(ctx).Return(expected, nil)
 
-			svc := newCommands(repo)
-			result, err := svc.GetAllInUse(ctx)
+			cacheService := newCommands(repository)
+			result, err := cacheService.GetAllInUse(ctx)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)

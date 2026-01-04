@@ -10,14 +10,13 @@ import (
 
 func Test_Validate(t *testing.T) {
 	t.Run("reports missing required field", func(t *testing.T) {
-		fields := []DynamicField{
-			{
-				ID:       "field1",
-				Type:     SingleLineTextType,
-				Required: true,
-			},
-		}
-		err := Validate(fields, map[string]any{})
+		dynamicField := newDynamicField()
+		dynamicField.ID = "field1"
+		dynamicField.Type = SingleLineTextType
+		dynamicField.Required = true
+
+		dynamicFields := []DynamicField{*dynamicField}
+		err := Validate(dynamicFields, map[string]any{})
 
 		var consistencyErr *validation.ConsistencyError
 		assert.ErrorAs(t, err, &consistencyErr)
@@ -25,38 +24,35 @@ func Test_Validate(t *testing.T) {
 	})
 
 	t.Run("reports invalid email", func(t *testing.T) {
-		fields := []DynamicField{
-			{
-				ID:       "email",
-				Type:     EmailType,
-				Required: true,
-			},
-		}
-		assert.Error(t, Validate(fields, map[string]any{"email": "invalid"}))
+		dynamicField := newDynamicField()
+		dynamicField.ID = "email"
+		dynamicField.Type = EmailType
+		dynamicField.Required = true
+
+		dynamicFields := []DynamicField{*dynamicField}
+		assert.Error(t, Validate(dynamicFields, map[string]any{"email": "invalid"}))
 	})
 
 	t.Run("reports invalid boolean", func(t *testing.T) {
-		fields := []DynamicField{
-			{
-				ID:       "bool",
-				Type:     BooleanType,
-				Required: true,
-			},
-		}
-		assert.Error(t, Validate(fields, map[string]any{"bool": "not bool"}))
+		dynamicField := newDynamicField()
+		dynamicField.ID = "bool"
+		dynamicField.Type = BooleanType
+		dynamicField.Required = true
+
+		dynamicFields := []DynamicField{*dynamicField}
+		assert.Error(t, Validate(dynamicFields, map[string]any{"bool": "not bool"}))
 	})
 
 	t.Run("reports invalid enum", func(t *testing.T) {
-		fields := []DynamicField{
-			{
-				ID:       "enum",
-				Type:     EnumType,
-				Required: true,
-				EnumOptions: []EnumOption{
-					{ID: "opt1"},
-				},
-			},
+		dynamicField := newDynamicField()
+		dynamicField.ID = "enum"
+		dynamicField.Type = EnumType
+		dynamicField.Required = true
+		dynamicField.EnumOptions = []EnumOption{
+			{ID: "opt1"},
 		}
-		assert.Error(t, Validate(fields, map[string]any{"enum": "invalid"}))
+
+		dynamicFields := []DynamicField{*dynamicField}
+		assert.Error(t, Validate(dynamicFields, map[string]any{"enum": "invalid"}))
 	})
 }

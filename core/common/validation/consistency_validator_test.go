@@ -9,17 +9,17 @@ import (
 func Test_ConsistencyValidator(t *testing.T) {
 	t.Run("Result", func(t *testing.T) {
 		t.Run("returns nil when no violations", func(t *testing.T) {
-			val := NewValidator()
+			validator := NewValidator()
 
-			assert.NoError(t, val.Result())
+			assert.NoError(t, validator.Result())
 		})
 
 		t.Run("returns error with violations when added", func(t *testing.T) {
-			val := NewValidator()
-			val.Add("field1", "error message 1")
-			val.Add("field2", "error message 2")
+			validator := NewValidator()
+			validator.Add("field1", "error message 1")
+			validator.Add("field2", "error message 2")
 
-			err := val.Result()
+			err := validator.Result()
 			assert.Error(t, err)
 			var consistencyErr *ConsistencyError
 			assert.ErrorAs(t, err, &consistencyErr)

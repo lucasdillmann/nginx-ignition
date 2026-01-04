@@ -1,7 +1,6 @@
 package cfgfiles
 
 import (
-	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -18,78 +17,50 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func Test_HostConfigurationFileProvider(t *testing.T) {
+func Test_hostConfigurationFileProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
-		paths := &Paths{
-			Config: "/etc/nginx/",
-			Logs:   "/var/log/nginx/",
-		}
-		id := uuid.New()
-		ctx := &providerContext{
-			context: context.Background(),
-			paths:   paths,
-			hosts: []host.Host{
-				{
-					ID:            id,
-					Enabled:       true,
-					DefaultServer: true,
-					DomainNames:   []string{"example.com"},
-					Bindings: []binding.Binding{
-						{
-							Type: binding.HTTPBindingType,
-							IP:   "0.0.0.0",
-							Port: 80,
-						},
-					},
-					Routes: []host.Route{
-						{
-							Enabled:    true,
-							Type:       host.ProxyRouteType,
-							SourcePath: "/",
-							TargetURI:  ptr.Of("http://backend:8080"),
-						},
-					},
-				},
+		provider := &hostConfigurationFileProvider{}
+
+		h := newHost()
+		h.Routes = []host.Route{
+			{
+				Enabled:    true,
+				Type:       host.ProxyRouteType,
+				SourcePath: "/",
+				TargetURI:  ptr.Of("http://backend:8080"),
 			},
 		}
+
+		ctx := newProviderContext()
+		ctx.hosts = []host.Host{h}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
 		settingsCmds := settings.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(&settings.Settings{
-			Nginx: &settings.NginxSettings{
-				WorkerProcesses: 1,
-				Logs: &settings.NginxLogsSettings{
-					AccessLogsEnabled: true,
-					ErrorLogsEnabled:  true,
-					ErrorLogsLevel:    settings.WarnLogLevel,
-				},
-			},
-		}, nil)
-		p.settingsCommands = settingsCmds
+		settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(newSettings(), nil)
+		provider.settingsCommands = settingsCmds
 
 		integrationCmds := integration.NewMockedCommands(ctrl)
-		p.integrationCommands = integrationCmds
+		provider.integrationCommands = integrationCmds
 
-		files, err := p.provide(ctx)
+		files, err := provider.provide(ctx)
 		assert.NoError(t, err)
 		assert.Len(t, files, 1)
-		assert.Equal(t, fmt.Sprintf("host-%s.conf", id), files[0].Name)
+		assert.Equal(t, fmt.Sprintf("host-%s.conf", h.ID), files[0].Name)
 		assert.Contains(t, files[0].Contents, "server_name _;")
 		assert.Contains(t, files[0].Contents, "listen 0.0.0.0:80 default_server;")
 		assert.Contains(t, files[0].Contents, "proxy_pass http://backend:8080;")
 	})
 
 	t.Run("BuildServerNames", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationFileProvider{}
 
 		t.Run("returns underscore for default server", func(t *testing.T) {
 			h := &host.Host{
 				DefaultServer: true,
 			}
-			assert.Equal(t, "server_name _;", p.buildServerNames(h))
+			assert.Equal(t, "server_name _;", provider.buildServerNames(h))
 		})
 
 		t.Run("returns space separated domain names", func(t *testing.T) {
@@ -99,18 +70,22 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 					"www.example.com",
 				},
 			}
-			assert.Equal(t, "server_name example.com www.example.com;", p.buildServerNames(h))
+			assert.Equal(
+				t,
+				"server_name example.com www.example.com;",
+				provider.buildServerNames(h),
+			)
 		})
 	})
 
 	t.Run("BuildProxyPass", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationFileProvider{}
 
 		t.Run("returns simple proxy_pass", func(t *testing.T) {
 			r := &host.Route{
 				TargetURI: ptr.Of("http://backend:8080"),
 			}
-			assert.Equal(t, "proxy_pass http://backend:8080;", p.buildProxyPass(r))
+			assert.Equal(t, "proxy_pass http://backend:8080;", provider.buildProxyPass(r))
 		})
 
 		t.Run("sets Host header when KeepOriginalDomainName is true", func(t *testing.T) {
@@ -120,7 +95,7 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 					KeepOriginalDomainName: true,
 				},
 			}
-			result := p.buildProxyPass(r)
+			result := provider.buildProxyPass(r)
 			assert.Contains(t, result, "proxy_pass http://backend:8080;")
 			assert.Contains(t, result, "proxy_set_header Host backend:8080;")
 		})
@@ -129,14 +104,14 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 			r := &host.Route{
 				TargetURI: ptr.Of("http://default:8080"),
 			}
-			result := p.buildProxyPass(r, "http://override:9090")
+			result := provider.buildProxyPass(r, "http://override:9090")
 			assert.Equal(t, "proxy_pass http://override:9090;", result)
 		})
 	})
 
 	t.Run("BuildRedirectRoute", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
-		ctx := &providerContext{}
+		provider := &hostConfigurationFileProvider{}
+		ctx := newProviderContext()
 
 		t.Run("generates redirect route config", func(t *testing.T) {
 			r := &host.Route{
@@ -144,17 +119,15 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 				RedirectCode: ptr.Of(301),
 				TargetURI:    ptr.Of("http://new.example.com"),
 			}
-			result := p.buildRedirectRoute(ctx, r, host.FeatureSet{})
+			result := provider.buildRedirectRoute(ctx, r, host.FeatureSet{})
 			assert.Contains(t, result, "location /old {")
 			assert.Contains(t, result, "return 301 http://new.example.com;")
 		})
 	})
 
 	t.Run("BuildIntegrationRoute", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
-		ctx := &providerContext{
-			context: context.Background(),
-		}
+		provider := &hostConfigurationFileProvider{}
+		ctx := newProviderContext()
 
 		t.Run("generates integration route config with dns resolvers", func(t *testing.T) {
 			integrationID := uuid.New()
@@ -173,9 +146,9 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 			integrationCmds.EXPECT().
 				GetOptionURL(gomock.Any(), integrationID, "opt-1").
 				Return(ptr.Of("http://1.2.3.4:80"), []string{"8.8.8.8", "8.8.4.4"}, nil)
-			p.integrationCommands = integrationCmds
+			provider.integrationCommands = integrationCmds
 
-			result, err := p.buildIntegrationRoute(ctx, r, host.FeatureSet{})
+			result, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
 			assert.NoError(t, err)
 			assert.Contains(t, result, "location /api {")
 			assert.Contains(t, result, "resolver 8.8.8.8 8.8.4.4 valid=5s;")
@@ -193,18 +166,16 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 			integrationCmds.EXPECT().
 				GetOptionURL(gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil, nil, nil)
-			p.integrationCommands = integrationCmds
-			_, err := p.buildIntegrationRoute(ctx, r, host.FeatureSet{})
+			provider.integrationCommands = integrationCmds
+			_, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "Integration option not found")
 		})
 	})
 
 	t.Run("BuildExecuteCodeRoute", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
-		ctx := &providerContext{
-			paths: &Paths{Config: "/etc/nginx/"},
-		}
+		provider := &hostConfigurationFileProvider{}
+		ctx := newProviderContext()
 		h := &host.Host{ID: uuid.New()}
 
 		t.Run("generates javascript route config", func(t *testing.T) {
@@ -216,7 +187,7 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 					MainFunction: ptr.Of("handler"),
 				},
 			}
-			result, err := p.buildExecuteCodeRoute(ctx, h, r)
+			result, err := provider.buildExecuteCodeRoute(ctx, h, r)
 			assert.NoError(t, err)
 			assert.Contains(
 				t,
@@ -234,7 +205,7 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 					Contents: "ngx.say('hello')",
 				},
 			}
-			result, err := p.buildExecuteCodeRoute(ctx, h, r)
+			result, err := provider.buildExecuteCodeRoute(ctx, h, r)
 			assert.NoError(t, err)
 			assert.Contains(t, result, "content_by_lua_block")
 			assert.Contains(t, result, "ngx.say('hello')")
@@ -246,17 +217,15 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 					Language: "FORTRAN",
 				},
 			}
-			_, err := p.buildExecuteCodeRoute(ctx, h, r)
+			_, err := provider.buildExecuteCodeRoute(ctx, h, r)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "invalid language")
 		})
 	})
 
 	t.Run("BuildStaticResponseRoute", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
-		ctx := &providerContext{
-			paths: &Paths{Config: "/etc/nginx/"},
-		}
+		provider := &hostConfigurationFileProvider{}
+		ctx := newProviderContext()
 		h := &host.Host{ID: uuid.New()}
 
 		t.Run("generates static response route config", func(t *testing.T) {
@@ -270,7 +239,7 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 					},
 				},
 			}
-			result := p.buildStaticResponseRoute(ctx, h, r)
+			result := provider.buildStaticResponseRoute(ctx, h, r)
 			assert.Contains(t, result, "location @route_2/static_payload {")
 			assert.Contains(t, result, "add_header \"Content-Type\" \"application/json\" always;")
 			assert.Contains(t, result, "try_files /host-"+h.ID.String()+"-route-2.payload =200;")
@@ -278,13 +247,13 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildRouteFeatures", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationFileProvider{}
 
 		t.Run("returns websocket config when enabled", func(t *testing.T) {
 			features := host.FeatureSet{
 				WebsocketSupport: true,
 			}
-			result := p.buildRouteFeatures(features)
+			result := provider.buildRouteFeatures(features)
 			assert.Contains(t, result, "proxy_http_version 1.1;")
 			assert.Contains(t, result, "proxy_set_header Upgrade $http_upgrade;")
 			assert.Contains(t, result, "proxy_set_header Connection \"upgrade\";")
@@ -294,17 +263,13 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 			features := host.FeatureSet{
 				WebsocketSupport: false,
 			}
-			assert.Equal(t, "", p.buildRouteFeatures(features))
+			assert.Equal(t, "", provider.buildRouteFeatures(features))
 		})
 	})
 
 	t.Run("BuildRouteSettings", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
-		ctx := &providerContext{
-			paths: &Paths{
-				Config: "/etc/nginx/",
-			},
-		}
+		provider := &hostConfigurationFileProvider{}
+		ctx := newProviderContext()
 
 		t.Run("includes forward headers when enabled", func(t *testing.T) {
 			r := &host.Route{
@@ -312,7 +277,7 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 					IncludeForwardHeaders: true,
 				},
 			}
-			result := p.buildRouteSettings(ctx, r)
+			result := provider.buildRouteSettings(ctx, r)
 			assert.Contains(
 				t,
 				result,
@@ -327,7 +292,7 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 					Custom: ptr.Of("proxy_buffer_size 16k;"),
 				},
 			}
-			result := p.buildRouteSettings(ctx, r)
+			result := provider.buildRouteSettings(ctx, r)
 			assert.Contains(t, result, "proxy_buffer_size 16k;")
 		})
 
@@ -336,36 +301,21 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 			r := &host.Route{
 				AccessListID: &id,
 			}
-			result := p.buildRouteSettings(ctx, r)
+			result := provider.buildRouteSettings(ctx, r)
 			assert.Contains(t, result, fmt.Sprintf("include /etc/nginx/access-list-%s.conf;", id))
 		})
 	})
 
 	t.Run("BuildBinding", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
-		paths := &Paths{
-			Config: "/etc/nginx/",
-			Logs:   "/var/log/nginx/",
-		}
-		ctx := &providerContext{
-			context: context.Background(),
-			paths:   paths,
-		}
+		provider := &hostConfigurationFileProvider{}
+		ctx := newProviderContext()
 		h := &host.Host{ID: uuid.New()}
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
 		settingsCmds := settings.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(&settings.Settings{
-			Nginx: &settings.NginxSettings{
-				Logs: &settings.NginxLogsSettings{
-					AccessLogsEnabled: true,
-					ErrorLogsEnabled:  true,
-					ErrorLogsLevel:    settings.WarnLogLevel,
-				},
-			},
-		}, nil)
-		p.settingsCommands = settingsCmds
+		settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(newSettings(), nil)
+		provider.settingsCommands = settingsCmds
 
 		t.Run("generates HTTP binding", func(t *testing.T) {
 			b := &binding.Binding{
@@ -373,7 +323,15 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 				IP:   "127.0.0.1",
 				Port: 8080,
 			}
-			result, err := p.buildBinding(ctx, h, b, []string{}, "server_name example.com;", "", "")
+			result, err := provider.buildBinding(
+				ctx,
+				h,
+				b,
+				[]string{},
+				"server_name example.com;",
+				"",
+				"",
+			)
 			assert.NoError(t, err)
 			assert.Contains(t, result, "listen 127.0.0.1:8080 ;")
 		})
@@ -386,7 +344,15 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 				Port:          443,
 				CertificateID: &certID,
 			}
-			result, err := p.buildBinding(ctx, h, b, []string{}, "server_name example.com;", "", "")
+			result, err := provider.buildBinding(
+				ctx,
+				h,
+				b,
+				[]string{},
+				"server_name example.com;",
+				"",
+				"",
+			)
 			assert.NoError(t, err)
 			assert.Contains(t, result, "listen 0.0.0.0:443 ssl ;")
 			assert.Contains(
@@ -399,7 +365,7 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 		t.Run("includes HTTP to HTTPS redirect in HTTP binding", func(t *testing.T) {
 			b := &binding.Binding{Type: binding.HTTPBindingType}
 			redirect := "return 301 https://$server_name$request_uri;"
-			result, err := p.buildBinding(ctx, h, b, []string{}, "", redirect, "")
+			result, err := provider.buildBinding(ctx, h, b, []string{}, "", redirect, "")
 			assert.NoError(t, err)
 			assert.Contains(t, result, redirect)
 		})
@@ -410,14 +376,14 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 				Type:          binding.HTTPSBindingType,
 				CertificateID: &certID,
 			}
-			result, err := p.buildBinding(ctx, h, b, []string{}, "", "", "http2 on;")
+			result, err := provider.buildBinding(ctx, h, b, []string{}, "", "", "http2 on;")
 			assert.NoError(t, err)
 			assert.Contains(t, result, "http2 on;")
 		})
 
 		t.Run("returns error for invalid binding type", func(t *testing.T) {
 			b := &binding.Binding{Type: "INVALID"}
-			_, err := p.buildBinding(ctx, h, b, []string{}, "", "", "")
+			_, err := provider.buildBinding(ctx, h, b, []string{}, "", "", "")
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "invalid binding type")
 		})
@@ -425,64 +391,63 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 		t.Run("returns error when settingsCommands fails", func(t *testing.T) {
 			settingsCmds := settings.NewMockedCommands(ctrl)
 			settingsCmds.EXPECT().Get(gomock.Any()).Return(nil, assert.AnError)
-			p.settingsCommands = settingsCmds
+			provider.settingsCommands = settingsCmds
 			b := &binding.Binding{Type: binding.HTTPBindingType}
-			_, err := p.buildBinding(ctx, h, b, []string{}, "", "", "")
+			_, err := provider.buildBinding(ctx, h, b, []string{}, "", "", "")
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 	})
 
 	t.Run("BuildRoute", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
-		ctx := &providerContext{}
+		provider := &hostConfigurationFileProvider{}
+		ctx := newProviderContext()
 		h := &host.Host{}
 
 		t.Run("returns error for invalid route type", func(t *testing.T) {
 			r := &host.Route{Type: "INVALID"}
-			_, err := p.buildRoute(ctx, h, r)
+			_, err := provider.buildRoute(ctx, h, r)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "invalid route type")
 		})
 	})
 
 	t.Run("BuildCacheConfig", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationFileProvider{}
 		cacheID := uuid.New()
-		caches := []cache.Cache{
+		c := newCache()
+		c.ID = cacheID
+		c.MinimumUsesBeforeCaching = 2
+		c.BackgroundUpdate = true
+		c.Revalidate = true
+		c.Durations = []cache.Duration{
 			{
-				ID:                       cacheID,
-				MinimumUsesBeforeCaching: 2,
-				BackgroundUpdate:         true,
-				Revalidate:               true,
-				Durations: []cache.Duration{
-					{
-						StatusCodes:      []string{"200", "302"},
-						ValidTimeSeconds: 600,
-					},
-				},
-				AllowedMethods: []cache.Method{
-					cache.GetMethod,
-					cache.HeadMethod,
-				},
-				IgnoreUpstreamCacheHeaders:       true,
-				CacheStatusResponseHeaderEnabled: true,
-				UseStale: []cache.UseStaleOption{
-					cache.ErrorUseStale,
-					cache.TimeoutUseStale,
-				},
-				ConcurrencyLock: cache.ConcurrencyLock{
-					Enabled:        true,
-					TimeoutSeconds: ptr.Of(5),
-					AgeSeconds:     ptr.Of(10),
-				},
-				BypassRules:    []string{"$cookie_nocache"},
-				NoCacheRules:   []string{"$arg_nocache"},
-				FileExtensions: []string{"jpg", "png"},
+				StatusCodes:      []string{"200", "302"},
+				ValidTimeSeconds: 600,
 			},
 		}
+		c.AllowedMethods = []cache.Method{
+			cache.GetMethod,
+			cache.HeadMethod,
+		}
+		c.IgnoreUpstreamCacheHeaders = true
+		c.CacheStatusResponseHeaderEnabled = true
+		c.UseStale = []cache.UseStaleOption{
+			cache.ErrorUseStale,
+			cache.TimeoutUseStale,
+		}
+		c.ConcurrencyLock = cache.ConcurrencyLock{
+			Enabled:        true,
+			TimeoutSeconds: ptr.Of(5),
+			AgeSeconds:     ptr.Of(10),
+		}
+		c.BypassRules = []string{"$cookie_nocache"}
+		c.NoCacheRules = []string{"$arg_nocache"}
+		c.FileExtensions = []string{"jpg", "png"}
+
+		caches := []cache.Cache{c}
 
 		t.Run("generates comprehensive cache config", func(t *testing.T) {
-			result := p.buildCacheConfig(caches, &cacheID)
+			result := provider.buildCacheConfig(caches, &cacheID)
 			cacheIDNoDashes := strings.ReplaceAll(cacheID.String(), "-", "")
 			assert.Contains(t, result, fmt.Sprintf("proxy_cache cache_%s;", cacheIDNoDashes))
 			assert.Contains(t, result, "proxy_cache_min_uses 2;")
@@ -503,19 +468,19 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 
 		t.Run("returns empty string when cache not found", func(t *testing.T) {
 			unknownID := uuid.New()
-			result := p.buildCacheConfig(caches, &unknownID)
+			result := provider.buildCacheConfig(caches, &unknownID)
 			assert.Equal(t, "", result)
 		})
 
 		t.Run("returns empty string when cacheID is nil", func(t *testing.T) {
-			result := p.buildCacheConfig(caches, nil)
+			result := provider.buildCacheConfig(caches, nil)
 			assert.Equal(t, "", result)
 		})
 	})
 
 	t.Run("BuildStaticFilesRoute", func(t *testing.T) {
-		p := &hostConfigurationFileProvider{}
-		ctx := &providerContext{}
+		provider := &hostConfigurationFileProvider{}
+		ctx := newProviderContext()
 
 		t.Run("generates static files config", func(t *testing.T) {
 			r := &host.Route{
@@ -525,7 +490,7 @@ func Test_HostConfigurationFileProvider(t *testing.T) {
 					DirectoryListingEnabled: true,
 				},
 			}
-			result := p.buildStaticFilesRoute(ctx, r)
+			result := provider.buildStaticFilesRoute(ctx, r)
 			assert.Contains(t, result, "location /static/ {")
 			assert.Contains(t, result, "root /var/www/static;")
 			assert.Contains(t, result, "autoindex on;")

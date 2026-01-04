@@ -6,126 +6,119 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func validCache() *Cache {
-	return &Cache{
-		Name:                     "test",
-		MinimumUsesBeforeCaching: 1,
-	}
-}
-
-func Test_Validator(t *testing.T) {
+func Test_validator(t *testing.T) {
 	t.Run("validate", func(t *testing.T) {
 		t.Run("valid cache passes", func(t *testing.T) {
-			cache := validCache()
-			val := newValidator()
+			cache := newCache()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.NoError(t, err)
 		})
 
 		t.Run("empty name fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.Name = ""
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("whitespace-only name fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.Name = "   "
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("minimum uses before caching less than 1 fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.MinimumUsesBeforeCaching = 0
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("inactive seconds less than 1 fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			zero := 0
 			cache.InactiveSeconds = &zero
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("maximum size MB less than 1 fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			zero := 0
 			cache.MaximumSizeMB = &zero
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("relative storage path fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			relativePath := "relative/path"
 			cache.StoragePath = &relativePath
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("absolute storage path passes", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			absolutePath := "/absolute/path"
 			cache.StoragePath = &absolutePath
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.NoError(t, err)
 		})
 
 		t.Run("concurrency lock enabled without timeout fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.ConcurrencyLock = ConcurrencyLock{
 				Enabled: true,
 			}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("concurrency lock enabled without age fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			timeout := 10
 			cache.ConcurrencyLock = ConcurrencyLock{
 				Enabled:        true,
 				TimeoutSeconds: &timeout,
 			}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("concurrency lock timeout less than 1 fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			timeout := 0
 			age := 5
 			cache.ConcurrencyLock = ConcurrencyLock{
@@ -133,15 +126,15 @@ func Test_Validator(t *testing.T) {
 				TimeoutSeconds: &timeout,
 				AgeSeconds:     &age,
 			}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("concurrency lock age less than 1 fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			timeout := 10
 			age := 0
 			cache.ConcurrencyLock = ConcurrencyLock{
@@ -149,15 +142,15 @@ func Test_Validator(t *testing.T) {
 				TimeoutSeconds: &timeout,
 				AgeSeconds:     &age,
 			}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("concurrency lock enabled with valid values passes", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			timeout := 10
 			age := 5
 			cache.ConcurrencyLock = ConcurrencyLock{
@@ -165,194 +158,194 @@ func Test_Validator(t *testing.T) {
 				TimeoutSeconds: &timeout,
 				AgeSeconds:     &age,
 			}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.NoError(t, err)
 		})
 
 		t.Run("invalid HTTP method fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.AllowedMethods = []Method{"INVALID"}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("valid HTTP methods pass", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.AllowedMethods = []Method{GetMethod, PostMethod, PutMethod}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.NoError(t, err)
 		})
 
 		t.Run("invalid use stale option fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.UseStale = []UseStaleOption{"INVALID"}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("valid use stale options pass", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.UseStale = []UseStaleOption{ErrorUseStale, TimeoutUseStale}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.NoError(t, err)
 		})
 
 		t.Run("duration without status codes fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.Durations = []Duration{
 				{
 					StatusCodes:      []string{},
 					ValidTimeSeconds: 60,
 				},
 			}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("duration with invalid status code fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.Durations = []Duration{
 				{
 					StatusCodes:      []string{"999"},
 					ValidTimeSeconds: 60,
 				},
 			}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("duration status code below range fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.Durations = []Duration{
 				{
 					StatusCodes:      []string{"99"},
 					ValidTimeSeconds: 60,
 				},
 			}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("duration status code above range fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.Durations = []Duration{
 				{
 					StatusCodes:      []string{"600"},
 					ValidTimeSeconds: 60,
 				},
 			}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("duration status code non-integer fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.Durations = []Duration{
 				{
 					StatusCodes:      []string{"abc"},
 					ValidTimeSeconds: 60,
 				},
 			}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("duration valid time seconds less than 1 fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.Durations = []Duration{
 				{
 					StatusCodes:      []string{"200"},
 					ValidTimeSeconds: 0,
 				},
 			}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("duration with valid status code passes", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.Durations = []Duration{
 				{
 					StatusCodes:      []string{"200", "404"},
 					ValidTimeSeconds: 60,
 				},
 			}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.NoError(t, err)
 		})
 
 		t.Run("empty file extension fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.FileExtensions = []string{""}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("whitespace-only file extension fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.FileExtensions = []string{"   "}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("file extension starting with dot fails", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.FileExtensions = []string{".txt"}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.Error(t, err)
 		})
 
 		t.Run("file extension without dot passes", func(t *testing.T) {
-			cache := validCache()
+			cache := newCache()
 			cache.FileExtensions = []string{"txt", "jpg"}
-			val := newValidator()
+			cacheValidator := newValidator()
 
-			err := val.validate(cache)
+			err := cacheValidator.validate(cache)
 
 			assert.NoError(t, err)
 		})

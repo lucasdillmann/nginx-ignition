@@ -4,24 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 )
 
-func validIntegration() *Integration {
-	return &Integration{
-		ID:         uuid.New(),
-		Name:       "test",
-		Driver:     "docker",
-		Enabled:    true,
-		Parameters: map[string]any{},
-	}
-}
-
-func Test_Validator(t *testing.T) {
+func Test_validator(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("validate", func(t *testing.T) {
@@ -29,15 +18,15 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			integration := validIntegration()
+			integration := newIntegration()
 			inUse := false
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
-			val := newValidator(repo, driverMock)
+			integrationValidator := newValidator(repository, driverMock)
 
-			err := val.validate(ctx, integration)
+			err := integrationValidator.validate(ctx, integration)
 
 			assert.NoError(t, err)
 		})
@@ -46,14 +35,14 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			integration := validIntegration()
+			integration := newIntegration()
 			integration.Name = ""
 			inUse := false
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-			val := newValidator(repo, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			integrationValidator := newValidator(repository, nil)
 
-			err := val.validate(ctx, integration)
+			err := integrationValidator.validate(ctx, integration)
 
 			assert.Error(t, err)
 		})
@@ -62,14 +51,14 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			integration := validIntegration()
+			integration := newIntegration()
 			integration.Name = "   "
 			inUse := false
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-			val := newValidator(repo, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			integrationValidator := newValidator(repository, nil)
 
-			err := val.validate(ctx, integration)
+			err := integrationValidator.validate(ctx, integration)
 
 			assert.Error(t, err)
 		})
@@ -78,14 +67,14 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			integration := validIntegration()
+			integration := newIntegration()
 			integration.Driver = ""
 			inUse := false
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-			val := newValidator(repo, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			integrationValidator := newValidator(repository, nil)
 
-			err := val.validate(ctx, integration)
+			err := integrationValidator.validate(ctx, integration)
 
 			assert.Error(t, err)
 		})
@@ -94,14 +83,14 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			integration := validIntegration()
+			integration := newIntegration()
 			integration.Driver = "   "
 			inUse := false
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-			val := newValidator(repo, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			integrationValidator := newValidator(repository, nil)
 
-			err := val.validate(ctx, integration)
+			err := integrationValidator.validate(ctx, integration)
 
 			assert.Error(t, err)
 		})
@@ -110,14 +99,14 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			integration := validIntegration()
+			integration := newIntegration()
 			integration.Driver = "nonexistent"
 			inUse := false
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
-			val := newValidator(repo, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			integrationValidator := newValidator(repository, nil)
 
-			err := val.validate(ctx, integration)
+			err := integrationValidator.validate(ctx, integration)
 
 			assert.Error(t, err)
 		})
@@ -126,16 +115,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			integration := validIntegration()
+			integration := newIntegration()
 			integration.Enabled = false
 			inUse := true
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
-			val := newValidator(repo, driverMock)
+			integrationValidator := newValidator(repository, driverMock)
 
-			err := val.validate(ctx, integration)
+			err := integrationValidator.validate(ctx, integration)
 
 			assert.Error(t, err)
 		})
@@ -144,16 +133,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			integration := validIntegration()
+			integration := newIntegration()
 			integration.Enabled = false
 			inUse := false
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
-			val := newValidator(repo, driverMock)
+			integrationValidator := newValidator(repository, driverMock)
 
-			err := val.validate(ctx, integration)
+			err := integrationValidator.validate(ctx, integration)
 
 			assert.NoError(t, err)
 		})
@@ -162,13 +151,13 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			integration := validIntegration()
+			integration := newIntegration()
 			integration.Parameters = map[string]any{
 				"requiredField": "",
 			}
 			inUse := false
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{
 				{
@@ -177,9 +166,9 @@ func Test_Validator(t *testing.T) {
 					Required: true,
 				},
 			})
-			val := newValidator(repo, driverMock)
+			integrationValidator := newValidator(repository, driverMock)
 
-			err := val.validate(ctx, integration)
+			err := integrationValidator.validate(ctx, integration)
 
 			assert.Error(t, err)
 		})

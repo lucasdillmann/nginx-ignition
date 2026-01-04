@@ -14,26 +14,21 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
-func Test_Service(t *testing.T) {
+func Test_service(t *testing.T) {
 	t.Run("Get", func(t *testing.T) {
 		t.Run("returns VPN when found", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			id := uuid.New()
-			expected := &VPN{
-				ID:     id,
-				Name:   "test",
-				Driver: "tailscale",
-			}
+			expected := newVPN()
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByID(ctx, id).Return(expected, nil)
+			repo.EXPECT().FindByID(ctx, expected.ID).Return(expected, nil)
 
 			cfg := &configuration.Configuration{}
-			svc := newService(cfg, repo, func() []Driver { return nil })
-			result, err := svc.Get(ctx, id)
+			vpnService := newService(cfg, repo, func() []Driver { return nil })
+			result, err := vpnService.Get(ctx, expected.ID)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -54,8 +49,8 @@ func Test_Service(t *testing.T) {
 			repo.EXPECT().DeleteByID(ctx, id).Return(nil)
 
 			cfg := &configuration.Configuration{}
-			svc := newService(cfg, repo, func() []Driver { return nil })
-			err := svc.Delete(ctx, id)
+			vpnService := newService(cfg, repo, func() []Driver { return nil })
+			err := vpnService.Delete(ctx, id)
 
 			assert.NoError(t, err)
 		})
@@ -72,8 +67,8 @@ func Test_Service(t *testing.T) {
 			repo.EXPECT().InUseByID(ctx, id).Return(&inUse, nil)
 
 			cfg := &configuration.Configuration{}
-			svc := newService(cfg, repo, func() []Driver { return nil })
-			err := svc.Delete(ctx, id)
+			vpnService := newService(cfg, repo, func() []Driver { return nil })
+			err := vpnService.Delete(ctx, id)
 
 			require.Error(t, err)
 			var coreErr *coreerror.CoreError
@@ -88,17 +83,15 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expectedPage := pagination.Of([]VPN{
-				{Name: "test"},
-			})
+			expectedPage := pagination.Of([]VPN{*newVPN()})
 			searchTerms := "test"
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindPage(ctx, 10, 1, &searchTerms, false).Return(expectedPage, nil)
 
 			cfg := &configuration.Configuration{}
-			svc := newService(cfg, repo, func() []Driver { return nil })
-			result, err := svc.List(ctx, 10, 1, &searchTerms, false)
+			vpnService := newService(cfg, repo, func() []Driver { return nil })
+			result, err := vpnService.List(ctx, 10, 1, &searchTerms, false)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expectedPage, result)
@@ -118,8 +111,8 @@ func Test_Service(t *testing.T) {
 			repo.EXPECT().ExistsByID(ctx, id).Return(&exists, nil)
 
 			cfg := &configuration.Configuration{}
-			svc := newService(cfg, repo, func() []Driver { return nil })
-			result, err := svc.Exists(ctx, id)
+			vpnService := newService(cfg, repo, func() []Driver { return nil })
+			result, err := vpnService.Exists(ctx, id)
 
 			assert.NoError(t, err)
 			assert.True(t, *result)
@@ -132,17 +125,16 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			vpn := &VPN{
-				Name: "",
-			}
+			vpn := newVPN()
+			vpn.Name = ""
 			inUse := false
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
 
 			cfg := &configuration.Configuration{}
-			svc := newService(cfg, repo, func() []Driver { return nil })
-			err := svc.Save(ctx, vpn)
+			vpnService := newService(cfg, repo, func() []Driver { return nil })
+			err := vpnService.Save(ctx, vpn)
 
 			assert.Error(t, err)
 		})

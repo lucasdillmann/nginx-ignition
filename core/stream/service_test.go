@@ -12,36 +12,20 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
-func Test_Service(t *testing.T) {
+func Test_service(t *testing.T) {
 	t.Run("Save", func(t *testing.T) {
 		t.Run("valid stream saves successfully", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			port := 8080
-			stream := &Stream{
-				Name: "test",
-				Type: SimpleType,
-				Binding: Address{
-					Protocol: TCPProtocol,
-					Address:  "127.0.0.1",
-					Port:     &port,
-				},
-				DefaultBackend: Backend{
-					Address: Address{
-						Protocol: TCPProtocol,
-						Address:  "127.0.0.1",
-						Port:     &port,
-					},
-				},
-			}
+			s := newStream()
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Save(ctx, stream).Return(nil)
+			repo.EXPECT().Save(ctx, s).Return(nil)
 
-			svc := newCommands(repo)
-			err := svc.Save(ctx, stream)
+			streamService := newCommands(repo)
+			err := streamService.Save(ctx, s)
 
 			assert.NoError(t, err)
 		})
@@ -51,13 +35,12 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			stream := &Stream{
-				Name: "",
-			}
+			s := newStream()
+			s.Name = ""
 
 			repo := NewMockedRepository(ctrl)
-			svc := newCommands(repo)
-			err := svc.Save(ctx, stream)
+			streamService := newCommands(repo)
+			err := streamService.Save(ctx, s)
 
 			assert.Error(t, err)
 		})
@@ -67,30 +50,14 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			port := 8080
-			stream := &Stream{
-				Name: "test",
-				Type: SimpleType,
-				Binding: Address{
-					Protocol: TCPProtocol,
-					Address:  "127.0.0.1",
-					Port:     &port,
-				},
-				DefaultBackend: Backend{
-					Address: Address{
-						Protocol: TCPProtocol,
-						Address:  "127.0.0.1",
-						Port:     &port,
-					},
-				},
-			}
+			s := newStream()
 
 			expectedErr := errors.New("repository error")
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Save(ctx, stream).Return(expectedErr)
+			repo.EXPECT().Save(ctx, s).Return(expectedErr)
 
-			svc := newCommands(repo)
-			err := svc.Save(ctx, stream)
+			streamService := newCommands(repo)
+			err := streamService.Save(ctx, s)
 
 			assert.Equal(t, expectedErr, err)
 		})
@@ -107,8 +74,8 @@ func Test_Service(t *testing.T) {
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().DeleteByID(ctx, id).Return(nil)
 
-			svc := newCommands(repo)
-			err := svc.Delete(ctx, id)
+			streamService := newCommands(repo)
+			err := streamService.Delete(ctx, id)
 
 			assert.NoError(t, err)
 		})
@@ -124,8 +91,8 @@ func Test_Service(t *testing.T) {
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().DeleteByID(ctx, id).Return(expectedErr)
 
-			svc := newCommands(repo)
-			err := svc.Delete(ctx, id)
+			streamService := newCommands(repo)
+			err := streamService.Delete(ctx, id)
 
 			assert.Equal(t, expectedErr, err)
 		})
@@ -138,16 +105,14 @@ func Test_Service(t *testing.T) {
 
 			ctx := context.Background()
 			id := uuid.New()
-			expected := &Stream{
-				ID:   id,
-				Name: "test",
-			}
+			expected := newStream()
+			expected.ID = id
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByID(ctx, id).Return(expected, nil)
 
-			svc := newCommands(repo)
-			result, err := svc.Get(ctx, id)
+			streamService := newCommands(repo)
+			result, err := streamService.Get(ctx, id)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -160,18 +125,14 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expectedPage := pagination.Of([]Stream{
-				{
-					Name: "test",
-				},
-			})
+			expectedPage := pagination.Of([]Stream{*newStream()})
 			searchTerms := "test"
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindPage(ctx, 10, 1, &searchTerms).Return(expectedPage, nil)
 
-			svc := newCommands(repo)
-			result, err := svc.List(ctx, 10, 1, &searchTerms)
+			streamService := newCommands(repo)
+			result, err := streamService.List(ctx, 10, 1, &searchTerms)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expectedPage, result)
@@ -189,8 +150,8 @@ func Test_Service(t *testing.T) {
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().ExistsByID(ctx, id).Return(true, nil)
 
-			svc := newCommands(repo)
-			exists, err := svc.Exists(ctx, id)
+			streamService := newCommands(repo)
+			exists, err := streamService.Exists(ctx, id)
 
 			assert.NoError(t, err)
 			assert.True(t, exists)

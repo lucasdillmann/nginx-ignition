@@ -26,6 +26,8 @@ linters:
       forbid:
         - pattern: ^NewMocked.*$
           msg: "Do not use shared mocks in production code"
+        - pattern: ^RunWithMocked.*$
+          msg: "Do not use shared mocks in production code"
     govet:
       enable-all: true
     dupl:
