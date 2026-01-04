@@ -6,34 +6,38 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_ServiceMetadata(t *testing.T) {
-	svc := &service{}
+func Test_service_metadata(t *testing.T) {
+	nginxService := &service{}
 
 	t.Run("ExtractVersion", func(t *testing.T) {
 		t.Run("extracts version correctly", func(t *testing.T) {
-			assert.Equal(t, "1.25.3", svc.extractVersion("nginx version: nginx/1.25.3"))
-			assert.Equal(t, "unknown", svc.extractVersion("invalid"))
+			assert.Equal(t, "1.25.3", nginxService.extractVersion("nginx version: nginx/1.25.3"))
+			assert.Equal(t, "unknown", nginxService.extractVersion("invalid"))
 		})
 	})
 
 	t.Run("ExtractBuildDetails", func(t *testing.T) {
 		t.Run("extracts build details correctly", func(t *testing.T) {
 			output := "built by gcc 12.2.0\nbuilt with OpenSSL 3.0.11"
-			assert.Equal(t, "by gcc 12.2.0; with OpenSSL 3.0.11", svc.extractBuildDetails(output))
+			assert.Equal(
+				t,
+				"by gcc 12.2.0; with OpenSSL 3.0.11",
+				nginxService.extractBuildDetails(output),
+			)
 		})
 	})
 
 	t.Run("ExtractTLSSNIEnabled", func(t *testing.T) {
 		t.Run("detects SNI support", func(t *testing.T) {
-			assert.True(t, svc.extractTLSSNIEnabled("TLS SNI support enabled"))
-			assert.False(t, svc.extractTLSSNIEnabled("no support"))
+			assert.True(t, nginxService.extractTLSSNIEnabled("TLS SNI support enabled"))
+			assert.False(t, nginxService.extractTLSSNIEnabled("no support"))
 		})
 	})
 
 	t.Run("ExtractStaticModules", func(t *testing.T) {
 		t.Run("extracts static modules from configure arguments", func(t *testing.T) {
 			args := "--with-http_ssl_module --with-pcre --with-http_v2_module"
-			modules := svc.extractStaticModules(args)
+			modules := nginxService.extractStaticModules(args)
 			assert.ElementsMatch(t, []string{
 				"http_ssl_module",
 				"pcre",
@@ -45,7 +49,7 @@ func Test_ServiceMetadata(t *testing.T) {
 	t.Run("ExtractDynamicModules", func(t *testing.T) {
 		t.Run("extracts dynamic modules from configure arguments", func(t *testing.T) {
 			args := "--with-http_xslt_module=dynamic --add-dynamic-module=/path/to/module_name"
-			modules := svc.extractDynamicModules(args)
+			modules := nginxService.extractDynamicModules(args)
 			assert.ElementsMatch(t, []string{
 				"http_xslt_module",
 				"module_name",
@@ -55,7 +59,7 @@ func Test_ServiceMetadata(t *testing.T) {
 
 	t.Run("MergeModules", func(t *testing.T) {
 		t.Run("merges and deduplicates modules", func(t *testing.T) {
-			merged := svc.mergeModules([]string{
+			merged := nginxService.mergeModules([]string{
 				"mod1",
 				"mod2",
 			}, []string{

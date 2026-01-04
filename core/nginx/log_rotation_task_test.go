@@ -11,7 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func Test_LogRotationTask(t *testing.T) {
+func Test_logRotationTask(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Schedule", func(t *testing.T) {

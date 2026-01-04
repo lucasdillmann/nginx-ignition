@@ -1,19 +1,16 @@
 package cfgfiles
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_MimeTypesFileProvider(t *testing.T) {
+func Test_mimeTypesFileProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
-		p := &mimeTypesFileProvider{}
-		ctx := &providerContext{
-			context: context.Background(),
-		}
-		files, err := p.provide(ctx)
+		provider := &mimeTypesFileProvider{}
+		ctx := newProviderContext()
+		files, err := provider.provide(ctx)
 
 		assert.NoError(t, err)
 		assert.Len(t, files, 1)

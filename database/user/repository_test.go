@@ -2,13 +2,13 @@ package user
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"dillmann.com.br/nginx-ignition/core/user"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 	"dillmann.com.br/nginx-ignition/database/common/testutils"
 )
@@ -112,7 +112,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 
 			for _, item := range page.Contents {
 				found := false
-				if contains(item.Name, prefix) || contains(item.Username, prefix) {
+				if strings.Contains(item.Name, prefix) || strings.Contains(item.Username, prefix) {
 					found = true
 				}
 				assert.True(
@@ -187,33 +187,4 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			assert.Nil(t, saved)
 		})
 	})
-}
-
-func newUser() *user.User {
-	return &user.User{
-		ID:           uuid.New(),
-		Name:         "Test User",
-		Username:     "testuser-" + uuid.New().String(),
-		PasswordHash: "hash",
-		PasswordSalt: "salt",
-		Permissions: user.Permissions{
-			Hosts:        user.ReadWriteAccessLevel,
-			Streams:      user.ReadWriteAccessLevel,
-			Certificates: user.ReadWriteAccessLevel,
-			Logs:         user.ReadOnlyAccessLevel,
-			Integrations: user.ReadWriteAccessLevel,
-			AccessLists:  user.ReadWriteAccessLevel,
-			Settings:     user.ReadWriteAccessLevel,
-			Users:        user.ReadWriteAccessLevel,
-			NginxServer:  user.ReadWriteAccessLevel,
-			ExportData:   user.ReadOnlyAccessLevel,
-			VPNs:         user.ReadWriteAccessLevel,
-			Caches:       user.ReadWriteAccessLevel,
-		},
-		Enabled: true,
-	}
-}
-
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) && s[0:len(substr)] == substr
 }

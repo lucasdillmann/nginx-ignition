@@ -11,53 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
-func validUser() (*User, *SaveRequest) {
-	id := uuid.New()
-	user := &User{
-		ID:       id,
-		Username: "testuser",
-		Name:     "Test User",
-		Enabled:  true,
-		Permissions: Permissions{
-			Hosts:        NoAccessAccessLevel,
-			Streams:      NoAccessAccessLevel,
-			Certificates: NoAccessAccessLevel,
-			Logs:         NoAccessAccessLevel,
-			Integrations: NoAccessAccessLevel,
-			AccessLists:  NoAccessAccessLevel,
-			Settings:     NoAccessAccessLevel,
-			Users:        NoAccessAccessLevel,
-			NginxServer:  ReadOnlyAccessLevel,
-			ExportData:   NoAccessAccessLevel,
-			VPNs:         NoAccessAccessLevel,
-			Caches:       NoAccessAccessLevel,
-		},
-	}
-	request := &SaveRequest{
-		ID:       id,
-		Username: "testuser",
-		Name:     "Test User",
-		Enabled:  true,
-		Password: ptr.Of("password123"),
-		Permissions: Permissions{
-			Hosts:        NoAccessAccessLevel,
-			Streams:      NoAccessAccessLevel,
-			Certificates: NoAccessAccessLevel,
-			Logs:         NoAccessAccessLevel,
-			Integrations: NoAccessAccessLevel,
-			AccessLists:  NoAccessAccessLevel,
-			Settings:     NoAccessAccessLevel,
-			Users:        NoAccessAccessLevel,
-			NginxServer:  ReadOnlyAccessLevel,
-			ExportData:   NoAccessAccessLevel,
-			VPNs:         NoAccessAccessLevel,
-			Caches:       NoAccessAccessLevel,
-		},
-	}
-	return user, request
-}
-
-func Test_Validator(t *testing.T) {
+func Test_validator(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("validate", func(t *testing.T) {
@@ -65,12 +19,14 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
+			usr := newUser()
+			request := newSaveRequest()
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.NoError(t, err)
 		})
@@ -79,16 +35,18 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Enabled = false
+			usr := newUser()
+			usr.Enabled = false
+			request := newSaveRequest()
 			request.Enabled = false
-			currentUser := &User{ID: user.ID}
-			currentUserID := user.ID
+			currentUser := &User{ID: usr.ID}
+			currentUserID := usr.ID
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, currentUser, request, &currentUserID)
+			err := userValidator.validate(ctx, usr, currentUser, request, &currentUserID)
 
 			assert.Error(t, err)
 		})
@@ -97,13 +55,15 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
+			usr := newUser()
+			request := newSaveRequest()
 			request.Password = nil
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -112,14 +72,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
+			usr := newUser()
+			request := newSaveRequest()
 			request.Password = nil
-			currentUser := &User{ID: user.ID}
+			currentUser := &User{ID: usr.ID}
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(currentUser, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, currentUser, request, nil)
+			err := userValidator.validate(ctx, usr, currentUser, request, nil)
 
 			assert.NoError(t, err)
 		})
@@ -128,13 +90,15 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
+			usr := newUser()
+			request := newSaveRequest()
 			otherID := uuid.New()
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(&User{ID: otherID}, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -143,14 +107,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Username = "ab"
+			usr := newUser()
+			usr.Username = "ab"
+			request := newSaveRequest()
 			request.Username = "ab"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "ab").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -159,14 +125,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Name = "ab"
+			usr := newUser()
+			usr.Name = "ab"
+			request := newSaveRequest()
 			request.Name = "ab"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -175,13 +143,15 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
+			usr := newUser()
+			request := newSaveRequest()
 			request.Password = ptr.Of("short")
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -190,14 +160,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.Hosts = AccessLevel("INVALID")
-			request.Permissions.Hosts = AccessLevel("INVALID")
+			usr := newUser()
+			usr.Permissions.Hosts = "INVALID"
+			request := newSaveRequest()
+			request.Permissions.Hosts = "INVALID"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -206,14 +178,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.Streams = AccessLevel("INVALID")
-			request.Permissions.Streams = AccessLevel("INVALID")
+			usr := newUser()
+			usr.Permissions.Streams = "INVALID"
+			request := newSaveRequest()
+			request.Permissions.Streams = "INVALID"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -222,14 +196,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.Certificates = AccessLevel("INVALID")
-			request.Permissions.Certificates = AccessLevel("INVALID")
+			usr := newUser()
+			usr.Permissions.Certificates = "INVALID"
+			request := newSaveRequest()
+			request.Permissions.Certificates = "INVALID"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -238,14 +214,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.Logs = AccessLevel("INVALID")
-			request.Permissions.Logs = AccessLevel("INVALID")
+			usr := newUser()
+			usr.Permissions.Logs = "INVALID"
+			request := newSaveRequest()
+			request.Permissions.Logs = "INVALID"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -254,14 +232,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.Integrations = AccessLevel("INVALID")
-			request.Permissions.Integrations = AccessLevel("INVALID")
+			usr := newUser()
+			usr.Permissions.Integrations = "INVALID"
+			request := newSaveRequest()
+			request.Permissions.Integrations = "INVALID"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -270,14 +250,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.AccessLists = AccessLevel("INVALID")
-			request.Permissions.AccessLists = AccessLevel("INVALID")
+			usr := newUser()
+			usr.Permissions.AccessLists = "INVALID"
+			request := newSaveRequest()
+			request.Permissions.AccessLists = "INVALID"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -286,14 +268,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.Settings = AccessLevel("INVALID")
-			request.Permissions.Settings = AccessLevel("INVALID")
+			usr := newUser()
+			usr.Permissions.Settings = "INVALID"
+			request := newSaveRequest()
+			request.Permissions.Settings = "INVALID"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -302,14 +286,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.Users = AccessLevel("INVALID")
-			request.Permissions.Users = AccessLevel("INVALID")
+			usr := newUser()
+			usr.Permissions.Users = "INVALID"
+			request := newSaveRequest()
+			request.Permissions.Users = "INVALID"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -318,14 +304,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.NginxServer = AccessLevel("INVALID")
-			request.Permissions.NginxServer = AccessLevel("INVALID")
+			usr := newUser()
+			usr.Permissions.NginxServer = "INVALID"
+			request := newSaveRequest()
+			request.Permissions.NginxServer = "INVALID"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -334,14 +322,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.ExportData = AccessLevel("INVALID")
-			request.Permissions.ExportData = AccessLevel("INVALID")
+			usr := newUser()
+			usr.Permissions.ExportData = "INVALID"
+			request := newSaveRequest()
+			request.Permissions.ExportData = "INVALID"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -350,14 +340,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.VPNs = AccessLevel("INVALID")
-			request.Permissions.VPNs = AccessLevel("INVALID")
+			usr := newUser()
+			usr.Permissions.VPNs = "INVALID"
+			request := newSaveRequest()
+			request.Permissions.VPNs = "INVALID"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -366,14 +358,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.Caches = AccessLevel("INVALID")
-			request.Permissions.Caches = AccessLevel("INVALID")
+			usr := newUser()
+			usr.Permissions.Caches = "INVALID"
+			request := newSaveRequest()
+			request.Permissions.Caches = "INVALID"
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -382,14 +376,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.NginxServer = NoAccessAccessLevel
+			usr := newUser()
+			usr.Permissions.NginxServer = NoAccessAccessLevel
+			request := newSaveRequest()
 			request.Permissions.NginxServer = NoAccessAccessLevel
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -398,14 +394,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.Logs = ReadWriteAccessLevel
+			usr := newUser()
+			usr.Permissions.Logs = ReadWriteAccessLevel
+			request := newSaveRequest()
 			request.Permissions.Logs = ReadWriteAccessLevel
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -414,14 +412,16 @@ func Test_Validator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			user, request := validUser()
-			user.Permissions.ExportData = ReadWriteAccessLevel
+			usr := newUser()
+			usr.Permissions.ExportData = ReadWriteAccessLevel
+			request := newSaveRequest()
 			request.Permissions.ExportData = ReadWriteAccessLevel
+
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
-			val := newValidator(repo)
+			userValidator := newValidator(repo)
 
-			err := val.validate(ctx, user, nil, request, nil)
+			err := userValidator.validate(ctx, usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})

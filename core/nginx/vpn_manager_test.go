@@ -14,28 +14,28 @@ import (
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
-func Test_EndpointAdapter(t *testing.T) {
+func Test_endpointAdapter(t *testing.T) {
 	t.Run("Hash", func(t *testing.T) {
 		id := uuid.New()
 		name := "test"
 		domain := "example.com"
 
 		t.Run("generates consistent hash", func(t *testing.T) {
-			a := &endpointAdapter{
+			adapter := &endpointAdapter{
 				vpnID:      id,
 				name:       name,
 				domainName: &domain,
 			}
-			assert.Equal(t, id.String()+name+domain, a.Hash())
+			assert.Equal(t, id.String()+name+domain, adapter.Hash())
 		})
 
 		t.Run("handles nil domain", func(t *testing.T) {
-			a := &endpointAdapter{
+			adapter := &endpointAdapter{
 				vpnID:      id,
 				name:       name,
 				domainName: nil,
 			}
-			assert.Equal(t, id.String()+name, a.Hash())
+			assert.Equal(t, id.String()+name, adapter.Hash())
 		})
 	})
 
@@ -55,11 +55,11 @@ func Test_EndpointAdapter(t *testing.T) {
 		}
 
 		t.Run("maps bindings to targets correctly", func(t *testing.T) {
-			a := &endpointAdapter{
+			adapter := &endpointAdapter{
 				domainName: &domain,
 				bindings:   bindings,
 			}
-			targets := a.Targets()
+			targets := adapter.Targets()
 
 			assert.Len(t, targets, 2)
 			assert.Equal(t, vpn.EndpointTarget{
@@ -78,7 +78,7 @@ func Test_EndpointAdapter(t *testing.T) {
 	})
 }
 
-func Test_VpnManager(t *testing.T) {
+func Test_vpnManager(t *testing.T) {
 	t.Run("buildEndpoints", func(t *testing.T) {
 		ctx := context.Background()
 		vpnID := uuid.New()
@@ -103,7 +103,7 @@ func Test_VpnManager(t *testing.T) {
 			GlobalBindings: globalBindings,
 		}, nil)
 
-		m := newVpnManager(nil, settingsCmds)
+		manager := newVpnManager(nil, settingsCmds)
 
 		t.Run("uses host bindings when UseGlobalBindings is false", func(t *testing.T) {
 			hosts := []host.Host{
@@ -121,7 +121,7 @@ func Test_VpnManager(t *testing.T) {
 				},
 			}
 
-			endpoints, err := m.buildEndpoints(ctx, hosts)
+			endpoints, err := manager.buildEndpoints(ctx, hosts)
 			assert.NoError(t, err)
 			assert.Len(t, endpoints, 1)
 			assert.Equal(t, hostBindings, endpoints[0].(*endpointAdapter).bindings)
@@ -143,7 +143,7 @@ func Test_VpnManager(t *testing.T) {
 				},
 			}
 
-			endpoints, err := m.buildEndpoints(ctx, hosts)
+			endpoints, err := manager.buildEndpoints(ctx, hosts)
 			assert.NoError(t, err)
 			assert.Len(t, endpoints, 1)
 			assert.Equal(t, globalBindings, endpoints[0].(*endpointAdapter).bindings)
@@ -163,7 +163,7 @@ func Test_VpnManager(t *testing.T) {
 				},
 			}
 
-			endpoints, err := m.buildEndpoints(ctx, hosts)
+			endpoints, err := manager.buildEndpoints(ctx, hosts)
 			assert.NoError(t, err)
 			assert.Equal(t, "fallback.com", *endpoints[0].(*endpointAdapter).domainName)
 		})
@@ -188,12 +188,12 @@ func Test_VpnManager(t *testing.T) {
 			vpnCmds := vpn.NewMockedCommands(ctrl)
 			vpnCmds.EXPECT().Stop(ctx, ep2).Return(nil)
 
-			m := &vpnManager{
+			manager := &vpnManager{
 				vpnCommands:      vpnCmds,
 				currentEndpoints: []vpn.Endpoint{ep1, ep2},
 			}
 
-			err := m.stopObsoleteEndpoints(ctx, []vpn.Endpoint{ep1})
+			err := manager.stopObsoleteEndpoints(ctx, []vpn.Endpoint{ep1})
 			assert.NoError(t, err)
 		})
 	})
@@ -217,12 +217,12 @@ func Test_VpnManager(t *testing.T) {
 			vpnCmds := vpn.NewMockedCommands(ctrl)
 			vpnCmds.EXPECT().Start(ctx, ep2).Return(nil)
 
-			m := &vpnManager{
+			manager := &vpnManager{
 				vpnCommands:      vpnCmds,
 				currentEndpoints: []vpn.Endpoint{ep1},
 			}
 
-			err := m.startNewEndpoints(ctx, []vpn.Endpoint{ep1, ep2})
+			err := manager.startNewEndpoints(ctx, []vpn.Endpoint{ep1, ep2})
 			assert.NoError(t, err)
 		})
 	})

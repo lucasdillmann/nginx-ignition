@@ -13,22 +13,20 @@ func Test_RemoveSensitiveFields(t *testing.T) {
 			"field2": "value2",
 			"field3": "value3",
 		}
-		fields := []DynamicField{
-			{
-				ID:        "field1",
-				Sensitive: false,
-			},
-			{
-				ID:        "field2",
-				Sensitive: true,
-			},
-			{
-				ID:        "field3",
-				Sensitive: false,
-			},
-		}
 
-		RemoveSensitiveFields(&values, fields)
+		dynamicField1 := newDynamicField()
+		dynamicField1.ID = "field1"
+
+		dynamicField2 := newDynamicField()
+		dynamicField2.ID = "field2"
+		dynamicField2.Sensitive = true
+
+		dynamicField3 := newDynamicField()
+		dynamicField3.ID = "field3"
+
+		dynamicFields := []DynamicField{*dynamicField1, *dynamicField2, *dynamicField3}
+
+		RemoveSensitiveFields(&values, dynamicFields)
 
 		assert.Contains(t, values, "field1")
 		assert.NotContains(t, values, "field2")
@@ -37,14 +35,14 @@ func Test_RemoveSensitiveFields(t *testing.T) {
 
 	t.Run("handles empty map", func(t *testing.T) {
 		values := map[string]any{}
-		fields := []DynamicField{
-			{
-				ID:        "field1",
-				Sensitive: true,
-			},
-		}
 
-		RemoveSensitiveFields(&values, fields)
+		dynamicField := newDynamicField()
+		dynamicField.ID = "field1"
+		dynamicField.Sensitive = true
+
+		dynamicFields := []DynamicField{*dynamicField}
+
+		RemoveSensitiveFields(&values, dynamicFields)
 
 		assert.Empty(t, values)
 	})
@@ -53,9 +51,9 @@ func Test_RemoveSensitiveFields(t *testing.T) {
 		values := map[string]any{
 			"field1": "value1",
 		}
-		fields := []DynamicField{}
+		dynamicFields := []DynamicField{}
 
-		RemoveSensitiveFields(&values, fields)
+		RemoveSensitiveFields(&values, dynamicFields)
 
 		assert.Contains(t, values, "field1")
 	})
@@ -67,26 +65,30 @@ func Test_RemoveSensitiveFields(t *testing.T) {
 			"field3": "value3",
 			"field4": "value4",
 		}
-		fields := []DynamicField{
-			{
-				ID:        "field1",
-				Sensitive: true,
-			},
-			{
-				ID:        "field2",
-				Sensitive: false,
-			},
-			{
-				ID:        "field3",
-				Sensitive: true,
-			},
-			{
-				ID:        "field4",
-				Sensitive: true,
-			},
+
+		dynamicField1 := newDynamicField()
+		dynamicField1.ID = "field1"
+		dynamicField1.Sensitive = true
+
+		dynamicField2 := newDynamicField()
+		dynamicField2.ID = "field2"
+
+		dynamicField3 := newDynamicField()
+		dynamicField3.ID = "field3"
+		dynamicField3.Sensitive = true
+
+		dynamicField4 := newDynamicField()
+		dynamicField4.ID = "field4"
+		dynamicField4.Sensitive = true
+
+		dynamicFields := []DynamicField{
+			*dynamicField1,
+			*dynamicField2,
+			*dynamicField3,
+			*dynamicField4,
 		}
 
-		RemoveSensitiveFields(&values, fields)
+		RemoveSensitiveFields(&values, dynamicFields)
 
 		assert.NotContains(t, values, "field1")
 		assert.Contains(t, values, "field2")
@@ -98,14 +100,14 @@ func Test_RemoveSensitiveFields(t *testing.T) {
 		values := map[string]any{
 			"field1": "value1",
 		}
-		fields := []DynamicField{
-			{
-				ID:        "nonexistent",
-				Sensitive: true,
-			},
-		}
 
-		RemoveSensitiveFields(&values, fields)
+		dynamicField := newDynamicField()
+		dynamicField.ID = "nonexistent"
+		dynamicField.Sensitive = true
+
+		dynamicFields := []DynamicField{*dynamicField}
+
+		RemoveSensitiveFields(&values, dynamicFields)
 
 		assert.Contains(t, values, "field1")
 	})

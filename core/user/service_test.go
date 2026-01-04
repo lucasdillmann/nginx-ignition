@@ -15,28 +15,21 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
-func Test_Service(t *testing.T) {
+func Test_service(t *testing.T) {
 	t.Run("Get", func(t *testing.T) {
 		t.Run("returns user when found", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			id := uuid.New()
-			expected := &User{
-				ID:       id,
-				Username: "testuser",
-			}
+			expected := newUser()
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByID(ctx, id).Return(expected, nil)
+			repo.EXPECT().FindByID(ctx, expected.ID).Return(expected, nil)
 
 			cfg := &configuration.Configuration{}
-			svc := &service{
-				repository:    repo,
-				configuration: cfg,
-			}
-			result, err := svc.Get(ctx, id)
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.Get(ctx, expected.ID)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -54,10 +47,7 @@ func Test_Service(t *testing.T) {
 			repo.EXPECT().FindByID(ctx, id).Return(nil, expectedErr)
 
 			cfg := &configuration.Configuration{}
-			svc := &service{
-				repository:    repo,
-				configuration: cfg,
-			}
+			svc, _ := newCommands(repo, cfg)
 			result, err := svc.Get(ctx, id)
 
 			assert.Error(t, err)
@@ -78,10 +68,7 @@ func Test_Service(t *testing.T) {
 			repo.EXPECT().DeleteByID(ctx, id).Return(nil)
 
 			cfg := &configuration.Configuration{}
-			svc := &service{
-				repository:    repo,
-				configuration: cfg,
-			}
+			svc, _ := newCommands(repo, cfg)
 			err := svc.Delete(ctx, id)
 
 			assert.NoError(t, err)
@@ -94,21 +81,14 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expectedPage := pagination.Of([]User{
-				{
-					Username: "user1",
-				},
-			})
+			expectedPage := pagination.Of([]User{*newUser()})
 			searchTerms := "test"
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindPage(ctx, 10, 1, &searchTerms).Return(expectedPage, nil)
 
 			cfg := &configuration.Configuration{}
-			svc := &service{
-				repository:    repo,
-				configuration: cfg,
-			}
+			svc, _ := newCommands(repo, cfg)
 			result, err := svc.List(ctx, 10, 1, &searchTerms)
 
 			assert.NoError(t, err)
@@ -128,10 +108,7 @@ func Test_Service(t *testing.T) {
 			repo.EXPECT().Count(ctx).Return(expectedCount, nil)
 
 			cfg := &configuration.Configuration{}
-			svc := &service{
-				repository:    repo,
-				configuration: cfg,
-			}
+			svc, _ := newCommands(repo, cfg)
 			count, err := svc.GetCount(ctx)
 
 			assert.NoError(t, err)
@@ -150,10 +127,7 @@ func Test_Service(t *testing.T) {
 			repo.EXPECT().Count(ctx).Return(1, nil)
 
 			cfg := &configuration.Configuration{}
-			svc := &service{
-				repository:    repo,
-				configuration: cfg,
-			}
+			svc, _ := newCommands(repo, cfg)
 			completed, err := svc.OnboardingCompleted(ctx)
 
 			assert.NoError(t, err)
@@ -170,10 +144,7 @@ func Test_Service(t *testing.T) {
 			repo.EXPECT().Count(ctx).Return(0, nil)
 
 			cfg := &configuration.Configuration{}
-			svc := &service{
-				repository:    repo,
-				configuration: cfg,
-			}
+			svc, _ := newCommands(repo, cfg)
 			completed, err := svc.OnboardingCompleted(ctx)
 
 			assert.NoError(t, err)
@@ -192,10 +163,7 @@ func Test_Service(t *testing.T) {
 			repo.EXPECT().FindByUsername(ctx, "nonexistent").Return(nil, nil)
 
 			cfg := &configuration.Configuration{}
-			svc := &service{
-				repository:    repo,
-				configuration: cfg,
-			}
+			svc, _ := newCommands(repo, cfg)
 			result, err := svc.Authenticate(ctx, "nonexistent", "password")
 
 			require.Error(t, err)
@@ -218,10 +186,7 @@ func Test_Service(t *testing.T) {
 			repo.EXPECT().IsEnabledByID(ctx, id).Return(true, nil)
 
 			cfg := &configuration.Configuration{}
-			svc := &service{
-				repository:    repo,
-				configuration: cfg,
-			}
+			svc, _ := newCommands(repo, cfg)
 			enabled, err := svc.GetStatus(ctx, id)
 
 			assert.NoError(t, err)

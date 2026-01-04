@@ -16,7 +16,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func Test_HostCertificateFileProvider(t *testing.T) {
+func Test_hostCertificateFileProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
 		paths := &Paths{
 			Config: "/etc/nginx/",
@@ -46,31 +46,28 @@ func Test_HostCertificateFileProvider(t *testing.T) {
 			defer ctrl.Finish()
 
 			settingsCmds := settings.NewMockedCommands(ctrl)
-			settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(&settings.Settings{
-				Nginx: &settings.NginxSettings{
-					Logs: &settings.NginxLogsSettings{},
-				},
-			}, nil)
+			settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(newSettings(), nil)
+
+			cert := newCertificate()
+			cert.ID = certID
+			cert.PublicKey = base64.StdEncoding.EncodeToString([]byte("cert-data"))
+			cert.PrivateKey = base64.StdEncoding.EncodeToString([]byte("key-data"))
+			cert.CertificationChain = []string{
+				base64.StdEncoding.EncodeToString([]byte("chain-data")),
+			}
 
 			certificateCmds := certificate.NewMockedCommands(ctrl)
 			certificateCmds.EXPECT().
 				Get(gomock.Any(), certID).
 				AnyTimes().
-				Return(&certificate.Certificate{
-					ID:         certID,
-					PublicKey:  base64.StdEncoding.EncodeToString([]byte("cert-data")),
-					PrivateKey: base64.StdEncoding.EncodeToString([]byte("key-data")),
-					CertificationChain: []string{
-						base64.StdEncoding.EncodeToString([]byte("chain-data")),
-					},
-				}, nil)
+				Return(cert, nil)
 
-			p := &hostCertificateFileProvider{
+			provider := &hostCertificateFileProvider{
 				settingsCommands:    settingsCmds,
 				certificateCommands: certificateCmds,
 			}
 
-			files, err := p.provide(ctx)
+			files, err := provider.provide(ctx)
 			assert.NoError(t, err)
 			assert.Len(t, files, 1)
 
@@ -101,8 +98,8 @@ func Test_HostCertificateFileProvider(t *testing.T) {
 			settingsCmds := settings.NewMockedCommands(ctrl)
 			settingsCmds.EXPECT().Get(gomock.Any()).Return(nil, assert.AnError)
 
-			p := &hostCertificateFileProvider{settingsCommands: settingsCmds}
-			_, err := p.provide(ctx)
+			provider := &hostCertificateFileProvider{settingsCommands: settingsCmds}
+			_, err := provider.provide(ctx)
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 
@@ -113,16 +110,16 @@ func Test_HostCertificateFileProvider(t *testing.T) {
 			settingsCmds := settings.NewMockedCommands(ctrl)
 			settingsCmds.EXPECT().
 				Get(gomock.Any()).
-				Return(&settings.Settings{Nginx: &settings.NginxSettings{}}, nil)
+				Return(newSettings(), nil)
 
 			certificateCmds := certificate.NewMockedCommands(ctrl)
 			certificateCmds.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil, assert.AnError)
 
-			p := &hostCertificateFileProvider{
+			provider := &hostCertificateFileProvider{
 				settingsCommands:    settingsCmds,
 				certificateCommands: certificateCmds,
 			}
-			_, err := p.provide(ctx)
+			_, err := provider.provide(ctx)
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 
@@ -134,17 +131,14 @@ func Test_HostCertificateFileProvider(t *testing.T) {
 			settingsCmds.EXPECT().
 				Get(gomock.Any()).
 				AnyTimes().
-				Return(&settings.Settings{Nginx: &settings.NginxSettings{}}, nil)
+				Return(newSettings(), nil)
 
 			certificateCmds := certificate.NewMockedCommands(ctrl)
 			certificateCmds.EXPECT().
 				Get(gomock.Any(), gomock.Any()).
-				Return(&certificate.Certificate{
-					PublicKey:  "data",
-					PrivateKey: "data",
-				}, nil)
+				Return(newCertificate(), nil)
 
-			p := &hostCertificateFileProvider{
+			provider := &hostCertificateFileProvider{
 				settingsCommands:    settingsCmds,
 				certificateCommands: certificateCmds,
 			}
@@ -162,7 +156,7 @@ func Test_HostCertificateFileProvider(t *testing.T) {
 				},
 			}
 
-			files, err := p.provide(subCtx)
+			files, err := provider.provide(subCtx)
 			assert.NoError(t, err)
 			assert.Len(t, files, 1)
 		})

@@ -14,30 +14,20 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
-func Test_Service(t *testing.T) {
+func Test_service(t *testing.T) {
 	t.Run("Save", func(t *testing.T) {
 		t.Run("valid access list saves successfully", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			accessList := &AccessList{
-				Name:           "test",
-				DefaultOutcome: AllowOutcome,
-				Entries: []Entry{
-					{
-						Outcome:       AllowOutcome,
-						SourceAddress: []string{"192.168.1.1"},
-						Priority:      1,
-					},
-				},
-			}
+			accessList := newAccessList()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Save(ctx, accessList).Return(nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().Save(ctx, accessList).Return(nil)
 
-			svc := newCommands(repo)
-			err := svc.Save(ctx, accessList)
+			accessListService := newCommands(repository)
+			err := accessListService.Save(ctx, accessList)
 
 			assert.NoError(t, err)
 		})
@@ -47,13 +37,12 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			accessList := &AccessList{
-				Name: "",
-			}
+			accessList := newAccessList()
+			accessList.Name = ""
 
-			repo := NewMockedRepository(ctrl)
-			svc := newCommands(repo)
-			err := svc.Save(ctx, accessList)
+			repository := NewMockedRepository(ctrl)
+			accessListService := newCommands(repository)
+			err := accessListService.Save(ctx, accessList)
 
 			assert.Error(t, err)
 		})
@@ -63,24 +52,14 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			accessList := &AccessList{
-				Name:           "test",
-				DefaultOutcome: AllowOutcome,
-				Entries: []Entry{
-					{
-						Outcome:       AllowOutcome,
-						SourceAddress: []string{"192.168.1.1"},
-						Priority:      1,
-					},
-				},
-			}
-
+			accessList := newAccessList()
 			expectedErr := errors.New("repository error")
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Save(ctx, accessList).Return(expectedErr)
 
-			svc := newCommands(repo)
-			err := svc.Save(ctx, accessList)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().Save(ctx, accessList).Return(expectedErr)
+
+			accessListService := newCommands(repository)
+			err := accessListService.Save(ctx, accessList)
 
 			assert.Equal(t, expectedErr, err)
 		})
@@ -94,12 +73,12 @@ func Test_Service(t *testing.T) {
 			ctx := context.Background()
 			id := uuid.New()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, id).Return(false, nil)
-			repo.EXPECT().DeleteByID(ctx, id).Return(nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, id).Return(false, nil)
+			repository.EXPECT().DeleteByID(ctx, id).Return(nil)
 
-			svc := newCommands(repo)
-			err := svc.Delete(ctx, id)
+			accessListService := newCommands(repository)
+			err := accessListService.Delete(ctx, id)
 
 			assert.NoError(t, err)
 		})
@@ -111,11 +90,11 @@ func Test_Service(t *testing.T) {
 			ctx := context.Background()
 			id := uuid.New()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, id).Return(true, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, id).Return(true, nil)
 
-			svc := newCommands(repo)
-			err := svc.Delete(ctx, id)
+			accessListService := newCommands(repository)
+			err := accessListService.Delete(ctx, id)
 
 			require.Error(t, err)
 			var coreErr *coreerror.CoreError
@@ -131,11 +110,11 @@ func Test_Service(t *testing.T) {
 			id := uuid.New()
 			expectedErr := errors.New("check failed")
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, id).Return(false, expectedErr)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, id).Return(false, expectedErr)
 
-			svc := newCommands(repo)
-			err := svc.Delete(ctx, id)
+			accessListService := newCommands(repository)
+			err := accessListService.Delete(ctx, id)
 
 			assert.Equal(t, expectedErr, err)
 		})
@@ -148,12 +127,12 @@ func Test_Service(t *testing.T) {
 			id := uuid.New()
 			expectedErr := errors.New("delete failed")
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, id).Return(false, nil)
-			repo.EXPECT().DeleteByID(ctx, id).Return(expectedErr)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().InUseByID(ctx, id).Return(false, nil)
+			repository.EXPECT().DeleteByID(ctx, id).Return(expectedErr)
 
-			svc := newCommands(repo)
-			err := svc.Delete(ctx, id)
+			accessListService := newCommands(repository)
+			err := accessListService.Delete(ctx, id)
 
 			assert.Equal(t, expectedErr, err)
 		})
@@ -165,17 +144,13 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			id := uuid.New()
-			expected := &AccessList{
-				ID:   id,
-				Name: "test",
-			}
+			expected := newAccessList()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByID(ctx, id).Return(expected, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().FindByID(ctx, expected.ID).Return(expected, nil)
 
-			svc := newCommands(repo)
-			result, err := svc.Get(ctx, id)
+			accessListService := newCommands(repository)
+			result, err := accessListService.Get(ctx, expected.ID)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -189,11 +164,11 @@ func Test_Service(t *testing.T) {
 			id := uuid.New()
 			expectedErr := errors.New("not found")
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByID(ctx, id).Return(nil, expectedErr)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().FindByID(ctx, id).Return(nil, expectedErr)
 
-			svc := newCommands(repo)
-			result, err := svc.Get(ctx, id)
+			accessListService := newCommands(repository)
+			result, err := accessListService.Get(ctx, id)
 
 			assert.Error(t, err)
 			assert.Nil(t, result)
@@ -207,18 +182,14 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expectedPage := pagination.Of([]AccessList{
-				{
-					Name: "test",
-				},
-			})
+			expectedPage := pagination.Of([]AccessList{*newAccessList()})
 			searchTerms := "test"
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindPage(ctx, 1, 10, &searchTerms).Return(expectedPage, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().FindPage(ctx, 1, 10, &searchTerms).Return(expectedPage, nil)
 
-			svc := newCommands(repo)
-			result, err := svc.List(ctx, 10, 1, &searchTerms)
+			accessListService := newCommands(repository)
+			result, err := accessListService.List(ctx, 10, 1, &searchTerms)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expectedPage, result)
@@ -231,11 +202,11 @@ func Test_Service(t *testing.T) {
 			ctx := context.Background()
 			expectedErr := errors.New("list failed")
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindPage(ctx, 1, 10, (*string)(nil)).Return(nil, expectedErr)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().FindPage(ctx, 1, 10, (*string)(nil)).Return(nil, expectedErr)
 
-			svc := newCommands(repo)
-			result, err := svc.List(ctx, 10, 1, nil)
+			accessListService := newCommands(repository)
+			result, err := accessListService.List(ctx, 10, 1, nil)
 
 			assert.Error(t, err)
 			assert.Nil(t, result)
@@ -251,11 +222,11 @@ func Test_Service(t *testing.T) {
 			ctx := context.Background()
 			id := uuid.New()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().ExistsByID(ctx, id).Return(true, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().ExistsByID(ctx, id).Return(true, nil)
 
-			svc := newCommands(repo)
-			exists, err := svc.Exists(ctx, id)
+			accessListService := newCommands(repository)
+			exists, err := accessListService.Exists(ctx, id)
 
 			assert.NoError(t, err)
 			assert.True(t, exists)
@@ -268,11 +239,11 @@ func Test_Service(t *testing.T) {
 			ctx := context.Background()
 			id := uuid.New()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().ExistsByID(ctx, id).Return(false, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().ExistsByID(ctx, id).Return(false, nil)
 
-			svc := newCommands(repo)
-			exists, err := svc.Exists(ctx, id)
+			accessListService := newCommands(repository)
+			exists, err := accessListService.Exists(ctx, id)
 
 			assert.NoError(t, err)
 			assert.False(t, exists)
@@ -286,11 +257,11 @@ func Test_Service(t *testing.T) {
 			id := uuid.New()
 			expectedErr := errors.New("exists check failed")
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().ExistsByID(ctx, id).Return(false, expectedErr)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().ExistsByID(ctx, id).Return(false, expectedErr)
 
-			svc := newCommands(repo)
-			exists, err := svc.Exists(ctx, id)
+			accessListService := newCommands(repository)
+			exists, err := accessListService.Exists(ctx, id)
 
 			assert.Error(t, err)
 			assert.False(t, exists)

@@ -9,24 +9,20 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func Test_Service(t *testing.T) {
+func Test_service(t *testing.T) {
 	t.Run("Get", func(t *testing.T) {
 		t.Run("returns backup when found", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expected := &Backup{
-				FileName:    "backup.db",
-				ContentType: "application/octet-stream",
-				Contents:    []byte("test content"),
-			}
+			expected := newBackup()
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Get(ctx).Return(expected, nil)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().Get(ctx).Return(expected, nil)
 
-			svc := newCommands(repo)
-			result, err := svc.Get(ctx)
+			backupService := newCommands(repository)
+			result, err := backupService.Get(ctx)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -39,11 +35,11 @@ func Test_Service(t *testing.T) {
 			ctx := context.Background()
 			expectedErr := errors.New("repository error")
 
-			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Get(ctx).Return(nil, expectedErr)
+			repository := NewMockedRepository(ctrl)
+			repository.EXPECT().Get(ctx).Return(nil, expectedErr)
 
-			svc := newCommands(repo)
-			result, err := svc.Get(ctx)
+			backupService := newCommands(repository)
+			result, err := backupService.Get(ctx)
 
 			assert.Error(t, err)
 			assert.Nil(t, result)

@@ -18,7 +18,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func Test_Service(t *testing.T) {
+func Test_service(t *testing.T) {
 	t.Run("GetMainLogs", func(t *testing.T) {
 		ctx := context.Background()
 		tmpDir := t.TempDir()
@@ -33,12 +33,12 @@ func Test_Service(t *testing.T) {
 		cfg := configuration.NewWithOverrides(map[string]string{
 			"nginx-ignition.nginx.config-path": tmpDir,
 		})
-		s := &service{
+		nginxService := &service{
 			logReader: newLogReader(cfg),
 		}
 
 		t.Run("returns requested number of lines in reverse order", func(t *testing.T) {
-			lines, err := s.GetMainLogs(ctx, 2)
+			lines, err := nginxService.GetMainLogs(ctx, 2)
 			assert.NoError(t, err)
 			assert.Equal(t, []string{"line3", "line2"}, lines)
 		})
@@ -59,12 +59,12 @@ func Test_Service(t *testing.T) {
 		cfg := configuration.NewWithOverrides(map[string]string{
 			"nginx-ignition.nginx.config-path": tmpDir,
 		})
-		s := &service{
+		nginxService := &service{
 			logReader: newLogReader(cfg),
 		}
 
 		t.Run("returns host specific logs", func(t *testing.T) {
-			lines, err := s.GetHostLogs(ctx, hostID, "access", 1)
+			lines, err := nginxService.GetHostLogs(ctx, hostID, "access", 1)
 			assert.NoError(t, err)
 			assert.Equal(t, []string{"access2"}, lines)
 		})
@@ -103,7 +103,7 @@ func Test_Service(t *testing.T) {
 		hostCmds := host.NewMockedCommands(ctrl)
 		hostCmds.EXPECT().GetAllEnabled(ctx).Return([]host.Host{}, nil)
 
-		s := &service{
+		nginxService := &service{
 			logRotator: newLogRotator(
 				cfg,
 				settingsCmds,
@@ -115,7 +115,7 @@ func Test_Service(t *testing.T) {
 			),
 		}
 
-		err = s.rotateLogs(ctx)
+		err = nginxService.rotateLogs(ctx)
 		assert.NoError(t, err)
 
 		content, err := os.ReadFile(mainLogPath)
@@ -127,13 +127,13 @@ func Test_Service(t *testing.T) {
 		ctx := context.Background()
 
 		t.Run("returns error when not running and failIfNotRunning is true", func(t *testing.T) {
-			s := &service{
+			nginxService := &service{
 				semaphore: &semaphore{
 					state: stoppedState,
 				},
 			}
 
-			err := s.Reload(ctx, true)
+			err := nginxService.Reload(ctx, true)
 			assert.Error(t, err)
 			var coreErr *coreerror.CoreError
 			assert.ErrorAs(t, err, &coreErr)
@@ -145,13 +145,13 @@ func Test_Service(t *testing.T) {
 		ctx := context.Background()
 
 		t.Run("returns nil if already running", func(t *testing.T) {
-			s := &service{
+			nginxService := &service{
 				semaphore: &semaphore{
 					state: runningState,
 				},
 			}
 
-			err := s.Start(ctx)
+			err := nginxService.Start(ctx)
 			assert.NoError(t, err)
 		})
 	})
@@ -160,34 +160,34 @@ func Test_Service(t *testing.T) {
 		ctx := context.Background()
 
 		t.Run("returns nil if already stopped", func(t *testing.T) {
-			s := &service{
+			nginxService := &service{
 				semaphore: &semaphore{
 					state: stoppedState,
 				},
 			}
 
-			err := s.Stop(ctx)
+			err := nginxService.Stop(ctx)
 			assert.NoError(t, err)
 		})
 	})
 
 	t.Run("GetStatus", func(t *testing.T) {
 		t.Run("returns true when running", func(t *testing.T) {
-			s := &service{
+			nginxService := &service{
 				semaphore: &semaphore{
 					state: runningState,
 				},
 			}
-			assert.True(t, s.GetStatus(context.Background()))
+			assert.True(t, nginxService.GetStatus(context.Background()))
 		})
 
 		t.Run("returns false when stopped", func(t *testing.T) {
-			s := &service{
+			nginxService := &service{
 				semaphore: &semaphore{
 					state: stoppedState,
 				},
 			}
-			assert.False(t, s.GetStatus(context.Background()))
+			assert.False(t, nginxService.GetStatus(context.Background()))
 		})
 	})
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 	"dillmann.com.br/nginx-ignition/database/common/testutils"
 )
@@ -166,16 +165,4 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			assert.False(t, *inUse)
 		})
 	})
-}
-
-func newIntegration() *integration.Integration {
-	return &integration.Integration{
-		ID:      uuid.New(),
-		Name:    uuid.NewString(),
-		Driver:  "DOCKER",
-		Enabled: true,
-		Parameters: map[string]any{
-			"key": "value",
-		},
-	}
 }

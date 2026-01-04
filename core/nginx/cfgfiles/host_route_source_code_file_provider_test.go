@@ -10,48 +10,42 @@ import (
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
-func Test_HostRouteSourceCodeFileProvider(t *testing.T) {
+func Test_hostRouteSourceCodeFileProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
-		p := &hostRouteSourceCodeFileProvider{}
+		provider := &hostRouteSourceCodeFileProvider{}
 		hostID := uuid.New()
-		ctx := &providerContext{
-			supportedFeatures: &SupportedFeatures{
-				RunCodeType: DynamicSupportType,
-			},
-			hosts: []host.Host{
-				{
-					ID: hostID,
-					Routes: []host.Route{
-						{
-							Enabled:  true,
-							Priority: 10,
-							Type:     host.ExecuteCodeRouteType,
-							SourceCode: &host.RouteSourceCode{
-								Language: host.JavascriptCodeLanguage,
-								Contents: "console.log('hi');",
-							},
+		ctx := newProviderContext()
+		ctx.supportedFeatures.RunCodeType = DynamicSupportType
+		ctx.hosts = []host.Host{
+			{
+				ID: hostID,
+				Routes: []host.Route{
+					{
+						Enabled:  true,
+						Priority: 10,
+						Type:     host.ExecuteCodeRouteType,
+						SourceCode: &host.RouteSourceCode{
+							Language: host.JavascriptCodeLanguage,
+							Contents: "console.log('hi');",
 						},
 					},
 				},
 			},
 		}
 
-		files, err := p.provide(ctx)
+		files, err := provider.provide(ctx)
 		assert.NoError(t, err)
 		assert.Len(t, files, 1)
 		assert.Equal(t, fmt.Sprintf("host-%s-route-10.js", hostID), files[0].Name)
 	})
 
 	t.Run("BuildSourceCodeFiles", func(t *testing.T) {
-		p := &hostRouteSourceCodeFileProvider{}
+		provider := &hostRouteSourceCodeFileProvider{}
 		hostID := uuid.New()
 
 		t.Run("generates javascript files when supported", func(t *testing.T) {
-			ctx := &providerContext{
-				supportedFeatures: &SupportedFeatures{
-					RunCodeType: DynamicSupportType,
-				},
-			}
+			ctx := newProviderContext()
+			ctx.supportedFeatures.RunCodeType = DynamicSupportType
 			h := &host.Host{
 				ID: hostID,
 				Routes: []host.Route{
@@ -67,7 +61,7 @@ func Test_HostRouteSourceCodeFileProvider(t *testing.T) {
 				},
 			}
 
-			files, err := p.buildSourceCodeFiles(ctx, h)
+			files, err := provider.buildSourceCodeFiles(ctx, h)
 			assert.NoError(t, err)
 			assert.Len(t, files, 1)
 			assert.Equal(t, fmt.Sprintf("host-%s-route-10.js", hostID), files[0].Name)
@@ -75,11 +69,8 @@ func Test_HostRouteSourceCodeFileProvider(t *testing.T) {
 		})
 
 		t.Run("returns error when code execution is not supported", func(t *testing.T) {
-			ctx := &providerContext{
-				supportedFeatures: &SupportedFeatures{
-					RunCodeType: NoneSupportType,
-				},
-			}
+			ctx := newProviderContext()
+			ctx.supportedFeatures.RunCodeType = NoneSupportType
 			h := &host.Host{
 				Routes: []host.Route{
 					{
@@ -89,7 +80,7 @@ func Test_HostRouteSourceCodeFileProvider(t *testing.T) {
 				},
 			}
 
-			_, err := p.buildSourceCodeFiles(ctx, h)
+			_, err := provider.buildSourceCodeFiles(ctx, h)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "not enabled")
 		})
