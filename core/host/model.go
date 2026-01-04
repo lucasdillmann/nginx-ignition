@@ -68,6 +68,7 @@ type RouteSourceCode struct {
 
 type RouteSettings struct {
 	Custom                  *string
+	IndexFile               *string
 	IncludeForwardHeaders   bool
 	ProxySSLServerName      bool
 	KeepOriginalDomainName  bool

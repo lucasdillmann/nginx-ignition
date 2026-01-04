@@ -1,4 +1,4 @@
-import { Form, FormItemProps, Modal, Switch, Tabs } from "antd"
+import { Form, FormItemProps, Input, Modal, Switch, Tabs } from "antd"
 import FormLayout from "../../../core/components/form/FormLayout"
 import TextArea from "antd/es/input/TextArea"
 import React from "react"
@@ -114,9 +114,10 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
         )
     }
 
+    Conditional = this.renderConditionally.bind(this)
+
     private renderMainTab() {
         const { index, validationResult, fieldPath } = this.props
-        const Conditional = this.renderConditionally.bind(this)
 
         return (
             <>
@@ -136,7 +137,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         allowEmpty
                     />
                 </Form.Item>
-                <Conditional types={ACCESS_LIST_SUPPORTED_ROUTE_TYPES}>
+                <this.Conditional types={ACCESS_LIST_SUPPORTED_ROUTE_TYPES}>
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "accessList"]}
@@ -153,8 +154,8 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                             allowEmpty
                         />
                     </Form.Item>
-                </Conditional>
-                <Conditional types={[HostRouteType.STATIC_FILES]}>
+                </this.Conditional>
+                <this.Conditional types={[HostRouteType.STATIC_FILES]}>
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "directoryListingEnabled"]}
@@ -168,8 +169,22 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     >
                         <Switch />
                     </Form.Item>
-                </Conditional>
-                <Conditional types={PROXY_ROUTE_TYPES}>
+                </this.Conditional>
+                <this.Conditional types={[HostRouteType.STATIC_FILES]}>
+                    <Form.Item
+                        {...ItemProps}
+                        name={[fieldPath, "settings", "indexFile"]}
+                        label="Index file"
+                        validateStatus={validationResult.getStatus(`routes[${index}].settings.indexFile`)}
+                        help={
+                            validationResult.getMessage(`routes[${index}].settings.indexFile`) ??
+                            "The default, index file to be used by nginx when a folder is requested"
+                        }
+                    >
+                        <Input />
+                    </Form.Item>
+                </this.Conditional>
+                <this.Conditional types={PROXY_ROUTE_TYPES}>
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "keepOriginalDomainName"]}
@@ -183,8 +198,8 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     >
                         <Switch />
                     </Form.Item>
-                </Conditional>
-                <Conditional types={PROXY_ROUTE_TYPES}>
+                </this.Conditional>
+                <this.Conditional types={PROXY_ROUTE_TYPES}>
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "proxySslServerName"]}
@@ -198,8 +213,8 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     >
                         <Switch />
                     </Form.Item>
-                </Conditional>
-                <Conditional types={PROXY_ROUTE_TYPES}>
+                </this.Conditional>
+                <this.Conditional types={PROXY_ROUTE_TYPES}>
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "includeForwardHeaders"]}
@@ -213,7 +228,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     >
                         <Switch />
                     </Form.Item>
-                </Conditional>
+                </this.Conditional>
             </>
         )
     }

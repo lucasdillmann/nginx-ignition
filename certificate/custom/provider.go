@@ -27,7 +27,7 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name() string {
-	return "Custom certificate"
+	return "Third-party issuer (certificate upload)"
 }
 
 func (p *Provider) DynamicFields() []dynamicfields.DynamicField {

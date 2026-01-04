@@ -191,7 +191,7 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
             subtitle: "Issue or upload a SSL certificate for use with the nginx's virtual hosts",
             actions: [
                 {
-                    description: "Issue and save",
+                    description: "Issue/Upload",
                     disabled: !enableActions,
                     onClick: () => this.submit(),
                 },

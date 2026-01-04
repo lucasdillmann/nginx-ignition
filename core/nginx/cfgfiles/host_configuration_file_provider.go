@@ -237,10 +237,16 @@ func (p *hostConfigurationFileProvider) buildStaticFilesRoute(
 		normalizedSourcePath += "/"
 	}
 
+	indexFile := ""
+	if r.Settings.IndexFile != nil && strings.TrimSpace(*r.Settings.IndexFile) != "" {
+		indexFile = fmt.Sprintf("index %s;", *r.Settings.IndexFile)
+	}
+
 	return fmt.Sprintf(
 		`location %s {
 			rewrite  ^%s(.*) /$1 break;
 			root %s;
+			%s
 			autoindex %s;
 			autoindex_exact_size off;
 			autoindex_format html;
@@ -250,6 +256,7 @@ func (p *hostConfigurationFileProvider) buildStaticFilesRoute(
 		normalizedSourcePath,
 		normalizedSourcePath,
 		*r.TargetURI,
+		indexFile,
 		statusFlag(r.Settings.DirectoryListingEnabled),
 		p.buildRouteSettings(ctx, r),
 	)
