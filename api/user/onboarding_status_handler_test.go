@@ -13,15 +13,17 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-func Test_OnboardingStatusHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_onboardingStatusHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with onboarding status", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := user.NewMockedCommands(ctrl)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				OnboardingCompleted(gomock.Any()).
 				Return(true, nil)
@@ -29,17 +31,17 @@ func Test_OnboardingStatusHandler(t *testing.T) {
 			handler := onboardingStatusHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/users/onboarding/status", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/users/onboarding/status", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/users/onboarding/status", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/users/onboarding/status", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp userOnboardingStatusResponseDTO
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.True(t, resp.Finished)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response userOnboardingStatusResponseDTO
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.True(t, response.Finished)
 		})
 	})
 }

@@ -12,71 +12,21 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func Test_PutHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	payload := settingsDTO{
-		Nginx: &nginxSettingsDTO{
-			GzipEnabled:         ptr.Of(true),
-			ServerTokensEnabled: ptr.Of(true),
-			SendfileEnabled:     ptr.Of(true),
-			TCPNoDelayEnabled:   ptr.Of(true),
-			WorkerProcesses:     ptr.Of(0),
-			WorkerConnections:   ptr.Of(0),
-			MaximumBodySizeMb:   ptr.Of(0),
-			DefaultContentType:  ptr.Of(""),
-			RuntimeUser:         ptr.Of(""),
-			Logs: &nginxLogsSettingsDTO{
-				ServerLogsEnabled: ptr.Of(true),
-				AccessLogsEnabled: ptr.Of(true),
-				ErrorLogsEnabled:  ptr.Of(true),
-				ServerLogsLevel:   ptr.Of(settings.WarnLogLevel),
-				ErrorLogsLevel:    ptr.Of(settings.WarnLogLevel),
-			},
-			Timeouts: &nginxTimeoutsSettingsDTO{
-				Read:       ptr.Of(0),
-				Connect:    ptr.Of(0),
-				Send:       ptr.Of(0),
-				Keepalive:  ptr.Of(0),
-				ClientBody: ptr.Of(0),
-			},
-			Buffers: &nginxBuffersSettingsDTO{
-				ClientBodyKb:   ptr.Of(0),
-				ClientHeaderKb: ptr.Of(0),
-				LargeClientHeader: &nginxBufferSizeDTO{
-					SizeKb: ptr.Of(0),
-					Amount: ptr.Of(0),
-				},
-				Output: &nginxBufferSizeDTO{
-					SizeKb: ptr.Of(0),
-					Amount: ptr.Of(0),
-				},
-			},
-		},
-		LogRotation: &logRotationSettingsDTO{
-			Enabled:           ptr.Of(true),
-			MaximumLines:      ptr.Of(0),
-			IntervalUnit:      ptr.Of(settings.MinutesTimeUnit),
-			IntervalUnitCount: ptr.Of(0),
-		},
-		CertificateAutoRenew: &certificateAutoRenewSettingsDTO{
-			Enabled:           ptr.Of(true),
-			IntervalUnit:      ptr.Of(settings.MinutesTimeUnit),
-			IntervalUnitCount: ptr.Of(0),
-		},
-	}
-	body, _ := json.Marshal(payload)
-
-	t.Run("Handle", func(t *testing.T) {
+func Test_putHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 204 No Content on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := settings.NewMockedCommands(ctrl)
+			payload := newSettingsDTO()
+			commands := settings.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(nil)
@@ -84,43 +34,45 @@ func Test_PutHandler(t *testing.T) {
 			handler := putHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.PUT("/api/settings", handler.handle)
+			engine := gin.New()
+			engine.PUT("/api/settings", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("PUT", "/api/settings", bytes.NewBuffer(body))
-			req.Header.Set("Content-Type", "application/json")
-			r.ServeHTTP(w, req)
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("PUT", "/api/settings", bytes.NewBuffer(body))
+			request.Header.Set("Content-Type", "application/json")
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNoContent, w.Code)
+			assert.Equal(t, http.StatusNoContent, recorder.Code)
 		})
 
 		t.Run("panics on invalid JSON", func(t *testing.T) {
 			handler := putHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.PUT("/api/settings", handler.handle)
+			engine := gin.New()
+			engine.PUT("/api/settings", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest(
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
 				"PUT",
 				"/api/settings",
 				bytes.NewBufferString("invalid json"),
 			)
-			req.Header.Set("Content-Type", "application/json")
+			request.Header.Set("Content-Type", "application/json")
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
+			payload := newSettingsDTO()
 			expectedErr := errors.New("update error")
-			commands := settings.NewMockedCommands(ctrl)
+			commands := settings.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(expectedErr)
@@ -128,23 +80,24 @@ func Test_PutHandler(t *testing.T) {
 			handler := putHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.PUT("/api/settings", func(c *gin.Context) {
+			engine := gin.New()
+			engine.PUT("/api/settings", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("PUT", "/api/settings", bytes.NewBuffer(body))
-			req.Header.Set("Content-Type", "application/json")
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("PUT", "/api/settings", bytes.NewBuffer(body))
+			request.Header.Set("Content-Type", "application/json")
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

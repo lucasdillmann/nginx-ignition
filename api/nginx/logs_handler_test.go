@@ -13,56 +13,58 @@ import (
 	"dillmann.com.br/nginx-ignition/core/nginx"
 )
 
-func Test_LogsHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_logsHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with logs on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			mockLogs := []string{"log line 1", "log line 2"}
-			commands := nginx.NewMockedCommands(ctrl)
+			logs := []string{"log line 1", "log line 2"}
+			commands := nginx.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetMainLogs(gomock.Any(), 50).
-				Return(mockLogs, nil)
+				Return(logs, nil)
 
 			handler := logsHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/nginx/logs", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/nginx/logs", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/nginx/logs", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/nginx/logs", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp []string
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.Equal(t, mockLogs, resp)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response []string
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.Equal(t, logs, response)
 		})
 
 		t.Run("returns 400 Bad Request on invalid line count", func(t *testing.T) {
 			handler := logsHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.GET("/api/nginx/logs", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/nginx/logs", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/nginx/logs?lines=abc", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/nginx/logs?lines=abc", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusBadRequest, w.Code)
+			assert.Equal(t, http.StatusBadRequest, recorder.Code)
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			expectedErr := assert.AnError
-			commands := nginx.NewMockedCommands(ctrl)
+			commands := nginx.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetMainLogs(gomock.Any(), 50).
 				Return(nil, expectedErr)
@@ -70,22 +72,22 @@ func Test_LogsHandler(t *testing.T) {
 			handler := logsHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/nginx/logs", func(c *gin.Context) {
+			engine := gin.New()
+			engine.GET("/api/nginx/logs", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/nginx/logs", nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/nginx/logs", nil)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

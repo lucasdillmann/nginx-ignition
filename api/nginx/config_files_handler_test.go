@@ -12,45 +12,47 @@ import (
 	"dillmann.com.br/nginx-ignition/core/nginx"
 )
 
-func Test_ConfigFilesHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_configFilesHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with zip data on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			mockZip := []byte("zip content")
-			commands := nginx.NewMockedCommands(ctrl)
+			zipData := []byte("zip content")
+			commands := nginx.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetConfigFiles(gomock.Any(), gomock.Any()).
-				Return(mockZip, nil)
+				Return(zipData, nil)
 
 			handler := configFilesHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/nginx/config-files", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/nginx/config-files", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest(
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
 				"GET",
 				"/api/nginx/config-files?basePath=/&configPath=/etc/nginx/",
 				nil,
 			)
-			r.ServeHTTP(w, req)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			assert.Equal(t, "application/zip", w.Header().Get("Content-Type"))
-			assert.Equal(t, mockZip, w.Body.Bytes())
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			assert.Equal(t, "application/zip", recorder.Header().Get("Content-Type"))
+			assert.Equal(t, zipData, recorder.Body.Bytes())
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			expectedErr := assert.AnError
-			commands := nginx.NewMockedCommands(ctrl)
+			commands := nginx.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetConfigFiles(gomock.Any(), gomock.Any()).
 				Return(nil, expectedErr)
@@ -58,22 +60,22 @@ func Test_ConfigFilesHandler(t *testing.T) {
 			handler := configFilesHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.GET("/api/nginx/config-files", func(c *gin.Context) {
+			engine := gin.New()
+			engine.GET("/api/nginx/config-files", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/nginx/config-files", nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/nginx/config-files", nil)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

@@ -7,56 +7,51 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
-	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-func Test_CurrentHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_currentHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with current user data", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			id := uuid.New()
-			mockUser := &user.User{
-				ID:   id,
-				Name: "Current User",
-			}
-
+			subject := newUser()
 			handler := currentHandler{}
-			r := gin.New()
-			r.Use(func(c *gin.Context) {
-				c.Set("ABAC:Subject", &authorization.Subject{User: mockUser})
-				c.Next()
+			engine := gin.New()
+			engine.Use(func(ginContext *gin.Context) {
+				ginContext.Set("ABAC:Subject", &authorization.Subject{User: subject})
+				ginContext.Next()
 			})
-			r.GET("/api/users/current", handler.handle)
+			engine.GET("/api/users/current", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/users/current", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/users/current", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp userResponseDTO
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.Equal(t, id, resp.ID)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response userResponseDTO
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.Equal(t, subject.ID, response.ID)
 		})
 
 		t.Run("returns 401 Unauthorized when subject is missing", func(t *testing.T) {
 			handler := currentHandler{}
-			r := gin.New()
-			r.GET("/api/users/current", handler.handle)
+			engine := gin.New()
+			engine.GET("/api/users/current", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/users/current", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/users/current", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusUnauthorized, w.Code)
+			assert.Equal(t, http.StatusUnauthorized, recorder.Code)
 		})
 	})
 }

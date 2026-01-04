@@ -20,100 +20,97 @@ func init() {
 	gin.SetMode(gin.TestMode)
 }
 
-func Test_GetHandler(t *testing.T) {
-	id := uuid.New()
-	accessList := &accesslist.AccessList{
-		ID:   id,
-		Name: "Test List",
-	}
-
-	t.Run("Handle", func(t *testing.T) {
+func Test_getHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK when list is found", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := accesslist.NewMockedCommands(ctrl)
+			accessList := newAccessList()
+			commands := accesslist.NewMockedCommands(controller)
 			commands.EXPECT().
 				Get(gomock.Any(), gomock.Any()).
-				DoAndReturn(func(_ context.Context, getID uuid.UUID) (*accesslist.AccessList, error) {
-					assert.Equal(t, id, getID)
+				DoAndReturn(func(_ context.Context, idToGet uuid.UUID) (*accesslist.AccessList, error) {
+					assert.Equal(t, accessList.ID, idToGet)
 					return accessList, nil
 				})
 
-			router := gin.New()
+			engine := gin.New()
 			handler := getHandler{
 				commands: commands,
 			}
-			router.GET("/api/access-lists/:id", handler.handle)
+			engine.GET("/api/access-lists/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/access-lists/"+id.String(), nil)
-			router.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/access-lists/"+accessList.ID.String(), nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, w.Code)
+			assert.Equal(t, http.StatusOK, recorder.Code)
 			var response accessListResponseDTO
-			err := json.Unmarshal(w.Body.Bytes(), &response)
+			err := json.Unmarshal(recorder.Body.Bytes(), &response)
 			assert.NoError(t, err)
 			assert.Equal(t, accessList.Name, response.Name)
 		})
 
 		t.Run("returns 404 Not Found when ID is invalid", func(t *testing.T) {
-			router := gin.New()
+			engine := gin.New()
 			handler := getHandler{
 				commands: nil,
 			}
-			router.GET("/api/access-lists/:id", handler.handle)
+			engine.GET("/api/access-lists/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/access-lists/invalid-uuid", nil)
-			router.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/access-lists/invalid-uuid", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("returns 404 Not Found when record does not exist", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := accesslist.NewMockedCommands(ctrl)
+			id := uuid.New()
+			commands := accesslist.NewMockedCommands(controller)
 			commands.EXPECT().
-				Get(gomock.Any(), gomock.Any()).
+				Get(gomock.Any(), id).
 				Return(nil, nil)
 
-			router := gin.New()
+			engine := gin.New()
 			handler := getHandler{
 				commands: commands,
 			}
-			router.GET("/api/access-lists/:id", handler.handle)
+			engine.GET("/api/access-lists/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/access-lists/"+id.String(), nil)
-			router.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/access-lists/"+id.String(), nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
 			expectedErr := errors.New("command error")
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := accesslist.NewMockedCommands(ctrl)
+			id := uuid.New()
+			commands := accesslist.NewMockedCommands(controller)
 			commands.EXPECT().
-				Get(gomock.Any(), gomock.Any()).
+				Get(gomock.Any(), id).
 				Return(nil, expectedErr)
 
-			router := gin.New()
+			engine := gin.New()
 			handler := getHandler{
 				commands: commands,
 			}
-			router.GET("/api/access-lists/:id", handler.handle)
+			engine.GET("/api/access-lists/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/api/access-lists/"+id.String(), nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/api/access-lists/"+id.String(), nil)
 
 			assert.PanicsWithValue(t, expectedErr, func() {
-				router.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

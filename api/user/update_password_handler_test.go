@@ -17,21 +17,23 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-func Test_UpdatePasswordHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_updatePasswordHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 204 No Content on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
-			payload := &userPasswordUpdateRequestDTO{
+			payload := userPasswordUpdateRequestDTO{
 				CurrentPassword: ptr.Of("oldpassword"),
 				NewPassword:     ptr.Of("newpassword"),
 			}
 
-			commands := user.NewMockedCommands(ctrl)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				UpdatePassword(gomock.Any(), id, *payload.CurrentPassword, *payload.NewPassword).
 				Return(nil)
@@ -39,45 +41,48 @@ func Test_UpdatePasswordHandler(t *testing.T) {
 			handler := updatePasswordHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.Use(func(c *gin.Context) {
-				c.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: id}})
-				c.Next()
+			engine := gin.New()
+			engine.Use(func(ginContext *gin.Context) {
+				ginContext.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: id}})
+				ginContext.Next()
 			})
-			r.PATCH("/current/update-password", handler.handle)
+			engine.PATCH("/current/update-password", handler.handle)
 
-			jsonPayload, _ := json.Marshal(payload)
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest(
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
 				"PATCH",
 				"/current/update-password",
-				bytes.NewBuffer(jsonPayload),
+				bytes.NewBuffer(body),
 			)
-			r.ServeHTTP(w, req)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNoContent, w.Code)
+			assert.Equal(t, http.StatusNoContent, recorder.Code)
 		})
 
 		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
 			handler := updatePasswordHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.PATCH("/current/update-password", handler.handle)
+			engine := gin.New()
+			engine.PATCH("/current/update-password", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest(
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
 				"PATCH",
 				"/api/users/invalid/password",
 				bytes.NewBufferString("{}"),
 			)
-			r.Use(func(c *gin.Context) {
-				c.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: uuid.New()}})
-				c.Next()
+			engine.Use(func(ginContext *gin.Context) {
+				ginContext.Set(
+					"ABAC:Subject",
+					&authorization.Subject{User: &user.User{ID: uuid.New()}},
+				)
+				ginContext.Next()
 			})
-			r.ServeHTTP(w, req)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 	})
 }

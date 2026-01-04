@@ -176,7 +176,7 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expectedPage := pagination.New(1, 10, 1, []Cache{
+			expectedPage := pagination.Of([]Cache{
 				{
 					Name: "test",
 				},

@@ -14,35 +14,37 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
-func Test_LogoutHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_logoutHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 204 No Content on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			cfg := configuration.NewWithOverrides(map[string]string{
 				"nginx-ignition.security.jwt.secret": "1234567890123456789012345678901234567890123456789012345678901234",
 			})
-			commands := user.NewMockedCommands(ctrl)
+			commands := user.NewMockedCommands(controller)
 			authorizer, _ := authorization.New(cfg, commands)
 
 			handler := logoutHandler{
 				authorizer: authorizer,
 			}
-			r := gin.New()
-			r.Use(func(c *gin.Context) {
-				c.Set("ABAC:Subject", &authorization.Subject{TokenID: "token-id"})
-				c.Next()
+			engine := gin.New()
+			engine.Use(func(ginContext *gin.Context) {
+				ginContext.Set("ABAC:Subject", &authorization.Subject{TokenID: "token-id"})
+				ginContext.Next()
 			})
-			r.POST("/api/users/logout", handler.handle)
+			engine.POST("/api/users/logout", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/users/logout", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("POST", "/api/users/logout", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNoContent, w.Code)
+			assert.Equal(t, http.StatusNoContent, recorder.Code)
 		})
 	})
 }

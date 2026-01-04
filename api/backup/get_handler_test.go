@@ -13,61 +13,60 @@ import (
 	"dillmann.com.br/nginx-ignition/core/backup"
 )
 
-func Test_GetHandler(t *testing.T) {
-	t.Run("Handle", func(t *testing.T) {
+func init() {
+	gin.SetMode(gin.TestMode)
+}
+
+func Test_getHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with backup data on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			mockData := &backup.Backup{
-				FileName:    "backup.zip",
-				ContentType: "application/zip",
-				Contents:    []byte("backup data"),
-			}
-
-			commands := backup.NewMockedCommands(ctrl)
+			backupData := newBackup()
+			commands := backup.NewMockedCommands(controller)
 			commands.EXPECT().
 				Get(gomock.Any()).
-				Return(mockData, nil)
+				Return(backupData, nil)
 
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("GET", "/api/backup", nil)
+			recorder := httptest.NewRecorder()
+			ginContext, _ := gin.CreateTestContext(recorder)
+			ginContext.Request = httptest.NewRequest("GET", "/api/backup", nil)
 
 			handler := getHandler{
 				commands: commands,
 			}
-			handler.handle(ctx)
+			handler.handle(ginContext)
 
-			assert.Equal(t, http.StatusOK, w.Code)
+			assert.Equal(t, http.StatusOK, recorder.Code)
 			assert.Equal(
 				t,
 				"attachment; filename=backup.zip",
-				w.Header().Get("Content-Disposition"),
+				recorder.Header().Get("Content-Disposition"),
 			)
-			assert.Equal(t, "application/zip", w.Header().Get("Content-Type"))
-			assert.Equal(t, mockData.Contents, w.Body.Bytes())
+			assert.Equal(t, "application/zip", recorder.Header().Get("Content-Type"))
+			assert.Equal(t, backupData.Contents, recorder.Body.Bytes())
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			expectedErr := errors.New("backup error")
-			commands := backup.NewMockedCommands(ctrl)
+			commands := backup.NewMockedCommands(controller)
 			commands.EXPECT().
 				Get(gomock.Any()).
 				Return(nil, expectedErr)
 
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("GET", "/api/backup", nil)
+			recorder := httptest.NewRecorder()
+			ginContext, _ := gin.CreateTestContext(recorder)
+			ginContext.Request = httptest.NewRequest("GET", "/api/backup", nil)
 
 			handler := getHandler{
 				commands: commands,
 			}
 			assert.PanicsWithValue(t, expectedErr, func() {
-				handler.handle(ctx)
+				handler.handle(ginContext)
 			})
 		})
 	})

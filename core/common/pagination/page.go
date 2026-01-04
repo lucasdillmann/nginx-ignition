@@ -15,3 +15,7 @@ func New[T any](pageNumber, pageSize, totalItems int, contents []T) *Page[T] {
 		Contents:   contents,
 	}
 }
+
+func Of[T any](contents []T) *Page[T] {
+	return New(0, len(contents), len(contents), contents)
+}

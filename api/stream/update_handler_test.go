@@ -12,24 +12,22 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
-func Test_UpdateHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_updateHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 204 No Content on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
-			payload := &streamRequestDTO{
-				Name: ptr.Of("updated-stream"),
-			}
-
-			commands := stream.NewMockedCommands(ctrl)
+			payload := newStreamRequest()
+			commands := stream.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(nil)
@@ -37,46 +35,47 @@ func Test_UpdateHandler(t *testing.T) {
 			handler := updateHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.PUT("/api/streams/:id", handler.handle)
+			engine := gin.New()
+			engine.PUT("/api/streams/:id", handler.handle)
 
-			jsonPayload, _ := json.Marshal(payload)
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest(
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
 				"PUT",
 				"/api/streams/"+id.String(),
-				bytes.NewBuffer(jsonPayload),
+				bytes.NewBuffer(body),
 			)
-			r.ServeHTTP(w, req)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNoContent, w.Code)
+			assert.Equal(t, http.StatusNoContent, recorder.Code)
 		})
 
 		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
 			handler := updateHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.PUT("/api/streams/:id", handler.handle)
+			engine := gin.New()
+			engine.PUT("/api/streams/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("PUT", "/api/streams/invalid", bytes.NewBufferString("{}"))
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
+				"PUT",
+				"/api/streams/invalid",
+				bytes.NewBufferString("{}"),
+			)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("panics on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
-			payload := &streamRequestDTO{
-				Name: ptr.Of("updated-stream"),
-			}
-
+			payload := newStreamRequest()
 			expectedErr := assert.AnError
-			commands := stream.NewMockedCommands(ctrl)
+			commands := stream.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(expectedErr)
@@ -84,27 +83,27 @@ func Test_UpdateHandler(t *testing.T) {
 			handler := updateHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.PUT("/api/streams/:id", func(c *gin.Context) {
+			engine := gin.New()
+			engine.PUT("/api/streams/:id", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			jsonPayload, _ := json.Marshal(payload)
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest(
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
 				"PUT",
 				"/api/streams/"+id.String(),
-				bytes.NewBuffer(jsonPayload),
+				bytes.NewBuffer(body),
 			)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

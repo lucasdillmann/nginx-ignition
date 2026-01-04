@@ -14,26 +14,21 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
-func Test_UpdateHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	id := uuid.New()
-	payload := cacheRequestDTO{
-		Name:            "Updated Cache",
-		StoragePath:     ptr.Of("/var/lib/nginx/cache"),
-		InactiveSeconds: ptr.Of(3600),
-	}
-	body, _ := json.Marshal(payload)
-
-	t.Run("Handle", func(t *testing.T) {
+func Test_updateHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 204 No Content on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := cache.NewMockedCommands(ctrl)
+			id := uuid.New()
+			payload := newCacheRequestDTO()
+			commands := cache.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(nil)
@@ -41,58 +36,72 @@ func Test_UpdateHandler(t *testing.T) {
 			handler := updateHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.PUT("/api/caches/:id", handler.handle)
+			engine := gin.New()
+			engine.PUT("/api/caches/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("PUT", "/api/caches/"+id.String(), bytes.NewBuffer(body))
-			req.Header.Set("Content-Type", "application/json")
-			r.ServeHTTP(w, req)
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
+				"PUT",
+				"/api/caches/"+id.String(),
+				bytes.NewBuffer(body),
+			)
+			request.Header.Set("Content-Type", "application/json")
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNoContent, w.Code)
+			assert.Equal(t, http.StatusNoContent, recorder.Code)
 		})
 
 		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
+			payload := newCacheRequestDTO()
 			handler := updateHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.PUT("/api/caches/:id", handler.handle)
+			engine := gin.New()
+			engine.PUT("/api/caches/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("PUT", "/api/caches/invalid", bytes.NewBuffer(body))
-			req.Header.Set("Content-Type", "application/json")
-			r.ServeHTTP(w, req)
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
+				"PUT",
+				"/api/caches/invalid",
+				bytes.NewBuffer(body),
+			)
+			request.Header.Set("Content-Type", "application/json")
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("panics on invalid JSON", func(t *testing.T) {
+			id := uuid.New()
 			handler := updateHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.PUT("/api/caches/:id", handler.handle)
+			engine := gin.New()
+			engine.PUT("/api/caches/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest(
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
 				"PUT",
 				"/api/caches/"+id.String(),
 				bytes.NewBufferString("invalid json"),
 			)
-			req.Header.Set("Content-Type", "application/json")
+			request.Header.Set("Content-Type", "application/json")
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
+			id := uuid.New()
+			payload := newCacheRequestDTO()
 			expectedErr := errors.New("update error")
-			commands := cache.NewMockedCommands(ctrl)
+			commands := cache.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(expectedErr)
@@ -100,23 +109,28 @@ func Test_UpdateHandler(t *testing.T) {
 			handler := updateHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.PUT("/api/caches/:id", func(c *gin.Context) {
+			engine := gin.New()
+			engine.PUT("/api/caches/:id", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("PUT", "/api/caches/"+id.String(), bytes.NewBuffer(body))
-			req.Header.Set("Content-Type", "application/json")
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
+				"PUT",
+				"/api/caches/"+id.String(),
+				bytes.NewBuffer(body),
+			)
+			request.Header.Set("Content-Type", "application/json")
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

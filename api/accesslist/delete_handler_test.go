@@ -15,70 +15,74 @@ import (
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 )
 
-func Test_DeleteHandler(t *testing.T) {
-	id := uuid.New()
+func init() {
+	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_deleteHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 204 No Content on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := accesslist.NewMockedCommands(ctrl)
+			id := uuid.New()
+			commands := accesslist.NewMockedCommands(controller)
 			commands.EXPECT().
 				Delete(gomock.Any(), gomock.Any()).
-				DoAndReturn(func(_ context.Context, delID uuid.UUID) error {
-					assert.Equal(t, id, delID)
+				DoAndReturn(func(_ context.Context, idToDelete uuid.UUID) error {
+					assert.Equal(t, id, idToDelete)
 					return nil
 				})
 
-			router := gin.New()
+			engine := gin.New()
 			handler := deleteHandler{
 				commands: commands,
 			}
-			router.DELETE("/api/access-lists/:id", handler.handle)
+			engine.DELETE("/api/access-lists/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("DELETE", "/api/access-lists/"+id.String(), nil)
-			router.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("DELETE", "/api/access-lists/"+id.String(), nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNoContent, w.Code)
+			assert.Equal(t, http.StatusNoContent, recorder.Code)
 		})
 
 		t.Run("returns 404 Not Found when ID is invalid", func(t *testing.T) {
-			router := gin.New()
+			engine := gin.New()
 			handler := deleteHandler{
 				commands: nil,
 			}
-			router.DELETE("/api/access-lists/:id", handler.handle)
+			engine.DELETE("/api/access-lists/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("DELETE", "/api/access-lists/invalid-uuid", nil)
-			router.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("DELETE", "/api/access-lists/invalid-uuid", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
 			expectedErr := errors.New("command error")
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := accesslist.NewMockedCommands(ctrl)
+			id := uuid.New()
+			commands := accesslist.NewMockedCommands(controller)
 			commands.EXPECT().
 				Delete(gomock.Any(), gomock.Any()).
 				Return(expectedErr)
 
-			router := gin.New()
+			engine := gin.New()
 			handler := deleteHandler{
 				commands: commands,
 			}
-			router.DELETE("/api/access-lists/:id", handler.handle)
+			engine.DELETE("/api/access-lists/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("DELETE", "/api/access-lists/"+id.String(), nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("DELETE", "/api/access-lists/"+id.String(), nil)
 
 			assert.PanicsWithValue(t, expectedErr, func() {
-				router.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

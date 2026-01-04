@@ -15,20 +15,18 @@ import (
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
-func Test_CreateHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_createHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 201 Created on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			payload := &vpnRequest{
-				Name:   "vpn-1",
-				Driver: "openvpn",
-			}
-
-			commands := vpn.NewMockedCommands(ctrl)
+			payload := newVPNRequest()
+			commands := vpn.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(nil)
@@ -36,30 +34,27 @@ func Test_CreateHandler(t *testing.T) {
 			handler := createHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.POST("/api/vpns", handler.handle)
+			engine := gin.New()
+			engine.POST("/api/vpns", handler.handle)
 
-			jsonPayload, _ := json.Marshal(payload)
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/vpns", bytes.NewBuffer(jsonPayload))
-			r.ServeHTTP(w, req)
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("POST", "/api/vpns", bytes.NewBuffer(body))
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusCreated, w.Code)
-			var resp map[string]uuid.UUID
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.NotEqual(t, uuid.Nil, resp["id"])
+			assert.Equal(t, http.StatusCreated, recorder.Code)
+			var response map[string]uuid.UUID
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.NotEqual(t, uuid.Nil, response["id"])
 		})
 
 		t.Run("panics on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			payload := &vpnRequest{
-				Name: "vpn-1",
-			}
-
+			payload := newVPNRequest()
 			expectedErr := assert.AnError
-			commands := vpn.NewMockedCommands(ctrl)
+			commands := vpn.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(expectedErr)
@@ -67,23 +62,23 @@ func Test_CreateHandler(t *testing.T) {
 			handler := createHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.POST("/api/vpns", func(c *gin.Context) {
+			engine := gin.New()
+			engine.POST("/api/vpns", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			jsonPayload, _ := json.Marshal(payload)
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/vpns", bytes.NewBuffer(jsonPayload))
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("POST", "/api/vpns", bytes.NewBuffer(body))
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

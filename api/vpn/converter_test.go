@@ -5,51 +5,33 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-
-	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
-func Test_Converter(t *testing.T) {
-	t.Run("toDTO", func(t *testing.T) {
-		t.Run("converts domain object to DTO", func(t *testing.T) {
-			id := uuid.New()
-			input := &vpn.VPN{
-				ID:         id,
-				Name:       "vpn-1",
-				Driver:     "openvpn",
-				Enabled:    true,
-				Parameters: map[string]any{"key": "value"},
-			}
+func Test_toDTO(t *testing.T) {
+	t.Run("converts domain object to DTO", func(t *testing.T) {
+		subject := newVPN()
+		result := toDTO(subject)
 
-			result := toDTO(input)
-
-			assert.NotNil(t, result)
-			assert.Equal(t, id, result.ID)
-			assert.Equal(t, input.Name, result.Name)
-			assert.Equal(t, input.Driver, result.Driver)
-			assert.True(t, result.Enabled)
-			assert.Equal(t, input.Parameters, result.Parameters)
-		})
+		assert.NotNil(t, result)
+		assert.Equal(t, subject.ID, result.ID)
+		assert.Equal(t, subject.Name, result.Name)
+		assert.Equal(t, subject.Driver, result.Driver)
+		assert.True(t, result.Enabled)
+		assert.Equal(t, subject.Parameters, result.Parameters)
 	})
+}
 
-	t.Run("toDomain", func(t *testing.T) {
-		t.Run("converts DTO to domain object", func(t *testing.T) {
-			id := uuid.New()
-			input := &vpnRequest{
-				Name:       "vpn-1",
-				Driver:     "openvpn",
-				Enabled:    true,
-				Parameters: map[string]any{"key": "value"},
-			}
+func Test_doDomain(t *testing.T) {
+	t.Run("converts DTO to domain object", func(t *testing.T) {
+		id := uuid.New()
+		payload := newVPNRequest()
+		result := toDomain(&payload, id)
 
-			result := toDomain(input, id)
-
-			assert.NotNil(t, result)
-			assert.Equal(t, id, result.ID)
-			assert.Equal(t, input.Name, result.Name)
-			assert.Equal(t, input.Driver, result.Driver)
-			assert.True(t, result.Enabled)
-			assert.Equal(t, input.Parameters, result.Parameters)
-		})
+		assert.NotNil(t, result)
+		assert.Equal(t, id, result.ID)
+		assert.Equal(t, payload.Name, result.Name)
+		assert.Equal(t, payload.Driver, result.Driver)
+		assert.True(t, result.Enabled)
+		assert.Equal(t, payload.Parameters, result.Parameters)
 	})
 }

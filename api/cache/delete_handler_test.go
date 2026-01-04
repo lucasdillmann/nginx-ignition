@@ -14,16 +14,18 @@ import (
 	"dillmann.com.br/nginx-ignition/core/cache"
 )
 
-func Test_DeleteHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_deleteHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 204 No Content on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
-			commands := cache.NewMockedCommands(ctrl)
+			commands := cache.NewMockedCommands(controller)
 			commands.EXPECT().
 				Delete(gomock.Any(), id).
 				Return(nil)
@@ -31,37 +33,37 @@ func Test_DeleteHandler(t *testing.T) {
 			handler := deleteHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.DELETE("/api/caches/:id", handler.handle)
+			engine := gin.New()
+			engine.DELETE("/api/caches/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("DELETE", "/api/caches/"+id.String(), nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("DELETE", "/api/caches/"+id.String(), nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNoContent, w.Code)
+			assert.Equal(t, http.StatusNoContent, recorder.Code)
 		})
 
 		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
 			handler := deleteHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.DELETE("/api/caches/:id", handler.handle)
+			engine := gin.New()
+			engine.DELETE("/api/caches/:id", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("DELETE", "/api/caches/invalid", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("DELETE", "/api/caches/invalid", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
 			expectedErr := errors.New("delete error")
-			commands := cache.NewMockedCommands(ctrl)
+			commands := cache.NewMockedCommands(controller)
 			commands.EXPECT().
 				Delete(gomock.Any(), id).
 				Return(expectedErr)
@@ -69,22 +71,22 @@ func Test_DeleteHandler(t *testing.T) {
 			handler := deleteHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.DELETE("/api/caches/:id", func(c *gin.Context) {
+			engine := gin.New()
+			engine.DELETE("/api/caches/:id", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("DELETE", "/api/caches/"+id.String(), nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("DELETE", "/api/caches/"+id.String(), nil)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

@@ -16,66 +16,69 @@ import (
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
-func Test_ListHandler(t *testing.T) {
-	page := pagination.New(1, 10, 1, []host.Host{
-		{
-			DomainNames: []string{"Test"},
-		},
-	})
+func init() {
+	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_listHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with paginated results", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := host.NewMockedCommands(ctrl)
+			page := newHostPage()
+			commands := host.NewMockedCommands(controller)
 			commands.EXPECT().
 				List(gomock.Any(), 10, 1, gomock.Any()).
 				Return(page, nil)
 
-			settingsCommands := settings.NewMockedCommands(ctrl)
+			settingsCommands := settings.NewMockedCommands(controller)
 			settingsCommands.EXPECT().
 				Get(gomock.Any()).
 				Return(&settings.Settings{}, nil)
 
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("GET", "/api/hosts?pageSize=10&pageNumber=1", nil)
+			recorder := httptest.NewRecorder()
+			ginContext, _ := gin.CreateTestContext(recorder)
+			ginContext.Request = httptest.NewRequest(
+				"GET",
+				"/api/hosts?pageSize=10&pageNumber=1",
+				nil,
+			)
 
 			handler := listHandler{
 				hostCommands:     commands,
 				settingsCommands: settingsCommands,
 			}
-			handler.handle(ctx)
+			handler.handle(ginContext)
 
-			assert.Equal(t, http.StatusOK, w.Code)
+			assert.Equal(t, http.StatusOK, recorder.Code)
 			var response pagination.Page[hostResponseDTO]
-			err := json.Unmarshal(w.Body.Bytes(), &response)
+			err := json.Unmarshal(recorder.Body.Bytes(), &response)
 			assert.NoError(t, err)
 			assert.Equal(t, 1, response.TotalItems)
-			assert.Equal(t, "Test", response.Contents[0].DomainNames[0])
+			assert.Equal(t, page.Contents[0].DomainNames[0], response.Contents[0].DomainNames[0])
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
 			expectedErr := errors.New("command error")
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := host.NewMockedCommands(ctrl)
+			commands := host.NewMockedCommands(controller)
 			commands.EXPECT().
 				List(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil, expectedErr)
 
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("GET", "/api/hosts", nil)
+			recorder := httptest.NewRecorder()
+			ginContext, _ := gin.CreateTestContext(recorder)
+			ginContext.Request = httptest.NewRequest("GET", "/api/hosts", nil)
 
 			handler := listHandler{
 				hostCommands:     commands,
 				settingsCommands: nil,
 			}
 			assert.PanicsWithValue(t, expectedErr, func() {
-				handler.handle(ctx)
+				handler.handle(ginContext)
 			})
 		})
 	})

@@ -8,29 +8,25 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
-func Test_CreateHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	payload := cacheRequestDTO{
-		Name:            "New Cache",
-		StoragePath:     ptr.Of("/var/lib/nginx/cache"),
-		InactiveSeconds: ptr.Of(3600),
-	}
-	body, _ := json.Marshal(payload)
-
-	t.Run("Handle", func(t *testing.T) {
+func Test_createHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 201 Created on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			commands := cache.NewMockedCommands(ctrl)
+			payload := newCacheRequestDTO()
+			commands := cache.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(nil)
@@ -38,43 +34,53 @@ func Test_CreateHandler(t *testing.T) {
 			handler := createHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.POST("/api/caches", handler.handle)
+			engine := gin.New()
+			engine.POST("/api/caches", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/caches", bytes.NewBuffer(body))
-			req.Header.Set("Content-Type", "application/json")
-			r.ServeHTTP(w, req)
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
+				"POST",
+				"/api/caches",
+				bytes.NewBuffer(body),
+			)
+			request.Header.Set("Content-Type", "application/json")
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusCreated, w.Code)
-			var resp cacheResponseDTO
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.Equal(t, payload.Name, resp.Name)
-			assert.NotEqual(t, "", resp.ID.String())
+			assert.Equal(t, http.StatusCreated, recorder.Code)
+			var response cacheResponseDTO
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.Equal(t, payload.Name, response.Name)
+			assert.NotEqual(t, uuid.Nil, response.ID)
 		})
 
 		t.Run("panics on invalid JSON", func(t *testing.T) {
 			handler := createHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.POST("/api/caches", handler.handle)
+			engine := gin.New()
+			engine.POST("/api/caches", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/caches", bytes.NewBufferString("invalid json"))
-			req.Header.Set("Content-Type", "application/json")
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
+				"POST",
+				"/api/caches",
+				bytes.NewBufferString("invalid json"),
+			)
+			request.Header.Set("Content-Type", "application/json")
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
+			payload := newCacheRequestDTO()
 			expectedErr := assert.AnError
-			commands := cache.NewMockedCommands(ctrl)
+			commands := cache.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(expectedErr)
@@ -82,23 +88,28 @@ func Test_CreateHandler(t *testing.T) {
 			handler := createHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.POST("/api/caches", func(c *gin.Context) {
+			engine := gin.New()
+			engine.POST("/api/caches", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/api/caches", bytes.NewBuffer(body))
-			req.Header.Set("Content-Type", "application/json")
+			body, _ := json.Marshal(payload)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
+				"POST",
+				"/api/caches",
+				bytes.NewBuffer(body),
+			)
+			request.Header.Set("Content-Type", "application/json")
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

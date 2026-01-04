@@ -14,9 +14,11 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
-func Test_Handler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
+func Test_handler(t *testing.T) {
 	tests := []struct {
 		err            any
 		name           string
@@ -33,7 +35,10 @@ func Test_Handler(t *testing.T) {
 			name: "ConsistencyError",
 			err: &validation.ConsistencyError{
 				Violations: []validation.ConsistencyViolation{
-					{Path: "field1", Message: "error1"},
+					{
+						Path:    "field1",
+						Message: "error1",
+					},
 				},
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -77,35 +82,35 @@ func Test_Handler(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			r := gin.New()
-			r.GET("/", func(c *gin.Context) {
-				Handler(c, tt.err)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			engine := gin.New()
+			engine.GET("/", func(ginContext *gin.Context) {
+				Handler(ginContext, test.err)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/", nil)
+			engine.ServeHTTP(recorder, request)
 
 			assert.Equalf(
 				t,
-				tt.expectedStatus,
-				w.Code,
+				test.expectedStatus,
+				recorder.Code,
 				"for test '%s': expected status %d but got %d. Body: %s",
-				tt.name,
-				tt.expectedStatus,
-				w.Code,
-				w.Body.String(),
+				test.name,
+				test.expectedStatus,
+				recorder.Code,
+				recorder.Body.String(),
 			)
-			if tt.expectedBody != "" {
-				assert.JSONEq(t, tt.expectedBody, w.Body.String())
+			if test.expectedBody != "" {
+				assert.JSONEq(t, test.expectedBody, recorder.Body.String())
 			}
 		})
 	}
 }
 
-func Test_CanHandle(t *testing.T) {
+func Test_canHandle(t *testing.T) {
 	tests := []struct {
 		err      error
 		name     string
@@ -143,9 +148,9 @@ func Test_CanHandle(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.expected, CanHandle(tt.err))
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, test.expected, CanHandle(test.err))
 		})
 	}
 }

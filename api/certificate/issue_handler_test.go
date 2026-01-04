@@ -8,77 +8,82 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/certificate"
 )
 
-func Test_IssueHandler(t *testing.T) {
-	payload := issueCertificateRequest{
-		ProviderID:  "test",
-		DomainNames: []string{"example.com"},
-	}
-	body, _ := json.Marshal(payload)
+func init() {
+	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_issueHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with success flag on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			id := uuid.New()
-			mockCert := &certificate.Certificate{
-				ID: id,
-			}
-
-			commands := certificate.NewMockedCommands(ctrl)
+			certificateData := newCertificate()
+			payload := newIssueCertificateRequest()
+			commands := certificate.NewMockedCommands(controller)
 			commands.EXPECT().
 				Issue(gomock.Any(), gomock.Any()).
-				Return(mockCert, nil)
+				Return(certificateData, nil)
 
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("POST", "/api/certificates", bytes.NewBuffer(body))
-			ctx.Request.Header.Set("Content-Type", "application/json")
+			recorder := httptest.NewRecorder()
+			ginContext, _ := gin.CreateTestContext(recorder)
+			body, _ := json.Marshal(payload)
+			ginContext.Request = httptest.NewRequest(
+				"POST",
+				"/api/certificates",
+				bytes.NewBuffer(body),
+			)
+			ginContext.Request.Header.Set("Content-Type", "application/json")
 
 			handler := issueHandler{
 				commands: commands,
 			}
-			handler.handle(ctx)
+			handler.handle(ginContext)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp issueCertificateResponse
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.True(t, resp.Success)
-			assert.Equal(t, &id, resp.CertificateID)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response issueCertificateResponse
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.True(t, response.Success)
+			assert.Equal(t, &certificateData.ID, response.CertificateID)
 		})
 
 		t.Run("returns 200 OK with error reasoning on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
+			payload := newIssueCertificateRequest()
 			expectedErr := assert.AnError
-			commands := certificate.NewMockedCommands(ctrl)
+			commands := certificate.NewMockedCommands(controller)
 			commands.EXPECT().
 				Issue(gomock.Any(), gomock.Any()).
 				Return(nil, expectedErr)
 
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("POST", "/api/certificates", bytes.NewBuffer(body))
-			ctx.Request.Header.Set("Content-Type", "application/json")
+			recorder := httptest.NewRecorder()
+			ginContext, _ := gin.CreateTestContext(recorder)
+			body, _ := json.Marshal(payload)
+			ginContext.Request = httptest.NewRequest(
+				"POST",
+				"/api/certificates",
+				bytes.NewBuffer(body),
+			)
+			ginContext.Request.Header.Set("Content-Type", "application/json")
 
 			handler := issueHandler{
 				commands: commands,
 			}
-			handler.handle(ctx)
+			handler.handle(ginContext)
 
-			assert.Equal(t, http.StatusOK, w.Code)
-			var resp issueCertificateResponse
-			json.Unmarshal(w.Body.Bytes(), &resp)
-			assert.False(t, resp.Success)
-			assert.Equal(t, expectedErr.Error(), *resp.ErrorReason)
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			var response issueCertificateResponse
+			json.Unmarshal(recorder.Body.Bytes(), &response)
+			assert.False(t, response.Success)
+			assert.Equal(t, expectedErr.Error(), *response.ErrorReason)
 		})
 	})
 }

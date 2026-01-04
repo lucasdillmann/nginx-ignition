@@ -13,23 +13,21 @@ import (
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
-func Test_ToggleEnabledHandler(t *testing.T) {
+func init() {
 	gin.SetMode(gin.TestMode)
+}
 
-	t.Run("Handle", func(t *testing.T) {
+func Test_toggleEnabledHandler(t *testing.T) {
+	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 204 No Content on success", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
-			id := uuid.New()
-			mockStream := &stream.Stream{
-				ID:      id,
-				Enabled: true,
-			}
-			commands := stream.NewMockedCommands(ctrl)
+			subject := newStream()
+			commands := stream.NewMockedCommands(controller)
 			commands.EXPECT().
-				Get(gomock.Any(), id).
-				Return(mockStream, nil)
+				Get(gomock.Any(), subject.ID).
+				Return(subject, nil)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(nil)
@@ -37,37 +35,41 @@ func Test_ToggleEnabledHandler(t *testing.T) {
 			handler := toggleEnabledHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.PATCH("/api/streams/:id/toggle-enabled", handler.handle)
+			engine := gin.New()
+			engine.PATCH("/api/streams/:id/toggle-enabled", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("PATCH", "/api/streams/"+id.String()+"/toggle-enabled", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
+				"PATCH",
+				"/api/streams/"+subject.ID.String()+"/toggle-enabled",
+				nil,
+			)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNoContent, w.Code)
-			assert.False(t, mockStream.Enabled)
+			assert.Equal(t, http.StatusNoContent, recorder.Code)
+			assert.False(t, subject.Enabled)
 		})
 
 		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
 			handler := toggleEnabledHandler{
 				commands: nil,
 			}
-			r := gin.New()
-			r.PATCH("/api/streams/:id/toggle-enabled", handler.handle)
+			engine := gin.New()
+			engine.PATCH("/api/streams/:id/toggle-enabled", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("PATCH", "/api/streams/invalid/toggle-enabled", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("PATCH", "/api/streams/invalid/toggle-enabled", nil)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("returns 404 Not Found when stream does not exist", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
-			commands := stream.NewMockedCommands(ctrl)
+			commands := stream.NewMockedCommands(controller)
 			commands.EXPECT().
 				Get(gomock.Any(), id).
 				Return(nil, nil)
@@ -75,23 +77,27 @@ func Test_ToggleEnabledHandler(t *testing.T) {
 			handler := toggleEnabledHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.PATCH("/api/streams/:id/toggle-enabled", handler.handle)
+			engine := gin.New()
+			engine.PATCH("/api/streams/:id/toggle-enabled", handler.handle)
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("PATCH", "/api/streams/"+id.String()+"/toggle-enabled", nil)
-			r.ServeHTTP(w, req)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
+				"PATCH",
+				"/api/streams/"+id.String()+"/toggle-enabled",
+				nil,
+			)
+			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
 		t.Run("panics on command error", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
+			controller := gomock.NewController(t)
+			defer controller.Finish()
 
 			id := uuid.New()
 			expectedErr := assert.AnError
-			commands := stream.NewMockedCommands(ctrl)
+			commands := stream.NewMockedCommands(controller)
 			commands.EXPECT().
 				Get(gomock.Any(), id).
 				Return(nil, expectedErr)
@@ -99,22 +105,26 @@ func Test_ToggleEnabledHandler(t *testing.T) {
 			handler := toggleEnabledHandler{
 				commands: commands,
 			}
-			r := gin.New()
-			r.PATCH("/api/streams/:id/toggle-enabled", func(c *gin.Context) {
+			engine := gin.New()
+			engine.PATCH("/api/streams/:id/toggle-enabled", func(ginContext *gin.Context) {
 				defer func() {
 					if r := recover(); r != nil {
 						assert.Equal(t, expectedErr, r)
 						panic(r)
 					}
 				}()
-				handler.handle(c)
+				handler.handle(ginContext)
 			})
 
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("PATCH", "/api/streams/"+id.String()+"/toggle-enabled", nil)
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
+				"PATCH",
+				"/api/streams/"+id.String()+"/toggle-enabled",
+				nil,
+			)
 
 			assert.Panics(t, func() {
-				r.ServeHTTP(w, req)
+				engine.ServeHTTP(recorder, request)
 			})
 		})
 	})

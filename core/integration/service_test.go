@@ -84,7 +84,7 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expectedPage := pagination.New(1, 10, 1, []Integration{
+			expectedPage := pagination.Of([]Integration{
 				{
 					Name: "test",
 				},

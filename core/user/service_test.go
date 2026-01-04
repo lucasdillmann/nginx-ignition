@@ -94,7 +94,7 @@ func Test_Service(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			expectedPage := pagination.New(1, 10, 1, []User{
+			expectedPage := pagination.Of([]User{
 				{
 					Username: "user1",
 				},
