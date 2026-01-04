@@ -11,8 +11,8 @@ jobs:
   quality-checks:
     runs-on: self-hosted
     services:
-      unit-tests-db:
-        image: postgres:18
+      postgres:
+        image: postgres:18-alpine
         env:
           POSTGRES_DB: nginx_ignition_tests
           POSTGRES_USER: postgres
@@ -22,6 +22,8 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 44554:5432
     env:
       GOPATH: /data/cache/go
       GOMODCACHE: /data/cache/go/pkg/mod
@@ -37,21 +39,9 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: 1.25.5
-      - name: Debug Network
-        run: |
-          echo "--- DNS Resolution ---"
-          getent hosts unit-tests-db || echo "unit-tests-db not found in hosts/DNS"
-          
-          echo "--- Connection Test ---"
-          # Try to connect to port 5432 with a 2-second timeout
-          nc -zv -w 2 unit-tests-db 5432 || echo "FAILED: Cannot reach unit-tests-db:5432"
-
       - name: Unit tests
         env:
-          TEST_POSTGRES_HOST: unit-tests-db
-          TEST_POSTGRES_USER: postgres
-          TEST_POSTGRES_PASSWORD: postgres
-          TEST_POSTGRES_DBNAME: nginx_ignition_tests
+          TEST_POSTGRES_PORT: 44554
         run: make test
       - name: Lint
         run: make lint
