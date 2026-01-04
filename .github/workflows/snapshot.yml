@@ -12,12 +12,11 @@ jobs:
     runs-on: self-hosted
     services:
       postgres:
-        image: postgres:18-alpine
+        image: postgres:18
         env:
           POSTGRES_DB: nginx_ignition_tests
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
           --health-cmd pg_isready
           --health-interval 5s
