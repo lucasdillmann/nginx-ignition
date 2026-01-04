@@ -41,6 +41,7 @@ jobs:
           go-version: 1.25.5
       - name: Unit tests
         env:
+          TEST_POSTGRES_HOST: postgres
           TEST_POSTGRES_PORT: 44554
         run: make test
       - name: Lint
@@ -55,7 +56,7 @@ jobs:
     env:
       GOPATH: /data/cache/go
       GOMODCACHE: /data/cache/go/pkg/mod
-      npm_config_cache: /data/cache/npm
+      NPM_CONFIG_CACHE: /data/cache/npm
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
