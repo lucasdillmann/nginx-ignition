@@ -11,12 +11,13 @@ jobs:
   quality-checks:
     runs-on: self-hosted
     services:
-      test-postgres-db:
+      postgres:
         image: postgres:18-alpine
         env:
           POSTGRES_DB: nginx_ignition_tests
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
           --health-cmd pg_isready
           --health-interval 5s
@@ -39,7 +40,7 @@ jobs:
           go-version: 1.25.5
       - name: Unit tests
         env:
-          TEST_POSTGRES_HOST: test-postgres-db
+          TEST_POSTGRES_HOST: postgres
           TEST_POSTGRES_USER: postgres
           TEST_POSTGRES_PASSWORD: postgres
           TEST_POSTGRES_DBNAME: nginx_ignition_tests
