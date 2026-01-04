@@ -46,6 +46,7 @@ type routeSettingsDTO struct {
 	ProxySslServerName      *bool   `json:"proxySslServerName"`
 	KeepOriginalDomainName  *bool   `json:"keepOriginalDomainName"`
 	DirectoryListingEnabled *bool   `json:"directoryListingEnabled"`
+	IndexFile               *string `json:"indexFile"`
 	Custom                  *string `json:"custom"`
 }
 

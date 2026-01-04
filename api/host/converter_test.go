@@ -31,6 +31,7 @@ func Test_toDTO(t *testing.T) {
 		assert.Equal(t, input.DomainNames, result.DomainNames)
 		assert.Len(t, result.GlobalBindings, 1)
 		assert.True(t, *result.FeatureSet.WebsocketsSupport)
+		assert.Equal(t, "index.html", *result.Routes[0].Settings.IndexFile)
 	})
 
 	t.Run("returns nil when input is nil", func(t *testing.T) {
@@ -50,6 +51,7 @@ func Test_toDomain(t *testing.T) {
 		assert.True(t, result.UseGlobalBindings)
 		assert.Equal(t, input.DomainNames, result.DomainNames)
 		assert.True(t, result.FeatureSet.WebsocketSupport)
+		assert.Equal(t, "index.html", *result.Routes[0].Settings.IndexFile)
 	})
 
 	t.Run("returns nil when input is nil", func(t *testing.T) {

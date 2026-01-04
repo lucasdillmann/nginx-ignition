@@ -41,6 +41,7 @@ export interface HostRouteSettings {
     proxySslServerName: boolean
     keepOriginalDomainName: boolean
     directoryListingEnabled: boolean
+    indexFile?: string
     custom?: string
 }
 

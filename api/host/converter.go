@@ -1,6 +1,8 @@
 package host
 
 import (
+	"strings"
+
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
@@ -133,6 +135,7 @@ func toRouteSettingsDTO(set *host.RouteSettings) *routeSettingsDTO {
 		ProxySslServerName:      &set.ProxySSLServerName,
 		KeepOriginalDomainName:  &set.KeepOriginalDomainName,
 		DirectoryListingEnabled: &set.DirectoryListingEnabled,
+		IndexFile:               dropBlankValues(set.IndexFile),
 		Custom:                  set.Custom,
 	}
 }
@@ -234,6 +237,7 @@ func toRouteSettings(input *routeSettingsDTO) host.RouteSettings {
 		ProxySSLServerName:      getBoolValue(input.ProxySslServerName),
 		KeepOriginalDomainName:  getBoolValue(input.KeepOriginalDomainName),
 		DirectoryListingEnabled: getBoolValue(input.DirectoryListingEnabled),
+		IndexFile:               dropBlankValues(input.IndexFile),
 		Custom:                  input.Custom,
 	}
 }
@@ -313,4 +317,12 @@ func getMapValue(value *map[string]string) map[string]string {
 	}
 
 	return *value
+}
+
+func dropBlankValues(input *string) *string {
+	if input == nil || strings.TrimSpace(*input) == "" {
+		return nil
+	}
+
+	return input
 }

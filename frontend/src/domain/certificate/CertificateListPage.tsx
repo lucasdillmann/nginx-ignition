@@ -126,7 +126,7 @@ export default class CertificateListPage extends React.Component<any, Certificat
             subtitle: "Relation of issued SSL certificates for use in the nginx's virtual hosts",
             actions: [
                 {
-                    description: "Issue certificate",
+                    description: "Issue or upload a certificate",
                     onClick: "/certificates/new",
                     disabled: this.isReadOnlyMode(),
                 },

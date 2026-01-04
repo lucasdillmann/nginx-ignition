@@ -46,24 +46,25 @@ type hostVpnModel struct {
 type hostRouteModel struct {
 	bun.BaseModel `bun:"host_route"`
 
-	IntegrationID           *uuid.UUID `bun:"integration_id"`
-	StaticResponsePayload   *string    `bun:"static_response_payload"`
+	RedirectCode            *int       `bun:"redirect_code"`
+	CustomSettings          *string    `bun:"custom_settings"`
 	CodeMainFunction        *string    `bun:"code_main_function"`
 	CodeContents            *string    `bun:"code_contents"`
 	CodeLanguage            *string    `bun:"code_language"`
 	TargetURI               *string    `bun:"target_uri"`
-	CustomSettings          *string    `bun:"custom_settings"`
+	IntegrationID           *uuid.UUID `bun:"integration_id"`
 	IntegrationOptionID     *string    `bun:"integration_option_id"`
 	CacheID                 *uuid.UUID `bun:"cache_id"`
 	StaticResponseHeaders   *string    `bun:"static_response_headers"`
+	StaticResponsePayload   *string    `bun:"static_response_payload"`
 	AccessListID            *uuid.UUID `bun:"access_list_id"`
-	RedirectCode            *int       `bun:"redirect_code"`
+	IndexFile               *string    `bun:"index_file"`
 	StaticResponseCode      *int       `bun:"static_response_code"`
-	SourcePath              string     `bun:"source_path,notnull"`
 	Type                    string     `bun:"type,notnull"`
+	SourcePath              string     `bun:"source_path,notnull"`
 	Priority                int        `bun:"priority,notnull"`
-	HostID                  uuid.UUID  `bun:"host_id,notnull"`
 	ID                      uuid.UUID  `bun:"id,pk"`
+	HostID                  uuid.UUID  `bun:"host_id,notnull"`
 	IncludeForwardHeaders   bool       `bun:"include_forward_headers,notnull"`
 	ProxySSLServerName      bool       `bun:"proxy_ssl_server_name,notnull"`
 	KeepOriginalDomainName  bool       `bun:"keep_original_domain_name,notnull"`
