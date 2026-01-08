@@ -8,6 +8,7 @@ Type=simple
 Restart=always
 RestartSec=1
 User=root
+WorkingDirectory=/opt/nginx-ignition/
 ExecStart=/opt/nginx-ignition/nginx-ignition --config /opt/nginx-ignition/nginx-ignition.properties
 
 [Install]
