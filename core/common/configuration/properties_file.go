@@ -45,13 +45,11 @@ func resolveConfigFilePath() string {
 
 		if customPathPtr != nil && *customPathPtr != "" {
 			resolvedConfigFilePath = *customPathPtr
-		}
-
-		if customPath := os.Getenv("NGINX_IGNITION_CONFIG_FILE_PATH"); customPath != "" {
+		} else if customPath := os.Getenv("NGINX_IGNITION_CONFIG_FILE_PATH"); customPath != "" {
 			resolvedConfigFilePath = customPath
+		} else {
+			resolvedConfigFilePath = "nginx-ignition.properties"
 		}
-
-		resolvedConfigFilePath = "nginx-ignition.properties"
 	})
 
 	return resolvedConfigFilePath
