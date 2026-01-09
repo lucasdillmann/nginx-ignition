@@ -133,7 +133,13 @@ func (v *validator) validateBindings(ctx context.Context, host *Host) error {
 		}
 
 		for index, b := range host.Bindings {
-			if err := v.bindingCommands.Validate(ctx, bindingsPath, index, &b, v.delegate); err != nil {
+			if err := v.bindingCommands.Validate(
+				ctx,
+				bindingsPath,
+				index,
+				&b,
+				v.delegate,
+			); err != nil {
 				return err
 			}
 		}
@@ -186,11 +192,19 @@ func (v *validator) validateRoute(
 		(*distinctPaths)[route.SourcePath] = true
 	}
 
-	if err := v.validateAccessList(ctx, route.AccessListID, buildIndexedRoutePath(index, "accessListId")); err != nil {
+	if err := v.validateAccessList(
+		ctx,
+		route.AccessListID,
+		buildIndexedRoutePath(index, "accessListId"),
+	); err != nil {
 		return err
 	}
 
-	if err := v.validateCache(ctx, route.CacheID, buildIndexedRoutePath(index, "cacheId")); err != nil {
+	if err := v.validateCache(
+		ctx,
+		route.CacheID,
+		buildIndexedRoutePath(index, "cacheId"),
+	); err != nil {
 		return err
 	}
 

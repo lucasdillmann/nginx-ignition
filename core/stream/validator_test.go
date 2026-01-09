@@ -34,7 +34,7 @@ func Test_validator(t *testing.T) {
 						}
 					}
 					if !found {
-						var allMsgs []string
+						allMsgs := make([]string, 0, len(consistencyErr.Violations))
 						for _, v := range consistencyErr.Violations {
 							allMsgs = append(allMsgs, fmt.Sprintf("'%s'", v.Message))
 						}
@@ -48,7 +48,13 @@ func Test_validator(t *testing.T) {
 					}
 				}
 			} else {
-				assert.Failf(t, "Unexpected error type", "Expected ConsistencyError, got %T: %v", err, err)
+				assert.Failf(
+					t,
+					"Unexpected error type",
+					"Expected ConsistencyError, got %T: %v",
+					err,
+					err,
+				)
 			}
 		}
 	}

@@ -154,7 +154,10 @@ func (s *simpleAdapter) buildOptionURL(
 		}
 
 		if targetHost == "" {
-			return nil, nil, fmt.Errorf("no network or IP address found for the container with ID %s", option.ID)
+			return nil, nil, fmt.Errorf(
+				"no network or IP address found for the container with ID %s",
+				option.ID,
+			)
 		}
 	}
 

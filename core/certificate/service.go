@@ -90,7 +90,7 @@ func (s *service) List(
 }
 
 func (s *service) AvailableProviders(_ context.Context) ([]AvailableProvider, error) {
-	availableProviders := make([]AvailableProvider, 0)
+	availableProviders := make([]AvailableProvider, 0, len(s.providers()))
 	for _, provider := range s.providers() {
 		availableProviders = append(availableProviders, AvailableProvider{
 			provider: provider,

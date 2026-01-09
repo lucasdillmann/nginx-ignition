@@ -10,7 +10,7 @@ import (
 func toAvailableProviderResponse(
 	input []certificate.AvailableProvider,
 ) []availableProviderResponse {
-	responses := make([]availableProviderResponse, 0)
+	responses := make([]availableProviderResponse, 0, len(input))
 	for _, provider := range input {
 		responses = append(responses, availableProviderResponse{
 			ID:            provider.ID(),

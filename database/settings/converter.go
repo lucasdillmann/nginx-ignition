@@ -67,7 +67,7 @@ func toDomain(
 }
 
 func toBindingDomain(bindings []bindingModel) []binding.Binding {
-	result := make([]binding.Binding, 0)
+	result := make([]binding.Binding, 0, len(bindings))
 
 	for _, b := range bindings {
 		result = append(result, binding.Binding{
@@ -140,7 +140,7 @@ func toModel(set *settings.Settings) (
 }
 
 func toBindingModel(bindings []binding.Binding) []bindingModel {
-	result := make([]bindingModel, 0)
+	result := make([]bindingModel, 0, len(bindings))
 
 	for _, b := range bindings {
 		result = append(result, bindingModel{

@@ -146,7 +146,7 @@ func (p *mainConfigurationFileProvider) getErrorLogPath(
 }
 
 func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []host.Host) string {
-	includes := make([]string, 0)
+	includes := make([]string, 0, len(hosts))
 	for _, h := range hosts {
 		includes = append(includes, fmt.Sprintf("include %shost-%s.conf;", paths.Config, h.ID))
 	}
@@ -158,7 +158,7 @@ func (p *mainConfigurationFileProvider) getStreamIncludes(
 	paths *Paths,
 	streams []stream.Stream,
 ) string {
-	includes := make([]string, 0)
+	includes := make([]string, 0, len(streams))
 
 	for _, s := range streams {
 		includes = append(includes, fmt.Sprintf("include %sstream-%s.conf;", paths.Config, s.ID))

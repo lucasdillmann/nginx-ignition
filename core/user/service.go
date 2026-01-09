@@ -142,7 +142,13 @@ func (s *service) Save(ctx context.Context, request *SaveRequest, currentUserID 
 		Permissions:  request.Permissions,
 	}
 
-	if err := newValidator(s.repository).validate(ctx, updatedState, databaseState, request, currentUserID); err != nil {
+	if err := newValidator(s.repository).validate(
+		ctx,
+		updatedState,
+		databaseState,
+		request,
+		currentUserID,
+	); err != nil {
 		return err
 	}
 

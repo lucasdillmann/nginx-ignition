@@ -156,7 +156,10 @@ func (v *validator) validateAddressProtocol(fieldPrefix string, address Address)
 			)
 		}
 	} else if address.Port != nil {
-		v.delegate.Add(fieldPrefix+".port", "Port should not be specified when using the Socket protocol")
+		v.delegate.Add(
+			fieldPrefix+".port",
+			"Port should not be specified when using the Socket protocol",
+		)
 	}
 }
 

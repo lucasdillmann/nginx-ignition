@@ -13,7 +13,7 @@ func newHostRouteStaticResponseFileProvider() *hostRouteStaticResponseFileProvid
 }
 
 func (p *hostRouteStaticResponseFileProvider) provide(ctx *providerContext) ([]File, error) {
-	outputs := make([]File, 0)
+	outputs := make([]File, 0, len(ctx.hosts))
 
 	for _, h := range ctx.hosts {
 		outputs = append(outputs, p.buildStaticResponseFiles(&h)...)

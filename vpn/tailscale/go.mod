@@ -2,7 +2,7 @@ module dillmann.com.br/nginx-ignition/vpn/tailscale
 
 go 1.25.5
 
-require tailscale.com v1.92.4
+require tailscale.com v1.92.5
 
 replace gvisor.dev/gvisor => gvisor.dev/gvisor v0.0.0-20250205023644-9414b50a5633
 
@@ -11,10 +11,10 @@ require (
 	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/akutz/memconn v0.1.0 // indirect
 	github.com/alexbrainman/sspi v0.0.0-20250919150558-7d374ff0d59e // indirect
-	github.com/aws/aws-sdk-go-v2 v1.41.0 // indirect
-	github.com/aws/aws-sdk-go-v2/config v1.32.6 // indirect
+	github.com/aws/aws-sdk-go-v2 v1.41.1 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.32.7 // indirect
 	github.com/coder/websocket v1.8.14 // indirect
-	github.com/creachadair/msync v0.8.1 // indirect
+	github.com/creachadair/msync v0.8.2 // indirect
 	github.com/dblohm7/wingoes v0.0.0-20250822163801-6d8e6105c62d // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/gaissmai/bart v0.26.0 // indirect
@@ -29,12 +29,12 @@ require (
 	github.com/klauspost/compress v1.18.2 // indirect
 	github.com/mdlayher/netlink v1.8.0 // indirect
 	github.com/mdlayher/socket v0.5.1 // indirect
-	github.com/miekg/dns v1.1.69 // indirect
+	github.com/miekg/dns v1.1.70 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/pires/go-proxyproto v0.8.1 // indirect
 	github.com/pkg/sftp v1.13.7 // indirect
 	github.com/prometheus-community/pro-bing v0.7.0 // indirect
-	github.com/prometheus/common v0.67.4 // indirect
+	github.com/prometheus/common v0.67.5 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/safchain/ethtool v0.7.0 // indirect
 	github.com/tailscale/certstore v0.1.1-0.20231202035212-d3fa0460f47e // indirect
@@ -50,16 +50,16 @@ require (
 	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20251219203646-944ab1f22d93 // indirect
+	golang.org/x/mod v0.32.0 // indirect
 	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.39.0 // indirect
-	golang.org/x/term v0.38.0 // indirect
-	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/term v0.39.0 // indirect
+	golang.org/x/text v0.33.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
 	gvisor.dev/gvisor v0.0.0-20250205023644-9414b50a5633 // indirect
-	software.sslmate.com/src/go-pkcs12 v0.6.0 // indirect
+	software.sslmate.com/src/go-pkcs12 v0.7.0 // indirect
 )

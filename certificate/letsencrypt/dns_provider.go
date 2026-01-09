@@ -156,7 +156,6 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/webnames"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/websupport"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/wedos"
-	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/westcn"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/yandex"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/yandex360"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/yandexcloud"
@@ -317,7 +316,6 @@ var providers = []dns.Provider{
 	&webnames.Provider{},
 	&websupport.Provider{},
 	&wedos.Provider{},
-	&westcn.Provider{},
 	&yandex.Provider{},
 	&yandex360.Provider{},
 	&yandexcloud.Provider{},
