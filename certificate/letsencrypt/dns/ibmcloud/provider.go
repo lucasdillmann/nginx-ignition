@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	user, _ := parameters[usernameFieldID].(string)
 	key, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &ibmcloud.Config{
-		Username:           user,
-		APIKey:             key,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := ibmcloud.NewDefaultConfig()
+	cfg.Username = user
+	cfg.APIKey = key
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return ibmcloud.NewDNSProviderConfig(cfg)
 }

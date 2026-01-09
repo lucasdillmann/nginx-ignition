@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	secretKey, _ := parameters[secretKeyFieldID].(string)
 
-	cfg := &cloudxns.Config{
-		APIKey:             apiKey,
-		SecretKey:          secretKey,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := cloudxns.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.SecretKey = secretKey
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return cloudxns.NewDNSProviderConfig(cfg)
 }

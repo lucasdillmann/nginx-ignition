@@ -48,14 +48,13 @@ func (p *Provider) ChallengeProvider(
 	login, _ := parameters[loginFieldID].(string)
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &nearlyfreespeech.Config{
-		Login:              login,
-		APIKey:             apiKey,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		SequenceInterval:   dns.SequenceInterval,
-	}
+	cfg := nearlyfreespeech.NewDefaultConfig()
+	cfg.Login = login
+	cfg.APIKey = apiKey
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.SequenceInterval = dns.SequenceInterval
 
 	return nearlyfreespeech.NewDNSProviderConfig(cfg)
 }

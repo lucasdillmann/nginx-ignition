@@ -60,14 +60,13 @@ func (p *Provider) ChallengeProvider(
 	secretKey, _ := parameters[secretKeyFieldID].(string)
 	host, _ := parameters[hostFieldID].(string)
 
-	cfg := &vinyldns.Config{
-		AccessKey:          accessKey,
-		SecretKey:          secretKey,
-		Host:               host,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := vinyldns.NewDefaultConfig()
+	cfg.AccessKey = accessKey
+	cfg.SecretKey = secretKey
+	cfg.Host = host
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return vinyldns.NewDNSProviderConfig(cfg)
 }

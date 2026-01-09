@@ -68,15 +68,14 @@ func (p *Provider) ChallengeProvider(
 	tsigSecret, _ := parameters[tsigSecretFieldID].(string)
 	tsigAlgorithm, _ := parameters[tsigAlgorithmFieldID].(string)
 
-	cfg := &rfc2136.Config{
-		Nameserver:         nameserver,
-		TSIGKey:            tsigKey,
-		TSIGSecret:         tsigSecret,
-		TSIGAlgorithm:      tsigAlgorithm,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := rfc2136.NewDefaultConfig()
+	cfg.Nameserver = nameserver
+	cfg.TSIGKey = tsigKey
+	cfg.TSIGSecret = tsigSecret
+	cfg.TSIGAlgorithm = tsigAlgorithm
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return rfc2136.NewDNSProviderConfig(cfg)
 }

@@ -52,14 +52,13 @@ func (p *Provider) ChallengeProvider(
 	userID, _ := parameters[userIDFieldID].(string)
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &sonic.Config{
-		UserID:             userID,
-		APIKey:             apiKey,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		SequenceInterval:   dns.SequenceInterval,
-	}
+	cfg := sonic.NewDefaultConfig()
+	cfg.UserID = userID
+	cfg.APIKey = apiKey
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.SequenceInterval = dns.SequenceInterval
 
 	return sonic.NewDNSProviderConfig(cfg)
 }

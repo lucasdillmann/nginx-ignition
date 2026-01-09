@@ -47,12 +47,11 @@ func (p *Provider) ChallengeProvider(
 	masterID, _ := parameters[masterIDFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
 
-	cfg := &mydnsjp.Config{
-		MasterID:           masterID,
-		Password:           password,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := mydnsjp.NewDefaultConfig()
+	cfg.MasterID = masterID
+	cfg.Password = password
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return mydnsjp.NewDNSProviderConfig(cfg)
 }

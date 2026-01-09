@@ -56,14 +56,13 @@ func (p *Provider) ChallengeProvider(
 	secretAccessKey, _ := parameters[secretAccessKeyFieldID].(string)
 	region, _ := parameters[regionFieldID].(string)
 
-	cfg := &huaweicloud.Config{
-		AccessKeyID:        accessKey,
-		SecretAccessKey:    secretAccessKey,
-		Region:             region,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := huaweicloud.NewDefaultConfig()
+	cfg.AccessKeyID = accessKey
+	cfg.SecretAccessKey = secretAccessKey
+	cfg.Region = region
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return huaweicloud.NewDNSProviderConfig(cfg)
 }

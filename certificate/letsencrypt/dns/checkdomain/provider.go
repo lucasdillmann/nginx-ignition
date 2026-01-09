@@ -39,12 +39,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	token, _ := parameters[tokenFieldID].(string)
 
-	cfg := &checkdomain.Config{
-		Token:              token,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := checkdomain.NewDefaultConfig()
+	cfg.Token = token
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return checkdomain.NewDNSProviderConfig(cfg)
 }

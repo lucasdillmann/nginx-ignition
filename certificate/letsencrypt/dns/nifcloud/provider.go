@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	accessKey, _ := parameters[accessKeyFieldID].(string)
 	secretKey, _ := parameters[secretKeyFieldID].(string)
 
-	cfg := &nifcloud.Config{
-		AccessKey:          accessKey,
-		SecretKey:          secretKey,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := nifcloud.NewDefaultConfig()
+	cfg.AccessKey = accessKey
+	cfg.SecretKey = secretKey
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return nifcloud.NewDNSProviderConfig(cfg)
 }

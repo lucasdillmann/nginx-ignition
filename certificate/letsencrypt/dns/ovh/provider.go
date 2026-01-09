@@ -64,15 +64,14 @@ func (p *Provider) ChallengeProvider(
 	appSecret, _ := parameters[applicationSecFieldID].(string)
 	consumerKey, _ := parameters[consumerKeyFieldID].(string)
 
-	cfg := &ovh.Config{
-		APIEndpoint:        endpoint,
-		ApplicationKey:     appKey,
-		ApplicationSecret:  appSecret,
-		ConsumerKey:        consumerKey,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := ovh.NewDefaultConfig()
+	cfg.APIEndpoint = endpoint
+	cfg.ApplicationKey = appKey
+	cfg.ApplicationSecret = appSecret
+	cfg.ConsumerKey = consumerKey
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return ovh.NewDNSProviderConfig(cfg)
 }

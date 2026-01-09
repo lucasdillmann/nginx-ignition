@@ -39,12 +39,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	token, _ := parameters[tokenFieldID].(string)
 
-	cfg := &civo.Config{
-		Token:              token,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := civo.NewDefaultConfig()
+	cfg.Token = token
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return civo.NewDNSProviderConfig(cfg)
 }

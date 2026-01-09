@@ -48,12 +48,11 @@ func (p *Provider) ChallengeProvider(
 	user, _ := parameters[usernameFieldID].(string)
 	pass, _ := parameters[passwordFieldID].(string)
 
-	cfg := &dyndnsfree.Config{
-		Username:           user,
-		Password:           pass,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := dyndnsfree.NewDefaultConfig()
+	cfg.Username = user
+	cfg.Password = pass
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return dyndnsfree.NewDNSProviderConfig(cfg)
 }

@@ -56,15 +56,14 @@ func (p *Provider) ChallengeProvider(
 	keyID, _ := parameters[keyIDFieldID].(string)
 	secret, _ := parameters[secretFieldID].(string)
 
-	cfg := &cloudru.Config{
-		ServiceInstanceID:  serviceInstanceID,
-		KeyID:              keyID,
-		Secret:             secret,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		SequenceInterval:   dns.SequenceInterval,
-	}
+	cfg := cloudru.NewDefaultConfig()
+	cfg.ServiceInstanceID = serviceInstanceID
+	cfg.KeyID = keyID
+	cfg.Secret = secret
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.SequenceInterval = dns.SequenceInterval
 
 	return cloudru.NewDNSProviderConfig(cfg)
 }

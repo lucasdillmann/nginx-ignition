@@ -63,15 +63,14 @@ func (p *Provider) ChallengeProvider(
 	tenantID, _ := parameters[tenantIDFieldID].(string)
 	region, _ := parameters[regionFieldID].(string)
 
-	cfg := &conohav3.Config{
-		UserID:             userName,
-		Password:           password,
-		TenantID:           tenantID,
-		Region:             region,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := conohav3.NewDefaultConfig()
+	cfg.UserID = userName
+	cfg.Password = password
+	cfg.TenantID = tenantID
+	cfg.Region = region
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return conohav3.NewDNSProviderConfig(cfg)
 }

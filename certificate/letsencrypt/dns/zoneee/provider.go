@@ -52,12 +52,11 @@ func (p *Provider) ChallengeProvider(
 	username, _ := parameters[usernameFieldID].(string)
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &zoneee.Config{
-		Username:           username,
-		APIKey:             apiKey,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := zoneee.NewDefaultConfig()
+	cfg.Username = username
+	cfg.APIKey = apiKey
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return zoneee.NewDNSProviderConfig(cfg)
 }

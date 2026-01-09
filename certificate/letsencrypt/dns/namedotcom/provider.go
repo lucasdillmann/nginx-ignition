@@ -54,14 +54,13 @@ func (p *Provider) ChallengeProvider(
 	apiToken, _ := parameters[apiTokenFieldID].(string)
 	server, _ := parameters[serverFieldID].(string)
 
-	cfg := &namedotcom.Config{
-		Username:           username,
-		APIToken:           apiToken,
-		Server:             server,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := namedotcom.NewDefaultConfig()
+	cfg.Username = username
+	cfg.APIToken = apiToken
+	cfg.Server = server
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return namedotcom.NewDNSProviderConfig(cfg)
 }

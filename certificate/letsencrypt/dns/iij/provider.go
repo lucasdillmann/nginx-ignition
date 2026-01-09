@@ -57,14 +57,13 @@ func (p *Provider) ChallengeProvider(
 	secretKey, _ := parameters[secretKeyFieldID].(string)
 	doServiceCode, _ := parameters[doServiceCodeFieldID].(string)
 
-	cfg := &iij.Config{
-		AccessKey:          accessKey,
-		SecretKey:          secretKey,
-		DoServiceCode:      doServiceCode,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := iij.NewDefaultConfig()
+	cfg.AccessKey = accessKey
+	cfg.SecretKey = secretKey
+	cfg.DoServiceCode = doServiceCode
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return iij.NewDNSProviderConfig(cfg)
 }

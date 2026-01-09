@@ -90,15 +90,14 @@ func (p *Provider) ChallengeProvider(
 	password, _ := parameters[passwordFieldID].(string)
 	apiMode, _ := parameters[apiModeFieldID].(string)
 
-	cfg := &joker.Config{
-		APIKey:             apiKey,
-		Username:           username,
-		Password:           password,
-		APIMode:            apiMode,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := joker.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.Username = username
+	cfg.Password = password
+	cfg.APIMode = apiMode
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return joker.NewDNSProviderConfig(cfg)
 }

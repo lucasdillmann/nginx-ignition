@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	apiUsername, _ := parameters[apiUsernameFieldID].(string)
 
-	cfg := &brandit.Config{
-		APIKey:             apiKey,
-		APIUsername:        apiUsername,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := brandit.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.APIUsername = apiUsername
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return brandit.NewDNSProviderConfig(cfg)
 }

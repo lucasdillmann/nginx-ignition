@@ -39,12 +39,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	token, _ := parameters[tokenFieldID].(string)
 
-	cfg := &desec.Config{
-		Token:              token,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := desec.NewDefaultConfig()
+	cfg.Token = token
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return desec.NewDNSProviderConfig(cfg)
 }

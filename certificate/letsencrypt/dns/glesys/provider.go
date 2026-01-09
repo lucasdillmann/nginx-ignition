@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	apiUser, _ := parameters[apiUserFieldID].(string)
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &glesys.Config{
-		APIUser:            apiUser,
-		APIKey:             apiKey,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := glesys.NewDefaultConfig()
+	cfg.APIUser = apiUser
+	cfg.APIKey = apiKey
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return glesys.NewDNSProviderConfig(cfg)
 }

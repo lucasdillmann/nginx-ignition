@@ -56,14 +56,13 @@ func (p *Provider) ChallengeProvider(
 	tenantName, _ := parameters[tenantNameFieldID].(string)
 	groupName, _ := parameters[groupNameFieldID].(string)
 
-	cfg := &f5xc.Config{
-		APIToken:           apiToken,
-		TenantName:         tenantName,
-		GroupName:          groupName,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := f5xc.NewDefaultConfig()
+	cfg.APIToken = apiToken
+	cfg.TenantName = tenantName
+	cfg.GroupName = groupName
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return f5xc.NewDNSProviderConfig(cfg)
 }

@@ -54,14 +54,13 @@ func (p *Provider) ChallengeProvider(
 	locationID, _ := parameters[locationIDFieldID].(string)
 	passportLocation, _ := parameters[passportLocationFieldID].(string)
 
-	cfg := &hyperone.Config{
-		APIEndpoint:        apiEndpoint,
-		LocationID:         locationID,
-		PassportLocation:   passportLocation,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := hyperone.NewDefaultConfig()
+	cfg.APIEndpoint = apiEndpoint
+	cfg.LocationID = locationID
+	cfg.PassportLocation = passportLocation
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return hyperone.NewDNSProviderConfig(cfg)
 }

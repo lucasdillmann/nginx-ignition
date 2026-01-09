@@ -39,12 +39,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	token, _ := parameters[tokenFieldID].(string)
 
-	cfg := &dode.Config{
-		Token:              token,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		SequenceInterval:   dns.SequenceInterval,
-	}
+	cfg := dode.NewDefaultConfig()
+	cfg.Token = token
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.SequenceInterval = dns.SequenceInterval
 
 	return dode.NewDNSProviderConfig(cfg)
 }

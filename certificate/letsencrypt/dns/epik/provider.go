@@ -39,12 +39,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	signature, _ := parameters[signatureFieldID].(string)
 
-	cfg := &epik.Config{
-		Signature:          signature,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := epik.NewDefaultConfig()
+	cfg.Signature = signature
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return epik.NewDNSProviderConfig(cfg)
 }

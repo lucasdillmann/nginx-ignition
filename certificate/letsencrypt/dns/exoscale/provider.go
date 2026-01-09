@@ -49,13 +49,12 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	apiSecret, _ := parameters[apiSecretFieldID].(string)
 
-	cfg := &exoscale.Config{
-		APIKey:             apiKey,
-		APISecret:          apiSecret,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := exoscale.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.APISecret = apiSecret
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return exoscale.NewDNSProviderConfig(cfg)
 }

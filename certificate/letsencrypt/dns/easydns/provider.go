@@ -56,14 +56,13 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[keyFieldID].(string)
 	endpoint, _ := parameters[endpointFieldID].(string)
 
-	cfg := &easydns.Config{
-		Token:              token,
-		Key:                apiKey,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		SequenceInterval:   dns.SequenceInterval,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := easydns.NewDefaultConfig()
+	cfg.Token = token
+	cfg.Key = apiKey
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.SequenceInterval = dns.SequenceInterval
+	cfg.PollingInterval = dns.PollingInterval
 
 	if endpoint != "" {
 		if parsedValue, err := url.Parse(endpoint); err == nil {

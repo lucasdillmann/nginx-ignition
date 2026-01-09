@@ -46,13 +46,12 @@ func (p *Provider) ChallengeProvider(
 	accountName, _ := parameters[accountNameFieldID].(string)
 	privateKeyPath, _ := parameters[privateKeyPathFieldID].(string)
 
-	cfg := &transip.Config{
-		AccountName:        accountName,
-		PrivateKeyPath:     privateKeyPath,
-		TTL:                int64(dns.TTL),
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := transip.NewDefaultConfig()
+	cfg.AccountName = accountName
+	cfg.PrivateKeyPath = privateKeyPath
+	cfg.TTL = int64(dns.TTL)
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return transip.NewDNSProviderConfig(cfg)
 }

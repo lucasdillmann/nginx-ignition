@@ -70,16 +70,15 @@ func (p *Provider) ChallengeProvider(
 	region, _ := parameters[regionFieldID].(string)
 	role, _ := parameters[ramRoleFieldID].(string)
 
-	cfg := &alidns.Config{
-		RAMRole:            role,
-		APIKey:             accessKey,
-		SecretKey:          accessSecret,
-		SecurityToken:      securityToken,
-		RegionID:           region,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := alidns.NewDefaultConfig()
+	cfg.RAMRole = role
+	cfg.APIKey = accessKey
+	cfg.SecretKey = accessSecret
+	cfg.SecurityToken = securityToken
+	cfg.RegionID = region
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return alidns.NewDNSProviderConfig(cfg)
 }

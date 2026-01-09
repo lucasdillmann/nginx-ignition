@@ -75,18 +75,17 @@ func (p *Provider) ChallengeProvider(
 	accessToken, _ := parameters[accessTokenFieldID].(string)
 	accountKey, _ := parameters[accountKeyFieldID].(string)
 
-	cfg := &edgedns.Config{
-		Config: &edgegrid.Config{
-			Host:         host,
-			ClientToken:  clientToken,
-			ClientSecret: clientSecret,
-			AccessToken:  accessToken,
-			AccountKey:   accountKey,
-		},
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
+	cfg := edgedns.NewDefaultConfig()
+	cfg.Config = &edgegrid.Config{
+		Host:         host,
+		ClientToken:  clientToken,
+		ClientSecret: clientSecret,
+		AccessToken:  accessToken,
+		AccountKey:   accountKey,
 	}
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return edgedns.NewDNSProviderConfig(cfg)
 }

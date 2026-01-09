@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	username, _ := parameters[userFieldID].(string)
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &rackspace.Config{
-		APIUser:            username,
-		APIKey:             apiKey,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := rackspace.NewDefaultConfig()
+	cfg.APIUser = username
+	cfg.APIKey = apiKey
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return rackspace.NewDNSProviderConfig(cfg)
 }

@@ -47,13 +47,12 @@ func (p *Provider) ChallengeProvider(
 	apiUser, _ := parameters[apiUserFieldID].(string)
 	apiPassword, _ := parameters[apiPasswordFieldID].(string)
 
-	cfg := &loopia.Config{
-		APIUser:            apiUser,
-		APIPassword:        apiPassword,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := loopia.NewDefaultConfig()
+	cfg.APIUser = apiUser
+	cfg.APIPassword = apiPassword
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return loopia.NewDNSProviderConfig(cfg)
 }

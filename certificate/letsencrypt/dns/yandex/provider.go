@@ -40,12 +40,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	pddToken, _ := parameters[pddTokenFieldID].(string)
 
-	cfg := &yandex.Config{
-		PddToken:           pddToken,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := yandex.NewDefaultConfig()
+	cfg.PddToken = pddToken
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return yandex.NewDNSProviderConfig(cfg)
 }

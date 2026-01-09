@@ -49,13 +49,12 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	secretKey, _ := parameters[secretKeyFieldID].(string)
 
-	cfg := &dnsmadeeasy.Config{
-		APIKey:             apiKey,
-		APISecret:          secretKey,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := dnsmadeeasy.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.APISecret = secretKey
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return dnsmadeeasy.NewDNSProviderConfig(cfg)
 }

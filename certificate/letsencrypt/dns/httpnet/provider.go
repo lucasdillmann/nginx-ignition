@@ -47,13 +47,12 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	zoneName, _ := parameters[zoneNameFieldID].(string)
 
-	cfg := &httpnet.Config{
-		APIKey:             apiKey,
-		ZoneName:           zoneName,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := httpnet.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.ZoneName = zoneName
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return httpnet.NewDNSProviderConfig(cfg)
 }

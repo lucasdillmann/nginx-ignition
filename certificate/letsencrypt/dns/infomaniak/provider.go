@@ -39,12 +39,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	accessToken, _ := parameters[accessTokenFieldID].(string)
 
-	cfg := &infomaniak.Config{
-		AccessToken:        accessToken,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := infomaniak.NewDefaultConfig()
+	cfg.AccessToken = accessToken
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return infomaniak.NewDNSProviderConfig(cfg)
 }

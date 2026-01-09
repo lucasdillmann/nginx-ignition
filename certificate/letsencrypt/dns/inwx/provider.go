@@ -56,14 +56,13 @@ func (p *Provider) ChallengeProvider(
 	password, _ := parameters[passwordFieldID].(string)
 	sharedSecret, _ := parameters[sharedSecretFieldID].(string)
 
-	cfg := &inwx.Config{
-		Username:           username,
-		Password:           password,
-		SharedSecret:       sharedSecret,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := inwx.NewDefaultConfig()
+	cfg.Username = username
+	cfg.Password = password
+	cfg.SharedSecret = sharedSecret
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return inwx.NewDNSProviderConfig(cfg)
 }

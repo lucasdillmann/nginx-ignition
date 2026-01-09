@@ -63,16 +63,15 @@ func (p *Provider) ChallengeProvider(
 		return nil, err
 	}
 
-	cfg := &route53.Config{
-		AccessKeyID:        accessKey,
-		SecretAccessKey:    secretKey,
-		HostedZoneID:       *hostedZoneID,
-		Region:             region,
-		MaxRetries:         dns.MaxRetries,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := route53.NewDefaultConfig()
+	cfg.AccessKeyID = accessKey
+	cfg.SecretAccessKey = secretKey
+	cfg.HostedZoneID = *hostedZoneID
+	cfg.Region = region
+	cfg.MaxRetries = dns.MaxRetries
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return route53.NewDNSProviderConfig(cfg)
 }

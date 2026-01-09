@@ -40,12 +40,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &liara.Config{
-		APIKey:             apiKey,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := liara.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return liara.NewDNSProviderConfig(cfg)
 }

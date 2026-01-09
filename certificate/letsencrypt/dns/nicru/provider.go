@@ -65,15 +65,14 @@ func (p *Provider) ChallengeProvider(
 	serviceID, _ := parameters[serviceIDFieldID].(string)
 	secret, _ := parameters[secretFieldID].(string)
 
-	cfg := &nicru.Config{
-		Username:           username,
-		Password:           password,
-		ServiceID:          serviceID,
-		Secret:             secret,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := nicru.NewDefaultConfig()
+	cfg.Username = username
+	cfg.Password = password
+	cfg.ServiceID = serviceID
+	cfg.Secret = secret
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return nicru.NewDNSProviderConfig(cfg)
 }

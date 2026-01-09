@@ -68,14 +68,13 @@ func (p *Provider) ChallengeProvider(
 		mode = "cpanel"
 	}
 
-	cfg := &cpanel.Config{
-		BaseURL:            host,
-		Username:           user,
-		Token:              token,
-		Mode:               mode,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := cpanel.NewDefaultConfig()
+	cfg.BaseURL = host
+	cfg.Username = user
+	cfg.Token = token
+	cfg.Mode = mode
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return cpanel.NewDNSProviderConfig(cfg)
 }

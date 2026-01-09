@@ -39,12 +39,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	token, _ := parameters[apiTokenFieldID].(string)
 
-	cfg := &digitalocean.Config{
-		AuthToken:          token,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := digitalocean.NewDefaultConfig()
+	cfg.AuthToken = token
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return digitalocean.NewDNSProviderConfig(cfg)
 }

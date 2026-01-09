@@ -57,14 +57,12 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	apiPassword, _ := parameters[apiPasswordFieldID].(string)
 
-	cfg := &netcup.Config{
-		Customer:           customerNumber,
-		Key:                apiKey,
-		Password:           apiPassword,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := netcup.NewDefaultConfig()
+	cfg.Customer = customerNumber
+	cfg.Key = apiKey
+	cfg.Password = apiPassword
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return netcup.NewDNSProviderConfig(cfg)
 }

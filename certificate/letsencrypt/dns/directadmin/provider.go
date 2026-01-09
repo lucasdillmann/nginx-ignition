@@ -62,16 +62,15 @@ func (p *Provider) ChallengeProvider(
 	password, _ := parameters[passwordFieldID].(string)
 	zoneName, _ := parameters[zoneNameFieldID].(string)
 
-	cfg := &directadmin.Config{
-		BaseURL:            host,
-		Username:           user,
-		Password:           password,
-		ZoneName:           zoneName,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		HTTPClient:         nil,
-	}
+	cfg := directadmin.NewDefaultConfig()
+	cfg.BaseURL = host
+	cfg.Username = user
+	cfg.Password = password
+	cfg.ZoneName = zoneName
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.HTTPClient = nil
 
 	return directadmin.NewDNSProviderConfig(cfg)
 }

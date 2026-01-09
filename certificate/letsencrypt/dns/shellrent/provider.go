@@ -51,13 +51,12 @@ func (p *Provider) ChallengeProvider(
 	username, _ := parameters[usernameFieldID].(string)
 	token, _ := parameters[tokenFieldID].(string)
 
-	cfg := &shellrent.Config{
-		Username:           username,
-		Token:              token,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := shellrent.NewDefaultConfig()
+	cfg.Username = username
+	cfg.Token = token
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return shellrent.NewDNSProviderConfig(cfg)
 }

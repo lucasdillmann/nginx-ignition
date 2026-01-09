@@ -60,14 +60,13 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	apiSecret, _ := parameters[apiSecretFieldID].(string)
 
-	cfg := &vegadns.Config{
-		BaseURL:            baseURL,
-		APIKey:             apiKey,
-		APISecret:          apiSecret,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := vegadns.NewDefaultConfig()
+	cfg.BaseURL = baseURL
+	cfg.APIKey = apiKey
+	cfg.APISecret = apiSecret
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return vegadns.NewDNSProviderConfig(cfg)
 }

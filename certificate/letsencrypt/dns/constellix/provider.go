@@ -49,13 +49,12 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	secretKey, _ := parameters[secretKeyFieldID].(string)
 
-	cfg := &constellix.Config{
-		APIKey:             apiKey,
-		SecretKey:          secretKey,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := constellix.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.SecretKey = secretKey
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return constellix.NewDNSProviderConfig(cfg)
 }

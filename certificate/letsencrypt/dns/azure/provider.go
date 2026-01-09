@@ -109,16 +109,15 @@ func (p *Provider) ChallengeProvider(
 		return nil, coreerror.New("Unknown Azure environment", true)
 	}
 
-	cfg := &azuredns.Config{
-		TenantID:           tenantID,
-		SubscriptionID:     subscriptionID,
-		ClientID:           clientID,
-		ClientSecret:       clientSecret,
-		Environment:        env,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := azuredns.NewDefaultConfig()
+	cfg.TenantID = tenantID
+	cfg.SubscriptionID = subscriptionID
+	cfg.ClientID = clientID
+	cfg.ClientSecret = clientSecret
+	cfg.Environment = env
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return azuredns.NewDNSProviderConfig(cfg)
 }

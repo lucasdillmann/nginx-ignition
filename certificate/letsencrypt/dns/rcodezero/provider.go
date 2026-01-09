@@ -44,12 +44,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	apiToken, _ := parameters[apiTokenFieldID].(string)
 
-	cfg := &rcodezero.Config{
-		APIToken:           apiToken,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := rcodezero.NewDefaultConfig()
+	cfg.APIToken = apiToken
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return rcodezero.NewDNSProviderConfig(cfg)
 }

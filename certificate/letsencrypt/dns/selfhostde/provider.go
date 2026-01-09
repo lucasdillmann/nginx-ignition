@@ -52,13 +52,12 @@ func (p *Provider) ChallengeProvider(
 	username, _ := parameters[usernameFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
 
-	cfg := &selfhostde.Config{
-		Username:           username,
-		Password:           password,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := selfhostde.NewDefaultConfig()
+	cfg.Username = username
+	cfg.Password = password
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return selfhostde.NewDNSProviderConfig(cfg)
 }

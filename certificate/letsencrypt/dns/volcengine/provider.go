@@ -59,14 +59,13 @@ func (p *Provider) ChallengeProvider(
 	secretKey, _ := parameters[secretKeyFieldID].(string)
 	region, _ := parameters[regionFieldID].(string)
 
-	cfg := &volcengine.Config{
-		AccessKey:          accessKey,
-		SecretKey:          secretKey,
-		Region:             region,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := volcengine.NewDefaultConfig()
+	cfg.AccessKey = accessKey
+	cfg.SecretKey = secretKey
+	cfg.Region = region
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return volcengine.NewDNSProviderConfig(cfg)
 }

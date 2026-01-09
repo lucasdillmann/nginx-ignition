@@ -52,13 +52,12 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	secretAPIKey, _ := parameters[secretAPIKeyFieldID].(string)
 
-	cfg := &porkbun.Config{
-		APIKey:             apiKey,
-		SecretAPIKey:       secretAPIKey,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := porkbun.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.SecretAPIKey = secretAPIKey
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return porkbun.NewDNSProviderConfig(cfg)
 }

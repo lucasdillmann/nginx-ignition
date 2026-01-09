@@ -44,12 +44,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	authToken, _ := parameters[authTokenFieldID].(string)
 
-	cfg := &safedns.Config{
-		AuthToken:          authToken,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := safedns.NewDefaultConfig()
+	cfg.AuthToken = authToken
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return safedns.NewDNSProviderConfig(cfg)
 }

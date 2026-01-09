@@ -76,17 +76,16 @@ func (p *Provider) ChallengeProvider(
 	otpSecret, _ := parameters[otpSecretFieldID].(string)
 	mode, _ := parameters[modeFieldID].(string)
 
-	cfg := &nicmanager.Config{
-		Login:              login,
-		Username:           username,
-		Email:              email,
-		Password:           password,
-		OTPSecret:          otpSecret,
-		Mode:               mode,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := nicmanager.NewDefaultConfig()
+	cfg.Login = login
+	cfg.Username = username
+	cfg.Email = email
+	cfg.Password = password
+	cfg.OTPSecret = otpSecret
+	cfg.Mode = mode
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return nicmanager.NewDNSProviderConfig(cfg)
 }

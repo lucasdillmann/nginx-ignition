@@ -51,13 +51,12 @@ func (p *Provider) ChallengeProvider(
 	iamToken, _ := parameters[iamTokenFieldID].(string)
 	folderID, _ := parameters[folderIDFieldID].(string)
 
-	cfg := &yandexcloud.Config{
-		IamToken:           iamToken,
-		FolderID:           folderID,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := yandexcloud.NewDefaultConfig()
+	cfg.IamToken = iamToken
+	cfg.FolderID = folderID
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return yandexcloud.NewDNSProviderConfig(cfg)
 }

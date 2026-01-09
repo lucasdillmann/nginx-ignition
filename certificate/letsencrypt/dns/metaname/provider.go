@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	accountReference, _ := parameters[accountReferenceFieldID].(string)
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &metaname.Config{
-		AccountReference:   accountReference,
-		APIKey:             apiKey,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := metaname.NewDefaultConfig()
+	cfg.AccountReference = accountReference
+	cfg.APIKey = apiKey
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return metaname.NewDNSProviderConfig(cfg)
 }

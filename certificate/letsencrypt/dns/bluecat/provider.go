@@ -71,16 +71,15 @@ func (p *Provider) ChallengeProvider(
 	configName, _ := parameters[configNameFieldID].(string)
 	dnsView, _ := parameters[dnsViewFieldID].(string)
 
-	cfg := &bluecat.Config{
-		BaseURL:            baseURL,
-		UserName:           username,
-		Password:           password,
-		ConfigName:         configName,
-		DNSView:            dnsView,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := bluecat.NewDefaultConfig()
+	cfg.BaseURL = baseURL
+	cfg.UserName = username
+	cfg.Password = password
+	cfg.ConfigName = configName
+	cfg.DNSView = dnsView
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return bluecat.NewDNSProviderConfig(cfg)
 }

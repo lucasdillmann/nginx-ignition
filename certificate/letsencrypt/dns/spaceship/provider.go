@@ -52,13 +52,12 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	apiSecret, _ := parameters[apiSecretFieldID].(string)
 
-	cfg := &spaceship.Config{
-		APIKey:             apiKey,
-		APISecret:          apiSecret,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := spaceship.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.APISecret = apiSecret
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return spaceship.NewDNSProviderConfig(cfg)
 }

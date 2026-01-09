@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	secret, _ := parameters[secretFieldID].(string)
 
-	cfg := &websupport.Config{
-		APIKey:             apiKey,
-		Secret:             secret,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := websupport.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.Secret = secret
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return websupport.NewDNSProviderConfig(cfg)
 }

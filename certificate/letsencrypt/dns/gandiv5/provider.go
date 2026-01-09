@@ -39,12 +39,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	token, _ := parameters[personalAccessTokenFieldID].(string)
 
-	cfg := &gandiv5.Config{
-		PersonalAccessToken: token,
-		PropagationTimeout:  dns.PropagationTimeout,
-		PollingInterval:     dns.PollingInterval,
-		TTL:                 dns.TTL,
-	}
+	cfg := gandiv5.NewDefaultConfig()
+	cfg.PersonalAccessToken = token
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return gandiv5.NewDNSProviderConfig(cfg)
 }

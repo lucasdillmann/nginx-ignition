@@ -90,19 +90,18 @@ func (p *Provider) ChallengeProvider(
 	sslVerify, _ := parameters[sslVerifyFieldID].(bool)
 	caCertificate, _ := parameters[caCertificateFieldID].(string)
 
-	cfg := &infoblox.Config{
-		Host:               host,
-		Port:               port,
-		Username:           username,
-		Password:           password,
-		DNSView:            dnsView,
-		WapiVersion:        wapiVersion,
-		SSLVerify:          sslVerify,
-		CACertificate:      caCertificate,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := infoblox.NewDefaultConfig()
+	cfg.Host = host
+	cfg.Port = port
+	cfg.Username = username
+	cfg.Password = password
+	cfg.DNSView = dnsView
+	cfg.WapiVersion = wapiVersion
+	cfg.SSLVerify = sslVerify
+	cfg.CACertificate = caCertificate
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return infoblox.NewDNSProviderConfig(cfg)
 }

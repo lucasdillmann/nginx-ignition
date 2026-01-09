@@ -40,11 +40,10 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &ipv64.Config{
-		APIKey:             apiKey,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := ipv64.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return ipv64.NewDNSProviderConfig(cfg)
 }

@@ -78,15 +78,14 @@ func (p *Provider) ChallengeProvider(
 		return nil, errors.New("pdns: invalid API version, must be an integer")
 	}
 
-	cfg := &pdns.Config{
-		APIKey:             apiKey,
-		Host:               hostURL,
-		ServerName:         serverName,
-		APIVersion:         apiVersion,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := pdns.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.Host = hostURL
+	cfg.ServerName = serverName
+	cfg.APIVersion = apiVersion
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return pdns.NewDNSProviderConfig(cfg)
 }

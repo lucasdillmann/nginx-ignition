@@ -54,14 +54,13 @@ func (p *Provider) ChallengeProvider(
 	password, _ := parameters[passwordFieldID].(string)
 	zone, _ := parameters[zoneFieldID].(string)
 
-	cfg := &liquidweb.Config{
-		Username:           username,
-		Password:           password,
-		Zone:               zone,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := liquidweb.NewDefaultConfig()
+	cfg.Username = username
+	cfg.Password = password
+	cfg.Zone = zone
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return liquidweb.NewDNSProviderConfig(cfg)
 }

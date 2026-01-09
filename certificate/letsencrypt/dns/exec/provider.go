@@ -50,12 +50,11 @@ func (p *Provider) ChallengeProvider(
 		mode = "RAW"
 	}
 
-	cfg := &exec.Config{
-		Program:            program,
-		Mode:               mode,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := exec.NewDefaultConfig()
+	cfg.Program = program
+	cfg.Mode = mode
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return exec.NewDNSProviderConfig(cfg)
 }

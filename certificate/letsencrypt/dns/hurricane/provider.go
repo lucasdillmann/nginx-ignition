@@ -48,12 +48,11 @@ func (p *Provider) ChallengeProvider(
 		return nil, err
 	}
 
-	cfg := &hurricane.Config{
-		Credentials:        credentials,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		SequenceInterval:   dns.SequenceInterval,
-	}
+	cfg := hurricane.NewDefaultConfig()
+	cfg.Credentials = credentials
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.SequenceInterval = dns.SequenceInterval
 
 	return hurricane.NewDNSProviderConfig(cfg)
 }

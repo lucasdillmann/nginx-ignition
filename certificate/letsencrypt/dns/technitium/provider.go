@@ -51,13 +51,12 @@ func (p *Provider) ChallengeProvider(
 	baseURL, _ := parameters[baseURLFieldID].(string)
 	apiToken, _ := parameters[apiTokenFieldID].(string)
 
-	cfg := &technitium.Config{
-		BaseURL:            baseURL,
-		APIToken:           apiToken,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := technitium.NewDefaultConfig()
+	cfg.BaseURL = baseURL
+	cfg.APIToken = apiToken
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return technitium.NewDNSProviderConfig(cfg)
 }

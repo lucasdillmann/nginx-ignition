@@ -44,11 +44,10 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &webnames.Config{
-		APIKey:             apiKey,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := webnames.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return webnames.NewDNSProviderConfig(cfg)
 }

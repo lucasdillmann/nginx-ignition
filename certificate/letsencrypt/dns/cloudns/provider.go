@@ -54,14 +54,13 @@ func (p *Provider) ChallengeProvider(
 	subAuthID, _ := parameters[subAuthIDFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
 
-	cfg := &cloudns.Config{
-		AuthID:             authID,
-		SubAuthID:          subAuthID,
-		AuthPassword:       password,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := cloudns.NewDefaultConfig()
+	cfg.AuthID = authID
+	cfg.SubAuthID = subAuthID
+	cfg.AuthPassword = password
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return cloudns.NewDNSProviderConfig(cfg)
 }

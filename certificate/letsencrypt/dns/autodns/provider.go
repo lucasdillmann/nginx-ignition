@@ -64,14 +64,13 @@ func (p *Provider) ChallengeProvider(
 		}
 	}
 
-	cfg := &autodns.Config{
-		Username:           username,
-		Password:           password,
-		Context:            contextInt,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := autodns.NewDefaultConfig()
+	cfg.Username = username
+	cfg.Password = password
+	cfg.Context = contextInt
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return autodns.NewDNSProviderConfig(cfg)
 }

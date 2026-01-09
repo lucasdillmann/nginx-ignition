@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	apiUsername, _ := parameters[apiUsernameFieldID].(string)
 	apiToken, _ := parameters[apiTokenFieldID].(string)
 
-	cfg := &luadns.Config{
-		APIUsername:        apiUsername,
-		APIToken:           apiToken,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := luadns.NewDefaultConfig()
+	cfg.APIUsername = apiUsername
+	cfg.APIToken = apiToken
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return luadns.NewDNSProviderConfig(cfg)
 }

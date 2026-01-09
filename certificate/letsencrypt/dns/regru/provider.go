@@ -68,15 +68,14 @@ func (p *Provider) ChallengeProvider(
 	tlsCert, _ := parameters[tlsCertFieldID].(string)
 	tlsKey, _ := parameters[tlsKeyFieldID].(string)
 
-	cfg := &regru.Config{
-		Username:           username,
-		Password:           password,
-		TLSCert:            tlsCert,
-		TLSKey:             tlsKey,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := regru.NewDefaultConfig()
+	cfg.Username = username
+	cfg.Password = password
+	cfg.TLSCert = tlsCert
+	cfg.TLSKey = tlsKey
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return regru.NewDNSProviderConfig(cfg)
 }

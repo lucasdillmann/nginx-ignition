@@ -47,13 +47,12 @@ func (p *Provider) ChallengeProvider(
 	username, _ := parameters[usernameFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
 
-	cfg := &plesk.Config{
-		Username:           username,
-		Password:           password,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := plesk.NewDefaultConfig()
+	cfg.Username = username
+	cfg.Password = password
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return plesk.NewDNSProviderConfig(cfg)
 }

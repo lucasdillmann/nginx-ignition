@@ -63,15 +63,14 @@ func (p *Provider) ChallengeProvider(
 	username, _ := parameters[usernameFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
 
-	cfg := &conoha.Config{
-		Region:             region,
-		TenantID:           tenantID,
-		Username:           username,
-		Password:           password,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := conoha.NewDefaultConfig()
+	cfg.Region = region
+	cfg.TenantID = tenantID
+	cfg.Username = username
+	cfg.Password = password
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return conoha.NewDNSProviderConfig(cfg)
 }

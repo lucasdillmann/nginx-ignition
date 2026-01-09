@@ -49,13 +49,12 @@ func (p *Provider) ChallengeProvider(
 	accessToken, _ := parameters[accessTokenFieldID].(string)
 	accessSecret, _ := parameters[accessSecretFieldID].(string)
 
-	cfg := &sakuracloud.Config{
-		Token:              accessToken,
-		Secret:             accessSecret,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := sakuracloud.NewDefaultConfig()
+	cfg.Token = accessToken
+	cfg.Secret = accessSecret
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return sakuracloud.NewDNSProviderConfig(cfg)
 }

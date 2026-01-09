@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	key, _ := parameters[apiKeyFieldID].(string)
 	secret, _ := parameters[apiSecretFieldID].(string)
 
-	cfg := &godaddy.Config{
-		APIKey:             key,
-		APISecret:          secret,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := godaddy.NewDefaultConfig()
+	cfg.APIKey = key
+	cfg.APISecret = secret
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return godaddy.NewDNSProviderConfig(cfg)
 }

@@ -64,11 +64,10 @@ func (p *Provider) ChallengeProvider(
 	storagePath, _ := parameters[storagePathFieldID].(string)
 	storageBaseURL, _ := parameters[storageBaseURLFieldID].(string)
 
-	cfg := &legoacmedns.Config{
-		APIBase:        apiBase,
-		StoragePath:    storagePath,
-		StorageBaseURL: storageBaseURL,
-	}
+	cfg := legoacmedns.NewDefaultConfig()
+	cfg.APIBase = apiBase
+	cfg.StoragePath = storagePath
+	cfg.StorageBaseURL = storageBaseURL
 
 	if allowListStr != "" {
 		list := make([]string, 0)

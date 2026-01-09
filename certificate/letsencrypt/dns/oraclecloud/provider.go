@@ -91,20 +91,19 @@ func (p *Provider) ChallengeProvider(
 	privateKey, _ := parameters[privateKeyFieldID].(string)
 	privateKeyPassword, _ := parameters[privateKeyPassFieldID].(string)
 
-	cfg := &oraclecloud.Config{
-		CompartmentID: compartment,
-		OCIConfigProvider: common.NewRawConfigurationProvider(
-			tenant,
-			user,
-			region,
-			finger,
-			privateKey,
-			ptr.Of(privateKeyPassword),
-		),
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := oraclecloud.NewDefaultConfig()
+	cfg.CompartmentID = compartment
+	cfg.OCIConfigProvider = common.NewRawConfigurationProvider(
+		tenant,
+		user,
+		region,
+		finger,
+		privateKey,
+		ptr.Of(privateKeyPassword),
+	)
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return oraclecloud.NewDNSProviderConfig(cfg)
 }

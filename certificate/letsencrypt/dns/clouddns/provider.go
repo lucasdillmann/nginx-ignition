@@ -55,14 +55,13 @@ func (p *Provider) ChallengeProvider(
 	email, _ := parameters[emailFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
 
-	cfg := &clouddns.Config{
-		ClientID:           clientID,
-		Email:              email,
-		Password:           password,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := clouddns.NewDefaultConfig()
+	cfg.ClientID = clientID
+	cfg.Email = email
+	cfg.Password = password
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return clouddns.NewDNSProviderConfig(cfg)
 }

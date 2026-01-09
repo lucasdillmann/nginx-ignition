@@ -49,13 +49,12 @@ func (p *Provider) ChallengeProvider(
 		return nil, err
 	}
 
-	cfg := &myaddr.Config{
-		Credentials:        credentials,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		SequenceInterval:   dns.SequenceInterval,
-	}
+	cfg := myaddr.NewDefaultConfig()
+	cfg.Credentials = credentials
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.SequenceInterval = dns.SequenceInterval
 
 	return myaddr.NewDNSProviderConfig(cfg)
 }

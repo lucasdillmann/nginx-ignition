@@ -39,12 +39,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	personalToken, _ := parameters[personalTokenFieldID].(string)
 
-	cfg := &azion.Config{
-		PersonalToken:      personalToken,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := azion.NewDefaultConfig()
+	cfg.PersonalToken = personalToken
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return azion.NewDNSProviderConfig(cfg)
 }

@@ -80,17 +80,16 @@ func (p *Provider) ChallengeProvider(
 	identityEndpoint, _ := parameters[identityEndpointFieldID].(string)
 	domainName, _ := parameters[domainNameFieldID].(string)
 
-	cfg := &vkcloud.Config{
-		Username:           username,
-		Password:           password,
-		ProjectID:          projectID,
-		DNSEndpoint:        dnsEndpoint,
-		IdentityEndpoint:   identityEndpoint,
-		DomainName:         domainName,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := vkcloud.NewDefaultConfig()
+	cfg.Username = username
+	cfg.Password = password
+	cfg.ProjectID = projectID
+	cfg.DNSEndpoint = dnsEndpoint
+	cfg.IdentityEndpoint = identityEndpoint
+	cfg.DomainName = domainName
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return vkcloud.NewDNSProviderConfig(cfg)
 }

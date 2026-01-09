@@ -56,14 +56,13 @@ func (p *Provider) ChallengeProvider(
 	secretKey, _ := parameters[secretKeyFieldID].(string)
 	region, _ := parameters[regionFieldID].(string)
 
-	cfg := &edgeone.Config{
-		SecretID:           secretID,
-		SecretKey:          secretKey,
-		Region:             region,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := edgeone.NewDefaultConfig()
+	cfg.SecretID = secretID
+	cfg.SecretKey = secretKey
+	cfg.Region = region
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return edgeone.NewDNSProviderConfig(cfg)
 }

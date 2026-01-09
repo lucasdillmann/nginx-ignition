@@ -44,11 +44,10 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	authToken, _ := parameters[authTokenFieldID].(string)
 
-	cfg := &timewebcloud.Config{
-		AuthToken:          authToken,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := timewebcloud.NewDefaultConfig()
+	cfg.AuthToken = authToken
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return timewebcloud.NewDNSProviderConfig(cfg)
 }

@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 	websiteID, _ := parameters[websiteIDFieldID].(string)
 
-	cfg := &derak.Config{
-		APIKey:             apiKey,
-		WebsiteID:          websiteID,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := derak.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.WebsiteID = websiteID
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return derak.NewDNSProviderConfig(cfg)
 }

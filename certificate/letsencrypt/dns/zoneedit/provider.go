@@ -52,12 +52,11 @@ func (p *Provider) ChallengeProvider(
 	user, _ := parameters[userFieldID].(string)
 	authToken, _ := parameters[authTokenFieldID].(string)
 
-	cfg := &zoneedit.Config{
-		User:               user,
-		AuthToken:          authToken,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := zoneedit.NewDefaultConfig()
+	cfg.User = user
+	cfg.AuthToken = authToken
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return zoneedit.NewDNSProviderConfig(cfg)
 }

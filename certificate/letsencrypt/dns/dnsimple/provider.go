@@ -39,12 +39,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	accessToken, _ := parameters[accessTokenFieldID].(string)
 
-	cfg := &dnsimple.Config{
-		AccessToken:        accessToken,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := dnsimple.NewDefaultConfig()
+	cfg.AccessToken = accessToken
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return dnsimple.NewDNSProviderConfig(cfg)
 }

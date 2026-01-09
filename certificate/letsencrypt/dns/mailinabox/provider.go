@@ -55,13 +55,12 @@ func (p *Provider) ChallengeProvider(
 	email, _ := parameters[emailFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
 
-	cfg := &mailinabox.Config{
-		BaseURL:            baseURL,
-		Email:              email,
-		Password:           password,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := mailinabox.NewDefaultConfig()
+	cfg.BaseURL = baseURL
+	cfg.Email = email
+	cfg.Password = password
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return mailinabox.NewDNSProviderConfig(cfg)
 }

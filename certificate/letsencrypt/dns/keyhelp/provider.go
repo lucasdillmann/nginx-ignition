@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	baseURL, _ := parameters[baseURLFieldID].(string)
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &keyhelp.Config{
-		BaseURL:            baseURL,
-		APIKey:             apiKey,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := keyhelp.NewDefaultConfig()
+	cfg.BaseURL = baseURL
+	cfg.APIKey = apiKey
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return keyhelp.NewDNSProviderConfig(cfg)
 }

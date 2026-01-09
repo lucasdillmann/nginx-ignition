@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	clientID, _ := parameters[clientIDFieldID].(string)
 	clientSecret, _ := parameters[clientSecretFieldID].(string)
 
-	cfg := &manageengine.Config{
-		ClientID:           clientID,
-		ClientSecret:       clientSecret,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := manageengine.NewDefaultConfig()
+	cfg.ClientID = clientID
+	cfg.ClientSecret = clientSecret
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return manageengine.NewDNSProviderConfig(cfg)
 }

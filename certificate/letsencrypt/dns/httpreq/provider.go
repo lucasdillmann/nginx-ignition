@@ -72,14 +72,13 @@ func (p *Provider) ChallengeProvider(
 		return nil, coreerror.New("Invalid endpoint URL", true)
 	}
 
-	cfg := &httpreq.Config{
-		Endpoint:           endpoint,
-		Mode:               mode,
-		Username:           username,
-		Password:           password,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := httpreq.NewDefaultConfig()
+	cfg.Endpoint = endpoint
+	cfg.Mode = mode
+	cfg.Username = username
+	cfg.Password = password
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return httpreq.NewDNSProviderConfig(cfg)
 }

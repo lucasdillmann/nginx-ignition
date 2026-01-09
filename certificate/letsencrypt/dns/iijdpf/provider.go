@@ -54,14 +54,13 @@ func (p *Provider) ChallengeProvider(
 	serviceCode, _ := parameters[serviceCodeFieldID].(string)
 	endpoint, _ := parameters[endpointFieldID].(string)
 
-	cfg := &iijdpf.Config{
-		Token:              token,
-		ServiceCode:        serviceCode,
-		Endpoint:           endpoint,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := iijdpf.NewDefaultConfig()
+	cfg.Token = token
+	cfg.ServiceCode = serviceCode
+	cfg.Endpoint = endpoint
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return iijdpf.NewDNSProviderConfig(cfg)
 }

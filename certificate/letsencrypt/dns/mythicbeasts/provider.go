@@ -47,13 +47,16 @@ func (p *Provider) ChallengeProvider(
 	username, _ := parameters[usernameFieldID].(string)
 	password, _ := parameters[passwordFieldID].(string)
 
-	cfg := &mythicbeasts.Config{
-		UserName:           username,
-		Password:           password,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
+	cfg, err := mythicbeasts.NewDefaultConfig()
+	if err != nil {
+		return nil, err
 	}
+
+	cfg.UserName = username
+	cfg.Password = password
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return mythicbeasts.NewDNSProviderConfig(cfg)
 }

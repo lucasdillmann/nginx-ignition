@@ -51,12 +51,11 @@ func (p *Provider) ChallengeProvider(
 		region = "us-east-1"
 	}
 
-	cfg := &lightsail.Config{
-		DNSZone:            dnsZone,
-		Region:             region,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := lightsail.NewDefaultConfig()
+	cfg.DNSZone = dnsZone
+	cfg.Region = region
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return lightsail.NewDNSProviderConfig(cfg)
 }

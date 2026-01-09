@@ -81,17 +81,16 @@ func (p *Provider) ChallengeProvider(
 	account, _ := parameters[accountFieldID].(string)
 	region, _ := parameters[regionFieldID].(string)
 
-	cfg := &selectelv2.Config{
-		Username:           username,
-		Password:           password,
-		ProjectID:          projectID,
-		BaseURL:            baseURL,
-		DomainName:         account,
-		AuthRegion:         region,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := selectelv2.NewDefaultConfig()
+	cfg.Username = username
+	cfg.Password = password
+	cfg.ProjectID = projectID
+	cfg.BaseURL = baseURL
+	cfg.DomainName = account
+	cfg.AuthRegion = region
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return selectelv2.NewDNSProviderConfig(cfg)
 }

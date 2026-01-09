@@ -71,16 +71,15 @@ func (p *Provider) ChallengeProvider(
 	password, _ := parameters[passwordFieldID].(string)
 	identityEndpoint, _ := parameters[identityEndpointFieldID].(string)
 
-	cfg := &otc.Config{
-		DomainName:         domainName,
-		ProjectName:        projectName,
-		UserName:           userName,
-		Password:           password,
-		IdentityEndpoint:   identityEndpoint,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		SequenceInterval:   dns.SequenceInterval,
-	}
+	cfg := otc.NewDefaultConfig()
+	cfg.DomainName = domainName
+	cfg.ProjectName = projectName
+	cfg.UserName = userName
+	cfg.Password = password
+	cfg.IdentityEndpoint = identityEndpoint
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.SequenceInterval = dns.SequenceInterval
 
 	return otc.NewDNSProviderConfig(cfg)
 }

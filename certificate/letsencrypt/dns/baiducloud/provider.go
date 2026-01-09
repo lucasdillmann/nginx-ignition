@@ -48,13 +48,12 @@ func (p *Provider) ChallengeProvider(
 	accessKey, _ := parameters[accessKeyFieldID].(string)
 	secretKey, _ := parameters[secretAccessKeyFieldID].(string)
 
-	cfg := &baiducloud.Config{
-		AccessKeyID:        accessKey,
-		SecretAccessKey:    secretKey,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := baiducloud.NewDefaultConfig()
+	cfg.AccessKeyID = accessKey
+	cfg.SecretAccessKey = secretKey
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return baiducloud.NewDNSProviderConfig(cfg)
 }

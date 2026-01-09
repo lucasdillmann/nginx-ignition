@@ -56,14 +56,13 @@ func (p *Provider) ChallengeProvider(
 	secretKey, _ := parameters[secretKeyFieldID].(string)
 	projectID, _ := parameters[projectIDFieldID].(string)
 
-	cfg := &scaleway.Config{
-		AccessKey:          accessKey,
-		Token:              secretKey,
-		ProjectID:          projectID,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := scaleway.NewDefaultConfig()
+	cfg.AccessKey = accessKey
+	cfg.Token = secretKey
+	cfg.ProjectID = projectID
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return scaleway.NewDNSProviderConfig(cfg)
 }

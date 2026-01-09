@@ -77,16 +77,15 @@ func (p *Provider) ChallengeProvider(
 	viewName, _ := parameters[viewNameFieldID].(string)
 	insecureSkipVerify, _ := parameters[insecureSkipVerifyFieldID].(bool)
 
-	cfg := &efficientip.Config{
-		Username:           username,
-		Password:           password,
-		Hostname:           hostname,
-		DNSName:            dnsName,
-		ViewName:           viewName,
-		InsecureSkipVerify: insecureSkipVerify,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := efficientip.NewDefaultConfig()
+	cfg.Username = username
+	cfg.Password = password
+	cfg.Hostname = hostname
+	cfg.DNSName = dnsName
+	cfg.ViewName = viewName
+	cfg.InsecureSkipVerify = insecureSkipVerify
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return efficientip.NewDNSProviderConfig(cfg)
 }

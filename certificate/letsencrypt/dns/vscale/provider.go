@@ -50,13 +50,12 @@ func (p *Provider) ChallengeProvider(
 	token, _ := parameters[tokenFieldID].(string)
 	baseURL, _ := parameters[baseURLFieldID].(string)
 
-	cfg := &vscale.Config{
-		Token:              token,
-		BaseURL:            baseURL,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := vscale.NewDefaultConfig()
+	cfg.Token = token
+	cfg.BaseURL = baseURL
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return vscale.NewDNSProviderConfig(cfg)
 }

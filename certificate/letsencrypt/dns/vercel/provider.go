@@ -47,13 +47,12 @@ func (p *Provider) ChallengeProvider(
 	teamID, _ := parameters[teamFieldID].(string)
 	token, _ := parameters[tokenFieldID].(string)
 
-	cfg := &vercel.Config{
-		AuthToken:          token,
-		TeamID:             teamID,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := vercel.NewDefaultConfig()
+	cfg.AuthToken = token
+	cfg.TeamID = teamID
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return vercel.NewDNSProviderConfig(cfg)
 }

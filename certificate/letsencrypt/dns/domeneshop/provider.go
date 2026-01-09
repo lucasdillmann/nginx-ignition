@@ -48,12 +48,11 @@ func (p *Provider) ChallengeProvider(
 	apiToken, _ := parameters[apiTokenFieldID].(string)
 	apiSecret, _ := parameters[apiSecretFieldID].(string)
 
-	cfg := &domeneshop.Config{
-		APIToken:           apiToken,
-		APISecret:          apiSecret,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := domeneshop.NewDefaultConfig()
+	cfg.APIToken = apiToken
+	cfg.APISecret = apiSecret
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return domeneshop.NewDNSProviderConfig(cfg)
 }

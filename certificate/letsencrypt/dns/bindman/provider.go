@@ -38,11 +38,10 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	baseURL, _ := parameters[baseURLFieldID].(string)
 
-	cfg := &bindman.Config{
-		BaseURL:            baseURL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := bindman.NewDefaultConfig()
+	cfg.BaseURL = baseURL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return bindman.NewDNSProviderConfig(cfg)
 }

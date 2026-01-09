@@ -40,12 +40,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &vultr.Config{
-		APIKey:             apiKey,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := vultr.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return vultr.NewDNSProviderConfig(cfg)
 }

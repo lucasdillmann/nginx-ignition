@@ -56,14 +56,13 @@ func (p *Provider) ChallengeProvider(
 	secretKey, _ := parameters[secretKeyKeyFieldID].(string)
 	region, _ := parameters[regionFieldID].(string)
 
-	cfg := &tencentcloud.Config{
-		SecretID:           secretID,
-		SecretKey:          secretKey,
-		Region:             region,
-		TTL:                dns.TTL,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-	}
+	cfg := tencentcloud.NewDefaultConfig()
+	cfg.SecretID = secretID
+	cfg.SecretKey = secretKey
+	cfg.Region = region
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return tencentcloud.NewDNSProviderConfig(cfg)
 }

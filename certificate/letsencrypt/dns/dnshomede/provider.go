@@ -49,12 +49,11 @@ func (p *Provider) ChallengeProvider(
 		return nil, err
 	}
 
-	cfg := &dnshomede.Config{
-		Credentials:        credentials,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		SequenceInterval:   dns.SequenceInterval,
-	}
+	cfg := dnshomede.NewDefaultConfig()
+	cfg.Credentials = credentials
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.SequenceInterval = dns.SequenceInterval
 
 	return dnshomede.NewDNSProviderConfig(cfg)
 }

@@ -53,13 +53,12 @@ func (p *Provider) ChallengeProvider(
 	password, _ := parameters[passwordFieldID].(string)
 
 	//nolint:misspell
-	cfg := &internetbs.Config{
-		APIKey:             apiKey,
-		Password:           password,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := internetbs.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.Password = password
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	//nolint:misspell
 	return internetbs.NewDNSProviderConfig(cfg)

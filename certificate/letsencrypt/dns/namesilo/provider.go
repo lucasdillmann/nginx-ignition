@@ -40,12 +40,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := &namesilo.Config{
-		APIKey:             apiKey,
-		PropagationTimeout: dns.PropagationTimeout,
-		PollingInterval:    dns.PollingInterval,
-		TTL:                dns.TTL,
-	}
+	cfg := namesilo.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
 
 	return namesilo.NewDNSProviderConfig(cfg)
 }
