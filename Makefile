@@ -34,6 +34,8 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	GOARCH=amd64 CGO_ENABLED="0" GOOS="linux" go build -ldflags "$(LDFLAGS)" -o build/linux/amd64 application/main.go
 	GOARCH=arm64 CGO_ENABLED="0" GOOS="linux" go build -ldflags "$(LDFLAGS)" -o build/linux/arm64 application/main.go
 	GOARCH=arm64 CGO_ENABLED="0" GOOS="darwin" go build -ldflags "$(LDFLAGS)" -o build/macos/arm64 application/main.go
+	GOARCH=amd64 CGO_ENABLED="0" GOOS="windows" go build -ldflags "$(LDFLAGS)" -o build/windows/amd64.exe application/main.go
+	GOARCH=arm64 CGO_ENABLED="0" GOOS="windows" go build -ldflags "$(LDFLAGS)" -o build/windows/arm64.exe application/main.go
 
 .build-release-docker-image:
 	docker buildx build \
@@ -49,9 +51,11 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		--push .
 
 .build-distribution-files:
-	$(MAKE) .build-distribution-zip ARCH=amd64 OS=linux SERVICE_FILE_EXT=service
-	$(MAKE) .build-distribution-zip ARCH=arm64 OS=linux SERVICE_FILE_EXT=service
-	$(MAKE) .build-distribution-zip ARCH=arm64 OS=macos SERVICE_FILE_EXT=plist
+	$(MAKE) .build-distribution-zip ARCH=amd64 OS=linux SERVICE_FILE_EXT=service BIN_EXT=
+	$(MAKE) .build-distribution-zip ARCH=arm64 OS=linux SERVICE_FILE_EXT=service BIN_EXT=
+	$(MAKE) .build-distribution-zip ARCH=arm64 OS=macos SERVICE_FILE_EXT=plist BIN_EXT=
+	$(MAKE) .build-distribution-zip ARCH=amd64 OS=windows SERVICE_FILE_EXT=md BIN_EXT=.exe
+	$(MAKE) .build-distribution-zip ARCH=arm64 OS=windows SERVICE_FILE_EXT=md BIN_EXT=.exe
 	$(MAKE) .build-distribution-packages ARCH=amd64 OS=linux
 	$(MAKE) .build-distribution-packages ARCH=arm64 OS=linux
 
@@ -62,8 +66,8 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	cp -Rf database/common/migrations/scripts build/zip/migrations
 	cp -Rf dist/$(OS)-instructions.md build/zip/
 	cp -Rf dist/nginx-ignition.properties build/zip/
-	cp dist/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/
-	cp build/$(OS)/$(ARCH) build/zip/nginx-ignition
+	if [ "$(OS)" != "windows" ]; then cp dist/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/; fi
+	cp build/$(OS)/$(ARCH)$(BIN_EXT) build/zip/nginx-ignition$(BIN_EXT)
 	cd build/zip && zip -q -r ../nginx-ignition-$(VERSION).$(OS)-$(ARCH).zip .
 	rm -Rf build/zip
 
