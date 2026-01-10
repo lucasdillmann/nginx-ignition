@@ -9,6 +9,7 @@
     Designed for developers and enthusiasts who want powerful control without the manual config headache.
 </p>
 
+<br />
 
 ## 🧰 Batteries included
 
@@ -26,6 +27,7 @@
 - 🚀 **Performance:** Built-in caching configuration to speed up your content delivery.
 - 🏗️ **Flexible execution:** nginx ignition can run nginx for you, or just generate the configuration files for you.
 
+<br />
 
 ## 🎯 Goals
 
@@ -36,6 +38,7 @@ your use-case is extremely advanced, you'll likely prefer managing configuration
 Our goal is to provide a powerful, yet intuitive way to run nginx for the most common use-cases with some optional, 
 nice-to-have features that can help you get your homelab up and running quickly.
 
+<br />
 
 ## 🚀 Run it for a quick test
 
@@ -53,6 +56,7 @@ docker run -p 8090:8090 -p 80:80 dillmann/nginx-ignition
 > 
 > Check the [database configuration](docs/configuration-properties.md) documentation for more details on how to do it.
 
+<br />
 
 ## 📦 All installation options for Linux, Windows, and macOS
 
@@ -75,6 +79,7 @@ Download the latest version for your architecture from the [releases page](https
 | **Windows**        | ZIP archive    | amd64, arm64 |
 | **macOS**          | ZIP archive    | arm64        |
 
+<br />
 
 ## 🛠️ Advanced configuration
 
@@ -84,6 +89,7 @@ Need to tune your setup? Explore our detailed guides:
 - 🏥 **[Health checks](docs/health-checks.md):** Monitor your instance's status.
 - 🔍 **[Troubleshooting](docs/troubleshooting.md):** Common issues and recovery steps (like password resets).
 
+<br />
 
 ## 🤝 Contributing and feedback
 
@@ -94,9 +100,9 @@ We love to hear and receive feedback from you. Whether it's a bug report, a feat
   feature request**
 - 👋 **[Say hello on LinkedIn](https://linkedin.com/in/lucasdillmann)** if you want to share some feedback
 
----
+##
 
-<p align="center" style="font-size: 12px">
+<p align="center" style="font-size: 10px">
     Made with ❤️ from Brazil. We hope nginx ignition can solve some problems for you and make your homelab a bit 
     simpler.
 </p>
