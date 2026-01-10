@@ -1,104 +1,112 @@
 <p align="center">
-    <img src="docs/readme-screenshots.png" alt="" width="600" />
+    <img src="docs/readme-screenshots.png" alt="nginx ignition header" width="600" />
 </p>
-<h1 align="center">
-    nginx ignition
-</h1>
 
-The nginx ignition is a user interface for the nginx web server, aimed at developers and enthusiasts that don't
-want to manage configuration files manually for their use-cases. 
+<h1 align="center">nginx ignition</h1>
 
-Although it isn't the goal to be feature-complete (if your use-case is quite advanced or complex, you probably will not 
-use a UI anyway) or to be enterprise-ready, the project does aim to provide an intuitive and powerful way to configure 
-and run nginx.
+<br />
 
-Some of the available features include:
-- Multiple nginx virtual hosts, each one with its customized set of domains, routes and bindings (port listeners)
-- Multiple nginx streams (for proxying raw TCP, UPD and unix sockets traffic), each one with its customized binding and
-  backing service, with support for domain-based routing (using the SNI from the TLS protocol), circuit breakers, 
-  weights and more.
-- Each host route can act as a proxy, redirection, execute custom code (JavaScript or Lua), reply with a static 
-  response or serve static files (directory listing can be optionally enabled)
-- Easy configuration of the nginx server (maximum body/upload size, server tokens, timeouts, log level, etc)
-- SSL certificates (Let's Encrypt, self-signed or bring your custom one) with automatic renew (when applicable)
-- Server and virtual hosts access and error logs with automatic log rotation
-- Multiple users with attribute-based access control (ABAC)
-- Support for TrueNAS, allowing to easily configure to proxy to an app hosted in your NAS
-- Native integration with Docker and Docker Swarm for easy pick of a container/service as the proxy target
-- Built-in support for Tailscale VPNs, enabling easy exposure of hosts in your Tailnet networks as virtual machines
-- Access lists for easy control of who can access what using basic authentication and/or source IP address checks 
-- Easy nginx content caching configuration
+<p align="center">
+    <strong>A modern, intuitive user interface for the nginx web server.</strong><br />
+    Designed for developers and enthusiasts who want powerful control without the manual config headache.
+</p>
 
-## Getting started
+<br />
 
-nginx ignition is available as a Docker image and can be run locally on a Linux or macOS machine. 
+## 🧰 Batteries included
 
-### Docker
-Run the following in your terminal to start nginx ignition using Docker. If you don't have Docker already, you will 
-need to install it first (follow [this link](https://www.docker.com/get-started/) for instructions).
+- 🌐 **Virtual hosts:** Easily manage multiple hosts with custom domains, routes, and port bindings.
+- 🔄 **Streams:** Proxy TCP, UDP, and Unix sockets with SNI-based routing, circuit breakers, and load balancing.
+- ⚡ **Versatile routing:** Configure proxies, redirections, custom JS/Lua code, static responses, or file serving.
+- ⚙️ **Server configuration:** Easy configuration of the nginx server (maximum body/upload size, server tokens,
+  timeouts, log level, etc).
+- 🔐 **SSL certificates:** Automated Let's Encrypt (ACME), self-signed, or bring your own certificates.
+- 🐳 **Native integrations:** First-class support for Docker, Docker Swarm, Tailscale VPNs, and TrueNAS.
+- 🛡️ **Security:** Secure access with attribute-based access control (ABAC) and per-host access lists using basic
+  authentication and source IP checks.
+- 📋 **Logging:** Detailed access and error logs for the server and each virtual host, with built-in automatic log
+  rotation.
+- 🚀 **Performance:** Built-in nginx caching configuration to speed up your content delivery.
+- 🏗️ **Flexible execution:** nginx ignition can run nginx for you, or just generate the configuration files for you.
+
+<br />
+
+## 🎯 Goals
+
+nginx ignition is **built for developers and enthusiasts** who want a balance between ease of use and the power of nginx.
+This project is **not aimed at being enterprise-ready or feature-complete for highly complex environments**. If
+your use-case is extremely advanced, you'll likely prefer managing configuration files manually.
+
+Our goal is to provide a powerful, yet intuitive way to run nginx for the most common use-cases with some optional,
+nice-to-have features that can help you get your homelab up and running quickly.
+
+<br />
+
+## 🚀 Run it for a quick test
+
+Getting up and running to check out if nginx ignition is for you can be done using a single Docker command.
 
 ```shell
-docker run -p8090:8090 -p80:80 dillmann/nginx-ignition
+docker run -p 8090:8090 -p 80:80 dillmann/nginx-ignition
 ```
 
-After a few seconds, you can open your favorite browser at http://localhost:8090 and start using it. There's no 
-default username or password, the nginx ignition will guide you to create your user.
+1.  Wait a few seconds for the app to initialize.
+2.  Open **[http://localhost:8090](http://localhost:8090)** in your browser.
+3.  The setup wizard will guide you through creating your first user.
 
-Please note that in its default configuration the app will start using an embedded SQLite database. While this is fine
-for testing and some experiments, is not recommended for a long-term scenario. For that, please refer to the 
-configuration section below to use PostgreSQL instead.
+<br />
 
-### Docker compose
+> By default, an embedded SQLite database is used. For production environments we recommend using PostgreSQL.
+> Check the [database configuration](docs/configuration-properties.md) documentation for more details on how to do it.
 
-The [docker-compose.yml](docker-compose.yml) file is also available as a recommended way of starting the nginx ignition
-using Docker alongside a production-ready PostgreSQL database and health checks enabled. Make sure to change the
-`POSTGRES_PASSWORD`, `NGINX_IGNITION_DATABASE_PASSWORD` and `NGINX_IGNITION_SECURITY_JWT_SECRET` values in the compose 
-file before deploying.
+<br />
 
-### Installing or running locally on a Linux or macOS machine
+## 📦 All installation options for Linux and macOS
 
-To install nginx ignition locally on your machine, you have several options:
+Choose the method that best fits your environment, be it Docker, Docker Compose, native packages for Linux or macOS.
 
-#### Linux Package Managers (Recommended for Linux)
-Download the appropriate package for your distribution and architecture (amd64/arm64) from the 
-[releases page](https://github.com/lucasdillmann/nginx-ignition/releases):
+### Docker Compose (recommended)
+Use our [docker-compose.yml](docker-compose.yml) for a production-ready setup with PostgreSQL and health checks.
 
-- Debian/Ubuntu: `.deb` packages
-- RedHat/Fedora/CentOS: `.rpm` packages
-- Alpine Linux: `.apk` packages
-- Arch Linux: `.pkg.tar.zst` packages
-- Embedded Linux (OpenWrt): `.ipk` packages
+### Native packages for Linux and macOS
+Download the latest version for your architecture from the [releases page](https://github.com/lucasdillmann/nginx-ignition/releases):
 
-#### ZIP Archive
-Download the ZIP file for your OS and arch (amd64/arm64) from the 
-[releases page](https://github.com/lucasdillmann/nginx-ignition/releases). An instructions file is available 
-inside the zip that will guide you through the installation process for your OS.
+| Platform           | Package type   | Arch         |
+|:-------------------|:---------------|--------------|
+| **Debian, Ubuntu** | `.deb`         | amd64, arm64 |
+| **RedHat, Fedora** | `.rpm`         | amd64, arm64 |
+| **Alpine Linux**   | `.apk`         | amd64, arm64 |
+| **Arch Linux**     | `.pkg.tar.zst` | amd64, arm64 |
+| **OpenWrt**        | `.ipk`         | amd64, arm64 |
+| **macOS**          | ZIP archive    | arm64        |
 
-## Migrating from 1.x to 2.0.0
+<br />
 
-If you're using any 1.x version of the nginx ignition and plans to upgrade to 2.0.0, please check 
-[this migration guide](docs/migration-guide.md) for instructions and important notes on where to do it.
+## 🛠️ Advanced configuration
 
-## Configuration
+Need to tune your setup? Explore our detailed guides:
 
-Check [this documentation file](docs/configuration-properties.md) for more details about the available configuration 
-properties and some common use-case examples.
+- 📜 **[Configuration properties](docs/configuration-properties.md):** Full list of available environment variables and configuration properties.
+- 🏥 **[Health checks](docs/health-checks.md):** Monitor your instance's status.
+- 🔍 **[Troubleshooting](docs/troubleshooting.md):** Common issues and recovery steps (like password resets).
+- 🔁 **[Migrating from v1 to v2](docs/migration-guide.md):** Steps to upgrade from nginx ignition v1 to v2.
 
-## Health checks
+<br />
 
-Check [this documentation file](docs/health-checks.md) for more details about the available health checks endpoints
-that you can use on your Docker Compose file, Kubernetes cluster or monitoring platform.
+## 🤝 Contributing and feedback
 
-If needed, you can disable the health check endpoints by setting the `NGINX_IGNITION_HEALTH_CHECK_ENABLED` environment
-variable with the `false` value (check the [configuration properties](docs/configuration-properties.md) documentation
-for more details).
+We love to hear and receive feedback from you. Whether it's a bug report, a feature request, or a pull request:
 
-## Troubleshooting
+- 🛠️ **[Open an issue](https://github.com/lucasdillmann/nginx-ignition/issues)** if you have a problem or bug to report
+- 💬 **[Start a discussion](https://github.com/lucasdillmann/nginx-ignition/discussions)** if you have a question or
+  feature request
+- 👋 **[Say hello on LinkedIn](https://linkedin.com/in/lucasdillmann)** if you want to share some feedback
 
-Check [this documentation file](docs/troubleshooting.md) for more details about how to troubleshoot the application
-and some common recovery operations, like resetting your password.
+<br />
 
-## Contributing and feedback
+##
 
-Feel free to open an issue or pull request here at GitHub or to send me a message through
-[my LinkedIn profile](https://linkedin.com/in/lucasdillmann) to share some feedback. Every constructive one is welcome.
+<p align="center" style="font-size: 10px">
+    Made with ❤️ from Brazil. We hope nginx ignition can solve some problems for you and make your homelab a bit 
+    simpler.
+</p>
