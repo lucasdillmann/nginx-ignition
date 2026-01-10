@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -67,7 +68,7 @@ func (m *processManager) start() error {
 }
 
 func (m *processManager) currentPid() (int64, error) {
-	pidFile := m.configPath + "/nginx.pid"
+	pidFile := filepath.Join(m.configPath, "nginx.pid")
 	data, err := os.ReadFile(pidFile)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -88,14 +89,11 @@ func (m *processManager) currentPid() (int64, error) {
 	return pid, nil
 }
 
-func (m *processManager) isPidAlive(pid int64) bool {
-	cmd := exec.Command("kill", "-0", strconv.FormatInt(pid, 10))
-	err := cmd.Run()
-	return err == nil
-}
-
 func (m *processManager) runCommand(extraArgs ...string) error {
-	args := append([]string{m.binaryPath, "-c", m.configPath + "/config/nginx.conf"}, extraArgs...)
+	args := append(
+		[]string{m.binaryPath, "-c", filepath.Join(m.configPath, "config", "nginx.conf")},
+		extraArgs...,
+	)
 
 	cmd := exec.Command(args[0], args[1:]...)
 	output, err := cmd.CombinedOutput()

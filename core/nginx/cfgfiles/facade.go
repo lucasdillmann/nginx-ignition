@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/cache"
@@ -112,12 +111,16 @@ func (f *Facade) ReplaceConfigurationFiles(
 		return nil, nil, err
 	}
 
-	normalizedPath := strings.TrimRight(configDir, "/")
+	cleanPath := filepath.Clean(configDir)
+	toNginxPath := func(p string) string {
+		return filepath.ToSlash(p) + "/"
+	}
+
 	paths := &Paths{
-		Base:   normalizedPath + "/",
-		Config: normalizedPath + "/config/",
-		Logs:   normalizedPath + "/logs/",
-		Cache:  normalizedPath + "/cache/",
+		Base:   toNginxPath(cleanPath),
+		Config: toNginxPath(filepath.Join(cleanPath, "config")),
+		Logs:   toNginxPath(filepath.Join(cleanPath, "logs")),
+		Cache:  toNginxPath(filepath.Join(cleanPath, "cache")),
 	}
 
 	if err = f.createMissingFolders(paths); err != nil {
