@@ -2,7 +2,7 @@ package nginx
 
 import (
 	"net/http"
-	"strings"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 
@@ -37,5 +37,5 @@ func normalizePathQuery(ctx *gin.Context, name string) string {
 		return ""
 	}
 
-	return strings.TrimRight(value, "/") + "/"
+	return filepath.ToSlash(filepath.Clean(value)) + "/"
 }

@@ -57,8 +57,8 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 			user %s %s;
 			%s
 			worker_processes %d;
-			pid %snginx.pid;
-			error_log %s;
+			pid "%snginx.pid";
+			error_log "%s";
 			
 			events {
 				worker_connections %d;
@@ -83,7 +83,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				output_buffers %d %dk;
 
 				default_type %s;
-				include %smime.types;
+				include "%smime.types";
 				%s
 				%s
 				%s
@@ -136,7 +136,7 @@ func (p *mainConfigurationFileProvider) getErrorLogPath(
 ) string {
 	if logs.ServerLogsEnabled {
 		return fmt.Sprintf(
-			"%smain.log %s",
+			"\"%smain.log\" %s",
 			paths.Logs,
 			strings.ToLower(string(logs.ServerLogsLevel)),
 		)
@@ -148,7 +148,7 @@ func (p *mainConfigurationFileProvider) getErrorLogPath(
 func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []host.Host) string {
 	includes := make([]string, 0, len(hosts))
 	for _, h := range hosts {
-		includes = append(includes, fmt.Sprintf("include %shost-%s.conf;", paths.Config, h.ID))
+		includes = append(includes, fmt.Sprintf("include \"%shost-%s.conf\";", paths.Config, h.ID))
 	}
 
 	return strings.Join(includes, "\n")
@@ -161,7 +161,10 @@ func (p *mainConfigurationFileProvider) getStreamIncludes(
 	includes := make([]string, 0, len(streams))
 
 	for _, s := range streams {
-		includes = append(includes, fmt.Sprintf("include %sstream-%s.conf;", paths.Config, s.ID))
+		includes = append(
+			includes,
+			fmt.Sprintf("include \"%sstream-%s.conf\";", paths.Config, s.ID),
+		)
 	}
 
 	return strings.Join(includes, "\n")
@@ -195,7 +198,7 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(
 		}
 
 		results = append(results, fmt.Sprintf(
-			"proxy_cache_path %s levels=1:2 keys_zone=cache_%s:10m%s%s;",
+			"proxy_cache_path \"%s\" levels=1:2 keys_zone=cache_%s:10m%s%s;",
 			*storagePath,
 			cacheIDNoDashes,
 			inactive,

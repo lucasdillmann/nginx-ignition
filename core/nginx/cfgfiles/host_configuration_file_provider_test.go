@@ -192,7 +192,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			assert.Contains(
 				t,
 				result,
-				fmt.Sprintf("js_import route_1 from /etc/nginx/host-%s-route-1.js;", h.ID),
+				fmt.Sprintf("js_import route_1 from \"/etc/nginx/host-%s-route-1.js\";", h.ID),
 			)
 			assert.Contains(t, result, "js_content route_1.handler;")
 		})
@@ -242,7 +242,11 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			result := provider.buildStaticResponseRoute(ctx, h, r)
 			assert.Contains(t, result, "location @route_2/static_payload {")
 			assert.Contains(t, result, "add_header \"Content-Type\" \"application/json\" always;")
-			assert.Contains(t, result, "try_files /host-"+h.ID.String()+"-route-2.payload =200;")
+			assert.Contains(
+				t,
+				result,
+				"try_files \"/host-"+h.ID.String()+"-route-2.payload\" =200;",
+			)
 		})
 	})
 
@@ -302,7 +306,11 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				AccessListID: &id,
 			}
 			result := provider.buildRouteSettings(ctx, r)
-			assert.Contains(t, result, fmt.Sprintf("include /etc/nginx/access-list-%s.conf;", id))
+			assert.Contains(
+				t,
+				result,
+				fmt.Sprintf("include \"/etc/nginx/access-list-%s.conf\";", id),
+			)
 		})
 	})
 
@@ -358,7 +366,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			assert.Contains(
 				t,
 				result,
-				fmt.Sprintf("ssl_certificate /etc/nginx/certificate-%s.pem;", certID),
+				fmt.Sprintf("ssl_certificate \"/etc/nginx/certificate-%s.pem\";", certID),
 			)
 		})
 
@@ -492,7 +500,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			}
 			result := provider.buildStaticFilesRoute(ctx, r)
 			assert.Contains(t, result, "location /static/ {")
-			assert.Contains(t, result, "root /var/www/static;")
+			assert.Contains(t, result, "root \"/var/www/static\";")
 			assert.Contains(t, result, "autoindex on;")
 		})
 
@@ -505,7 +513,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				},
 			}
 			result := provider.buildStaticFilesRoute(ctx, r)
-			assert.Contains(t, result, "index home.html;")
+			assert.Contains(t, result, "index \"home.html\";")
 		})
 	})
 }

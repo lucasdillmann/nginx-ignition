@@ -55,7 +55,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			assert.Contains(t, files[0].Contents, "load_module modules/ngx_stream_module.so;")
 			assert.Contains(t, files[0].Contents, "load_module modules/ngx_http_js_module.so;")
 			assert.Contains(t, files[0].Contents, "stream {")
-			assert.Contains(t, files[0].Contents, "include /etc/nginx/stream-")
+			assert.Contains(t, files[0].Contents, "include \"/etc/nginx/stream-")
 		})
 
 		t.Run("includes custom configuration", func(t *testing.T) {
@@ -98,7 +98,11 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 				ServerLogsEnabled: true,
 				ServerLogsLevel:   settings.WarnLogLevel,
 			}
-			assert.Equal(t, "/var/log/nginx/main.log warn", provider.getErrorLogPath(paths, logs))
+			assert.Equal(
+				t,
+				"\"/var/log/nginx/main.log\" warn",
+				provider.getErrorLogPath(paths, logs),
+			)
 		})
 	})
 
@@ -124,8 +128,8 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 				},
 			}
 			result := provider.getHostIncludes(paths, hosts)
-			assert.Contains(t, result, fmt.Sprintf("include /etc/nginx/host-%s.conf;", id1))
-			assert.Contains(t, result, fmt.Sprintf("include /etc/nginx/host-%s.conf;", id2))
+			assert.Contains(t, result, fmt.Sprintf("include \"/etc/nginx/host-%s.conf\";", id1))
+			assert.Contains(t, result, fmt.Sprintf("include \"/etc/nginx/host-%s.conf\";", id2))
 		})
 	})
 
@@ -143,7 +147,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 				},
 			}
 			result := provider.getStreamIncludes(paths, streams)
-			assert.Equal(t, fmt.Sprintf("include /etc/nginx/stream-%s.conf;", id1), result)
+			assert.Equal(t, fmt.Sprintf("include \"/etc/nginx/stream-%s.conf\";", id1), result)
 		})
 	})
 
@@ -163,7 +167,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 				},
 			}
 			result := provider.getCacheDefinitions(paths, caches)
-			assert.Contains(t, result, "proxy_cache_path /var/cache/nginx/")
+			assert.Contains(t, result, "proxy_cache_path \"/var/cache/nginx/")
 			assert.Contains(t, result, "inactive=3600s")
 			assert.Contains(t, result, "max_size=1024m")
 			assert.Contains(t, result, "keys_zone=cache_")
@@ -178,7 +182,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 				},
 			}
 			result := provider.getCacheDefinitions(paths, caches)
-			assert.Contains(t, result, "proxy_cache_path /mnt/ssd/cache")
+			assert.Contains(t, result, "proxy_cache_path \"/mnt/ssd/cache\"")
 		})
 
 		t.Run("generates basic config when optional fields are nil", func(t *testing.T) {
@@ -188,7 +192,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 				},
 			}
 			result := provider.getCacheDefinitions(paths, caches)
-			assert.Contains(t, result, "proxy_cache_path /var/cache/nginx/")
+			assert.Contains(t, result, "proxy_cache_path \"/var/cache/nginx/")
 			assert.NotContains(t, result, "inactive=")
 			assert.NotContains(t, result, "max_size=")
 		})

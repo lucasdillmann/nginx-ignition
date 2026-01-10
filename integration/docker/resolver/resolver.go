@@ -20,7 +20,15 @@ func For(parameters map[string]any) (Resolver, error) {
 	switch parameters[fields.ConnectionMode.ID].(string) {
 	case fields.SocketConnectionMode:
 		socketPath := parameters[fields.SocketPath.ID].(string)
-		connectionURL = "unix://" + socketPath
+		switch {
+		case strings.Contains(socketPath, "://"):
+			connectionURL = socketPath
+		case strings.HasPrefix(socketPath, "//./pipe/"),
+			strings.HasPrefix(socketPath, "\\\\.\\pipe\\"):
+			connectionURL = "npipe://" + socketPath
+		default:
+			connectionURL = "unix://" + socketPath
+		}
 	case fields.TCPConnectionMode:
 		hostURL := parameters[fields.HostURL.ID].(string)
 		connectionURL = hostURL

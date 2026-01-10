@@ -71,7 +71,7 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 
 	switch s.Binding.Protocol {
 	case stream.SocketProtocol:
-		_, _ = fmt.Fprintf(&instruction, "unix:%s", s.Binding.Address)
+		_, _ = fmt.Fprintf(&instruction, "unix:\"%s\"", s.Binding.Address)
 
 	case stream.TCPProtocol:
 		_, _ = fmt.Fprintf(&instruction, "%s:%d", s.Binding.Address, *s.Binding.Port)
@@ -111,7 +111,7 @@ func (p *streamFileProvider) buildUpstream(
 		address := backend.Address
 		switch address.Protocol {
 		case stream.SocketProtocol:
-			_, _ = fmt.Fprintf(&instructions, "server unix:%s", address.Address)
+			_, _ = fmt.Fprintf(&instructions, "server unix:\"%s\"", address.Address)
 
 		case stream.TCPProtocol, stream.UDPProtocol:
 			_, _ = fmt.Fprintf(&instructions, "server %s:%d", address.Address, *address.Port)

@@ -94,7 +94,7 @@ func Test_streamFileProvider(t *testing.T) {
 
 			result, err := provider.buildBinding(s)
 			assert.NoError(t, err)
-			assert.Equal(t, "listen unix:/tmp/nginx.sock reuseport;", *result)
+			assert.Equal(t, "listen unix:\"/tmp/nginx.sock\" reuseport;", *result)
 		})
 
 		t.Run("returns error for unknown protocol", func(t *testing.T) {
@@ -142,7 +142,7 @@ func Test_streamFileProvider(t *testing.T) {
 				*result,
 				"server 10.0.0.1:8080 weight=5 max_fails=3 fail_timeout=30s;",
 			)
-			assert.Contains(t, *result, "server unix:/var/run/backend.sock;")
+			assert.Contains(t, *result, "server unix:\"/var/run/backend.sock\";")
 		})
 
 		t.Run("returns error for unknown backend protocol", func(t *testing.T) {

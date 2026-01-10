@@ -66,7 +66,7 @@ func (p *accessListFileProvider) buildConfFile(
 		usernamePasswordContents = fmt.Sprintf(
 			`
 				auth_basic "%s"; 
-				auth_basic_user_file %saccess-list-%s.htpasswd;
+				auth_basic_user_file "%saccess-list-%s.htpasswd";
 			`,
 			accessList.Realm, paths.Config, accessList.ID,
 		)
