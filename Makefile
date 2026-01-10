@@ -31,11 +31,14 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	cd frontend/ && npm run build
 
 .backend-build: .backend-prerequisites
-	GOARCH=amd64 CGO_ENABLED="0" GOOS="linux" go build -ldflags "$(LDFLAGS)" -o build/linux/amd64 application/main.go
-	GOARCH=arm64 CGO_ENABLED="0" GOOS="linux" go build -ldflags "$(LDFLAGS)" -o build/linux/arm64 application/main.go
-	GOARCH=arm64 CGO_ENABLED="0" GOOS="darwin" go build -ldflags "$(LDFLAGS)" -o build/macos/arm64 application/main.go
-	GOARCH=amd64 CGO_ENABLED="0" GOOS="windows" go build -ldflags "$(LDFLAGS)" -o build/windows/amd64.exe application/main.go
-	GOARCH=arm64 CGO_ENABLED="0" GOOS="windows" go build -ldflags "$(LDFLAGS)" -o build/windows/arm64.exe application/main.go
+	$(MAKE) .backend-build-file OS=linux ARCH=amd64 DIR=linux
+	$(MAKE) .backend-build-file OS=linux ARCH=arm64 DIR=linux
+	$(MAKE) .backend-build-file OS=darwin ARCH=arm64 DIR=macos
+	$(MAKE) .backend-build-file OS=windows ARCH=amd64 DIR=windows EXT=.exe
+	$(MAKE) .backend-build-file OS=windows ARCH=arm64 DIR=windows EXT=.exe
+
+.backend-build-file:
+	GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o build/$(DIR)/$(ARCH)$(EXT) application/main.go
 
 .build-release-docker-image:
 	docker buildx build \
