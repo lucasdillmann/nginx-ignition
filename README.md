@@ -4,6 +4,8 @@
 
 <h1 align="center">nginx ignition</h1>
 
+<br />
+
 <p align="center">
     <strong>A modern, intuitive user interface for the nginx web server.</strong><br />
     Designed for developers and enthusiasts who want powerful control without the manual config headache.
@@ -99,6 +101,8 @@ We love to hear and receive feedback from you. Whether it's a bug report, a feat
 - 💬 **[Start a discussion](https://github.com/lucasdillmann/nginx-ignition/discussions)** if you have a question or 
   feature request**
 - 👋 **[Say hello on LinkedIn](https://linkedin.com/in/lucasdillmann)** if you want to share some feedback
+
+<br />
 
 ##
 
