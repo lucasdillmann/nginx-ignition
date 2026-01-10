@@ -54,8 +54,9 @@ docker run -p 8090:8090 -p 80:80 dillmann/nginx-ignition
 2.  Open **[http://localhost:8090](http://localhost:8090)** in your browser.
 3.  The setup wizard will guide you through creating your first user.
 
+<br />
+
 > By default, an embedded SQLite database is used. For production environments we recommend using PostgreSQL. 
-> 
 > Check the [database configuration](docs/configuration-properties.md) documentation for more details on how to do it.
 
 <br />
@@ -99,7 +100,7 @@ We love to hear and receive feedback from you. Whether it's a bug report, a feat
 
 - 🛠️ **[Open an issue](https://github.com/lucasdillmann/nginx-ignition/issues)** if you have a problem or bug to report
 - 💬 **[Start a discussion](https://github.com/lucasdillmann/nginx-ignition/discussions)** if you have a question or 
-  feature request**
+  feature request
 - 👋 **[Say hello on LinkedIn](https://linkedin.com/in/lucasdillmann)** if you want to share some feedback
 
 <br />
