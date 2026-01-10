@@ -2,6 +2,7 @@ package cfgfiles
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
@@ -58,7 +59,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 			%s
 			worker_processes %d;
 			pid "%snginx.pid";
-			error_log "%s";
+			error_log %s;
 			
 			events {
 				worker_connections %d;
@@ -81,6 +82,11 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				client_header_buffer_size %dk;
 				large_client_header_buffers %d %dk;
 				output_buffers %d %dk;
+				client_body_temp_path "%s" 1 2;
+				proxy_temp_path "%s" 1 2;
+				fastcgi_temp_path "%s" 1 2;
+				scgi_temp_path "%s" 1 2;
+				uwsgi_temp_path "%s" 1 2;
 
 				default_type %s;
 				include "%smime.types";
@@ -114,6 +120,11 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		cfg.Nginx.Buffers.LargeClientHeader.SizeKb,
 		cfg.Nginx.Buffers.Output.Amount,
 		cfg.Nginx.Buffers.Output.SizeKb,
+		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "client-body")),
+		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "proxy")),
+		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "fastcgi")),
+		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "scgi")),
+		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "uwsgi")),
 		cfg.Nginx.DefaultContentType,
 		ctx.paths.Config,
 		customCfg,

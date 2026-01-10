@@ -121,6 +121,7 @@ func (f *Facade) ReplaceConfigurationFiles(
 		Config: toNginxPath(filepath.Join(cleanPath, "config")),
 		Logs:   toNginxPath(filepath.Join(cleanPath, "logs")),
 		Cache:  toNginxPath(filepath.Join(cleanPath, "cache")),
+		Temp:   toNginxPath(filepath.Join(cleanPath, "temp")),
 	}
 
 	if err = f.createMissingFolders(paths); err != nil {
@@ -151,7 +152,7 @@ func (f *Facade) ReplaceConfigurationFiles(
 }
 
 func (f *Facade) createMissingFolders(paths *Paths) error {
-	for _, folderPath := range []string{paths.Config, paths.Logs, paths.Cache} {
+	for _, folderPath := range []string{paths.Config, paths.Logs, paths.Cache, paths.Temp} {
 		if _, err := os.Stat(folderPath); os.IsNotExist(err) {
 			if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
 				return fmt.Errorf("unable to create folder %s: %w", folderPath, err)

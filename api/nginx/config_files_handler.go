@@ -21,6 +21,7 @@ func (h configFilesHandler) handle(ctx *gin.Context) {
 			ConfigPath: normalizePathQuery(ctx, "configPath"),
 			LogPath:    normalizePathQuery(ctx, "logPath"),
 			CachePath:  normalizePathQuery(ctx, "cachePath"),
+			TempPath:   normalizePathQuery(ctx, "tempPath"),
 		},
 	)
 	if err != nil {

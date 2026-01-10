@@ -16,9 +16,10 @@ export default class ExportService {
         configPath: string,
         logPath: string,
         cachePath: string,
+        tempPath: string,
     ): Promise<void> {
         return this.nginxGateway
-            .configFiles(basePath, configPath, logPath, cachePath)
+            .configFiles(basePath, configPath, logPath, cachePath, tempPath)
             .then(requireSuccessRawResponse)
             .then(response => response.raw.blob())
             .then(blob => this.sendBlob(blob, "nginx-config.zip"))

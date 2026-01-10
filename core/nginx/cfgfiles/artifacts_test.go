@@ -21,6 +21,7 @@ func newPaths() *Paths {
 		Config: "/etc/nginx/",
 		Logs:   "/var/log/nginx/",
 		Cache:  "/var/cache/nginx/",
+		Temp:   "/tmp/nginx/",
 	}
 }
 

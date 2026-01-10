@@ -16,6 +16,7 @@ interface ExportPageState {
     nginxConfigPath: string
     nginxLogPath: string
     nginxCachePath: string
+    nginxTempPath: string
     nginxLoading: boolean
     databaseLoading: boolean
 }
@@ -34,6 +35,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
             nginxConfigPath: "",
             nginxLogPath: "",
             nginxCachePath: "",
+            nginxTempPath: "",
             databaseLoading: false,
         }
     }
@@ -64,11 +66,17 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
     }
 
     private nginxConfigurationFiles() {
-        const { nginxBasePath, nginxConfigPath, nginxLogPath, nginxCachePath } = this.state
+        const { nginxBasePath, nginxConfigPath, nginxLogPath, nginxCachePath, nginxTempPath } = this.state
 
         this.setState({ nginxLoading: true, nginxModalOpen: false }, () =>
             this.service
-                .downloadNginxConfigurationFiles(nginxBasePath, nginxConfigPath, nginxLogPath, nginxCachePath)
+                .downloadNginxConfigurationFiles(
+                    nginxBasePath,
+                    nginxConfigPath,
+                    nginxLogPath,
+                    nginxCachePath,
+                    nginxTempPath,
+                )
                 .catch(error => this.showErrorNotification(error))
                 .then(() => this.setState({ nginxLoading: false })),
         )
@@ -165,8 +173,15 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
     }
 
     private renderNginxConfigurationModal(): ReactNode {
-        const { nginxModalOpen, nginxBasePath, nginxConfigPath, nginxLogPath, nginxCachePath, nginxLoading } =
-            this.state
+        const {
+            nginxModalOpen,
+            nginxBasePath,
+            nginxConfigPath,
+            nginxLogPath,
+            nginxCachePath,
+            nginxTempPath,
+            nginxLoading,
+        } = this.state
         return (
             <Modal
                 afterClose={() => this.closeNginxModal()}
@@ -222,7 +237,16 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                         size="large"
                         onChange={event => this.setValue("nginxCachePath", event.target.value)}
                         required={false}
-                        placeholder="e.g. /tmp/nginx/cache"
+                        placeholder="e.g. /var/run/nginx/cache"
+                        autoFocus
+                    />
+                </Form.Item>
+                <Form.Item label="Path for the nginx temp files" initialValue={nginxTempPath} layout="vertical">
+                    <Input
+                        size="large"
+                        onChange={event => this.setValue("nginxTempPath", event.target.value)}
+                        required={false}
+                        placeholder="e.g. /tmp/nginx"
                         autoFocus
                     />
                 </Form.Item>

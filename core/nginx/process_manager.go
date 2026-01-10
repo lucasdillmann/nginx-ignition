@@ -58,15 +58,6 @@ func (m *processManager) sendStopSignal() error {
 	return nil
 }
 
-func (m *processManager) start() error {
-	if err := m.runCommand(); err != nil {
-		return err
-	}
-
-	log.Infof("nginx started")
-	return nil
-}
-
 func (m *processManager) currentPid() (int64, error) {
 	pidFile := filepath.Join(m.configPath, "nginx.pid")
 	data, err := os.ReadFile(pidFile)
@@ -90,16 +81,21 @@ func (m *processManager) currentPid() (int64, error) {
 }
 
 func (m *processManager) runCommand(extraArgs ...string) error {
-	args := append(
-		[]string{m.binaryPath, "-c", filepath.Join(m.configPath, "config", "nginx.conf")},
-		extraArgs...,
-	)
+	cmd := m.prepareCommand(extraArgs...)
 
-	cmd := exec.Command(args[0], args[1:]...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return errors.New(string(output))
 	}
 
 	return nil
+}
+
+func (m *processManager) prepareCommand(extraArgs ...string) *exec.Cmd {
+	args := append(
+		[]string{"-c", filepath.Join(m.configPath, "config", "nginx.conf")},
+		extraArgs...,
+	)
+
+	return exec.Command(m.binaryPath, args...)
 }
