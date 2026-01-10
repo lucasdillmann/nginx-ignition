@@ -3,14 +3,15 @@
 package configuration
 
 import (
+	"os"
 	"path/filepath"
 )
 
 func init() {
 	defaultValues["nginx-ignition.nginx.config-path"] =
-		filepath.Join("C:", "ProgramData", "nginx-ignition", "nginx")
+		filepath.Join(os.TempDir(), "nginx-ignition", "nginx")
 	defaultValues["nginx-ignition.vpn.config-path"] =
-		filepath.Join("C:", "ProgramData", "nginx-ignition", "vpn")
+		filepath.Join(os.TempDir(), "nginx-ignition", "vpn")
 	defaultValues["nginx-ignition.database.data-path"] =
-		filepath.Join("C:", "ProgramData", "nginx-ignition", "data")
+		filepath.Join(os.TempDir(), "nginx-ignition", "data")
 }

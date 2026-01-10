@@ -33,14 +33,14 @@ contents:
       mode: 0644
       owner: root
       group: root
-  - src: "dist/nginx-ignition.properties"
+  - src: "dist/linux/nginx-ignition.properties"
     dst: "/opt/nginx-ignition/nginx-ignition.properties"
     type: config|noreplace
     file_info:
       mode: 0644
       owner: root
       group: root
-  - src: "dist/nginx-ignition.service"
+  - src: "dist/linux/nginx-ignition.service"
     dst: "/etc/systemd/system/nginx-ignition.service"
     file_info:
       mode: 0644
@@ -54,8 +54,8 @@ contents:
       group: root
 
 scripts:
-  postinstall: "dist/postinstall.sh"
-  preremove: "dist/preremove.sh"
+  postinstall: "dist/linux/postinstall.sh"
+  preremove: "dist/linux/preremove.sh"
 
 overrides:
   deb:

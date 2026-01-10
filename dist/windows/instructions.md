@@ -29,12 +29,19 @@ but with uppercase names and dots/dashes replaced by underscores. For example, t
 property can be set using the `NGINX_IGNITION_NGINX_BINARY_PATH` environment variable.
 
 ### Running the application
-To start nginx ignition, open a Command Prompt or PowerShell as Administrator and run:
+To start nginx ignition manually, open a Command Prompt or PowerShell as Administrator and run:
 
 ```powershell
 cd C:\nginx-ignition
 .\nginx-ignition.exe
 ```
+
+### Installing as a Service
+A registry file (`nginx-ignition.reg`) is included to easily register nginx ignition as a Windows Service. 
+
+1.  Open the `nginx-ignition.reg` file with a text editor and verify the paths match your installation (default is `C:\nginx-ignition`).
+2.  Double-click `nginx-ignition.reg` to import it into the Registry.
+3.  Open `Services.msc`, find "Nginx Ignition", and start the service.
 
 ### Open firewall (if applicable)
 If you have Windows Firewall enabled, you'll need to allow traffic on port 8090:
