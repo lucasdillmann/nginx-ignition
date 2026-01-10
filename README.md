@@ -26,7 +26,7 @@
      authentication and source IP checks.
 - 📋 **Logging:** Detailed access and error logs for the server and each virtual host, with built-in automatic log 
      rotation.
-- 🚀 **Performance:** Built-in caching configuration to speed up your content delivery.
+- 🚀 **Performance:** Built-in nginx caching configuration to speed up your content delivery.
 - 🏗️ **Flexible execution:** nginx ignition can run nginx for you, or just generate the configuration files for you.
 
 <br />

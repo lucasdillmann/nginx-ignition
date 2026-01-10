@@ -13,4 +13,5 @@ func init() {
 	defaultValues["nginx-ignition.nginx.config-path"] = filepath.Join(basePath, "nginx")
 	defaultValues["nginx-ignition.vpn.config-path"] = filepath.Join(basePath, "vpn")
 	defaultValues["nginx-ignition.database.data-path"] = filepath.Join(basePath, "data")
+	defaultValues["nginx-ignition.nginx.binary-path"] = "nginx.exe"
 }

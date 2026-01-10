@@ -7,6 +7,7 @@ already includes:
 - frontend assets (UI)
 - database migrations
 - default configuration file, nginx-ignition.properties
+- a ready-to-use registry file, `nginx-ignition.reg`, capable of installing nginx ignition as a background service
 
 ## Requirements
 - Windows (amd64 or arm64)
@@ -39,9 +40,10 @@ cd C:\nginx-ignition
 ### Installing as a Service
 A registry file (`nginx-ignition.reg`) is included to easily register nginx ignition as a Windows Service. 
 
-1.  Open the `nginx-ignition.reg` file with a text editor and verify the paths match your installation (default is `C:\nginx-ignition`).
+1.  Open the `nginx-ignition.reg` file with a text editor and verify the paths match your installation (default is
+    `C:\nginx-ignition`).
 2.  Double-click `nginx-ignition.reg` to import it into the Registry.
-3.  Open `Services.msc`, find "Nginx Ignition", and start the service.
+3.  Open `Services.msc`, find "nginx ignition", and start the service. Optionally set it to start automatically on boot.
 
 ### Open firewall (if applicable)
 If you have Windows Firewall enabled, you'll need to allow traffic on port 8090:
