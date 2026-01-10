@@ -8,10 +8,9 @@ import (
 )
 
 func init() {
-	defaultValues["nginx-ignition.nginx.config-path"] =
-		filepath.Join(os.TempDir(), "nginx-ignition", "nginx")
-	defaultValues["nginx-ignition.vpn.config-path"] =
-		filepath.Join(os.TempDir(), "nginx-ignition", "vpn")
-	defaultValues["nginx-ignition.database.data-path"] =
-		filepath.Join(os.TempDir(), "nginx-ignition", "data")
+	basePath := filepath.Join(os.TempDir(), "nginx-ignition")
+
+	defaultValues["nginx-ignition.nginx.config-path"] = filepath.Join(basePath, "nginx")
+	defaultValues["nginx-ignition.vpn.config-path"] = filepath.Join(basePath, "vpn")
+	defaultValues["nginx-ignition.database.data-path"] = filepath.Join(basePath, "data")
 }

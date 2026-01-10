@@ -7,8 +7,8 @@ import (
 	"io"
 	"mime"
 	"net/http"
-	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -64,24 +64,22 @@ func (h staticFilesHandler) handle(ctx *gin.Context) {
 	ctx.Data(http.StatusOK, *fileType, fileContents)
 }
 
-func sanitizePath(path string) (*string, error) {
-	parsedPath, err := url.Parse(path)
-	if err != nil {
-		return nil, err
+func sanitizePath(p string) (*string, error) {
+	if p == "" {
+		return nil, errors.New("path cannot be empty")
 	}
 
-	cleanPath := filepath.Clean(parsedPath.Path)
-	if strings.Contains(cleanPath, "..") {
-		return nil, err
+	cleanPath := path.Clean(p)
+	if strings.Contains(cleanPath, "..") || strings.Contains(p, "..") {
+		return nil, errors.New("invalid path")
 	}
 
-	absPath, err := filepath.Abs(cleanPath)
-	if err != nil {
-		return nil, err
+	cleanPath = strings.TrimPrefix(cleanPath, "/")
+	if cleanPath == "" {
+		cleanPath = indexFile
 	}
 
-	absPath = strings.TrimPrefix(absPath, "/")
-	return &absPath, nil
+	return &cleanPath, nil
 }
 
 func (h staticFilesHandler) loadFile(path string) ([]byte, *string, error) {
