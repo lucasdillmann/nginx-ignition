@@ -91,6 +91,7 @@ Need to tune your setup? Explore our detailed guides:
 - 📜 **[Configuration properties](docs/configuration-properties.md):** Full list of available environment variables and configuration properties.
 - 🏥 **[Health checks](docs/health-checks.md):** Monitor your instance's status.
 - 🔍 **[Troubleshooting](docs/troubleshooting.md):** Common issues and recovery steps (like password resets).
+- 🔁 **[Migrating from v1 to v2](docs/migration-guide.md):** Steps to upgrade from nginx ignition v1 to v2.
 
 <br />
 
