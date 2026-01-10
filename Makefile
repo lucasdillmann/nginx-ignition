@@ -51,13 +51,11 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		--push .
 
 .build-distribution-files:
-	$(MAKE) .build-distribution-zip ARCH=amd64 OS=linux SERVICE_FILE_EXT=service BIN_EXT=
-	$(MAKE) .build-distribution-zip ARCH=arm64 OS=linux SERVICE_FILE_EXT=service BIN_EXT=
-	$(MAKE) .build-distribution-zip ARCH=arm64 OS=macos SERVICE_FILE_EXT=plist BIN_EXT=
-	$(MAKE) .build-distribution-zip ARCH=amd64 OS=windows SERVICE_FILE_EXT=md BIN_EXT=.exe
-	$(MAKE) .build-distribution-zip ARCH=arm64 OS=windows SERVICE_FILE_EXT=md BIN_EXT=.exe
-	$(MAKE) .build-distribution-packages ARCH=amd64 OS=linux
-	$(MAKE) .build-distribution-packages ARCH=arm64 OS=linux
+	$(MAKE) .build-distribution-zip ARCH=amd64 OS=linux SERVICE_FILE_EXT=service
+	$(MAKE) .build-distribution-zip ARCH=arm64 OS=linux SERVICE_FILE_EXT=service
+	$(MAKE) .build-distribution-zip ARCH=arm64 OS=macos SERVICE_FILE_EXT=plist
+	$(MAKE) .build-distribution-zip ARCH=amd64 OS=windows BIN_EXT=.exe SKIP_SERVICE_FILE=true
+	$(MAKE) .build-distribution-zip ARCH=arm64 OS=windows BIN_EXT=.exe SKIP_SERVICE_FILE=true
 
 .build-distribution-zip:
 	rm -Rf build/nginx-ignition.$(OS)-$(ARCH).zip
@@ -66,7 +64,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	cp -Rf database/common/migrations/scripts build/zip/migrations
 	cp -Rf dist/$(OS)-instructions.md build/zip/
 	cp -Rf dist/nginx-ignition.properties build/zip/
-	if [ "$(OS)" != "windows" ]; then cp dist/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/; fi
+	if [ "$(SKIP_SERVICE_FILE)" != "true" ]; then cp dist/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/; fi
 	cp build/$(OS)/$(ARCH)$(BIN_EXT) build/zip/nginx-ignition$(BIN_EXT)
 	cd build/zip && zip -q -r ../nginx-ignition-$(VERSION).$(OS)-$(ARCH).zip .
 	rm -Rf build/zip
