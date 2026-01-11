@@ -6,6 +6,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/common/runtime"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
@@ -95,7 +96,11 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 		return nil, fmt.Errorf("unknown binding protocol: %s", s.Binding.Protocol)
 	}
 
-	_, _ = instruction.WriteString(" reuseport;")
+	if runtime.IsWindows() {
+		_, _ = instruction.WriteString(";")
+	} else {
+		_, _ = instruction.WriteString(" reuseport;")
+	}
 
 	return ptr.Of(instruction.String()), nil
 }

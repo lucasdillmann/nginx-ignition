@@ -3,11 +3,11 @@ package cfgfiles
 import (
 	"fmt"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/common/runtime"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/stream"
@@ -55,7 +55,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 	}
 
 	userStatement := fmt.Sprintf("user %s %s;", cfg.Nginx.RuntimeUser, cfg.Nginx.RuntimeUser)
-	if runtime.GOOS == "windows" {
+	if runtime.IsWindows() {
 		userStatement = ""
 	}
 
