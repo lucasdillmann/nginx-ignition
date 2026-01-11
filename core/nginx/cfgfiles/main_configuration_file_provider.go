@@ -3,6 +3,7 @@ package cfgfiles
 import (
 	"fmt"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
@@ -53,9 +54,14 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		customCfg = fmt.Sprintf("\n%s\n", *cfg.Nginx.Custom)
 	}
 
+	userStatement := fmt.Sprintf("user %s %s;", cfg.Nginx.RuntimeUser, cfg.Nginx.RuntimeUser)
+	if runtime.GOOS == "windows" {
+		userStatement = ""
+	}
+
 	contents := fmt.Sprintf(
 		`
-			user %s %s;
+			%s
 			%s
 			worker_processes %d;
 			pid "%snginx.pid";
@@ -97,8 +103,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 			
 			%s
 		`,
-		cfg.Nginx.RuntimeUser,
-		cfg.Nginx.RuntimeUser,
+		userStatement,
 		moduleLines.String(),
 		cfg.Nginx.WorkerProcesses,
 		ctx.paths.Base,
