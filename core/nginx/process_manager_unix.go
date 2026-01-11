@@ -3,15 +3,19 @@
 package nginx
 
 import (
-	"os/exec"
-	"strconv"
+	"os"
+	"syscall"
 
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
 func (m *processManager) isPidAlive(pid int64) bool {
-	cmd := exec.Command("kill", "-0", strconv.FormatInt(pid, 10))
-	return cmd.Run() == nil
+	process, err := os.FindProcess(int(pid))
+	if err != nil {
+		return false
+	}
+
+	return process.Signal(syscall.Signal(0)) == nil
 }
 
 func (m *processManager) start() error {

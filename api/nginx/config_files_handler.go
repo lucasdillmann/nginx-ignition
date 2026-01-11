@@ -38,5 +38,5 @@ func normalizePathQuery(ctx *gin.Context, name string) string {
 		return ""
 	}
 
-	return filepath.ToSlash(filepath.Clean(value)) + "/"
+	return filepath.ToSlash(filepath.Clean(value)) + string(filepath.Separator)
 }
