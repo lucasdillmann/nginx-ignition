@@ -16,7 +16,7 @@ func Test_Validate(t *testing.T) {
 		dynamicField.Required = true
 
 		dynamicFields := []DynamicField{*dynamicField}
-		err := Validate(dynamicFields, map[string]any{})
+		err := Validate(t.Context(), dynamicFields, map[string]any{})
 
 		var consistencyErr *validation.ConsistencyError
 		assert.ErrorAs(t, err, &consistencyErr)
@@ -30,7 +30,7 @@ func Test_Validate(t *testing.T) {
 		dynamicField.Required = true
 
 		dynamicFields := []DynamicField{*dynamicField}
-		assert.Error(t, Validate(dynamicFields, map[string]any{"email": "invalid"}))
+		assert.Error(t, Validate(t.Context(), dynamicFields, map[string]any{"email": "invalid"}))
 	})
 
 	t.Run("reports invalid boolean", func(t *testing.T) {
@@ -40,7 +40,7 @@ func Test_Validate(t *testing.T) {
 		dynamicField.Required = true
 
 		dynamicFields := []DynamicField{*dynamicField}
-		assert.Error(t, Validate(dynamicFields, map[string]any{"bool": "not bool"}))
+		assert.Error(t, Validate(t.Context(), dynamicFields, map[string]any{"bool": "not bool"}))
 	})
 
 	t.Run("reports invalid enum", func(t *testing.T) {
@@ -53,6 +53,6 @@ func Test_Validate(t *testing.T) {
 		}
 
 		dynamicFields := []DynamicField{*dynamicField}
-		assert.Error(t, Validate(dynamicFields, map[string]any{"enum": "invalid"}))
+		assert.Error(t, Validate(t.Context(), dynamicFields, map[string]any{"enum": "invalid"}))
 	})
 }

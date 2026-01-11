@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
@@ -37,7 +38,7 @@ func Test_handler(t *testing.T) {
 				Violations: []validation.ConsistencyViolation{
 					{
 						Path:    "field1",
-						Message: "error1",
+						Message: i18n.Raw("error1"),
 					},
 				},
 			},

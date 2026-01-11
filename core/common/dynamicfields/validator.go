@@ -1,16 +1,18 @@
 package dynamicfields
 
 import (
+	"context"
 	"encoding/base64"
 	"net/mail"
 	"net/url"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
 func Validate(
+	ctx context.Context,
 	dynamicFields []DynamicField,
 	parameters map[string]any,
 ) *validation.ConsistencyError {
@@ -25,16 +27,16 @@ func Validate(
 		if !exists && field.Required && conditionSatisfied {
 			violations = append(violations, validation.ConsistencyViolation{
 				Path:    "parameters." + field.ID,
-				Message: "A value is required",
+				Message: i18n.M(ctx, "common.validation.value-missing"),
 			})
 		}
 
 		if exists && conditionSatisfied {
-			incompatibleMessage := resolveErrorMessage(field, value)
+			incompatibleMessage := resolveErrorMessage(ctx, field, value)
 			if incompatibleMessage != nil {
 				violations = append(violations, validation.ConsistencyViolation{
 					Path:    "parameters." + field.ID,
-					Message: *incompatibleMessage,
+					Message: incompatibleMessage,
 				})
 			}
 		}
@@ -67,33 +69,33 @@ func isConditionSatisfied(condition *Condition, parameters map[string]any) bool 
 	return exists && expectedValue == currentValue
 }
 
-func resolveErrorMessage(field DynamicField, value any) *string {
+func resolveErrorMessage(ctx context.Context, field DynamicField, value any) *i18n.Message {
 	switch field.Type {
 	case EnumType, SingleLineTextType, MultiLineTextType:
-		return resolveTextBasedFieldErrorMessage(field, value)
+		return resolveTextBasedFieldErrorMessage(ctx, field, value)
 
 	case FileType:
 		if !canDecodeFile(value) {
-			return ptr.Of("A file is expected, encoded in a Base64 String")
+			return i18n.M(ctx, "dynamicfield.validation.invalid-file-encoded-base64")
 		}
 
 	case BooleanType:
 		if _, ok := value.(bool); !ok {
-			return ptr.Of("A boolean value is expected")
+			return i18n.M(ctx, "dynamicfield.validation.invalid-boolean")
 		}
 
 	case EmailType:
 		if !isAnEmail(value) {
-			return ptr.Of("An email is expected")
+			return i18n.M(ctx, "dynamicfield.validation.invalid-email")
 		}
 
 	case URLType:
 		if !isAnURL(value) {
-			return ptr.Of("Not a valid URL")
+			return i18n.M(ctx, "common.validation.invalid-url")
 		}
 
 	default:
-		return ptr.Of("Unknown field type")
+		return i18n.M(ctx, "dynamicfield.validation.unknown-field-type")
 	}
 
 	return nil
@@ -126,24 +128,32 @@ func isAnURL(value any) bool {
 	return err == nil
 }
 
-func resolveTextBasedFieldErrorMessage(field DynamicField, value any) *string {
+func resolveTextBasedFieldErrorMessage(
+	ctx context.Context,
+	field DynamicField,
+	value any,
+) *i18n.Message {
 	castedValue, casted := value.(string)
 	if !casted {
-		return ptr.Of("A text value is expected")
+		return i18n.M(ctx, "dynamicfield.validation.invalid-text")
 	}
 
 	if field.Required && strings.TrimSpace(castedValue) == "" {
-		return ptr.Of("A not empty text value is required")
+		return i18n.M(ctx, "common.validation.cannot-be-empty")
 	}
 
 	if field.Type == EnumType {
-		return resolveEnumFieldErrorMessage(field, castedValue)
+		return resolveEnumFieldErrorMessage(ctx, field, castedValue)
 	}
 
 	return nil
 }
 
-func resolveEnumFieldErrorMessage(field DynamicField, value any) *string {
+func resolveEnumFieldErrorMessage(
+	ctx context.Context,
+	field DynamicField,
+	value any,
+) *i18n.Message {
 	enumOptions := make([]string, len(field.EnumOptions))
 	for index, option := range field.EnumOptions {
 		enumOptions[index] = option.ID
@@ -158,7 +168,8 @@ func resolveEnumFieldErrorMessage(field DynamicField, value any) *string {
 	}
 
 	if !valid {
-		return ptr.Of("Not a recognized option. Valid values: " + strings.Join(enumOptions, ", "))
+		return i18n.M(ctx, "dynamicfield.validation.not-recognized-option").
+			V("options", strings.Join(enumOptions, ", "))
 	}
 
 	return nil

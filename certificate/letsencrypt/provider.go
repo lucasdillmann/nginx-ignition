@@ -54,7 +54,7 @@ func (p *Provider) Issue(
 	ctx context.Context,
 	request *certificate.IssueRequest,
 ) (*certificate.Certificate, error) {
-	if err := commons.Validate(request, validationRules{p.DynamicFields()}); err != nil {
+	if err := commons.Validate(ctx, request, validationRules{p.DynamicFields()}); err != nil {
 		return nil, err
 	}
 

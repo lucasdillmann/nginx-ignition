@@ -4,6 +4,13 @@ import (
 	"context"
 )
 
+func Raw(message string) *Message {
+	return &Message{
+		raw: true,
+		Key: message,
+	}
+}
+
 func M(ctx context.Context, key string) *Message {
 	return &Message{
 		ctx:       ctx,

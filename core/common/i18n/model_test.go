@@ -12,18 +12,23 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/container"
 )
 
+func TestMain(m *testing.M) {
+	m.Run()
+	container.Shutdown()
+}
+
 func Test_Message(t *testing.T) {
 	t.Run("String", func(t *testing.T) {
 		t.Run("returns translated string when language is in context", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			container.Init(context.Background())
+			container.Init(t.Context())
 			commands := NewMockedCommands(ctrl)
 			container.Singleton[Commands](commands)
 
 			lang := language.BrazilianPortuguese
-			ctx := context.WithValue(context.Background(), ContextKey, lang)
+			ctx := context.WithValue(t.Context(), ContextKey, lang)
 			key := "test-key"
 			variables := map[string]any{"var": "val"}
 			message := Message{ctx: ctx, Key: key, Variables: variables}
@@ -41,7 +46,7 @@ func Test_Message(t *testing.T) {
 				ctrl := gomock.NewController(t)
 				defer ctrl.Finish()
 
-				container.Init(context.Background())
+				container.Init(t.Context())
 				commands := NewMockedCommands(ctrl)
 				container.Singleton[Commands](commands)
 
@@ -67,12 +72,12 @@ func Test_Message(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			container.Init(context.Background())
+			container.Init(t.Context())
 			commands := NewMockedCommands(ctrl)
 			container.Singleton[Commands](commands)
 
 			lang := language.AmericanEnglish
-			ctx := context.WithValue(context.Background(), ContextKey, lang)
+			ctx := context.WithValue(t.Context(), ContextKey, lang)
 			message := Message{ctx: ctx, Key: "key"}
 
 			commands.EXPECT().Translate(lang, "key", gomock.Any()).Return("translated")

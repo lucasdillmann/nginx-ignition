@@ -7,6 +7,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/user/passwordhash"
@@ -74,11 +75,17 @@ func (s *service) UpdatePassword(
 	}
 
 	if !passwordMatches {
-		return validation.SingleFieldError("currentPassword", "Not your current password")
+		return validation.SingleFieldError(
+			"currentPassword",
+			i18n.M(ctx, "user.validation.current-password-mismatch"),
+		)
 	}
 
 	if len(newPassword) < minimumPasswordLength {
-		return validation.SingleFieldError("newPassword", "Must have at least 8 characters")
+		return validation.SingleFieldError(
+			"newPassword",
+			i18n.M(ctx, "common.validation.too-short").V("min", minimumPasswordLength),
+		)
 	}
 
 	updatedHash, updatedSalt, err := hash.Hash(newPassword)

@@ -1,10 +1,12 @@
 package letsencrypt
 
 import (
+	"context"
 	"fmt"
 
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
@@ -17,6 +19,7 @@ func (r validationRules) DynamicFields() []dynamicfields.DynamicField {
 }
 
 func (r validationRules) Validate(
+	ctx context.Context,
 	request *certificate.IssueRequest,
 ) []validation.ConsistencyViolation {
 	output := make([]validation.ConsistencyViolation, 0)
@@ -25,7 +28,7 @@ func (r validationRules) Validate(
 	if !casted || !termsOfServiceAccepted {
 		output = append(output, validation.ConsistencyViolation{
 			Path:    fmt.Sprintf("parameters.%s", termsOfService.ID),
-			Message: "You must accept the Let's Encrypt's terms of service to be able to use its certificates",
+			Message: i18n.M(ctx, "letsencrypt.validation.tos-required"),
 		})
 	}
 

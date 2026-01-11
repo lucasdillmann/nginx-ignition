@@ -20,7 +20,7 @@ func newCommands(repository Repository) Commands {
 }
 
 func (s *service) Save(ctx context.Context, c *Cache) error {
-	if err := newValidator().validate(c); err != nil {
+	if err := newValidator().validate(ctx, c); err != nil {
 		return err
 	}
 

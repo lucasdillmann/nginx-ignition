@@ -12,6 +12,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/constants"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 	"dillmann.com.br/nginx-ignition/core/integration"
@@ -48,7 +49,6 @@ func newValidator(
 }
 
 const (
-	invalidValue = "Invalid value"
 	bindingsPath = "bindings"
 )
 
@@ -66,7 +66,7 @@ func (v *validator) validate(ctx context.Context, host *Host) error {
 		return err
 	}
 
-	v.validateDomainNames(host)
+	v.validateDomainNames(ctx, host)
 	if err := v.validateRoutes(ctx, host); err != nil {
 		return err
 	}
@@ -97,26 +97,29 @@ func (v *validator) validateDefaultFlag(ctx context.Context, host *Host) error {
 	}
 
 	if defaultServer != nil && host.ID != defaultServer.ID {
-		v.delegate.Add("defaultServer", "There's already another host marked as the default one")
+		v.delegate.Add("defaultServer", i18n.M(ctx, "host.validation.default-already-exists"))
 	}
 
 	if len(host.DomainNames) > 0 {
-		v.delegate.Add("domainNames", "Must be empty when the host is the default one")
+		v.delegate.Add(
+			"domainNames",
+			i18n.M(ctx, "host.validation.domain-must-be-empty-for-default"),
+		)
 	}
 
 	return nil
 }
 
-func (v *validator) validateDomainNames(host *Host) {
+func (v *validator) validateDomainNames(ctx context.Context, host *Host) {
 	if len(host.DomainNames) == 0 && !host.DefaultServer {
-		v.delegate.Add("domainNames", "At least one domain name must be informed")
+		v.delegate.Add("domainNames", i18n.M(ctx, "common.validation.at-least-one-required"))
 	}
 
 	for index, domainName := range host.DomainNames {
 		if !constants.TLDPattern.MatchString(domainName) {
 			v.delegate.Add(
 				fmt.Sprintf("domainNames[%d]", index),
-				"Value is not a valid domain name",
+				i18n.M(ctx, "common.validation.invalid-domain-name"),
 			)
 		}
 	}
@@ -124,12 +127,15 @@ func (v *validator) validateDomainNames(host *Host) {
 
 func (v *validator) validateBindings(ctx context.Context, host *Host) error {
 	if host.UseGlobalBindings && len(host.Bindings) > 0 {
-		v.delegate.Add(bindingsPath, "Must be empty when using global bindings")
+		v.delegate.Add(
+			bindingsPath,
+			i18n.M(ctx, "host.validation.bindings-must-be-empty-for-global"),
+		)
 	}
 
 	if !host.UseGlobalBindings {
 		if len(host.Bindings) == 0 {
-			v.delegate.Add(bindingsPath, "At least one binding must be informed")
+			v.delegate.Add(bindingsPath, i18n.M(ctx, "common.validation.at-least-one-required"))
 		}
 
 		for index, b := range host.Bindings {
@@ -150,7 +156,7 @@ func (v *validator) validateBindings(ctx context.Context, host *Host) error {
 
 func (v *validator) validateRoutes(ctx context.Context, host *Host) error {
 	if len(host.Routes) == 0 {
-		v.delegate.Add("routes", "At least one route must be informed")
+		v.delegate.Add("routes", i18n.M(ctx, "common.validation.at-least-one-required"))
 	}
 
 	priorityMap := make(map[int]int)
@@ -162,7 +168,7 @@ func (v *validator) validateRoutes(ctx context.Context, host *Host) error {
 		if count > 1 {
 			v.delegate.Add(
 				"routes",
-				fmt.Sprintf("Priority %d is duplicated in two or more routes", priority),
+				i18n.M(ctx, "host.validation.duplicated-route-priority").V("priority", priority),
 			)
 		}
 	}
@@ -186,7 +192,7 @@ func (v *validator) validateRoute(
 	if (*distinctPaths)[route.SourcePath] {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "sourcePath"),
-			"Source path was already used in another route",
+			i18n.M(ctx, "host.validation.duplicated-source-path"),
 		)
 	} else {
 		(*distinctPaths)[route.SourcePath] = true
@@ -210,70 +216,84 @@ func (v *validator) validateRoute(
 
 	switch route.Type {
 	case ProxyRouteType:
-		v.validateProxyRoute(route, index)
+		v.validateProxyRoute(ctx, route, index)
 	case RedirectRouteType:
-		v.validateRedirectRoute(route, index)
+		v.validateRedirectRoute(ctx, route, index)
 	case StaticResponseRouteType:
-		v.validateStaticResponseRoute(route, index)
+		v.validateStaticResponseRoute(ctx, route, index)
 	case IntegrationRouteType:
 		return v.validateIntegrationRoute(ctx, route, index)
 	case ExecuteCodeRouteType:
-		v.validateExecuteCodeRoute(route, index)
+		v.validateExecuteCodeRoute(ctx, route, index)
 	case StaticFilesRouteType:
-		v.validateStaticFilesRoute(route, index)
+		v.validateStaticFilesRoute(ctx, route, index)
 	default:
-		v.delegate.Add(buildIndexedRoutePath(index, "type"), invalidValue)
+		v.delegate.Add(
+			buildIndexedRoutePath(index, "type"),
+			i18n.M(ctx, "common.validation.invalid-value"),
+		)
 	}
 
 	return nil
 }
 
-func (v *validator) validateStaticFilesRoute(route *Route, index int) {
+func (v *validator) validateStaticFilesRoute(ctx context.Context, route *Route, index int) {
 	targetURIField := buildIndexedRoutePath(index, "targetUri")
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
-		v.delegate.Add(targetURIField, "Value is required when the type of the route is directory")
+		v.delegate.Add(
+			targetURIField,
+			i18n.M(ctx, "host.validation.target-uri-required").V("type", "directory"),
+		)
 		return
 	}
 
 	if !strings.HasPrefix(*route.TargetURI, "/") {
-		v.delegate.Add(targetURIField, "Value must start with a /")
+		v.delegate.Add(targetURIField, i18n.M(ctx, "common.validation.starts-with-slash-required"))
 	}
 }
 
-func (v *validator) validateProxyRoute(route *Route, index int) {
+func (v *validator) validateProxyRoute(ctx context.Context, route *Route, index int) {
 	targetURIField := buildIndexedRoutePath(index, "targetUri")
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
-		v.delegate.Add(targetURIField, "Value is required when the type of the route is proxy")
+		v.delegate.Add(
+			targetURIField,
+			i18n.M(ctx, "host.validation.target-uri-required").V("type", "proxy"),
+		)
 	} else {
 		if _, err := url.Parse(*route.TargetURI); err != nil {
-			v.delegate.Add(targetURIField, "Value is not a valid URL")
+			v.delegate.Add(targetURIField, i18n.M(ctx, "common.validation.invalid-url"))
 		}
 	}
 }
 
-func (v *validator) validateRedirectRoute(route *Route, index int) {
+func (v *validator) validateRedirectRoute(ctx context.Context, route *Route, index int) {
 	targetURIField := buildIndexedRoutePath(index, "targetUri")
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
-		v.delegate.Add(targetURIField, "Value is required when the type of the route is redirect")
+		v.delegate.Add(
+			targetURIField,
+			i18n.M(ctx, "host.validation.target-uri-required").V("type", "redirect"),
+		)
 	} else {
 		if _, err := url.ParseRequestURI(*route.TargetURI); err != nil {
-			v.delegate.Add(targetURIField, "Value is not a valid URI")
+			v.delegate.Add(targetURIField, i18n.M(ctx, "common.validation.invalid-uri"))
 		}
 	}
 
 	if route.RedirectCode == nil || !redirectStatusCodeRange.Contains(*route.RedirectCode) {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "redirectCode"),
-			buildOutOfRangeMessage(redirectStatusCodeRange),
+			i18n.M(ctx, "common.validation.between-values").
+				V("min", redirectStatusCodeRange.Min).
+				V("max", redirectStatusCodeRange.Max),
 		)
 	}
 }
 
-func (v *validator) validateStaticResponseRoute(route *Route, index int) {
+func (v *validator) validateStaticResponseRoute(ctx context.Context, route *Route, index int) {
 	if route.Response == nil {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "response"),
-			"A value is required when the type of the route is static response",
+			i18n.M(ctx, "host.validation.static-response-required"),
 		)
 		return
 	}
@@ -281,13 +301,15 @@ func (v *validator) validateStaticResponseRoute(route *Route, index int) {
 	if !statusCodeRange.Contains(route.Response.StatusCode) {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "response.statusCode"),
-			buildOutOfRangeMessage(statusCodeRange),
+			i18n.M(ctx, "common.validation.between-values").
+				V("min", statusCodeRange.Min).
+				V("max", statusCodeRange.Max),
 		)
 	}
 }
 
 func (v *validator) validateIntegrationRoute(ctx context.Context, route *Route, index int) error {
-	requiredMessage := "Value is required when the type of the route is integration"
+	requiredMessage := i18n.M(ctx, "host.validation.integration-required")
 
 	if route.Integration == nil {
 		v.delegate.Add(buildIndexedRoutePath(index, "integration"), requiredMessage)
@@ -310,8 +332,8 @@ func (v *validator) validateIntegrationRoute(ctx context.Context, route *Route, 
 	return nil
 }
 
-func (v *validator) validateExecuteCodeRoute(route *Route, index int) {
-	requiredMessage := "Value is required when the type of the route is source code"
+func (v *validator) validateExecuteCodeRoute(ctx context.Context, route *Route, index int) {
+	requiredMessage := i18n.M(ctx, "host.validation.source-code-required")
 
 	if route.SourceCode == nil {
 		v.delegate.Add(buildIndexedRoutePath(index, "sourceCode"), requiredMessage)
@@ -326,7 +348,7 @@ func (v *validator) validateExecuteCodeRoute(route *Route, index int) {
 		route.SourceCode.Language != LuaCodeLanguage {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "sourceCode.language"),
-			invalidValue,
+			i18n.M(ctx, "common.validation.invalid-value"),
 		)
 	}
 
@@ -334,7 +356,7 @@ func (v *validator) validateExecuteCodeRoute(route *Route, index int) {
 		(route.SourceCode.MainFunction == nil || strings.TrimSpace(*route.SourceCode.MainFunction) == "") {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "sourceCode.mainFunction"),
-			"Value is required when the language is JavaScript",
+			i18n.M(ctx, "host.validation.js-main-function-required"),
 		)
 	}
 }
@@ -348,11 +370,11 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 		namePath := basePath + ".name"
 
 		if strings.TrimSpace(value.Name) == "" {
-			v.delegate.Add(namePath, validation.ValueMissingMessage)
+			v.delegate.Add(namePath, i18n.M(ctx, "common.validation.value-missing"))
 		}
 
 		if value.VPNID == uuid.Nil {
-			v.delegate.Add(vpnIDPath, validation.ValueMissingMessage)
+			v.delegate.Add(vpnIDPath, i18n.M(ctx, "common.validation.value-missing"))
 			continue
 		}
 
@@ -361,7 +383,7 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 		}
 
 		if vpnNameUsage[value.VPNID][value.Name] > 0 {
-			v.delegate.Add(namePath, "Name was already used before")
+			v.delegate.Add(namePath, i18n.M(ctx, "host.validation.duplicated-vpn-name"))
 		}
 
 		vpnNameUsage[value.VPNID][value.Name]++
@@ -372,20 +394,16 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 		}
 
 		if vpnData == nil {
-			v.delegate.Add(vpnIDPath, "No VPN connection was found using the provided ID")
+			v.delegate.Add(vpnIDPath, i18n.M(ctx, "host.validation.vpn-not-found"))
 			continue
 		}
 
 		if !vpnData.Enabled {
-			v.delegate.Add(vpnIDPath, "Selected VPN is disabled")
+			v.delegate.Add(vpnIDPath, i18n.M(ctx, "host.validation.vpn-disabled"))
 		}
 	}
 
 	return nil
-}
-
-func buildOutOfRangeMessage(valueRange *valuerange.ValueRange) string {
-	return fmt.Sprintf("Value must be between %d and %d", valueRange.Min, valueRange.Max)
 }
 
 func buildIndexedRoutePath(index int, childPath string) string {
@@ -407,7 +425,7 @@ func (v *validator) validateAccessList(
 	}
 
 	if !exists {
-		v.delegate.Add(path, "No access list found with provided ID")
+		v.delegate.Add(path, i18n.M(ctx, "host.validation.access-list-not-found"))
 	}
 
 	return nil
@@ -424,7 +442,7 @@ func (v *validator) validateCache(ctx context.Context, cacheID *uuid.UUID, path 
 	}
 
 	if !exists {
-		v.delegate.Add(path, "No cache configuration found with provided ID")
+		v.delegate.Add(path, i18n.M(ctx, "host.validation.cache-not-found"))
 	}
 
 	return nil

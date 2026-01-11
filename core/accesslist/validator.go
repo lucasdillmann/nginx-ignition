@@ -1,10 +1,12 @@
 package accesslist
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"strings"
 
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
@@ -18,42 +20,43 @@ func newValidator() *validator {
 	}
 }
 
-func (v *validator) validate(accessList *AccessList) error {
+func (v *validator) validate(ctx context.Context, accessList *AccessList) error {
 	if strings.TrimSpace(accessList.Name) == "" {
-		v.delegate.Add("name", validation.ValueMissingMessage)
+		v.delegate.Add("name", i18n.M(ctx, "common.validation.value-missing"))
 	}
 
 	knownUsernames := map[string]bool{}
 	for index, value := range accessList.Credentials {
-		v.validateCredentials(index, &value, &knownUsernames)
+		v.validateCredentials(ctx, index, &value, &knownUsernames)
 	}
 
 	knownPriorities := map[int]bool{}
 	for index, value := range accessList.Entries {
-		v.validateEntry(index, &value, &knownPriorities)
+		v.validateEntry(ctx, index, &value, &knownPriorities)
 	}
 
 	return v.delegate.Result()
 }
 
 func (v *validator) validateEntry(
+	ctx context.Context,
 	index int,
 	entry *Entry,
 	knownUsernames *map[int]bool,
 ) {
 	path := fmt.Sprintf("entries[%d]", index)
 	if (*knownUsernames)[entry.Priority] {
-		v.delegate.Add(path+".priority", "Value is duplicated")
+		v.delegate.Add(path+".priority", i18n.M(ctx, "common.validation.duplicated-value"))
 	} else {
 		(*knownUsernames)[entry.Priority] = true
 	}
 
 	if entry.Priority < 0 {
-		v.delegate.Add(path+".priority", validation.ValueCannotBeZeroMessage)
+		v.delegate.Add(path+".priority", i18n.M(ctx, "common.validation.cannot-be-zero"))
 	}
 
 	if len(entry.SourceAddress) == 0 {
-		v.delegate.Add(path+".sourceAddress", validation.ValueMissingMessage)
+		v.delegate.Add(path+".sourceAddress", i18n.M(ctx, "common.validation.value-missing"))
 	}
 
 	for addressIndex, address := range entry.SourceAddress {
@@ -67,12 +70,13 @@ func (v *validator) validateEntry(
 
 		v.delegate.Add(
 			fmt.Sprintf("%s.sourceAddress[%d]", path, addressIndex),
-			"Address \""+address+"\" is not a valid IPv4 or IPv6 address or range",
+			i18n.M(ctx, "accesslist.validation.invalid-address").V("address", address),
 		)
 	}
 }
 
 func (v *validator) validateCredentials(
+	ctx context.Context,
 	index int,
 	credentials *Credentials,
 	knownUsernames *map[string]bool,
@@ -80,11 +84,11 @@ func (v *validator) validateCredentials(
 	path := fmt.Sprintf("credentials[%d].username", index)
 
 	if strings.TrimSpace(credentials.Username) == "" {
-		v.delegate.Add(path, validation.ValueMissingMessage)
+		v.delegate.Add(path, i18n.M(ctx, "common.validation.value-missing"))
 	}
 
 	if (*knownUsernames)[credentials.Username] {
-		v.delegate.Add(path, credentials.Username)
+		v.delegate.Add(path, i18n.Raw(credentials.Username))
 	} else {
 		(*knownUsernames)[credentials.Username] = true
 	}

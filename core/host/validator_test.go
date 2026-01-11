@@ -1,7 +1,6 @@
 package host
 
 import (
-	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -20,18 +19,16 @@ import (
 )
 
 func Test_validator(t *testing.T) {
-	ctx := context.Background()
-
 	t.Run("validate", func(t *testing.T) {
 		t.Run("valid host passes", func(t *testing.T) {
 			hostValidator, _, _, _, _, _, bindingCmds := setupValidator(t)
 			h := newHost()
 
 			bindingCmds.EXPECT().
-				Validate(ctx, "bindings", 0, &h.Bindings[0], gomock.Any()).
+				Validate(t.Context(), "bindings", 0, &h.Bindings[0], gomock.Any()).
 				Return(nil)
 
-			assert.NoError(t, hostValidator.validate(ctx, h))
+			assert.NoError(t, hostValidator.validate(t.Context(), h))
 		})
 
 		t.Run("validates simple host fields", func(t *testing.T) {
@@ -41,11 +38,11 @@ func Test_validator(t *testing.T) {
 				h.DomainNames = []string{"invalid_domain"}
 
 				bindingCmds.EXPECT().
-					Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+					Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 					Return(nil)
 
-				err := hostValidator.validate(ctx, h)
-				assertViolations(t, err, "Value is not a valid domain name")
+				err := hostValidator.validate(t.Context(), h)
+				assertViolations(t, err, "common.validation.invalid-domain-name")
 			})
 
 			t.Run("default server logic", func(t *testing.T) {
@@ -58,10 +55,10 @@ func Test_validator(t *testing.T) {
 
 					otherDefault := newHost()
 					otherDefault.ID = uuid.New()
-					repo.EXPECT().FindDefault(ctx).Return(otherDefault, nil)
+					repo.EXPECT().FindDefault(t.Context()).Return(otherDefault, nil)
 
-					err := hostValidator.validate(ctx, h)
-					assertViolations(t, err, "already another host marked as the default")
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "host.validation.default-already-exists")
 				})
 
 				t.Run("error if domains provided for default", func(t *testing.T) {
@@ -71,10 +68,10 @@ func Test_validator(t *testing.T) {
 					h.DomainNames = []string{"example.com"}
 					h.Bindings = nil
 
-					repo.EXPECT().FindDefault(ctx).Return(nil, nil)
+					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil)
 
-					err := hostValidator.validate(ctx, h)
-					assertViolations(t, err, "Must be empty when the host is the default one")
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "host.validation.domain-must-be-empty-for-default")
 				})
 			})
 		})
@@ -86,8 +83,8 @@ func Test_validator(t *testing.T) {
 				h.UseGlobalBindings = true
 				h.Bindings = []binding.Binding{{}}
 
-				err := hostValidator.validate(ctx, h)
-				assertViolations(t, err, "Must be empty when using global bindings")
+				err := hostValidator.validate(t.Context(), h)
+				assertViolations(t, err, "host.validation.bindings-must-be-empty-for-global")
 			})
 
 			t.Run("custom bindings required", func(t *testing.T) {
@@ -96,8 +93,8 @@ func Test_validator(t *testing.T) {
 				h.UseGlobalBindings = false
 				h.Bindings = nil
 
-				err := hostValidator.validate(ctx, h)
-				assertViolations(t, err, "At least one binding must be informed")
+				err := hostValidator.validate(t.Context(), h)
+				assertViolations(t, err, "common.validation.at-least-one-required")
 			})
 		})
 
@@ -108,11 +105,11 @@ func Test_validator(t *testing.T) {
 				h.Routes = nil
 
 				bindingCmds.EXPECT().
-					Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+					Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 					Return(nil)
 
-				err := hostValidator.validate(ctx, h)
-				assertViolations(t, err, "At least one route must be informed")
+				err := hostValidator.validate(t.Context(), h)
+				assertViolations(t, err, "common.validation.at-least-one-required")
 			})
 
 			t.Run("duplicates priority", func(t *testing.T) {
@@ -134,11 +131,11 @@ func Test_validator(t *testing.T) {
 				}
 
 				bindingCmds.EXPECT().
-					Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+					Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 					Return(nil)
 
-				err := hostValidator.validate(ctx, h)
-				assertViolations(t, err, "Priority 10 is duplicated")
+				err := hostValidator.validate(t.Context(), h)
+				assertViolations(t, err, "host.validation.duplicated-route-priority")
 			})
 
 			t.Run("duplicates source path", func(t *testing.T) {
@@ -160,11 +157,11 @@ func Test_validator(t *testing.T) {
 				}
 
 				bindingCmds.EXPECT().
-					Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+					Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 					Return(nil)
 
-				err := hostValidator.validate(ctx, h)
-				assertViolations(t, err, "Source path was already used")
+				err := hostValidator.validate(t.Context(), h)
+				assertViolations(t, err, "host.validation.duplicated-source-path")
 			})
 
 			t.Run("validates route types", func(t *testing.T) {
@@ -174,19 +171,19 @@ func Test_validator(t *testing.T) {
 					h.Routes[0].Type = ProxyRouteType
 					h.Routes[0].TargetURI = nil
 
-					repo.EXPECT().FindDefault(ctx).Return(nil, nil).AnyTimes()
+					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
 					bindingCmds.EXPECT().
-						Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
 
-					err := hostValidator.validate(ctx, h)
-					assertViolations(t, err, "Value is required")
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "host.validation.target-uri-required")
 
 					h.Routes[0].TargetURI = ptr.Of("http://invalid\nurl")
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
-					err = hostValidator.validate(ctx, h)
-					assertViolations(t, err, "Value is not a valid URL")
+					err = hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "common.validation.invalid-url")
 				})
 
 				t.Run("Redirect", func(t *testing.T) {
@@ -196,20 +193,20 @@ func Test_validator(t *testing.T) {
 					h.Routes[0].TargetURI = nil
 					h.Routes[0].RedirectCode = nil
 
-					repo.EXPECT().FindDefault(ctx).Return(nil, nil).AnyTimes()
+					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
 					bindingCmds.EXPECT().
-						Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
 
-					err := hostValidator.validate(ctx, h)
-					assertViolations(t, err, "Value is required")
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "host.validation.target-uri-required")
 
 					h.Routes[0].TargetURI = ptr.Of("http://example.com")
 					h.Routes[0].RedirectCode = ptr.Of(200)
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
-					err = hostValidator.validate(ctx, h)
-					assertViolations(t, err, "Value must be between 300 and 399")
+					err = hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "common.validation.between-values")
 				})
 
 				t.Run("StaticResponse", func(t *testing.T) {
@@ -218,19 +215,19 @@ func Test_validator(t *testing.T) {
 					h.Routes[0].Type = StaticResponseRouteType
 					h.Routes[0].Response = nil
 
-					repo.EXPECT().FindDefault(ctx).Return(nil, nil).AnyTimes()
+					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
 					bindingCmds.EXPECT().
-						Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
 
-					err := hostValidator.validate(ctx, h)
-					assertViolations(t, err, "A value is required")
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "host.validation.static-response-required")
 
 					h.Routes[0].Response = &RouteStaticResponse{StatusCode: 999}
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
-					err = hostValidator.validate(ctx, h)
-					assertViolations(t, err, "Value must be between 100 and 599")
+					err = hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "common.validation.between-values")
 				})
 
 				t.Run("Integration", func(t *testing.T) {
@@ -239,25 +236,27 @@ func Test_validator(t *testing.T) {
 					h.Routes[0].Type = IntegrationRouteType
 					h.Routes[0].Integration = nil
 
-					repo.EXPECT().FindDefault(ctx).Return(nil, nil).AnyTimes()
+					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
 					bindingCmds.EXPECT().
-						Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
 
-					err := hostValidator.validate(ctx, h)
-					assertViolations(t, err, "Value is required")
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "host.validation.integration-required")
 
 					integrationID := uuid.New()
 					h.Routes[0].Integration = &RouteIntegrationConfig{
 						IntegrationID: integrationID,
 						OptionID:      "",
 					}
-					integrationCmds.EXPECT().Exists(ctx, integrationID).Return(ptr.Of(false), nil)
+					integrationCmds.EXPECT().
+						Exists(t.Context(), integrationID).
+						Return(ptr.Of(false), nil)
 
 					hostValidator = newValidator(repo, integrationCmds, nil, nil, nil, bindingCmds)
-					err = hostValidator.validate(ctx, h)
-					assertViolations(t, err, "Value is required")
+					err = hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "host.validation.integration-required")
 				})
 
 				t.Run("ExecuteCode", func(t *testing.T) {
@@ -266,19 +265,24 @@ func Test_validator(t *testing.T) {
 					h.Routes[0].Type = ExecuteCodeRouteType
 					h.Routes[0].SourceCode = nil
 
-					repo.EXPECT().FindDefault(ctx).Return(nil, nil).AnyTimes()
+					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
 					bindingCmds.EXPECT().
-						Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
 
-					err := hostValidator.validate(ctx, h)
-					assertViolations(t, err, "Value is required")
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "host.validation.source-code-required")
 
 					h.Routes[0].SourceCode = &RouteSourceCode{Language: "INVALID", Contents: ""}
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
-					err = hostValidator.validate(ctx, h)
-					assertViolations(t, err, "Invalid value", "Value is required")
+					err = hostValidator.validate(t.Context(), h)
+					assertViolations(
+						t,
+						err,
+						"common.validation.invalid-value",
+						"host.validation.source-code-required",
+					)
 				})
 
 				t.Run("StaticFiles", func(t *testing.T) {
@@ -287,19 +291,19 @@ func Test_validator(t *testing.T) {
 					h.Routes[0].Type = StaticFilesRouteType
 					h.Routes[0].TargetURI = nil
 
-					repo.EXPECT().FindDefault(ctx).Return(nil, nil).AnyTimes()
+					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
 					bindingCmds.EXPECT().
-						Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
 
-					err := hostValidator.validate(ctx, h)
-					assertViolations(t, err, "Value is required")
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "host.validation.target-uri-required")
 
 					h.Routes[0].TargetURI = ptr.Of("invalid/path")
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
-					err = hostValidator.validate(ctx, h)
-					assertViolations(t, err, "Value must start with a /")
+					err = hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, "common.validation.starts-with-slash-required")
 				})
 			})
 		})
@@ -311,12 +315,12 @@ func Test_validator(t *testing.T) {
 			h.VPNs = []VPN{{VPNID: vpnID, Name: "vpn1"}}
 
 			bindingCmds.EXPECT().
-				Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+				Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil)
-			vpnCmds.EXPECT().Get(ctx, vpnID).Return(nil, nil)
+			vpnCmds.EXPECT().Get(t.Context(), vpnID).Return(nil, nil)
 
-			err := hostValidator.validate(ctx, h)
-			assertViolations(t, err, "No VPN connection was found")
+			err := hostValidator.validate(t.Context(), h)
+			assertViolations(t, err, "host.validation.vpn-not-found")
 		})
 
 		t.Run("validates ACLs", func(t *testing.T) {
@@ -326,12 +330,12 @@ func Test_validator(t *testing.T) {
 			h.AccessListID = &aclID
 
 			bindingCmds.EXPECT().
-				Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+				Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil)
-			aclCmds.EXPECT().Exists(ctx, aclID).Return(false, nil)
+			aclCmds.EXPECT().Exists(t.Context(), aclID).Return(false, nil)
 
-			err := hostValidator.validate(ctx, h)
-			assertViolations(t, err, "No access list found")
+			err := hostValidator.validate(t.Context(), h)
+			assertViolations(t, err, "host.validation.access-list-not-found")
 		})
 
 		t.Run("validates Cache", func(t *testing.T) {
@@ -341,12 +345,12 @@ func Test_validator(t *testing.T) {
 			h.CacheID = &cacheID
 
 			bindingCmds.EXPECT().
-				Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+				Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil)
-			cacheCmds.EXPECT().Exists(ctx, cacheID).Return(false, nil)
+			cacheCmds.EXPECT().Exists(t.Context(), cacheID).Return(false, nil)
 
-			err := hostValidator.validate(ctx, h)
-			assertViolations(t, err, "No cache configuration found")
+			err := hostValidator.validate(t.Context(), h)
+			assertViolations(t, err, "host.validation.cache-not-found")
 		})
 	})
 }
@@ -381,7 +385,7 @@ func assertViolations(t *testing.T, err error, msgs ...string) {
 			for _, msg := range msgs {
 				found := false
 				for _, v := range consistencyErr.Violations {
-					if strings.Contains(v.Message, msg) {
+					if strings.Contains(v.Message.Key, msg) {
 						found = true
 						break
 					}
@@ -389,7 +393,7 @@ func assertViolations(t *testing.T, err error, msgs ...string) {
 				if !found {
 					allMsgs := make([]string, 0, len(consistencyErr.Violations))
 					for _, v := range consistencyErr.Violations {
-						allMsgs = append(allMsgs, fmt.Sprintf("'%s'", v.Message))
+						allMsgs = append(allMsgs, fmt.Sprintf("'%s'", v.Message.String()))
 					}
 					assert.Failf(
 						t,

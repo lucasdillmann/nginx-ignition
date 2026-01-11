@@ -141,7 +141,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	done
 
 .backend-test: .backend-test-mocks
-	go test -v \
+	go test \
 		./api/... \
 		./application/... \
 		./certificate/commons/... \

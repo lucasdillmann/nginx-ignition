@@ -1,6 +1,8 @@
 package commons
 
 import (
+	"context"
+
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
@@ -8,5 +10,8 @@ import (
 
 type DomainRules interface {
 	DynamicFields() []dynamicfields.DynamicField
-	Validate(request *certificate.IssueRequest) []validation.ConsistencyViolation
+	Validate(
+		ctx context.Context,
+		request *certificate.IssueRequest,
+	) []validation.ConsistencyViolation
 }

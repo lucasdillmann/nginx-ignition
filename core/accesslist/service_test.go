@@ -20,14 +20,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			accessList := newAccessList()
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().Save(ctx, accessList).Return(nil)
+			repository.EXPECT().Save(t.Context(), accessList).Return(nil)
 
 			accessListService := newCommands(repository)
-			err := accessListService.Save(ctx, accessList)
+			err := accessListService.Save(t.Context(), accessList)
 
 			assert.NoError(t, err)
 		})

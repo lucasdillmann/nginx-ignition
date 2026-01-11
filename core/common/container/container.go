@@ -48,3 +48,11 @@ func Get[T any]() T {
 
 	return output
 }
+
+func Ready() bool {
+	return delegate != nil
+}
+
+func Shutdown() {
+	delegate = nil
+}

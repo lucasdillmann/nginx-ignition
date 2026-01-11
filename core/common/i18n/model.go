@@ -15,6 +15,7 @@ type Message struct {
 	ctx       context.Context
 	Variables map[string]any
 	Key       string
+	raw       bool
 }
 
 type Dictionary struct {
@@ -23,7 +24,14 @@ type Dictionary struct {
 }
 
 func (m Message) String() string {
+	if m.raw || m.ctx == nil || !container.Ready() {
+		return m.Key
+	}
+
 	commands := container.Get[Commands]()
+	if commands == nil {
+		return m.Key
+	}
 
 	var lang *language.Tag
 	if ctxLang, casted := m.ctx.Value(ContextKey).(language.Tag); casted {

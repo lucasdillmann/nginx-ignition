@@ -20,7 +20,7 @@ func newCommands(repository Repository) Commands {
 }
 
 func (s *service) Save(ctx context.Context, accessList *AccessList) error {
-	if err := newValidator().validate(accessList); err != nil {
+	if err := newValidator().validate(ctx, accessList); err != nil {
 		return err
 	}
 

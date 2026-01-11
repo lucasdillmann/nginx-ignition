@@ -36,10 +36,10 @@ func (p *Provider) Priority() int {
 }
 
 func (p *Provider) Issue(
-	_ context.Context,
+	ctx context.Context,
 	request *certificate.IssueRequest,
 ) (*certificate.Certificate, error) {
-	if err := commons.Validate(request, validationRules{}); err != nil {
+	if err := commons.Validate(ctx, request, validationRules{}); err != nil {
 		return nil, err
 	}
 

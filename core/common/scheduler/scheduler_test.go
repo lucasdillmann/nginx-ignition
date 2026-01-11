@@ -30,7 +30,7 @@ func Test_Scheduler(t *testing.T) {
 			sched := buildScheduler()
 			task := NewMockedTask(ctrl)
 
-			err := sched.Register(context.Background(), task)
+			err := sched.Register(t.Context(), task)
 
 			assert.NoError(t, err)
 			assert.Contains(t, sched.tickers, task)
@@ -61,7 +61,7 @@ func Test_Scheduler(t *testing.T) {
 			sched.stopped = true
 			task := NewMockedTask(gomock.NewController(t))
 
-			err := sched.Register(context.Background(), task)
+			err := sched.Register(t.Context(), task)
 
 			assert.Error(t, err)
 		})

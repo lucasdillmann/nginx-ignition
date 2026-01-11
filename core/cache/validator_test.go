@@ -12,7 +12,7 @@ func Test_validator(t *testing.T) {
 			cache := newCache()
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.NoError(t, err)
 		})
@@ -22,7 +22,7 @@ func Test_validator(t *testing.T) {
 			cache.Name = ""
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -32,7 +32,7 @@ func Test_validator(t *testing.T) {
 			cache.Name = "   "
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -42,7 +42,7 @@ func Test_validator(t *testing.T) {
 			cache.MinimumUsesBeforeCaching = 0
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -53,7 +53,7 @@ func Test_validator(t *testing.T) {
 			cache.InactiveSeconds = &zero
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -64,7 +64,7 @@ func Test_validator(t *testing.T) {
 			cache.MaximumSizeMB = &zero
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -75,7 +75,7 @@ func Test_validator(t *testing.T) {
 			cache.StoragePath = &relativePath
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -86,7 +86,7 @@ func Test_validator(t *testing.T) {
 			cache.StoragePath = &absolutePath
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.NoError(t, err)
 		})
@@ -98,7 +98,7 @@ func Test_validator(t *testing.T) {
 			}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -112,7 +112,7 @@ func Test_validator(t *testing.T) {
 			}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -128,7 +128,7 @@ func Test_validator(t *testing.T) {
 			}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -144,7 +144,7 @@ func Test_validator(t *testing.T) {
 			}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -160,7 +160,7 @@ func Test_validator(t *testing.T) {
 			}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.NoError(t, err)
 		})
@@ -170,7 +170,7 @@ func Test_validator(t *testing.T) {
 			cache.AllowedMethods = []Method{"INVALID"}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -180,7 +180,7 @@ func Test_validator(t *testing.T) {
 			cache.AllowedMethods = []Method{GetMethod, PostMethod, PutMethod}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.NoError(t, err)
 		})
@@ -190,7 +190,7 @@ func Test_validator(t *testing.T) {
 			cache.UseStale = []UseStaleOption{"INVALID"}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -200,7 +200,7 @@ func Test_validator(t *testing.T) {
 			cache.UseStale = []UseStaleOption{ErrorUseStale, TimeoutUseStale}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.NoError(t, err)
 		})
@@ -215,7 +215,7 @@ func Test_validator(t *testing.T) {
 			}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -230,7 +230,7 @@ func Test_validator(t *testing.T) {
 			}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -245,7 +245,7 @@ func Test_validator(t *testing.T) {
 			}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -260,7 +260,7 @@ func Test_validator(t *testing.T) {
 			}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -275,7 +275,7 @@ func Test_validator(t *testing.T) {
 			}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -290,7 +290,7 @@ func Test_validator(t *testing.T) {
 			}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -305,7 +305,7 @@ func Test_validator(t *testing.T) {
 			}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.NoError(t, err)
 		})
@@ -315,7 +315,7 @@ func Test_validator(t *testing.T) {
 			cache.FileExtensions = []string{""}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -325,7 +325,7 @@ func Test_validator(t *testing.T) {
 			cache.FileExtensions = []string{"   "}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -335,7 +335,7 @@ func Test_validator(t *testing.T) {
 			cache.FileExtensions = []string{".txt"}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -345,7 +345,7 @@ func Test_validator(t *testing.T) {
 			cache.FileExtensions = []string{"txt", "jpg"}
 			cacheValidator := newValidator()
 
-			err := cacheValidator.validate(cache)
+			err := cacheValidator.validate(t.Context(), cache)
 
 			assert.NoError(t, err)
 		})

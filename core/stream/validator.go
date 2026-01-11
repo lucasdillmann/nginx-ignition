@@ -6,12 +6,9 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/constants"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
-)
-
-const (
-	invalidValue = "Invalid value"
 )
 
 var portRange = valuerange.New(1, 65535)
@@ -26,156 +23,178 @@ func newValidator() *validator {
 	}
 }
 
-func (v *validator) validate(_ context.Context, stream *Stream) error {
+func (v *validator) validate(ctx context.Context, stream *Stream) error {
 	if stream == nil {
-		v.delegate.Add("", "Stream cannot be nil")
+		v.delegate.Add("", i18n.M(ctx, "stream.validation.nil-stream"))
 		return v.delegate.Result()
 	}
 
-	v.validateName(stream)
-	v.validateType(stream)
-	v.validateBinding(stream)
-	v.validateDefaultBackend(stream)
-	v.validateRoutes(stream)
-	v.validateFeatureSet(stream)
+	v.validateName(ctx, stream)
+	v.validateType(ctx, stream)
+	v.validateBinding(ctx, stream)
+	v.validateDefaultBackend(ctx, stream)
+	v.validateRoutes(ctx, stream)
+	v.validateFeatureSet(ctx, stream)
 
 	return v.delegate.Result()
 }
 
-func (v *validator) validateName(stream *Stream) {
+func (v *validator) validateName(ctx context.Context, stream *Stream) {
 	if strings.TrimSpace(stream.Name) == "" {
-		v.delegate.Add("name", "Name cannot be empty")
+		v.delegate.Add("name", i18n.M(ctx, "common.validation.cannot-be-empty"))
 	}
 }
 
-func (v *validator) validateType(stream *Stream) {
+func (v *validator) validateType(ctx context.Context, stream *Stream) {
 	switch stream.Type {
 	case SimpleType, SNIRouterType:
 	default:
-		v.delegate.Add("type", invalidValue)
+		v.delegate.Add("type", i18n.M(ctx, "common.validation.invalid-value"))
 	}
 }
 
-func (v *validator) validateBinding(stream *Stream) {
-	v.validateAddress("binding", stream.Binding)
+func (v *validator) validateBinding(ctx context.Context, stream *Stream) {
+	v.validateAddress(ctx, "binding", stream.Binding)
 }
 
-func (v *validator) validateDefaultBackend(stream *Stream) {
-	v.validateAddress("defaultBackend.target", stream.DefaultBackend.Address)
-	v.validateCircuitBreaker("defaultBackend.circuitBreaker", stream.DefaultBackend.CircuitBreaker)
+func (v *validator) validateDefaultBackend(ctx context.Context, stream *Stream) {
+	v.validateAddress(ctx, "defaultBackend.target", stream.DefaultBackend.Address)
+	v.validateCircuitBreaker(
+		ctx,
+		"defaultBackend.circuitBreaker",
+		stream.DefaultBackend.CircuitBreaker,
+	)
 }
 
-func (v *validator) validateRoutes(stream *Stream) {
+func (v *validator) validateRoutes(ctx context.Context, stream *Stream) {
 	if stream.Type != SNIRouterType {
 		return
 	}
 
 	if len(stream.Routes) == 0 {
-		v.delegate.Add("routes", "Must be informed and not be empty when type is SNI_ROUTER")
+		v.delegate.Add("routes", i18n.M(ctx, "stream.validation.routes-required-for-sni"))
 		return
 	}
 
 	for index := range stream.Routes {
-		v.validateRoute(&stream.Routes[index], index)
+		v.validateRoute(ctx, &stream.Routes[index], index)
 	}
 }
 
-func (v *validator) validateRoute(route *Route, index int) {
+func (v *validator) validateRoute(ctx context.Context, route *Route, index int) {
 	prefix := fmt.Sprintf("routes[%d]", index)
 
 	if len(route.DomainNames) == 0 {
-		v.delegate.Add(prefix+".domainNames", "Route must have at least one domain")
+		v.delegate.Add(prefix+".domainNames", i18n.M(ctx, "stream.validation.at-least-one-domain"))
 	} else {
 		for domainNameIndex, domainName := range route.DomainNames {
-			v.validateDomainName(domainName, prefix, domainNameIndex)
+			v.validateDomainName(ctx, domainName, prefix, domainNameIndex)
 		}
 	}
 
 	if len(route.Backends) == 0 {
-		v.delegate.Add(prefix+".backends", "Route must have at least one backend")
+		v.delegate.Add(prefix+".backends", i18n.M(ctx, "stream.validation.at-least-one-backend"))
 	} else {
 		for backendIndex, backend := range route.Backends {
-			v.validateBackend(&backend, prefix, backendIndex)
+			v.validateBackend(ctx, &backend, prefix, backendIndex)
 		}
 	}
 }
 
-func (v *validator) validateDomainName(domain, prefix string, index int) {
+func (v *validator) validateDomainName(ctx context.Context, domain, prefix string, index int) {
 	domainPrefix := fmt.Sprintf("%s.domainNames[%d]", prefix, index)
 
 	if domain == "" {
-		v.delegate.Add(domainPrefix, "Domain cannot be empty")
+		v.delegate.Add(domainPrefix, i18n.M(ctx, "common.validation.cannot-be-empty"))
 	} else if !constants.TLDPattern.MatchString(domain) {
-		v.delegate.Add(domainPrefix, "Not a valid DNS domain name")
+		v.delegate.Add(domainPrefix, i18n.M(ctx, "common.validation.invalid-domain-name"))
 	}
 }
 
-func (v *validator) validateBackend(backend *Backend, routePrefix string, index int) {
+func (v *validator) validateBackend(
+	ctx context.Context,
+	backend *Backend,
+	routePrefix string,
+	index int,
+) {
 	prefix := fmt.Sprintf("%s.backends[%d]", routePrefix, index)
 
-	v.validateAddress(prefix+".target", backend.Address)
-	v.validateCircuitBreaker(prefix+".circuitBreaker", backend.CircuitBreaker)
+	v.validateAddress(ctx, prefix+".target", backend.Address)
+	v.validateCircuitBreaker(ctx, prefix+".circuitBreaker", backend.CircuitBreaker)
 }
 
-func (v *validator) validateCircuitBreaker(prefix string, circuitBreaker *CircuitBreaker) {
+func (v *validator) validateCircuitBreaker(
+	ctx context.Context,
+	prefix string,
+	circuitBreaker *CircuitBreaker,
+) {
 	if circuitBreaker == nil {
 		return
 	}
 
 	if circuitBreaker.MaxFailures < 1 {
-		v.delegate.Add(prefix+".maxFailures", "Value must be greater than or equal to 1")
+		v.delegate.Add(prefix+".maxFailures", i18n.M(ctx, "common.validation.cannot-be-zero"))
 	}
 
 	if circuitBreaker.OpenSeconds < 0 {
-		v.delegate.Add(prefix+".openSeconds", "Value must be greater than or equal to 0")
+		v.delegate.Add(prefix+".openSeconds", i18n.M(ctx, "common.validation.cannot-be-negative"))
 	}
 }
 
-func (v *validator) validateAddress(fieldPrefix string, address Address) {
+func (v *validator) validateAddress(ctx context.Context, fieldPrefix string, address Address) {
 	switch address.Protocol {
 	case UDPProtocol, TCPProtocol, SocketProtocol:
 	default:
-		v.delegate.Add(fieldPrefix+".protocol", invalidValue)
+		v.delegate.Add(fieldPrefix+".protocol", i18n.M(ctx, "common.validation.invalid-value"))
 	}
 
-	v.validateAddressValue(fieldPrefix, address)
-	v.validateAddressProtocol(fieldPrefix, address)
+	v.validateAddressValue(ctx, fieldPrefix, address)
+	v.validateAddressProtocol(ctx, fieldPrefix, address)
 }
 
-func (v *validator) validateAddressProtocol(fieldPrefix string, address Address) {
+func (v *validator) validateAddressProtocol(
+	ctx context.Context,
+	fieldPrefix string,
+	address Address,
+) {
 	if address.Protocol != SocketProtocol {
 		if address.Port == nil {
 			v.delegate.Add(
 				fieldPrefix+".port",
-				"Port is required when using TCP or UDP protocol",
+				i18n.M(ctx, "stream.validation.port-required"),
 			)
 		} else if !portRange.Contains(*address.Port) {
 			v.delegate.Add(
 				fieldPrefix+".port",
-				fmt.Sprintf("Value must be between %d and %d", portRange.Min, portRange.Max),
+				i18n.M(ctx, "common.validation.between-values").
+					V("min", portRange.Min).
+					V("max", portRange.Max),
 			)
 		}
 	} else if address.Port != nil {
 		v.delegate.Add(
 			fieldPrefix+".port",
-			"Port should not be specified when using the Socket protocol",
+			i18n.M(ctx, "stream.validation.port-not-allowed-for-socket"),
 		)
 	}
 }
 
-func (v *validator) validateAddressValue(fieldPrefix string, address Address) {
+func (v *validator) validateAddressValue(ctx context.Context, fieldPrefix string, address Address) {
 	if strings.TrimSpace(address.Address) == "" {
-		v.delegate.Add(fieldPrefix+".address", "Address cannot be empty")
+		v.delegate.Add(fieldPrefix+".address", i18n.M(ctx, "common.validation.cannot-be-empty"))
 		return
 	}
 
 	if address.Protocol == SocketProtocol && !strings.HasPrefix(address.Address, "/") {
-		v.delegate.Add(fieldPrefix+".protocol", "Unix socket path must start with a /")
+		v.delegate.Add(
+			fieldPrefix+".protocol",
+			i18n.M(ctx, "common.validation.starts-with-slash-required"),
+		)
 		return
 	}
 }
 
-func (v *validator) validateFeatureSet(stream *Stream) {
+func (v *validator) validateFeatureSet(ctx context.Context, stream *Stream) {
 	if stream.Binding.Protocol == TCPProtocol {
 		return
 	}
@@ -183,21 +202,21 @@ func (v *validator) validateFeatureSet(stream *Stream) {
 	if stream.FeatureSet.TCPKeepAlive {
 		v.delegate.Add(
 			"featureSet.tcpKeepAlive",
-			"TCP Keep Alive can be enabled only when binding uses the TCP protocol",
+			i18n.M(ctx, "stream.validation.feature-only-for-tcp").V("feature", "TCP Keep Alive"),
 		)
 	}
 
 	if stream.FeatureSet.TCPNoDelay {
 		v.delegate.Add(
 			"featureSet.tcpNoDelay",
-			"TCP No Delay can be enabled only when binding uses the TCP protocol",
+			i18n.M(ctx, "stream.validation.feature-only-for-tcp").V("feature", "TCP No Delay"),
 		)
 	}
 
 	if stream.FeatureSet.TCPDeferred {
 		v.delegate.Add(
 			"featureSet.tcpDeferred",
-			"TCP Deferred can be enabled only when binding uses the TCP protocol",
+			i18n.M(ctx, "stream.validation.feature-only-for-tcp").V("feature", "TCP Deferred"),
 		)
 	}
 }

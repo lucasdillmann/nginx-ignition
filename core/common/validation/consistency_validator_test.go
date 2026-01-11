@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 func Test_ConsistencyValidator(t *testing.T) {
@@ -16,8 +18,10 @@ func Test_ConsistencyValidator(t *testing.T) {
 
 		t.Run("returns error with violations when added", func(t *testing.T) {
 			validator := NewValidator()
-			validator.Add("field1", "error message 1")
-			validator.Add("field2", "error message 2")
+			msg1 := i18n.Raw("error message 1")
+			msg2 := i18n.Raw("error message 2")
+			validator.Add("field1", msg1)
+			validator.Add("field2", msg2)
 
 			err := validator.Result()
 			assert.Error(t, err)
@@ -25,9 +29,9 @@ func Test_ConsistencyValidator(t *testing.T) {
 			assert.ErrorAs(t, err, &consistencyErr)
 			assert.Len(t, consistencyErr.Violations, 2)
 			assert.Equal(t, "field1", consistencyErr.Violations[0].Path)
-			assert.Equal(t, "error message 1", consistencyErr.Violations[0].Message)
+			assert.Equal(t, msg1, consistencyErr.Violations[0].Message)
 			assert.Equal(t, "field2", consistencyErr.Violations[1].Path)
-			assert.Equal(t, "error message 2", consistencyErr.Violations[1].Message)
+			assert.Equal(t, msg2, consistencyErr.Violations[1].Message)
 		})
 	})
 }
