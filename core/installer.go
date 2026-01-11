@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/core/common/scheduler"
 	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/i18n"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/nginx"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -20,6 +21,7 @@ import (
 
 func Install() error {
 	return container.Run(
+		i18n.Install,
 		broadcast.Install,
 		scheduler.Install,
 		settings.Install,
