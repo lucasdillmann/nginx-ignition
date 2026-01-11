@@ -30,8 +30,12 @@ func (s *service) GetMetadata(ctx context.Context) (*Metadata, error) {
 	fileModules := s.listModuleFiles(modulesPath)
 	modules := s.mergeModules(staticModules, dynamicModules, fileModules)
 
+	for index, module := range modules {
+		modules[index] = removeLineBreaks(module)
+	}
+
 	return &Metadata{
-		Version:       version,
+		Version:       removeLineBreaks(version),
 		BuildDetails:  buildDetails,
 		Modules:       modules,
 		tlsSniEnabled: tlsSniEnabled,
@@ -208,4 +212,8 @@ func (s *service) mergeModules(staticModules, dynamicModules, fileModules []stri
 	}
 
 	return modules
+}
+
+func removeLineBreaks(value string) string {
+	return strings.NewReplacer("\n", "", "\r", "").Replace(value)
 }
