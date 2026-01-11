@@ -3,7 +3,7 @@ package i18n
 import (
 	"golang.org/x/text/language"
 
-	"dillmann.com.br/nginx-ignition/core/i18n"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 func newDictionary() i18n.Dictionary {

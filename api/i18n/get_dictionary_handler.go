@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"dillmann.com.br/nginx-ignition/core/i18n"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 type getDictionaryHandler struct {

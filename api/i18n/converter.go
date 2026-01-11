@@ -1,7 +1,7 @@
 package i18n
 
 import (
-	"dillmann.com.br/nginx-ignition/core/i18n"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 func toDTO(dictionaries []i18n.Dictionary) []dictionaryDTO {

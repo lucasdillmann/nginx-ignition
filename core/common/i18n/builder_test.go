@@ -8,12 +8,12 @@ import (
 )
 
 func Test_builder(t *testing.T) {
-	t.Run("K", func(t *testing.T) {
+	t.Run("M", func(t *testing.T) {
 		t.Run("initializes message correctly", func(t *testing.T) {
 			ctx := context.Background()
 			key := "some-key"
 
-			message := K(ctx, key)
+			message := M(ctx, key)
 
 			assert.NotNil(t, message)
 			assert.Equal(t, ctx, message.ctx)
@@ -26,7 +26,7 @@ func Test_builder(t *testing.T) {
 	t.Run("V", func(t *testing.T) {
 		t.Run("adds variable and supports chaining", func(t *testing.T) {
 			ctx := context.Background()
-			message := K(ctx, "key").
+			message := M(ctx, "key").
 				V("var1", "value1").
 				V("var2", 123)
 
@@ -36,7 +36,7 @@ func Test_builder(t *testing.T) {
 
 		t.Run("updates existing variable", func(t *testing.T) {
 			ctx := context.Background()
-			message := K(ctx, "key").
+			message := M(ctx, "key").
 				V("var1", "value1").
 				V("var1", "value2")
 

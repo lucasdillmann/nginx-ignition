@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"dillmann.com.br/nginx-ignition/core/i18n"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 func init() {

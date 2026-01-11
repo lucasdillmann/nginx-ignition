@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/text/language"
 
-	"dillmann.com.br/nginx-ignition/core/i18n"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 func middleware(commands i18n.Commands) gin.HandlerFunc {

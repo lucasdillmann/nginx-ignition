@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-func K(ctx context.Context, key string) *Message {
+func M(ctx context.Context, key string) *Message {
 	return &Message{
 		ctx:       ctx,
 		Key:       key,
