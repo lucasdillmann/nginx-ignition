@@ -1,6 +1,6 @@
 Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\nginx-ignition]
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NginxIgnition]
 "DisplayName"="nginx ignition"
 "Description"="An user interface for the nginx web server aimed at developers and enthusiasts"
 "ImagePath"="\"C:\\nginx-ignition\\nginx-ignition.exe\" --config \"C:\\nginx-ignition\\nginx-ignition.properties\""
