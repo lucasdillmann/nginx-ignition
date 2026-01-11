@@ -156,7 +156,13 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
                 {...FormLayout.FormDefaults}
                 ref={this.formRef}
                 initialValues={formValues}
-                onValuesChange={(_, formValues) => this.setState({ formValues })}
+                onValuesChange={(changedValues, formValues) => {
+                    if (changedValues.driver !== undefined) {
+                        formValues = this.fillDynamicFieldsDefaultValues(formValues, this.state.availableDrivers)
+                        this.formRef.current?.setFieldsValue(formValues)
+                    }
+                    this.setState({ formValues })
+                }}
             >
                 <Form.Item
                     name="enabled"
@@ -213,7 +219,12 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
 
         if (this.integrationId === undefined) {
             return availableDriversPromise.then(availableDrivers => {
-                this.setState({ loading: false, availableDrivers })
+                const formValues = this.fillDynamicFieldsDefaultValues(
+                    { ...integrationRequestDefaults(), driver: availableDrivers[0]?.id },
+                    availableDrivers,
+                )
+                this.setState({ loading: false, availableDrivers, formValues })
+                this.formRef.current?.setFieldsValue(formValues)
                 this.updateShellConfig(true)
             })
         }

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/cache"
@@ -112,12 +111,17 @@ func (f *Facade) ReplaceConfigurationFiles(
 		return nil, nil, err
 	}
 
-	normalizedPath := strings.TrimRight(configDir, "/")
+	cleanPath := filepath.Clean(configDir)
+	toNginxPath := func(p string) string {
+		return filepath.ToSlash(p) + "/"
+	}
+
 	paths := &Paths{
-		Base:   normalizedPath + "/",
-		Config: normalizedPath + "/config/",
-		Logs:   normalizedPath + "/logs/",
-		Cache:  normalizedPath + "/cache/",
+		Base:   toNginxPath(cleanPath),
+		Config: toNginxPath(filepath.Join(cleanPath, "config")),
+		Logs:   toNginxPath(filepath.Join(cleanPath, "logs")),
+		Cache:  toNginxPath(filepath.Join(cleanPath, "cache")),
+		Temp:   toNginxPath(filepath.Join(cleanPath, "temp")),
 	}
 
 	if err = f.createMissingFolders(paths); err != nil {
@@ -148,7 +152,7 @@ func (f *Facade) ReplaceConfigurationFiles(
 }
 
 func (f *Facade) createMissingFolders(paths *Paths) error {
-	for _, folderPath := range []string{paths.Config, paths.Logs, paths.Cache} {
+	for _, folderPath := range []string{paths.Config, paths.Logs, paths.Cache, paths.Temp} {
 		if _, err := os.Stat(folderPath); os.IsNotExist(err) {
 			if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
 				return fmt.Errorf("unable to create folder %s: %w", folderPath, err)

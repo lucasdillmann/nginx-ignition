@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -95,7 +96,7 @@ func (d *Database) initSqlite() error {
 		return err
 	}
 
-	filePath := fmt.Sprintf("%s/nginx-ignition.db", folder)
+	filePath := filepath.Join(folder, "nginx-ignition.db")
 	log.Infof("Starting database connection to SQLite on %s", filePath)
 
 	if err = os.MkdirAll(folder, os.ModePerm); err != nil {

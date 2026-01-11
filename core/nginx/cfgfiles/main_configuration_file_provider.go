@@ -2,10 +2,12 @@ package cfgfiles
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/common/runtime"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/stream"
@@ -52,12 +54,17 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		customCfg = fmt.Sprintf("\n%s\n", *cfg.Nginx.Custom)
 	}
 
+	userStatement := fmt.Sprintf("user %s %s;", cfg.Nginx.RuntimeUser, cfg.Nginx.RuntimeUser)
+	if runtime.IsWindows() {
+		userStatement = ""
+	}
+
 	contents := fmt.Sprintf(
 		`
-			user %s %s;
+			%s
 			%s
 			worker_processes %d;
-			pid %snginx.pid;
+			pid "%snginx.pid";
 			error_log %s;
 			
 			events {
@@ -81,9 +88,14 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				client_header_buffer_size %dk;
 				large_client_header_buffers %d %dk;
 				output_buffers %d %dk;
+				client_body_temp_path "%s" 1 2;
+				proxy_temp_path "%s" 1 2;
+				fastcgi_temp_path "%s" 1 2;
+				scgi_temp_path "%s" 1 2;
+				uwsgi_temp_path "%s" 1 2;
 
 				default_type %s;
-				include %smime.types;
+				include "%smime.types";
 				%s
 				%s
 				%s
@@ -91,8 +103,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 			
 			%s
 		`,
-		cfg.Nginx.RuntimeUser,
-		cfg.Nginx.RuntimeUser,
+		userStatement,
 		moduleLines.String(),
 		cfg.Nginx.WorkerProcesses,
 		ctx.paths.Base,
@@ -114,6 +125,11 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		cfg.Nginx.Buffers.LargeClientHeader.SizeKb,
 		cfg.Nginx.Buffers.Output.Amount,
 		cfg.Nginx.Buffers.Output.SizeKb,
+		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "client-body")),
+		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "proxy")),
+		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "fastcgi")),
+		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "scgi")),
+		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "uwsgi")),
 		cfg.Nginx.DefaultContentType,
 		ctx.paths.Config,
 		customCfg,
@@ -136,7 +152,7 @@ func (p *mainConfigurationFileProvider) getErrorLogPath(
 ) string {
 	if logs.ServerLogsEnabled {
 		return fmt.Sprintf(
-			"%smain.log %s",
+			"\"%smain.log\" %s",
 			paths.Logs,
 			strings.ToLower(string(logs.ServerLogsLevel)),
 		)
@@ -148,7 +164,7 @@ func (p *mainConfigurationFileProvider) getErrorLogPath(
 func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []host.Host) string {
 	includes := make([]string, 0, len(hosts))
 	for _, h := range hosts {
-		includes = append(includes, fmt.Sprintf("include %shost-%s.conf;", paths.Config, h.ID))
+		includes = append(includes, fmt.Sprintf("include \"%shost-%s.conf\";", paths.Config, h.ID))
 	}
 
 	return strings.Join(includes, "\n")
@@ -161,7 +177,10 @@ func (p *mainConfigurationFileProvider) getStreamIncludes(
 	includes := make([]string, 0, len(streams))
 
 	for _, s := range streams {
-		includes = append(includes, fmt.Sprintf("include %sstream-%s.conf;", paths.Config, s.ID))
+		includes = append(
+			includes,
+			fmt.Sprintf("include \"%sstream-%s.conf\";", paths.Config, s.ID),
+		)
 	}
 
 	return strings.Join(includes, "\n")
@@ -195,7 +214,7 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(
 		}
 
 		results = append(results, fmt.Sprintf(
-			"proxy_cache_path %s levels=1:2 keys_zone=cache_%s:10m%s%s;",
+			"proxy_cache_path \"%s\" levels=1:2 keys_zone=cache_%s:10m%s%s;",
 			*storagePath,
 			cacheIDNoDashes,
 			inactive,

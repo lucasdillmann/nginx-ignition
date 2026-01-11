@@ -122,8 +122,8 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		listen = fmt.Sprintf(
 			`
 				listen %s:%d ssl %s;
-				ssl_certificate %scertificate-%s.pem;
-				ssl_certificate_key %scertificate-%s.pem;
+				ssl_certificate "%scertificate-%s.pem";
+				ssl_certificate_key "%scertificate-%s.pem";
 				ssl_protocols TLSv1.2 TLSv1.3;
 				ssl_ciphers HIGH:!aNULL:!MD5;
 			`,
@@ -168,13 +168,13 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		}`,
 		flag(
 			logs.AccessLogsEnabled,
-			fmt.Sprintf("%shost-%s.access.log", ctx.paths.Logs, h.ID),
+			fmt.Sprintf("\"%shost-%s.access.log\"", ctx.paths.Logs, h.ID),
 			"off",
 		),
 		flag(
 			logs.ErrorLogsEnabled,
 			fmt.Sprintf(
-				"%shost-%s.error.log %s",
+				"\"%shost-%s.error.log\" %s",
 				ctx.paths.Logs,
 				h.ID,
 				strings.ToLower(string(logs.ErrorLogsLevel)),
@@ -185,7 +185,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		cfg.Nginx.MaximumBodySizeMb,
 		flag(
 			h.AccessListID != nil,
-			fmt.Sprintf("include %saccess-list-%s.conf;", ctx.paths.Config, h.AccessListID),
+			fmt.Sprintf("include \"%saccess-list-%s.conf\";", ctx.paths.Config, h.AccessListID),
 			"",
 		),
 		p.buildCacheConfig(ctx.caches, h.CacheID),
@@ -239,13 +239,13 @@ func (p *hostConfigurationFileProvider) buildStaticFilesRoute(
 
 	indexFile := ""
 	if r.Settings.IndexFile != nil && strings.TrimSpace(*r.Settings.IndexFile) != "" {
-		indexFile = fmt.Sprintf("index %s;", *r.Settings.IndexFile)
+		indexFile = fmt.Sprintf("index \"%s\";", *r.Settings.IndexFile)
 	}
 
 	return fmt.Sprintf(
 		`location %s {
 			rewrite  ^%s(.*) /$1 break;
-			root %s;
+			root "%s";
 			%s
 			autoindex %s;
 			autoindex_exact_size off;
@@ -279,8 +279,8 @@ func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 		location @route_%d/static_payload {
 			internal;
 			%s
-			root %s;
-			try_files %s =%d;
+			root "%s";
+			try_files "%s" =%d;
 		}
 
 		location %s {
@@ -390,7 +390,7 @@ func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(
 	switch r.SourceCode.Language {
 	case host.JavascriptCodeLanguage:
 		headerBlock = fmt.Sprintf(
-			"js_import route_%d from %shost-%s-route-%d.js;",
+			"js_import route_%d from \"%shost-%s-route-%d.js\";",
 			r.Priority,
 			ctx.paths.Config,
 			h.ID,
@@ -484,7 +484,7 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(
 	if r.AccessListID != nil {
 		_, _ = fmt.Fprintf(
 			&builder,
-			"\ninclude %saccess-list-%s.conf;",
+			"\ninclude \"%saccess-list-%s.conf\";",
 			ctx.paths.Config,
 			*r.AccessListID,
 		)

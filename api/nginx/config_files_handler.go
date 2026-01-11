@@ -2,7 +2,7 @@ package nginx
 
 import (
 	"net/http"
-	"strings"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 
@@ -21,6 +21,7 @@ func (h configFilesHandler) handle(ctx *gin.Context) {
 			ConfigPath: normalizePathQuery(ctx, "configPath"),
 			LogPath:    normalizePathQuery(ctx, "logPath"),
 			CachePath:  normalizePathQuery(ctx, "cachePath"),
+			TempPath:   normalizePathQuery(ctx, "tempPath"),
 		},
 	)
 	if err != nil {
@@ -37,5 +38,5 @@ func normalizePathQuery(ctx *gin.Context, name string) string {
 		return ""
 	}
 
-	return strings.TrimRight(value, "/") + "/"
+	return filepath.ToSlash(filepath.Clean(value)) + string(filepath.Separator)
 }

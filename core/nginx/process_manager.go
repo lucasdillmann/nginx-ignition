@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -57,17 +58,8 @@ func (m *processManager) sendStopSignal() error {
 	return nil
 }
 
-func (m *processManager) start() error {
-	if err := m.runCommand(); err != nil {
-		return err
-	}
-
-	log.Infof("nginx started")
-	return nil
-}
-
 func (m *processManager) currentPid() (int64, error) {
-	pidFile := m.configPath + "/nginx.pid"
+	pidFile := filepath.Join(m.configPath, "nginx.pid")
 	data, err := os.ReadFile(pidFile)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -88,20 +80,25 @@ func (m *processManager) currentPid() (int64, error) {
 	return pid, nil
 }
 
-func (m *processManager) isPidAlive(pid int64) bool {
-	cmd := exec.Command("kill", "-0", strconv.FormatInt(pid, 10))
-	err := cmd.Run()
-	return err == nil
-}
-
 func (m *processManager) runCommand(extraArgs ...string) error {
-	args := append([]string{m.binaryPath, "-c", m.configPath + "/config/nginx.conf"}, extraArgs...)
+	cmd := m.prepareCommand(extraArgs...)
 
-	cmd := exec.Command(args[0], args[1:]...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return errors.New(string(output))
 	}
 
 	return nil
+}
+
+func (m *processManager) prepareCommand(extraArgs ...string) *exec.Cmd {
+	args := append(
+		[]string{
+			"-e", filepath.Join(m.configPath, "logs", "main.log"),
+			"-c", filepath.Join(m.configPath, "config", "nginx.conf"),
+		},
+		extraArgs...,
+	)
+
+	return exec.Command(m.binaryPath, args...)
 }

@@ -98,7 +98,7 @@ func Test_accessListFileProvider(t *testing.T) {
 			assert.Contains(
 				t,
 				file.Contents,
-				fmt.Sprintf("auth_basic_user_file /etc/nginx/access-list-%s.htpasswd;", id),
+				fmt.Sprintf("auth_basic_user_file \"/etc/nginx/access-list-%s.htpasswd\";", id),
 			)
 		})
 

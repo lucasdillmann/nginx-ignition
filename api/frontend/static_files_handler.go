@@ -7,8 +7,8 @@ import (
 	"io"
 	"mime"
 	"net/http"
-	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -27,15 +27,15 @@ type staticFilesHandler struct {
 }
 
 func (h staticFilesHandler) handle(ctx *gin.Context) {
-	path := ctx.Request.URL.Path
-	if h.basePath == nil || strings.HasPrefix(path, "/api/") {
+	urlPath := ctx.Request.URL.Path
+	if h.basePath == nil || strings.HasPrefix(urlPath, "/api/") {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "Not found"})
 		return
 	}
 
-	sanitizedPath, err := sanitizePath(path)
+	sanitizedPath, err := sanitizePath(urlPath)
 	if err != nil {
-		log.Warnf("Request rejected. Possible path traversal attempt: %s", path)
+		log.Warnf("Request rejected. Possible path traversal attempt: %s", urlPath)
 		ctx.Status(http.StatusBadRequest)
 		return
 	}
@@ -64,32 +64,30 @@ func (h staticFilesHandler) handle(ctx *gin.Context) {
 	ctx.Data(http.StatusOK, *fileType, fileContents)
 }
 
-func sanitizePath(path string) (*string, error) {
-	parsedPath, err := url.Parse(path)
-	if err != nil {
-		return nil, err
+func sanitizePath(p string) (*string, error) {
+	if p == "" {
+		return nil, errors.New("path cannot be empty")
 	}
 
-	cleanPath := filepath.Clean(parsedPath.Path)
-	if strings.Contains(cleanPath, "..") {
-		return nil, err
+	cleanPath := path.Clean(p)
+	if strings.Contains(cleanPath, "..") || strings.Contains(p, "..") {
+		return nil, errors.New("invalid path")
 	}
 
-	absPath, err := filepath.Abs(cleanPath)
-	if err != nil {
-		return nil, err
+	cleanPath = strings.TrimPrefix(cleanPath, "/")
+	if cleanPath == "" {
+		cleanPath = indexFile
 	}
 
-	absPath = strings.TrimPrefix(absPath, "/")
-	return &absPath, nil
+	return &cleanPath, nil
 }
 
-func (h staticFilesHandler) loadFile(path string) ([]byte, *string, error) {
+func (h staticFilesHandler) loadFile(filePath string) ([]byte, *string, error) {
 	baseDir := os.DirFS(*h.basePath)
-	file, err := baseDir.Open(path)
+	file, err := baseDir.Open(filePath)
 	if errors.Is(err, os.ErrNotExist) || errors.Is(err, os.ErrInvalid) {
-		path = indexFile
-		file, err = baseDir.Open(path)
+		filePath = indexFile
+		file, err = baseDir.Open(filePath)
 	}
 
 	if err != nil {
@@ -99,7 +97,7 @@ func (h staticFilesHandler) loadFile(path string) ([]byte, *string, error) {
 	//nolint:errcheck
 	defer file.Close()
 
-	ext := filepath.Ext(path)
+	ext := filepath.Ext(filePath)
 	mimeType := mime.TypeByExtension(ext)
 	if mimeType == "" {
 		mimeType = fallbackMimeType

@@ -68,7 +68,7 @@ func (c *Configuration) Get(key string) (string, error) {
 		return value, nil
 	}
 
-	value = defaultValues()[fullKey]
+	value = defaultValues[fullKey]
 	if value != "" {
 		return value, nil
 	}

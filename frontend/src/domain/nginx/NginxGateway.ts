@@ -39,7 +39,8 @@ export default class NginxGateway {
         configPath: string,
         logPath: string,
         cachePath: string,
+        tempPath: string,
     ): Promise<ApiResponse<any>> {
-        return this.client.get("/config", undefined, { basePath, configPath, logPath, cachePath }, true)
+        return this.client.get("/config", undefined, { basePath, configPath, logPath, cachePath, tempPath }, true)
     }
 }

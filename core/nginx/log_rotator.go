@@ -42,7 +42,7 @@ func (r *logRotator) rotate(ctx context.Context) error {
 		return err
 	}
 
-	normalizedPath := strings.TrimRight(basePath, "/") + "/logs"
+	normalizedPath := filepath.Join(basePath, "logs")
 
 	cfg, err := r.settingsCommands.Get(ctx)
 	if err != nil {

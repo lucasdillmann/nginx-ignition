@@ -37,6 +37,7 @@ type Paths struct {
 	Config string
 	Logs   string
 	Cache  string
+	Temp   string
 }
 
 type fileProvider interface {

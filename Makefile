@@ -31,9 +31,14 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	cd frontend/ && npm run build
 
 .backend-build: .backend-prerequisites
-	GOARCH=amd64 CGO_ENABLED="0" GOOS="linux" go build -ldflags "$(LDFLAGS)" -o build/linux/amd64 application/main.go
-	GOARCH=arm64 CGO_ENABLED="0" GOOS="linux" go build -ldflags "$(LDFLAGS)" -o build/linux/arm64 application/main.go
-	GOARCH=arm64 CGO_ENABLED="0" GOOS="darwin" go build -ldflags "$(LDFLAGS)" -o build/macos/arm64 application/main.go
+	$(MAKE) .backend-build-file OS=linux ARCH=amd64 DIR=linux
+	$(MAKE) .backend-build-file OS=linux ARCH=arm64 DIR=linux
+	$(MAKE) .backend-build-file OS=darwin ARCH=arm64 DIR=macos
+	$(MAKE) .backend-build-file OS=windows ARCH=amd64 DIR=windows EXT=.exe
+	$(MAKE) .backend-build-file OS=windows ARCH=arm64 DIR=windows EXT=.exe
+
+.backend-build-file:
+	GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o build/$(DIR)/$(ARCH)$(EXT) application/main.go
 
 .build-release-docker-image:
 	docker buildx build \
@@ -52,18 +57,18 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	$(MAKE) .build-distribution-zip ARCH=amd64 OS=linux SERVICE_FILE_EXT=service
 	$(MAKE) .build-distribution-zip ARCH=arm64 OS=linux SERVICE_FILE_EXT=service
 	$(MAKE) .build-distribution-zip ARCH=arm64 OS=macos SERVICE_FILE_EXT=plist
-	$(MAKE) .build-distribution-packages ARCH=amd64 OS=linux
-	$(MAKE) .build-distribution-packages ARCH=arm64 OS=linux
+	$(MAKE) .build-distribution-zip ARCH=amd64 OS=windows BIN_EXT=.exe
+	$(MAKE) .build-distribution-zip ARCH=arm64 OS=windows BIN_EXT=.exe
 
 .build-distribution-zip:
 	rm -Rf build/nginx-ignition.$(OS)-$(ARCH).zip
 	mkdir -p build/zip
 	cp -Rf frontend/build build/zip/frontend
 	cp -Rf database/common/migrations/scripts build/zip/migrations
-	cp -Rf dist/$(OS)-instructions.md build/zip/
-	cp -Rf dist/nginx-ignition.properties build/zip/
-	cp dist/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/
-	cp build/$(OS)/$(ARCH) build/zip/nginx-ignition
+	cp dist/$(OS)/instructions.md build/zip/instructions.md
+	cp dist/$(OS)/nginx-ignition.properties build/zip/
+	[ -z "$(SERVICE_FILE_EXT)" ] || cp dist/$(OS)/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/
+	cp build/$(OS)/$(ARCH)$(BIN_EXT) build/zip/nginx-ignition$(BIN_EXT)
 	cd build/zip && zip -q -r ../nginx-ignition-$(VERSION).$(OS)-$(ARCH).zip .
 	rm -Rf build/zip
 
@@ -72,7 +77,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	export OS=$(OS); \
 	export ARCH=$(ARCH); \
 	export PACKAGE_ARCH=$(ARCH); \
-	envsubst < dist/nfpm.yaml > build/nfpm.yaml
+	envsubst < dist/linux/nfpm.yaml > build/nfpm.yaml
 	nfpm package --config build/nfpm.yaml --packager deb --target build/nginx-ignition-$(VERSION).$(ARCH).deb
 	nfpm package --config build/nfpm.yaml --packager rpm --target build/nginx-ignition-$(VERSION).$(ARCH).rpm
 	nfpm package --config build/nfpm.yaml --packager apk --target build/nginx-ignition-$(VERSION).$(ARCH).apk

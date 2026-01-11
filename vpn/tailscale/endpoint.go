@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httputil"
+	"path/filepath"
 	"time"
 
 	"tailscale.com/client/local"
@@ -47,7 +48,7 @@ func (e *tailnetEndpoint) start(ctx context.Context) error {
 	e.server.Ephemeral = true
 	e.server.UserLogf = noOpLogger
 	e.server.Logf = noOpLogger
-	e.server.Dir = fmt.Sprintf("%s/tsnet/%s", e.configDir, e.endpoint.SourceName())
+	e.server.Dir = filepath.Join(e.configDir, "tsnet", e.endpoint.SourceName())
 
 	if _, err := e.server.Up(ctx); err != nil {
 		return err

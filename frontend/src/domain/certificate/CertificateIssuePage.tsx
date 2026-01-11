@@ -3,7 +3,7 @@ import ValidationResult from "../../core/validation/ValidationResult"
 import CertificateService from "./CertificateService"
 import AvailableProviderResponse from "./model/AvailableProviderResponse"
 import Preloader from "../../core/components/preloader/Preloader"
-import { Form, Select } from "antd"
+import { Form, FormInstance, Select } from "antd"
 import If from "../../core/components/flowcontrol/If"
 import FormLayout from "../../core/components/form/FormLayout"
 import DynamicInput from "../../core/components/dynamicfield/DynamicInput"
@@ -34,11 +34,13 @@ interface CertificateIssuePageState {
 export default class CertificateIssuePage extends React.Component<unknown, CertificateIssuePageState> {
     private readonly service: CertificateService
     private readonly saveModal: ModalPreloader
+    private readonly formRef: React.RefObject<FormInstance | null>
 
     constructor(props: any) {
         super(props)
         this.service = new CertificateService()
         this.saveModal = new ModalPreloader()
+        this.formRef = React.createRef()
         this.state = {
             loading: true,
             validationResult: new ValidationResult(),
@@ -167,7 +169,14 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
         return (
             <Form<IssueCertificateRequest>
                 {...FormLayout.FormDefaults}
-                onValuesChange={(_, formValues) => this.setState({ formValues })}
+                ref={this.formRef}
+                onValuesChange={(changedValues, formValues) => {
+                    if (changedValues.providerId !== undefined) {
+                        formValues = this.fillDynamicFieldsDefaultValues(this.state.availableProviders, formValues)
+                        this.formRef.current?.setFieldsValue(formValues)
+                    }
+                    this.setState({ formValues })
+                }}
                 initialValues={formValues}
             >
                 <Form.Item
@@ -204,15 +213,17 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
             .availableProviders()
             .then(providers => {
                 const sortedProviders = providers.sort((left, right) => (left.priority > right.priority ? 1 : -1))
+                const formValues = this.fillDynamicFieldsDefaultValues(sortedProviders, {
+                    providerId: providers[0].id,
+                    domainNames: [""],
+                    parameters: {},
+                })
                 this.setState({
                     availableProviders: sortedProviders,
                     loading: false,
-                    formValues: this.fillDynamicFieldsDefaultValues(sortedProviders, {
-                        providerId: providers[0].id,
-                        domainNames: [""],
-                        parameters: {},
-                    }),
+                    formValues,
                 })
+                this.formRef.current?.setFieldsValue(formValues)
 
                 this.updateShellConfig(true)
             })

@@ -11,6 +11,7 @@ type GetConfigFilesInput struct {
 	ConfigPath string
 	LogPath    string
 	CachePath  string
+	TempPath   string
 }
 
 type Commands interface {

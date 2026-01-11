@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/JCoupalK/go-pgdump"
 
@@ -51,7 +52,7 @@ func (r *repository) getSqliteBackup() (*backup.Backup, error) {
 		return nil, err
 	}
 
-	filePath := fmt.Sprintf("%s/%s", folder, fileName)
+	filePath := filepath.Join(folder, fileName)
 	contents, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err

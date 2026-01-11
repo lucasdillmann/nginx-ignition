@@ -164,6 +164,7 @@ func (s *service) GetConfigFiles(
 		Config: input.ConfigPath,
 		Logs:   input.LogPath,
 		Cache:  input.CachePath,
+		Temp:   input.TempPath,
 	}
 
 	supportedFeatures, err := s.resolveSupportedFeatures(ctx)

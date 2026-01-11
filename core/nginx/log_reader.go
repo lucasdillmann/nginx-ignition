@@ -5,7 +5,6 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 )
@@ -26,7 +25,7 @@ func (r *logReader) read(_ context.Context, fileName string, tailSize int) ([]st
 		return nil, err
 	}
 
-	normalizedPath := strings.TrimRight(basePath, "/") + "/logs"
+	normalizedPath := filepath.Join(basePath, "logs")
 	filePath := filepath.Join(normalizedPath, fileName)
 	file, err := os.Open(filePath)
 	if err != nil {

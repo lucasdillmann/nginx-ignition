@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"path/filepath"
 
 	"github.com/golang-migrate/migrate/v4"
 	migratordb "github.com/golang-migrate/migrate/v4/database"
@@ -40,11 +41,11 @@ func (m *Migrations) runScripts(db *sql.DB, driverName string) error {
 		return err
 	}
 
-	fullPath := fmt.Sprintf("%s/%s", scriptsPath, driverName)
+	fullPath := filepath.Join(scriptsPath, driverName)
 	log.Infof("Running database migrations from %s", fullPath)
 
 	migrator, err := migrate.NewWithDatabaseInstance(
-		fmt.Sprintf("file://%s", fullPath),
+		fmt.Sprintf("file://%s", filepath.ToSlash(fullPath)),
 		driverName,
 		driverInstance,
 	)
