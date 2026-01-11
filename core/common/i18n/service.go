@@ -18,7 +18,7 @@ type service struct {
 func newCommands() Commands {
 	return &service{
 		cache:           make(map[language.Tag]*Dictionary),
-		languages:       []Dictionary{enUS, ptBR},
+		languages:       []Dictionary{enUS},
 		defaultLanguage: enUS,
 	}
 }
