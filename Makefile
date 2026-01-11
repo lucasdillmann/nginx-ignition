@@ -57,8 +57,8 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	$(MAKE) .build-distribution-zip ARCH=amd64 OS=linux SERVICE_FILE_EXT=service
 	$(MAKE) .build-distribution-zip ARCH=arm64 OS=linux SERVICE_FILE_EXT=service
 	$(MAKE) .build-distribution-zip ARCH=arm64 OS=macos SERVICE_FILE_EXT=plist
-	$(MAKE) .build-distribution-zip ARCH=amd64 OS=windows BIN_EXT=.exe SERVICE_FILE_EXT=reg
-	$(MAKE) .build-distribution-zip ARCH=arm64 OS=windows BIN_EXT=.exe SERVICE_FILE_EXT=reg
+	$(MAKE) .build-distribution-zip ARCH=amd64 OS=windows BIN_EXT=.exe
+	$(MAKE) .build-distribution-zip ARCH=arm64 OS=windows BIN_EXT=.exe
 
 .build-distribution-zip:
 	rm -Rf build/nginx-ignition.$(OS)-$(ARCH).zip
@@ -67,7 +67,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	cp -Rf database/common/migrations/scripts build/zip/migrations
 	cp dist/$(OS)/instructions.md build/zip/instructions.md
 	cp dist/$(OS)/nginx-ignition.properties build/zip/
-	cp dist/$(OS)/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/
+	[ -z "$(SERVICE_FILE_EXT)" ] || cp dist/$(OS)/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/
 	cp build/$(OS)/$(ARCH)$(BIN_EXT) build/zip/nginx-ignition$(BIN_EXT)
 	cd build/zip && zip -q -r ../nginx-ignition-$(VERSION).$(OS)-$(ARCH).zip .
 	rm -Rf build/zip

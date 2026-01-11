@@ -37,14 +37,12 @@ cd C:\nginx-ignition
 .\nginx-ignition.exe
 ```
 
-### Installing as a Service
-A registry file (`nginx-ignition.reg`) is included to easily register nginx ignition as a Windows Service. 
+### Installing as a background service
+nginx ignition by itself can't run as a service on Windows since it doesn't support the Windows Service Control Manager.
+However, you can use the following tools to still run it as a background service. 
 
-1. Open the `nginx-ignition.reg` file with a text editor and verify the paths match your installation (default is
-    `C:\nginx-ignition`).
-2. Double-click `nginx-ignition.reg` to import it into the Registry.
-3. Restart your computer to apply the service registration changes.
-4. Open `Services.msc`, find `nginx ignition`, and start the service. Optionally set it to start automatically on boot.
+- [NSSM](https://nssm.cc/) - Non-Sucking Service Manager
+- [WinSW](https://github.com/winsw/winsw) - Windows Service Wrapper
 
 ### Open firewall (if applicable)
 If you have Windows Firewall enabled, you'll need to allow traffic on port 8090:
