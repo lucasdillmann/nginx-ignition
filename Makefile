@@ -59,6 +59,8 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	$(MAKE) .build-distribution-zip ARCH=arm64 OS=macos SERVICE_FILE_EXT=plist
 	$(MAKE) .build-distribution-zip ARCH=amd64 OS=windows BIN_EXT=.exe
 	$(MAKE) .build-distribution-zip ARCH=arm64 OS=windows BIN_EXT=.exe
+	$(MAKE) .build-distribution-packages ARCH=amd64 OS=linux
+	$(MAKE) .build-distribution-packages ARCH=arm64 OS=linux
 
 .build-distribution-zip:
 	rm -Rf build/nginx-ignition.$(OS)-$(ARCH).zip
