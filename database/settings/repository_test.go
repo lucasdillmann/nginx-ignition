@@ -1,7 +1,6 @@
 package settings
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,17 +15,16 @@ func Test_Repository(t *testing.T) {
 }
 
 func runRepositoryTests(t *testing.T, db *database.Database) {
-	ctx := context.Background()
 	repo := New(db)
 
 	t.Run("Save", func(t *testing.T) {
 		t.Run("successfully saves settings", func(t *testing.T) {
 			cmd := newSettings()
 
-			err := repo.Save(ctx, cmd)
+			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
-			saved, err := repo.Get(ctx)
+			saved, err := repo.Get(t.Context())
 			require.NoError(t, err)
 			require.NotNil(t, saved)
 
@@ -38,14 +36,14 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 
 		t.Run("successfully updates existing settings", func(t *testing.T) {
 			cmd := newSettings()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
 			cmd.Nginx.WorkerProcesses = 4
 			cmd.Nginx.GzipEnabled = false
-			err := repo.Save(ctx, cmd)
+			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
-			saved, err := repo.Get(ctx)
+			saved, err := repo.Get(t.Context())
 			require.NoError(t, err)
 			assert.Equal(t, 4, saved.Nginx.WorkerProcesses)
 			assert.False(t, saved.Nginx.GzipEnabled)

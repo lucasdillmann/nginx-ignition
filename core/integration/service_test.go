@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -19,14 +18,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expected := newIntegration()
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().FindByID(ctx, expected.ID).Return(expected, nil)
+			repository.EXPECT().FindByID(t.Context(), expected.ID).Return(expected, nil)
 
 			integrationService := newService(repository, func() []Driver { return nil })
-			result, err := integrationService.Get(ctx, expected.ID)
+			result, err := integrationService.Get(t.Context(), expected.ID)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -38,16 +36,15 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 			inUse := false
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(ctx, id).Return(&inUse, nil)
-			repository.EXPECT().DeleteByID(ctx, id).Return(nil)
+			repository.EXPECT().InUseByID(t.Context(), id).Return(&inUse, nil)
+			repository.EXPECT().DeleteByID(t.Context(), id).Return(nil)
 
 			integrationService := newService(repository, func() []Driver { return nil })
-			err := integrationService.Delete(ctx, id)
+			err := integrationService.Delete(t.Context(), id)
 
 			assert.NoError(t, err)
 		})
@@ -56,15 +53,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 			inUse := true
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(ctx, id).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), id).Return(&inUse, nil)
 
 			integrationService := newService(repository, func() []Driver { return nil })
-			err := integrationService.Delete(ctx, id)
+			err := integrationService.Delete(t.Context(), id)
 
 			require.Error(t, err)
 			var coreErr *coreerror.CoreError
@@ -78,15 +74,16 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expectedPage := pagination.Of([]Integration{*newIntegration()})
 			searchTerms := "test"
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().FindPage(ctx, 10, 1, &searchTerms, false).Return(expectedPage, nil)
+			repository.EXPECT().
+				FindPage(t.Context(), 10, 1, &searchTerms, false).
+				Return(expectedPage, nil)
 
 			integrationService := newService(repository, func() []Driver { return nil })
-			result, err := integrationService.List(ctx, 10, 1, &searchTerms, false)
+			result, err := integrationService.List(t.Context(), 10, 1, &searchTerms, false)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expectedPage, result)
@@ -98,15 +95,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 			exists := true
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().ExistsByID(ctx, id).Return(&exists, nil)
+			repository.EXPECT().ExistsByID(t.Context(), id).Return(&exists, nil)
 
 			integrationService := newService(repository, func() []Driver { return nil })
-			result, err := integrationService.Exists(ctx, id)
+			result, err := integrationService.Exists(t.Context(), id)
 
 			assert.NoError(t, err)
 			assert.True(t, *result)
@@ -118,16 +114,15 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			integration := newIntegration()
 			integration.Name = ""
 			inUse := false
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(ctx, integration.ID).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
 
 			integrationService := newService(repository, func() []Driver { return nil })
-			err := integrationService.Save(ctx, integration)
+			err := integrationService.Save(t.Context(), integration)
 
 			assert.Error(t, err)
 		})

@@ -1,7 +1,6 @@
 package binding
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -13,8 +12,6 @@ import (
 )
 
 func Test_validator(t *testing.T) {
-	ctx := context.Background()
-
 	t.Run("validate", func(t *testing.T) {
 		t.Run("valid HTTP binding passes", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
@@ -24,7 +21,7 @@ func Test_validator(t *testing.T) {
 			certificateCommands := certificate.NewMockedCommands(ctrl)
 			bindingValidator := newValidator(validation.NewValidator(), certificateCommands)
 
-			err := bindingValidator.validate(ctx, "bindings", binding, 0)
+			err := bindingValidator.validate(t.Context(), "bindings", binding, 0)
 
 			assert.NoError(t, err)
 		})
@@ -37,7 +34,7 @@ func Test_validator(t *testing.T) {
 			certificateCommands := certCommandsExists(ctrl, *binding.CertificateID)
 			bindingValidator := newValidator(validation.NewValidator(), certificateCommands)
 
-			err := bindingValidator.validate(ctx, "bindings", binding, 0)
+			err := bindingValidator.validate(t.Context(), "bindings", binding, 0)
 
 			assert.NoError(t, err)
 		})
@@ -51,7 +48,7 @@ func Test_validator(t *testing.T) {
 			certificateCommands := certificate.NewMockedCommands(ctrl)
 			bindingValidator := newValidator(validation.NewValidator(), certificateCommands)
 
-			err := bindingValidator.validate(ctx, "bindings", binding, 0)
+			err := bindingValidator.validate(t.Context(), "bindings", binding, 0)
 
 			assert.NoError(t, err)
 		})
@@ -66,7 +63,7 @@ func Test_validator(t *testing.T) {
 			delegate := validation.NewValidator()
 			bindingValidator := newValidator(delegate, certificateCommands)
 
-			err := bindingValidator.validate(ctx, "bindings", binding, 0)
+			err := bindingValidator.validate(t.Context(), "bindings", binding, 0)
 
 			assert.NoError(t, err)
 			assert.Error(t, delegate.Result())
@@ -82,7 +79,7 @@ func Test_validator(t *testing.T) {
 			delegate := validation.NewValidator()
 			bindingValidator := newValidator(delegate, certificateCommands)
 
-			err := bindingValidator.validate(ctx, "bindings", binding, 0)
+			err := bindingValidator.validate(t.Context(), "bindings", binding, 0)
 
 			assert.NoError(t, err)
 			assert.Error(t, delegate.Result())
@@ -98,7 +95,7 @@ func Test_validator(t *testing.T) {
 			delegate := validation.NewValidator()
 			bindingValidator := newValidator(delegate, certificateCommands)
 
-			err := bindingValidator.validate(ctx, "bindings", binding, 0)
+			err := bindingValidator.validate(t.Context(), "bindings", binding, 0)
 
 			assert.NoError(t, err)
 			assert.Error(t, delegate.Result())
@@ -115,7 +112,7 @@ func Test_validator(t *testing.T) {
 			delegate := validation.NewValidator()
 			bindingValidator := newValidator(delegate, certificateCommands)
 
-			err := bindingValidator.validate(ctx, "bindings", binding, 0)
+			err := bindingValidator.validate(t.Context(), "bindings", binding, 0)
 
 			assert.NoError(t, err)
 			assert.Error(t, delegate.Result())
@@ -131,7 +128,7 @@ func Test_validator(t *testing.T) {
 			delegate := validation.NewValidator()
 			bindingValidator := newValidator(delegate, certificateCommands)
 
-			err := bindingValidator.validate(ctx, "bindings", binding, 0)
+			err := bindingValidator.validate(t.Context(), "bindings", binding, 0)
 
 			assert.NoError(t, err)
 			assert.Error(t, delegate.Result())
@@ -146,7 +143,7 @@ func Test_validator(t *testing.T) {
 			delegate := validation.NewValidator()
 			bindingValidator := newValidator(delegate, certificateCommands)
 
-			err := bindingValidator.validate(ctx, "bindings", binding, 0)
+			err := bindingValidator.validate(t.Context(), "bindings", binding, 0)
 
 			assert.NoError(t, err)
 			assert.Error(t, delegate.Result())
@@ -162,7 +159,7 @@ func Test_validator(t *testing.T) {
 			delegate := validation.NewValidator()
 			bindingValidator := newValidator(delegate, certificateCommands)
 
-			err := bindingValidator.validate(ctx, "bindings", binding, 0)
+			err := bindingValidator.validate(t.Context(), "bindings", binding, 0)
 
 			assert.NoError(t, err)
 			assert.Error(t, delegate.Result())

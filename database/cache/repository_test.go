@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -17,17 +16,16 @@ func Test_Repository(t *testing.T) {
 }
 
 func runRepositoryTests(t *testing.T, db *database.Database) {
-	ctx := context.Background()
 	repo := New(db)
 
 	t.Run("Save", func(t *testing.T) {
 		t.Run("successfully saves a new cache configuration", func(t *testing.T) {
 			cmd := newCache()
 
-			err := repo.Save(ctx, cmd)
+			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
-			saved, err := repo.FindByID(ctx, cmd.ID)
+			saved, err := repo.FindByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			require.NotNil(t, saved)
 			assert.Equal(t, cmd.Name, saved.Name)
@@ -46,14 +44,14 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			cmd.ID = id
 			cmd.Name = "Initial Name"
 			cmd.MinimumUsesBeforeCaching = 1
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
 			cmd.Name = "Updated Name"
 			cmd.MinimumUsesBeforeCaching = 5
-			err := repo.Save(ctx, cmd)
+			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
-			saved, err := repo.FindByID(ctx, id)
+			saved, err := repo.FindByID(t.Context(), id)
 			require.NoError(t, err)
 			assert.Equal(t, "Updated Name", saved.Name)
 			assert.Equal(t, 5, saved.MinimumUsesBeforeCaching)
@@ -62,7 +60,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 
 	t.Run("FindByID", func(t *testing.T) {
 		t.Run("returns nil when not exists", func(t *testing.T) {
-			saved, err := repo.FindByID(ctx, uuid.New())
+			saved, err := repo.FindByID(t.Context(), uuid.New())
 			require.NoError(t, err)
 			assert.Nil(t, saved)
 		})
@@ -70,7 +68,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 
 	t.Run("FindByID", func(t *testing.T) {
 		t.Run("returns nil when not exists", func(t *testing.T) {
-			saved, err := repo.FindByID(ctx, uuid.New())
+			saved, err := repo.FindByID(t.Context(), uuid.New())
 			require.NoError(t, err)
 			assert.Nil(t, saved)
 		})
@@ -89,16 +87,16 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 				cmd := newCache()
 				cmd.ID = uuid.New()
 				cmd.Name = name
-				require.NoError(t, repo.Save(ctx, cmd))
+				require.NoError(t, repo.Save(t.Context(), cmd))
 			}
 
 			other := newCache()
 			other.ID = uuid.New()
 			other.Name = "Other" + uuid.New().String()
-			require.NoError(t, repo.Save(ctx, other))
+			require.NoError(t, repo.Save(t.Context(), other))
 
 			search := prefix
-			page, err := repo.FindPage(ctx, 0, 10, &search)
+			page, err := repo.FindPage(t.Context(), 0, 10, &search)
 			require.NoError(t, err)
 
 			assert.GreaterOrEqual(t, page.TotalItems, 3)
@@ -112,12 +110,12 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	t.Run("DeleteByID", func(t *testing.T) {
 		t.Run("removes the cache", func(t *testing.T) {
 			cmd := newCache()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			err := repo.DeleteByID(ctx, cmd.ID)
+			err := repo.DeleteByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 
-			exists, err := repo.ExistsByID(ctx, cmd.ID)
+			exists, err := repo.ExistsByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			assert.False(t, exists)
 		})
@@ -126,9 +124,9 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	t.Run("InUseByID", func(t *testing.T) {
 		t.Run("returns false when not in use", func(t *testing.T) {
 			cmd := newCache()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			inUse, err := repo.InUseByID(ctx, cmd.ID)
+			inUse, err := repo.InUseByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			assert.False(t, inUse)
 		})
@@ -137,9 +135,9 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	t.Run("FindAllInUse", func(t *testing.T) {
 		t.Run("returns empty list when no caches in use", func(t *testing.T) {
 			cmd := newCache()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			inUseList, err := repo.FindAllInUse(ctx)
+			inUseList, err := repo.FindAllInUse(t.Context())
 			require.NoError(t, err)
 			assert.Empty(t, inUseList)
 		})

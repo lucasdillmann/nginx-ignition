@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -20,14 +19,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			cache := newCache()
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().Save(ctx, cache).Return(nil)
+			repository.EXPECT().Save(t.Context(), cache).Return(nil)
 
 			cacheService := newCommands(repository)
-			err := cacheService.Save(ctx, cache)
+			err := cacheService.Save(t.Context(), cache)
 
 			assert.NoError(t, err)
 		})
@@ -36,13 +34,12 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			cache := newCache()
 			cache.Name = ""
 
 			repository := NewMockedRepository(ctrl)
 			cacheService := newCommands(repository)
-			err := cacheService.Save(ctx, cache)
+			err := cacheService.Save(t.Context(), cache)
 
 			assert.Error(t, err)
 		})
@@ -51,15 +48,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			cache := newCache()
 			expectedErr := errors.New("repository error")
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().Save(ctx, cache).Return(expectedErr)
+			repository.EXPECT().Save(t.Context(), cache).Return(expectedErr)
 
 			cacheService := newCommands(repository)
-			err := cacheService.Save(ctx, cache)
+			err := cacheService.Save(t.Context(), cache)
 
 			assert.Equal(t, expectedErr, err)
 		})
@@ -70,15 +66,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(ctx, id).Return(false, nil)
-			repository.EXPECT().DeleteByID(ctx, id).Return(nil)
+			repository.EXPECT().InUseByID(t.Context(), id).Return(false, nil)
+			repository.EXPECT().DeleteByID(t.Context(), id).Return(nil)
 
 			cacheService := newCommands(repository)
-			err := cacheService.Delete(ctx, id)
+			err := cacheService.Delete(t.Context(), id)
 
 			assert.NoError(t, err)
 		})
@@ -87,14 +82,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(ctx, id).Return(true, nil)
+			repository.EXPECT().InUseByID(t.Context(), id).Return(true, nil)
 
 			cacheService := newCommands(repository)
-			err := cacheService.Delete(ctx, id)
+			err := cacheService.Delete(t.Context(), id)
 
 			require.Error(t, err)
 			var coreErr *coreerror.CoreError
@@ -106,15 +100,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 			expectedErr := errors.New("check failed")
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(ctx, id).Return(false, expectedErr)
+			repository.EXPECT().InUseByID(t.Context(), id).Return(false, expectedErr)
 
 			cacheService := newCommands(repository)
-			err := cacheService.Delete(ctx, id)
+			err := cacheService.Delete(t.Context(), id)
 
 			assert.Equal(t, expectedErr, err)
 		})
@@ -125,14 +118,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expected := newCache()
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().FindByID(ctx, expected.ID).Return(expected, nil)
+			repository.EXPECT().FindByID(t.Context(), expected.ID).Return(expected, nil)
 
 			cacheService := newCommands(repository)
-			result, err := cacheService.Get(ctx, expected.ID)
+			result, err := cacheService.Get(t.Context(), expected.ID)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -142,15 +134,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 			expectedErr := errors.New("not found")
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().FindByID(ctx, id).Return(nil, expectedErr)
+			repository.EXPECT().FindByID(t.Context(), id).Return(nil, expectedErr)
 
 			cacheService := newCommands(repository)
-			result, err := cacheService.Get(ctx, id)
+			result, err := cacheService.Get(t.Context(), id)
 
 			assert.Error(t, err)
 			assert.Nil(t, result)
@@ -163,15 +154,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expectedPage := pagination.Of([]Cache{*newCache()})
 			searchTerms := "test"
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().FindPage(ctx, 1, 10, &searchTerms).Return(expectedPage, nil)
+			repository.EXPECT().FindPage(t.Context(), 1, 10, &searchTerms).Return(expectedPage, nil)
 
 			cacheService := newCommands(repository)
-			result, err := cacheService.List(ctx, 10, 1, &searchTerms)
+			result, err := cacheService.List(t.Context(), 10, 1, &searchTerms)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expectedPage, result)
@@ -183,14 +173,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().ExistsByID(ctx, id).Return(true, nil)
+			repository.EXPECT().ExistsByID(t.Context(), id).Return(true, nil)
 
 			cacheService := newCommands(repository)
-			exists, err := cacheService.Exists(ctx, id)
+			exists, err := cacheService.Exists(t.Context(), id)
 
 			assert.NoError(t, err)
 			assert.True(t, exists)
@@ -200,14 +189,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().ExistsByID(ctx, id).Return(false, nil)
+			repository.EXPECT().ExistsByID(t.Context(), id).Return(false, nil)
 
 			cacheService := newCommands(repository)
-			exists, err := cacheService.Exists(ctx, id)
+			exists, err := cacheService.Exists(t.Context(), id)
 
 			assert.NoError(t, err)
 			assert.False(t, exists)
@@ -219,14 +207,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expected := []Cache{*newCache(), *newCache()}
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().FindAllInUse(ctx).Return(expected, nil)
+			repository.EXPECT().FindAllInUse(t.Context()).Return(expected, nil)
 
 			cacheService := newCommands(repository)
-			result, err := cacheService.GetAllInUse(ctx)
+			result, err := cacheService.GetAllInUse(t.Context())
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)

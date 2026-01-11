@@ -1,7 +1,6 @@
 package settings
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -12,8 +11,6 @@ import (
 )
 
 func Test_validator(t *testing.T) {
-	ctx := context.Background()
-
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -24,7 +21,7 @@ func Test_validator(t *testing.T) {
 			s := newSettings()
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.NoError(t, err)
 		})
@@ -34,7 +31,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.DefaultContentType = ""
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -44,7 +41,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.DefaultContentType = strings.Repeat("a", 129)
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -54,7 +51,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.RuntimeUser = ""
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -64,7 +61,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.RuntimeUser = "   "
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -74,7 +71,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.RuntimeUser = strings.Repeat("a", 33)
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -84,7 +81,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.RuntimeUser = strings.Repeat("a", 32)
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.NoError(t, err)
 		})
@@ -94,7 +91,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.DefaultContentType = strings.Repeat("a", 128)
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.NoError(t, err)
 		})
@@ -104,7 +101,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.Timeouts.Read = 0
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -114,7 +111,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.Timeouts.Send = 0
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -124,7 +121,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.Timeouts.Connect = 0
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -134,7 +131,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.Timeouts.Keepalive = 0
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -144,7 +141,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.WorkerProcesses = 0
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -154,7 +151,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.WorkerProcesses = 101
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -164,7 +161,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.WorkerConnections = 31
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -174,7 +171,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.WorkerConnections = 4097
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -184,7 +181,7 @@ func Test_validator(t *testing.T) {
 			s.Nginx.MaximumBodySizeMb = 0
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -194,7 +191,7 @@ func Test_validator(t *testing.T) {
 			s.LogRotation.IntervalUnitCount = 0
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -204,7 +201,7 @@ func Test_validator(t *testing.T) {
 			s.LogRotation.MaximumLines = -1
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -214,7 +211,7 @@ func Test_validator(t *testing.T) {
 			s.LogRotation.MaximumLines = 10001
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -224,7 +221,7 @@ func Test_validator(t *testing.T) {
 			s.CertificateAutoRenew.IntervalUnitCount = 0
 			settingsValidator := newValidator(bindingCommands)
 
-			err := settingsValidator.validate(ctx, s)
+			err := settingsValidator.validate(t.Context(), s)
 
 			assert.Error(t, err)
 		})

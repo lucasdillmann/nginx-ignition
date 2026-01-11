@@ -1,7 +1,6 @@
 package vpn
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -20,15 +19,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expected := newVPN()
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByID(ctx, expected.ID).Return(expected, nil)
+			repo.EXPECT().FindByID(t.Context(), expected.ID).Return(expected, nil)
 
 			cfg := &configuration.Configuration{}
 			vpnService := newService(cfg, repo, func() []Driver { return nil })
-			result, err := vpnService.Get(ctx, expected.ID)
+			result, err := vpnService.Get(t.Context(), expected.ID)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -40,17 +38,16 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 			inUse := false
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, id).Return(&inUse, nil)
-			repo.EXPECT().DeleteByID(ctx, id).Return(nil)
+			repo.EXPECT().InUseByID(t.Context(), id).Return(&inUse, nil)
+			repo.EXPECT().DeleteByID(t.Context(), id).Return(nil)
 
 			cfg := &configuration.Configuration{}
 			vpnService := newService(cfg, repo, func() []Driver { return nil })
-			err := vpnService.Delete(ctx, id)
+			err := vpnService.Delete(t.Context(), id)
 
 			assert.NoError(t, err)
 		})
@@ -59,16 +56,15 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 			inUse := true
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, id).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), id).Return(&inUse, nil)
 
 			cfg := &configuration.Configuration{}
 			vpnService := newService(cfg, repo, func() []Driver { return nil })
-			err := vpnService.Delete(ctx, id)
+			err := vpnService.Delete(t.Context(), id)
 
 			require.Error(t, err)
 			var coreErr *coreerror.CoreError
@@ -82,16 +78,17 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expectedPage := pagination.Of([]VPN{*newVPN()})
 			searchTerms := "test"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindPage(ctx, 10, 1, &searchTerms, false).Return(expectedPage, nil)
+			repo.EXPECT().
+				FindPage(t.Context(), 10, 1, &searchTerms, false).
+				Return(expectedPage, nil)
 
 			cfg := &configuration.Configuration{}
 			vpnService := newService(cfg, repo, func() []Driver { return nil })
-			result, err := vpnService.List(ctx, 10, 1, &searchTerms, false)
+			result, err := vpnService.List(t.Context(), 10, 1, &searchTerms, false)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expectedPage, result)
@@ -103,16 +100,15 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 			exists := true
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().ExistsByID(ctx, id).Return(&exists, nil)
+			repo.EXPECT().ExistsByID(t.Context(), id).Return(&exists, nil)
 
 			cfg := &configuration.Configuration{}
 			vpnService := newService(cfg, repo, func() []Driver { return nil })
-			result, err := vpnService.Exists(ctx, id)
+			result, err := vpnService.Exists(t.Context(), id)
 
 			assert.NoError(t, err)
 			assert.True(t, *result)
@@ -124,17 +120,16 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			vpn := newVPN()
 			vpn.Name = ""
 			inUse := false
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(ctx, vpn.ID).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
 
 			cfg := &configuration.Configuration{}
 			vpnService := newService(cfg, repo, func() []Driver { return nil })
-			err := vpnService.Save(ctx, vpn)
+			err := vpnService.Save(t.Context(), vpn)
 
 			assert.Error(t, err)
 		})

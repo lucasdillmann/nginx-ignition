@@ -1,7 +1,6 @@
 package i18n
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,13 +9,12 @@ import (
 func Test_builder(t *testing.T) {
 	t.Run("M", func(t *testing.T) {
 		t.Run("initializes message correctly", func(t *testing.T) {
-			ctx := context.Background()
 			key := "some-key"
 
-			message := M(ctx, key)
+			message := M(t.Context(), key)
 
 			assert.NotNil(t, message)
-			assert.Equal(t, ctx, message.ctx)
+			assert.Equal(t, t.Context(), message.ctx)
 			assert.Equal(t, key, message.Key)
 			assert.NotNil(t, message.Variables)
 			assert.Empty(t, message.Variables)
@@ -25,8 +23,7 @@ func Test_builder(t *testing.T) {
 
 	t.Run("V", func(t *testing.T) {
 		t.Run("adds variable and supports chaining", func(t *testing.T) {
-			ctx := context.Background()
-			message := M(ctx, "key").
+			message := M(t.Context(), "key").
 				V("var1", "value1").
 				V("var2", 123)
 
@@ -35,8 +32,7 @@ func Test_builder(t *testing.T) {
 		})
 
 		t.Run("updates existing variable", func(t *testing.T) {
-			ctx := context.Background()
-			message := M(ctx, "key").
+			message := M(t.Context(), "key").
 				V("var1", "value1").
 				V("var1", "value2")
 

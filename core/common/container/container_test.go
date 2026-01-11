@@ -1,7 +1,6 @@
 package container
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -10,8 +9,7 @@ import (
 
 func Test_Init(t *testing.T) {
 	t.Run("initializes container", func(t *testing.T) {
-		ctx := context.Background()
-		Init(ctx)
+		Init(t.Context())
 
 		assert.NotNil(t, delegate)
 	})
@@ -19,8 +17,7 @@ func Test_Init(t *testing.T) {
 
 func Test_Provide(t *testing.T) {
 	t.Run("provides function", func(t *testing.T) {
-		ctx := context.Background()
-		Init(ctx)
+		Init(t.Context())
 
 		provider := func() string {
 			return "test"
@@ -32,8 +29,7 @@ func Test_Provide(t *testing.T) {
 	})
 
 	t.Run("returns error for invalid provider", func(t *testing.T) {
-		ctx := context.Background()
-		Init(ctx)
+		Init(t.Context())
 
 		err := Provide("not-a-function")
 
@@ -43,8 +39,7 @@ func Test_Provide(t *testing.T) {
 
 func Test_Singleton(t *testing.T) {
 	t.Run("provides singleton value", func(t *testing.T) {
-		ctx := context.Background()
-		Init(ctx)
+		Init(t.Context())
 
 		value := "test-singleton"
 		err := Singleton(value)
@@ -58,8 +53,7 @@ func Test_Singleton(t *testing.T) {
 
 func Test_Run(t *testing.T) {
 	t.Run("invokes function", func(t *testing.T) {
-		ctx := context.Background()
-		Init(ctx)
+		Init(t.Context())
 
 		called := false
 		fn := func() {
@@ -73,8 +67,7 @@ func Test_Run(t *testing.T) {
 	})
 
 	t.Run("returns error when function fails", func(t *testing.T) {
-		ctx := context.Background()
-		Init(ctx)
+		Init(t.Context())
 
 		fn := func() error {
 			return errors.New("invocation error")
@@ -88,8 +81,7 @@ func Test_Run(t *testing.T) {
 
 func Test_Get(t *testing.T) {
 	t.Run("retrieves provided value", func(t *testing.T) {
-		ctx := context.Background()
-		Init(ctx)
+		Init(t.Context())
 
 		expectedValue := "test-value"
 		_ = Provide(func() string {

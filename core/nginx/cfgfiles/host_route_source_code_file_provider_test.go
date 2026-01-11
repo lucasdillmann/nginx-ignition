@@ -14,7 +14,7 @@ func Test_hostRouteSourceCodeFileProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
 		provider := &hostRouteSourceCodeFileProvider{}
 		hostID := uuid.New()
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 		ctx.supportedFeatures.RunCodeType = DynamicSupportType
 		ctx.hosts = []host.Host{
 			{
@@ -44,7 +44,7 @@ func Test_hostRouteSourceCodeFileProvider(t *testing.T) {
 		hostID := uuid.New()
 
 		t.Run("generates javascript files when supported", func(t *testing.T) {
-			ctx := newProviderContext()
+			ctx := newProviderContext(t)
 			ctx.supportedFeatures.RunCodeType = DynamicSupportType
 			h := &host.Host{
 				ID: hostID,
@@ -69,7 +69,7 @@ func Test_hostRouteSourceCodeFileProvider(t *testing.T) {
 		})
 
 		t.Run("returns error when code execution is not supported", func(t *testing.T) {
-			ctx := newProviderContext()
+			ctx := newProviderContext(t)
 			ctx.supportedFeatures.RunCodeType = NoneSupportType
 			h := &host.Host{
 				Routes: []host.Route{

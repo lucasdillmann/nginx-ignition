@@ -1,7 +1,6 @@
 package certificate
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -19,17 +18,16 @@ func Test_Repository(t *testing.T) {
 }
 
 func runRepositoryTests(t *testing.T, db *database.Database) {
-	ctx := context.Background()
 	repo := New(db)
 
 	t.Run("Save", func(t *testing.T) {
 		t.Run("successfully saves a new certificate", func(t *testing.T) {
 			cmd := newCertificate()
 
-			err := repo.Save(ctx, cmd)
+			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
-			saved, err := repo.FindByID(ctx, cmd.ID)
+			saved, err := repo.FindByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			require.NotNil(t, saved)
 			assert.Equal(t, cmd.ProviderID, saved.ProviderID)
@@ -49,14 +47,14 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			id := uuid.New()
 			cmd := newCertificate()
 			cmd.ID = id
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
 			cmd.Metadata = ptr.Of("Updated Metadata")
 			cmd.RenewAfter = ptr.Of(time.Now().Add(48 * time.Hour))
-			err := repo.Save(ctx, cmd)
+			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
-			saved, err := repo.FindByID(ctx, id)
+			saved, err := repo.FindByID(t.Context(), id)
 			require.NoError(t, err)
 			assert.Equal(t, "Updated Metadata", *saved.Metadata)
 			assert.WithinDuration(t, *cmd.RenewAfter, *saved.RenewAfter, time.Second)
@@ -76,16 +74,16 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 				cmd := newCertificate()
 				cmd.ID = uuid.New()
 				cmd.DomainNames = []string{domain}
-				require.NoError(t, repo.Save(ctx, cmd))
+				require.NoError(t, repo.Save(t.Context(), cmd))
 			}
 
 			other := newCertificate()
 			other.ID = uuid.New()
 			other.DomainNames = []string{"other.com"}
-			require.NoError(t, repo.Save(ctx, other))
+			require.NoError(t, repo.Save(t.Context(), other))
 
 			search := prefix
-			page, err := repo.FindPage(ctx, 0, 10, &search)
+			page, err := repo.FindPage(t.Context(), 0, 10, &search)
 			require.NoError(t, err)
 
 			assert.GreaterOrEqual(t, page.TotalItems, 3)
@@ -106,12 +104,12 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	t.Run("DeleteByID", func(t *testing.T) {
 		t.Run("removes the certificate", func(t *testing.T) {
 			cmd := newCertificate()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			err := repo.DeleteByID(ctx, cmd.ID)
+			err := repo.DeleteByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 
-			exists, err := repo.ExistsByID(ctx, cmd.ID)
+			exists, err := repo.ExistsByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			assert.False(t, exists)
 		})
@@ -121,9 +119,9 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 		t.Run("returns certificates eligible for rotation", func(t *testing.T) {
 			cmd := newCertificate()
 			cmd.RenewAfter = ptr.Of(time.Now().Add(-1 * time.Hour))
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			candidates, err := repo.FindAllDueToRenew(ctx)
+			candidates, err := repo.FindAllDueToRenew(t.Context())
 			require.NoError(t, err)
 
 			found := false
@@ -139,9 +137,9 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 		t.Run("does not return certificates not yet eligible", func(t *testing.T) {
 			cmd := newCertificate()
 			cmd.RenewAfter = ptr.Of(time.Now().Add(1 * time.Hour))
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			candidates, err := repo.FindAllDueToRenew(ctx)
+			candidates, err := repo.FindAllDueToRenew(t.Context())
 			require.NoError(t, err)
 
 			found := false
@@ -158,9 +156,9 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	t.Run("InUseByID", func(t *testing.T) {
 		t.Run("returns false when not in use", func(t *testing.T) {
 			cmd := newCertificate()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			inUse, err := repo.InUseByID(ctx, cmd.ID)
+			inUse, err := repo.InUseByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			assert.False(t, inUse)
 		})
@@ -168,7 +166,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 
 	t.Run("GetAutoRenewSettings", func(t *testing.T) {
 		t.Run("returns settings", func(t *testing.T) {
-			settings, err := repo.GetAutoRenewSettings(ctx)
+			settings, err := repo.GetAutoRenewSettings(t.Context())
 			require.NoError(t, err)
 			require.NotNil(t, settings)
 		})

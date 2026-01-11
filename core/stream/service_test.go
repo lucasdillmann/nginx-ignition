@@ -1,7 +1,6 @@
 package stream
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -18,14 +17,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			s := newStream()
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Save(ctx, s).Return(nil)
+			repo.EXPECT().Save(t.Context(), s).Return(nil)
 
 			streamService := newCommands(repo)
-			err := streamService.Save(ctx, s)
+			err := streamService.Save(t.Context(), s)
 
 			assert.NoError(t, err)
 		})
@@ -34,13 +32,12 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			s := newStream()
 			s.Name = ""
 
 			repo := NewMockedRepository(ctrl)
 			streamService := newCommands(repo)
-			err := streamService.Save(ctx, s)
+			err := streamService.Save(t.Context(), s)
 
 			assert.Error(t, err)
 		})
@@ -49,15 +46,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			s := newStream()
 
 			expectedErr := errors.New("repository error")
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Save(ctx, s).Return(expectedErr)
+			repo.EXPECT().Save(t.Context(), s).Return(expectedErr)
 
 			streamService := newCommands(repo)
-			err := streamService.Save(ctx, s)
+			err := streamService.Save(t.Context(), s)
 
 			assert.Equal(t, expectedErr, err)
 		})
@@ -68,14 +64,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().DeleteByID(ctx, id).Return(nil)
+			repo.EXPECT().DeleteByID(t.Context(), id).Return(nil)
 
 			streamService := newCommands(repo)
-			err := streamService.Delete(ctx, id)
+			err := streamService.Delete(t.Context(), id)
 
 			assert.NoError(t, err)
 		})
@@ -84,15 +79,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 			expectedErr := errors.New("delete failed")
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().DeleteByID(ctx, id).Return(expectedErr)
+			repo.EXPECT().DeleteByID(t.Context(), id).Return(expectedErr)
 
 			streamService := newCommands(repo)
-			err := streamService.Delete(ctx, id)
+			err := streamService.Delete(t.Context(), id)
 
 			assert.Equal(t, expectedErr, err)
 		})
@@ -103,16 +97,15 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 			expected := newStream()
 			expected.ID = id
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByID(ctx, id).Return(expected, nil)
+			repo.EXPECT().FindByID(t.Context(), id).Return(expected, nil)
 
 			streamService := newCommands(repo)
-			result, err := streamService.Get(ctx, id)
+			result, err := streamService.Get(t.Context(), id)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -124,15 +117,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expectedPage := pagination.Of([]Stream{*newStream()})
 			searchTerms := "test"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindPage(ctx, 10, 1, &searchTerms).Return(expectedPage, nil)
+			repo.EXPECT().FindPage(t.Context(), 10, 1, &searchTerms).Return(expectedPage, nil)
 
 			streamService := newCommands(repo)
-			result, err := streamService.List(ctx, 10, 1, &searchTerms)
+			result, err := streamService.List(t.Context(), 10, 1, &searchTerms)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expectedPage, result)
@@ -144,14 +136,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().ExistsByID(ctx, id).Return(true, nil)
+			repo.EXPECT().ExistsByID(t.Context(), id).Return(true, nil)
 
 			streamService := newCommands(repo)
-			exists, err := streamService.Exists(ctx, id)
+			exists, err := streamService.Exists(t.Context(), id)
 
 			assert.NoError(t, err)
 			assert.True(t, exists)

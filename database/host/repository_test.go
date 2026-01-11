@@ -1,7 +1,6 @@
 package host
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -18,17 +17,16 @@ func Test_Repository(t *testing.T) {
 }
 
 func runRepositoryTests(t *testing.T, db *database.Database) {
-	ctx := context.Background()
 	repo := New(db)
 
 	t.Run("Save", func(t *testing.T) {
 		t.Run("successfully saves a new host", func(t *testing.T) {
 			cmd := newHost()
 
-			err := repo.Save(ctx, cmd)
+			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
-			saved, err := repo.FindByID(ctx, cmd.ID)
+			saved, err := repo.FindByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			require.NotNil(t, saved)
 			assert.Equal(t, cmd.DomainNames, saved.DomainNames)
@@ -44,14 +42,14 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			id := uuid.New()
 			cmd := newHost()
 			cmd.ID = id
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
 			cmd.Enabled = false
 			cmd.DomainNames = []string{"updated.example.com"}
-			err := repo.Save(ctx, cmd)
+			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
-			saved, err := repo.FindByID(ctx, id)
+			saved, err := repo.FindByID(t.Context(), id)
 			require.NoError(t, err)
 			assert.ElementsMatch(t, []string{"updated.example.com"}, saved.DomainNames)
 			assert.False(t, saved.Enabled)
@@ -61,15 +59,15 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	t.Run("ExistsByID", func(t *testing.T) {
 		t.Run("returns true when exists", func(t *testing.T) {
 			cmd := newHost()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			exists, err := repo.ExistsByID(ctx, cmd.ID)
+			exists, err := repo.ExistsByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			assert.True(t, exists)
 		})
 
 		t.Run("returns false when not exists", func(t *testing.T) {
-			exists, err := repo.ExistsByID(ctx, uuid.New())
+			exists, err := repo.ExistsByID(t.Context(), uuid.New())
 			require.NoError(t, err)
 			assert.False(t, exists)
 		})
@@ -88,16 +86,16 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 				cmd := newHost()
 				cmd.ID = uuid.New()
 				cmd.DomainNames = []string{domain}
-				require.NoError(t, repo.Save(ctx, cmd))
+				require.NoError(t, repo.Save(t.Context(), cmd))
 			}
 
 			other := newHost()
 			other.ID = uuid.New()
 			other.DomainNames = []string{"other.com"}
-			require.NoError(t, repo.Save(ctx, other))
+			require.NoError(t, repo.Save(t.Context(), other))
 
 			search := prefix
-			page, err := repo.FindPage(ctx, 10, 0, &search)
+			page, err := repo.FindPage(t.Context(), 10, 0, &search)
 			require.NoError(t, err)
 
 			assert.GreaterOrEqual(t, page.TotalItems, 3)
@@ -120,14 +118,14 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			enabled := newHost()
 			enabled.ID = uuid.New()
 			enabled.Enabled = true
-			require.NoError(t, repo.Save(ctx, enabled))
+			require.NoError(t, repo.Save(t.Context(), enabled))
 
 			disabled := newHost()
 			disabled.ID = uuid.New()
 			disabled.Enabled = false
-			require.NoError(t, repo.Save(ctx, disabled))
+			require.NoError(t, repo.Save(t.Context(), disabled))
 
-			all, err := repo.FindAllEnabled(ctx)
+			all, err := repo.FindAllEnabled(t.Context())
 			require.NoError(t, err)
 
 			foundEnabled := false
@@ -147,36 +145,36 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 
 	t.Run("FindDefault", func(t *testing.T) {
 		t.Run("returns the default server", func(t *testing.T) {
-			cleanup(ctx, t, repo)
+			cleanup(t.Context(), t, repo)
 
 			def := newHost()
 			def.ID = uuid.New()
 			def.DefaultServer = true
 			def.DomainNames = nil
-			require.NoError(t, repo.Save(ctx, def))
+			require.NoError(t, repo.Save(t.Context(), def))
 
 			normal := newHost()
 			normal.ID = uuid.New()
 			normal.DefaultServer = false
-			require.NoError(t, repo.Save(ctx, normal))
+			require.NoError(t, repo.Save(t.Context(), normal))
 
-			found, err := repo.FindDefault(ctx)
+			found, err := repo.FindDefault(t.Context())
 			require.NoError(t, err)
 			require.NotNil(t, found)
 			assert.Equal(t, def.ID, found.ID)
 		})
 
 		t.Run("returns nil when no default server", func(t *testing.T) {
-			cleanup(ctx, t, repo)
+			cleanup(t.Context(), t, repo)
 
-			existing, err := repo.FindDefault(ctx)
+			existing, err := repo.FindDefault(t.Context())
 			require.NoError(t, err)
 			if existing != nil {
-				err = repo.DeleteByID(ctx, existing.ID)
+				err = repo.DeleteByID(t.Context(), existing.ID)
 				require.NoError(t, err)
 			}
 
-			found, err := repo.FindDefault(ctx)
+			found, err := repo.FindDefault(t.Context())
 			require.NoError(t, err)
 			assert.Nil(t, found)
 		})
@@ -185,12 +183,12 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	t.Run("DeleteByID", func(t *testing.T) {
 		t.Run("removes the host", func(t *testing.T) {
 			cmd := newHost()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			err := repo.DeleteByID(ctx, cmd.ID)
+			err := repo.DeleteByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 
-			exists, err := repo.ExistsByID(ctx, cmd.ID)
+			exists, err := repo.ExistsByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			assert.False(t, exists)
 		})

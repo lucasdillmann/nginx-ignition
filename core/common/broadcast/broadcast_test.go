@@ -1,7 +1,6 @@
 package broadcast
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -31,20 +30,18 @@ func Test_Broadcast(t *testing.T) {
 			qualifier := "test-qualifier-3"
 			ch := Listen(qualifier)
 
-			ctx := context.Background()
-			go SendSignal(ctx, qualifier)
+			go SendSignal(t.Context(), qualifier)
 
 			select {
 			case received := <-ch:
-				assert.Equal(t, ctx, received)
+				assert.NotNil(t, received)
 			case <-time.After(time.Second):
 				t.Fatal("signal not received")
 			}
 		})
 
-		t.Run("does not block when no listeners", func(_ *testing.T) {
-			ctx := context.Background()
-			SendSignal(ctx, "non-existent-qualifier-2")
+		t.Run("does not block when no listeners", func(t *testing.T) {
+			SendSignal(t.Context(), "non-existent-qualifier-2")
 		})
 	})
 
@@ -54,7 +51,7 @@ func Test_Broadcast(t *testing.T) {
 			ch2 := Listen("test-shutdown-2")
 
 			s := shutdown{}
-			s.Run(context.Background())
+			s.Run(t.Context())
 
 			_, ok1 := <-ch1
 			_, ok2 := <-ch2

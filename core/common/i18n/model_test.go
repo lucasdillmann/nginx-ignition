@@ -50,10 +50,9 @@ func Test_Message(t *testing.T) {
 				commands := NewMockedCommands(ctrl)
 				container.Singleton[Commands](commands)
 
-				ctx := context.Background()
 				key := "test-key"
 				variables := map[string]any{"var": "val"}
-				message := Message{ctx: ctx, Key: key, Variables: variables}
+				message := Message{ctx: t.Context(), Key: key, Variables: variables}
 
 				defaultLang := language.AmericanEnglish
 				commands.EXPECT().DefaultLanguage().Return(defaultLang)

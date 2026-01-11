@@ -18,7 +18,7 @@ func Test_streamFileProvider(t *testing.T) {
 		s := newStream()
 		s.ID = id
 
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 		ctx.supportedFeatures.StreamType = StaticSupportType
 		ctx.streams = []stream.Stream{s}
 
@@ -163,7 +163,7 @@ func Test_streamFileProvider(t *testing.T) {
 		idStr := nginxID(&stream.Stream{ID: id})
 
 		t.Run("generates SNI routing configuration", func(t *testing.T) {
-			ctx := newProviderContext()
+			ctx := newProviderContext(t)
 			ctx.supportedFeatures.TLSSNI = StaticSupportType
 			s := &stream.Stream{
 				ID:   id,
@@ -210,7 +210,7 @@ func Test_streamFileProvider(t *testing.T) {
 		})
 
 		t.Run("returns error when TLSSNI not supported", func(t *testing.T) {
-			ctx := newProviderContext()
+			ctx := newProviderContext(t)
 			ctx.supportedFeatures.TLSSNI = NoneSupportType
 			s := &stream.Stream{Type: stream.SNIRouterType}
 			_, err := provider.buildRoutedStream(ctx, s)

@@ -1,7 +1,6 @@
 package nginx
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -20,7 +19,6 @@ import (
 
 func Test_service(t *testing.T) {
 	t.Run("GetMainLogs", func(t *testing.T) {
-		ctx := context.Background()
 		tmpDir := t.TempDir()
 		logsDir := filepath.Join(tmpDir, "logs")
 		err := os.Mkdir(logsDir, 0o755)
@@ -38,14 +36,13 @@ func Test_service(t *testing.T) {
 		}
 
 		t.Run("returns requested number of lines in reverse order", func(t *testing.T) {
-			lines, err := nginxService.GetMainLogs(ctx, 2)
+			lines, err := nginxService.GetMainLogs(t.Context(), 2)
 			assert.NoError(t, err)
 			assert.Equal(t, []string{"line3", "line2"}, lines)
 		})
 	})
 
 	t.Run("GetHostLogs", func(t *testing.T) {
-		ctx := context.Background()
 		tmpDir := t.TempDir()
 		logsDir := filepath.Join(tmpDir, "logs")
 		err := os.Mkdir(logsDir, 0o755)
@@ -64,14 +61,13 @@ func Test_service(t *testing.T) {
 		}
 
 		t.Run("returns host specific logs", func(t *testing.T) {
-			lines, err := nginxService.GetHostLogs(ctx, hostID, "access", 1)
+			lines, err := nginxService.GetHostLogs(t.Context(), hostID, "access", 1)
 			assert.NoError(t, err)
 			assert.Equal(t, []string{"access2"}, lines)
 		})
 	})
 
 	t.Run("rotateLogs", func(t *testing.T) {
-		ctx := context.Background()
 		tmpDir := t.TempDir()
 		logsDir := filepath.Join(tmpDir, "logs")
 		err := os.Mkdir(logsDir, 0o755)
@@ -93,7 +89,7 @@ func Test_service(t *testing.T) {
 		defer ctrl.Finish()
 
 		settingsCmds := settings.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(ctx).Return(&settings.Settings{
+		settingsCmds.EXPECT().Get(t.Context()).Return(&settings.Settings{
 			LogRotation: &settings.LogRotationSettings{
 				Enabled:      true,
 				MaximumLines: 2,
@@ -101,7 +97,7 @@ func Test_service(t *testing.T) {
 		}, nil)
 
 		hostCmds := host.NewMockedCommands(ctrl)
-		hostCmds.EXPECT().GetAllEnabled(ctx).Return([]host.Host{}, nil)
+		hostCmds.EXPECT().GetAllEnabled(t.Context()).Return([]host.Host{}, nil)
 
 		nginxService := &service{
 			logRotator: newLogRotator(
@@ -115,7 +111,7 @@ func Test_service(t *testing.T) {
 			),
 		}
 
-		err = nginxService.rotateLogs(ctx)
+		err = nginxService.rotateLogs(t.Context())
 		assert.NoError(t, err)
 
 		content, err := os.ReadFile(mainLogPath)
@@ -124,8 +120,6 @@ func Test_service(t *testing.T) {
 	})
 
 	t.Run("Reload", func(t *testing.T) {
-		ctx := context.Background()
-
 		t.Run("returns error when not running and failIfNotRunning is true", func(t *testing.T) {
 			nginxService := &service{
 				semaphore: &semaphore{
@@ -133,7 +127,7 @@ func Test_service(t *testing.T) {
 				},
 			}
 
-			err := nginxService.Reload(ctx, true)
+			err := nginxService.Reload(t.Context(), true)
 			assert.Error(t, err)
 			var coreErr *coreerror.CoreError
 			assert.ErrorAs(t, err, &coreErr)
@@ -142,8 +136,6 @@ func Test_service(t *testing.T) {
 	})
 
 	t.Run("Start", func(t *testing.T) {
-		ctx := context.Background()
-
 		t.Run("returns nil if already running", func(t *testing.T) {
 			nginxService := &service{
 				semaphore: &semaphore{
@@ -151,14 +143,12 @@ func Test_service(t *testing.T) {
 				},
 			}
 
-			err := nginxService.Start(ctx)
+			err := nginxService.Start(t.Context())
 			assert.NoError(t, err)
 		})
 	})
 
 	t.Run("Stop", func(t *testing.T) {
-		ctx := context.Background()
-
 		t.Run("returns nil if already stopped", func(t *testing.T) {
 			nginxService := &service{
 				semaphore: &semaphore{
@@ -166,7 +156,7 @@ func Test_service(t *testing.T) {
 				},
 			}
 
-			err := nginxService.Stop(ctx)
+			err := nginxService.Stop(t.Context())
 			assert.NoError(t, err)
 		})
 	})
@@ -178,7 +168,7 @@ func Test_service(t *testing.T) {
 					state: runningState,
 				},
 			}
-			assert.True(t, nginxService.GetStatus(context.Background()))
+			assert.True(t, nginxService.GetStatus(t.Context()))
 		})
 
 		t.Run("returns false when stopped", func(t *testing.T) {
@@ -187,7 +177,7 @@ func Test_service(t *testing.T) {
 					state: stoppedState,
 				},
 			}
-			assert.False(t, nginxService.GetStatus(context.Background()))
+			assert.False(t, nginxService.GetStatus(t.Context()))
 		})
 	})
 }

@@ -1,7 +1,6 @@
 package backup
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -15,14 +14,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expected := newBackup()
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().Get(ctx).Return(expected, nil)
+			repository.EXPECT().Get(t.Context()).Return(expected, nil)
 
 			backupService := newCommands(repository)
-			result, err := backupService.Get(ctx)
+			result, err := backupService.Get(t.Context())
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -32,14 +30,13 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expectedErr := errors.New("repository error")
 
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().Get(ctx).Return(nil, expectedErr)
+			repository.EXPECT().Get(t.Context()).Return(nil, expectedErr)
 
 			backupService := newCommands(repository)
-			result, err := backupService.Get(ctx)
+			result, err := backupService.Get(t.Context())
 
 			assert.Error(t, err)
 			assert.Nil(t, result)
