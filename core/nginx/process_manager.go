@@ -94,7 +94,6 @@ func (m *processManager) runCommand(extraArgs ...string) error {
 func (m *processManager) prepareCommand(extraArgs ...string) *exec.Cmd {
 	args := append(
 		[]string{
-			"-p", m.configPath,
 			"-e", filepath.Join(m.configPath, "logs", "main.log"),
 			"-c", filepath.Join(m.configPath, "config", "nginx.conf"),
 		},
