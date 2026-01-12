@@ -4,6 +4,8 @@ package dict
 var Keys = Messages{
 	AccessListErrorInUse:                           "accesslist.error.in-use",
 	AccessListValidationInvalidAddress:             "accesslist.validation.invalid-address",
+	AuthorizationErrorAccessDenied:                 "authorization.error.access-denied",
+	AuthorizationErrorInvalidAccessToken:           "authorization.error.invalid-access-token",
 	BindingValidationCertificateIDNotAllowed:       "binding.validation.certificate-id-not-allowed",
 	BindingValidationCertificateIDNotFound:         "binding.validation.certificate-id-not-found",
 	BindingValidationCertificateIDRequired:         "binding.validation.certificate-id-required",
@@ -80,6 +82,9 @@ var Keys = Messages{
 	NginxErrorStreamNotEnabled:                     "nginx.error.stream-not-enabled",
 	NginxErrorStreamSniNotEnabled:                  "nginx.error.stream-sni-not-enabled",
 	NginxErrorVersionCheckFailed:                   "nginx.error.version-check-failed",
+	PaginationErrorCantBeNegative:                  "pagination.error.cant-be-negative",
+	PaginationErrorMustBeAnInteger:                 "pagination.error.must-be-an-integer",
+	PaginationErrorMustBeBetweenRange:              "pagination.error.must-be-between-range",
 	SchedulerErrorAlreadyStarted:                   "scheduler.error.already-started",
 	SchedulerErrorShuttingDown:                     "scheduler.error.shutting-down",
 	StreamValidationAtLeastOneBackend:              "stream.validation.at-least-one-backend",
@@ -102,9 +107,4 @@ var Keys = Messages{
 	VpnErrorDriverNotFound:                         "vpn.error.driver-not-found",
 	VpnErrorInUse:                                  "vpn.error.in-use",
 	VpnValidationInUse:                             "vpn.validation.in-use",
-	AuthorizationErrorInvalidAccessToken:           "authorization.error.invalid-access-token",
-	AuthorizationErrorAccessDenied:                 "authorization.error.access-denied",
-	PaginationErrorMustBeAnInteger:                 "pagination.error.must-be-an-integer",
-	PaginationErrorMustBeBetweenRange:              "pagination.error.must-be-between-range",
-	PaginationErrorCantBeNegative:                  "pagination.error.cant-be-negative",
 }

@@ -11,6 +11,8 @@ func PtBR() Dictionary {
 		Messages{
 			AccessListErrorInUse:                           "A lista de acesso está em uso por um ou mais hosts",
 			AccessListValidationInvalidAddress:             "O endereço \"${address}\" não é um endereço ou intervalo IPv4 ou IPv6 válido",
+			AuthorizationErrorAccessDenied:                 "Você não tem a permissão necessária para acessar este recurso",
+			AuthorizationErrorInvalidAccessToken:           "Token de acesso inválido ou expirado",
 			BindingValidationCertificateIDNotAllowed:       "Certificado não pode ser especificado para este tipo de vínculo",
 			BindingValidationCertificateIDNotFound:         "Nenhum certificado encontrado com o ID fornecido",
 			BindingValidationCertificateIDRequired:         "Um certificado é obrigatório para este tipo de vínculo",
@@ -87,6 +89,9 @@ func PtBR() Dictionary {
 			NginxErrorStreamNotEnabled:                     "Não foi possível gerar o arquivo de configuração de stream: O suporte para streams não está habilitado no servidor nginx e pelo menos um stream está habilitado.",
 			NginxErrorStreamSniNotEnabled:                  "Não foi possível gerar o arquivo de configuração de stream: O suporte para TLS SNI não está habilitado no servidor nginx e pelo menos um stream está habilitado com roteamento SNI.",
 			NginxErrorVersionCheckFailed:                   "Falha ao verificar a versão do Nginx",
+			PaginationErrorCantBeNegative:                  "O ${type} da página deve ser maior ou igual a 0",
+			PaginationErrorMustBeAnInteger:                 "O ${type} da página deve ser um número inteiro",
+			PaginationErrorMustBeBetweenRange:              "O ${type} da página deve estar entre ${min} e ${max}",
 			SchedulerErrorAlreadyStarted:                   "O agendador já foi iniciado",
 			SchedulerErrorShuttingDown:                     "O agendador está sendo desligado ou já foi parado",
 			StreamValidationAtLeastOneBackend:              "A rota deve ter pelo menos um backend",
@@ -109,11 +114,6 @@ func PtBR() Dictionary {
 			VpnErrorDriverNotFound:                         "Driver de VPN não encontrado",
 			VpnErrorInUse:                                  "A VPN está em uso por um ou mais hosts",
 			VpnValidationInUse:                             "A VPN está em uso por um ou mais hosts. Ela não pode ser desabilitada.",
-			AuthorizationErrorInvalidAccessToken:           "Token de acesso inválido ou expirado",
-			AuthorizationErrorAccessDenied:                 "Você não tem a permissão necessária para acessar este recurso",
-			PaginationErrorMustBeAnInteger:                 "O ${type} da página deve ser um número inteiro",
-			PaginationErrorMustBeBetweenRange:              "O ${type} da página deve estar entre ${min} e ${max}",
-			PaginationErrorCantBeNegative:                  "O ${type} da página deve ser maior ou igual a 0",
 		},
 	)
 }

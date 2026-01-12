@@ -11,6 +11,8 @@ func EsES() Dictionary {
 		Messages{
 			AccessListErrorInUse:                           "La lista de acceso está en uso por uno o más hosts",
 			AccessListValidationInvalidAddress:             "La dirección \"${address}\" no es una dirección o rango IPv4 o IPv6 válido",
+			AuthorizationErrorAccessDenied:                 "No tiene los permisos necesarios para acceder a este recurso",
+			AuthorizationErrorInvalidAccessToken:           "Token de acceso inválido o caducado",
 			BindingValidationCertificateIDNotAllowed:       "No se puede especificar un certificado para este tipo de enlace",
 			BindingValidationCertificateIDNotFound:         "No se encontró ningún certificado con el ID proporcionado",
 			BindingValidationCertificateIDRequired:         "Se requiere un certificado para este tipo de enlace",
@@ -87,6 +89,9 @@ func EsES() Dictionary {
 			NginxErrorStreamNotEnabled:                     "No se puede generar el archivo de configuración de stream: el soporte para streams no está habilitado en el servidor nginx y al menos un stream está habilitado.",
 			NginxErrorStreamSniNotEnabled:                  "No se puede generar el archivo de configuración de stream: el soporte para TLS SNI no está habilitado en el servidor nginx y al menos un stream está habilitado con enrutamiento SNI.",
 			NginxErrorVersionCheckFailed:                   "Error al verificar la versión de Nginx",
+			PaginationErrorCantBeNegative:                  "El ${type} de la página debe ser mayor o igual a 0",
+			PaginationErrorMustBeAnInteger:                 "El ${type} de la página debe ser un número entero",
+			PaginationErrorMustBeBetweenRange:              "El ${type} de la página debe estar entre ${min} y ${max}",
 			SchedulerErrorAlreadyStarted:                   "El programador ya ha comenzado",
 			SchedulerErrorShuttingDown:                     "El programador se está apagando o ya se detuvo",
 			StreamValidationAtLeastOneBackend:              "La ruta debe tener al menos un backend",
@@ -109,11 +114,6 @@ func EsES() Dictionary {
 			VpnErrorDriverNotFound:                         "Controlador de VPN no encontrado",
 			VpnErrorInUse:                                  "La VPN está en uso por uno o más hosts",
 			VpnValidationInUse:                             "La VPN está en uso por uno o más hosts. No se puede deshabilitar.",
-			AuthorizationErrorInvalidAccessToken:           "Token de acceso inválido o caducado",
-			AuthorizationErrorAccessDenied:                 "No tiene los permisos necesarios para acceder a este recurso",
-			PaginationErrorMustBeAnInteger:                 "El ${type} de la página debe ser un número entero",
-			PaginationErrorMustBeBetweenRange:              "El ${type} de la página debe estar entre ${min} y ${max}",
-			PaginationErrorCantBeNegative:                  "El ${type} de la página debe ser mayor o igual a 0",
 		},
 	)
 }
