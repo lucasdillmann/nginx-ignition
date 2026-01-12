@@ -15,6 +15,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -67,7 +68,7 @@ func (p *Provider) Issue(
 
 	usrKey, err := rsa.GenerateKey(rand.Reader, privateKeySize)
 	if err != nil {
-		return nil, coreerror.New("Failed to generate private key", false)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorGeneratePrivateKey), false)
 	}
 
 	user := userDetails{
@@ -91,17 +92,17 @@ func (p *Provider) Renew(
 ) (*certificate.Certificate, error) {
 	var metadata *certificateMetadata
 	if err := json.Unmarshal([]byte(*cert.Metadata), &metadata); err != nil {
-		return nil, coreerror.New("Failed to parse metadata", false)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorParseMetadata), false)
 	}
 
 	encodedPrivKey, err := base64.StdEncoding.DecodeString(metadata.UserPrivateKey)
 	if err != nil {
-		return nil, coreerror.New("Failed to decode private key", false)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorDecodePrivateKey), false)
 	}
 
 	privKey, err := x509.ParsePKCS1PrivateKey(encodedPrivKey)
 	if err != nil {
-		return nil, coreerror.New("Failed to parse private key", false)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorParsePrivateKey), false)
 	}
 
 	user := userDetails{

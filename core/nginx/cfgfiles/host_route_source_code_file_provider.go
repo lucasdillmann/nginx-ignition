@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
@@ -41,8 +42,7 @@ func (p *hostRouteSourceCodeFileProvider) buildSourceCodeFiles(
 
 		if ctx.supportedFeatures.RunCodeType == NoneSupportType {
 			return nil, coreerror.New(
-				"Unable to generate the host route source code files: Support for JavaScript and/or Lua "+
-					"code is not enabled in the nginx server and at least one code execution host route is enabled.",
+				i18n.M(ctx.context, i18n.K.NginxErrorHostRouteCodeNotEnabled),
 				false,
 			)
 		}

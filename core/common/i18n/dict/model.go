@@ -11,16 +11,35 @@ type Dictionary interface {
 }
 
 type Messages struct {
+	AccessListErrorInUse                           string
 	AccessListValidationInvalidAddress             string
 	BindingValidationCertificateIDNotAllowed       string
 	BindingValidationCertificateIDNotFound         string
 	BindingValidationCertificateIDRequired         string
 	BindingValidationInvalidIP                     string
 	BindingValidationInvalidType                   string
+	CacheErrorInUse                                string
 	CacheValidationExtensionDotNotAllowed          string
 	CacheValidationInvalidMethod                   string
 	CacheValidationInvalidStaleOption              string
 	CacheValidationInvalidStatusCode               string
+	CertificateErrorAWSHostedZoneNotFound          string
+	CertificateErrorAzureUnknownEnvironment        string
+	CertificateErrorDecodePrivateKey               string
+	CertificateErrorGeneratePrivateKey             string
+	CertificateErrorInUse                          string
+	CertificateErrorInvalidCertificationChain      string
+	CertificateErrorInvalidIntervalUnit            string
+	CertificateErrorInvalidPrivateKey              string
+	CertificateErrorInvalidPublicKey               string
+	CertificateErrorParseMetadata                  string
+	CertificateErrorParsePrivateKey                string
+	CertificateErrorProviderNotFound               string
+	CertificateErrorUnableToDecode                 string
+	CertificateErrorUnableToParsePEM               string
+	CertificateErrorUnknownDNSProvider             string
+	CertificateValidationTosRequired               string
+	CommonErrorInvalidFormat                       string
 	CommonValidationAbsolutePathRequired           string
 	CommonValidationAtLeastOneRequired             string
 	CommonValidationBetweenValues                  string
@@ -36,6 +55,7 @@ type Messages struct {
 	CommonValidationTooLong                        string
 	CommonValidationTooShort                       string
 	CommonValidationValueMissing                   string
+	DatabaseErrorUnsupportedDriver                 string
 	DynamicFieldValidationInvalidBoolean           string
 	DynamicFieldValidationInvalidEmail             string
 	DynamicFieldValidationInvalidFileEncodedBase64 string
@@ -57,8 +77,20 @@ type Messages struct {
 	HostValidationTargetURIRequired                string
 	HostValidationVpnDisabled                      string
 	HostValidationVpnNotFound                      string
+	IntegrationErrorDisabled                       string
+	IntegrationErrorInUse                          string
+	IntegrationErrorInvalidConnectionMode          string
+	IntegrationErrorNotFound                       string
+	IntegrationErrorOptionNotFound                 string
 	IntegrationValidationInUse                     string
-	LetsEncryptValidationTosRequired               string
+	NginxErrorHostRouteCodeNotEnabled              string
+	NginxErrorInvalidIntervalUnit                  string
+	NginxErrorNotRunning                           string
+	NginxErrorStreamNotEnabled                     string
+	NginxErrorStreamSniNotEnabled                  string
+	NginxErrorVersionCheckFailed                   string
+	SchedulerErrorAlreadyStarted                   string
+	SchedulerErrorShuttingDown                     string
 	StreamValidationAtLeastOneBackend              string
 	StreamValidationAtLeastOneDomain               string
 	StreamValidationFeatureOnlyForTCP              string
@@ -66,11 +98,17 @@ type Messages struct {
 	StreamValidationPortNotAllowedForSocket        string
 	StreamValidationPortRequired                   string
 	StreamValidationRoutesRequiredForSni           string
+	UserErrorInvalidCredentials                    string
+	UserErrorNotFound                              string
+	UserErrorNotFoundByID                          string
+	UserErrorPasswordResetMode                     string
 	UserValidationAtLeastReadOnly                  string
 	UserValidationCannotDisableSelf                string
 	UserValidationCannotHaveWriteAccess            string
 	UserValidationCurrentPasswordMismatch          string
 	UserValidationDuplicatedUsername               string
 	UserValidationInvalidAccessLevel               string
+	VpnErrorDriverNotFound                         string
+	VpnErrorInUse                                  string
 	VpnValidationInUse                             string
 }

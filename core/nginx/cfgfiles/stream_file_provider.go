@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/common/runtime"
 	"dillmann.com.br/nginx-ignition/core/stream"
@@ -19,8 +20,7 @@ func newStreamFileProvider() *streamFileProvider {
 func (p *streamFileProvider) provide(ctx *providerContext) ([]File, error) {
 	if len(ctx.streams) > 0 && ctx.supportedFeatures.StreamType == NoneSupportType {
 		return nil, coreerror.New(
-			"Unable to generate the stream configuration file: Support for streams is not enabled in the "+
-				"nginx server and at least one stream is enabled.",
+			i18n.M(ctx.context, i18n.K.NginxErrorStreamNotEnabled),
 			false,
 		)
 	}
@@ -151,8 +151,7 @@ func (p *streamFileProvider) buildRoutedStream(
 ) (*string, error) {
 	if ctx.supportedFeatures.TLSSNI == NoneSupportType {
 		return nil, coreerror.New(
-			"Unable to generate the stream configuration file: Support for TLS SNI is not enabled in the "+
-				"nginx server and at lease one stream is enabled with SNI routing.",
+			i18n.M(ctx.context, i18n.K.NginxErrorStreamSniNotEnabled),
 			false,
 		)
 	}

@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -53,7 +54,7 @@ func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 }
 
 func (p *Provider) ChallengeProvider(
-	_ context.Context,
+	ctx context.Context,
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
@@ -69,7 +70,7 @@ func (p *Provider) ChallengeProvider(
 
 	endpoint, err := url.Parse(endpointStr)
 	if err != nil {
-		return nil, coreerror.New("Invalid endpoint URL", true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CommonValidationInvalidURL), true)
 	}
 
 	cfg := httpreq.NewDefaultConfig()

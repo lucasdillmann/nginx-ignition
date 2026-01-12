@@ -13,8 +13,6 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user/passwordhash"
 )
 
-var invalidCredentialsError = coreerror.New("Invalid username or password", true)
-
 type service struct {
 	repository    Repository
 	configuration *configuration.Configuration
@@ -34,7 +32,10 @@ func (s *service) Authenticate(ctx context.Context, username, password string) (
 	}
 
 	if usr == nil {
-		return nil, invalidCredentialsError
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.UserErrorInvalidCredentials),
+			true,
+		)
 	}
 
 	passwordMatches, err := passwordhash.New(s.configuration).
@@ -44,7 +45,10 @@ func (s *service) Authenticate(ctx context.Context, username, password string) (
 	}
 
 	if !passwordMatches {
-		return nil, invalidCredentialsError
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.UserErrorInvalidCredentials),
+			true,
+		)
 	}
 
 	return usr, nil
@@ -62,7 +66,7 @@ func (s *service) UpdatePassword(
 	}
 
 	if databaseState == nil {
-		return coreerror.New("No user found with provided ID", true)
+		return coreerror.New(i18n.M(ctx, i18n.K.UserErrorNotFoundByID), true)
 	}
 
 	passwordMatches, err := hash.Verify(
@@ -181,7 +185,7 @@ func (s *service) resetPassword(ctx context.Context, username string) (string, e
 	}
 
 	if user == nil {
-		return "", coreerror.New("User not found", true)
+		return "", coreerror.New(i18n.M(ctx, i18n.K.UserErrorNotFound), true)
 	}
 
 	newPassword := uuid.NewString()[:8]

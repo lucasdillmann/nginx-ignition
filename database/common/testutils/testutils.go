@@ -93,7 +93,7 @@ func runWithMockedDatabase(
 	cfg := configuration.NewWithOverrides(overrides)
 	db := database.New(cfg)
 
-	err := db.Init()
+	err := db.Init(t.Context())
 	require.NoError(t, err)
 	defer db.Close()
 

@@ -10,6 +10,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -93,7 +94,7 @@ func Test_service(t *testing.T) {
 			require.Error(t, err)
 			var coreErr *coreerror.CoreError
 			require.ErrorAs(t, err, &coreErr)
-			assert.Contains(t, coreErr.Message, "in use")
+			assert.Equal(t, i18n.K.CacheErrorInUse, coreErr.Message.Key)
 		})
 
 		t.Run("returns error when InUseByID fails", func(t *testing.T) {

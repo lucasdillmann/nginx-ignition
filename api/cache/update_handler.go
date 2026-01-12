@@ -26,7 +26,7 @@ func (h updateHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	domain := converter.Wrap2(toDomain, id, &dto)
+	domain := converter.Wrap2(ctx.Request.Context(), toDomain, id, &dto)
 	if err := h.commands.Save(ctx, domain); err != nil {
 		panic(err)
 	}

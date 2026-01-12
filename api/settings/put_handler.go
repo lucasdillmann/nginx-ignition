@@ -19,7 +19,7 @@ func (h putHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	domain := converter.Wrap(toDomain, payload)
+	domain := converter.Wrap(ctx.Request.Context(), toDomain, payload)
 	if err := h.commands.Save(ctx.Request.Context(), domain); err != nil {
 		panic(err)
 	}

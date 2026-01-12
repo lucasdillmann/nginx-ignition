@@ -13,6 +13,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -112,5 +113,5 @@ func resolveHostedZoneID(
 		}
 	}
 
-	return nil, coreerror.New("AWS Hosted Zone ID not found from given domain names", true)
+	return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorAWSHostedZoneNotFound), true)
 }

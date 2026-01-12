@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -58,7 +59,7 @@ func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if *inUse {
-		return coreerror.New("VPN is in use by one or more hosts", true)
+		return coreerror.New(i18n.M(ctx, i18n.K.VpnErrorInUse), true)
 	}
 
 	return s.repository.DeleteByID(ctx, id)
@@ -122,7 +123,7 @@ func (s *service) resolveValues(ctx context.Context, id uuid.UUID) (*VPN, Driver
 
 	driver := s.findDriver(data)
 	if driver == nil {
-		return nil, nil, nil, coreerror.New("VPN driver not found", false)
+		return nil, nil, nil, coreerror.New(i18n.M(ctx, i18n.K.VpnErrorDriverNotFound), false)
 	}
 
 	configDir, err := s.cfg.Get("nginx-ignition.vpn.config-path")

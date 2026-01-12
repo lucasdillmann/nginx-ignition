@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -87,7 +88,7 @@ func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 }
 
 func (p *Provider) ChallengeProvider(
-	_ context.Context,
+	ctx context.Context,
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
@@ -106,7 +107,7 @@ func (p *Provider) ChallengeProvider(
 	case usGovRegion:
 		env = cloud.AzureGovernment
 	default:
-		return nil, coreerror.New("Unknown Azure environment", true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorAzureUnknownEnvironment), true)
 	}
 
 	cfg := azuredns.NewDefaultConfig()

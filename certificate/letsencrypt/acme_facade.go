@@ -18,6 +18,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 func issueCertificate(
@@ -78,6 +79,7 @@ func issueCertificate(
 	}
 
 	return parseResult(
+		ctx,
 		uuid.New(),
 		domainNames,
 		parameters,
@@ -89,6 +91,7 @@ func issueCertificate(
 }
 
 func parseResult(
+	ctx context.Context,
 	id uuid.UUID,
 	domainNames []string,
 	parameters map[string]any,
@@ -100,7 +103,10 @@ func parseResult(
 	mainCert := strings.Replace(string(result.Certificate), string(result.IssuerCertificate), "", 1)
 	pemBlock, _ := pem.Decode([]byte(mainCert))
 	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
-		return nil, coreerror.New("failed to decode PEM block containing certificate", false)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePEM).V("type", "certificate"),
+			false,
+		)
 	}
 
 	metadata := certificateMetadata{
@@ -121,7 +127,10 @@ func parseResult(
 
 	privateKeyBlock, _ := pem.Decode(result.PrivateKey)
 	if privateKeyBlock == nil || privateKeyBlock.Type != "RSA PRIVATE KEY" {
-		return nil, coreerror.New("failed to decode PEM block with the private key", false)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePEM).V("type", "private key"),
+			false,
+		)
 	}
 
 	privateKey, err := x509.ParsePKCS1PrivateKey(privateKeyBlock.Bytes)
@@ -139,7 +148,7 @@ func parseResult(
 		return nil, err
 	}
 
-	encodedCertificationChain, err := encodeIssuerCertificate(result.IssuerCertificate)
+	encodedCertificationChain, err := encodeIssuerCertificate(ctx, result.IssuerCertificate)
 	if err != nil {
 		return nil, err
 	}
@@ -162,10 +171,13 @@ func parseResult(
 	return &output, nil
 }
 
-func encodeIssuerCertificate(issuer []byte) (*string, error) {
+func encodeIssuerCertificate(ctx context.Context, issuer []byte) (*string, error) {
 	pemBlock, _ := pem.Decode(issuer)
 	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
-		return nil, coreerror.New("Failed to decode issuer PEM block", false)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePEM).V("type", "issuer"),
+			false,
+		)
 	}
 
 	encodedValue := base64.StdEncoding.EncodeToString(pemBlock.Bytes)

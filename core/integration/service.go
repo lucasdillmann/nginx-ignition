@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -51,7 +52,7 @@ func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if *inUse {
-		return coreerror.New("Integration is in use by one or more hosts", true)
+		return coreerror.New(i18n.M(ctx, i18n.K.IntegrationErrorInUse), true)
 	}
 
 	return s.repository.DeleteByID(ctx, id)
@@ -74,16 +75,25 @@ func (s *service) ListOptions(
 	}
 
 	if data == nil {
-		return nil, ErrIntegrationNotFound
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.IntegrationErrorNotFound),
+			true,
+		)
 	}
 
 	if !data.Enabled {
-		return nil, ErrIntegrationDisabled
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.IntegrationErrorDisabled),
+			true,
+		)
 	}
 
 	driver := s.findDriver(data)
 	if driver == nil {
-		return nil, ErrIntegrationNotFound
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.IntegrationErrorNotFound),
+			true,
+		)
 	}
 
 	options, err := driver.GetAvailableOptions(
@@ -116,16 +126,25 @@ func (s *service) GetOption(
 	}
 
 	if data == nil {
-		return nil, ErrIntegrationNotFound
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.IntegrationErrorNotFound),
+			true,
+		)
 	}
 
 	driver := s.findDriver(data)
 	if driver == nil {
-		return nil, ErrIntegrationNotFound
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.IntegrationErrorNotFound),
+			true,
+		)
 	}
 
 	if !data.Enabled {
-		return nil, ErrIntegrationDisabled
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.IntegrationErrorDisabled),
+			true,
+		)
 	}
 
 	return driver.GetAvailableOptionByID(ctx, data.Parameters, optionID)
@@ -142,16 +161,25 @@ func (s *service) GetOptionURL(
 	}
 
 	if data == nil {
-		return nil, nil, ErrIntegrationNotFound
+		return nil, nil, coreerror.New(
+			i18n.M(ctx, i18n.K.IntegrationErrorNotFound),
+			true,
+		)
 	}
 
 	driver := s.findDriver(data)
 	if driver == nil {
-		return nil, nil, ErrIntegrationNotFound
+		return nil, nil, coreerror.New(
+			i18n.M(ctx, i18n.K.IntegrationErrorNotFound),
+			true,
+		)
 	}
 
 	if !data.Enabled {
-		return nil, nil, ErrIntegrationDisabled
+		return nil, nil, coreerror.New(
+			i18n.M(ctx, i18n.K.IntegrationErrorDisabled),
+			true,
+		)
 	}
 
 	return driver.GetOptionProxyURL(ctx, data.Parameters, optionID)

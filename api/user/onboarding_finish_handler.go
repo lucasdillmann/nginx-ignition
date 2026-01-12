@@ -32,7 +32,7 @@ func (h onboardingFinishHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	domainModel := converter.Wrap(toDomain, requestPayload)
+	domainModel := converter.Wrap(ctx.Request.Context(), toDomain, requestPayload)
 	domainModel.ID = uuid.New()
 	domainModel.Enabled = true
 	domainModel.Permissions = user.Permissions{

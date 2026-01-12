@@ -14,6 +14,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 type Provider struct{}
@@ -70,21 +71,24 @@ func (p *Provider) Issue(
 		chainStr, chainPresent = params[certificationChainTextField.ID].(string)
 	}
 
-	privateKey, err := parsePrivateKey(privateKeyStr, fileUploadMode)
+	privateKey, err := parsePrivateKey(ctx, privateKeyStr, fileUploadMode)
 	if err != nil {
-		return nil, coreerror.New("Invalid private key", true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorInvalidPrivateKey), true)
 	}
 
-	publicKey, err := parseCertificate(publicKeyStr, fileUploadMode)
+	publicKey, err := parseCertificate(ctx, publicKeyStr, fileUploadMode)
 	if err != nil {
-		return nil, coreerror.New("Invalid public key", true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorInvalidPublicKey), true)
 	}
 
 	chain := make([]x509.Certificate, 0)
 	if chainPresent && chainStr != "" {
-		chain, err = parseCertificateChain(chainStr, fileUploadMode)
+		chain, err = parseCertificateChain(ctx, chainStr, fileUploadMode)
 		if err != nil {
-			return nil, coreerror.New("Invalid certification chain", true)
+			return nil, coreerror.New(
+				i18n.M(ctx, i18n.K.CertificateErrorInvalidCertificationChain),
+				true,
+			)
 		}
 	}
 
@@ -111,38 +115,61 @@ func (p *Provider) Renew(
 	return cert, nil
 }
 
-func parsePrivateKey(key string, base64Encoded bool) ([]byte, error) {
+func parsePrivateKey(ctx context.Context, key string, base64Encoded bool) ([]byte, error) {
 	decodedKey, err := stringToByteArray(key, base64Encoded)
 	if err != nil {
-		return nil, coreerror.New("Failed to decode key", true)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CertificateErrorUnableToDecode).V("type", "key"),
+			true,
+		)
 	}
 
 	block, _ := pem.Decode(decodedKey)
 	if block == nil {
-		return nil, coreerror.New("Failed to parse PEM block containing the key", true)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePEM).V("type", "key"),
+			true,
+		)
 	}
 
 	return block.Bytes, nil
 }
 
-func parseCertificate(cert string, base64Encoded bool) (*x509.Certificate, error) {
+func parseCertificate(
+	ctx context.Context,
+	cert string,
+	base64Encoded bool,
+) (*x509.Certificate, error) {
 	decodedCert, err := stringToByteArray(cert, base64Encoded)
 	if err != nil {
-		return nil, coreerror.New("Failed to decode certificate", true)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CertificateErrorUnableToDecode).V("type", "certificate"),
+			true,
+		)
 	}
 
 	block, _ := pem.Decode(decodedCert)
 	if block == nil {
-		return nil, coreerror.New("Failed to parse PEM block containing the certificate", true)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePEM).V("type", "certificate"),
+			true,
+		)
 	}
 
 	return x509.ParseCertificate(block.Bytes)
 }
 
-func parseCertificateChain(chain string, base64Encoded bool) ([]x509.Certificate, error) {
+func parseCertificateChain(
+	ctx context.Context,
+	chain string,
+	base64Encoded bool,
+) ([]x509.Certificate, error) {
 	decodedChain, err := stringToByteArray(chain, base64Encoded)
 	if err != nil {
-		return nil, coreerror.New("Failed to decode chain", true)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CertificateErrorUnableToDecode).V("type", "chain"),
+			true,
+		)
 	}
 
 	certs := make([]x509.Certificate, 0)
@@ -152,7 +179,7 @@ func parseCertificateChain(chain string, base64Encoded bool) ([]x509.Certificate
 		}
 
 		cert += "-----END CERTIFICATE-----"
-		parsedCert, err := parseCertificate(cert, false)
+		parsedCert, err := parseCertificate(ctx, cert, false)
 		if err != nil {
 			return nil, err
 		}

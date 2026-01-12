@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
@@ -31,7 +33,9 @@ func Test_streamFileProvider(t *testing.T) {
 			ctx.supportedFeatures.StreamType = NoneSupportType
 			_, err := provider.provide(ctx)
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "Support for streams is not enabled")
+			var coreErr *coreerror.CoreError
+			assert.ErrorAs(t, err, &coreErr)
+			assert.Equal(t, i18n.K.NginxErrorStreamNotEnabled, coreErr.Message.Key)
 		})
 
 		t.Run("returns error for unknown stream type", func(t *testing.T) {
@@ -215,7 +219,9 @@ func Test_streamFileProvider(t *testing.T) {
 			s := &stream.Stream{Type: stream.SNIRouterType}
 			_, err := provider.buildRoutedStream(ctx, s)
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "Support for TLS SNI is not enabled")
+			var coreErr *coreerror.CoreError
+			assert.ErrorAs(t, err, &coreErr)
+			assert.Equal(t, i18n.K.NginxErrorStreamSniNotEnabled, coreErr.Message.Key)
 		})
 	})
 }

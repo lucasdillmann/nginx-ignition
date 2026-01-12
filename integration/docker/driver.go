@@ -40,7 +40,7 @@ func (a *Driver) GetAvailableOptions(
 	searchTerms *string,
 	tcpOnly bool,
 ) (*pagination.Page[integration.DriverOption], error) {
-	optionResolver, err := resolver.For(parameters)
+	optionResolver, err := resolver.For(ctx, parameters)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (a *Driver) GetAvailableOptionByID(
 	parameters map[string]any,
 	id string,
 ) (*integration.DriverOption, error) {
-	optionResolver, err := resolver.For(parameters)
+	optionResolver, err := resolver.For(ctx, parameters)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (a *Driver) GetOptionProxyURL(
 	parameters map[string]any,
 	id string,
 ) (*string, []string, error) {
-	optionResolver, err := resolver.For(parameters)
+	optionResolver, err := resolver.For(ctx, parameters)
 	if err != nil {
 		return nil, nil, err
 	}

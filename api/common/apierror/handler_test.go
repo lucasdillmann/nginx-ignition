@@ -48,7 +48,7 @@ func Test_handler(t *testing.T) {
 		{
 			name: "CoreError (UserRelated)",
 			err: &coreerror.CoreError{
-				Message:     "User error",
+				Message:     i18n.Raw("User error"),
 				UserRelated: true,
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -57,7 +57,7 @@ func Test_handler(t *testing.T) {
 		{
 			name: "CoreError (Not UserRelated)",
 			err: &coreerror.CoreError{
-				Message:     "System error",
+				Message:     i18n.Raw("System error"),
 				UserRelated: false,
 			},
 			expectedStatus: http.StatusInternalServerError,

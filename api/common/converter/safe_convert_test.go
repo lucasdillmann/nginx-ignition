@@ -12,7 +12,7 @@ func Test_wrap(t *testing.T) {
 			return "value"
 		}
 		input := 1
-		result := Wrap(convertFunc, &input)
+		result := Wrap(t.Context(), convertFunc, &input)
 		assert.Equal(t, "value", result)
 	})
 
@@ -22,7 +22,7 @@ func Test_wrap(t *testing.T) {
 			return "value" + string(rune(val))
 		}
 		assert.Panics(t, func() {
-			Wrap(convertFunc, nil)
+			Wrap(t.Context(), convertFunc, nil)
 		})
 	})
 }
@@ -32,7 +32,7 @@ func Test_wrap2(t *testing.T) {
 		convertFunc := func(_, _ int) string {
 			return "value"
 		}
-		result := Wrap2(convertFunc, 1, 2)
+		result := Wrap2(t.Context(), convertFunc, 1, 2)
 		assert.Equal(t, "value", result)
 	})
 
@@ -42,7 +42,7 @@ func Test_wrap2(t *testing.T) {
 		}
 
 		assert.Panics(t, func() {
-			Wrap2(convertFunc, 1, 2)
+			Wrap2(t.Context(), convertFunc, 1, 2)
 		})
 	})
 }

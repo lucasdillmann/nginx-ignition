@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
@@ -82,7 +84,9 @@ func Test_hostRouteSourceCodeFileProvider(t *testing.T) {
 
 			_, err := provider.buildSourceCodeFiles(ctx, h)
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "not enabled")
+			var coreErr *coreerror.CoreError
+			assert.ErrorAs(t, err, &coreErr)
+			assert.Equal(t, i18n.K.NginxErrorHostRouteCodeNotEnabled, coreErr.Message.Key)
 		})
 	})
 }

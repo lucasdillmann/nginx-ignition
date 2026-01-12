@@ -11,6 +11,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -158,7 +159,7 @@ func Test_service(t *testing.T) {
 			assert.Nil(t, result)
 			var coreErr *coreerror.CoreError
 			require.ErrorAs(t, err, &coreErr)
-			assert.Contains(t, coreErr.Message, "Invalid username or password")
+			assert.Equal(t, i18n.K.UserErrorInvalidCredentials, coreErr.Message.Key)
 		})
 	})
 

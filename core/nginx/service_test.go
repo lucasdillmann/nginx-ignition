@@ -13,6 +13,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
@@ -131,7 +132,7 @@ func Test_service(t *testing.T) {
 			assert.Error(t, err)
 			var coreErr *coreerror.CoreError
 			assert.ErrorAs(t, err, &coreErr)
-			assert.Contains(t, coreErr.Message, "not running")
+			assert.Equal(t, i18n.K.NginxErrorNotRunning, coreErr.Message.Key)
 		})
 	})
 

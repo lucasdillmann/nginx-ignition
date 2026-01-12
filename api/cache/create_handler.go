@@ -21,7 +21,7 @@ func (h createHandler) handle(ctx *gin.Context) {
 	}
 
 	id := uuid.New()
-	domain := converter.Wrap2(toDomain, id, &dto)
+	domain := converter.Wrap2(ctx.Request.Context(), toDomain, id, &dto)
 	if err := h.commands.Save(ctx.Request.Context(), domain); err != nil {
 		panic(err)
 	}
