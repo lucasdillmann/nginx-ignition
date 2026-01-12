@@ -19,6 +19,7 @@ vendor/
 .idea/
 .qodo
 build/
+**/.DS_Store
 
 # Generated mock files
 **/*_mock.go

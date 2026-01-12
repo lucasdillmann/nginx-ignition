@@ -9,7 +9,6 @@ func EnUS() Dictionary {
 	return newDictionary(
 		language.Make("en-US"),
 		Messages{
-			// TODO: Review all messages to assert that they didn't change in the migration
 			AccessListErrorInUse:                           "Access list is in use by one or more hosts",
 			AccessListValidationInvalidAddress:             "Address \"${address}\" is not a valid IPv4 or IPv6 address or range",
 			BindingValidationCertificateIDNotAllowed:       "Certificate cannot be specified for this type of binding",
