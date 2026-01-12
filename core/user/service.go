@@ -77,14 +77,14 @@ func (s *service) UpdatePassword(
 	if !passwordMatches {
 		return validation.SingleFieldError(
 			"currentPassword",
-			i18n.M(ctx, "user.validation.current-password-mismatch"),
+			i18n.M(ctx, i18n.K.UserValidationCurrentPasswordMismatch),
 		)
 	}
 
 	if len(newPassword) < minimumPasswordLength {
 		return validation.SingleFieldError(
 			"newPassword",
-			i18n.M(ctx, "common.validation.too-short").V("min", minimumPasswordLength),
+			i18n.M(ctx, i18n.K.CommonValidationTooShort).V("min", minimumPasswordLength),
 		)
 	}
 

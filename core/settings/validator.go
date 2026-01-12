@@ -59,24 +59,24 @@ func (v *validator) validateNginx(ctx context.Context, settings *NginxSettings) 
 	v.checkRange(ctx, settings.MaximumBodySizeMb, maximumBodySizeRange, "nginx.maximumBodySizeMb")
 
 	if settings.DefaultContentType == "" {
-		v.delegate.Add(defaultContentTypePath, i18n.M(ctx, "common.validation.value-missing"))
+		v.delegate.Add(defaultContentTypePath, i18n.M(ctx, i18n.K.CommonValidationValueMissing))
 	}
 
 	if len(settings.DefaultContentType) > maximumDefaultContentTypeLength {
 		v.delegate.Add(
 			defaultContentTypePath,
-			i18n.M(ctx, "common.validation.too-long").V("max", maximumDefaultContentTypeLength),
+			i18n.M(ctx, i18n.K.CommonValidationTooLong).V("max", maximumDefaultContentTypeLength),
 		)
 	}
 
 	if strings.TrimSpace(settings.RuntimeUser) == "" {
-		v.delegate.Add("nginx.runtimeUser", i18n.M(ctx, "common.validation.value-missing"))
+		v.delegate.Add("nginx.runtimeUser", i18n.M(ctx, i18n.K.CommonValidationValueMissing))
 	}
 
 	if len(settings.RuntimeUser) > maximumRuntimeUserLength {
 		v.delegate.Add(
 			"nginx.runtimeUser",
-			i18n.M(ctx, "common.validation.too-long").V("max", maximumRuntimeUserLength),
+			i18n.M(ctx, i18n.K.CommonValidationTooLong).V("max", maximumRuntimeUserLength),
 		)
 	}
 }
@@ -117,7 +117,7 @@ func (v *validator) checkRange(
 	if !r.Contains(value) {
 		v.delegate.Add(
 			path,
-			i18n.M(ctx, "common.validation.between-values").V("min", r.Min).V("max", r.Max),
+			i18n.M(ctx, i18n.K.CommonValidationBetweenValues).V("min", r.Min).V("max", r.Max),
 		)
 	}
 }

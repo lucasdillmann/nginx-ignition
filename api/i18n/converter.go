@@ -1,16 +1,16 @@
 package i18n
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
+	"dillmann.com.br/nginx-ignition/core/common/i18n/dict"
 )
 
-func toDTO(dictionaries []i18n.Dictionary) []dictionaryDTO {
+func toDTO(dictionaries []dict.Dictionary) []dictionaryDTO {
 	output := make([]dictionaryDTO, len(dictionaries))
 
-	for index, dictionary := range dictionaries {
+	for index := range dictionaries {
 		output[index] = dictionaryDTO{
-			Language:  dictionary.Language.String(),
-			Templates: dictionary.Templates,
+			Language:  dictionaries[index].Language().String(),
+			Templates: dictionaries[index].Templates(),
 		}
 	}
 

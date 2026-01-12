@@ -5,13 +5,13 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
+	"dillmann.com.br/nginx-ignition/core/common/i18n/dict"
 )
 
 func Test_converter(t *testing.T) {
 	t.Run("toDTO", func(t *testing.T) {
 		t.Run("maps dictionaries correctly", func(t *testing.T) {
-			input := []i18n.Dictionary{newDictionary()}
+			input := []dict.Dictionary{newDictionary()}
 			expected := []dictionaryDTO{newDictionaryDTO()}
 
 			result := toDTO(input)
@@ -20,7 +20,7 @@ func Test_converter(t *testing.T) {
 		})
 
 		t.Run("returns empty slice for empty input", func(t *testing.T) {
-			result := toDTO([]i18n.Dictionary{})
+			result := toDTO([]dict.Dictionary{})
 			assert.Empty(t, result)
 		})
 	})

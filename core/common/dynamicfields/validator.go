@@ -27,7 +27,7 @@ func Validate(
 		if !exists && field.Required && conditionSatisfied {
 			violations = append(violations, validation.ConsistencyViolation{
 				Path:    "parameters." + field.ID,
-				Message: i18n.M(ctx, "common.validation.value-missing"),
+				Message: i18n.M(ctx, i18n.K.CommonValidationValueMissing),
 			})
 		}
 
@@ -76,26 +76,26 @@ func resolveErrorMessage(ctx context.Context, field DynamicField, value any) *i1
 
 	case FileType:
 		if !canDecodeFile(value) {
-			return i18n.M(ctx, "dynamicfield.validation.invalid-file-encoded-base64")
+			return i18n.M(ctx, i18n.K.DynamicFieldValidationInvalidFileEncodedBase64)
 		}
 
 	case BooleanType:
 		if _, ok := value.(bool); !ok {
-			return i18n.M(ctx, "dynamicfield.validation.invalid-boolean")
+			return i18n.M(ctx, i18n.K.DynamicFieldValidationInvalidBoolean)
 		}
 
 	case EmailType:
 		if !isAnEmail(value) {
-			return i18n.M(ctx, "dynamicfield.validation.invalid-email")
+			return i18n.M(ctx, i18n.K.DynamicFieldValidationInvalidEmail)
 		}
 
 	case URLType:
 		if !isAnURL(value) {
-			return i18n.M(ctx, "common.validation.invalid-url")
+			return i18n.M(ctx, i18n.K.CommonValidationInvalidURL)
 		}
 
 	default:
-		return i18n.M(ctx, "dynamicfield.validation.unknown-field-type")
+		return i18n.M(ctx, i18n.K.DynamicFieldValidationUnknownFieldType)
 	}
 
 	return nil
@@ -135,11 +135,11 @@ func resolveTextBasedFieldErrorMessage(
 ) *i18n.Message {
 	castedValue, casted := value.(string)
 	if !casted {
-		return i18n.M(ctx, "dynamicfield.validation.invalid-text")
+		return i18n.M(ctx, i18n.K.DynamicFieldValidationInvalidText)
 	}
 
 	if field.Required && strings.TrimSpace(castedValue) == "" {
-		return i18n.M(ctx, "common.validation.cannot-be-empty")
+		return i18n.M(ctx, i18n.K.CommonValidationCannotBeEmpty)
 	}
 
 	if field.Type == EnumType {
@@ -168,7 +168,7 @@ func resolveEnumFieldErrorMessage(
 	}
 
 	if !valid {
-		return i18n.M(ctx, "dynamicfield.validation.not-recognized-option").
+		return i18n.M(ctx, i18n.K.DynamicFieldValidationNotRecognizedOption).
 			V("options", strings.Join(enumOptions, ", "))
 	}
 

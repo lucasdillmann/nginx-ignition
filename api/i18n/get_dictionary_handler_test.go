@@ -11,6 +11,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
+	"dillmann.com.br/nginx-ignition/core/common/i18n/dict"
 )
 
 func init() {
@@ -24,7 +25,7 @@ func Test_getDictionaryHandler(t *testing.T) {
 			defer ctrl.Finish()
 
 			commands := i18n.NewMockedCommands(ctrl)
-			dicts := []i18n.Dictionary{newDictionary()}
+			dicts := []dict.Dictionary{newDictionary()}
 			commands.EXPECT().GetDictionaries().Return(dicts)
 
 			recorder := httptest.NewRecorder()

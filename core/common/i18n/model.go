@@ -18,11 +18,6 @@ type Message struct {
 	raw       bool
 }
 
-type Dictionary struct {
-	Language  language.Tag
-	Templates map[string]string
-}
-
 func (m Message) String() string {
 	if m.raw || m.ctx == nil || !container.Ready() {
 		return m.Key

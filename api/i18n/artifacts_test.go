@@ -1,21 +1,17 @@
 package i18n
 
 import (
-	"golang.org/x/text/language"
-
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
+	"dillmann.com.br/nginx-ignition/core/common/i18n/dict"
 )
 
-func newDictionary() i18n.Dictionary {
-	return i18n.Dictionary{
-		Language:  language.AmericanEnglish,
-		Templates: map[string]string{"key": "value"},
-	}
+func newDictionary() dict.Dictionary {
+	return dict.EnUS()
 }
 
 func newDictionaryDTO() dictionaryDTO {
+	baseDict := dict.EnUS()
 	return dictionaryDTO{
-		Language:  "en-US",
-		Templates: map[string]string{"key": "value"},
+		Language:  baseDict.Language().String(),
+		Templates: baseDict.Templates(),
 	}
 }

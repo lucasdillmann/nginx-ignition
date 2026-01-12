@@ -4,7 +4,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 	"golang.org/x/text/language"
+
+	"dillmann.com.br/nginx-ignition/core/common/i18n/dict"
 )
 
 func Test_service(t *testing.T) {
@@ -20,13 +23,18 @@ func Test_service(t *testing.T) {
 	})
 
 	t.Run("Supports", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		enUS := dict.NewMockedDictionary(ctrl)
+		ptBR := dict.NewMockedDictionary(ctrl)
+
+		enUS.EXPECT().Language().Return(language.AmericanEnglish).AnyTimes()
+		ptBR.EXPECT().Language().Return(language.BrazilianPortuguese).AnyTimes()
+
 		s := &service{
-			languages: []Dictionary{
-				{Language: language.AmericanEnglish},
-				{Language: language.BrazilianPortuguese},
-			},
-			defaultLanguage: Dictionary{Language: language.AmericanEnglish},
-			cache:           make(map[language.Tag]*Dictionary),
+			dictionaries:      []dict.Dictionary{enUS, ptBR},
+			defaultDictionary: enUS,
 		}
 
 		t.Run("returns true for exact match", func(t *testing.T) {
@@ -45,46 +53,59 @@ func Test_service(t *testing.T) {
 	})
 
 	t.Run("Translate", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		enUS := dict.NewMockedDictionary(ctrl)
+		ptBR := dict.NewMockedDictionary(ctrl)
+
+		enUS.EXPECT().Language().Return(language.AmericanEnglish).AnyTimes()
+		ptBR.EXPECT().Language().Return(language.BrazilianPortuguese).AnyTimes()
+
 		s := &service{
-			languages: []Dictionary{
-				{
-					Language: language.AmericanEnglish,
-					Templates: map[string]string{
-						"msg":  "Hello",
-						"vars": "Hello ${name}",
-					},
-				},
-				{
-					Language: language.BrazilianPortuguese,
-					Templates: map[string]string{
-						"msg": "Olá",
-					},
-				},
-			},
-			defaultLanguage: Dictionary{
-				Language: language.AmericanEnglish,
-				Templates: map[string]string{
-					"msg":  "Hello",
-					"vars": "Hello ${name}",
-				},
-			},
-			cache: make(map[language.Tag]*Dictionary),
+			dictionaries:      []dict.Dictionary{enUS, ptBR},
+			defaultDictionary: enUS,
 		}
 
 		t.Run("translates for exact match", func(t *testing.T) {
-			assert.Equal(t, "Hello", s.Translate(language.AmericanEnglish, "msg", nil))
-			assert.Equal(t, "Olá", s.Translate(language.BrazilianPortuguese, "msg", nil))
+			enUS.EXPECT().Translate(K.CommonValidationValueMissing, gomock.Nil()).Return("Hello")
+			ptBR.EXPECT().Translate(K.CommonValidationValueMissing, gomock.Nil()).Return("Olá")
+
+			assert.Equal(
+				t,
+				"Hello",
+				s.Translate(language.AmericanEnglish, K.CommonValidationValueMissing, nil),
+			)
+			assert.Equal(
+				t,
+				"Olá",
+				s.Translate(language.BrazilianPortuguese, K.CommonValidationValueMissing, nil),
+			)
 		})
 
 		t.Run("translates for base language match", func(t *testing.T) {
-			assert.Equal(t, "Hello", s.Translate(language.BritishEnglish, "msg", nil))
+			ptBR.EXPECT().Translate(K.CommonValidationValueMissing, gomock.Nil()).Return("Olá")
+
+			assert.Equal(
+				t,
+				"Olá",
+				s.Translate(language.EuropeanPortuguese, K.CommonValidationValueMissing, nil),
+			)
 		})
 
 		t.Run("falls back to default language for unsupported language", func(t *testing.T) {
-			assert.Equal(t, "Hello", s.Translate(language.French, "msg", nil))
+			enUS.EXPECT().Translate(K.CommonValidationValueMissing, gomock.Nil()).Return("Hello")
+
+			assert.Equal(
+				t,
+				"Hello",
+				s.Translate(language.French, K.CommonValidationValueMissing, nil),
+			)
 		})
 
 		t.Run("falls back to key if template is missing", func(t *testing.T) {
+			enUS.EXPECT().Translate("missing-key", gomock.Nil()).Return("missing-key")
+
 			assert.Equal(
 				t,
 				"missing-key",
@@ -94,15 +115,36 @@ func Test_service(t *testing.T) {
 
 		t.Run("replaces variables", func(t *testing.T) {
 			vars := map[string]any{"name": "Lucas"}
-			assert.Equal(t, "Hello Lucas", s.Translate(language.AmericanEnglish, "vars", vars))
+			enUS.EXPECT().Translate(K.CommonValidationBetweenValues, vars).Return("Hello Lucas")
+
+			assert.Equal(
+				t,
+				"Hello Lucas",
+				s.Translate(language.AmericanEnglish, K.CommonValidationBetweenValues, vars),
+			)
 		})
 
 		t.Run("falls back for missing variables", func(t *testing.T) {
-			assert.Equal(t, "Hello ${name}", s.Translate(language.AmericanEnglish, "vars", nil))
+			enUS.EXPECT().
+				Translate(K.CommonValidationBetweenValues, gomock.Nil()).
+				Return("Hello ${name}")
+			enUS.EXPECT().
+				Translate(K.CommonValidationBetweenValues, gomock.Any()).
+				Return("Hello ${name}")
+
 			assert.Equal(
 				t,
 				"Hello ${name}",
-				s.Translate(language.AmericanEnglish, "vars", map[string]any{}),
+				s.Translate(language.AmericanEnglish, K.CommonValidationBetweenValues, nil),
+			)
+			assert.Equal(
+				t,
+				"Hello ${name}",
+				s.Translate(
+					language.AmericanEnglish,
+					K.CommonValidationBetweenValues,
+					make(map[string]any),
+				),
 			)
 		})
 	})

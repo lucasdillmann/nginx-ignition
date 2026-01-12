@@ -28,7 +28,7 @@ func (r validationRules) Validate(
 	if !casted || !termsOfServiceAccepted {
 		output = append(output, validation.ConsistencyViolation{
 			Path:    fmt.Sprintf("parameters.%s", termsOfService.ID),
-			Message: i18n.M(ctx, "letsencrypt.validation.tos-required"),
+			Message: i18n.M(ctx, i18n.K.LetsEncryptValidationTosRequired),
 		})
 	}
 

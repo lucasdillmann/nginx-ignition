@@ -22,7 +22,7 @@ func newValidator() *validator {
 
 func (v *validator) validate(ctx context.Context, accessList *AccessList) error {
 	if strings.TrimSpace(accessList.Name) == "" {
-		v.delegate.Add("name", i18n.M(ctx, "common.validation.value-missing"))
+		v.delegate.Add("name", i18n.M(ctx, i18n.K.CommonValidationValueMissing))
 	}
 
 	knownUsernames := map[string]bool{}
@@ -46,17 +46,17 @@ func (v *validator) validateEntry(
 ) {
 	path := fmt.Sprintf("entries[%d]", index)
 	if (*knownUsernames)[entry.Priority] {
-		v.delegate.Add(path+".priority", i18n.M(ctx, "common.validation.duplicated-value"))
+		v.delegate.Add(path+".priority", i18n.M(ctx, i18n.K.CommonValidationDuplicatedValue))
 	} else {
 		(*knownUsernames)[entry.Priority] = true
 	}
 
 	if entry.Priority < 0 {
-		v.delegate.Add(path+".priority", i18n.M(ctx, "common.validation.cannot-be-zero"))
+		v.delegate.Add(path+".priority", i18n.M(ctx, i18n.K.CommonValidationCannotBeZero))
 	}
 
 	if len(entry.SourceAddress) == 0 {
-		v.delegate.Add(path+".sourceAddress", i18n.M(ctx, "common.validation.value-missing"))
+		v.delegate.Add(path+".sourceAddress", i18n.M(ctx, i18n.K.CommonValidationValueMissing))
 	}
 
 	for addressIndex, address := range entry.SourceAddress {
@@ -70,7 +70,7 @@ func (v *validator) validateEntry(
 
 		v.delegate.Add(
 			fmt.Sprintf("%s.sourceAddress[%d]", path, addressIndex),
-			i18n.M(ctx, "accesslist.validation.invalid-address").V("address", address),
+			i18n.M(ctx, i18n.K.AccessListValidationInvalidAddress).V("address", address),
 		)
 	}
 }
@@ -84,7 +84,7 @@ func (v *validator) validateCredentials(
 	path := fmt.Sprintf("credentials[%d].username", index)
 
 	if strings.TrimSpace(credentials.Username) == "" {
-		v.delegate.Add(path, i18n.M(ctx, "common.validation.value-missing"))
+		v.delegate.Add(path, i18n.M(ctx, i18n.K.CommonValidationValueMissing))
 	}
 
 	if (*knownUsernames)[credentials.Username] {

@@ -2,11 +2,13 @@ package i18n
 
 import (
 	"golang.org/x/text/language"
+
+	"dillmann.com.br/nginx-ignition/core/common/i18n/dict"
 )
 
 type Commands interface {
 	Translate(lang language.Tag, messageKey string, variables map[string]any) string
-	GetDictionaries() []Dictionary
+	GetDictionaries() []dict.Dictionary
 	DefaultLanguage() language.Tag
 	Supports(lang language.Tag) bool
 }

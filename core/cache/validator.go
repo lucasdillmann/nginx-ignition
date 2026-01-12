@@ -36,19 +36,19 @@ func (v *validator) validate(ctx context.Context, c *Cache) error {
 
 func (v *validator) validateBasicSettings(ctx context.Context, c *Cache) {
 	if strings.TrimSpace(c.Name) == "" {
-		v.delegate.Add("name", i18n.M(ctx, "common.validation.value-missing"))
+		v.delegate.Add("name", i18n.M(ctx, i18n.K.CommonValidationValueMissing))
 	}
 
 	if c.InactiveSeconds != nil && *c.InactiveSeconds < 1 {
-		v.delegate.Add("inactiveSeconds", i18n.M(ctx, "common.validation.cannot-be-zero"))
+		v.delegate.Add("inactiveSeconds", i18n.M(ctx, i18n.K.CommonValidationCannotBeZero))
 	}
 
 	if c.MaximumSizeMB != nil && *c.MaximumSizeMB < 1 {
-		v.delegate.Add("maximumSizeMb", i18n.M(ctx, "common.validation.cannot-be-zero"))
+		v.delegate.Add("maximumSizeMb", i18n.M(ctx, i18n.K.CommonValidationCannotBeZero))
 	}
 
 	if c.MinimumUsesBeforeCaching < 1 {
-		v.delegate.Add("minimumUsesBeforeCaching", i18n.M(ctx, "common.validation.cannot-be-zero"))
+		v.delegate.Add("minimumUsesBeforeCaching", i18n.M(ctx, i18n.K.CommonValidationCannotBeZero))
 	}
 }
 
@@ -59,7 +59,7 @@ func (v *validator) validateStoragePath(ctx context.Context, path *string) {
 
 	trimmedPath := strings.TrimSpace(*path)
 	if !filepath.IsAbs(trimmedPath) {
-		v.delegate.Add("storagePath", i18n.M(ctx, "common.validation.absolute-path-required"))
+		v.delegate.Add("storagePath", i18n.M(ctx, i18n.K.CommonValidationAbsolutePathRequired))
 	}
 }
 
@@ -71,21 +71,24 @@ func (v *validator) validateConcurrencyLock(ctx context.Context, lock Concurrenc
 	if lock.TimeoutSeconds == nil {
 		v.delegate.Add(
 			"concurrencyLock.timeoutSeconds",
-			i18n.M(ctx, "common.validation.value-missing"),
+			i18n.M(ctx, i18n.K.CommonValidationValueMissing),
 		)
 	} else if *lock.TimeoutSeconds < 1 {
 		v.delegate.Add(
 			"concurrencyLock.timeoutSeconds",
-			i18n.M(ctx, "common.validation.cannot-be-zero"),
+			i18n.M(ctx, i18n.K.CommonValidationCannotBeZero),
 		)
 	}
 
 	if lock.AgeSeconds == nil {
-		v.delegate.Add("concurrencyLock.ageSeconds", i18n.M(ctx, "common.validation.value-missing"))
+		v.delegate.Add(
+			"concurrencyLock.ageSeconds",
+			i18n.M(ctx, i18n.K.CommonValidationValueMissing),
+		)
 	} else if *lock.AgeSeconds < 1 {
 		v.delegate.Add(
 			"concurrencyLock.ageSeconds",
-			i18n.M(ctx, "common.validation.cannot-be-zero"),
+			i18n.M(ctx, i18n.K.CommonValidationCannotBeZero),
 		)
 	}
 }
@@ -110,7 +113,7 @@ func (v *validator) validateMethod(ctx context.Context, index int, method Method
 		// Valid
 	default:
 		path := fmt.Sprintf("allowedMethods[%d]", index)
-		v.delegate.Add(path, i18n.M(ctx, "cache.validation.invalid-method"))
+		v.delegate.Add(path, i18n.M(ctx, i18n.K.CacheValidationInvalidMethod))
 	}
 }
 
@@ -122,14 +125,14 @@ func (v *validator) validateUseStaleOption(ctx context.Context, index int, optio
 		// Valid
 	default:
 		path := fmt.Sprintf("useStale[%d]", index)
-		v.delegate.Add(path, i18n.M(ctx, "cache.validation.invalid-stale-option"))
+		v.delegate.Add(path, i18n.M(ctx, i18n.K.CacheValidationInvalidStaleOption))
 	}
 }
 
 func (v *validator) validateDuration(ctx context.Context, index int, duration *Duration) {
 	path := fmt.Sprintf("durations[%d].statusCodes", index)
 	if len(duration.StatusCodes) == 0 {
-		v.delegate.Add(path, i18n.M(ctx, "common.validation.value-missing"))
+		v.delegate.Add(path, i18n.M(ctx, i18n.K.CommonValidationValueMissing))
 	}
 
 	for _, rawValue := range duration.StatusCodes {
@@ -140,7 +143,7 @@ func (v *validator) validateDuration(ctx context.Context, index int, duration *D
 
 		v.delegate.Add(
 			path,
-			i18n.M(ctx, "cache.validation.invalid-status-code").
+			i18n.M(ctx, i18n.K.CacheValidationInvalidStatusCode).
 				V("value", rawValue).
 				V("min", httpStatusCodeRange.Min).
 				V("max", httpStatusCodeRange.Max),
@@ -148,7 +151,7 @@ func (v *validator) validateDuration(ctx context.Context, index int, duration *D
 	}
 
 	if duration.ValidTimeSeconds < 1 {
-		v.delegate.Add(path+".validTimeSeconds", i18n.M(ctx, "common.validation.cannot-be-zero"))
+		v.delegate.Add(path+".validTimeSeconds", i18n.M(ctx, i18n.K.CommonValidationCannotBeZero))
 	}
 }
 
@@ -157,12 +160,12 @@ func (v *validator) validateFileExtensions(ctx context.Context, extensions []str
 		path := fmt.Sprintf("fileExtensions[%d]", index)
 
 		if strings.TrimSpace(extension) == "" {
-			v.delegate.Add(path, i18n.M(ctx, "common.validation.value-missing"))
+			v.delegate.Add(path, i18n.M(ctx, i18n.K.CommonValidationValueMissing))
 			continue
 		}
 
 		if strings.HasPrefix(extension, ".") {
-			v.delegate.Add(path, i18n.M(ctx, "cache.validation.extension-dot-not-allowed"))
+			v.delegate.Add(path, i18n.M(ctx, i18n.K.CacheValidationExtensionDotNotAllowed))
 		}
 	}
 }

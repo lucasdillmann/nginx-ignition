@@ -97,13 +97,13 @@ func (v *validator) validateDefaultFlag(ctx context.Context, host *Host) error {
 	}
 
 	if defaultServer != nil && host.ID != defaultServer.ID {
-		v.delegate.Add("defaultServer", i18n.M(ctx, "host.validation.default-already-exists"))
+		v.delegate.Add("defaultServer", i18n.M(ctx, i18n.K.HostValidationDefaultAlreadyExists))
 	}
 
 	if len(host.DomainNames) > 0 {
 		v.delegate.Add(
 			"domainNames",
-			i18n.M(ctx, "host.validation.domain-must-be-empty-for-default"),
+			i18n.M(ctx, i18n.K.HostValidationDomainMustBeEmptyForDefault),
 		)
 	}
 
@@ -112,14 +112,14 @@ func (v *validator) validateDefaultFlag(ctx context.Context, host *Host) error {
 
 func (v *validator) validateDomainNames(ctx context.Context, host *Host) {
 	if len(host.DomainNames) == 0 && !host.DefaultServer {
-		v.delegate.Add("domainNames", i18n.M(ctx, "common.validation.at-least-one-required"))
+		v.delegate.Add("domainNames", i18n.M(ctx, i18n.K.CommonValidationAtLeastOneRequired))
 	}
 
 	for index, domainName := range host.DomainNames {
 		if !constants.TLDPattern.MatchString(domainName) {
 			v.delegate.Add(
 				fmt.Sprintf("domainNames[%d]", index),
-				i18n.M(ctx, "common.validation.invalid-domain-name"),
+				i18n.M(ctx, i18n.K.CommonValidationInvalidDomainName),
 			)
 		}
 	}
@@ -129,13 +129,13 @@ func (v *validator) validateBindings(ctx context.Context, host *Host) error {
 	if host.UseGlobalBindings && len(host.Bindings) > 0 {
 		v.delegate.Add(
 			bindingsPath,
-			i18n.M(ctx, "host.validation.bindings-must-be-empty-for-global"),
+			i18n.M(ctx, i18n.K.HostValidationBindingsMustBeEmptyForGlobal),
 		)
 	}
 
 	if !host.UseGlobalBindings {
 		if len(host.Bindings) == 0 {
-			v.delegate.Add(bindingsPath, i18n.M(ctx, "common.validation.at-least-one-required"))
+			v.delegate.Add(bindingsPath, i18n.M(ctx, i18n.K.CommonValidationAtLeastOneRequired))
 		}
 
 		for index, b := range host.Bindings {
@@ -156,7 +156,7 @@ func (v *validator) validateBindings(ctx context.Context, host *Host) error {
 
 func (v *validator) validateRoutes(ctx context.Context, host *Host) error {
 	if len(host.Routes) == 0 {
-		v.delegate.Add("routes", i18n.M(ctx, "common.validation.at-least-one-required"))
+		v.delegate.Add("routes", i18n.M(ctx, i18n.K.CommonValidationAtLeastOneRequired))
 	}
 
 	priorityMap := make(map[int]int)
@@ -168,7 +168,7 @@ func (v *validator) validateRoutes(ctx context.Context, host *Host) error {
 		if count > 1 {
 			v.delegate.Add(
 				"routes",
-				i18n.M(ctx, "host.validation.duplicated-route-priority").V("priority", priority),
+				i18n.M(ctx, i18n.K.HostValidationDuplicatedRoutePriority).V("priority", priority),
 			)
 		}
 	}
@@ -192,7 +192,7 @@ func (v *validator) validateRoute(
 	if (*distinctPaths)[route.SourcePath] {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "sourcePath"),
-			i18n.M(ctx, "host.validation.duplicated-source-path"),
+			i18n.M(ctx, i18n.K.HostValidationDuplicatedSourcePath),
 		)
 	} else {
 		(*distinctPaths)[route.SourcePath] = true
@@ -230,7 +230,7 @@ func (v *validator) validateRoute(
 	default:
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "type"),
-			i18n.M(ctx, "common.validation.invalid-value"),
+			i18n.M(ctx, i18n.K.CommonValidationInvalidValue),
 		)
 	}
 
@@ -242,13 +242,13 @@ func (v *validator) validateStaticFilesRoute(ctx context.Context, route *Route, 
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
 		v.delegate.Add(
 			targetURIField,
-			i18n.M(ctx, "host.validation.target-uri-required").V("type", "directory"),
+			i18n.M(ctx, i18n.K.HostValidationTargetURIRequired).V("type", "directory"),
 		)
 		return
 	}
 
 	if !strings.HasPrefix(*route.TargetURI, "/") {
-		v.delegate.Add(targetURIField, i18n.M(ctx, "common.validation.starts-with-slash-required"))
+		v.delegate.Add(targetURIField, i18n.M(ctx, i18n.K.CommonValidationStartsWithSlashRequired))
 	}
 }
 
@@ -257,11 +257,11 @@ func (v *validator) validateProxyRoute(ctx context.Context, route *Route, index 
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
 		v.delegate.Add(
 			targetURIField,
-			i18n.M(ctx, "host.validation.target-uri-required").V("type", "proxy"),
+			i18n.M(ctx, i18n.K.HostValidationTargetURIRequired).V("type", "proxy"),
 		)
 	} else {
 		if _, err := url.Parse(*route.TargetURI); err != nil {
-			v.delegate.Add(targetURIField, i18n.M(ctx, "common.validation.invalid-url"))
+			v.delegate.Add(targetURIField, i18n.M(ctx, i18n.K.CommonValidationInvalidURL))
 		}
 	}
 }
@@ -271,18 +271,18 @@ func (v *validator) validateRedirectRoute(ctx context.Context, route *Route, ind
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
 		v.delegate.Add(
 			targetURIField,
-			i18n.M(ctx, "host.validation.target-uri-required").V("type", "redirect"),
+			i18n.M(ctx, i18n.K.HostValidationTargetURIRequired).V("type", "redirect"),
 		)
 	} else {
 		if _, err := url.ParseRequestURI(*route.TargetURI); err != nil {
-			v.delegate.Add(targetURIField, i18n.M(ctx, "common.validation.invalid-uri"))
+			v.delegate.Add(targetURIField, i18n.M(ctx, i18n.K.CommonValidationInvalidURI))
 		}
 	}
 
 	if route.RedirectCode == nil || !redirectStatusCodeRange.Contains(*route.RedirectCode) {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "redirectCode"),
-			i18n.M(ctx, "common.validation.between-values").
+			i18n.M(ctx, i18n.K.CommonValidationBetweenValues).
 				V("min", redirectStatusCodeRange.Min).
 				V("max", redirectStatusCodeRange.Max),
 		)
@@ -293,7 +293,7 @@ func (v *validator) validateStaticResponseRoute(ctx context.Context, route *Rout
 	if route.Response == nil {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "response"),
-			i18n.M(ctx, "host.validation.static-response-required"),
+			i18n.M(ctx, i18n.K.HostValidationStaticResponseRequired),
 		)
 		return
 	}
@@ -301,7 +301,7 @@ func (v *validator) validateStaticResponseRoute(ctx context.Context, route *Rout
 	if !statusCodeRange.Contains(route.Response.StatusCode) {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "response.statusCode"),
-			i18n.M(ctx, "common.validation.between-values").
+			i18n.M(ctx, i18n.K.CommonValidationBetweenValues).
 				V("min", statusCodeRange.Min).
 				V("max", statusCodeRange.Max),
 		)
@@ -309,7 +309,7 @@ func (v *validator) validateStaticResponseRoute(ctx context.Context, route *Rout
 }
 
 func (v *validator) validateIntegrationRoute(ctx context.Context, route *Route, index int) error {
-	requiredMessage := i18n.M(ctx, "host.validation.integration-required")
+	requiredMessage := i18n.M(ctx, i18n.K.HostValidationIntegrationRequired)
 
 	if route.Integration == nil {
 		v.delegate.Add(buildIndexedRoutePath(index, "integration"), requiredMessage)
@@ -333,7 +333,7 @@ func (v *validator) validateIntegrationRoute(ctx context.Context, route *Route, 
 }
 
 func (v *validator) validateExecuteCodeRoute(ctx context.Context, route *Route, index int) {
-	requiredMessage := i18n.M(ctx, "host.validation.source-code-required")
+	requiredMessage := i18n.M(ctx, i18n.K.HostValidationSourceCodeRequired)
 
 	if route.SourceCode == nil {
 		v.delegate.Add(buildIndexedRoutePath(index, "sourceCode"), requiredMessage)
@@ -348,7 +348,7 @@ func (v *validator) validateExecuteCodeRoute(ctx context.Context, route *Route, 
 		route.SourceCode.Language != LuaCodeLanguage {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "sourceCode.language"),
-			i18n.M(ctx, "common.validation.invalid-value"),
+			i18n.M(ctx, i18n.K.CommonValidationInvalidValue),
 		)
 	}
 
@@ -356,7 +356,7 @@ func (v *validator) validateExecuteCodeRoute(ctx context.Context, route *Route, 
 		(route.SourceCode.MainFunction == nil || strings.TrimSpace(*route.SourceCode.MainFunction) == "") {
 		v.delegate.Add(
 			buildIndexedRoutePath(index, "sourceCode.mainFunction"),
-			i18n.M(ctx, "host.validation.js-main-function-required"),
+			i18n.M(ctx, i18n.K.HostValidationJsMainFunctionRequired),
 		)
 	}
 }
@@ -370,11 +370,11 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 		namePath := basePath + ".name"
 
 		if strings.TrimSpace(value.Name) == "" {
-			v.delegate.Add(namePath, i18n.M(ctx, "common.validation.value-missing"))
+			v.delegate.Add(namePath, i18n.M(ctx, i18n.K.CommonValidationValueMissing))
 		}
 
 		if value.VPNID == uuid.Nil {
-			v.delegate.Add(vpnIDPath, i18n.M(ctx, "common.validation.value-missing"))
+			v.delegate.Add(vpnIDPath, i18n.M(ctx, i18n.K.CommonValidationValueMissing))
 			continue
 		}
 
@@ -383,7 +383,7 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 		}
 
 		if vpnNameUsage[value.VPNID][value.Name] > 0 {
-			v.delegate.Add(namePath, i18n.M(ctx, "host.validation.duplicated-vpn-name"))
+			v.delegate.Add(namePath, i18n.M(ctx, i18n.K.HostValidationDuplicatedVpnName))
 		}
 
 		vpnNameUsage[value.VPNID][value.Name]++
@@ -394,12 +394,12 @@ func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
 		}
 
 		if vpnData == nil {
-			v.delegate.Add(vpnIDPath, i18n.M(ctx, "host.validation.vpn-not-found"))
+			v.delegate.Add(vpnIDPath, i18n.M(ctx, i18n.K.HostValidationVpnNotFound))
 			continue
 		}
 
 		if !vpnData.Enabled {
-			v.delegate.Add(vpnIDPath, i18n.M(ctx, "host.validation.vpn-disabled"))
+			v.delegate.Add(vpnIDPath, i18n.M(ctx, i18n.K.HostValidationVpnDisabled))
 		}
 	}
 
@@ -425,7 +425,7 @@ func (v *validator) validateAccessList(
 	}
 
 	if !exists {
-		v.delegate.Add(path, i18n.M(ctx, "host.validation.access-list-not-found"))
+		v.delegate.Add(path, i18n.M(ctx, i18n.K.HostValidationAccessListNotFound))
 	}
 
 	return nil
@@ -442,7 +442,7 @@ func (v *validator) validateCache(ctx context.Context, cacheID *uuid.UUID, path 
 	}
 
 	if !exists {
-		v.delegate.Add(path, i18n.M(ctx, "host.validation.cache-not-found"))
+		v.delegate.Add(path, i18n.M(ctx, i18n.K.HostValidationCacheNotFound))
 	}
 
 	return nil

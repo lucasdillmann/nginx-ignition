@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
@@ -59,7 +60,7 @@ func Test_validator(t *testing.T) {
 	t.Run("validate", func(t *testing.T) {
 		t.Run("returns error when stream is nil", func(t *testing.T) {
 			err := validate(nil)
-			assertViolations(t, err, "stream.validation.nil-stream")
+			assertViolations(t, err, i18n.K.StreamValidationNilStream)
 		})
 
 		t.Run("valid stream passes", func(t *testing.T) {
@@ -71,14 +72,14 @@ func Test_validator(t *testing.T) {
 			s := newStream()
 			s.Name = ""
 			err := validate(s)
-			assertViolations(t, err, "common.validation.cannot-be-empty")
+			assertViolations(t, err, i18n.K.CommonValidationCannotBeEmpty)
 		})
 
 		t.Run("validates type", func(t *testing.T) {
 			s := newStream()
 			s.Type = "INVALID"
 			err := validate(s)
-			assertViolations(t, err, "common.validation.invalid-value")
+			assertViolations(t, err, i18n.K.CommonValidationInvalidValue)
 		})
 
 		t.Run("validates binding", func(t *testing.T) {
@@ -86,14 +87,14 @@ func Test_validator(t *testing.T) {
 				s := newStream()
 				s.Binding.Address = ""
 				err := validate(s)
-				assertViolations(t, err, "common.validation.cannot-be-empty")
+				assertViolations(t, err, i18n.K.CommonValidationCannotBeEmpty)
 			})
 
 			t.Run("protocol required", func(t *testing.T) {
 				s := newStream()
 				s.Binding.Protocol = "INVALID"
 				err := validate(s)
-				assertViolations(t, err, "common.validation.invalid-value")
+				assertViolations(t, err, i18n.K.CommonValidationInvalidValue)
 			})
 
 			t.Run("port required for TCP/UDP", func(t *testing.T) {
@@ -101,7 +102,7 @@ func Test_validator(t *testing.T) {
 				s.Binding.Protocol = TCPProtocol
 				s.Binding.Port = nil
 				err := validate(s)
-				assertViolations(t, err, "stream.validation.port-required")
+				assertViolations(t, err, i18n.K.StreamValidationPortRequired)
 			})
 
 			t.Run("port range validation", func(t *testing.T) {
@@ -109,7 +110,7 @@ func Test_validator(t *testing.T) {
 				s.Binding.Protocol = TCPProtocol
 				s.Binding.Port = ptr.Of(70000)
 				err := validate(s)
-				assertViolations(t, err, "common.validation.between-values")
+				assertViolations(t, err, i18n.K.CommonValidationBetweenValues)
 			})
 
 			t.Run("socket protocol validation", func(t *testing.T) {
@@ -121,8 +122,8 @@ func Test_validator(t *testing.T) {
 				assertViolations(
 					t,
 					err,
-					"common.validation.starts-with-slash-required",
-					"stream.validation.port-not-allowed-for-socket",
+					i18n.K.CommonValidationStartsWithSlashRequired,
+					i18n.K.StreamValidationPortNotAllowedForSocket,
 				)
 			})
 		})
@@ -132,7 +133,7 @@ func Test_validator(t *testing.T) {
 				s := newStream()
 				s.DefaultBackend.Address.Address = ""
 				err := validate(s)
-				assertViolations(t, err, "common.validation.cannot-be-empty")
+				assertViolations(t, err, i18n.K.CommonValidationCannotBeEmpty)
 			})
 
 			t.Run("validates circuit breaker", func(t *testing.T) {
@@ -145,8 +146,8 @@ func Test_validator(t *testing.T) {
 				assertViolations(
 					t,
 					err,
-					"common.validation.cannot-be-zero",
-					"common.validation.cannot-be-zero",
+					i18n.K.CommonValidationCannotBeZero,
+					i18n.K.CommonValidationCannotBeZero,
 				)
 			})
 
@@ -170,7 +171,7 @@ func Test_validator(t *testing.T) {
 				s.Type = SNIRouterType
 				s.Routes = nil
 				err := validate(s)
-				assertViolations(t, err, "stream.validation.routes-required-for-sni")
+				assertViolations(t, err, i18n.K.StreamValidationRoutesRequiredForSni)
 			})
 
 			t.Run("validates route entries", func(t *testing.T) {
@@ -186,8 +187,8 @@ func Test_validator(t *testing.T) {
 				assertViolations(
 					t,
 					err,
-					"stream.validation.at-least-one-domain",
-					"stream.validation.at-least-one-backend",
+					i18n.K.StreamValidationAtLeastOneDomain,
+					i18n.K.StreamValidationAtLeastOneBackend,
 				)
 			})
 
@@ -209,11 +210,11 @@ func Test_validator(t *testing.T) {
 					},
 				}
 				err := validate(s)
-				assertViolations(t, err, "common.validation.cannot-be-empty")
+				assertViolations(t, err, i18n.K.CommonValidationCannotBeEmpty)
 
 				s.Routes[0].DomainNames[0] = "invalid_domain"
 				err = validate(s)
-				assertViolations(t, err, "common.validation.invalid-domain-name")
+				assertViolations(t, err, i18n.K.CommonValidationInvalidDomainName)
 			})
 
 			t.Run("validates backends", func(t *testing.T) {
@@ -228,7 +229,7 @@ func Test_validator(t *testing.T) {
 					},
 				}
 				err := validate(s)
-				assertViolations(t, err, "common.validation.cannot-be-empty")
+				assertViolations(t, err, i18n.K.CommonValidationCannotBeEmpty)
 			})
 		})
 
@@ -254,9 +255,9 @@ func Test_validator(t *testing.T) {
 				}
 				err := validate(s)
 				assertViolations(t, err,
-					"stream.validation.feature-only-for-tcp",
-					"stream.validation.feature-only-for-tcp",
-					"stream.validation.feature-only-for-tcp",
+					i18n.K.StreamValidationFeatureOnlyForTCP,
+					i18n.K.StreamValidationFeatureOnlyForTCP,
+					i18n.K.StreamValidationFeatureOnlyForTCP,
 				)
 			})
 		})

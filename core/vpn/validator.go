@@ -30,17 +30,17 @@ func (v *validator) validate(ctx context.Context, data *VPN) error {
 	}
 
 	if *inUse && !data.Enabled {
-		v.delegate.Add("enabled", i18n.M(ctx, "vpn.validation.in-use"))
+		v.delegate.Add("enabled", i18n.M(ctx, i18n.K.VpnValidationInUse))
 	}
 
 	if strings.TrimSpace(data.Name) == "" {
-		v.delegate.Add("name", i18n.M(ctx, "common.validation.value-missing"))
+		v.delegate.Add("name", i18n.M(ctx, i18n.K.CommonValidationValueMissing))
 	}
 
 	if strings.TrimSpace(data.Driver) == "" {
-		v.delegate.Add("driver", i18n.M(ctx, "common.validation.value-missing"))
+		v.delegate.Add("driver", i18n.M(ctx, i18n.K.CommonValidationValueMissing))
 	} else if v.driver == nil {
-		v.delegate.Add("driver", i18n.M(ctx, "common.validation.invalid-value"))
+		v.delegate.Add("driver", i18n.M(ctx, i18n.K.CommonValidationInvalidValue))
 	}
 
 	params := data.Parameters
