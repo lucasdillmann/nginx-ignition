@@ -13,6 +13,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/api/common/apierror"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/user"
 )
@@ -22,8 +23,6 @@ const (
 	expectedJwtSecretSizeChars = 64
 	expectedJwtSecretSizeBytes = 512
 )
-
-var errInvalidToken = apierror.New(http.StatusUnauthorized, "Invalid access token")
 
 type Jwt struct {
 	configuration *configuration.Configuration
@@ -85,7 +84,10 @@ func (j *Jwt) GenerateToken(usr *user.User) (*string, error) {
 func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errInvalidToken
+			return nil, apierror.New(
+				http.StatusUnauthorized,
+				i18n.M(ctx, i18n.K.AuthorizationErrorInvalidAccessToken),
+			)
 		}
 
 		return j.secretKey, nil
@@ -109,11 +111,17 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 		tokenID := claims["jti"].(string)
 		if !usr.Enabled {
 			j.RevokeToken(tokenID)
-			return nil, errInvalidToken
+			return nil, apierror.New(
+				http.StatusUnauthorized,
+				i18n.M(ctx, i18n.K.AuthorizationErrorInvalidAccessToken),
+			)
 		}
 
 		if j.isRevoked(tokenID) {
-			return nil, errInvalidToken
+			return nil, apierror.New(
+				http.StatusUnauthorized,
+				i18n.M(ctx, i18n.K.AuthorizationErrorInvalidAccessToken),
+			)
 		}
 
 		return &Subject{
@@ -123,7 +131,10 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 		}, nil
 	}
 
-	return nil, errInvalidToken
+	return nil, apierror.New(
+		http.StatusUnauthorized,
+		i18n.M(ctx, i18n.K.AuthorizationErrorInvalidAccessToken),
+	)
 }
 
 func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {

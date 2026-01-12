@@ -28,7 +28,7 @@ func Test_handler(t *testing.T) {
 	}{
 		{
 			name:           "APIError",
-			err:            New(http.StatusBadRequest, "Bad Request"),
+			err:            New(http.StatusBadRequest, i18n.Raw("Bad Request")),
 			expectedStatus: http.StatusBadRequest,
 			expectedBody:   `{"message":"Bad Request"}`,
 		},
@@ -119,7 +119,7 @@ func Test_canHandle(t *testing.T) {
 	}{
 		{
 			name:     "APIError",
-			err:      New(http.StatusBadRequest, "msg"),
+			err:      New(http.StatusBadRequest, i18n.Raw("msg")),
 			expected: true,
 		},
 		{

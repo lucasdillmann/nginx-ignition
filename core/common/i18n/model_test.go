@@ -1,3 +1,4 @@
+//nolint:staticcheck,revive
 package i18n
 
 import (

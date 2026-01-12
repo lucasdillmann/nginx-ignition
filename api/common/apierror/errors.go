@@ -1,11 +1,15 @@
 package apierror
 
+import (
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
+)
+
 type APIError struct {
-	Message    string
+	Message    *i18n.Message
 	StatusCode int
 }
 
-func New(statusCode int, message string) *APIError {
+func New(statusCode int, message *i18n.Message) *APIError {
 	return &APIError{
 		Message:    message,
 		StatusCode: statusCode,
@@ -13,5 +17,5 @@ func New(statusCode int, message string) *APIError {
 }
 
 func (e APIError) Error() string {
-	return e.Message
+	return e.Message.String()
 }

@@ -102,4 +102,9 @@ var Keys = Messages{
 	VpnErrorDriverNotFound:                         "vpn.error.driver-not-found",
 	VpnErrorInUse:                                  "vpn.error.in-use",
 	VpnValidationInUse:                             "vpn.validation.in-use",
+	AuthorizationErrorInvalidAccessToken:           "authorization.error.invalid-access-token",
+	AuthorizationErrorAccessDenied:                 "authorization.error.access-denied",
+	PaginationErrorMustBeAnInteger:                 "pagination.error.must-be-an-integer",
+	PaginationErrorMustBeBetweenRange:              "pagination.error.must-be-between-range",
+	PaginationErrorCantBeNegative:                  "pagination.error.cant-be-negative",
 }

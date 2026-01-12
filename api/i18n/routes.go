@@ -10,8 +10,6 @@ import (
 )
 
 func Install(router *gin.Engine, commands i18n.Commands, authorizer *authorization.ABAC) {
-	router.Use(middleware(commands))
-
 	basePath := router.Group("/api/i18n")
 	basePath.GET("", getDictionaryHandler{commands}.handle)
 

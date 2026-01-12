@@ -1,16 +1,21 @@
+//nolint:dupl
 package dict
 
 import (
 	"golang.org/x/text/language"
 )
 
-//nolint:dupl
 func EnUS() Dictionary {
 	return newDictionary(
 		language.Make("en-US"),
 		Messages{
 			AccessListErrorInUse:                           "Access list is in use by one or more hosts",
 			AccessListValidationInvalidAddress:             "Address \"${address}\" is not a valid IPv4 or IPv6 address or range",
+			AuthorizationErrorInvalidAccessToken:           "Invalid or expired access token",
+			AuthorizationErrorAccessDenied:                 "You do not have the required permission to access this resource",
+			PaginationErrorMustBeAnInteger:                 "Page ${type} must be an integer",
+			PaginationErrorMustBeBetweenRange:              "Page ${type} must be between ${min} and ${max}",
+			PaginationErrorCantBeNegative:                  "Page ${type} must be greater than or equal to 0",
 			BindingValidationCertificateIDNotAllowed:       "Certificate cannot be specified for this type of binding",
 			BindingValidationCertificateIDNotFound:         "No certificate found with provided ID",
 			BindingValidationCertificateIDRequired:         "A certificate is required for this type of binding",

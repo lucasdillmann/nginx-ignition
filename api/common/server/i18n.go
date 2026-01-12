@@ -1,4 +1,4 @@
-package i18n
+package server
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
-func middleware(commands i18n.Commands) gin.HandlerFunc {
+func i18nMiddleware(commands i18n.Commands) gin.HandlerFunc {
 	return func(ginCtx *gin.Context) {
 		lang := commands.DefaultLanguage()
 
@@ -24,8 +24,10 @@ func middleware(commands i18n.Commands) gin.HandlerFunc {
 			}
 		}
 
+		//nolint:staticcheck
 		updatedCtx := context.WithValue(ginCtx.Request.Context(), i18n.ContextKey, lang)
 		ginCtx.Request = ginCtx.Request.WithContext(updatedCtx)
+		ginCtx.Set(i18n.ContextKey, lang)
 		ginCtx.Next()
 	}
 }

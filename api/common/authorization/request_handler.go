@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"dillmann.com.br/nginx-ignition/api/common/apierror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -28,7 +29,10 @@ func (m *ABAC) HandleRequest(ctx *gin.Context) {
 	accessToken, _ := strings.CutPrefix(ctx.GetHeader("Authorization"), "Bearer ")
 	if strings.TrimSpace(accessToken) == "" {
 		ctx.Abort()
-		panic(errInvalidToken)
+		panic(apierror.New(
+			http.StatusUnauthorized,
+			i18n.M(ctx.Request.Context(), i18n.K.AuthorizationErrorInvalidAccessToken),
+		))
 	}
 
 	subject, err := m.jwt.ValidateToken(ctx.Request.Context(), accessToken)
@@ -36,7 +40,7 @@ func (m *ABAC) HandleRequest(ctx *gin.Context) {
 		ctx.Abort()
 		panic(apierror.New(
 			http.StatusUnauthorized,
-			"Invalid or expired access token",
+			i18n.M(ctx.Request.Context(), i18n.K.AuthorizationErrorInvalidAccessToken),
 		))
 	}
 
@@ -46,7 +50,7 @@ func (m *ABAC) HandleRequest(ctx *gin.Context) {
 			ctx.Abort()
 			panic(apierror.New(
 				http.StatusForbidden,
-				"User does not have the required permission to access this resource",
+				i18n.M(ctx.Request.Context(), i18n.K.AuthorizationErrorAccessDenied),
 			))
 		}
 	}

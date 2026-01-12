@@ -1,4 +1,4 @@
-package i18n
+package server
 
 import (
 	"net/http/httptest"
@@ -12,8 +12,8 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
-func Test_middleware(t *testing.T) {
-	t.Run("middleware", func(t *testing.T) {
+func Test_i18nMiddleware(t *testing.T) {
+	t.Run("i18nMiddleware", func(t *testing.T) {
 		setup := func(t *testing.T) (*gomock.Controller, *i18n.MockedCommands, *gin.Context) {
 			ctrl := gomock.NewController(t)
 			recorder := httptest.NewRecorder()
@@ -31,7 +31,7 @@ func Test_middleware(t *testing.T) {
 			commands.EXPECT().DefaultLanguage().Return(language.AmericanEnglish)
 			commands.EXPECT().Supports(language.BrazilianPortuguese).Return(true)
 
-			middleware(commands)(ctx)
+			i18nMiddleware(commands)(ctx)
 
 			val := ctx.Request.Context().Value(i18n.ContextKey)
 			assert.Equal(t, language.BrazilianPortuguese, val)
@@ -45,7 +45,7 @@ func Test_middleware(t *testing.T) {
 			commands.EXPECT().DefaultLanguage().Return(language.AmericanEnglish)
 			commands.EXPECT().Supports(language.BritishEnglish).Return(true)
 
-			middleware(commands)(ctx)
+			i18nMiddleware(commands)(ctx)
 
 			val := ctx.Request.Context().Value(i18n.ContextKey)
 			assert.Equal(t, language.BritishEnglish, val)
@@ -59,7 +59,7 @@ func Test_middleware(t *testing.T) {
 			commands.EXPECT().DefaultLanguage().Return(language.AmericanEnglish)
 			commands.EXPECT().Supports(language.Make("fr-FR")).Return(false)
 
-			middleware(commands)(ctx)
+			i18nMiddleware(commands)(ctx)
 
 			val := ctx.Request.Context().Value(i18n.ContextKey)
 			assert.Equal(t, language.AmericanEnglish, val)
@@ -71,7 +71,7 @@ func Test_middleware(t *testing.T) {
 
 			commands.EXPECT().DefaultLanguage().Return(language.AmericanEnglish)
 
-			middleware(commands)(ctx)
+			i18nMiddleware(commands)(ctx)
 
 			val := ctx.Request.Context().Value(i18n.ContextKey)
 			assert.Equal(t, language.AmericanEnglish, val)

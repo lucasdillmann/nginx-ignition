@@ -111,4 +111,9 @@ type Messages struct {
 	VpnErrorDriverNotFound                         string
 	VpnErrorInUse                                  string
 	VpnValidationInUse                             string
+	AuthorizationErrorInvalidAccessToken           string
+	AuthorizationErrorAccessDenied                 string
+	PaginationErrorMustBeAnInteger                 string
+	PaginationErrorMustBeBetweenRange              string
+	PaginationErrorCantBeNegative                  string
 }
