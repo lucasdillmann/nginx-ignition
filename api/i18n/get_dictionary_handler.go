@@ -14,5 +14,7 @@ type getDictionaryHandler struct {
 
 func (h getDictionaryHandler) handle(ctx *gin.Context) {
 	dictionaries := h.commands.GetDictionaries()
-	ctx.JSON(http.StatusOK, toDTO(dictionaries))
+	defaultLanguage := h.commands.DefaultLanguage()
+
+	ctx.JSON(http.StatusOK, toDTO(defaultLanguage, dictionaries))
 }

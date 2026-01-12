@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
+	"golang.org/x/text/language"
 
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/i18n/dict"
@@ -26,7 +27,9 @@ func Test_getDictionaryHandler(t *testing.T) {
 
 			commands := i18n.NewMockedCommands(ctrl)
 			dicts := []dict.Dictionary{newDictionary()}
+			defaultLanguage := language.BrazilianPortuguese
 			commands.EXPECT().GetDictionaries().Return(dicts)
+			commands.EXPECT().DefaultLanguage().Return(defaultLanguage)
 
 			recorder := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(recorder)
@@ -35,9 +38,10 @@ func Test_getDictionaryHandler(t *testing.T) {
 			handler.handle(ctx)
 
 			assert.Equal(t, http.StatusOK, recorder.Code)
-			var response []dictionaryDTO
+
+			var response dictionariesDTO
 			json.Unmarshal(recorder.Body.Bytes(), &response)
-			assert.Equal(t, toDTO(dicts), response)
+			assert.Equal(t, toDTO(defaultLanguage, dicts), response)
 		})
 	})
 }

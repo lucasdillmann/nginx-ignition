@@ -13,7 +13,7 @@ func Install(router *gin.Engine, commands i18n.Commands, authorizer *authorizati
 	router.Use(middleware(commands))
 
 	basePath := router.Group("/api/i18n")
-	basePath.GET("/dictionaries", getDictionaryHandler{commands}.handle)
+	basePath.GET("", getDictionaryHandler{commands}.handle)
 
-	authorizer.AllowAnonymous(http.MethodGet, "/api/i18n/dictionaries")
+	authorizer.AllowAnonymous(http.MethodGet, "/api/i18n")
 }
