@@ -9,7 +9,7 @@ import (
 	"go.uber.org/mock/gomock"
 	"golang.org/x/text/language"
 
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 func Test_i18nMiddleware(t *testing.T) {

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 func Install(router *gin.Engine, commands i18n.Commands, authorizer *authorization.ABAC) {

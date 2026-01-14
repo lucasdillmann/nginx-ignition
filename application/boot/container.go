@@ -16,6 +16,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 	"dillmann.com.br/nginx-ignition/database"
+	"dillmann.com.br/nginx-ignition/i18n"
 	"dillmann.com.br/nginx-ignition/integration/docker"
 	"dillmann.com.br/nginx-ignition/integration/truenas"
 	"dillmann.com.br/nginx-ignition/vpn/tailscale"
@@ -33,6 +34,7 @@ func startContainer(ctx context.Context) error {
 	}
 
 	return container.Run(
+		i18n.Install,
 		database.Install,
 		core.Install,
 		api.Install,

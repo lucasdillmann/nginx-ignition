@@ -1,7 +1,7 @@
 package i18n
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/i18n/dict"
+	"dillmann.com.br/nginx-ignition/i18n/dict"
 )
 
 func newDictionary() dict.Dictionary {

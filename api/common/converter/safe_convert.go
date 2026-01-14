@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 func Wrap[I, O any](ctx context.Context, converter func(I) O, input I) O {

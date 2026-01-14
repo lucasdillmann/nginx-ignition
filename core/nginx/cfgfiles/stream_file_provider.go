@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/common/runtime"
 	"dillmann.com.br/nginx-ignition/core/stream"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 type streamFileProvider struct{}

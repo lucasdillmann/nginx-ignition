@@ -183,7 +183,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zoneee"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zonomi"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 var providers = []dns.Provider{

@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/stream"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 func Test_streamFileProvider(t *testing.T) {

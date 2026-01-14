@@ -13,9 +13,9 @@ import (
 
 	"dillmann.com.br/nginx-ignition/api/common/apierror"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/user"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 const (

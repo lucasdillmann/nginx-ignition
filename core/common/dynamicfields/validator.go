@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 func Validate(

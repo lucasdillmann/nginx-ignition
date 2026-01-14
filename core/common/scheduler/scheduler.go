@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/log"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 var placeholderDuration = time.Hour * 99999

@@ -7,8 +7,8 @@ import (
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/container"
-	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/user"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 func Install() error {
