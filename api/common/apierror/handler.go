@@ -94,7 +94,7 @@ func handleConsistencyError(ctx *gin.Context, err *validation.ConsistencyError) 
 
 func sendError(ctx *gin.Context, details []problemDetail) {
 	ctx.JSON(http.StatusBadRequest, gin.H{
-		"message":             "One or more consistency problems were found",
+		"message":             i18n.M(ctx, i18n.K.CommonErrorConsistencyProblems),
 		"consistencyProblems": details,
 	})
 }

@@ -6,13 +6,14 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
 type AvailableDriver struct {
 	ID                  string
 	Name                string
-	Description         string
+	Description         *i18n.Message
 	ConfigurationFields []dynamicfields.DynamicField
 }
 

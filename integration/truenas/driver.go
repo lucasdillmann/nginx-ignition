@@ -8,7 +8,9 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/integration/truenas/client"
@@ -36,10 +38,8 @@ func (a *Driver) Name() string {
 	return "TrueNAS"
 }
 
-func (a *Driver) Description() string {
-	return "TrueNAS allows, alongside many other things, to run your favorite apps under Docker containers. With this " +
-		"integration enabled, you will be able to easily pick any app exposing a service in your TrueNAS as a " +
-		"target for your nginx ignition's host routes."
+func (a *Driver) Description(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.TruenasCommonDescription)
 }
 
 func (a *Driver) ConfigurationFields() []dynamicfields.DynamicField {
@@ -107,7 +107,7 @@ func (a *Driver) GetAvailableOptionByID(
 }
 
 func (a *Driver) GetOptionProxyURL(
-	_ context.Context,
+	ctx context.Context,
 	parameters map[string]any,
 	id string,
 ) (*string, []string, error) {
@@ -123,9 +123,9 @@ func (a *Driver) GetOptionProxyURL(
 	}
 
 	if port == nil || len(port.HostPorts) == 0 {
-		return nil, nil, fmt.Errorf(
-			"unable to resolve proxy URL for %s: service is probably offline/stopped",
-			id,
+		return nil, nil, coreerror.New(
+			i18n.M(ctx, i18n.K.TruenasErrorProxyUrl).V("id", id),
+			false,
 		)
 	}
 

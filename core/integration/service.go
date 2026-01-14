@@ -185,7 +185,7 @@ func (s *service) GetOptionURL(
 	return driver.GetOptionProxyURL(ctx, data.Parameters, optionID)
 }
 
-func (s *service) GetAvailableDrivers(_ context.Context) ([]AvailableDriver, error) {
+func (s *service) GetAvailableDrivers(ctx context.Context) ([]AvailableDriver, error) {
 	drivers := s.drivers()
 	sort.Slice(drivers, func(left, right int) bool {
 		return drivers[left].Name() < drivers[right].Name()
@@ -196,7 +196,7 @@ func (s *service) GetAvailableDrivers(_ context.Context) ([]AvailableDriver, err
 		output[index] = AvailableDriver{
 			ID:                  driver.ID(),
 			Name:                driver.Name(),
-			Description:         driver.Description(),
+			Description:         driver.Description(ctx),
 			ConfigurationFields: driver.ConfigurationFields(),
 		}
 	}

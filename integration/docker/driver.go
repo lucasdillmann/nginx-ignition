@@ -3,6 +3,8 @@ package docker
 import (
 	"context"
 
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
+
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
@@ -24,9 +26,8 @@ func (a *Driver) Name() string {
 	return "Docker"
 }
 
-func (a *Driver) Description() string {
-	return "Enables easy pick of a Docker container with ports exposing a service as a target for your nginx " +
-		"ignition's host routes."
+func (a *Driver) Description(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.DockerCommonDescription)
 }
 
 func (a *Driver) ConfigurationFields() []dynamicfields.DynamicField {
