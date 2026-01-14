@@ -1,9 +1,8 @@
-package dict
+package i18n
 
 import (
 	"fmt"
 	"os"
-	"reflect"
 
 	"golang.org/x/text/language"
 
@@ -11,20 +10,15 @@ import (
 )
 
 type dictionary struct {
-	templates map[string]string
-	lang      language.Tag
-	messages  Messages
+	lang     language.Tag
+	messages map[string]string
 }
 
-func newDictionary(lang language.Tag, messages Messages) Dictionary {
-	dict := &dictionary{
-		lang:      lang,
-		messages:  messages,
-		templates: make(map[string]string),
+func newDictionary(lang language.Tag, messages map[string]string) Dictionary {
+	return &dictionary{
+		lang:     lang,
+		messages: messages,
 	}
-	dict.initTemplates()
-
-	return dict
 }
 
 func (d *dictionary) Language() language.Tag {
@@ -32,28 +26,11 @@ func (d *dictionary) Language() language.Tag {
 }
 
 func (d *dictionary) Templates() map[string]string {
-	return d.templates
-}
-
-func (d *dictionary) initTemplates() {
-	keysType := reflect.TypeOf(d.messages)
-	keysValue := reflect.ValueOf(d.messages)
-	kType := reflect.TypeOf(Keys)
-
-	for index := 0; index < keysType.NumField(); index++ {
-		field := keysType.Field(index)
-		value := keysValue.Field(index).String()
-		_, found := kType.FieldByName(field.Name)
-
-		if found {
-			keyName := reflect.ValueOf(Keys).FieldByName(field.Name).String()
-			d.templates[keyName] = value
-		}
-	}
+	return d.messages
 }
 
 func (d *dictionary) Translate(messageKey string, variables map[string]any) string {
-	template, found := d.templates[messageKey]
+	template, found := d.messages[messageKey]
 	if !found {
 		log.Warnf(
 			"i18n template not found for key %s on language %s. Using the key itself as the message as a fallback.",

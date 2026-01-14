@@ -6,9 +6,9 @@ import (
 	"net"
 
 	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
-	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 var portRange = valuerange.New(1, 65535)
@@ -37,7 +37,7 @@ func (v *validator) validate(
 	if net.ParseIP(binding.IP) == nil {
 		v.delegate.Add(
 			fmt.Sprintf("%s[%d].ip", pathPrefix, index),
-			i18n.M(ctx, i18n.K.BindingValidationInvalidIP),
+			i18n.M(ctx, i18n.K.BindingValidationInvalidIp),
 		)
 	}
 
@@ -56,14 +56,14 @@ func (v *validator) validate(
 	case binding.Type == HTTPBindingType && binding.CertificateID != nil:
 		v.delegate.Add(
 			certificateIDField,
-			i18n.M(ctx, i18n.K.BindingValidationCertificateIDNotAllowed),
+			i18n.M(ctx, i18n.K.BindingValidationCertificateIdNotAllowed),
 		)
 	case binding.Type == HTTPBindingType && binding.CertificateID == nil:
 		return nil
 	case binding.Type == HTTPSBindingType && binding.CertificateID == nil:
 		v.delegate.Add(
 			certificateIDField,
-			i18n.M(ctx, i18n.K.BindingValidationCertificateIDRequired),
+			i18n.M(ctx, i18n.K.BindingValidationCertificateIdRequired),
 		)
 	case binding.Type == HTTPSBindingType:
 		exists, err := v.certificateCommands.Exists(ctx, *binding.CertificateID)
@@ -74,7 +74,7 @@ func (v *validator) validate(
 		if !exists {
 			v.delegate.Add(
 				certificateIDField,
-				i18n.M(ctx, i18n.K.BindingValidationCertificateIDNotFound),
+				i18n.M(ctx, i18n.K.BindingValidationCertificateIdNotFound),
 			)
 		}
 	default:

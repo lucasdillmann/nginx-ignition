@@ -12,11 +12,11 @@ import (
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/constants"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/vpn"
-	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 type validator struct {
@@ -242,7 +242,7 @@ func (v *validator) validateStaticFilesRoute(ctx context.Context, route *Route, 
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
 		v.delegate.Add(
 			targetURIField,
-			i18n.M(ctx, i18n.K.HostValidationTargetURIRequired).V("type", "directory"),
+			i18n.M(ctx, i18n.K.HostValidationTargetUriRequired).V("type", "directory"),
 		)
 		return
 	}
@@ -257,11 +257,11 @@ func (v *validator) validateProxyRoute(ctx context.Context, route *Route, index 
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
 		v.delegate.Add(
 			targetURIField,
-			i18n.M(ctx, i18n.K.HostValidationTargetURIRequired).V("type", "proxy"),
+			i18n.M(ctx, i18n.K.HostValidationTargetUriRequired).V("type", "proxy"),
 		)
 	} else {
 		if _, err := url.Parse(*route.TargetURI); err != nil {
-			v.delegate.Add(targetURIField, i18n.M(ctx, i18n.K.CommonValidationInvalidURL))
+			v.delegate.Add(targetURIField, i18n.M(ctx, i18n.K.CommonValidationInvalidUrl))
 		}
 	}
 }
@@ -271,11 +271,11 @@ func (v *validator) validateRedirectRoute(ctx context.Context, route *Route, ind
 	if route.TargetURI == nil || strings.TrimSpace(*route.TargetURI) == "" {
 		v.delegate.Add(
 			targetURIField,
-			i18n.M(ctx, i18n.K.HostValidationTargetURIRequired).V("type", "redirect"),
+			i18n.M(ctx, i18n.K.HostValidationTargetUriRequired).V("type", "redirect"),
 		)
 	} else {
 		if _, err := url.ParseRequestURI(*route.TargetURI); err != nil {
-			v.delegate.Add(targetURIField, i18n.M(ctx, i18n.K.CommonValidationInvalidURI))
+			v.delegate.Add(targetURIField, i18n.M(ctx, i18n.K.CommonValidationInvalidUri))
 		}
 	}
 

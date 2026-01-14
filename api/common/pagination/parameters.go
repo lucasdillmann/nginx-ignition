@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"dillmann.com.br/nginx-ignition/api/common/apierror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
-	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 var pageSizeRange = valuerange.New(1, 1000)

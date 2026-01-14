@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/constants"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
-	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 var portRange = valuerange.New(1, 65535)
@@ -202,21 +202,21 @@ func (v *validator) validateFeatureSet(ctx context.Context, stream *Stream) {
 	if stream.FeatureSet.TCPKeepAlive {
 		v.delegate.Add(
 			"featureSet.tcpKeepAlive",
-			i18n.M(ctx, i18n.K.StreamValidationFeatureOnlyForTCP).V("feature", "TCP Keep Alive"),
+			i18n.M(ctx, i18n.K.StreamValidationFeatureOnlyForTcp).V("feature", "TCP Keep Alive"),
 		)
 	}
 
 	if stream.FeatureSet.TCPNoDelay {
 		v.delegate.Add(
 			"featureSet.tcpNoDelay",
-			i18n.M(ctx, i18n.K.StreamValidationFeatureOnlyForTCP).V("feature", "TCP No Delay"),
+			i18n.M(ctx, i18n.K.StreamValidationFeatureOnlyForTcp).V("feature", "TCP No Delay"),
 		)
 	}
 
 	if stream.FeatureSet.TCPDeferred {
 		v.delegate.Add(
 			"featureSet.tcpDeferred",
-			i18n.M(ctx, i18n.K.StreamValidationFeatureOnlyForTCP).V("feature", "TCP Deferred"),
+			i18n.M(ctx, i18n.K.StreamValidationFeatureOnlyForTcp).V("feature", "TCP Deferred"),
 		)
 	}
 }

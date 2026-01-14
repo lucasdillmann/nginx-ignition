@@ -7,7 +7,7 @@ import (
 	"go.uber.org/mock/gomock"
 	"golang.org/x/text/language"
 
-	"dillmann.com.br/nginx-ignition/i18n/dict"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 func Test_service(t *testing.T) {
@@ -26,14 +26,14 @@ func Test_service(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		enUS := dict.NewMockedDictionary(ctrl)
-		ptBR := dict.NewMockedDictionary(ctrl)
+		enUS := i18n.NewMockedDictionary(ctrl)
+		ptBR := i18n.NewMockedDictionary(ctrl)
 
 		enUS.EXPECT().Language().Return(language.AmericanEnglish).AnyTimes()
 		ptBR.EXPECT().Language().Return(language.BrazilianPortuguese).AnyTimes()
 
 		s := &service{
-			dictionaries:      []dict.Dictionary{enUS, ptBR},
+			dictionaries:      []i18n.Dictionary{enUS, ptBR},
 			defaultDictionary: enUS,
 		}
 
@@ -56,14 +56,14 @@ func Test_service(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		enUS := dict.NewMockedDictionary(ctrl)
-		ptBR := dict.NewMockedDictionary(ctrl)
+		enUS := i18n.NewMockedDictionary(ctrl)
+		ptBR := i18n.NewMockedDictionary(ctrl)
 
 		enUS.EXPECT().Language().Return(language.AmericanEnglish).AnyTimes()
 		ptBR.EXPECT().Language().Return(language.BrazilianPortuguese).AnyTimes()
 
 		s := &service{
-			dictionaries:      []dict.Dictionary{enUS, ptBR},
+			dictionaries:      []i18n.Dictionary{enUS, ptBR},
 			defaultDictionary: enUS,
 		}
 

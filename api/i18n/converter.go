@@ -3,12 +3,12 @@ package i18n
 import (
 	"golang.org/x/text/language"
 
-	"dillmann.com.br/nginx-ignition/i18n/dict"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 func toDTO(
 	defaultLanguage language.Tag,
-	dictionaries []dict.Dictionary,
+	dictionaries []i18n.Dictionary,
 ) dictionariesDTO {
 	output := make([]dictionaryDTO, len(dictionaries))
 

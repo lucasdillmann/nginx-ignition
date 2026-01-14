@@ -3,16 +3,16 @@ package i18n
 import (
 	"golang.org/x/text/language"
 
-	"dillmann.com.br/nginx-ignition/i18n/dict"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 type service struct {
-	defaultDictionary dict.Dictionary
-	dictionaries      []dict.Dictionary
+	defaultDictionary i18n.Dictionary
+	dictionaries      []i18n.Dictionary
 }
 
 func newCommands() Commands {
-	dictionaries := []dict.Dictionary{dict.EnUS(), dict.PtBR(), dict.EsES()}
+	dictionaries := []i18n.Dictionary{i18n.ENUS(), i18n.PTBR(), i18n.ESES()}
 	return &service{
 		dictionaries:      dictionaries,
 		defaultDictionary: dictionaries[0],
@@ -37,8 +37,8 @@ func (s *service) Translate(lang language.Tag, messageKey string, variables map[
 	return dictionary.Translate(messageKey, variables)
 }
 
-func (s *service) resolveDict(lang language.Tag) dict.Dictionary {
-	var partialMatch dict.Dictionary
+func (s *service) resolveDict(lang language.Tag) i18n.Dictionary {
+	var partialMatch i18n.Dictionary
 
 	for _, dictionary := range s.dictionaries {
 		if dictionary.Language().String() == lang.String() {
@@ -59,6 +59,6 @@ func (s *service) resolveDict(lang language.Tag) dict.Dictionary {
 	return s.defaultDictionary
 }
 
-func (s *service) GetDictionaries() []dict.Dictionary {
+func (s *service) GetDictionaries() []i18n.Dictionary {
 	return s.dictionaries
 }

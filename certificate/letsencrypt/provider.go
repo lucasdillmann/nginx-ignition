@@ -15,7 +15,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/i18n"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (

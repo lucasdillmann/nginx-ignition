@@ -7,10 +7,10 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/user/passwordhash"
-	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 type service struct {
@@ -66,7 +66,7 @@ func (s *service) UpdatePassword(
 	}
 
 	if databaseState == nil {
-		return coreerror.New(i18n.M(ctx, i18n.K.UserErrorNotFoundByID), true)
+		return coreerror.New(i18n.M(ctx, i18n.K.UserErrorNotFoundById), true)
 	}
 
 	passwordMatches, err := hash.Verify(

@@ -14,7 +14,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/i18n"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 type Provider struct{}
@@ -127,7 +127,7 @@ func parsePrivateKey(ctx context.Context, key string, base64Encoded bool) ([]byt
 	block, _ := pem.Decode(decodedKey)
 	if block == nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePEM).V("type", "key"),
+			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePem).V("type", "key"),
 			true,
 		)
 	}
@@ -151,7 +151,7 @@ func parseCertificate(
 	block, _ := pem.Decode(decodedCert)
 	if block == nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePEM).V("type", "certificate"),
+			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePem).V("type", "certificate"),
 			true,
 		)
 	}

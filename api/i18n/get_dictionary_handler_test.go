@@ -11,8 +11,8 @@ import (
 	"go.uber.org/mock/gomock"
 	"golang.org/x/text/language"
 
+	corei18n "dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/i18n"
-	"dillmann.com.br/nginx-ignition/i18n/dict"
 )
 
 func init() {
@@ -25,8 +25,8 @@ func Test_getDictionaryHandler(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			commands := i18n.NewMockedCommands(ctrl)
-			dicts := []dict.Dictionary{newDictionary()}
+			commands := corei18n.NewMockedCommands(ctrl)
+			dicts := []i18n.Dictionary{newDictionary()}
 			defaultLanguage := language.BrazilianPortuguese
 			commands.EXPECT().GetDictionaries().Return(dicts)
 			commands.EXPECT().DefaultLanguage().Return(defaultLanguage)

@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"strings"
 
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
-	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 func Validate(
@@ -91,7 +91,7 @@ func resolveErrorMessage(ctx context.Context, field DynamicField, value any) *i1
 
 	case URLType:
 		if !isAnURL(value) {
-			return i18n.M(ctx, i18n.K.CommonValidationInvalidURL)
+			return i18n.M(ctx, i18n.K.CommonValidationInvalidUrl)
 		}
 
 	default:

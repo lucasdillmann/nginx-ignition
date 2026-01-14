@@ -1,15 +1,15 @@
 package i18n
 
 import (
-	"dillmann.com.br/nginx-ignition/i18n/dict"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
-func newDictionary() dict.Dictionary {
-	return dict.EnUS()
+func newDictionary() i18n.Dictionary {
+	return i18n.ENUS()
 }
 
 func newDictionaryDTO() dictionaryDTO {
-	baseDict := dict.EnUS()
+	baseDict := i18n.ENUS()
 	return dictionaryDTO{
 		Language:  baseDict.Language().String(),
 		Templates: baseDict.Templates(),

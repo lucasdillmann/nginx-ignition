@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"strings"
 
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
-	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 var httpStatusCodeRange = valuerange.New(100, 599)

@@ -6,13 +6,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/text/language"
 
-	"dillmann.com.br/nginx-ignition/i18n/dict"
+	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 func Test_converter(t *testing.T) {
 	t.Run("toDTO", func(t *testing.T) {
 		t.Run("maps dictionaries correctly", func(t *testing.T) {
-			dictionaries := []dict.Dictionary{newDictionary()}
+			dictionaries := []i18n.Dictionary{newDictionary()}
 			defaultLanguage := language.AmericanEnglish
 			expected := dictionariesDTO{
 				DefaultLanguage: defaultLanguage.String(),

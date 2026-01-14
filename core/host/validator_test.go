@@ -12,11 +12,11 @@ import (
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/vpn"
-	"dillmann.com.br/nginx-ignition/i18n"
 )
 
 func Test_validator(t *testing.T) {
@@ -179,12 +179,12 @@ func Test_validator(t *testing.T) {
 						AnyTimes()
 
 					err := hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.HostValidationTargetURIRequired)
+					assertViolations(t, err, i18n.K.HostValidationTargetUriRequired)
 
 					h.Routes[0].TargetURI = ptr.Of("http://invalid\nurl")
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
 					err = hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.CommonValidationInvalidURL)
+					assertViolations(t, err, i18n.K.CommonValidationInvalidUrl)
 				})
 
 				t.Run("Redirect", func(t *testing.T) {
@@ -201,7 +201,7 @@ func Test_validator(t *testing.T) {
 						AnyTimes()
 
 					err := hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.HostValidationTargetURIRequired)
+					assertViolations(t, err, i18n.K.HostValidationTargetUriRequired)
 
 					h.Routes[0].TargetURI = ptr.Of("http://example.com")
 					h.Routes[0].RedirectCode = ptr.Of(200)
@@ -299,7 +299,7 @@ func Test_validator(t *testing.T) {
 						AnyTimes()
 
 					err := hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.HostValidationTargetURIRequired)
+					assertViolations(t, err, i18n.K.HostValidationTargetUriRequired)
 
 					h.Routes[0].TargetURI = ptr.Of("invalid/path")
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
