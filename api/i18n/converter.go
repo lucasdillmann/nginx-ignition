@@ -14,8 +14,8 @@ func toDTO(
 
 	for index := range dictionaries {
 		output[index] = dictionaryDTO{
-			Language:  dictionaries[index].Language().String(),
-			Templates: dictionaries[index].Templates(),
+			Language: dictionaries[index].Language().String(),
+			Messages: dictionaries[index].Raw(),
 		}
 	}
 

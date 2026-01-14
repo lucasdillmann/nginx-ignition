@@ -11,7 +11,7 @@ func newDictionary() i18n.Dictionary {
 func newDictionaryDTO() dictionaryDTO {
 	baseDict := i18n.ENUS()
 	return dictionaryDTO{
-		Language:  baseDict.Language().String(),
-		Templates: baseDict.Templates(),
+		Language: baseDict.Language().String(),
+		Messages: baseDict.Raw(),
 	}
 }

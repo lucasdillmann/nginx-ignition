@@ -5,6 +5,6 @@ type dictionariesDTO struct {
 	Dictionaries    []dictionaryDTO `json:"dictionaries"`
 }
 type dictionaryDTO struct {
-	Templates map[string]string `json:"templates"`
-	Language  string            `json:"language"`
+	Messages map[string]string `json:"messages"`
+	Language string            `json:"language"`
 }
