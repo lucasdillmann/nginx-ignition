@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -20,26 +21,28 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "IIJ_DPF" }
 
-func (p *Provider) Name() string { return "IIJ DNS Platform Service" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIijdpfName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokenFieldID,
-			Description: "IIJ DPF API token",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIijdpfApiToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          serviceCodeFieldID,
-			Description: "IIJ DPF DPM service code",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIijdpfServiceCode),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          endpointFieldID,
-			Description: "IIJ DPF API endpoint",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIijdpfApiEndpoint),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

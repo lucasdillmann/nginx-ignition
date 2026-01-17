@@ -69,7 +69,7 @@ func (s *service) Exists(ctx context.Context, id uuid.UUID) (*bool, error) {
 	return s.repository.ExistsByID(ctx, id)
 }
 
-func (s *service) GetAvailableDrivers(_ context.Context) ([]AvailableDriver, error) {
+func (s *service) GetAvailableDrivers(ctx context.Context) ([]AvailableDriver, error) {
 	drivers := s.drivers()
 	sort.Slice(drivers, func(left, right int) bool {
 		return drivers[left].Name() < drivers[right].Name()
@@ -80,8 +80,8 @@ func (s *service) GetAvailableDrivers(_ context.Context) ([]AvailableDriver, err
 		output[index] = AvailableDriver{
 			ID:                    driver.ID(),
 			Name:                  driver.Name(),
-			ImportantInstructions: driver.ImportantInstructions(),
-			ConfigurationFields:   driver.ConfigurationFields(),
+			ImportantInstructions: driver.ImportantInstructions(ctx),
+			ConfigurationFields:   driver.ConfigurationFields(ctx),
 		}
 	}
 

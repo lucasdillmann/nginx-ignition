@@ -10,7 +10,7 @@ import (
 
 func Test_Validate(t *testing.T) {
 	t.Run("reports missing required field", func(t *testing.T) {
-		dynamicField := newDynamicField()
+		dynamicField := newDynamicField(t.Context())
 		dynamicField.ID = "field1"
 		dynamicField.Type = SingleLineTextType
 		dynamicField.Required = true
@@ -24,7 +24,7 @@ func Test_Validate(t *testing.T) {
 	})
 
 	t.Run("reports invalid email", func(t *testing.T) {
-		dynamicField := newDynamicField()
+		dynamicField := newDynamicField(t.Context())
 		dynamicField.ID = "email"
 		dynamicField.Type = EmailType
 		dynamicField.Required = true
@@ -34,7 +34,7 @@ func Test_Validate(t *testing.T) {
 	})
 
 	t.Run("reports invalid boolean", func(t *testing.T) {
-		dynamicField := newDynamicField()
+		dynamicField := newDynamicField(t.Context())
 		dynamicField.ID = "bool"
 		dynamicField.Type = BooleanType
 		dynamicField.Required = true
@@ -44,7 +44,7 @@ func Test_Validate(t *testing.T) {
 	})
 
 	t.Run("reports invalid enum", func(t *testing.T) {
-		dynamicField := newDynamicField()
+		dynamicField := newDynamicField(t.Context())
 		dynamicField.ID = "enum"
 		dynamicField.Type = EnumType
 		dynamicField.Required = true

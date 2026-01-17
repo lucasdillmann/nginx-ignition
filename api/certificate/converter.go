@@ -1,6 +1,8 @@
 package certificate
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/api/common/dynamicfield"
@@ -8,15 +10,16 @@ import (
 )
 
 func toAvailableProviderResponse(
+	ctx context.Context,
 	input []certificate.AvailableProvider,
 ) []availableProviderResponse {
 	responses := make([]availableProviderResponse, 0, len(input))
 	for _, provider := range input {
 		responses = append(responses, availableProviderResponse{
 			ID:            provider.ID(),
-			Name:          provider.Name(),
+			Name:          provider.Name(ctx),
 			Priority:      provider.Priority(),
-			DynamicFields: dynamicfield.ToResponse(provider.DynamicFields()),
+			DynamicFields: dynamicfield.ToResponse(provider.DynamicFields(ctx)),
 		})
 	}
 

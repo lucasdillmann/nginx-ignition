@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -19,19 +20,21 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "EXEC_PROGRAM" }
 
-func (p *Provider) Name() string { return "Custom script or program" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsExecName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          programFieldID,
-			Description: "Path to the program/script",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsExecProgramPath),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          modeFieldID,
-			Description: "Raw mode",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsExecRawMode),
 			Type:        dynamicfields.BooleanType,
 		},
 	})

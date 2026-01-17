@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -22,31 +23,33 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "OVH" }
 
-func (p *Provider) Name() string { return "OVH" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOvhName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          endpointFieldID,
-			Description: "OVH API endpoint",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOvhApiEndpoint),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          applicationKeyFieldID,
-			Description: "OVH application key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOvhApplicationKey),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          applicationSecFieldID,
-			Description: "OVH application secret",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOvhApplicationSecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          consumerKeyFieldID,
-			Description: "OVH consumer key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOvhConsumerKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -20,25 +21,27 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "MAIL_IN_A_BOX" }
 
-func (p *Provider) Name() string { return "Mail-in-a-Box" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsMailinaboxName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          baseURLFieldID,
-			Description: "Mail-in-a-Box base URL",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsMailinaboxBaseUrl),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          emailFieldID,
-			Description: "Mail-in-a-Box email",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsMailinaboxEmail),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "Mail-in-a-Box password",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsMailinaboxPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

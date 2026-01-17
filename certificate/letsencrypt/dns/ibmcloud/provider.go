@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -20,19 +21,21 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "IBM_CLOUD" }
 
-func (p *Provider) Name() string { return "IBM Cloud (SoftLayer)" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIbmcloudName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: "IBM Cloud (SoftLayer) username",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIbmcloudUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiKeyFieldID,
-			Description: "IBM Cloud (SoftLayer) API key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIbmcloudApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

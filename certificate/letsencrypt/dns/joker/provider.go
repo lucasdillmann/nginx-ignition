@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -24,30 +25,32 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "JOKER" }
 
-func (p *Provider) Name() string { return "Joker" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJokerName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:           apiModeFieldID,
-			Description:  "Joker API mode",
+			Description:  i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJokerApiMode),
 			Type:         dynamicfields.EnumType,
 			Required:     true,
 			DefaultValue: dmapi,
 			EnumOptions: []dynamicfields.EnumOption{
 				{
 					ID:          dmapi,
-					Description: dmapi,
+					Description: i18n.Raw(dmapi),
 				},
 				{
 					ID:          svc,
-					Description: svc,
+					Description: i18n.Raw(svc),
 				},
 			},
 		},
 		{
 			ID:          apiKeyFieldID,
-			Description: "Joker API key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJokerApiKey),
 			Sensitive:   true,
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
@@ -58,7 +61,7 @@ func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 		},
 		{
 			ID:          usernameFieldID,
-			Description: "Joker username",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJokerUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 			Conditions: []dynamicfields.Condition{{
@@ -68,7 +71,7 @@ func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "Joker password",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJokerPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

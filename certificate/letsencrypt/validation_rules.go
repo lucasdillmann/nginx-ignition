@@ -24,10 +24,10 @@ func (r validationRules) Validate(
 ) []validation.ConsistencyViolation {
 	output := make([]validation.ConsistencyViolation, 0)
 
-	termsOfServiceAccepted, casted := request.Parameters[termsOfService.ID].(bool)
+	termsOfServiceAccepted, casted := request.Parameters[termsOfServiceFieldID].(bool)
 	if !casted || !termsOfServiceAccepted {
 		output = append(output, validation.ConsistencyViolation{
-			Path:    fmt.Sprintf("parameters.%s", termsOfService.ID),
+			Path:    fmt.Sprintf("parameters.%s", termsOfServiceFieldID),
 			Message: i18n.M(ctx, i18n.K.CertificateValidationTosRequired),
 		})
 	}

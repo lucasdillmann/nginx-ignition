@@ -27,20 +27,12 @@ func (p *Provider) ID() string {
 	return "CUSTOM"
 }
 
-func (p *Provider) Name() string {
-	return "Third-party issuer (certificate upload)"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonCustomName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
-	return []dynamicfields.DynamicField{
-		uploadModeField,
-		publicKeyTextField,
-		privateKeyTextField,
-		certificationChainTextField,
-		publicKeyFileField,
-		privateKeyFileField,
-		certificationChainFileField,
-	}
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	return dynamicFields(ctx)
 }
 
 func (p *Provider) Priority() int {
@@ -51,24 +43,24 @@ func (p *Provider) Issue(
 	ctx context.Context,
 	request *certificate.IssueRequest,
 ) (*certificate.Certificate, error) {
-	if err := commons.Validate(ctx, request, validationRules{p.DynamicFields()}); err != nil {
+	if err := commons.Validate(ctx, request, validationRules{p.DynamicFields(ctx)}); err != nil {
 		return nil, err
 	}
 
 	params := request.Parameters
-	fileUploadMode := params[uploadModeField.ID] == fileUploadModeID
+	fileUploadMode := params[uploadModeFieldID] == fileUploadModeID
 
 	var privateKeyStr, publicKeyStr, chainStr string
 	var chainPresent bool
 
 	if fileUploadMode {
-		privateKeyStr, _ = params[privateKeyFileField.ID].(string)
-		publicKeyStr, _ = params[publicKeyFileField.ID].(string)
-		chainStr, chainPresent = params[certificationChainFileField.ID].(string)
+		privateKeyStr, _ = params[privateKeyFileFieldID].(string)
+		publicKeyStr, _ = params[publicKeyFileFieldID].(string)
+		chainStr, chainPresent = params[chainFileFieldID].(string)
 	} else {
-		privateKeyStr, _ = params[privateKeyTextField.ID].(string)
-		publicKeyStr, _ = params[publicKeyTextField.ID].(string)
-		chainStr, chainPresent = params[certificationChainTextField.ID].(string)
+		privateKeyStr, _ = params[privateKeyTextFieldID].(string)
+		publicKeyStr, _ = params[publicKeyTextFieldID].(string)
+		chainStr, chainPresent = params[chainTextFieldID].(string)
 	}
 
 	privateKey, err := parsePrivateKey(ctx, privateKeyStr, fileUploadMode)

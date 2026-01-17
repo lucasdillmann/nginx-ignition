@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -23,44 +24,52 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "EFFICIENTIP" }
 
-func (p *Provider) Name() string { return "EfficientIP" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEfficientipName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: "EfficientIP username",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEfficientipUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "EfficientIP password",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEfficientipPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          hostnameFieldID,
-			Description: "EfficientIP hostname",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEfficientipHostname),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
-			ID:          dnsNameFieldID,
-			Description: "DNS server name",
-			Required:    true,
-			Type:        dynamicfields.SingleLineTextType,
+			ID: dnsNameFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateCommonLetsEncryptDnsEfficientipDnsServerName,
+			),
+			Required: true,
+			Type:     dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          viewNameFieldID,
-			Description: "DNS view name",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEfficientipDnsViewName),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
-			ID:          insecureSkipVerifyFieldID,
-			Description: "Skip TLS certificate verification",
-			Type:        dynamicfields.BooleanType,
+			ID: insecureSkipVerifyFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateCommonLetsEncryptDnsEfficientipSkipTlsVerify,
+			),
+			Type: dynamicfields.BooleanType,
 		},
 	})
 }

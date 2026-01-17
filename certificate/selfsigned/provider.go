@@ -11,6 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 type Provider struct{}
@@ -23,11 +24,11 @@ func (p *Provider) ID() string {
 	return "SELF_SIGNED"
 }
 
-func (p *Provider) Name() string {
-	return "Self-signed certificate"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonSelfSignedName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(_ context.Context) []dynamicfields.DynamicField {
 	return []dynamicfields.DynamicField{}
 }
 

@@ -22,16 +22,16 @@ func (a *Driver) ID() string {
 	return "DOCKER"
 }
 
-func (a *Driver) Name() string {
-	return "Docker"
+func (a *Driver) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.DockerCommonName)
 }
 
 func (a *Driver) Description(ctx context.Context) *i18n.Message {
 	return i18n.M(ctx, i18n.K.DockerCommonDescription)
 }
 
-func (a *Driver) ConfigurationFields() []dynamicfields.DynamicField {
-	return fields.All
+func (a *Driver) ConfigurationFields(ctx context.Context) []dynamicfields.DynamicField {
+	return fields.DynamicFields(ctx)
 }
 
 func (a *Driver) GetAvailableOptions(

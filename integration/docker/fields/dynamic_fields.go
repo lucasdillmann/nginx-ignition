@@ -1,149 +1,150 @@
 package fields
 
 import (
+	"context"
+
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
-var (
-	ConnectionMode = dynamicfields.DynamicField{
-		ID:           "connectionMode",
-		Description:  "Connection mode",
+const (
+	SocketConnectionMode = "SOCKET"
+	TCPConnectionMode    = "TCP"
+
+	ConnectionModeFieldID       = "connectionMode"
+	SocketPathFieldID           = "socketPath"
+	HostURLFieldID              = "hostUrl"
+	SwarmModeFieldID            = "swarmMode"
+	SwarmServiceMeshFieldID     = "swarmServiceMesh"
+	SwarmDNSResolversFieldID    = "swarmDnsResolvers"
+	UseContainerNameAsIDFieldID = "useContainerNameAsId"
+	ProxyURLFieldID             = "proxyUrl"
+)
+
+func DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	connectionMode := dynamicfields.DynamicField{
+		ID:           ConnectionModeFieldID,
+		Description:  i18n.M(ctx, i18n.K.DockerCommonConnectionMode),
 		Priority:     1,
 		Required:     true,
 		Type:         dynamicfields.EnumType,
 		DefaultValue: SocketConnectionMode,
 		EnumOptions: []dynamicfields.EnumOption{
-			{ID: SocketConnectionMode, Description: "Socket"},
-			{ID: TCPConnectionMode, Description: "TCP"},
+			{
+				ID:          SocketConnectionMode,
+				Description: i18n.M(ctx, i18n.K.DockerCommonConnectionModeSocket),
+			},
+			{ID: TCPConnectionMode, Description: i18n.M(ctx, i18n.K.DockerCommonConnectionModeTcp)},
 		},
 	}
 
-	SocketPath = dynamicfields.DynamicField{
-		ID:           "socketPath",
-		Description:  "Socket path",
+	socketPath := dynamicfields.DynamicField{
+		ID:           SocketPathFieldID,
+		Description:  i18n.M(ctx, i18n.K.DockerCommonSocketPath),
 		Priority:     2,
 		Required:     true,
 		Type:         dynamicfields.SingleLineTextType,
 		DefaultValue: "/var/run/docker.sock",
 		Conditions: []dynamicfields.Condition{{
-			ParentField: ConnectionMode.ID,
+			ParentField: ConnectionModeFieldID,
 			Value:       SocketConnectionMode,
 		}},
 	}
 
-	HostURL = dynamicfields.DynamicField{
-		ID:           "hostUrl",
-		Description:  "Host URL",
+	hostURL := dynamicfields.DynamicField{
+		ID:           HostURLFieldID,
+		Description:  i18n.M(ctx, i18n.K.DockerCommonHostUrl),
 		Priority:     3,
 		Required:     true,
 		Type:         dynamicfields.URLType,
 		DefaultValue: "",
-		HelpText: ptr.Of(
-			"The URL to be used to connect to Docker (such as tcp://example.com:2375)",
-		),
+		HelpText:     i18n.M(ctx, i18n.K.DockerCommonHostUrlHelp),
 		Conditions: []dynamicfields.Condition{{
-			ParentField: ConnectionMode.ID,
+			ParentField: ConnectionModeFieldID,
 			Value:       TCPConnectionMode,
 		}},
 	}
 
-	SwarmMode = dynamicfields.DynamicField{
-		ID:           "swarmMode",
-		Description:  "Swarm mode",
+	swarmMode := dynamicfields.DynamicField{
+		ID:           SwarmModeFieldID,
+		Description:  i18n.M(ctx, i18n.K.DockerCommonSwarmMode),
 		Priority:     4,
 		Required:     true,
 		Type:         dynamicfields.BooleanType,
 		DefaultValue: false,
-		HelpText: ptr.Of(
-			"When enabled, ignition will retrieve the available options by looking for the " +
-				"deployed Swarm services instead of resolving available containers",
-		),
+		HelpText:     i18n.M(ctx, i18n.K.DockerCommonSwarmModeHelp),
 	}
 
-	SwarmServiceMesh = dynamicfields.DynamicField{
-		ID:           "swarmServiceMesh",
-		Description:  "Service mesh",
+	swarmServiceMesh := dynamicfields.DynamicField{
+		ID:           SwarmServiceMeshFieldID,
+		Description:  i18n.M(ctx, i18n.K.DockerCommonSwarmServiceMesh),
 		Priority:     5,
 		Required:     true,
 		Type:         dynamicfields.BooleanType,
 		DefaultValue: false,
-		HelpText: ptr.Of(
-			"When enabled, nginx will be configured to reach Swarm services using the service mesh " +
-				"(internal DNS names) when an ingress is selected as the proxy target",
-		),
+		HelpText:     i18n.M(ctx, i18n.K.DockerCommonSwarmServiceMeshHelp),
 		Conditions: []dynamicfields.Condition{{
-			ParentField: SwarmMode.ID,
+			ParentField: SwarmModeFieldID,
 			Value:       true,
 		}},
 	}
 
-	SwarmDNSResolvers = dynamicfields.DynamicField{
-		ID:           "swarmDnsResolvers",
-		Description:  "Swarm DNS resolvers",
+	swarmDNSResolvers := dynamicfields.DynamicField{
+		ID:           SwarmDNSResolversFieldID,
+		Description:  i18n.M(ctx, i18n.K.DockerCommonSwarmDnsResolvers),
 		Priority:     6,
 		Required:     false,
 		Type:         dynamicfields.MultiLineTextType,
 		DefaultValue: "",
-		HelpText: ptr.Of(
-			"Overrides the default DNS resolvers used by nginx when resolving Swarm services. " +
-				"One IP address per line.",
-		),
+		HelpText:     i18n.M(ctx, i18n.K.DockerCommonSwarmDnsResolversHelp),
 		Conditions: []dynamicfields.Condition{
 			{
-				ParentField: SwarmMode.ID,
+				ParentField: SwarmModeFieldID,
 				Value:       true,
 			},
 			{
-				ParentField: SwarmServiceMesh.ID,
+				ParentField: SwarmServiceMeshFieldID,
 				Value:       true,
 			},
 		},
 	}
 
-	UseContainerNameAsID = dynamicfields.DynamicField{
-		ID:           "useContainerNameAsId",
-		Description:  "Use container name as ID",
+	useContainerNameAsID := dynamicfields.DynamicField{
+		ID:           UseContainerNameAsIDFieldID,
+		Description:  i18n.M(ctx, i18n.K.DockerCommonUseContainerNameAsId),
 		Priority:     5,
 		Required:     true,
 		Type:         dynamicfields.BooleanType,
 		DefaultValue: false,
-		HelpText: ptr.Of(
-			"When enabled, ignition will use the container name as the ID instead of the " +
-				"container's actual ID. Use this option when the containers are recreated constantly and/or managed " +
-				"by a third-party tool.",
-		),
+		HelpText:     i18n.M(ctx, i18n.K.DockerCommonUseContainerNameAsIdHelp),
 		Conditions: []dynamicfields.Condition{{
-			ParentField: SwarmMode.ID,
+			ParentField: SwarmModeFieldID,
 			Value:       false,
 		}},
 	}
 
-	ProxyURL = dynamicfields.DynamicField{
-		ID:           "proxyUrl",
-		Description:  "Proxy URL",
+	proxyURL := dynamicfields.DynamicField{
+		ID:           ProxyURLFieldID,
+		Description:  i18n.M(ctx, i18n.K.DockerCommonProxyUrl),
 		Priority:     6,
 		Required:     false,
 		Type:         dynamicfields.URLType,
 		DefaultValue: "",
-		HelpText: ptr.Of(
-			"The URL to be used when proxying a request to a Docker container using a port " +
-				"exposed on the host. If not set, the container IP will be used instead.",
-		),
+		HelpText:     i18n.M(ctx, i18n.K.DockerCommonProxyUrlHelp),
 		Conditions: []dynamicfields.Condition{{
-			ParentField: SwarmMode.ID,
+			ParentField: SwarmModeFieldID,
 			Value:       false,
 		}},
 	}
 
-	All = []dynamicfields.DynamicField{
-		ConnectionMode,
-		SocketPath,
-		HostURL,
-		SwarmMode,
-		SwarmServiceMesh,
-		SwarmDNSResolvers,
-		UseContainerNameAsID,
-		ProxyURL,
+	return []dynamicfields.DynamicField{
+		connectionMode,
+		socketPath,
+		hostURL,
+		swarmMode,
+		swarmServiceMesh,
+		swarmDNSResolvers,
+		useContainerNameAsID,
+		proxyURL,
 	}
-)
+}

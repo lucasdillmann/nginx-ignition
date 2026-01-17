@@ -8,7 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -23,35 +23,47 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "RFC2136" }
 
-func (p *Provider) Name() string { return "RFC2136" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRfc2136Name)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
-			ID:          nameserverFieldID,
-			Description: "DNS nameserver address",
-			HelpText:    ptr.Of("host:port or host, defaults to port 53"),
-			Required:    true,
-			Type:        dynamicfields.SingleLineTextType,
+			ID: nameserverFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateCommonLetsEncryptDnsRfc2136NameserverAddress,
+			),
+			HelpText: i18n.M(
+				ctx,
+				i18n.K.CertificateCommonLetsEncryptDnsRfc2136NameserverAddressHelp,
+			),
+			Required: true,
+			Type:     dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tsigKeyFieldID,
-			Description: "TSIG key name",
-			HelpText:    ptr.Of("Leave empty to disable TSIG authentication"),
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRfc2136TsigKeyName),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRfc2136TsigKeyNameHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tsigSecretFieldID,
-			Description: "TSIG secret key",
-			HelpText:    ptr.Of("Leave empty to disable TSIG authentication"),
-			Sensitive:   true,
-			Type:        dynamicfields.SingleLineTextType,
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRfc2136TsigSecretKey),
+			HelpText: i18n.M(
+				ctx,
+				i18n.K.CertificateCommonLetsEncryptDnsRfc2136TsigSecretKeyHelp,
+			),
+			Sensitive: true,
+			Type:      dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tsigAlgorithmFieldID,
-			Description: "TSIG algorithm",
-			HelpText: ptr.Of(
-				"e.g., hmac-sha256., defaults to hmac-sha1. Leave empty to disable TSIG authentication.",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRfc2136TsigAlgorithm),
+			HelpText: i18n.M(
+				ctx,
+				i18n.K.CertificateCommonLetsEncryptDnsRfc2136TsigAlgorithmHelp,
 			),
 			Type: dynamicfields.SingleLineTextType,
 		},

@@ -29,21 +29,21 @@ func (p *Provider) ID() string {
 	return "AWS_ROUTE53"
 }
 
-func (p *Provider) Name() string {
-	return "AWS Route53"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAwsName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,
-			Description: "AWS access key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAwsAccessKey),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretKeyFieldID,
-			Description: "AWS secret key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAwsSecretKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

@@ -18,9 +18,9 @@ const (
 
 type Driver interface {
 	ID() string
-	Name() string
+	Name(ctx context.Context) *i18n.Message
 	Description(ctx context.Context) *i18n.Message
-	ConfigurationFields() []dynamicfields.DynamicField
+	ConfigurationFields(ctx context.Context) []dynamicfields.DynamicField
 	GetAvailableOptions(
 		ctx context.Context,
 		parameters map[string]any,

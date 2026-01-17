@@ -18,5 +18,8 @@ func (h availableProvidersHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	ctx.JSON(http.StatusOK, toAvailableProviderResponse(availableProviders))
+	ctx.JSON(
+		http.StatusOK,
+		toAvailableProviderResponse(ctx.Request.Context(), availableProviders),
+	)
 }

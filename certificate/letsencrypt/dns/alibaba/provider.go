@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -23,37 +24,39 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "ALIBABA" }
 
-func (p *Provider) Name() string { return "Alibaba" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAlibabaName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,
-			Description: "Alibaba Cloud access key ID",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAlibabaAccessKeyId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          accessKeySecretFieldID,
-			Description: "Alibaba Cloud access key secret",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAlibabaAccessKeySecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          securityTokenFieldID,
-			Description: "Alibaba Cloud security token",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAlibabaSecurityToken),
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionFieldID,
-			Description: "Alibaba Cloud region",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAlibabaRegion),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          ramRoleFieldID,
-			Description: "Alibaba Cloud RAM role",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAlibabaRamRole),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

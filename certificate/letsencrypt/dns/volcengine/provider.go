@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -23,28 +24,28 @@ func (p *Provider) ID() string {
 	return "VOLCENGINE"
 }
 
-func (p *Provider) Name() string {
-	return "Volcengine"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVolcengineName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,
-			Description: "Volcengine access key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVolcengineAccessKey),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretKeyFieldID,
-			Description: "Volcengine secret key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVolcengineSecretKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionFieldID,
-			Description: "Volcengine region",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVolcengineRegion),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

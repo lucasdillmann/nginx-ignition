@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -20,19 +21,21 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "KEYHELP" }
 
-func (p *Provider) Name() string { return "KeyHelp" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsKeyhelpName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          baseURLFieldID,
-			Description: "KeyHelp base URL",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsKeyhelpBaseUrl),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiKeyFieldID,
-			Description: "KeyHelp API key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsKeyhelpApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

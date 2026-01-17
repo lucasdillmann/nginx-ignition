@@ -11,7 +11,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -26,33 +26,35 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "POWERDNS" }
 
-func (p *Provider) Name() string { return "PowerDNS" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiKeyFieldID,
-			Description: "PowerDNS API key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          hostURLFieldID,
-			Description: "PowerDNS host URL",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsHostUrl),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          serverNameFieldID,
-			Description: "PowerDNS server name",
-			HelpText:    ptr.Of("Defaults to localhost when left empty"),
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsServerName),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsServerNameHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiVersionFieldID,
-			Description: "PowerDNS API version",
-			HelpText:    ptr.Of("Defaults to auto-detection when left empty"),
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsApiVersion),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsApiVersionHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

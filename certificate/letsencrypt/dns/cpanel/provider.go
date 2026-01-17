@@ -8,7 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -22,33 +22,35 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "CPANEL" }
 
-func (p *Provider) Name() string { return "cPanel" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCpanelName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          hostFieldID,
-			Description: "cPanel base URL",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCpanelBaseUrl),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          userFieldID,
-			Description: "cPanel username",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCpanelUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tokenFieldID,
-			Description: "cPanel API token",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCpanelApiToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          modeFieldID,
-			Description: "cPanel mode",
-			HelpText:    ptr.Of("Defaults to cpanel when left empty"),
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCpanelMode),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCpanelModeHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

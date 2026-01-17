@@ -39,12 +39,12 @@ func (p *Provider) ID() string {
 	return certificateProviderID
 }
 
-func (p *Provider) Name() string {
-	return "Let's encrypt"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
-	return resolveDynamicFields()
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	return resolveDynamicFields(ctx)
 }
 
 func (p *Provider) Priority() int {
@@ -55,7 +55,7 @@ func (p *Provider) Issue(
 	ctx context.Context,
 	request *certificate.IssueRequest,
 ) (*certificate.Certificate, error) {
-	if err := commons.Validate(ctx, request, validationRules{p.DynamicFields()}); err != nil {
+	if err := commons.Validate(ctx, request, validationRules{p.DynamicFields(ctx)}); err != nil {
 		return nil, err
 	}
 
@@ -64,7 +64,7 @@ func (p *Provider) Issue(
 		return nil, err
 	}
 
-	email, _ := request.Parameters[emailAddress.ID].(string)
+	email, _ := request.Parameters[emailAddressFieldID].(string)
 
 	usrKey, err := rsa.GenerateKey(rand.Reader, privateKeySize)
 	if err != nil {

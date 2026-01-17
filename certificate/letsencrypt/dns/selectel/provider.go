@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -21,22 +22,22 @@ func (p *Provider) ID() string {
 	return "SELECTEL"
 }
 
-func (p *Provider) Name() string {
-	return "Selectel"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsSelectelName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokenFieldID,
-			Description: "Selectel API token",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsSelectelApiToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          baseURLFieldID,
-			Description: "Selectel base URL",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsSelectelBaseUrl),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

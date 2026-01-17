@@ -1,11 +1,13 @@
 package certificate
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 type Certificate struct {
@@ -43,12 +45,12 @@ func (a *AvailableProvider) ID() string {
 	return a.provider.ID()
 }
 
-func (a *AvailableProvider) Name() string {
-	return a.provider.Name()
+func (a *AvailableProvider) Name(ctx context.Context) *i18n.Message {
+	return a.provider.Name(ctx)
 }
 
-func (a *AvailableProvider) DynamicFields() []dynamicfields.DynamicField {
-	return a.provider.DynamicFields()
+func (a *AvailableProvider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	return a.provider.DynamicFields(ctx)
 }
 
 func (a *AvailableProvider) Priority() int {

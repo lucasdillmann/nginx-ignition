@@ -4,13 +4,14 @@ import (
 	"context"
 
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 type Driver interface {
 	ID() string
 	Name() string
-	ImportantInstructions() []string
-	ConfigurationFields() []dynamicfields.DynamicField
+	ImportantInstructions(ctx context.Context) []*i18n.Message
+	ConfigurationFields(ctx context.Context) []dynamicfields.DynamicField
 	Reload(
 		ctx context.Context,
 		configDir string,

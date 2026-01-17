@@ -32,55 +32,64 @@ func (p *Provider) ID() string {
 	return "AZURE"
 }
 
-func (p *Provider) Name() string {
-	return "Azure"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAzureName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tenantFieldID,
-			Description: "Azure tenant ID",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAzureTenantId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          subscriptionFieldID,
-			Description: "Azure subscription ID",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAzureSubscriptionId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          clientFieldID,
-			Description: "Azure client ID",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAzureClientId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          clientSecretFieldID,
-			Description: "Azure client secret",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAzureClientSecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:           environmentFieldID,
-			Description:  "Azure environment",
+			Description:  i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAzureEnvironment),
 			Required:     true,
 			DefaultValue: defaultRegion,
 			Type:         dynamicfields.EnumType,
 			EnumOptions: []dynamicfields.EnumOption{
 				{
-					ID:          defaultRegion,
-					Description: "Azure (default)",
+					ID: defaultRegion,
+					Description: i18n.M(
+						ctx,
+						i18n.K.CertificateCommonLetsEncryptDnsAzureEnvironmentDefault,
+					),
 				},
 				{
-					ID:          chinaRegion,
-					Description: "China",
+					ID: chinaRegion,
+					Description: i18n.M(
+						ctx,
+						i18n.K.CertificateCommonLetsEncryptDnsAzureEnvironmentChina,
+					),
 				},
 				{
-					ID:          usGovRegion,
-					Description: "US Government",
+					ID: usGovRegion,
+					Description: i18n.M(
+						ctx,
+						i18n.K.CertificateCommonLetsEncryptDnsAzureEnvironmentUsGovernment,
+					),
 				},
 			},
 		},

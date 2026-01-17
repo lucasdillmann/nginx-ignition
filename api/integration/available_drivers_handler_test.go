@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
@@ -26,11 +27,11 @@ func Test_availableDriversHandler(t *testing.T) {
 			drivers := []integration.AvailableDriver{
 				{
 					ID:   "docker",
-					Name: "Docker",
+					Name: i18n.Raw("Docker"),
 				},
 				{
 					ID:   "swarm",
-					Name: "Swarm",
+					Name: i18n.Raw("Swarm"),
 				},
 			}
 

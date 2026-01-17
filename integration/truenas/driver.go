@@ -34,21 +34,16 @@ func (a *Driver) ID() string {
 	return "TRUENAS"
 }
 
-func (a *Driver) Name() string {
-	return "TrueNAS"
+func (a *Driver) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.TruenasCommonName)
 }
 
 func (a *Driver) Description(ctx context.Context) *i18n.Message {
 	return i18n.M(ctx, i18n.K.TruenasCommonDescription)
 }
 
-func (a *Driver) ConfigurationFields() []dynamicfields.DynamicField {
-	return []dynamicfields.DynamicField{
-		urlField,
-		proxyURLField,
-		usernameField,
-		passwordField,
-	}
+func (a *Driver) ConfigurationFields(ctx context.Context) []dynamicfields.DynamicField {
+	return dynamicFields(ctx)
 }
 
 func (a *Driver) GetAvailableOptions(
@@ -111,8 +106,8 @@ func (a *Driver) GetOptionProxyURL(
 	parameters map[string]any,
 	id string,
 ) (*string, []string, error) {
-	baseURL := parameters[urlField.ID].(string)
-	proxyURL := parameters[proxyURLField.ID].(string)
+	baseURL := parameters[urlFieldID].(string)
+	proxyURL := parameters[proxyURLFieldID].(string)
 	parts := strings.Split(id, ":")
 	appID := parts[0]
 	containerPort := parts[1]
@@ -212,9 +207,9 @@ func (a *Driver) buildOptions(
 }
 
 func (a *Driver) getAvailableApps(parameters map[string]any) ([]client.AvailableAppDTO, error) {
-	baseURL := parameters[urlField.ID].(string)
-	username := parameters[usernameField.ID].(string)
-	password := parameters[passwordField.ID].(string)
+	baseURL := parameters[urlFieldID].(string)
+	username := parameters[usernameFieldID].(string)
+	password := parameters[passwordFieldID].(string)
 
 	if a.client == nil {
 		a.client = client.New(baseURL, username, password, a.cacheDuration)

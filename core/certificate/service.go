@@ -54,7 +54,7 @@ func (s *service) Get(ctx context.Context, id uuid.UUID) (*Certificate, error) {
 		}
 
 		provider := providerByID(availableProviders, cert.ProviderID)
-		dynamicfields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields())
+		dynamicfields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields(ctx))
 	}
 
 	return cert, nil
@@ -81,7 +81,7 @@ func (s *service) List(
 
 	for _, cert := range certs.Contents {
 		provider := providerByID(availableProviders, cert.ProviderID)
-		dynamicfields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields())
+		dynamicfields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields(ctx))
 	}
 
 	return certs, nil

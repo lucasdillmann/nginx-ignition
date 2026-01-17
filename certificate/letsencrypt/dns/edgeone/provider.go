@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -21,26 +22,28 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "EDGEONE" }
 
-func (p *Provider) Name() string { return "Tencent EdgeOne" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEdgeoneName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          secretIDFieldID,
-			Description: "Tencent Cloud secret ID",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEdgeoneSecretId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretKeyFieldID,
-			Description: "Tencent Cloud secret key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEdgeoneSecretKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionFieldID,
-			Description: "Tencent Cloud region",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEdgeoneRegion),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

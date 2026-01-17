@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -21,26 +22,28 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "NETCUP" }
 
-func (p *Provider) Name() string { return "Netcup" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNetcupName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          customerFieldID,
-			Description: "Netcup customer",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNetcupCustomer),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiKeyFieldID,
-			Description: "Netcup API key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNetcupApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiPasswordFieldID,
-			Description: "Netcup API password",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNetcupApiPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

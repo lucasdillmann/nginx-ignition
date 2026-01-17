@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -22,21 +23,21 @@ func (p *Provider) ID() string {
 	return "ZONEEE"
 }
 
-func (p *Provider) Name() string {
-	return "Zone.ee"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsZoneeeName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: "Zone.ee username",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsZoneeeUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiKeyFieldID,
-			Description: "Zone.ee API key",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsZoneeeApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

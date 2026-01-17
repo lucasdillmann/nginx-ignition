@@ -1,8 +1,10 @@
 package tailscale
 
 import (
+	"context"
+
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -10,32 +12,32 @@ const (
 	coordinatorURLFieldName = "coordinatorUrl"
 )
 
-var configurationFields = []dynamicfields.DynamicField{
-	{
-		ID:          authKeyFieldName,
-		Priority:    0,
-		Description: "Tailscale auth key",
-		Required:    true,
-		Sensitive:   true,
-		Type:        dynamicfields.SingleLineTextType,
-	},
-	{
-		ID:          coordinatorURLFieldName,
-		Priority:    1,
-		Description: "Tailnet coordinator URL",
-		Required:    false,
-		Sensitive:   false,
-		Type:        dynamicfields.URLType,
-		HelpText: ptr.Of(
-			"Custom coordinator server URL. Leave empty to use the default (tailscale.com).",
-		),
-	},
+func configurationFields(ctx context.Context) []dynamicfields.DynamicField {
+	return []dynamicfields.DynamicField{
+		{
+			ID:          authKeyFieldName,
+			Priority:    0,
+			Description: i18n.M(ctx, i18n.K.TailscaleCommonAuthKey),
+			Required:    true,
+			Sensitive:   true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+		{
+			ID:          coordinatorURLFieldName,
+			Priority:    1,
+			Description: i18n.M(ctx, i18n.K.TailscaleCommonTailnetCoordinatorUrl),
+			Required:    false,
+			Sensitive:   false,
+			Type:        dynamicfields.URLType,
+			HelpText:    i18n.M(ctx, i18n.K.TailscaleCommonCoordinatorUrlHelp),
+		},
+	}
 }
 
-var importantInstructions = []string{
-	"An auth key can be generated in the Tailscale Admin console under Settings > Personal settings.",
-	"When generating the key, make sure to generate a Reusable, Ephemeral and Pre-approved key. " +
-		"Otherwise, nginx ignition will not be able to property manage and register virtual devices in the network.",
-	"nginx ignition will use Tailscale to automatically provision SSL certificates for your ts.net domain. Make sure " +
-		"that such possibility is enabled under Admin console > DNS > HTTP certificates.",
+func importantInstructions(ctx context.Context) []*i18n.Message {
+	return []*i18n.Message{
+		i18n.M(ctx, i18n.K.TailscaleCommonInstructionAuthKey),
+		i18n.M(ctx, i18n.K.TailscaleCommonInstructionKeySettings),
+		i18n.M(ctx, i18n.K.TailscaleCommonInstructionSsl),
+	}
 }

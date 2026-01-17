@@ -22,7 +22,9 @@ func Test_validator(t *testing.T) {
 			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
 
 			driverMock := NewMockedDriver(ctrl)
-			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
+			driverMock.EXPECT().
+				ConfigurationFields(t.Context()).
+				Return([]dynamicfields.DynamicField{})
 
 			vpnValidator := newValidator(repo, driverMock)
 			err := vpnValidator.validate(t.Context(), vpn)
@@ -127,7 +129,9 @@ func Test_validator(t *testing.T) {
 			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
 
 			driverMock := NewMockedDriver(ctrl)
-			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
+			driverMock.EXPECT().
+				ConfigurationFields(t.Context()).
+				Return([]dynamicfields.DynamicField{})
 
 			vpnValidator := newValidator(repo, driverMock)
 			err := vpnValidator.validate(t.Context(), vpn)
@@ -147,7 +151,9 @@ func Test_validator(t *testing.T) {
 			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
 
 			driverMock := NewMockedDriver(ctrl)
-			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
+			driverMock.EXPECT().
+				ConfigurationFields(t.Context()).
+				Return([]dynamicfields.DynamicField{})
 
 			vpnValidator := newValidator(repo, driverMock)
 			err := vpnValidator.validate(t.Context(), vpn)
@@ -169,13 +175,15 @@ func Test_validator(t *testing.T) {
 			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
 
 			driverMock := NewMockedDriver(ctrl)
-			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{
-				{
-					ID:       "requiredField",
-					Type:     dynamicfields.SingleLineTextType,
-					Required: true,
-				},
-			})
+			driverMock.EXPECT().
+				ConfigurationFields(t.Context()).
+				Return([]dynamicfields.DynamicField{
+					{
+						ID:       "requiredField",
+						Type:     dynamicfields.SingleLineTextType,
+						Required: true,
+					},
+				})
 
 			vpnValidator := newValidator(repo, driverMock)
 			err := vpnValidator.validate(t.Context(), vpn)

@@ -370,7 +370,7 @@ func resolveProviderChallenge(
 	domainNames []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
-	providerID, _ := parameters[dnsProvider.ID].(string)
+	providerID, _ := parameters[dnsProviderFieldID].(string)
 
 	for _, provider := range providers {
 		if provider.ID() == providerID {

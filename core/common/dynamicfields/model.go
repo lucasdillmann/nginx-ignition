@@ -1,5 +1,9 @@
 package dynamicfields
 
+import (
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
+)
+
 type Type string
 
 const (
@@ -14,9 +18,9 @@ const (
 
 type DynamicField struct {
 	DefaultValue any
-	HelpText     *string
+	HelpText     *i18n.Message
 	ID           string
-	Description  string
+	Description  *i18n.Message
 	Type         Type
 	EnumOptions  []EnumOption
 	Conditions   []Condition
@@ -26,8 +30,8 @@ type DynamicField struct {
 }
 
 type EnumOption struct {
+	Description *i18n.Message
 	ID          string
-	Description string
 }
 
 type Condition struct {

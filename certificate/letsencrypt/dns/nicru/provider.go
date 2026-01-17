@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -22,32 +23,34 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "NICRU" }
 
-func (p *Provider) Name() string { return "RU-CENTER" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNicruName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: "RU-CENTER username",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNicruUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "RU-CENTER password",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNicruPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          serviceIDFieldID,
-			Description: "RU-CENTER OAuth2 service ID",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNicruOauth2ServiceId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretFieldID,
-			Description: "RU-CENTER OAuth2 secret",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNicruOauth2Secret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

@@ -20,7 +20,9 @@ func Test_validator(t *testing.T) {
 			repository := NewMockedRepository(ctrl)
 			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
 			driverMock := NewMockedDriver(ctrl)
-			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
+			driverMock.EXPECT().
+				ConfigurationFields(t.Context()).
+				Return([]dynamicfields.DynamicField{})
 			integrationValidator := newValidator(repository, driverMock)
 
 			err := integrationValidator.validate(t.Context(), integration)
@@ -118,7 +120,9 @@ func Test_validator(t *testing.T) {
 			repository := NewMockedRepository(ctrl)
 			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
 			driverMock := NewMockedDriver(ctrl)
-			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
+			driverMock.EXPECT().
+				ConfigurationFields(t.Context()).
+				Return([]dynamicfields.DynamicField{})
 			integrationValidator := newValidator(repository, driverMock)
 
 			err := integrationValidator.validate(t.Context(), integration)
@@ -136,7 +140,9 @@ func Test_validator(t *testing.T) {
 			repository := NewMockedRepository(ctrl)
 			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
 			driverMock := NewMockedDriver(ctrl)
-			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{})
+			driverMock.EXPECT().
+				ConfigurationFields(t.Context()).
+				Return([]dynamicfields.DynamicField{})
 			integrationValidator := newValidator(repository, driverMock)
 
 			err := integrationValidator.validate(t.Context(), integration)
@@ -156,13 +162,15 @@ func Test_validator(t *testing.T) {
 			repository := NewMockedRepository(ctrl)
 			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
 			driverMock := NewMockedDriver(ctrl)
-			driverMock.EXPECT().ConfigurationFields().Return([]dynamicfields.DynamicField{
-				{
-					ID:       "requiredField",
-					Type:     dynamicfields.SingleLineTextType,
-					Required: true,
-				},
-			})
+			driverMock.EXPECT().
+				ConfigurationFields(t.Context()).
+				Return([]dynamicfields.DynamicField{
+					{
+						ID:       "requiredField",
+						Type:     dynamicfields.SingleLineTextType,
+						Required: true,
+					},
+				})
 			integrationValidator := newValidator(repository, driverMock)
 
 			err := integrationValidator.validate(t.Context(), integration)

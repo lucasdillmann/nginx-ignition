@@ -6,11 +6,12 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/api/common/dynamicfield"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 type availableProviderResponse struct {
 	ID            string                  `json:"id"`
-	Name          string                  `json:"name"`
+	Name          *i18n.Message           `json:"name"`
 	DynamicFields []dynamicfield.Response `json:"dynamicFields"`
 	Priority      int                     `json:"priority"`
 }

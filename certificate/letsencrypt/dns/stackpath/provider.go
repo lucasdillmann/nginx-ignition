@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -23,28 +24,28 @@ func (p *Provider) ID() string {
 	return "STACKPATH"
 }
 
-func (p *Provider) Name() string {
-	return "StackPath"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsStackpathName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          clientIDFieldID,
-			Description: "StackPath client ID",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsStackpathClientId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          clientSecretFieldID,
-			Description: "StackPath client secret",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsStackpathClientSecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          stackIDFieldID,
-			Description: "StackPath stack ID",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsStackpathStackId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

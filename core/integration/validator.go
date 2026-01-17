@@ -49,7 +49,11 @@ func (v *validator) validate(ctx context.Context, data *Integration) error {
 	}
 
 	if v.driver != nil {
-		if err := dynamicfields.Validate(ctx, v.driver.ConfigurationFields(), params); err != nil {
+		if err := dynamicfields.Validate(
+			ctx,
+			v.driver.ConfigurationFields(ctx),
+			params,
+		); err != nil {
 			for _, violation := range err.Violations {
 				v.delegate.Add(violation.Path, violation.Message)
 			}

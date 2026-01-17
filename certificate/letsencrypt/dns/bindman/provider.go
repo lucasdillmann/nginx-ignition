@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -18,13 +19,15 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "BINDMAN" }
 
-func (p *Provider) Name() string { return "Bindman" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsBindmanName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          baseURLFieldID,
-			Description: "Bindman API base URL",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsBindmanBaseUrl),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

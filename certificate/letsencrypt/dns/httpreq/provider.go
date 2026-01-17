@@ -24,30 +24,32 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "HTTP_REQUEST" }
 
-func (p *Provider) Name() string { return "HTTP request" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHttpreqName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          endpointFieldID,
-			Description: "HTTP endpoint URL",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHttpreqEndpointUrl),
 			Required:    true,
 			Type:        dynamicfields.URLType,
 		},
 		{
 			ID:          usernameFieldID,
-			Description: "HTTP basic auth username",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHttpreqUsername),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "HTTP basic auth password",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHttpreqPassword),
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          modeFieldID,
-			Description: "Raw mode",
+			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHttpreqRawMode),
 			Type:        dynamicfields.BooleanType,
 		},
 	})

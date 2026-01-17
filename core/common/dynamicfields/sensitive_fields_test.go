@@ -14,14 +14,14 @@ func Test_RemoveSensitiveFields(t *testing.T) {
 			"field3": "value3",
 		}
 
-		dynamicField1 := newDynamicField()
+		dynamicField1 := newDynamicField(t.Context())
 		dynamicField1.ID = "field1"
 
-		dynamicField2 := newDynamicField()
+		dynamicField2 := newDynamicField(t.Context())
 		dynamicField2.ID = "field2"
 		dynamicField2.Sensitive = true
 
-		dynamicField3 := newDynamicField()
+		dynamicField3 := newDynamicField(t.Context())
 		dynamicField3.ID = "field3"
 
 		dynamicFields := []DynamicField{*dynamicField1, *dynamicField2, *dynamicField3}
@@ -36,7 +36,7 @@ func Test_RemoveSensitiveFields(t *testing.T) {
 	t.Run("handles empty map", func(t *testing.T) {
 		values := map[string]any{}
 
-		dynamicField := newDynamicField()
+		dynamicField := newDynamicField(t.Context())
 		dynamicField.ID = "field1"
 		dynamicField.Sensitive = true
 
@@ -66,18 +66,18 @@ func Test_RemoveSensitiveFields(t *testing.T) {
 			"field4": "value4",
 		}
 
-		dynamicField1 := newDynamicField()
+		dynamicField1 := newDynamicField(t.Context())
 		dynamicField1.ID = "field1"
 		dynamicField1.Sensitive = true
 
-		dynamicField2 := newDynamicField()
+		dynamicField2 := newDynamicField(t.Context())
 		dynamicField2.ID = "field2"
 
-		dynamicField3 := newDynamicField()
+		dynamicField3 := newDynamicField(t.Context())
 		dynamicField3.ID = "field3"
 		dynamicField3.Sensitive = true
 
-		dynamicField4 := newDynamicField()
+		dynamicField4 := newDynamicField(t.Context())
 		dynamicField4.ID = "field4"
 		dynamicField4.Sensitive = true
 
@@ -101,7 +101,7 @@ func Test_RemoveSensitiveFields(t *testing.T) {
 			"field1": "value1",
 		}
 
-		dynamicField := newDynamicField()
+		dynamicField := newDynamicField(t.Context())
 		dynamicField.ID = "nonexistent"
 		dynamicField.Sensitive = true
 
