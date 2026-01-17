@@ -2,7 +2,6 @@ package resolver
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -11,6 +10,8 @@ import (
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/client"
 
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
@@ -162,9 +163,9 @@ func (s *swarmAdapter) findNodeAddress(
 	}
 
 	if len(tasks) == 0 {
-		return nil, fmt.Errorf(
-			"unable to resolve node IPs: no running tasks found for service %s",
-			service.ID,
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.DockerErrorNoRunningTasks).V("id", service.ID),
+			false,
 		)
 	}
 
@@ -174,7 +175,7 @@ func (s *swarmAdapter) findNodeAddress(
 	}
 
 	if len(nodes) == 0 {
-		return nil, errors.New("unable to resolve node IPs: no nodes found")
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.DockerErrorNoNodesFound), false)
 	}
 
 	for _, task := range tasks {
@@ -185,8 +186,8 @@ func (s *swarmAdapter) findNodeAddress(
 		}
 	}
 
-	return nil, fmt.Errorf(
-		"unable to resolve node IPs: unable to conciliate tasks and nodes for service %s",
-		service.ID,
+	return nil, coreerror.New(
+		i18n.M(ctx, i18n.K.DockerErrorNoMatchingNodes).V("id", service.ID),
+		false,
 	)
 }

@@ -2,7 +2,6 @@ package pdns
 
 import (
 	"context"
-	"errors"
 	"net/url"
 	"strconv"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/pdns"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
@@ -61,7 +61,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 }
 
 func (p *Provider) ChallengeProvider(
-	_ context.Context,
+	ctx context.Context,
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
@@ -72,12 +72,12 @@ func (p *Provider) ChallengeProvider(
 
 	hostURL, err := url.Parse(hostURLStr)
 	if err != nil {
-		return nil, errors.New("pdns: invalid Host URL")
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorPdnsInvalidHostUrl), true)
 	}
 
 	apiVersion, err := strconv.Atoi(apiVersionStr)
 	if err != nil && apiVersionStr != "" {
-		return nil, errors.New("pdns: invalid API version, must be an integer")
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorPdnsInvalidApiVersion), true)
 	}
 
 	cfg := pdns.NewDefaultConfig()

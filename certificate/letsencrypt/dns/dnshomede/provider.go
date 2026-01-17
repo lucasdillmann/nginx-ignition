@@ -2,13 +2,13 @@ package dnshomede
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/dnshomede"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
@@ -43,13 +43,13 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 }
 
 func (p *Provider) ChallengeProvider(
-	_ context.Context,
+	ctx context.Context,
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
 	credentialsStr, _ := parameters[credentialsFieldID].(string)
 
-	credentials, err := parseCredentials(credentialsStr)
+	credentials, err := parseCredentials(ctx, credentialsStr)
 	if err != nil {
 		return nil, err
 	}
@@ -63,14 +63,17 @@ func (p *Provider) ChallengeProvider(
 	return dnshomede.NewDNSProviderConfig(cfg)
 }
 
-func parseCredentials(credentialsStr string) (map[string]string, error) {
+func parseCredentials(ctx context.Context, credentialsStr string) (map[string]string, error) {
 	credentials := make(map[string]string)
 	pairs := strings.Split(credentialsStr, ",")
 
 	for _, pair := range pairs {
 		parts := strings.SplitN(pair, "=", 2)
 		if len(parts) != 2 {
-			return nil, errors.New("dnshomede: invalid credentials format, expected key=value")
+			return nil, coreerror.New(
+				i18n.M(ctx, i18n.K.CertificateErrorDnshomedeInvalidCredentialsFormat),
+				true,
+			)
 		}
 
 		credentials[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])

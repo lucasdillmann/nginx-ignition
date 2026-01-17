@@ -2,13 +2,13 @@ package hurricane
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/hurricane"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
@@ -39,13 +39,13 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 }
 
 func (p *Provider) ChallengeProvider(
-	_ context.Context,
+	ctx context.Context,
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
 	tokensStr, _ := parameters[tokensFieldID].(string)
 
-	credentials, err := parseTokens(tokensStr)
+	credentials, err := parseTokens(ctx, tokensStr)
 	if err != nil {
 		return nil, err
 	}
@@ -59,14 +59,17 @@ func (p *Provider) ChallengeProvider(
 	return hurricane.NewDNSProviderConfig(cfg)
 }
 
-func parseTokens(tokensStr string) (map[string]string, error) {
+func parseTokens(ctx context.Context, tokensStr string) (map[string]string, error) {
 	credentials := make(map[string]string)
 	pairs := strings.Split(tokensStr, ",")
 
 	for _, pair := range pairs {
 		parts := strings.SplitN(pair, "=", 2)
 		if len(parts) != 2 {
-			return nil, errors.New("hurricane: invalid token format, expected key=value")
+			return nil, coreerror.New(
+				i18n.M(ctx, i18n.K.CertificateErrorHurricaneInvalidTokenFormat),
+				true,
+			)
 		}
 
 		credentials[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
