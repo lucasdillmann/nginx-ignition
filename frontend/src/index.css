@@ -65,28 +65,11 @@ code {
     flex-direction: row;
 }
 
-.preloader-title {
-    margin: 0 0 15px 0;
-    padding: 0;
-    font-size: 20px;
-    font-weight: bold;
-    line-height: 20px;
-}
-
-.preloader-message {
-    margin: 0;
-    padding: 0;
-    font-size: 16px;
-    font-weight: normal;
-    line-height: 16px;
-}
-
 .preloader-spinner {
     font-size: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 50px;
 }
 
 .preloader-spinner svg {

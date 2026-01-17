@@ -1,0 +1,78 @@
+import MessageKey from "./model/MessageKey.generated"
+import React from "react"
+import I18nDictionary from "./model/I18nDictionary"
+import I18nContext from "./I18nContext"
+
+interface I18nState {
+    value: string
+}
+
+export interface I18nProps {
+    id: MessageKey
+    params?: Record<string, any>
+}
+
+export class I18n extends React.Component<I18nProps, I18nState> {
+    constructor(props: I18nProps) {
+        super(props)
+
+        const { id, params } = this.props
+        this.state = {
+            value: i18n(id, params),
+        }
+    }
+
+    private handleContextUpdate() {
+        const { id, params } = this.props
+        this.setState({
+            value: i18n(id, params),
+        })
+    }
+
+    componentDidMount() {
+        I18nContext.register(this.handleContextUpdate.bind(this))
+    }
+
+    componentWillUnmount() {
+        I18nContext.deregister(this.handleContextUpdate.bind(this))
+    }
+
+    render() {
+        const { value } = this.state
+        return value
+    }
+}
+
+export function i18n(id: MessageKey, params: Record<string, any> = {}): string {
+    const dictionary = resolveDictionary()
+    const template = dictionary.messages[id]
+    if (!template) return id
+
+    return template.replace(/\${(.*?)}/g, (match, varName) => {
+        const value = params[varName]
+        return value !== undefined ? String(value) : match
+    })
+}
+
+function resolveDictionary(): I18nDictionary {
+    const { currentLanguage, defaultLanguage, dictionaries } = I18nContext.get()
+    const targetLanguage = currentLanguage ?? defaultLanguage
+
+    for (const dictionary of dictionaries) {
+        if (dictionary.languageTag === targetLanguage) {
+            return dictionary
+        }
+    }
+
+    if (targetLanguage.includes("-")) {
+        const baseLanguage = targetLanguage.split("-")[0]
+        for (const dictionary of dictionaries) {
+            if (dictionary.languageTag === baseLanguage) {
+                return dictionary
+            }
+        }
+    }
+
+    // @ts-expect-error fallback dictionary
+    return { languageTag: targetLanguage, messages: {} }
+}

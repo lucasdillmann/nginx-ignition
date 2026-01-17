@@ -67,9 +67,15 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                     },
                 }}
                 containerStyle={{
+                    display: "flex",
+                    justifyContent: "center",
                     backgroundColor: "rgba(0, 0, 0, 0.65)",
                     backdropFilter: "blur(4px)",
                     color: "white",
+                    padding: "60px 40px",
+                }}
+                otherStyle={{
+                    width: 10,
                 }}
             >
                 <ProFormText
@@ -79,6 +85,9 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                         size: "large",
                         prefix: <UserOutlined />,
                     }}
+                    style={{
+                        marginLeft: 20,
+                    }}
                 />
                 <ProFormText.Password
                     name="password"
@@ -86,6 +95,9 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                     fieldProps={{
                         size: "large",
                         prefix: <LockOutlined />,
+                    }}
+                    style={{
+                        marginLeft: 20,
                     }}
                 />
             </LoginFormPage>

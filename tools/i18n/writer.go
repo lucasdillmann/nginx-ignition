@@ -10,12 +10,18 @@ import (
 	"golang.org/x/text/language"
 )
 
-func writeKeysFile(dir string, allKeys map[string]bool) {
-	targetFile, err := os.Create(filepath.Join(dir, "keys_generated.go"))
+func writeKeysFiles(goDir, tsDir string, allKeys map[string]bool) {
+	targetGoFile, err := os.Create(filepath.Join(goDir, "keys_generated.go"))
 	if err != nil {
 		panic(err)
 	}
-	defer targetFile.Close()
+	defer targetGoFile.Close()
+
+	targetTsFile, err := os.Create(filepath.Join(tsDir, "MessageKey.generated.ts"))
+	if err != nil {
+		panic(err)
+	}
+	defer targetTsFile.Close()
 
 	data := keyFileData{
 		Items: make([]itemData, 0, len(allKeys)),
@@ -29,8 +35,13 @@ func writeKeysFile(dir string, allKeys map[string]bool) {
 		})
 	}
 
-	tmpl := template.Must(template.New("keys").Parse(keyFileTemplate))
-	if err = tmpl.Execute(targetFile, data); err != nil {
+	goTmpl := template.Must(template.New("keys").Parse(goKeyFileTemplate))
+	if err = goTmpl.Execute(targetGoFile, data); err != nil {
+		panic(err)
+	}
+
+	tsTmpl := template.Must(template.New("keys").Parse(tsKeyFileTemplate))
+	if err = tsTmpl.Execute(targetTsFile, data); err != nil {
 		panic(err)
 	}
 }

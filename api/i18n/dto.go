@@ -6,5 +6,5 @@ type dictionariesDTO struct {
 }
 type dictionaryDTO struct {
 	Messages map[string]string `json:"messages"`
-	Language string            `json:"language"`
+	Language string            `json:"languageTag"`
 }

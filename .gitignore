@@ -24,3 +24,4 @@ build/
 # Generated files
 **/*_mock.go
 **/*_generated.go
+**/*.generated.ts

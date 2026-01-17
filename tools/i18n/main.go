@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	baseDir = "i18n"
+	baseDir   = "i18n"
+	baseTsDir = "frontend/src/core/i18n/model"
 )
 
 func main() {
@@ -37,8 +38,8 @@ func main() {
 
 	validateKeys(allKeys, propertiesByLang)
 
-	log.Infof("Writing keys file...")
-	writeKeysFile(baseDir, allKeys)
+	log.Infof("Writing keys files...")
+	writeKeysFiles(baseDir, baseTsDir, allKeys)
 
 	for lang, props := range propertiesByLang {
 		log.Infof("Writing %s dictionary file...", lang)

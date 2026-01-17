@@ -30,7 +30,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 .frontend-build: .frontend-prerequisites
 	cd frontend/ && npm run build
 
-.backend-build: .backend-prerequisites .backend-i18n-dictionaries
+.backend-build: .backend-prerequisites .generate-18n-files
 	$(MAKE) .backend-build-file OS=linux ARCH=amd64 DIR=linux
 	$(MAKE) .backend-build-file OS=linux ARCH=arm64 DIR=linux
 	$(MAKE) .backend-build-file OS=darwin ARCH=arm64 DIR=macos
@@ -40,7 +40,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 .backend-build-file:
 	GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o build/$(DIR)/$(ARCH)$(EXT) application/main.go
 
-.backend-i18n-dictionaries:
+.generate-18n-files:
 	go run ./tools/i18n/
 
 .build-release-docker-image:
@@ -143,7 +143,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 			-self_package "$$(cd $$dir && go list)" || true; \
 	done
 
-.backend-test: .backend-test-mocks .backend-i18n-dictionaries
+.backend-test: .backend-test-mocks .generate-18n-files
 	go test \
 		./api/... \
 		./application/... \

@@ -17,6 +17,19 @@
     justify-content: left;
 }
 
+.ant-pro-form-login-page-notice {
+    display: none;
+}
+
+.ant-pro-form-login-page-left {
+    max-width: 650px;
+    margin: 10% auto 0;
+}
+
+.ant-pro-form-login-page-top {
+    margin-right: 10px;
+}
+
 #nginx-ignition-login-form .ant-form-item:first-of-type {
     margin-bottom: 12px;
 }
