@@ -4,10 +4,10 @@ import (
 	"context"
 )
 
-func Raw(message string) *Message {
+func Static(message string) *Message {
 	return &Message{
-		raw: true,
-		Key: message,
+		static: true,
+		Key:    message,
 	}
 }
 

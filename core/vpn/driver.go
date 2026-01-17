@@ -9,7 +9,7 @@ import (
 
 type Driver interface {
 	ID() string
-	Name() string
+	Name(ctx context.Context) *i18n.Message
 	ImportantInstructions(ctx context.Context) []*i18n.Message
 	ConfigurationFields(ctx context.Context) []dynamicfields.DynamicField
 	Reload(

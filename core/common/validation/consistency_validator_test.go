@@ -18,8 +18,8 @@ func Test_ConsistencyValidator(t *testing.T) {
 
 		t.Run("returns error with violations when added", func(t *testing.T) {
 			validator := NewValidator()
-			msg1 := i18n.Raw("error message 1")
-			msg2 := i18n.Raw("error message 2")
+			msg1 := i18n.Static("error message 1")
+			msg2 := i18n.Static("error message 2")
 			validator.Add("field1", msg1)
 			validator.Add("field2", msg2)
 

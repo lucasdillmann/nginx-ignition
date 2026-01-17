@@ -40,11 +40,11 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			EnumOptions: []dynamicfields.EnumOption{
 				{
 					ID:          dmapi,
-					Description: i18n.Raw(dmapi),
+					Description: i18n.Static(dmapi),
 				},
 				{
 					ID:          svc,
-					Description: i18n.Raw(svc),
+					Description: i18n.Static(svc),
 				},
 			},
 		},

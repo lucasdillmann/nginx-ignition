@@ -27,11 +27,11 @@ func Test_availableDriversHandler(t *testing.T) {
 			drivers := []integration.AvailableDriver{
 				{
 					ID:   "docker",
-					Name: i18n.Raw("Docker"),
+					Name: i18n.Static("Docker"),
 				},
 				{
 					ID:   "swarm",
-					Name: i18n.Raw("Swarm"),
+					Name: i18n.Static("Swarm"),
 				},
 			}
 

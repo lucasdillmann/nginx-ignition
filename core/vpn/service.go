@@ -72,14 +72,14 @@ func (s *service) Exists(ctx context.Context, id uuid.UUID) (*bool, error) {
 func (s *service) GetAvailableDrivers(ctx context.Context) ([]AvailableDriver, error) {
 	drivers := s.drivers()
 	sort.Slice(drivers, func(left, right int) bool {
-		return drivers[left].Name() < drivers[right].Name()
+		return drivers[left].Name(ctx).String() < drivers[right].Name(ctx).String()
 	})
 
 	output := make([]AvailableDriver, len(drivers))
 	for index, driver := range drivers {
 		output[index] = AvailableDriver{
 			ID:                    driver.ID(),
-			Name:                  driver.Name(),
+			Name:                  driver.Name(ctx),
 			ImportantInstructions: driver.ImportantInstructions(ctx),
 			ConfigurationFields:   driver.ConfigurationFields(ctx),
 		}

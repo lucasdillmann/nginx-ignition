@@ -12,7 +12,7 @@ import (
 
 type AvailableDriver struct {
 	ID                    string
-	Name                  string
+	Name                  *i18n.Message
 	ImportantInstructions []*i18n.Message
 	ConfigurationFields   []dynamicfields.DynamicField
 }

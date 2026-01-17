@@ -17,7 +17,7 @@ func Test_toResponse(t *testing.T) {
 				Type:        dynamicfields.SingleLineTextType,
 				Required:    true,
 				Priority:    1,
-				Description: i18n.Raw("desc_1"),
+				Description: i18n.Static("desc_1"),
 			},
 			{
 				ID:           "field2",
@@ -30,7 +30,7 @@ func Test_toResponse(t *testing.T) {
 				EnumOptions: []dynamicfields.EnumOption{
 					{
 						ID:          "A",
-						Description: i18n.Raw("desc_a"),
+						Description: i18n.Static("desc_a"),
 					},
 				},
 			},

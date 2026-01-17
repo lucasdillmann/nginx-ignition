@@ -15,11 +15,11 @@ type Message struct {
 	ctx       context.Context
 	Variables map[string]any
 	Key       string
-	raw       bool
+	static    bool
 }
 
 func (m Message) String() string {
-	if m.raw || m.ctx == nil || !container.Ready() {
+	if m.static || m.ctx == nil || !container.Ready() {
 		return m.Key
 	}
 

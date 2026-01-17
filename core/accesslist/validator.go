@@ -88,7 +88,7 @@ func (v *validator) validateCredentials(
 	}
 
 	if (*knownUsernames)[credentials.Username] {
-		v.delegate.Add(path, i18n.Raw(credentials.Username))
+		v.delegate.Add(path, i18n.Static(credentials.Username))
 	} else {
 		(*knownUsernames)[credentials.Username] = true
 	}

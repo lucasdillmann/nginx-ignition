@@ -24,7 +24,7 @@ type vpnResponse struct {
 
 type vpnDriverResponse struct {
 	ID                    string                  `json:"id"`
-	Name                  string                  `json:"name"`
+	Name                  *i18n.Message           `json:"name"`
 	ImportantInstructions []*i18n.Message         `json:"importantInstructions"`
 	ConfigurationFields   []dynamicfield.Response `json:"configurationFields"`
 }

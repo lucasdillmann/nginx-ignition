@@ -14,7 +14,7 @@ func Test_ConsistencyError(t *testing.T) {
 			err := NewError([]ConsistencyViolation{
 				{
 					Path:    "field1",
-					Message: i18n.Raw("error 1"),
+					Message: i18n.Static("error 1"),
 				},
 			})
 
@@ -25,7 +25,7 @@ func Test_ConsistencyError(t *testing.T) {
 
 func Test_SingleFieldError(t *testing.T) {
 	t.Run("creates error with single violation", func(t *testing.T) {
-		message := i18n.Raw("error message")
+		message := i18n.Static("error message")
 		err := SingleFieldError("field1", message)
 
 		assert.Len(t, err.Violations, 1)

@@ -28,7 +28,7 @@ func Test_handler(t *testing.T) {
 	}{
 		{
 			name:           "APIError",
-			err:            New(http.StatusBadRequest, i18n.Raw("Bad Request")),
+			err:            New(http.StatusBadRequest, i18n.Static("Bad Request")),
 			expectedStatus: http.StatusBadRequest,
 			expectedBody:   `{"message":"Bad Request"}`,
 		},
@@ -38,7 +38,7 @@ func Test_handler(t *testing.T) {
 				Violations: []validation.ConsistencyViolation{
 					{
 						Path:    "field1",
-						Message: i18n.Raw("error1"),
+						Message: i18n.Static("error1"),
 					},
 				},
 			},
@@ -48,7 +48,7 @@ func Test_handler(t *testing.T) {
 		{
 			name: "CoreError (UserRelated)",
 			err: &coreerror.CoreError{
-				Message:     i18n.Raw("User error"),
+				Message:     i18n.Static("User error"),
 				UserRelated: true,
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -57,7 +57,7 @@ func Test_handler(t *testing.T) {
 		{
 			name: "CoreError (Not UserRelated)",
 			err: &coreerror.CoreError{
-				Message:     i18n.Raw("System error"),
+				Message:     i18n.Static("System error"),
 				UserRelated: false,
 			},
 			expectedStatus: http.StatusInternalServerError,
@@ -119,7 +119,7 @@ func Test_canHandle(t *testing.T) {
 	}{
 		{
 			name:     "APIError",
-			err:      New(http.StatusBadRequest, i18n.Raw("msg")),
+			err:      New(http.StatusBadRequest, i18n.Static("msg")),
 			expected: true,
 		},
 		{

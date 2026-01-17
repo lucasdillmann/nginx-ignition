@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/vpn"
@@ -19,8 +20,8 @@ func (d Driver) ID() string {
 	return "TAILSCALE"
 }
 
-func (d Driver) Name() string {
-	return "Tailscale"
+func (d Driver) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.TailscaleCommonName)
 }
 
 func (d Driver) ImportantInstructions(ctx context.Context) []*i18n.Message {
@@ -81,7 +82,7 @@ func (d Driver) doStart(
 ) error {
 	authKey, ok := parameters[authKeyFieldName].(string)
 	if !ok || authKey == "" {
-		return errors.New("authKey parameter is required and must be a non-empty string")
+		return coreerror.New(i18n.M(ctx, i18n.K.TailscaleValidationAuthKey), true)
 	}
 
 	var serverURL string
