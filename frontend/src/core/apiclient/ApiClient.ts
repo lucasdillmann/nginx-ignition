@@ -1,6 +1,7 @@
 import ApiResponse from "./ApiResponse"
 import Header from "./Header"
 import ApiClientEventDispatcher from "./event/ApiClientEventDispatcher"
+import I18nContext from "../i18n/I18nContext"
 
 export default class ApiClient {
     private readonly basePath: string
@@ -49,8 +50,10 @@ export default class ApiClient {
     }
 
     private async buildRequest<T>(method: string, headers?: Header[], payload?: T): Promise<RequestInit> {
+        const { currentLanguage, defaultLanguage } = I18nContext.get()
         const requestHeaders: { [key: string]: string } = {
             Accept: "application/json",
+            "Accept-Language": currentLanguage ?? defaultLanguage,
             "Content-type": "application/json",
         }
 

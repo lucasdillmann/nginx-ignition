@@ -22,10 +22,13 @@ export default class AppContainer extends React.Component<unknown, AppContainerS
         }
     }
 
-    componentDidMount() {
-        loadAppContextData()
+    private async boot() {
+        return loadAppContextData()
             .then(context => {
-                AppContext.replace(context)
+                AppContext.replace({
+                    ...context,
+                    container: this,
+                })
                 this.setState({ loading: false })
                 NewVersionNotifier.checkAndNotify()
             })
@@ -33,6 +36,14 @@ export default class AppContainer extends React.Component<unknown, AppContainerS
                 CommonNotifications.failedToFetch()
                 this.setState({ error, loading: false })
             })
+    }
+
+    async reload() {
+        this.setState({ loading: true }, () => this.boot())
+    }
+
+    async componentDidMount() {
+        return this.reload()
     }
 
     render() {

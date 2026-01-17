@@ -8,7 +8,7 @@ export interface I18nContext {
 }
 
 export default new ContextHolder<I18nContext>({
-    defaultLanguage: "",
-    currentLanguage: null,
+    defaultLanguage: window.navigator.language,
+    currentLanguage: window.navigator.languages.join(","),
     dictionaries: [],
 })

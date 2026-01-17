@@ -73,6 +73,13 @@ function resolveDictionary(): I18nDictionary {
         }
     }
 
+    for (const dictionary of dictionaries) {
+        const baseLanguage = defaultLanguage.split("-")[0]
+        if (dictionary.languageTag === defaultLanguage || dictionary.languageTag === baseLanguage) {
+            return dictionary
+        }
+    }
+
     // @ts-expect-error fallback dictionary
     return { languageTag: targetLanguage, messages: {} }
 }

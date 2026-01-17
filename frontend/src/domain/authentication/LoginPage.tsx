@@ -6,7 +6,7 @@ import Preloader from "../../core/components/preloader/Preloader"
 import Notification from "../../core/components/notification/Notification"
 import "./LoginPage.css"
 import UserService from "../user/UserService"
-import { queryParams } from "../../core/components/router/AppRouter"
+import { navigateTo, queryParams } from "../../core/components/router/AppRouter"
 import { LoginFormPage, ProFormText } from "@ant-design/pro-components"
 import ThemeContext from "../../core/components/context/ThemeContext"
 import LightBackground from "./background/light.jpg"
@@ -43,9 +43,13 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
             .then(() => this.setState({ loading: false }))
     }
 
-    private handleSuccessfulLogin() {
+    private async handleSuccessfulLogin() {
         const returnTo = queryParams().returnTo as string | undefined
-        location.href = returnTo ?? "/"
+        return AppContext.get()
+            .container!!.reload()
+            .then(() => {
+                if (returnTo) navigateTo(returnTo, true)
+            })
     }
 
     private handleLoginError() {

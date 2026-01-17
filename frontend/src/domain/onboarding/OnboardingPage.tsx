@@ -44,8 +44,8 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
             .then(() => this.setState({ loading: false }))
     }
 
-    private handleSuccess() {
-        location.href = "/"
+    private async handleSuccess() {
+        return AppContext.get().container!!.reload()
     }
 
     private handleError(error: Error) {
