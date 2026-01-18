@@ -10,22 +10,27 @@ interface I18nState {
 export interface I18nProps {
     id: MessageKey
     params?: Record<string, any>
+    fallback?: string
 }
 
 export class I18n extends React.Component<I18nProps, I18nState> {
     constructor(props: I18nProps) {
         super(props)
 
-        const { id, params } = this.props
         this.state = {
-            value: i18n(id, params),
+            value: this.resolveMessage(),
         }
     }
 
+    private resolveMessage(): string {
+        const { id, params, fallback } = this.props
+        const result = i18n(id, params)
+        return result !== id ? result : fallback ?? id
+    }
+
     private handleContextUpdate() {
-        const { id, params } = this.props
         this.setState({
-            value: i18n(id, params),
+            value: this.resolveMessage(),
         })
     }
 
