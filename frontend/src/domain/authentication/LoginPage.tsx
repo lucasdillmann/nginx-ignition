@@ -11,6 +11,8 @@ import { LoginFormPage, ProFormText } from "@ant-design/pro-components"
 import ThemeContext from "../../core/components/context/ThemeContext"
 import LightBackground from "./background/light.jpg"
 import DarkBackground from "./background/dark.jpg"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n, i18n } from "../../core/i18n/I18n"
 
 interface LoginPageState {
     loading: boolean
@@ -54,20 +56,23 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
 
     private handleLoginError() {
         this.setState({ attemptFailed: true })
-        Notification.error("Login failed", "Please check your username and password.")
+        Notification.error(
+            i18n(MessageKey.AuthenticationErrorLoginFailedTitle),
+            i18n(MessageKey.AuthenticationErrorLoginFailedMessage),
+        )
     }
 
     private renderForm() {
         return (
             <LoginFormPage
                 id="nginx-ignition-login-form"
-                title="nginx ignition"
-                subTitle="Welcome back. Please sign in to continue."
+                title={<I18n id={MessageKey.GlobalCommonAppName} />}
+                subTitle={<I18n id={MessageKey.AuthenticationCommonLoginSubtitle} />}
                 onFinish={this.handleSubmit.bind(this)}
                 backgroundImageUrl={this.backgroundImageUrl}
                 submitter={{
                     searchConfig: {
-                        submitText: "Log in",
+                        submitText: i18n(MessageKey.AuthenticationCommonLoginButton),
                     },
                 }}
                 containerStyle={{
@@ -84,7 +89,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
             >
                 <ProFormText
                     name="username"
-                    placeholder="username"
+                    placeholder={i18n(MessageKey.AuthenticationCommonUsernamePlaceholder)}
                     fieldProps={{
                         size: "large",
                         prefix: <UserOutlined />,
@@ -95,7 +100,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                 />
                 <ProFormText.Password
                     name="password"
-                    placeholder="password"
+                    placeholder={i18n(MessageKey.AuthenticationCommonPasswordPlaceholder)}
                     fieldProps={{
                         size: "large",
                         prefix: <LockOutlined />,

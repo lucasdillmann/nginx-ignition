@@ -8,6 +8,7 @@ import ShellUserMenu from "./user/components/ShellUserMenu"
 import NginxControl from "./nginx/components/NginxControl"
 import CommonNotifications from "../core/components/notification/CommonNotifications"
 import NewVersionNotifier from "./version/NewVersionNotifier"
+import I18nService from "../core/i18n/I18nService"
 
 interface AppContainerState {
     loading: boolean
@@ -23,7 +24,9 @@ export default class AppContainer extends React.Component<unknown, AppContainerS
     }
 
     private async boot() {
-        return loadAppContextData()
+        return new I18nService()
+            .initContext()
+            .then(() => loadAppContextData())
             .then(context => {
                 AppContext.replace({
                     ...context,
