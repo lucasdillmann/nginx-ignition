@@ -24,8 +24,7 @@ export class I18n extends React.Component<I18nProps, I18nState> {
 
     private resolveMessage(): string {
         const { id, params, fallback } = this.props
-        const result = i18n(id, params)
-        return result !== id ? result : fallback ?? id
+        return i18n(id, params, fallback)
     }
 
     private handleContextUpdate() {
@@ -48,10 +47,10 @@ export class I18n extends React.Component<I18nProps, I18nState> {
     }
 }
 
-export function i18n(id: MessageKey, params: Record<string, any> = {}): string {
+export function i18n(id: MessageKey, params: Record<string, any> = {}, fallback?: string): string {
     const dictionary = resolveDictionary()
     const template = dictionary.messages[id]
-    if (!template) return id
+    if (!template) return fallback ?? id
 
     return template.replace(/\${(.*?)}/g, (match, varName) => {
         const value = params[varName]

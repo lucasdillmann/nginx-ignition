@@ -3,10 +3,12 @@ import { Button, Flex } from "antd"
 import "./FullPageError.css"
 import { ExclamationCircleFilled } from "@ant-design/icons"
 import { themedModal } from "../theme/ThemedResources"
+import MessageKey from "../../i18n/model/MessageKey.generated"
+import { I18n, i18n } from "../../i18n/I18n"
 
 export interface FullPageErrorProps {
-    title?: string
-    message?: string
+    title?: MessageKey
+    message?: MessageKey
     error?: Error
     icon?: any
 }
@@ -15,7 +17,7 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
     private openErrorDetailsModal() {
         const { error } = this.props
         themedModal().info({
-            title: "Error details",
+            title: i18n(MessageKey.GlobalCommonErrorDetails, {}, "Error details"),
             type: "info",
             width: 1000,
             content: <pre>{error?.stack ?? error?.message ?? typeof error}</pre>,
@@ -33,7 +35,7 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
                 size="small"
                 className="error-page-details-button"
             >
-                Show details of what happened
+                <I18n id={MessageKey.GlobalCommonShowDetailsButton} fallback="Show details of what happened" />
             </Button>
         )
     }
@@ -46,18 +48,22 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
     }
 
     render() {
-        const title = this.props.title ?? "Well, that didn't work"
-        const message =
-            this.props.message ??
-            "We ran into an error and don't know what to do with it. Please refresh the page and try again."
+        const { title, message } = this.props
 
         return (
             <Flex align="center" justify="center" className="error-page-container">
                 <Flex align="center">
                     {this.renderIcon()}
                     <Flex className="error-page-text-container" vertical>
-                        <h2 className="error-page-title">{title}</h2>
-                        <p className="error-page-message">{message}</p>
+                        <h2 className="error-page-title">
+                            <I18n id={title ?? MessageKey.GlobalErrorFallbackTitle} fallback="Well, that didn't work" />
+                        </h2>
+                        <p className="error-page-message">
+                            <I18n
+                                id={message ?? MessageKey.GlobalErrorFallbackMessage}
+                                fallback="We ran into an error and don't know what to do with it. Please refresh the page and try again."
+                            />
+                        </p>
                         <Flex>{this.renderErrorButton()}</Flex>
                     </Flex>
                 </Flex>

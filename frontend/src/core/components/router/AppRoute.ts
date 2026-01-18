@@ -2,7 +2,7 @@ import React from "react"
 
 export interface AppRouteMenuItem {
     icon: React.ReactNode
-    description: string
+    description: React.ReactNode
 }
 
 export default interface AppRoute {

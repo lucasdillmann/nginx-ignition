@@ -4,6 +4,7 @@ import AppContext from "../../core/components/context/AppContext"
 import { Navigate } from "react-router-dom"
 import { QuestionCircleFilled } from "@ant-design/icons"
 import { buildLoginUrl } from "../../core/authentication/buildLoginUrl"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
 
 export default class NotFoundPage extends React.PureComponent {
     render() {
@@ -12,8 +13,8 @@ export default class NotFoundPage extends React.PureComponent {
 
         return (
             <FullPageError
-                title="Not found"
-                message="There's nothing here. Try checking if the address you've opened is the right one."
+                title={MessageKey.GlobalErrorNotFoundTitle}
+                message={MessageKey.GlobalErrorNotFoundDescription}
                 icon={
                     <QuestionCircleFilled style={{ fontSize: 48, color: "var(--nginxIgnition-colorTextSecondary)" }} />
                 }

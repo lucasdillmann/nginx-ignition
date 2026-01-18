@@ -8,12 +8,14 @@ import If from "../flowcontrol/If"
 import AppShellContext, { ShellAction, ShellConfig } from "./AppShellContext"
 import { GithubFilled, LinkedinFilled } from "@ant-design/icons"
 import AppContext from "../context/AppContext"
+import MessageKey from "../../i18n/model/MessageKey.generated"
+import { I18n } from "../../i18n/I18n"
 
 const { Sider, Content } = Layout
 
 export interface AppShellMenuItem {
     icon: React.ReactNode
-    description: string
+    description: React.ReactNode
     path: string
 }
 
@@ -116,8 +118,6 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         })
 
         const { version } = AppContext.get().configuration
-        const versionDescription = version.current ? `Version ${version.current}` : "Development version"
-
         const { activeRoute, children, userMenu, serverControl } = this.props
         const { config } = this.state
         const activeMenuItemPath = activeRoute.activeMenuItemPath ?? activeRoute.path
@@ -131,7 +131,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                 <Sider trigger={null} width={250} className="shell-sider-container">
                     <div className="shell-sider-logo">
                         <Link to="/" className="shell-sider-logo-link">
-                            nginx ignition
+                            <I18n id={MessageKey.GlobalCommonAppName} />
                         </Link>
                     </div>
                     <div className="shell-sider-server-control">{serverControl}</div>
@@ -144,9 +144,16 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                     />
                     <div className="shell-sider-bottom">
                         <div className="shell-sider-bottom-credits">
-                            {versionDescription}
+                            <I18n
+                                id={
+                                    version.current
+                                        ? MessageKey.GlobalCommonVersionFormat
+                                        : MessageKey.GlobalCommonVersionDev
+                                }
+                                params={{ version: version.current }}
+                            />
                             <br />
-                            Made by Lucas Dillmann
+                            <I18n id={MessageKey.GlobalCommonCreditsMadeBy} />
                             <LinkedinFilled onClick={() => this.handleLinkedInClick()} />
                             <GithubFilled onClick={() => this.handleGithubClick()} />
                         </div>
