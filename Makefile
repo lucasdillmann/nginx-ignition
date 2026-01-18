@@ -27,7 +27,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./integration/truenas/... \
 		./vpn/tailscale/...
 
-.frontend-build: .frontend-prerequisites
+.frontend-build: .frontend-prerequisites .generate-18n-files
 	cd frontend/ && npm run build
 
 .backend-build: .backend-prerequisites .generate-18n-files
