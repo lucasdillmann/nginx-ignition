@@ -45,8 +45,8 @@ export default class AppContainer extends React.Component<unknown, AppContainerS
         this.setState({ loading: true }, () => this.boot())
     }
 
-    async componentDidMount() {
-        return this.reload()
+    componentDidMount() {
+        this.reload()
     }
 
     render() {

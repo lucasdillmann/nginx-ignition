@@ -26,7 +26,7 @@ export default class NginxIgnition extends React.Component<unknown, NginxIgnitio
         this.setState({ darkMode })
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         ThemeContext.register(this.handleThemeChange.bind(this))
         ApiClientEventDispatcher.register(new AuthenticationTokenApiClientEventListener())
         ApiClientEventDispatcher.register(new SessionExpiredApiClientEventListener())

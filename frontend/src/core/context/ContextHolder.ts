@@ -1,6 +1,4 @@
-export interface ContextListener<T> {
-    (newContext: T): void
-}
+export type ContextListener<T> = (newContext: T) => void
 
 export default class ContextHolder<T> {
     private readonly listeners: ContextListener<T>[]
