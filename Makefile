@@ -40,7 +40,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 .backend-build-file:
 	GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o build/$(DIR)/$(ARCH)$(EXT) application/main.go
 
-.generate-18n-files:
+.generate-i18n-files:
 	go run ./tools/i18n/
 
 .build-release-docker-image:
@@ -121,14 +121,14 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 
 .backend-test-mocks: .backend-prerequisites
 	@echo "Generating mock files..."
-	@find api application certificate core database i18n integration vpn -type f -name "*_mock.go" -delete;
+	@find api application certificate core database i18n integration vpn -type f -name "*.mock.go" -delete;
 	@find api application certificate core database i18n integration vpn -type f -name "*.go" \
 		-not -name "*_test.go" \
 		-exec sh -c 'grep -q "^type [a-zA-Z0-9_]* interface" "$$1" && echo "$$1"' _ {} \; | \
 	while read -r file; do \
 		dir=$$(dirname "$$file"); \
 		base=$$(basename "$$file" .go); \
-		mock_file="$$dir/$${base}_mock.go"; \
+		mock_file="$$dir/$${base}.mock.go"; \
 		package_name=$$(basename "$$dir"); \
 		interfaces=$$(grep -oE "^type [a-zA-Z0-9_]+ interface" "$$file" | awk '{print $$2}'); \
 		mock_names_flag=""; \

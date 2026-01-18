@@ -12,7 +12,7 @@ type service struct {
 }
 
 func newCommands() Commands {
-	dictionaries := []i18n.Dictionary{i18n.ENUS()}
+	dictionaries := []i18n.Dictionary{i18n.En_US()}
 	return &service{
 		dictionaries:      dictionaries,
 		defaultDictionary: dictionaries[0],

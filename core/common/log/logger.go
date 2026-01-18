@@ -20,12 +20,18 @@ func init() {
 	}
 
 	config.EncoderConfig.EncodeCaller = nil
-	loggerInstance, err := config.Build()
-	delegate = loggerInstance
 
+	loggerInstance, err := config.Build()
 	if err != nil {
 		panic(err)
 	}
+
+	delegate = loggerInstance.WithOptions(zap.AddCallerSkip(1))
+}
+
+func EnableStackTrace(enabled bool) {
+	enabler := &stacktrace{enabled}
+	delegate = delegate.WithOptions(zap.AddStacktrace(enabler))
 }
 
 func Info(message string) {

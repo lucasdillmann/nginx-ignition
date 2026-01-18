@@ -2,60 +2,40 @@ package main
 
 import (
 	"os"
-	"path/filepath"
 	"strings"
 
-	"golang.org/x/text/cases"
-
 	"dillmann.com.br/nginx-ignition/core/common/log"
-)
-
-const (
-	baseDir   = "i18n"
-	baseTsDir = "frontend/src/core/i18n/model"
+	"dillmann.com.br/nginx-ignition/tools/i18n/reader"
+	"dillmann.com.br/nginx-ignition/tools/i18n/validator"
+	"dillmann.com.br/nginx-ignition/tools/i18n/writer"
 )
 
 func main() {
-	log.Infof("Starting i18n code generation...")
-	files, err := os.ReadDir(baseDir)
+	log.EnableStackTrace(false)
+	log.Info("Starting i18n code generation...")
+
+	propertiesFiles, err := reader.ReadPropertiesFiles("i18n")
 	if err != nil {
-		panic(err)
+		log.Errorf("Error reading properties files: %v", err)
+		os.Exit(1)
 	}
 
-	allKeys := make(map[string]bool)
-	propertiesByLang := make(map[string]properties)
-
-	for _, file := range files {
-		if filepath.Ext(file.Name()) != ".properties" {
-			continue
-		}
-
-		log.Infof("i18n file found: %s", file.Name())
-
-		lang := strings.TrimPrefix(strings.TrimSuffix(file.Name(), ".properties"), "messages-")
-		propertiesByLang[lang] = readPropertiesFile(filepath.Join(baseDir, file.Name()), &allKeys)
+	if len(propertiesFiles) == 0 {
+		log.Error("No properties files found in the i18n folder")
+		os.Exit(1)
 	}
 
-	validateKeys(allKeys, propertiesByLang)
-
-	log.Infof("Writing keys files...")
-	writeKeysFiles(baseDir, baseTsDir, allKeys)
-
-	for lang, props := range propertiesByLang {
-		log.Infof("Writing %s dictionary file...", lang)
-		writeDictionaryFile(baseDir, lang, props)
+	problems := validator.Validate(propertiesFiles)
+	if len(problems) > 0 {
+		problemsMerged := strings.Join(problems, "\n- ")
+		log.Errorf("One or more problems were found in the properties files: \n- %s", problemsMerged)
+		os.Exit(1)
 	}
 
-	log.Infof("i18n code generation completed")
-}
-
-func toPascalCase(s string, caser cases.Caser) string {
-	parts := strings.FieldsFunc(s, func(r rune) bool {
-		return r == '.' || r == '-' || r == '_'
-	})
-	for index := range parts {
-		parts[index] = caser.String(parts[index])
+	if err := writer.Write(propertiesFiles); err != nil {
+		log.Errorf("Error writing files: %v", err)
+		os.Exit(1)
 	}
 
-	return strings.Join(parts, "")
+	log.Info("Code generation for the i18n messages completed successfully")
 }

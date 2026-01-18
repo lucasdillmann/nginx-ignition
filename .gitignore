@@ -22,6 +22,6 @@ build/
 **/.DS_Store
 
 # Generated files
-**/*_mock.go
-**/*_generated.go
+**/*.mock.go
+**/*.generated.go
 **/*.generated.ts
