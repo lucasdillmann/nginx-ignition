@@ -24,35 +24,35 @@ type Provider struct{}
 func (p *Provider) ID() string { return "ACME_DNS" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAcmednsName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiBaseFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAcmednsApiBase),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsApiBase),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          allowListFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAcmednsAllowList),
-			HelpText:    i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAcmednsAllowListHelp),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsAllowList),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsAllowListHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          storagePathFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAcmednsStoragePath),
-			HelpText:    i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAcmednsStoragePathHelp),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsStoragePath),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsStoragePathHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          storageBaseURLFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAcmednsStorageBaseUrl),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsStorageBaseUrl),
 			HelpText: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsAcmednsStorageBaseUrlHelp,
+				i18n.K.CertificateLetsencryptDnsAcmednsStorageBaseUrlHelp,
 			),
 			Type: dynamicfields.SingleLineTextType,
 		},

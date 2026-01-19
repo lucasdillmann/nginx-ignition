@@ -33,7 +33,7 @@ func (h staticFilesHandler) handle(ctx *gin.Context) {
 		ctx.JSON(
 			http.StatusNotFound,
 			gin.H{
-				"message": i18n.M(ctx.Request.Context(), i18n.K.GlobalErrorNotFoundTitle),
+				"message": i18n.M(ctx.Request.Context(), i18n.K.CommonNotFoundTitle),
 			},
 		)
 		return

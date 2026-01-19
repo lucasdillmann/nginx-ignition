@@ -23,11 +23,11 @@ func (a *Driver) ID() string {
 }
 
 func (a *Driver) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.DockerCommonName)
+	return i18n.M(ctx, i18n.K.IntegrationDockerName)
 }
 
 func (a *Driver) Description(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.DockerCommonDescription)
+	return i18n.M(ctx, i18n.K.IntegrationDockerDescription)
 }
 
 func (a *Driver) ConfigurationFields(ctx context.Context) []dynamicfields.DynamicField {

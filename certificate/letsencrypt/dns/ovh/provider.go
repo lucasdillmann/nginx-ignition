@@ -24,32 +24,32 @@ type Provider struct{}
 func (p *Provider) ID() string { return "OVH" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOvhName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOvhName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          endpointFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOvhApiEndpoint),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOvhApiEndpoint),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          applicationKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOvhApplicationKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOvhApplicationKey),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          applicationSecFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOvhApplicationSecret),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOvhApplicationSecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          consumerKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOvhConsumerKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOvhConsumerKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

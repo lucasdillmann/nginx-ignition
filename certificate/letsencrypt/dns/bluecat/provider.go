@@ -24,39 +24,39 @@ type Provider struct{}
 func (p *Provider) ID() string { return "BLUECAT" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsBluecatName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBluecatName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          baseURLFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsBluecatBaseUrl),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBluecatBaseUrl),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsBluecatUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBluecatUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsBluecatPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBluecatPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          configNameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsBluecatConfigName),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBluecatConfigName),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          dnsViewFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsBluecatDnsView),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBluecatDnsView),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

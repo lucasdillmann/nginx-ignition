@@ -22,14 +22,14 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIonoscloudName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIonoscloudName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiTokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIonoscloudApiToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIonoscloudApiToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

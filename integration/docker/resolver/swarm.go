@@ -164,7 +164,7 @@ func (s *swarmAdapter) findNodeAddress(
 
 	if len(tasks) == 0 {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.DockerErrorNoRunningTasks).V("id", service.ID),
+			i18n.M(ctx, i18n.K.IntegrationDockerResolverNoRunningTasks).V("id", service.ID),
 			false,
 		)
 	}
@@ -175,7 +175,7 @@ func (s *swarmAdapter) findNodeAddress(
 	}
 
 	if len(nodes) == 0 {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.DockerErrorNoNodesFound), false)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.IntegrationDockerResolverNoNodesFound), false)
 	}
 
 	for _, task := range tasks {
@@ -187,7 +187,7 @@ func (s *swarmAdapter) findNodeAddress(
 	}
 
 	return nil, coreerror.New(
-		i18n.M(ctx, i18n.K.DockerErrorNoMatchingNodes).V("id", service.ID),
+		i18n.M(ctx, i18n.K.IntegrationDockerResolverNoMatchingNodes).V("id", service.ID),
 		false,
 	)
 }

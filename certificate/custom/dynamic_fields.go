@@ -23,18 +23,18 @@ func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	uploadModeField := dynamicfields.DynamicField{
 		ID:          uploadModeFieldID,
 		Priority:    0,
-		Description: i18n.M(ctx, i18n.K.CertificateCommonCustomUploadMode),
+		Description: i18n.M(ctx, i18n.K.CertificateCustomUploadMode),
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.EnumType,
 		EnumOptions: []dynamicfields.EnumOption{
 			{
 				ID:          textFieldUploadModeID,
-				Description: i18n.M(ctx, i18n.K.CertificateCommonCustomUploadModeText),
+				Description: i18n.M(ctx, i18n.K.CertificateCustomUploadModeText),
 			},
 			{
 				ID:          fileUploadModeID,
-				Description: i18n.M(ctx, i18n.K.CertificateCommonCustomUploadModeFile),
+				Description: i18n.M(ctx, i18n.K.CertificateCustomUploadModeFile),
 			},
 		},
 	}
@@ -42,7 +42,7 @@ func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	publicKeyTextField := dynamicfields.DynamicField{
 		ID:          publicKeyTextFieldID,
 		Priority:    1,
-		Description: i18n.M(ctx, i18n.K.CertificateCommonCustomPublicKey),
+		Description: i18n.M(ctx, i18n.K.CertificateCustomPublicKey),
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.MultiLineTextType,
@@ -55,7 +55,7 @@ func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	privateKeyTextField := dynamicfields.DynamicField{
 		ID:          privateKeyTextFieldID,
 		Priority:    2,
-		Description: i18n.M(ctx, i18n.K.CertificateCommonCustomPrivateKey),
+		Description: i18n.M(ctx, i18n.K.CertificateCustomPrivateKey),
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.MultiLineTextType,
@@ -68,7 +68,7 @@ func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	certificationChainTextField := dynamicfields.DynamicField{
 		ID:          chainTextFieldID,
 		Priority:    3,
-		Description: i18n.M(ctx, i18n.K.CertificateCommonCustomChain),
+		Description: i18n.M(ctx, i18n.K.CertificateCustomChain),
 		Required:    false,
 		Sensitive:   true,
 		Type:        dynamicfields.MultiLineTextType,
@@ -81,7 +81,7 @@ func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	publicKeyFileField := dynamicfields.DynamicField{
 		ID:          publicKeyFileFieldID,
 		Priority:    1,
-		Description: i18n.M(ctx, i18n.K.CertificateCommonCustomPublicKey),
+		Description: i18n.M(ctx, i18n.K.CertificateCustomPublicKey),
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
@@ -94,7 +94,7 @@ func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	privateKeyFileField := dynamicfields.DynamicField{
 		ID:          privateKeyFileFieldID,
 		Priority:    2,
-		Description: i18n.M(ctx, i18n.K.CertificateCommonCustomPrivateKey),
+		Description: i18n.M(ctx, i18n.K.CertificateCustomPrivateKey),
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
@@ -107,7 +107,7 @@ func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	certificationChainFileField := dynamicfields.DynamicField{
 		ID:          chainFileFieldID,
 		Priority:    3,
-		Description: i18n.M(ctx, i18n.K.CertificateCommonCustomChain),
+		Description: i18n.M(ctx, i18n.K.CertificateCustomChain),
 		Required:    false,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,

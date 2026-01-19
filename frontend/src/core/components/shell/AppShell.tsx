@@ -131,7 +131,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                 <Sider trigger={null} width={250} className="shell-sider-container">
                     <div className="shell-sider-logo">
                         <Link to="/" className="shell-sider-logo-link">
-                            <I18n id={MessageKey.GlobalCommonAppName} />
+                            <I18n id={MessageKey.CommonAppName} />
                         </Link>
                     </div>
                     <div className="shell-sider-server-control">{serverControl}</div>
@@ -147,13 +147,13 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                             <I18n
                                 id={
                                     version.current
-                                        ? MessageKey.GlobalCommonVersionFormat
-                                        : MessageKey.GlobalCommonVersionDev
+                                        ? MessageKey.FrontendComponentsShellVersionFormat
+                                        : MessageKey.FrontendComponentsShellVersionDev
                                 }
                                 params={{ version: version.current }}
                             />
                             <br />
-                            <I18n id={MessageKey.GlobalCommonCreditsMadeBy} />
+                            <I18n id={MessageKey.FrontendComponentsShellCreditsMadeBy} />
                             <LinkedinFilled onClick={() => this.handleLinkedInClick()} />
                             <GithubFilled onClick={() => this.handleGithubClick()} />
                         </div>

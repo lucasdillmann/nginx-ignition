@@ -27,55 +27,55 @@ type Provider struct{}
 func (p *Provider) ID() string { return "INFOBLOX" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsInfobloxName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInfobloxName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          hostFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsInfobloxGridManagerHost),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInfobloxGridManagerHost),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          portFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsInfobloxGridManagerPort),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInfobloxGridManagerPort),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsInfobloxUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInfobloxUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsInfobloxPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInfobloxPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          dnsViewFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsInfobloxDnsView),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInfobloxDnsView),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          wapiVersionFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsInfobloxWapiVersion),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInfobloxWapiVersion),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          sslVerifyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsInfobloxVerifySsl),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInfobloxVerifySsl),
 			Type:        dynamicfields.BooleanType,
 		},
 		{
 			ID: caCertificateFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsInfobloxCaCertificatePath,
+				i18n.K.CertificateLetsencryptDnsInfobloxCaCertificatePath,
 			),
 			Type: dynamicfields.SingleLineTextType,
 		},

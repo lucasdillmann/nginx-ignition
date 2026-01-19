@@ -68,38 +68,38 @@ func Test_service(t *testing.T) {
 		}
 
 		t.Run("translates for exact match", func(t *testing.T) {
-			enUS.EXPECT().Translate(K.CommonValidationValueMissing, gomock.Nil()).Return("Hello")
-			ptBR.EXPECT().Translate(K.CommonValidationValueMissing, gomock.Nil()).Return("Olá")
+			enUS.EXPECT().Translate(K.CommonValueMissing, gomock.Nil()).Return("Hello")
+			ptBR.EXPECT().Translate(K.CommonValueMissing, gomock.Nil()).Return("Olá")
 
 			assert.Equal(
 				t,
 				"Hello",
-				s.Translate(language.AmericanEnglish, K.CommonValidationValueMissing, nil),
+				s.Translate(language.AmericanEnglish, K.CommonValueMissing, nil),
 			)
 			assert.Equal(
 				t,
 				"Olá",
-				s.Translate(language.BrazilianPortuguese, K.CommonValidationValueMissing, nil),
+				s.Translate(language.BrazilianPortuguese, K.CommonValueMissing, nil),
 			)
 		})
 
 		t.Run("translates for base language match", func(t *testing.T) {
-			ptBR.EXPECT().Translate(K.CommonValidationValueMissing, gomock.Nil()).Return("Olá")
+			ptBR.EXPECT().Translate(K.CommonValueMissing, gomock.Nil()).Return("Olá")
 
 			assert.Equal(
 				t,
 				"Olá",
-				s.Translate(language.EuropeanPortuguese, K.CommonValidationValueMissing, nil),
+				s.Translate(language.EuropeanPortuguese, K.CommonValueMissing, nil),
 			)
 		})
 
 		t.Run("falls back to default language for unsupported language", func(t *testing.T) {
-			enUS.EXPECT().Translate(K.CommonValidationValueMissing, gomock.Nil()).Return("Hello")
+			enUS.EXPECT().Translate(K.CommonValueMissing, gomock.Nil()).Return("Hello")
 
 			assert.Equal(
 				t,
 				"Hello",
-				s.Translate(language.French, K.CommonValidationValueMissing, nil),
+				s.Translate(language.French, K.CommonValueMissing, nil),
 			)
 		})
 
@@ -115,34 +115,34 @@ func Test_service(t *testing.T) {
 
 		t.Run("replaces variables", func(t *testing.T) {
 			vars := map[string]any{"name": "Lucas"}
-			enUS.EXPECT().Translate(K.CommonValidationBetweenValues, vars).Return("Hello Lucas")
+			enUS.EXPECT().Translate(K.CommonBetweenValues, vars).Return("Hello Lucas")
 
 			assert.Equal(
 				t,
 				"Hello Lucas",
-				s.Translate(language.AmericanEnglish, K.CommonValidationBetweenValues, vars),
+				s.Translate(language.AmericanEnglish, K.CommonBetweenValues, vars),
 			)
 		})
 
 		t.Run("falls back for missing variables", func(t *testing.T) {
 			enUS.EXPECT().
-				Translate(K.CommonValidationBetweenValues, gomock.Nil()).
+				Translate(K.CommonBetweenValues, gomock.Nil()).
 				Return("Hello ${name}")
 			enUS.EXPECT().
-				Translate(K.CommonValidationBetweenValues, gomock.Any()).
+				Translate(K.CommonBetweenValues, gomock.Any()).
 				Return("Hello ${name}")
 
 			assert.Equal(
 				t,
 				"Hello ${name}",
-				s.Translate(language.AmericanEnglish, K.CommonValidationBetweenValues, nil),
+				s.Translate(language.AmericanEnglish, K.CommonBetweenValues, nil),
 			)
 			assert.Equal(
 				t,
 				"Hello ${name}",
 				s.Translate(
 					language.AmericanEnglish,
-					K.CommonValidationBetweenValues,
+					K.CommonBetweenValues,
 					make(map[string]any),
 				),
 			)

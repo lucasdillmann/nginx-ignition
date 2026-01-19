@@ -27,34 +27,34 @@ type Provider struct{}
 func (p *Provider) ID() string { return "POWERDNS" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsApiKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          hostURLFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsHostUrl),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsHostUrl),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          serverNameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsServerName),
-			HelpText:    i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsServerNameHelp),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsServerName),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsServerNameHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiVersionFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsApiVersion),
-			HelpText:    i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsPdnsApiVersionHelp),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsApiVersion),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsApiVersionHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
@@ -72,12 +72,12 @@ func (p *Provider) ChallengeProvider(
 
 	hostURL, err := url.Parse(hostURLStr)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorPdnsInvalidHostUrl), true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsErrorPdnsInvalidHostUrl), true)
 	}
 
 	apiVersion, err := strconv.Atoi(apiVersionStr)
 	if err != nil && apiVersionStr != "" {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorPdnsInvalidApiVersion), true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsErrorPdnsInvalidApiVersion), true)
 	}
 
 	cfg := pdns.NewDefaultConfig()

@@ -22,21 +22,21 @@ type Provider struct{}
 func (p *Provider) ID() string { return "AURORA_DNS" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAuroradnsName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAuroradnsName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAuroradnsApiKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAuroradnsApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAuroradnsSecret),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAuroradnsSecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

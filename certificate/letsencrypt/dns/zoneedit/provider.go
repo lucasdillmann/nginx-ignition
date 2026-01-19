@@ -24,20 +24,20 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsZoneeditName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsZoneeditName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          userFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsZoneeditUser),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsZoneeditUser),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          authTokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsZoneeditAuthToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsZoneeditAuthToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

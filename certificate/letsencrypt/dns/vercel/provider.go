@@ -22,21 +22,21 @@ type Provider struct{}
 func (p *Provider) ID() string { return "VERCEL" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVercelName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVercelName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVercelToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVercelToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          teamFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVercelTeamId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVercelTeamId),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

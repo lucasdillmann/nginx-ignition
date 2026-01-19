@@ -24,7 +24,7 @@ type Provider struct{}
 func (p *Provider) ID() string { return "RFC2136" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRfc2136Name)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRfc2136Name)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
@@ -33,37 +33,37 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: nameserverFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsRfc2136NameserverAddress,
+				i18n.K.CertificateLetsencryptDnsRfc2136NameserverAddress,
 			),
 			HelpText: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsRfc2136NameserverAddressHelp,
+				i18n.K.CertificateLetsencryptDnsRfc2136NameserverAddressHelp,
 			),
 			Required: true,
 			Type:     dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tsigKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRfc2136TsigKeyName),
-			HelpText:    i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRfc2136TsigKeyNameHelp),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRfc2136TsigKeyName),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRfc2136TsigKeyNameHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tsigSecretFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRfc2136TsigSecretKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRfc2136TsigSecretKey),
 			HelpText: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsRfc2136TsigSecretKeyHelp,
+				i18n.K.CertificateLetsencryptDnsRfc2136TsigSecretKeyHelp,
 			),
 			Sensitive: true,
 			Type:      dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tsigAlgorithmFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRfc2136TsigAlgorithm),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRfc2136TsigAlgorithm),
 			HelpText: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsRfc2136TsigAlgorithmHelp,
+				i18n.K.CertificateLetsencryptDnsRfc2136TsigAlgorithmHelp,
 			),
 			Type: dynamicfields.SingleLineTextType,
 		},

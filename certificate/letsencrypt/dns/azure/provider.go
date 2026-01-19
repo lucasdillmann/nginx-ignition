@@ -33,39 +33,39 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAzureName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAzureName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tenantFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAzureTenantId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAzureTenantId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          subscriptionFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAzureSubscriptionId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAzureSubscriptionId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          clientFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAzureClientId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAzureClientId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          clientSecretFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAzureClientSecret),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAzureClientSecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:           environmentFieldID,
-			Description:  i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAzureEnvironment),
+			Description:  i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAzureEnvironment),
 			Required:     true,
 			DefaultValue: defaultRegion,
 			Type:         dynamicfields.EnumType,
@@ -74,21 +74,21 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 					ID: defaultRegion,
 					Description: i18n.M(
 						ctx,
-						i18n.K.CertificateCommonLetsEncryptDnsAzureEnvironmentDefault,
+						i18n.K.CertificateLetsencryptDnsAzureEnvironmentDefault,
 					),
 				},
 				{
 					ID: chinaRegion,
 					Description: i18n.M(
 						ctx,
-						i18n.K.CertificateCommonLetsEncryptDnsAzureEnvironmentChina,
+						i18n.K.CertificateLetsencryptDnsAzureEnvironmentChina,
 					),
 				},
 				{
 					ID: usGovRegion,
 					Description: i18n.M(
 						ctx,
-						i18n.K.CertificateCommonLetsEncryptDnsAzureEnvironmentUsGovernment,
+						i18n.K.CertificateLetsencryptDnsAzureEnvironmentUsGovernment,
 					),
 				},
 			},
@@ -116,7 +116,7 @@ func (p *Provider) ChallengeProvider(
 	case usGovRegion:
 		env = cloud.AzureGovernment
 	default:
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorAzureUnknownEnvironment), true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAzureErrorAzureUnknownEnvironment), true)
 	}
 
 	cfg := azuredns.NewDefaultConfig()

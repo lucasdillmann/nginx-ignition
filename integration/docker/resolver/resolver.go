@@ -35,7 +35,7 @@ func For(ctx context.Context, parameters map[string]any) (Resolver, error) {
 		connectionURL = hostURL
 	default:
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.IntegrationErrorInvalidConnectionMode),
+			i18n.M(ctx, i18n.K.IntegrationDockerResolverInvalidConnectionMode),
 			false,
 		)
 	}

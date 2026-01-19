@@ -23,7 +23,7 @@ type Provider struct{}
 func (p *Provider) ID() string { return "MYADDR" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsMyaddrName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsMyaddrName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
@@ -32,11 +32,11 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: credentialsFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsMyaddrPrivateKeysMapping,
+				i18n.K.CertificateLetsencryptDnsMyaddrPrivateKeysMapping,
 			),
 			HelpText: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsMyaddrPrivateKeysMappingHelp,
+				i18n.K.CertificateLetsencryptDnsMyaddrPrivateKeysMappingHelp,
 			),
 			Required:  true,
 			Sensitive: true,
@@ -75,7 +75,7 @@ func parseCredentials(ctx context.Context, credentialsStr string) (map[string]st
 		parts := strings.SplitN(pair, "=", 2)
 		if len(parts) != 2 {
 			return nil, coreerror.New(
-				i18n.M(ctx, i18n.K.CertificateErrorMyaddrInvalidCredentialsFormat),
+				i18n.M(ctx, i18n.K.CertificateLetsencryptDnsMyaddrErrorMyaddrInvalidCredentialsFormat),
 				true,
 			)
 		}

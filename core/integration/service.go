@@ -52,7 +52,7 @@ func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if *inUse {
-		return coreerror.New(i18n.M(ctx, i18n.K.IntegrationErrorInUse), true)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreIntegrationInUse), true)
 	}
 
 	return s.repository.DeleteByID(ctx, id)
@@ -76,14 +76,14 @@ func (s *service) ListOptions(
 
 	if data == nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.IntegrationErrorNotFound),
+			i18n.M(ctx, i18n.K.CoreIntegrationNotFound),
 			true,
 		)
 	}
 
 	if !data.Enabled {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.IntegrationErrorDisabled),
+			i18n.M(ctx, i18n.K.CoreIntegrationDisabled),
 			true,
 		)
 	}
@@ -91,7 +91,7 @@ func (s *service) ListOptions(
 	driver := s.findDriver(data)
 	if driver == nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.IntegrationErrorNotFound),
+			i18n.M(ctx, i18n.K.CoreIntegrationNotFound),
 			true,
 		)
 	}
@@ -127,7 +127,7 @@ func (s *service) GetOption(
 
 	if data == nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.IntegrationErrorNotFound),
+			i18n.M(ctx, i18n.K.CoreIntegrationNotFound),
 			true,
 		)
 	}
@@ -135,14 +135,14 @@ func (s *service) GetOption(
 	driver := s.findDriver(data)
 	if driver == nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.IntegrationErrorNotFound),
+			i18n.M(ctx, i18n.K.CoreIntegrationNotFound),
 			true,
 		)
 	}
 
 	if !data.Enabled {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.IntegrationErrorDisabled),
+			i18n.M(ctx, i18n.K.CoreIntegrationDisabled),
 			true,
 		)
 	}
@@ -162,7 +162,7 @@ func (s *service) GetOptionURL(
 
 	if data == nil {
 		return nil, nil, coreerror.New(
-			i18n.M(ctx, i18n.K.IntegrationErrorNotFound),
+			i18n.M(ctx, i18n.K.CoreIntegrationNotFound),
 			true,
 		)
 	}
@@ -170,14 +170,14 @@ func (s *service) GetOptionURL(
 	driver := s.findDriver(data)
 	if driver == nil {
 		return nil, nil, coreerror.New(
-			i18n.M(ctx, i18n.K.IntegrationErrorNotFound),
+			i18n.M(ctx, i18n.K.CoreIntegrationNotFound),
 			true,
 		)
 	}
 
 	if !data.Enabled {
 		return nil, nil, coreerror.New(
-			i18n.M(ctx, i18n.K.IntegrationErrorDisabled),
+			i18n.M(ctx, i18n.K.CoreIntegrationDisabled),
 			true,
 		)
 	}

@@ -20,14 +20,14 @@ type Provider struct{}
 func (p *Provider) ID() string { return "G_CORE" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsGcoreName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGcoreName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiTokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsGcoreApiToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGcoreApiToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

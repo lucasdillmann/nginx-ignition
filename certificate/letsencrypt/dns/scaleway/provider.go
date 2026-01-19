@@ -23,27 +23,27 @@ type Provider struct{}
 func (p *Provider) ID() string { return "SCALEWAY" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsScalewayName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsScalewayName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsScalewayAccessKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsScalewayAccessKey),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsScalewaySecretKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsScalewaySecretKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          projectIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsScalewayProjectId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsScalewayProjectId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

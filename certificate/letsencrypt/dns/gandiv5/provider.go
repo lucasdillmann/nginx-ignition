@@ -20,7 +20,7 @@ type Provider struct{}
 func (p *Provider) ID() string { return "GANDI_V5" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsGandiv5Name)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGandiv5Name)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
@@ -29,7 +29,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: personalAccessTokenFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsGandiv5PersonalAccessToken,
+				i18n.K.CertificateLetsencryptDnsGandiv5PersonalAccessToken,
 			),
 			Required:  true,
 			Sensitive: true,

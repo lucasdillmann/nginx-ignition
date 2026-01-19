@@ -40,7 +40,7 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
@@ -68,7 +68,7 @@ func (p *Provider) Issue(
 
 	usrKey, err := rsa.GenerateKey(rand.Reader, privateKeySize)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorGeneratePrivateKey), false)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptGeneratePrivateKey), false)
 	}
 
 	user := userDetails{
@@ -92,17 +92,17 @@ func (p *Provider) Renew(
 ) (*certificate.Certificate, error) {
 	var metadata *certificateMetadata
 	if err := json.Unmarshal([]byte(*cert.Metadata), &metadata); err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorParseMetadata), false)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptParseMetadata), false)
 	}
 
 	encodedPrivKey, err := base64.StdEncoding.DecodeString(metadata.UserPrivateKey)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorDecodePrivateKey), false)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptDecodePrivateKey), false)
 	}
 
 	privKey, err := x509.ParsePKCS1PrivateKey(encodedPrivKey)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorParsePrivateKey), false)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptParsePrivateKey), false)
 	}
 
 	user := userDetails{

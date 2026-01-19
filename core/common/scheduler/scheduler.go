@@ -33,11 +33,11 @@ func (s *Scheduler) Register(ctx context.Context, task Task) error {
 
 func (s *Scheduler) start(ctx context.Context) error {
 	if s.started {
-		return coreerror.New(i18n.M(ctx, i18n.K.SchedulerErrorAlreadyStarted), false)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreCommonSchedulerAlreadyStarted), false)
 	}
 
 	if s.stopped {
-		return coreerror.New(i18n.M(ctx, i18n.K.SchedulerErrorShuttingDown), false)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreCommonSchedulerShuttingDown), false)
 	}
 
 	s.started = true
@@ -111,5 +111,5 @@ func (s *Scheduler) Reload(ctx context.Context) error {
 }
 
 func schedulerStoppedError(ctx context.Context) error {
-	return coreerror.New(i18n.M(ctx, i18n.K.SchedulerErrorShuttingDown), false)
+	return coreerror.New(i18n.M(ctx, i18n.K.CoreCommonSchedulerShuttingDown), false)
 }

@@ -33,7 +33,7 @@ func (s *service) Authenticate(ctx context.Context, username, password string) (
 
 	if usr == nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.UserErrorInvalidCredentials),
+			i18n.M(ctx, i18n.K.CoreUserInvalidCredentials),
 			true,
 		)
 	}
@@ -46,7 +46,7 @@ func (s *service) Authenticate(ctx context.Context, username, password string) (
 
 	if !passwordMatches {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.UserErrorInvalidCredentials),
+			i18n.M(ctx, i18n.K.CoreUserInvalidCredentials),
 			true,
 		)
 	}
@@ -66,7 +66,7 @@ func (s *service) UpdatePassword(
 	}
 
 	if databaseState == nil {
-		return coreerror.New(i18n.M(ctx, i18n.K.UserErrorNotFoundById), true)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreUserNotFoundById), true)
 	}
 
 	passwordMatches, err := hash.Verify(
@@ -81,14 +81,14 @@ func (s *service) UpdatePassword(
 	if !passwordMatches {
 		return validation.SingleFieldError(
 			"currentPassword",
-			i18n.M(ctx, i18n.K.UserValidationCurrentPasswordMismatch),
+			i18n.M(ctx, i18n.K.CoreUserCurrentPasswordMismatch),
 		)
 	}
 
 	if len(newPassword) < minimumPasswordLength {
 		return validation.SingleFieldError(
 			"newPassword",
-			i18n.M(ctx, i18n.K.CommonValidationTooShort).V("min", minimumPasswordLength),
+			i18n.M(ctx, i18n.K.CoreUserTooShort).V("min", minimumPasswordLength),
 		)
 	}
 
@@ -185,7 +185,7 @@ func (s *service) resetPassword(ctx context.Context, username string) (string, e
 	}
 
 	if user == nil {
-		return "", coreerror.New(i18n.M(ctx, i18n.K.UserErrorNotFound), true)
+		return "", coreerror.New(i18n.M(ctx, i18n.K.CoreUserNotFound), true)
 	}
 
 	newPassword := uuid.NewString()[:8]

@@ -20,14 +20,14 @@ type Provider struct{}
 func (p *Provider) ID() string { return "CIVO" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCivoName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCivoName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCivoToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCivoToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

@@ -24,20 +24,20 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsSpaceshipName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsSpaceshipName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsSpaceshipApiKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsSpaceshipApiKey),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiSecretFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsSpaceshipApiSecret),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsSpaceshipApiSecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

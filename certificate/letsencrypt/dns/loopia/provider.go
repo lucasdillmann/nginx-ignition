@@ -21,20 +21,20 @@ type Provider struct{}
 func (p *Provider) ID() string { return "LOOPIA" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsLoopiaName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLoopiaName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiUserFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsLoopiaApiUser),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLoopiaApiUser),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiPasswordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsLoopiaApiPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLoopiaApiPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

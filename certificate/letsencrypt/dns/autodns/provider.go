@@ -23,27 +23,27 @@ type Provider struct{}
 func (p *Provider) ID() string { return "AUTODNS" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAutodnsName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAutodnsName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAutodnsUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAutodnsUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAutodnsPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAutodnsPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          contextFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAutodnsContext),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAutodnsContext),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

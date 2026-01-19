@@ -35,7 +35,7 @@ func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if inUse {
-		return coreerror.New(i18n.M(ctx, i18n.K.CacheErrorInUse), true)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreCacheInUse), true)
 	}
 
 	return s.repository.DeleteByID(ctx, id)

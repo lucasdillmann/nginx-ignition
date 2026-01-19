@@ -23,27 +23,27 @@ type Provider struct{}
 func (p *Provider) ID() string { return "F5_XC" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsF5xcName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsF5xcName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiTokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsF5xcApiToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsF5xcApiToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tenantNameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsF5xcTenantName),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsF5xcTenantName),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          groupNameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsF5xcGroupName),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsF5xcGroupName),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

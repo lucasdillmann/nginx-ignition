@@ -159,7 +159,7 @@ func Test_service(t *testing.T) {
 			assert.Nil(t, result)
 			var coreErr *coreerror.CoreError
 			require.ErrorAs(t, err, &coreErr)
-			assert.Equal(t, i18n.K.UserErrorInvalidCredentials, coreErr.Message.Key)
+			assert.Equal(t, i18n.K.CoreUserInvalidCredentials, coreErr.Message.Key)
 		})
 	})
 

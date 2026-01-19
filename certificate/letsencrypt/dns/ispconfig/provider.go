@@ -25,26 +25,26 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIspconfigName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIspconfigName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          serverURLFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIspconfigServerUrl),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIspconfigServerUrl),
 			Required:    true,
 			Type:        dynamicfields.URLType,
 		},
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIspconfigUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIspconfigUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIspconfigPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIspconfigPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
@@ -53,7 +53,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: insecureSkipVerifyFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsIspconfigInsecureSkipVerify,
+				i18n.K.CertificateLetsencryptDnsIspconfigInsecureSkipVerify,
 			),
 			Required: false,
 			Type:     dynamicfields.BooleanType,

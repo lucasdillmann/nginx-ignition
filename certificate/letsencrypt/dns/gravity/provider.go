@@ -24,27 +24,27 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsGravityName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGravityName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsGravityUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGravityUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsGravityPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGravityPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          serverURLFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsGravityServerUrl),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGravityServerUrl),
 			Required:    true,
 			Type:        dynamicfields.URLType,
 		},

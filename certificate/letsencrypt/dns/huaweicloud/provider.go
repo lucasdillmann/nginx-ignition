@@ -23,14 +23,14 @@ type Provider struct{}
 func (p *Provider) ID() string { return "HUAWEI_CLOUD" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHuaweicloudName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHuaweicloudName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHuaweicloudAccessKeyId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHuaweicloudAccessKeyId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
@@ -38,7 +38,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: secretAccessKeyFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsHuaweicloudSecretAccessKey,
+				i18n.K.CertificateLetsencryptDnsHuaweicloudSecretAccessKey,
 			),
 			Required:  true,
 			Sensitive: true,
@@ -46,7 +46,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 		},
 		{
 			ID:          regionFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHuaweicloudRegion),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHuaweicloudRegion),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

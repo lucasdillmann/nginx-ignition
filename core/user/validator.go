@@ -30,36 +30,36 @@ func (v *validator) validate(
 ) error {
 	if !updatedState.Enabled && currentState != nil && currentUserID != nil &&
 		currentState.ID == *currentUserID {
-		v.delegate.Add("enabled", i18n.M(ctx, i18n.K.UserValidationCannotDisableSelf))
+		v.delegate.Add("enabled", i18n.M(ctx, i18n.K.CoreUserCannotDisableSelf))
 	}
 
 	if request.Password == nil && currentState == nil {
-		v.delegate.Add("password", i18n.M(ctx, i18n.K.CommonValidationValueMissing))
+		v.delegate.Add("password", i18n.M(ctx, i18n.K.CommonValueMissing))
 	}
 
 	databaseUser, _ := v.repository.FindByUsername(ctx, updatedState.Username)
 	if databaseUser != nil && databaseUser.ID != updatedState.ID {
-		v.delegate.Add("username", i18n.M(ctx, i18n.K.UserValidationDuplicatedUsername))
+		v.delegate.Add("username", i18n.M(ctx, i18n.K.CoreUserDuplicatedUsername))
 	}
 
 	if len(updatedState.Username) < minimumUsernameLength {
 		v.delegate.Add(
 			"username",
-			i18n.M(ctx, i18n.K.CommonValidationTooShort).V("min", minimumUsernameLength),
+			i18n.M(ctx, i18n.K.CoreUserTooShort).V("min", minimumUsernameLength),
 		)
 	}
 
 	if len(updatedState.Name) < minimumNameLength {
 		v.delegate.Add(
 			"name",
-			i18n.M(ctx, i18n.K.CommonValidationTooShort).V("min", minimumNameLength),
+			i18n.M(ctx, i18n.K.CoreUserTooShort).V("min", minimumNameLength),
 		)
 	}
 
 	if request.Password != nil && len(*request.Password) < minimumPasswordLength {
 		v.delegate.Add(
 			"password",
-			i18n.M(ctx, i18n.K.CommonValidationTooShort).V("min", minimumPasswordLength),
+			i18n.M(ctx, i18n.K.CoreUserTooShort).V("min", minimumPasswordLength),
 		)
 	}
 
@@ -83,17 +83,17 @@ func (v *validator) validatePermissions(ctx context.Context, permissions Permiss
 	v.validatePermission(ctx, "caches", permissions.Caches)
 
 	if permissions.NginxServer == NoAccessAccessLevel {
-		v.delegate.Add("permissions.nginxServer", i18n.M(ctx, i18n.K.UserValidationAtLeastReadOnly))
+		v.delegate.Add("permissions.nginxServer", i18n.M(ctx, i18n.K.CoreUserAtLeastReadOnly))
 	}
 
 	if permissions.Logs == ReadWriteAccessLevel {
-		v.delegate.Add("permissions.logs", i18n.M(ctx, i18n.K.UserValidationCannotHaveWriteAccess))
+		v.delegate.Add("permissions.logs", i18n.M(ctx, i18n.K.CoreUserCannotHaveWriteAccess))
 	}
 
 	if permissions.ExportData == ReadWriteAccessLevel {
 		v.delegate.Add(
 			"permissions.exportData",
-			i18n.M(ctx, i18n.K.UserValidationCannotHaveWriteAccess),
+			i18n.M(ctx, i18n.K.CoreUserCannotHaveWriteAccess),
 		)
 	}
 }
@@ -104,7 +104,7 @@ func (v *validator) validatePermission(ctx context.Context, key string, value Ac
 	default:
 		v.delegate.Add(
 			fmt.Sprintf("permissions.%s", key),
-			i18n.M(ctx, i18n.K.UserValidationInvalidAccessLevel),
+			i18n.M(ctx, i18n.K.CoreUserInvalidAccessLevel),
 		)
 	}
 }

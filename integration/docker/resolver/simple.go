@@ -172,7 +172,7 @@ func (s *simpleAdapter) buildOptionURL(
 
 		if targetHost == "" {
 			return nil, nil, coreerror.New(
-				i18n.M(ctx, i18n.K.DockerErrorNoNetwork).V("id", option.ID),
+				i18n.M(ctx, i18n.K.IntegrationDockerResolverNoNetwork).V("id", option.ID),
 				false,
 			)
 		}

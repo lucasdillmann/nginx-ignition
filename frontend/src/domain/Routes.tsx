@@ -66,7 +66,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <HostListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.GlobalCommonMenuHosts} />,
+            description: <I18n id={MessageKey.FrontendMenuHosts} />,
             icon: <HddOutlined />,
         },
     },
@@ -83,7 +83,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <StreamListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.GlobalCommonMenuStreams} />,
+            description: <I18n id={MessageKey.FrontendMenuStreams} />,
             icon: <MergeCellsOutlined />,
         },
     },
@@ -107,7 +107,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <CertificateListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.GlobalCommonMenuCertificates} />,
+            description: <I18n id={MessageKey.FrontendMenuCertificates} />,
             icon: <AuditOutlined />,
         },
     },
@@ -117,7 +117,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <LogsPage />,
         menuItem: {
-            description: <I18n id={MessageKey.GlobalCommonMenuLogs} />,
+            description: <I18n id={MessageKey.FrontendMenuLogs} />,
             icon: <FileSearchOutlined />,
         },
     },
@@ -134,7 +134,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <IntegrationListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.GlobalCommonMenuIntegrations} />,
+            description: <I18n id={MessageKey.FrontendMenuIntegrations} />,
             icon: <BlockOutlined />,
         },
     },
@@ -151,7 +151,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <VpnListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.GlobalCommonMenuVpn} />,
+            description: <I18n id={MessageKey.FrontendMenuVpn} />,
             icon: <ApartmentOutlined />,
         },
     },
@@ -168,7 +168,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <CacheListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.GlobalCommonMenuCache} />,
+            description: <I18n id={MessageKey.FrontendMenuCache} />,
             icon: <RocketOutlined />,
         },
     },
@@ -185,7 +185,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <AccessListListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.GlobalCommonMenuAccessLists} />,
+            description: <I18n id={MessageKey.FrontendMenuAccessLists} />,
             icon: <FileProtectOutlined />,
         },
     },
@@ -195,7 +195,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <ExportPage />,
         menuItem: {
-            description: <I18n id={MessageKey.GlobalCommonMenuExport} />,
+            description: <I18n id={MessageKey.FrontendMenuExport} />,
             icon: <DownloadOutlined />,
         },
     },
@@ -205,7 +205,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <SettingsPage />,
         menuItem: {
-            description: <I18n id={MessageKey.GlobalCommonMenuSettings} />,
+            description: <I18n id={MessageKey.FrontendMenuSettings} />,
             icon: <SettingOutlined />,
         },
     },
@@ -222,7 +222,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <UserListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.GlobalCommonMenuUsers} />,
+            description: <I18n id={MessageKey.FrontendMenuUsers} />,
             icon: <TeamOutlined />,
         },
     },

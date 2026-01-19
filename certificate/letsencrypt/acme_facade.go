@@ -104,7 +104,7 @@ func parseResult(
 	pemBlock, _ := pem.Decode([]byte(mainCert))
 	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePem).V("type", "certificate"),
+			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "certificate"),
 			false,
 		)
 	}
@@ -128,7 +128,7 @@ func parseResult(
 	privateKeyBlock, _ := pem.Decode(result.PrivateKey)
 	if privateKeyBlock == nil || privateKeyBlock.Type != "RSA PRIVATE KEY" {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePem).V("type", "private key"),
+			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "private key"),
 			false,
 		)
 	}
@@ -175,7 +175,7 @@ func encodeIssuerCertificate(ctx context.Context, issuer []byte) (*string, error
 	pemBlock, _ := pem.Decode(issuer)
 	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePem).V("type", "issuer"),
+			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "issuer"),
 			false,
 		)
 	}

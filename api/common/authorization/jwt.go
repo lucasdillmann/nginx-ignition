@@ -86,7 +86,7 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, apierror.New(
 				http.StatusUnauthorized,
-				i18n.M(ctx, i18n.K.AuthorizationErrorInvalidAccessToken),
+				i18n.M(ctx, i18n.K.ApiCommonAuthorizationInvalidAccessToken),
 			)
 		}
 
@@ -113,14 +113,14 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 			j.RevokeToken(tokenID)
 			return nil, apierror.New(
 				http.StatusUnauthorized,
-				i18n.M(ctx, i18n.K.AuthorizationErrorInvalidAccessToken),
+				i18n.M(ctx, i18n.K.ApiCommonAuthorizationInvalidAccessToken),
 			)
 		}
 
 		if j.isRevoked(tokenID) {
 			return nil, apierror.New(
 				http.StatusUnauthorized,
-				i18n.M(ctx, i18n.K.AuthorizationErrorInvalidAccessToken),
+				i18n.M(ctx, i18n.K.ApiCommonAuthorizationInvalidAccessToken),
 			)
 		}
 
@@ -133,7 +133,7 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 
 	return nil, apierror.New(
 		http.StatusUnauthorized,
-		i18n.M(ctx, i18n.K.AuthorizationErrorInvalidAccessToken),
+		i18n.M(ctx, i18n.K.ApiCommonAuthorizationInvalidAccessToken),
 	)
 }
 

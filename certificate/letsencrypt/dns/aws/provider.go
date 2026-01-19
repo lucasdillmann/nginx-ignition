@@ -30,20 +30,20 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAwsName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAwsAccessKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsAccessKey),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAwsSecretKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsSecretKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
@@ -113,5 +113,5 @@ func resolveHostedZoneID(
 		}
 	}
 
-	return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorAwsHostedZoneNotFound), true)
+	return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsErrorAwsHostedZoneNotFound), true)
 }

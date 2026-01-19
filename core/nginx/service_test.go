@@ -132,7 +132,7 @@ func Test_service(t *testing.T) {
 			assert.Error(t, err)
 			var coreErr *coreerror.CoreError
 			assert.ErrorAs(t, err, &coreErr)
-			assert.Equal(t, i18n.K.NginxErrorNotRunning, coreErr.Message.Key)
+			assert.Equal(t, i18n.K.CoreNginxNotRunning, coreErr.Message.Key)
 		})
 	})
 

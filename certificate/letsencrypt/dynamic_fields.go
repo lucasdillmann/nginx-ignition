@@ -22,7 +22,7 @@ func mainDynamicFields(ctx context.Context) (
 	dnsField := dynamicfields.DynamicField{
 		ID:          dnsProviderFieldID,
 		Priority:    1,
-		Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsProvider),
+		Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsProvider),
 		Required:    true,
 		Type:        dynamicfields.EnumType,
 	}
@@ -30,8 +30,8 @@ func mainDynamicFields(ctx context.Context) (
 	tosField := dynamicfields.DynamicField{
 		ID:           termsOfServiceFieldID,
 		Priority:     99,
-		Description:  i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptTos),
-		HelpText:     i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptTosHelp),
+		Description:  i18n.M(ctx, i18n.K.CertificateLetsencryptTos),
+		HelpText:     i18n.M(ctx, i18n.K.CertificateLetsencryptTosHelp),
 		Required:     true,
 		DefaultValue: false,
 		Type:         dynamicfields.BooleanType,
@@ -40,7 +40,7 @@ func mainDynamicFields(ctx context.Context) (
 	emailField := dynamicfields.DynamicField{
 		ID:          emailAddressFieldID,
 		Priority:    0,
-		Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptEmail),
+		Description: i18n.M(ctx, i18n.K.CertificateLetsencryptEmail),
 		Required:    true,
 		Type:        dynamicfields.EmailType,
 	}

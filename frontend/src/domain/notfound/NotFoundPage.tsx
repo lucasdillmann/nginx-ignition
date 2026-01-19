@@ -13,8 +13,8 @@ export default class NotFoundPage extends React.PureComponent {
 
         return (
             <FullPageError
-                title={MessageKey.GlobalErrorNotFoundTitle}
-                message={MessageKey.GlobalErrorNotFoundDescription}
+                title={MessageKey.CommonNotFoundTitle}
+                message={MessageKey.FrontendNotfoundNotFoundDescription}
                 icon={
                     <QuestionCircleFilled style={{ fontSize: 48, color: "var(--nginxIgnition-colorTextSecondary)" }} />
                 }

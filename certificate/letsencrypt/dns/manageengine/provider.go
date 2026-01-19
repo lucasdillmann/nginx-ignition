@@ -22,14 +22,14 @@ type Provider struct{}
 func (p *Provider) ID() string { return "MANAGEENGINE" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsManageengineName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsManageengineName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          clientIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsManageengineClientId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsManageengineClientId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
@@ -37,7 +37,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: clientSecretFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsManageengineClientSecret,
+				i18n.K.CertificateLetsencryptDnsManageengineClientSecret,
 			),
 			Required:  true,
 			Sensitive: true,

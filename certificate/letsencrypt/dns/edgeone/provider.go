@@ -23,27 +23,27 @@ type Provider struct{}
 func (p *Provider) ID() string { return "EDGEONE" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEdgeoneName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEdgeoneName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          secretIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEdgeoneSecretId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEdgeoneSecretId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEdgeoneSecretKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEdgeoneSecretKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEdgeoneRegion),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEdgeoneRegion),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

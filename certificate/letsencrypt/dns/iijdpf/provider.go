@@ -22,27 +22,27 @@ type Provider struct{}
 func (p *Provider) ID() string { return "IIJ_DPF" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIijdpfName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIijdpfName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIijdpfApiToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIijdpfApiToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          serviceCodeFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIijdpfServiceCode),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIijdpfServiceCode),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          endpointFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIijdpfApiEndpoint),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIijdpfApiEndpoint),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

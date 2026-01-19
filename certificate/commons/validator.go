@@ -42,7 +42,7 @@ func validateBaseFields(
 	if len(request.DomainNames) == 0 {
 		violations = append(violations, validation.ConsistencyViolation{
 			Path:    "domainNames",
-			Message: i18n.M(ctx, i18n.K.CommonValidationAtLeastOneRequired),
+			Message: i18n.M(ctx, i18n.K.CommonAtLeastOneRequired),
 		})
 	}
 
@@ -50,7 +50,7 @@ func validateBaseFields(
 		if !constants.TLDPattern.MatchString(domainName) {
 			violations = append(violations, validation.ConsistencyViolation{
 				Path:    fmt.Sprintf("domainNames[%d]", index),
-				Message: i18n.M(ctx, i18n.K.CommonValidationInvalidDomainName),
+				Message: i18n.M(ctx, i18n.K.CommonInvalidDomainName),
 			})
 		}
 	}

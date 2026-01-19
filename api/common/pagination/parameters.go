@@ -28,14 +28,14 @@ func ExtractPaginationParameters(ctx *gin.Context) (
 	if err != nil {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
-			i18n.M(ctx.Request.Context(), i18n.K.PaginationErrorMustBeAnInteger).V("type", "size"),
+			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonPaginationMustBeAnInteger).V("type", "size"),
 		)
 	}
 
 	if !pageSizeRange.Contains(pageSize) {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
-			i18n.M(ctx.Request.Context(), i18n.K.PaginationErrorMustBeBetweenRange).
+			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonPaginationMustBeBetweenRange).
 				V("type", "size").
 				V("min", pageSizeRange.Min).
 				V("max", pageSizeRange.Max),
@@ -46,7 +46,7 @@ func ExtractPaginationParameters(ctx *gin.Context) (
 	if err != nil {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
-			i18n.M(ctx.Request.Context(), i18n.K.PaginationErrorMustBeAnInteger).
+			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonPaginationMustBeAnInteger).
 				V("type", "number"),
 		)
 	}
@@ -54,7 +54,7 @@ func ExtractPaginationParameters(ctx *gin.Context) (
 	if pageNumber < 0 {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
-			i18n.M(ctx.Request.Context(), i18n.K.PaginationErrorCantBeNegative).
+			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonPaginationCantBeNegative).
 				V("type", "number"),
 		)
 	}

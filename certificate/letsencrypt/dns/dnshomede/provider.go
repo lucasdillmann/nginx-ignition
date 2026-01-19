@@ -23,17 +23,17 @@ type Provider struct{}
 func (p *Provider) ID() string { return "DNSHOME_DE" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsDnshomedeName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsDnshomedeName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          credentialsFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsDnshomedeCredentials),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsDnshomedeCredentials),
 			HelpText: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsDnshomedeCredentialsHelp,
+				i18n.K.CertificateLetsencryptDnsDnshomedeCredentialsHelp,
 			),
 			Required:  true,
 			Sensitive: true,
@@ -71,7 +71,7 @@ func parseCredentials(ctx context.Context, credentialsStr string) (map[string]st
 		parts := strings.SplitN(pair, "=", 2)
 		if len(parts) != 2 {
 			return nil, coreerror.New(
-				i18n.M(ctx, i18n.K.CertificateErrorDnshomedeInvalidCredentialsFormat),
+				i18n.M(ctx, i18n.K.CertificateLetsencryptDnsDnshomedeErrorDnshomedeInvalidCredentialsFormat),
 				true,
 			)
 		}

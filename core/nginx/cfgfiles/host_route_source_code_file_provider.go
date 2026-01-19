@@ -42,7 +42,7 @@ func (p *hostRouteSourceCodeFileProvider) buildSourceCodeFiles(
 
 		if ctx.supportedFeatures.RunCodeType == NoneSupportType {
 			return nil, coreerror.New(
-				i18n.M(ctx.context, i18n.K.NginxErrorHostRouteCodeNotEnabled),
+				i18n.M(ctx.context, i18n.K.CoreNginxCfgfilesHostRouteCodeNotEnabled),
 				false,
 			)
 		}

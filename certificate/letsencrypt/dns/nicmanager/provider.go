@@ -26,42 +26,42 @@ type Provider struct{}
 func (p *Provider) ID() string { return "NICMANAGER" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNicmanagerName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          loginFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNicmanagerApiLogin),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerApiLogin),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNicmanagerApiPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerApiPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          emailFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNicmanagerApiEmail),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerApiEmail),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNicmanagerApiUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerApiUsername),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          otpSecretFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNicmanagerOtpSecret),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerOtpSecret),
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          modeFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNicmanagerApiMode),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerApiMode),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

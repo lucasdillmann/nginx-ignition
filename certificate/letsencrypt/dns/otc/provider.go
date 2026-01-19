@@ -24,39 +24,39 @@ type Provider struct{}
 func (p *Provider) ID() string { return "OTC" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOtcName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOtcName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          domainNameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOtcDomainName),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOtcDomainName),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          projectNameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOtcProjectName),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOtcProjectName),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          userNameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOtcUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOtcUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOtcPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOtcPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          identityEndpointFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOtcIdentityEndpoint),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOtcIdentityEndpoint),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

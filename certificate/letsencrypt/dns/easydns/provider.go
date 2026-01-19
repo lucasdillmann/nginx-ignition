@@ -24,27 +24,27 @@ type Provider struct{}
 func (p *Provider) ID() string { return "EASYDNS" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEasydnsName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEasydnsName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEasydnsApiToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEasydnsApiToken),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          keyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEasydnsApiKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEasydnsApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          endpointFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEasydnsApiEndpoint),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEasydnsApiEndpoint),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

@@ -86,7 +86,7 @@ func Test_hostRouteSourceCodeFileProvider(t *testing.T) {
 			assert.Error(t, err)
 			var coreErr *coreerror.CoreError
 			assert.ErrorAs(t, err, &coreErr)
-			assert.Equal(t, i18n.K.NginxErrorHostRouteCodeNotEnabled, coreErr.Message.Key)
+			assert.Equal(t, i18n.K.CoreNginxCfgfilesHostRouteCodeNotEnabled, coreErr.Message.Key)
 		})
 	})
 }

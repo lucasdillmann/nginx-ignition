@@ -39,7 +39,7 @@ func safeExecute[T any](ctx context.Context, action func() T) T {
 	res := <-ch
 	if res.err != nil {
 		panic(coreerror.New(
-			i18n.M(ctx, i18n.K.CommonErrorInvalidFormat),
+			i18n.M(ctx, i18n.K.ApiCommonConverterInvalidFormat),
 			true,
 		))
 	}

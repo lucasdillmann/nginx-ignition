@@ -379,7 +379,7 @@ func resolveProviderChallenge(
 	}
 
 	return nil, coreerror.New(
-		i18n.M(ctx, i18n.K.CertificateErrorUnknownDnsProvider),
+		i18n.M(ctx, i18n.K.CertificateLetsencryptUnknownDnsProvider),
 		true,
 	)
 }

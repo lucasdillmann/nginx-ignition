@@ -23,33 +23,33 @@ type Provider struct{}
 func (p *Provider) ID() string { return "CONOHA_V3" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsConohav3Name)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsConohav3Name)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          userIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsConohav3UserId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsConohav3UserId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsConohav3Password),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsConohav3Password),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tenantIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsConohav3TenantId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsConohav3TenantId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsConohav3Region),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsConohav3Region),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

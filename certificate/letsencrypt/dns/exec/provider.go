@@ -21,20 +21,20 @@ type Provider struct{}
 func (p *Provider) ID() string { return "EXEC_PROGRAM" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsExecName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsExecName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          programFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsExecProgramPath),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsExecProgramPath),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          modeFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsExecRawMode),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsExecRawMode),
 			Type:        dynamicfields.BooleanType,
 		},
 	})

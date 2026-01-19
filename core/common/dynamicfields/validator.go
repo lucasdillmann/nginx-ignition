@@ -27,7 +27,7 @@ func Validate(
 		if !exists && field.Required && conditionSatisfied {
 			violations = append(violations, validation.ConsistencyViolation{
 				Path:    "parameters." + field.ID,
-				Message: i18n.M(ctx, i18n.K.CommonValidationValueMissing),
+				Message: i18n.M(ctx, i18n.K.CommonValueMissing),
 			})
 		}
 
@@ -76,26 +76,26 @@ func resolveErrorMessage(ctx context.Context, field DynamicField, value any) *i1
 
 	case FileType:
 		if !canDecodeFile(value) {
-			return i18n.M(ctx, i18n.K.DynamicFieldValidationInvalidFileEncodedBase64)
+			return i18n.M(ctx, i18n.K.CoreCommonDynamicfieldsInvalidFileEncodedBase64)
 		}
 
 	case BooleanType:
 		if _, ok := value.(bool); !ok {
-			return i18n.M(ctx, i18n.K.DynamicFieldValidationInvalidBoolean)
+			return i18n.M(ctx, i18n.K.CoreCommonDynamicfieldsInvalidBoolean)
 		}
 
 	case EmailType:
 		if !isAnEmail(value) {
-			return i18n.M(ctx, i18n.K.DynamicFieldValidationInvalidEmail)
+			return i18n.M(ctx, i18n.K.CoreCommonDynamicfieldsInvalidEmail)
 		}
 
 	case URLType:
 		if !isAnURL(value) {
-			return i18n.M(ctx, i18n.K.CommonValidationInvalidUrl)
+			return i18n.M(ctx, i18n.K.CommonInvalidUrl)
 		}
 
 	default:
-		return i18n.M(ctx, i18n.K.DynamicFieldValidationUnknownFieldType)
+		return i18n.M(ctx, i18n.K.CoreCommonDynamicfieldsUnknownFieldType)
 	}
 
 	return nil
@@ -135,11 +135,11 @@ func resolveTextBasedFieldErrorMessage(
 ) *i18n.Message {
 	castedValue, casted := value.(string)
 	if !casted {
-		return i18n.M(ctx, i18n.K.DynamicFieldValidationInvalidText)
+		return i18n.M(ctx, i18n.K.CoreCommonDynamicfieldsInvalidText)
 	}
 
 	if field.Required && strings.TrimSpace(castedValue) == "" {
-		return i18n.M(ctx, i18n.K.CommonValidationCannotBeEmpty)
+		return i18n.M(ctx, i18n.K.CommonCannotBeEmpty)
 	}
 
 	if field.Type == EnumType {
@@ -168,7 +168,7 @@ func resolveEnumFieldErrorMessage(
 	}
 
 	if !valid {
-		return i18n.M(ctx, i18n.K.DynamicFieldValidationNotRecognizedOption).
+		return i18n.M(ctx, i18n.K.CoreCommonDynamicfieldsNotRecognizedOption).
 			V("options", strings.Join(enumOptions, ", "))
 	}
 

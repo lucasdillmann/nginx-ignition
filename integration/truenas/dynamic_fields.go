@@ -18,23 +18,23 @@ func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return []dynamicfields.DynamicField{
 		{
 			ID:          urlFieldID,
-			Description: i18n.M(ctx, i18n.K.TruenasCommonUrl),
+			Description: i18n.M(ctx, i18n.K.IntegrationTruenasUrl),
 			Priority:    1,
 			Required:    true,
-			HelpText:    i18n.M(ctx, i18n.K.TruenasCommonUrlHelp),
+			HelpText:    i18n.M(ctx, i18n.K.IntegrationTruenasUrlHelp),
 			Type:        dynamicfields.URLType,
 		},
 		{
 			ID:          proxyURLFieldID,
-			Description: i18n.M(ctx, i18n.K.TruenasCommonProxyUrl),
+			Description: i18n.M(ctx, i18n.K.IntegrationTruenasProxyUrl),
 			Priority:    2,
 			Required:    false,
-			HelpText:    i18n.M(ctx, i18n.K.TruenasCommonProxyUrlHelp),
+			HelpText:    i18n.M(ctx, i18n.K.IntegrationTruenasProxyUrlHelp),
 			Type:        dynamicfields.URLType,
 		},
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.TruenasCommonUsername),
+			Description: i18n.M(ctx, i18n.K.IntegrationTruenasUsername),
 			Priority:    3,
 			Required:    true,
 			Sensitive:   false,
@@ -42,7 +42,7 @@ func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.TruenasCommonPassword),
+			Description: i18n.M(ctx, i18n.K.IntegrationTruenasPassword),
 			Priority:    4,
 			Required:    true,
 			Sensitive:   true,

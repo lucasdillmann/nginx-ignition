@@ -25,38 +25,38 @@ type Provider struct{}
 func (p *Provider) ID() string { return "ALIBABA" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAlibabaName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAlibabaName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAlibabaAccessKeyId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAlibabaAccessKeyId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          accessKeySecretFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAlibabaAccessKeySecret),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAlibabaAccessKeySecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          securityTokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAlibabaSecurityToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAlibabaSecurityToken),
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAlibabaRegion),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAlibabaRegion),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          ramRoleFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAlibabaRamRole),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAlibabaRamRole),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

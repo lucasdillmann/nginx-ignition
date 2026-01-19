@@ -59,7 +59,7 @@ func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if *inUse {
-		return coreerror.New(i18n.M(ctx, i18n.K.VpnErrorInUse), true)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreVpnInUse), true)
 	}
 
 	return s.repository.DeleteByID(ctx, id)
@@ -123,7 +123,7 @@ func (s *service) resolveValues(ctx context.Context, id uuid.UUID) (*VPN, Driver
 
 	driver := s.findDriver(data)
 	if driver == nil {
-		return nil, nil, nil, coreerror.New(i18n.M(ctx, i18n.K.VpnErrorDriverNotFound), false)
+		return nil, nil, nil, coreerror.New(i18n.M(ctx, i18n.K.CoreVpnDriverNotFound), false)
 	}
 
 	configDir, err := s.cfg.Get("nginx-ignition.vpn.config-path")

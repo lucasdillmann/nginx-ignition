@@ -38,7 +38,7 @@ func (s startup) Run(ctx context.Context) error {
 		newPassword,
 	)
 	return coreerror.New(
-		i18n.M(ctx, i18n.K.UserErrorPasswordResetMode),
+		i18n.M(ctx, i18n.K.CoreUserPasswordResetMode),
 		true,
 	)
 }

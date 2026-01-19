@@ -9,7 +9,7 @@ import (
 func newDynamicField(ctx context.Context) *DynamicField {
 	return &DynamicField{
 		ID:          "field1",
-		Description: i18n.M(ctx, i18n.K.CertificateCommonCustomName),
+		Description: i18n.M(ctx, i18n.K.CertificateCustomName),
 		Type:        SingleLineTextType,
 		Priority:    100,
 		Required:    false,

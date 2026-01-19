@@ -21,14 +21,14 @@ type Provider struct{}
 func (p *Provider) ID() string { return "NAMESILO" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNamesiloName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNamesiloName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsNamesiloApiKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNamesiloApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

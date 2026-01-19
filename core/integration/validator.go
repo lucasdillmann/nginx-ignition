@@ -30,17 +30,17 @@ func (v *validator) validate(ctx context.Context, data *Integration) error {
 	}
 
 	if *inUse && !data.Enabled {
-		v.delegate.Add("enabled", i18n.M(ctx, i18n.K.IntegrationValidationInUse))
+		v.delegate.Add("enabled", i18n.M(ctx, i18n.K.CoreIntegrationCannotDisableInUse))
 	}
 
 	if strings.TrimSpace(data.Name) == "" {
-		v.delegate.Add("name", i18n.M(ctx, i18n.K.CommonValidationValueMissing))
+		v.delegate.Add("name", i18n.M(ctx, i18n.K.CommonValueMissing))
 	}
 
 	if strings.TrimSpace(data.Driver) == "" {
-		v.delegate.Add("driver", i18n.M(ctx, i18n.K.CommonValidationValueMissing))
+		v.delegate.Add("driver", i18n.M(ctx, i18n.K.CommonValueMissing))
 	} else if v.driver == nil {
-		v.delegate.Add("driver", i18n.M(ctx, i18n.K.CommonValidationInvalidValue))
+		v.delegate.Add("driver", i18n.M(ctx, i18n.K.CommonInvalidValue))
 	}
 
 	params := data.Parameters

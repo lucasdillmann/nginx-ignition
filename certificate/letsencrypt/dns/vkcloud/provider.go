@@ -27,43 +27,43 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVkcloudName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVkcloudUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVkcloudPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          projectIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVkcloudProjectId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudProjectId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          dnsEndpointFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVkcloudDnsEndpoint),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudDnsEndpoint),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          identityEndpointFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVkcloudIdentityEndpoint),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudIdentityEndpoint),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          domainNameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsVkcloudDomainName),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudDomainName),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

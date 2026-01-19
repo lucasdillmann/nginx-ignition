@@ -21,21 +21,21 @@ type Provider struct{}
 func (p *Provider) ID() string { return "LIGHTSAIL" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsLightsailName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLightsailName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          dnsZoneFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsLightsailDnsZoneName),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLightsailDnsZoneName),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsLightsailAwsRegion),
-			HelpText:    i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsLightsailAwsRegionHelp),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLightsailAwsRegion),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLightsailAwsRegionHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

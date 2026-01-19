@@ -22,25 +22,25 @@ type Provider struct{}
 func (p *Provider) ID() string { return "CLOUDNS" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCloudnsName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCloudnsName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          authIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCloudnsAuthId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCloudnsAuthId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          subAuthIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCloudnsSubAuthId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCloudnsSubAuthId),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCloudnsPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCloudnsPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

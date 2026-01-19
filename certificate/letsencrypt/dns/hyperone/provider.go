@@ -22,20 +22,20 @@ type Provider struct{}
 func (p *Provider) ID() string { return "HYPERONE" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHyperoneName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHyperoneName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiEndpointFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHyperoneApiEndpoint),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHyperoneApiEndpoint),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          locationIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHyperoneLocationId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHyperoneLocationId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
@@ -43,7 +43,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: passportLocationFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsHyperonePassportFileLocation,
+				i18n.K.CertificateLetsencryptDnsHyperonePassportFileLocation,
 			),
 			Required: true,
 			Type:     dynamicfields.SingleLineTextType,

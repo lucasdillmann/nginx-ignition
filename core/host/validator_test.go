@@ -43,7 +43,7 @@ func Test_validator(t *testing.T) {
 					Return(nil)
 
 				err := hostValidator.validate(t.Context(), h)
-				assertViolations(t, err, i18n.K.CommonValidationInvalidDomainName)
+				assertViolations(t, err, i18n.K.CommonInvalidDomainName)
 			})
 
 			t.Run("default server logic", func(t *testing.T) {
@@ -59,7 +59,7 @@ func Test_validator(t *testing.T) {
 					repo.EXPECT().FindDefault(t.Context()).Return(otherDefault, nil)
 
 					err := hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.HostValidationDefaultAlreadyExists)
+					assertViolations(t, err, i18n.K.CoreHostDefaultAlreadyExists)
 				})
 
 				t.Run("error if domains provided for default", func(t *testing.T) {
@@ -72,7 +72,7 @@ func Test_validator(t *testing.T) {
 					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil)
 
 					err := hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.HostValidationDomainMustBeEmptyForDefault)
+					assertViolations(t, err, i18n.K.CoreHostDomainMustBeEmptyForDefault)
 				})
 			})
 		})
@@ -85,7 +85,7 @@ func Test_validator(t *testing.T) {
 				h.Bindings = []binding.Binding{{}}
 
 				err := hostValidator.validate(t.Context(), h)
-				assertViolations(t, err, i18n.K.HostValidationBindingsMustBeEmptyForGlobal)
+				assertViolations(t, err, i18n.K.CoreHostBindingsMustBeEmptyForGlobal)
 			})
 
 			t.Run("custom bindings required", func(t *testing.T) {
@@ -95,7 +95,7 @@ func Test_validator(t *testing.T) {
 				h.Bindings = nil
 
 				err := hostValidator.validate(t.Context(), h)
-				assertViolations(t, err, i18n.K.CommonValidationAtLeastOneRequired)
+				assertViolations(t, err, i18n.K.CommonAtLeastOneRequired)
 			})
 		})
 
@@ -110,7 +110,7 @@ func Test_validator(t *testing.T) {
 					Return(nil)
 
 				err := hostValidator.validate(t.Context(), h)
-				assertViolations(t, err, i18n.K.CommonValidationAtLeastOneRequired)
+				assertViolations(t, err, i18n.K.CommonAtLeastOneRequired)
 			})
 
 			t.Run("duplicates priority", func(t *testing.T) {
@@ -136,7 +136,7 @@ func Test_validator(t *testing.T) {
 					Return(nil)
 
 				err := hostValidator.validate(t.Context(), h)
-				assertViolations(t, err, i18n.K.HostValidationDuplicatedRoutePriority)
+				assertViolations(t, err, i18n.K.CoreHostDuplicatedRoutePriority)
 			})
 
 			t.Run("duplicates source path", func(t *testing.T) {
@@ -162,7 +162,7 @@ func Test_validator(t *testing.T) {
 					Return(nil)
 
 				err := hostValidator.validate(t.Context(), h)
-				assertViolations(t, err, i18n.K.HostValidationDuplicatedSourcePath)
+				assertViolations(t, err, i18n.K.CoreHostDuplicatedSourcePath)
 			})
 
 			t.Run("validates route types", func(t *testing.T) {
@@ -179,12 +179,12 @@ func Test_validator(t *testing.T) {
 						AnyTimes()
 
 					err := hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.HostValidationTargetUriRequired)
+					assertViolations(t, err, i18n.K.CoreHostTargetUriRequired)
 
 					h.Routes[0].TargetURI = ptr.Of("http://invalid\nurl")
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
 					err = hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.CommonValidationInvalidUrl)
+					assertViolations(t, err, i18n.K.CommonInvalidUrl)
 				})
 
 				t.Run("Redirect", func(t *testing.T) {
@@ -201,13 +201,13 @@ func Test_validator(t *testing.T) {
 						AnyTimes()
 
 					err := hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.HostValidationTargetUriRequired)
+					assertViolations(t, err, i18n.K.CoreHostTargetUriRequired)
 
 					h.Routes[0].TargetURI = ptr.Of("http://example.com")
 					h.Routes[0].RedirectCode = ptr.Of(200)
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
 					err = hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.CommonValidationBetweenValues)
+					assertViolations(t, err, i18n.K.CommonBetweenValues)
 				})
 
 				t.Run("StaticResponse", func(t *testing.T) {
@@ -223,12 +223,12 @@ func Test_validator(t *testing.T) {
 						AnyTimes()
 
 					err := hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.HostValidationStaticResponseRequired)
+					assertViolations(t, err, i18n.K.CoreHostStaticResponseRequired)
 
 					h.Routes[0].Response = &RouteStaticResponse{StatusCode: 999}
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
 					err = hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.CommonValidationBetweenValues)
+					assertViolations(t, err, i18n.K.CommonBetweenValues)
 				})
 
 				t.Run("Integration", func(t *testing.T) {
@@ -244,7 +244,7 @@ func Test_validator(t *testing.T) {
 						AnyTimes()
 
 					err := hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.HostValidationIntegrationRequired)
+					assertViolations(t, err, i18n.K.CoreHostIntegrationRequired)
 
 					integrationID := uuid.New()
 					h.Routes[0].Integration = &RouteIntegrationConfig{
@@ -257,7 +257,7 @@ func Test_validator(t *testing.T) {
 
 					hostValidator = newValidator(repo, integrationCmds, nil, nil, nil, bindingCmds)
 					err = hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.HostValidationIntegrationRequired)
+					assertViolations(t, err, i18n.K.CoreHostIntegrationRequired)
 				})
 
 				t.Run("ExecuteCode", func(t *testing.T) {
@@ -273,7 +273,7 @@ func Test_validator(t *testing.T) {
 						AnyTimes()
 
 					err := hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.HostValidationSourceCodeRequired)
+					assertViolations(t, err, i18n.K.CoreHostSourceCodeRequired)
 
 					h.Routes[0].SourceCode = &RouteSourceCode{Language: "INVALID", Contents: ""}
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
@@ -281,8 +281,8 @@ func Test_validator(t *testing.T) {
 					assertViolations(
 						t,
 						err,
-						i18n.K.CommonValidationInvalidValue,
-						i18n.K.HostValidationSourceCodeRequired,
+						i18n.K.CommonInvalidValue,
+						i18n.K.CoreHostSourceCodeRequired,
 					)
 				})
 
@@ -299,12 +299,12 @@ func Test_validator(t *testing.T) {
 						AnyTimes()
 
 					err := hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.HostValidationTargetUriRequired)
+					assertViolations(t, err, i18n.K.CoreHostTargetUriRequired)
 
 					h.Routes[0].TargetURI = ptr.Of("invalid/path")
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
 					err = hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.CommonValidationStartsWithSlashRequired)
+					assertViolations(t, err, i18n.K.CommonStartsWithSlashRequired)
 				})
 			})
 		})
@@ -321,7 +321,7 @@ func Test_validator(t *testing.T) {
 			vpnCmds.EXPECT().Get(t.Context(), vpnID).Return(nil, nil)
 
 			err := hostValidator.validate(t.Context(), h)
-			assertViolations(t, err, i18n.K.HostValidationVpnNotFound)
+			assertViolations(t, err, i18n.K.CoreHostVpnNotFound)
 		})
 
 		t.Run("validates ACLs", func(t *testing.T) {
@@ -336,7 +336,7 @@ func Test_validator(t *testing.T) {
 			aclCmds.EXPECT().Exists(t.Context(), aclID).Return(false, nil)
 
 			err := hostValidator.validate(t.Context(), h)
-			assertViolations(t, err, i18n.K.HostValidationAccessListNotFound)
+			assertViolations(t, err, i18n.K.CoreHostAccessListNotFound)
 		})
 
 		t.Run("validates Cache", func(t *testing.T) {
@@ -351,7 +351,7 @@ func Test_validator(t *testing.T) {
 			cacheCmds.EXPECT().Exists(t.Context(), cacheID).Return(false, nil)
 
 			err := hostValidator.validate(t.Context(), h)
-			assertViolations(t, err, i18n.K.HostValidationCacheNotFound)
+			assertViolations(t, err, i18n.K.CoreHostCacheNotFound)
 		})
 	})
 }

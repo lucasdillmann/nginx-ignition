@@ -25,31 +25,31 @@ type Provider struct{}
 func (p *Provider) ID() string { return "HTTP_REQUEST" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHttpreqName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHttpreqName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          endpointFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHttpreqEndpointUrl),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHttpreqEndpointUrl),
 			Required:    true,
 			Type:        dynamicfields.URLType,
 		},
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHttpreqUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHttpreqUsername),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHttpreqPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHttpreqPassword),
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          modeFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHttpreqRawMode),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHttpreqRawMode),
 			Type:        dynamicfields.BooleanType,
 		},
 	})
@@ -72,7 +72,7 @@ func (p *Provider) ChallengeProvider(
 
 	endpoint, err := url.Parse(endpointStr)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CommonValidationInvalidUrl), true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CommonInvalidUrl), true)
 	}
 
 	cfg := httpreq.NewDefaultConfig()

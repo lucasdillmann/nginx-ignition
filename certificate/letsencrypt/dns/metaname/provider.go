@@ -22,7 +22,7 @@ type Provider struct{}
 func (p *Provider) ID() string { return "METANAME" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsMetanameName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsMetanameName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
@@ -31,14 +31,14 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: accountReferenceFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsMetanameAccountReference,
+				i18n.K.CertificateLetsencryptDnsMetanameAccountReference,
 			),
 			Required: true,
 			Type:     dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsMetanameApiKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsMetanameApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

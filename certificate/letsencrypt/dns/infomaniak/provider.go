@@ -20,7 +20,7 @@ type Provider struct{}
 func (p *Provider) ID() string { return "INFOMANIAK" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsInfomaniakName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInfomaniakName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
@@ -29,7 +29,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: accessTokenFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsInfomaniakApiAccessToken,
+				i18n.K.CertificateLetsencryptDnsInfomaniakApiAccessToken,
 			),
 			Required:  true,
 			Sensitive: true,

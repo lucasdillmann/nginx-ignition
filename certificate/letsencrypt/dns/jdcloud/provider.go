@@ -24,28 +24,28 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJdcloudName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsJdcloudName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJdcloudAccessKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsJdcloudAccessKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJdcloudSecretKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsJdcloudSecretKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJdcloudRegionId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsJdcloudRegionId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

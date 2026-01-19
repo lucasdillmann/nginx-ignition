@@ -31,7 +31,7 @@ func (m *ABAC) HandleRequest(ctx *gin.Context) {
 		ctx.Abort()
 		panic(apierror.New(
 			http.StatusUnauthorized,
-			i18n.M(ctx.Request.Context(), i18n.K.AuthorizationErrorInvalidAccessToken),
+			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonAuthorizationInvalidAccessToken),
 		))
 	}
 
@@ -40,7 +40,7 @@ func (m *ABAC) HandleRequest(ctx *gin.Context) {
 		ctx.Abort()
 		panic(apierror.New(
 			http.StatusUnauthorized,
-			i18n.M(ctx.Request.Context(), i18n.K.AuthorizationErrorInvalidAccessToken),
+			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonAuthorizationInvalidAccessToken),
 		))
 	}
 
@@ -50,7 +50,7 @@ func (m *ABAC) HandleRequest(ctx *gin.Context) {
 			ctx.Abort()
 			panic(apierror.New(
 				http.StatusForbidden,
-				i18n.M(ctx.Request.Context(), i18n.K.AuthorizationErrorAccessDenied),
+				i18n.M(ctx.Request.Context(), i18n.K.ApiCommonAuthorizationAccessDenied),
 			))
 		}
 	}

@@ -23,27 +23,27 @@ type Provider struct{}
 func (p *Provider) ID() string { return "TENCENT_CLOUD" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsTencentcloudName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsTencentcloudName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          secretIDKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsTencentcloudSecretId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsTencentcloudSecretId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretKeyKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsTencentcloudSecretKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsTencentcloudSecretKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsTencentcloudRegion),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsTencentcloudRegion),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

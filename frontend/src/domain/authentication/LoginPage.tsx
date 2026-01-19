@@ -57,8 +57,8 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
     private handleLoginError() {
         this.setState({ attemptFailed: true })
         Notification.error(
-            i18n(MessageKey.AuthenticationErrorLoginFailedTitle),
-            i18n(MessageKey.AuthenticationErrorLoginFailedMessage),
+            i18n(MessageKey.FrontendAuthenticationLoginFailedTitle),
+            i18n(MessageKey.FrontendAuthenticationLoginFailedMessage),
         )
     }
 
@@ -66,13 +66,13 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
         return (
             <LoginFormPage
                 id="nginx-ignition-login-form"
-                title={<I18n id={MessageKey.GlobalCommonAppName} />}
-                subTitle={<I18n id={MessageKey.AuthenticationCommonLoginSubtitle} />}
+                title={<I18n id={MessageKey.CommonAppName} />}
+                subTitle={<I18n id={MessageKey.FrontendAuthenticationLoginSubtitle} />}
                 onFinish={this.handleSubmit.bind(this)}
                 backgroundImageUrl={this.backgroundImageUrl}
                 submitter={{
                     searchConfig: {
-                        submitText: i18n(MessageKey.AuthenticationCommonLoginButton),
+                        submitText: i18n(MessageKey.FrontendAuthenticationLoginButton),
                     },
                 }}
                 containerStyle={{
@@ -89,7 +89,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
             >
                 <ProFormText
                     name="username"
-                    placeholder={i18n(MessageKey.AuthenticationCommonUsernamePlaceholder)}
+                    placeholder={i18n(MessageKey.FrontendAuthenticationUsernamePlaceholder)}
                     fieldProps={{
                         size: "large",
                         prefix: <UserOutlined />,
@@ -100,7 +100,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                 />
                 <ProFormText.Password
                     name="password"
-                    placeholder={i18n(MessageKey.AuthenticationCommonPasswordPlaceholder)}
+                    placeholder={i18n(MessageKey.FrontendAuthenticationPasswordPlaceholder)}
                     fieldProps={{
                         size: "large",
                         prefix: <LockOutlined />,

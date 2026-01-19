@@ -22,21 +22,21 @@ type Provider struct{}
 func (p *Provider) ID() string { return "SAKURA_CLOUD" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsSakuracloudName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsSakuracloudName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessTokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsSakuracloudAccessToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsSakuracloudAccessToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          accessSecretFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsSakuracloudAccessSecret),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsSakuracloudAccessSecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

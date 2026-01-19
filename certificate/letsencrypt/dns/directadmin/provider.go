@@ -23,33 +23,33 @@ type Provider struct{}
 func (p *Provider) ID() string { return "DIRECTADMIN" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsDirectadminName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsDirectadminName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          hostFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsDirectadminBaseUrl),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsDirectadminBaseUrl),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          userFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsDirectadminUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsDirectadminUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsDirectadminPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsDirectadminPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          zoneNameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsDirectadminZoneName),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsDirectadminZoneName),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

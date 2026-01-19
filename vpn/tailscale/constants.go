@@ -17,7 +17,7 @@ func configurationFields(ctx context.Context) []dynamicfields.DynamicField {
 		{
 			ID:          authKeyFieldName,
 			Priority:    0,
-			Description: i18n.M(ctx, i18n.K.TailscaleCommonAuthKey),
+			Description: i18n.M(ctx, i18n.K.VpnTailscaleAuthKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
@@ -25,19 +25,19 @@ func configurationFields(ctx context.Context) []dynamicfields.DynamicField {
 		{
 			ID:          coordinatorURLFieldName,
 			Priority:    1,
-			Description: i18n.M(ctx, i18n.K.TailscaleCommonTailnetCoordinatorUrl),
+			Description: i18n.M(ctx, i18n.K.VpnTailscaleTailnetCoordinatorUrl),
 			Required:    false,
 			Sensitive:   false,
 			Type:        dynamicfields.URLType,
-			HelpText:    i18n.M(ctx, i18n.K.TailscaleCommonCoordinatorUrlHelp),
+			HelpText:    i18n.M(ctx, i18n.K.VpnTailscaleCoordinatorUrlHelp),
 		},
 	}
 }
 
 func importantInstructions(ctx context.Context) []*i18n.Message {
 	return []*i18n.Message{
-		i18n.M(ctx, i18n.K.TailscaleCommonInstructionAuthKey),
-		i18n.M(ctx, i18n.K.TailscaleCommonInstructionKeySettings),
-		i18n.M(ctx, i18n.K.TailscaleCommonInstructionSsl),
+		i18n.M(ctx, i18n.K.VpnTailscaleInstructionAuthKey),
+		i18n.M(ctx, i18n.K.VpnTailscaleInstructionKeySettings),
+		i18n.M(ctx, i18n.K.VpnTailscaleInstructionSsl),
 	}
 }

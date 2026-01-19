@@ -22,15 +22,15 @@ type Provider struct{}
 func (p *Provider) ID() string { return "HURRICANE" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHurricaneName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHurricaneName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokensFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHurricaneTokens),
-			HelpText:    i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsHurricaneTokensHelp),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHurricaneTokens),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHurricaneTokensHelp),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
@@ -67,7 +67,7 @@ func parseTokens(ctx context.Context, tokensStr string) (map[string]string, erro
 		parts := strings.SplitN(pair, "=", 2)
 		if len(parts) != 2 {
 			return nil, coreerror.New(
-				i18n.M(ctx, i18n.K.CertificateErrorHurricaneInvalidTokenFormat),
+				i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHurricaneErrorHurricaneInvalidTokenFormat),
 				true,
 			)
 		}

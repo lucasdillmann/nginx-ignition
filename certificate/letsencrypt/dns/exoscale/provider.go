@@ -22,21 +22,21 @@ type Provider struct{}
 func (p *Provider) ID() string { return "EXOSCALE" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsExoscaleName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsExoscaleName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsExoscaleApiKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsExoscaleApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiSecretFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsExoscaleApiSecret),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsExoscaleApiSecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

@@ -25,7 +25,7 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonSelfSignedName)
+	return i18n.M(ctx, i18n.K.CertificateSelfsignedName)
 }
 
 func (p *Provider) DynamicFields(_ context.Context) []dynamicfields.DynamicField {

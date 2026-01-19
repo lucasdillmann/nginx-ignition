@@ -21,20 +21,20 @@ type Provider struct{}
 func (p *Provider) ID() string { return "MYTHIC_BEASTS" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsMythicbeastsName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsMythicbeastsName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsMythicbeastsUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsMythicbeastsUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsMythicbeastsPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsMythicbeastsPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

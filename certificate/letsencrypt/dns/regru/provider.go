@@ -26,33 +26,33 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRegruName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRegruName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRegruUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRegruUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRegruPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRegruPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tlsCertFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRegruTlsCertificate),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRegruTlsCertificate),
 			Sensitive:   true,
 			Type:        dynamicfields.MultiLineTextType,
 		},
 		{
 			ID:          tlsKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsRegruTlsKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRegruTlsKey),
 			Sensitive:   true,
 			Type:        dynamicfields.MultiLineTextType,
 		},

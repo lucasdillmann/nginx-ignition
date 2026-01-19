@@ -173,7 +173,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			assert.Error(t, err)
 			var coreErr *coreerror.CoreError
 			assert.ErrorAs(t, err, &coreErr)
-			assert.Equal(t, i18n.K.IntegrationErrorOptionNotFound, coreErr.Message.Key)
+			assert.Equal(t, i18n.K.CoreNginxCfgfilesOptionNotFound, coreErr.Message.Key)
 		})
 	})
 

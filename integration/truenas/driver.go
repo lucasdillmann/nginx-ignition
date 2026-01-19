@@ -35,11 +35,11 @@ func (a *Driver) ID() string {
 }
 
 func (a *Driver) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.TruenasCommonName)
+	return i18n.M(ctx, i18n.K.IntegrationTruenasName)
 }
 
 func (a *Driver) Description(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.TruenasCommonDescription)
+	return i18n.M(ctx, i18n.K.IntegrationTruenasDescription)
 }
 
 func (a *Driver) ConfigurationFields(ctx context.Context) []dynamicfields.DynamicField {
@@ -119,7 +119,7 @@ func (a *Driver) GetOptionProxyURL(
 
 	if port == nil || len(port.HostPorts) == 0 {
 		return nil, nil, coreerror.New(
-			i18n.M(ctx, i18n.K.TruenasErrorProxyUrl).V("id", id),
+			i18n.M(ctx, i18n.K.IntegrationTruenasProxyUrlResolutionFailed).V("id", id),
 			false,
 		)
 	}

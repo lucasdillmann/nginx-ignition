@@ -26,41 +26,41 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAliesaName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAliesaName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          ramRoleFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAliesaRamRole),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAliesaRamRole),
 			Required:    false,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAliesaApiKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAliesaApiKey),
 			Required:    false,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAliesaSecretKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAliesaSecretKey),
 			Required:    false,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          securityTokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAliesaSecurityToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAliesaSecurityToken),
 			Required:    false,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsAliesaRegionId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAliesaRegionId),
 			Required:    false,
 			Type:        dynamicfields.SingleLineTextType,
 		},

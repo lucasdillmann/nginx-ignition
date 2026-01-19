@@ -28,7 +28,7 @@ func (p *Provider) ID() string {
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonCustomName)
+	return i18n.M(ctx, i18n.K.CertificateCustomName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
@@ -65,12 +65,12 @@ func (p *Provider) Issue(
 
 	privateKey, err := parsePrivateKey(ctx, privateKeyStr, fileUploadMode)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorInvalidPrivateKey), true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateCustomInvalidPrivateKey), true)
 	}
 
 	publicKey, err := parseCertificate(ctx, publicKeyStr, fileUploadMode)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorInvalidPublicKey), true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateCustomInvalidPublicKey), true)
 	}
 
 	chain := make([]x509.Certificate, 0)
@@ -78,7 +78,7 @@ func (p *Provider) Issue(
 		chain, err = parseCertificateChain(ctx, chainStr, fileUploadMode)
 		if err != nil {
 			return nil, coreerror.New(
-				i18n.M(ctx, i18n.K.CertificateErrorInvalidCertificationChain),
+				i18n.M(ctx, i18n.K.CertificateCustomInvalidCertificationChain),
 				true,
 			)
 		}
@@ -111,7 +111,7 @@ func parsePrivateKey(ctx context.Context, key string, base64Encoded bool) ([]byt
 	decodedKey, err := stringToByteArray(key, base64Encoded)
 	if err != nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateErrorUnableToDecode).V("type", "key"),
+			i18n.M(ctx, i18n.K.CertificateCustomUnableToDecode).V("type", "key"),
 			true,
 		)
 	}
@@ -119,7 +119,7 @@ func parsePrivateKey(ctx context.Context, key string, base64Encoded bool) ([]byt
 	block, _ := pem.Decode(decodedKey)
 	if block == nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePem).V("type", "key"),
+			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "key"),
 			true,
 		)
 	}
@@ -135,7 +135,7 @@ func parseCertificate(
 	decodedCert, err := stringToByteArray(cert, base64Encoded)
 	if err != nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateErrorUnableToDecode).V("type", "certificate"),
+			i18n.M(ctx, i18n.K.CertificateCustomUnableToDecode).V("type", "certificate"),
 			true,
 		)
 	}
@@ -143,7 +143,7 @@ func parseCertificate(
 	block, _ := pem.Decode(decodedCert)
 	if block == nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateErrorUnableToParsePem).V("type", "certificate"),
+			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "certificate"),
 			true,
 		)
 	}
@@ -159,7 +159,7 @@ func parseCertificateChain(
 	decodedChain, err := stringToByteArray(chain, base64Encoded)
 	if err != nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateErrorUnableToDecode).V("type", "chain"),
+			i18n.M(ctx, i18n.K.CertificateCustomUnableToDecode).V("type", "chain"),
 			true,
 		)
 	}

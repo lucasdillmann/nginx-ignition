@@ -22,14 +22,14 @@ type Provider struct{}
 func (p *Provider) ID() string { return "BAIDU_CLOUD" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsBaiducloudName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBaiducloudName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsBaiducloudAccessKeyId),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBaiducloudAccessKeyId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
@@ -37,7 +37,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: secretAccessKeyFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsBaiducloudSecretAccessKey,
+				i18n.K.CertificateLetsencryptDnsBaiducloudSecretAccessKey,
 			),
 			Required:  true,
 			Sensitive: true,

@@ -29,7 +29,7 @@ type Provider struct{}
 func (p *Provider) ID() string { return "ORACLE_CLOUD" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOraclecloudName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOraclecloudName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
@@ -38,26 +38,26 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: compartmentOCIDFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsOraclecloudCompartmentOcid,
+				i18n.K.CertificateLetsencryptDnsOraclecloudCompartmentOcid,
 			),
 			Required: true,
 			Type:     dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOraclecloudRegion),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOraclecloudRegion),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tenancyOCIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOraclecloudTenancyOcid),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOraclecloudTenancyOcid),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          userOCIDFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOraclecloudUserOcid),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOraclecloudUserOcid),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
@@ -65,17 +65,17 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: pubKeyFingerprintFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsOraclecloudPublicKeyFingerprint,
+				i18n.K.CertificateLetsencryptDnsOraclecloudPublicKeyFingerprint,
 			),
 			Required: true,
 			Type:     dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          privateKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsOraclecloudPrivateKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOraclecloudPrivateKey),
 			HelpText: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsOraclecloudPrivateKeyHelp,
+				i18n.K.CertificateLetsencryptDnsOraclecloudPrivateKeyHelp,
 			),
 			Required:  true,
 			Sensitive: true,
@@ -85,7 +85,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: privateKeyPassFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsOraclecloudPrivateKeyPassphrase,
+				i18n.K.CertificateLetsencryptDnsOraclecloudPrivateKeyPassphrase,
 			),
 			Sensitive: true,
 			Type:      dynamicfields.SingleLineTextType,

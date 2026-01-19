@@ -18,7 +18,7 @@ func (s *service) GetMetadata(ctx context.Context) (*Metadata, error) {
 	rawOutput, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.NginxErrorVersionCheckFailed).V("error", err.Error()),
+			i18n.M(ctx, i18n.K.CoreNginxVersionCheckFailed).V("error", err.Error()),
 			false,
 		)
 	}

@@ -35,7 +35,7 @@ func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if inUse {
-		return coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorInUse), true)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreCertificateInUse), true)
 	}
 
 	return s.repository.DeleteByID(ctx, id)
@@ -140,7 +140,7 @@ func (s *service) Renew(ctx context.Context, certificateID uuid.UUID) error {
 
 	provider := providerByID(providers, certificate.ProviderID)
 	if provider == nil {
-		return coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorProviderNotFound), true)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreCertificateProviderNotFound), true)
 	}
 
 	certificate, err = provider.Renew(ctx, certificate)
@@ -160,7 +160,7 @@ func (s *service) Issue(ctx context.Context, request *IssueRequest) (*Certificat
 
 	provider := providerByID(providers, request.ProviderID)
 	if provider == nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateErrorProviderNotFound), true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CoreCertificateProviderNotFound), true)
 	}
 
 	certificate, err := provider.Issue(ctx, request)

@@ -53,7 +53,7 @@ func newService(
 
 func (s *service) Reload(ctx context.Context, failIfNotRunning bool) error {
 	if failIfNotRunning && s.semaphore.currentState() != runningState {
-		return coreerror.New(i18n.M(ctx, i18n.K.NginxErrorNotRunning), false)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreNginxNotRunning), false)
 	}
 
 	supportedFeatures, err := s.resolveSupportedFeatures(ctx)

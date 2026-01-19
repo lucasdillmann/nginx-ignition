@@ -23,34 +23,34 @@ type Provider struct{}
 func (p *Provider) ID() string { return "CPANEL" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCpanelName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCpanelName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          hostFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCpanelBaseUrl),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCpanelBaseUrl),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          userFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCpanelUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCpanelUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCpanelApiToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCpanelApiToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          modeFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCpanelMode),
-			HelpText:    i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsCpanelModeHelp),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCpanelMode),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCpanelModeHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

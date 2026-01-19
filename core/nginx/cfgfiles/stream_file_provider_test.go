@@ -35,7 +35,7 @@ func Test_streamFileProvider(t *testing.T) {
 			assert.Error(t, err)
 			var coreErr *coreerror.CoreError
 			assert.ErrorAs(t, err, &coreErr)
-			assert.Equal(t, i18n.K.NginxErrorStreamNotEnabled, coreErr.Message.Key)
+			assert.Equal(t, i18n.K.CoreNginxCfgfilesStreamNotEnabled, coreErr.Message.Key)
 		})
 
 		t.Run("returns error for unknown stream type", func(t *testing.T) {
@@ -221,7 +221,7 @@ func Test_streamFileProvider(t *testing.T) {
 			assert.Error(t, err)
 			var coreErr *coreerror.CoreError
 			assert.ErrorAs(t, err, &coreErr)
-			assert.Equal(t, i18n.K.NginxErrorStreamSniNotEnabled, coreErr.Message.Key)
+			assert.Equal(t, i18n.K.CoreNginxCfgfilesStreamSniNotEnabled, coreErr.Message.Key)
 		})
 	})
 }

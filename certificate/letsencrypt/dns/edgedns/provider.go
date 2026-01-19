@@ -26,14 +26,14 @@ type Provider struct{}
 func (p *Provider) ID() string { return "EDGEDNS" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEdgednsName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEdgednsName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          hostFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsEdgednsEdgegridHost),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEdgednsEdgegridHost),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
@@ -41,7 +41,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: clientTokenFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsEdgednsEdgegridClientToken,
+				i18n.K.CertificateLetsencryptDnsEdgednsEdgegridClientToken,
 			),
 			Required:  true,
 			Sensitive: true,
@@ -51,7 +51,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: clientSecretFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsEdgednsEdgegridClientSecret,
+				i18n.K.CertificateLetsencryptDnsEdgednsEdgegridClientSecret,
 			),
 			Required:  true,
 			Sensitive: true,
@@ -61,7 +61,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: accessTokenFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsEdgednsEdgegridAccessToken,
+				i18n.K.CertificateLetsencryptDnsEdgednsEdgegridAccessToken,
 			),
 			Required:  true,
 			Sensitive: true,
@@ -71,7 +71,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			ID: accountKeyFieldID,
 			Description: i18n.M(
 				ctx,
-				i18n.K.CertificateCommonLetsEncryptDnsEdgednsEdgegridAccountKey,
+				i18n.K.CertificateLetsencryptDnsEdgednsEdgegridAccountKey,
 			),
 			Required: true,
 			Type:     dynamicfields.SingleLineTextType,

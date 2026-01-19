@@ -94,7 +94,7 @@ func Test_service(t *testing.T) {
 			require.Error(t, err)
 			var coreErr *coreerror.CoreError
 			require.ErrorAs(t, err, &coreErr)
-			assert.Equal(t, i18n.K.AccessListErrorInUse, coreErr.Message.Key)
+			assert.Equal(t, i18n.K.CoreAccesslistInUse, coreErr.Message.Key)
 		})
 
 		t.Run("returns error when InUseByID fails", func(t *testing.T) {

@@ -20,14 +20,14 @@ type Provider struct{}
 func (p *Provider) ID() string { return "BINDMAN" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsBindmanName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBindmanName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          baseURLFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsBindmanBaseUrl),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBindmanBaseUrl),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

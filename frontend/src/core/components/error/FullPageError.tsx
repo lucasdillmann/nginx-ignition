@@ -17,7 +17,7 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
     private openErrorDetailsModal() {
         const { error } = this.props
         themedModal().info({
-            title: i18n(MessageKey.GlobalCommonErrorDetails, {}, "Error details"),
+            title: i18n(MessageKey.FrontendComponentsErrorDetails, {}, "Error details"),
             type: "info",
             width: 1000,
             content: <pre>{error?.stack ?? error?.message ?? typeof error}</pre>,
@@ -35,7 +35,7 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
                 size="small"
                 className="error-page-details-button"
             >
-                <I18n id={MessageKey.GlobalCommonShowDetailsButton} fallback="Show details of what happened" />
+                <I18n id={MessageKey.FrontendComponentsErrorShowDetailsButton} fallback="Show details of what happened" />
             </Button>
         )
     }
@@ -56,11 +56,11 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
                     {this.renderIcon()}
                     <Flex className="error-page-text-container" vertical>
                         <h2 className="error-page-title">
-                            <I18n id={title ?? MessageKey.GlobalErrorFallbackTitle} fallback="Well, that didn't work" />
+                            <I18n id={title ?? MessageKey.FrontendComponentsErrorFallbackTitle} fallback="Well, that didn't work" />
                         </h2>
                         <p className="error-page-message">
                             <I18n
-                                id={message ?? MessageKey.GlobalErrorFallbackMessage}
+                                id={message ?? MessageKey.FrontendComponentsErrorFallbackMessage}
                                 fallback="We ran into an error and don't know what to do with it. Please refresh the page and try again."
                             />
                         </p>

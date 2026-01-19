@@ -22,20 +22,20 @@ type Provider struct{}
 func (p *Provider) ID() string { return "IBM_CLOUD" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIbmcloudName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIbmcloudName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIbmcloudUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIbmcloudUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsIbmcloudApiKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIbmcloudApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

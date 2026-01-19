@@ -20,14 +20,14 @@ type Provider struct{}
 func (p *Provider) ID() string { return "METAREGISTRAR" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsMetaregistrarName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsMetaregistrarName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiTokenFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsMetaregistrarApiToken),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsMetaregistrarApiToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

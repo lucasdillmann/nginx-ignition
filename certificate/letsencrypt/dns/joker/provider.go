@@ -26,14 +26,14 @@ type Provider struct{}
 func (p *Provider) ID() string { return "JOKER" }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJokerName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsJokerName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:           apiModeFieldID,
-			Description:  i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJokerApiMode),
+			Description:  i18n.M(ctx, i18n.K.CertificateLetsencryptDnsJokerApiMode),
 			Type:         dynamicfields.EnumType,
 			Required:     true,
 			DefaultValue: dmapi,
@@ -50,7 +50,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 		},
 		{
 			ID:          apiKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJokerApiKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsJokerApiKey),
 			Sensitive:   true,
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
@@ -61,7 +61,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 		},
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJokerUsername),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsJokerUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 			Conditions: []dynamicfields.Condition{{
@@ -71,7 +71,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateCommonLetsEncryptDnsJokerPassword),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsJokerPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

@@ -66,7 +66,7 @@ func Test_service(t *testing.T) {
 			require.Error(t, err)
 			var coreErr *coreerror.CoreError
 			require.ErrorAs(t, err, &coreErr)
-			assert.Equal(t, i18n.K.IntegrationErrorInUse, coreErr.Message.Key)
+			assert.Equal(t, i18n.K.CoreIntegrationInUse, coreErr.Message.Key)
 		})
 	})
 

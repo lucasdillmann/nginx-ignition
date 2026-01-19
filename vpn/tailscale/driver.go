@@ -21,7 +21,7 @@ func (d Driver) ID() string {
 }
 
 func (d Driver) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.TailscaleCommonName)
+	return i18n.M(ctx, i18n.K.VpnTailscaleName)
 }
 
 func (d Driver) ImportantInstructions(ctx context.Context) []*i18n.Message {
@@ -82,7 +82,7 @@ func (d Driver) doStart(
 ) error {
 	authKey, ok := parameters[authKeyFieldName].(string)
 	if !ok || authKey == "" {
-		return coreerror.New(i18n.M(ctx, i18n.K.TailscaleValidationAuthKey), true)
+		return coreerror.New(i18n.M(ctx, i18n.K.VpnTailscaleAuthKeyRequired), true)
 	}
 
 	var serverURL string

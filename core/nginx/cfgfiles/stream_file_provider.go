@@ -20,7 +20,7 @@ func newStreamFileProvider() *streamFileProvider {
 func (p *streamFileProvider) provide(ctx *providerContext) ([]File, error) {
 	if len(ctx.streams) > 0 && ctx.supportedFeatures.StreamType == NoneSupportType {
 		return nil, coreerror.New(
-			i18n.M(ctx.context, i18n.K.NginxErrorStreamNotEnabled),
+			i18n.M(ctx.context, i18n.K.CoreNginxCfgfilesStreamNotEnabled),
 			false,
 		)
 	}
@@ -151,7 +151,7 @@ func (p *streamFileProvider) buildRoutedStream(
 ) (*string, error) {
 	if ctx.supportedFeatures.TLSSNI == NoneSupportType {
 		return nil, coreerror.New(
-			i18n.M(ctx.context, i18n.K.NginxErrorStreamSniNotEnabled),
+			i18n.M(ctx.context, i18n.K.CoreNginxCfgfilesStreamSniNotEnabled),
 			false,
 		)
 	}

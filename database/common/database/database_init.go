@@ -37,7 +37,7 @@ func (d *Database) Init(ctx context.Context) error {
 		return d.initSqlite()
 	default:
 		return coreerror.New(
-			i18n.M(ctx, i18n.K.DatabaseErrorUnsupportedDriver).V("driver", driver),
+			i18n.M(ctx, i18n.K.DatabaseCommonDatabaseUnsupportedDriver).V("driver", driver),
 			true,
 		)
 	}

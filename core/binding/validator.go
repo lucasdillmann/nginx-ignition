@@ -37,14 +37,14 @@ func (v *validator) validate(
 	if net.ParseIP(binding.IP) == nil {
 		v.delegate.Add(
 			fmt.Sprintf("%s[%d].ip", pathPrefix, index),
-			i18n.M(ctx, i18n.K.BindingValidationInvalidIp),
+			i18n.M(ctx, i18n.K.CoreBindingInvalidIp),
 		)
 	}
 
 	if !portRange.Contains(binding.Port) {
 		v.delegate.Add(
 			fmt.Sprintf("%s[%d].port", pathPrefix, index),
-			i18n.M(ctx, i18n.K.CommonValidationBetweenValues).
+			i18n.M(ctx, i18n.K.CommonBetweenValues).
 				V("min", portRange.Min).
 				V("max", portRange.Max),
 		)
@@ -56,14 +56,14 @@ func (v *validator) validate(
 	case binding.Type == HTTPBindingType && binding.CertificateID != nil:
 		v.delegate.Add(
 			certificateIDField,
-			i18n.M(ctx, i18n.K.BindingValidationCertificateIdNotAllowed),
+			i18n.M(ctx, i18n.K.CoreBindingCertificateIdNotAllowed),
 		)
 	case binding.Type == HTTPBindingType && binding.CertificateID == nil:
 		return nil
 	case binding.Type == HTTPSBindingType && binding.CertificateID == nil:
 		v.delegate.Add(
 			certificateIDField,
-			i18n.M(ctx, i18n.K.BindingValidationCertificateIdRequired),
+			i18n.M(ctx, i18n.K.CoreBindingCertificateIdRequired),
 		)
 	case binding.Type == HTTPSBindingType:
 		exists, err := v.certificateCommands.Exists(ctx, *binding.CertificateID)
@@ -74,13 +74,13 @@ func (v *validator) validate(
 		if !exists {
 			v.delegate.Add(
 				certificateIDField,
-				i18n.M(ctx, i18n.K.BindingValidationCertificateIdNotFound),
+				i18n.M(ctx, i18n.K.CoreBindingCertificateIdNotFound),
 			)
 		}
 	default:
 		v.delegate.Add(
 			fmt.Sprintf("%s[%d].certificateId", pathPrefix, index),
-			i18n.M(ctx, i18n.K.BindingValidationInvalidType),
+			i18n.M(ctx, i18n.K.CoreBindingInvalidType),
 		)
 	}
 
