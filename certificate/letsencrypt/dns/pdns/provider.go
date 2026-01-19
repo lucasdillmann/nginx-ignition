@@ -72,12 +72,18 @@ func (p *Provider) ChallengeProvider(
 
 	hostURL, err := url.Parse(hostURLStr)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsErrorPdnsInvalidHostUrl), true)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsErrorPdnsInvalidHostUrl),
+			true,
+		)
 	}
 
 	apiVersion, err := strconv.Atoi(apiVersionStr)
 	if err != nil && apiVersionStr != "" {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsErrorPdnsInvalidApiVersion), true)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CertificateLetsencryptDnsPdnsErrorPdnsInvalidApiVersion),
+			true,
+		)
 	}
 
 	cfg := pdns.NewDefaultConfig()

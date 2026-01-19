@@ -67,7 +67,10 @@ func parseTokens(ctx context.Context, tokensStr string) (map[string]string, erro
 		parts := strings.SplitN(pair, "=", 2)
 		if len(parts) != 2 {
 			return nil, coreerror.New(
-				i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHurricaneErrorHurricaneInvalidTokenFormat),
+				i18n.M(
+					ctx,
+					i18n.K.CertificateLetsencryptDnsHurricaneErrorHurricaneInvalidTokenFormat,
+				),
 				true,
 			)
 		}

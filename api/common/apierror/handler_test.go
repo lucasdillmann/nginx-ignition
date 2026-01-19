@@ -43,7 +43,7 @@ func Test_handler(t *testing.T) {
 				},
 			},
 			expectedStatus: http.StatusBadRequest,
-			expectedBody:   `{"consistencyProblems":[{"fieldPath":"field1","message":"error1"}],"message":"common.error.consistency-problems"}`,
+			expectedBody:   `{"consistencyProblems":[{"fieldPath":"field1","message":"error1"}],"message":"api/common/apierror/consistency-problems"}`,
 		},
 		{
 			name: "CoreError (UserRelated)",

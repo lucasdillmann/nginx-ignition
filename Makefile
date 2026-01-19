@@ -27,10 +27,10 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./integration/truenas/... \
 		./vpn/tailscale/...
 
-.frontend-build: .frontend-prerequisites .generate-18n-files
+.frontend-build: .frontend-prerequisites .generate-i18n-files
 	cd frontend/ && npm run build
 
-.backend-build: .backend-prerequisites .generate-18n-files
+.backend-build: .backend-prerequisites .generate-i18n-files
 	$(MAKE) .backend-build-file OS=linux ARCH=amd64 DIR=linux
 	$(MAKE) .backend-build-file OS=linux ARCH=arm64 DIR=linux
 	$(MAKE) .backend-build-file OS=darwin ARCH=arm64 DIR=macos
@@ -143,7 +143,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 			-self_package "$$(cd $$dir && go list)" || true; \
 	done
 
-.backend-test: .backend-test-mocks .generate-18n-files
+.backend-test: .backend-test-mocks .generate-i18n-files
 	go test \
 		./api/... \
 		./application/... \

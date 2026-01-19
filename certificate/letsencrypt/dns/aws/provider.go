@@ -113,5 +113,8 @@ func resolveHostedZoneID(
 		}
 	}
 
-	return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsErrorAwsHostedZoneNotFound), true)
+	return nil, coreerror.New(
+		i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsErrorAwsHostedZoneNotFound),
+		true,
+	)
 }

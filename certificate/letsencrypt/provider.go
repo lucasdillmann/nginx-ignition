@@ -68,7 +68,10 @@ func (p *Provider) Issue(
 
 	usrKey, err := rsa.GenerateKey(rand.Reader, privateKeySize)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptGeneratePrivateKey), false)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CertificateLetsencryptGeneratePrivateKey),
+			false,
+		)
 	}
 
 	user := userDetails{

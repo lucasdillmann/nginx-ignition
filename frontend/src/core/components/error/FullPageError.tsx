@@ -35,7 +35,10 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
                 size="small"
                 className="error-page-details-button"
             >
-                <I18n id={MessageKey.FrontendComponentsErrorShowDetailsButton} fallback="Show details of what happened" />
+                <I18n
+                    id={MessageKey.FrontendComponentsErrorShowDetailsButton}
+                    fallback="Show details of what happened"
+                />
             </Button>
         )
     }
@@ -56,7 +59,10 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
                     {this.renderIcon()}
                     <Flex className="error-page-text-container" vertical>
                         <h2 className="error-page-title">
-                            <I18n id={title ?? MessageKey.FrontendComponentsErrorFallbackTitle} fallback="Well, that didn't work" />
+                            <I18n
+                                id={title ?? MessageKey.FrontendComponentsErrorFallbackTitle}
+                                fallback="Well, that didn't work"
+                            />
                         </h2>
                         <p className="error-page-message">
                             <I18n

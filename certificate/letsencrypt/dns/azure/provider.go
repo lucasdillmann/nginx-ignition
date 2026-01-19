@@ -116,7 +116,10 @@ func (p *Provider) ChallengeProvider(
 	case usGovRegion:
 		env = cloud.AzureGovernment
 	default:
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAzureErrorAzureUnknownEnvironment), true)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAzureErrorAzureUnknownEnvironment),
+			true,
+		)
 	}
 
 	cfg := azuredns.NewDefaultConfig()

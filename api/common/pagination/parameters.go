@@ -28,7 +28,8 @@ func ExtractPaginationParameters(ctx *gin.Context) (
 	if err != nil {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
-			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonPaginationMustBeAnInteger).V("type", "size"),
+			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonPaginationMustBeAnInteger).
+				V("type", "size"),
 		)
 	}
 

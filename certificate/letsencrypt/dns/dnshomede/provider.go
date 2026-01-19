@@ -71,7 +71,10 @@ func parseCredentials(ctx context.Context, credentialsStr string) (map[string]st
 		parts := strings.SplitN(pair, "=", 2)
 		if len(parts) != 2 {
 			return nil, coreerror.New(
-				i18n.M(ctx, i18n.K.CertificateLetsencryptDnsDnshomedeErrorDnshomedeInvalidCredentialsFormat),
+				i18n.M(
+					ctx,
+					i18n.K.CertificateLetsencryptDnsDnshomedeErrorDnshomedeInvalidCredentialsFormat,
+				),
 				true,
 			)
 		}

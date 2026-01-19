@@ -34,7 +34,10 @@ func DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 				ID:          SocketConnectionMode,
 				Description: i18n.M(ctx, i18n.K.IntegrationDockerFieldsConnectionModeSocket),
 			},
-			{ID: TCPConnectionMode, Description: i18n.M(ctx, i18n.K.IntegrationDockerFieldsConnectionModeTcp)},
+			{
+				ID:          TCPConnectionMode,
+				Description: i18n.M(ctx, i18n.K.IntegrationDockerFieldsConnectionModeTcp),
+			},
 		},
 	}
 
