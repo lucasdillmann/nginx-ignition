@@ -47,7 +47,7 @@ func (t logRotationTask) Schedule(ctx context.Context) (*scheduler.Schedule, err
 	case settings.DaysTimeUnit:
 		interval = time.Hour * 24 * time.Duration(certCfg.IntervalUnitCount)
 	default:
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CoreNginxInvalidIntervalUnit), false)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CommonInvalidIntervalUnit), false)
 	}
 
 	return &scheduler.Schedule{

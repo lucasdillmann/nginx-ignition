@@ -38,7 +38,6 @@ import VpnFormPage from "./vpn/VpnFormPage"
 import CacheFormPage from "./cache/CacheFormPage"
 import CacheListPage from "./cache/CacheListPage"
 import MessageKey from "../core/i18n/model/MessageKey.generated"
-import { I18n } from "../core/i18n/I18n"
 
 const Routes: AppRoute[] = [
     {
@@ -66,7 +65,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <HostListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.FrontendMenuHosts} />,
+            description: MessageKey.FrontendMenuHosts,
             icon: <HddOutlined />,
         },
     },
@@ -83,7 +82,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <StreamListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.FrontendMenuStreams} />,
+            description: MessageKey.FrontendMenuStreams,
             icon: <MergeCellsOutlined />,
         },
     },
@@ -107,7 +106,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <CertificateListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.FrontendMenuCertificates} />,
+            description: MessageKey.FrontendMenuCertificates,
             icon: <AuditOutlined />,
         },
     },
@@ -117,7 +116,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <LogsPage />,
         menuItem: {
-            description: <I18n id={MessageKey.FrontendMenuLogs} />,
+            description: MessageKey.FrontendMenuLogs,
             icon: <FileSearchOutlined />,
         },
     },
@@ -134,7 +133,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <IntegrationListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.FrontendMenuIntegrations} />,
+            description: MessageKey.FrontendMenuIntegrations,
             icon: <BlockOutlined />,
         },
     },
@@ -151,7 +150,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <VpnListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.FrontendMenuVpn} />,
+            description: MessageKey.FrontendMenuVpn,
             icon: <ApartmentOutlined />,
         },
     },
@@ -168,7 +167,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <CacheListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.FrontendMenuCache} />,
+            description: MessageKey.FrontendMenuCache,
             icon: <RocketOutlined />,
         },
     },
@@ -185,7 +184,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <AccessListListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.FrontendMenuAccessLists} />,
+            description: MessageKey.FrontendMenuAccessLists,
             icon: <FileProtectOutlined />,
         },
     },
@@ -195,7 +194,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <ExportPage />,
         menuItem: {
-            description: <I18n id={MessageKey.FrontendMenuExport} />,
+            description: MessageKey.FrontendMenuExport,
             icon: <DownloadOutlined />,
         },
     },
@@ -205,7 +204,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <SettingsPage />,
         menuItem: {
-            description: <I18n id={MessageKey.FrontendMenuSettings} />,
+            description: MessageKey.FrontendMenuSettings,
             icon: <SettingOutlined />,
         },
     },
@@ -222,7 +221,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <UserListPage />,
         menuItem: {
-            description: <I18n id={MessageKey.FrontendMenuUsers} />,
+            description: MessageKey.FrontendMenuUsers,
             icon: <TeamOutlined />,
         },
     },

@@ -8,6 +8,7 @@ import "./DataTable.css"
 import DataTableSearchBar from "./DataTableSearchBar"
 import CommonNotifications from "../notification/CommonNotifications"
 import EmptyStates from "../emptystate/EmptyStates"
+import { i18n, I18nMessage } from "../../i18n/I18n"
 
 const DEFAULT_PAGE_SIZE = 10
 const PAGE_SIZES = [10, 25, 50, 100, 250, 500]
@@ -20,7 +21,7 @@ const DEFAULT_DATA: PageResponse<any> = {
 
 export interface DataTableColumn<T> {
     id: string
-    description: string
+    description: I18nMessage
     renderer: (row: T, index: number) => React.ReactNode
     width?: number
     minWidth?: number
@@ -54,7 +55,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
         const { columns } = this.props
         return columns.map(column => ({
             key: column.id,
-            title: column.description,
+            title: i18n(column.description),
             render: (_, row, index) => column.renderer(row, index),
             width: column.width,
             minWidth: column.minWidth,

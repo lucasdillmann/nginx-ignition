@@ -23,7 +23,7 @@ func (a *Driver) ID() string {
 }
 
 func (a *Driver) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.IntegrationDockerName)
+	return i18n.M(ctx, i18n.K.CommonDocker)
 }
 
 func (a *Driver) Description(ctx context.Context) *i18n.Message {

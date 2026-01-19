@@ -4,11 +4,11 @@ import "./FullPageError.css"
 import { ExclamationCircleFilled } from "@ant-design/icons"
 import { themedModal } from "../theme/ThemedResources"
 import MessageKey from "../../i18n/model/MessageKey.generated"
-import { I18n, i18n } from "../../i18n/I18n"
+import { I18n, i18n, I18nMessage } from "../../i18n/I18n"
 
 export interface FullPageErrorProps {
-    title?: MessageKey
-    message?: MessageKey
+    title?: I18nMessage
+    message?: I18nMessage
     error?: Error
     icon?: any
 }
@@ -17,7 +17,7 @@ export default class FullPageError extends React.Component<FullPageErrorProps> {
     private openErrorDetailsModal() {
         const { error } = this.props
         themedModal().info({
-            title: i18n(MessageKey.FrontendComponentsErrorDetails, {}, "Error details"),
+            title: i18n(MessageKey.FrontendComponentsErrorDetails, "Error details"),
             type: "info",
             width: 1000,
             content: <pre>{error?.stack ?? error?.message ?? typeof error}</pre>,

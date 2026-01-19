@@ -5,6 +5,7 @@ import { InputStatus } from "antd/es/_util/statusUtils"
 import Notification from "../notification/Notification"
 import { LoadingOutlined } from "@ant-design/icons"
 import debounce from "debounce"
+import { I18n, I18nMessage } from "../../i18n/I18n"
 
 const PAGE_SIZE = 10
 
@@ -33,7 +34,7 @@ interface PaginatedSelectState<T> {
 }
 
 export interface PaginatedSelectProps<T> {
-    placeholder?: string
+    placeholder?: I18nMessage
     onChange?: (selected?: T) => void
     pageProvider: (pageSize: number, pageNumber: number, searchTerms?: string) => Promise<PageResponse<T>>
     itemKey: (item: T) => string
@@ -148,7 +149,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
         return (
             <Select<SelectOption<T>>
                 showSearch={disableSearch !== true}
-                placeholder={placeholder}
+                placeholder={placeholder ? <I18n id={placeholder} /> : undefined}
                 disabled={disabled}
                 allowClear={allowEmpty}
                 options={this.buildOptions()}

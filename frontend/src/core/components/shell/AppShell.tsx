@@ -9,13 +9,13 @@ import AppShellContext, { ShellAction, ShellConfig } from "./AppShellContext"
 import { GithubFilled, LinkedinFilled } from "@ant-design/icons"
 import AppContext from "../context/AppContext"
 import MessageKey from "../../i18n/model/MessageKey.generated"
-import { I18n } from "../../i18n/I18n"
+import { I18n, I18nMessage } from "../../i18n/I18n"
 
 const { Sider, Content } = Layout
 
 export interface AppShellMenuItem {
     icon: React.ReactNode
-    description: React.ReactNode
+    description: I18nMessage
     path: string
 }
 
@@ -44,7 +44,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         return menuItems.map(item => ({
             key: item.path,
             icon: item.icon,
-            label: <Link to={item.path}>{item.description}</Link>,
+            label: <Link to={item.path}><I18n id={item.description} /></Link>,
             className: "shell-sider-menu-item",
         }))
     }
@@ -54,14 +54,14 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         if (typeof onClick === "string") {
             return (
                 <Tooltip title={disabledReason}>
-                    <Link to={onClick} key={action.description}>
+                    <Link to={onClick} key={action.description as string}>
                         <Button
                             className="shell-content-actions-action-item"
                             variant={type ?? "solid"}
                             color={color ?? "primary"}
                             disabled={disabled}
                         >
-                            {description}
+                            <I18n id={description} />
                         </Button>
                     </Link>
                 </Tooltip>
@@ -71,13 +71,13 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                 <Tooltip title={disabledReason}>
                     <Button
                         className="shell-content-actions-action-item"
-                        key={action.description}
+                        key={action.description as string}
                         variant={type ?? "solid"}
                         color={color ?? "primary"}
                         onClick={onClick}
                         disabled={disabled}
                     >
-                        {description}
+                        <I18n id={description} />
                     </Button>
                 </Tooltip>
             )
@@ -164,9 +164,15 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                     <If condition={title !== undefined}>
                         <Flex className="shell-content-header-container">
                             <Flex className="shell-content-header" vertical>
-                                <h1 className="shell-content-header-title">{title}</h1>
+                                <If condition={title !== undefined}>
+                                    <h1 className="shell-content-header-title">
+                                        <I18n id={title!} />
+                                    </h1>
+                                </If>
                                 <If condition={subtitle !== undefined}>
-                                    <h2 className="shell-content-header-subtitle">{subtitle}</h2>
+                                    <h2 className="shell-content-header-subtitle">
+                                        <I18n id={subtitle!} />
+                                    </h2>
                                 </If>
                             </Flex>
                             <Flex className="shell-content-header-actions-container">{this.renderActions()}</Flex>

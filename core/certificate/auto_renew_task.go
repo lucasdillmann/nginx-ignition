@@ -43,7 +43,7 @@ func (t autoRenewTask) Schedule(ctx context.Context) (*scheduler.Schedule, error
 	case "DAYS":
 		interval = time.Hour * 24 * time.Duration(cfg.IntervalUnitCount)
 	default:
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CoreCertificateInvalidIntervalUnit), false)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CommonInvalidIntervalUnit), false)
 	}
 
 	return &scheduler.Schedule{

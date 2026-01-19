@@ -7,8 +7,15 @@ interface I18nState {
     value: string
 }
 
-export interface I18nProps {
+export interface MessageKeyWithParams {
     id: MessageKey
+    params: Record<string, any>
+}
+
+export type I18nMessage = MessageKey | MessageKeyWithParams
+
+export interface I18nProps {
+    id: I18nMessage
     params?: Record<string, any>
     fallback?: string
 }
@@ -24,7 +31,7 @@ export class I18n extends React.Component<I18nProps, I18nState> {
 
     private resolveMessage(): string {
         const { id, params, fallback } = this.props
-        return i18n(id, params, fallback)
+        return params && typeof id === "string" ? i18n({ id, params }, fallback) : i18n(id, fallback)
     }
 
     private handleContextUpdate() {
@@ -47,7 +54,13 @@ export class I18n extends React.Component<I18nProps, I18nState> {
     }
 }
 
-export function i18n(id: MessageKey, params: Record<string, any> = {}, fallback?: string): string {
+export function i18n(input: I18nMessage, fallback?: string): string {
+    let id: MessageKey
+    let params: Record<string, any> = {}
+
+    if (typeof input === "object") ({ id, params } = input)
+    else id = input
+
     const dictionary = resolveDictionary()
     const template = dictionary.messages[id]
     if (!template) return fallback ?? id
