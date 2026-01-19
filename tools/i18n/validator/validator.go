@@ -3,12 +3,15 @@ package validator
 import (
 	"fmt"
 
+	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/tools/i18n/reader"
 )
 
-func Validate(files []reader.PropertiesFile) []string {
-	var violations []string
+const (
+	duplicatedValuesCheckEnabled = false
+)
 
+func Validate(files []reader.PropertiesFile) []string {
 	keyUsage := make(map[string]map[string]bool)
 	valueUsage := make(map[string]map[string][]string)
 	allLanguageTags := make([]string, 0, len(files))
@@ -17,37 +20,56 @@ func Validate(files []reader.PropertiesFile) []string {
 		allLanguageTags = append(allLanguageTags, file.LanguageTag)
 
 		for _, msg := range file.Messages {
-			if keyUsage[msg.PropertiesKey] == nil {
-				keyUsage[msg.PropertiesKey] = make(map[string]bool)
-			}
-			keyUsage[msg.PropertiesKey][file.LanguageTag] = true
-
-			if valueUsage[msg.Value] == nil {
-				valueUsage[msg.Value] = make(map[string][]string)
-			}
-			valueUsage[msg.Value][file.LanguageTag] = append(valueUsage[msg.Value][file.LanguageTag], msg.PropertiesKey)
+			trackKeyUsage(keyUsage, msg.PropertiesKey, file.LanguageTag)
+			trackValueUsage(valueUsage, msg.Value, file.LanguageTag, msg.PropertiesKey)
 		}
 	}
+
+	checkDuplicateValues(valueUsage)
+
+	return checkMissingKeys(keyUsage, allLanguageTags, len(files))
+}
+
+func trackKeyUsage(usage map[string]map[string]bool, key, tag string) {
+	if usage[key] == nil {
+		usage[key] = make(map[string]bool)
+	}
+
+	usage[key][tag] = true
+}
+
+func trackValueUsage(usage map[string]map[string][]string, val, tag, key string) {
+	if usage[val] == nil {
+		usage[val] = make(map[string][]string)
+	}
+
+	usage[val][tag] = append(usage[val][tag], key)
+}
+
+func checkMissingKeys(keyUsage map[string]map[string]bool, tags []string, expectedCount int) []string {
+	var violations []string
 
 	for key, languagesWithKey := range keyUsage {
-		if len(languagesWithKey) < len(files) {
-			for _, tag := range allLanguageTags {
-				if !languagesWithKey[tag] {
-					violation := fmt.Sprintf("Key '%s' is missing in language '%s'", key, tag)
-					violations = append(violations, violation)
-				}
+		if len(languagesWithKey) >= expectedCount {
+			continue
+		}
+
+		for _, tag := range tags {
+			if !languagesWithKey[tag] {
+				violations = append(violations, fmt.Sprintf("Key '%s' is missing in language '%s'", key, tag))
 			}
 		}
 	}
 
-	//for val, languages := range valueUsage {
-	//	for tag, keys := range languages {
-	//		if len(keys) > 1 {
-	//			violation := fmt.Sprintf("Language '%s' has duplicate value '%s' in keys: %v", tag, val, keys)
-	//			violations = append(violations, violation)
-	//		}
-	//	}
-	//}
-
 	return violations
+}
+
+func checkDuplicateValues(valueUsage map[string]map[string][]string) {
+	for val, languages := range valueUsage {
+		for tag, keys := range languages {
+			if len(keys) > 1 {
+				log.Warnf("Language %s has duplicate value '%s' in keys %v", tag, val, keys)
+			}
+		}
+	}
 }
