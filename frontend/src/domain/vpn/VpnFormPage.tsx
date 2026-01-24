@@ -23,7 +23,6 @@ import AvailableDriverResponse from "./model/AvailableDriverResponse"
 import DynamicInput from "../../core/components/dynamicfield/DynamicInput"
 import If from "../../core/components/flowcontrol/If"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { i18n } from "../../core/i18n/I18n"
 
 interface VpnFormPageState {
     availableDrivers: AvailableDriverResponse[]
@@ -67,7 +66,7 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
         const { formValues } = this.state
         this.saveModal.show(MessageKey.CommonHangOnTight, {
             id: MessageKey.CommonSavingType,
-            params: { type: i18n(MessageKey.CommonEntityVpnConnection) },
+            params: { type: MessageKey.CommonEntityVpnConnection },
         })
         this.setState({ validationResult: new ValidationResult() })
 
@@ -90,7 +89,7 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
 
     private handleSuccess() {
         Notification.success(
-            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityVpnConnection) } },
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonEntityVpnConnection } },
             MessageKey.CommonSuccessMessage,
         )
         ReloadNginxAction.execute()

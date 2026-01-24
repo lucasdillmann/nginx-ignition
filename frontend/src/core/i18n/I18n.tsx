@@ -48,6 +48,10 @@ export class I18n extends React.Component<I18nProps, I18nState> {
         I18nContext.deregister(this.handleContextUpdate.bind(this))
     }
 
+    componentDidUpdate(prevProps: I18nProps) {
+        if (prevProps.id !== this.props.id || prevProps.params !== this.props.params) this.handleContextUpdate()
+    }
+
     render() {
         const { value } = this.state
         return value
@@ -71,7 +75,11 @@ export function i18n(input: I18nMessage, fallback?: string): string {
 
     return template.replace(/\${(.*?)}/g, (match, varName) => {
         const value = params[varName]
-        return value !== undefined ? String(value) : match
+        if (value === undefined) return match
+
+        // @ts-expect-error dynamic checking, enabling MessageKey as param values
+        const output = dictionary.messages[value] ?? value
+        return String(output)
     })
 }
 

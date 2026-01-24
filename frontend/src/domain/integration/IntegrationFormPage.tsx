@@ -22,7 +22,6 @@ import { integrationRequestDefaults } from "./model/IntegrationRequestDefaults"
 import AvailableDriverResponse from "./model/AvailableDriverResponse"
 import DynamicInput from "../../core/components/dynamicfield/DynamicInput"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { i18n } from "../../core/i18n/I18n"
 
 interface IntegrationFormPageState {
     availableDrivers: AvailableDriverResponse[]
@@ -66,7 +65,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
         const { formValues } = this.state
         this.saveModal.show(MessageKey.CommonHangOnTight, {
             id: MessageKey.CommonSavingType,
-            params: { type: i18n(MessageKey.CommonEntityIntegration) },
+            params: { type: MessageKey.CommonEntityIntegration },
         })
         this.setState({ validationResult: new ValidationResult() })
 
@@ -89,7 +88,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
 
     private handleSuccess() {
         Notification.success(
-            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityIntegration) } },
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonEntityIntegration } },
             MessageKey.CommonSuccessMessage,
         )
         ReloadNginxAction.execute()

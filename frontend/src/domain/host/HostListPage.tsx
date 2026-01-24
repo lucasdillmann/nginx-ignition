@@ -22,7 +22,7 @@ import { Button } from "antd"
 import HostSupportWarning from "./components/HostSupportWarning"
 import { HostBindingType } from "./model/HostRequest"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { i18n, raw } from "../../core/i18n/I18n"
+import { raw } from "../../core/i18n/I18n"
 
 const BUTTON_STYLE = {
     height: "auto",
@@ -128,7 +128,7 @@ export default class HostListPage extends React.PureComponent {
             .then(() => {
                 const msgKey = host.enabled ? MessageKey.CommonTypeDisabled : MessageKey.CommonTypeEnabled
                 Notification.success(
-                    { id: msgKey, params: { type: i18n(MessageKey.CommonEntityHost) } },
+                    { id: msgKey, params: { type: MessageKey.CommonEntityHost } },
                     MessageKey.CommonSuccessMessage,
                 )
                 ReloadNginxAction.execute()
@@ -137,7 +137,7 @@ export default class HostListPage extends React.PureComponent {
             .catch(() => {
                 const msgKey = host.enabled ? MessageKey.CommonUnableToDisable : MessageKey.CommonUnableToEnable
                 Notification.error(
-                    { id: msgKey, params: { type: i18n(MessageKey.CommonEntityHost) } },
+                    { id: msgKey, params: { type: MessageKey.CommonEntityHost } },
                     MessageKey.CommonUnexpectedErrorTryAgain,
                 )
             })

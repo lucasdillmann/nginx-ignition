@@ -2,7 +2,6 @@ import UserService from "../UserService"
 import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
 import Notification from "../../../core/components/notification/Notification"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { i18n } from "../../../core/i18n/I18n"
 
 class DeleteUserAction {
     private readonly service: UserService
@@ -16,13 +15,13 @@ class DeleteUserAction {
             .then(() => this.service.delete(userId))
             .then(() =>
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: i18n(MessageKey.CommonEntityUser) } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityUser } },
                     MessageKey.CommonSuccessMessage,
                 ),
             )
             .catch(() =>
                 Notification.error(
-                    { id: MessageKey.CommonUnableToDelete, params: { type: i18n(MessageKey.CommonEntityUser) } },
+                    { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonEntityUser } },
                     MessageKey.CommonUnexpectedErrorTryAgain,
                 ),
             )

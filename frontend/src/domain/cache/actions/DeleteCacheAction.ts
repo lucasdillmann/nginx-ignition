@@ -3,7 +3,7 @@ import UserConfirmation from "../../../core/components/confirmation/UserConfirma
 import Notification from "../../../core/components/notification/Notification"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { i18n, I18nMessage, raw } from "../../../core/i18n/I18n"
+import { I18nMessage, raw } from "../../../core/i18n/I18n"
 
 class DeleteCacheAction {
     private readonly service: CacheService
@@ -15,7 +15,7 @@ class DeleteCacheAction {
     private handleError(error: Error) {
         const title = {
             id: MessageKey.CommonUnableToDelete,
-            params: { type: i18n(MessageKey.CommonEntityCacheConfiguration) },
+            params: { type: MessageKey.CommonEntityCacheConfiguration },
         }
         let message: I18nMessage = MessageKey.CommonUnexpectedErrorTryAgain
 
@@ -36,7 +36,7 @@ class DeleteCacheAction {
                 Notification.success(
                     {
                         id: MessageKey.CommonTypeDeleted,
-                        params: { type: i18n(MessageKey.CommonEntityCacheConfiguration) },
+                        params: { type: MessageKey.CommonEntityCacheConfiguration },
                     },
                     MessageKey.CommonSuccessMessage,
                 ),

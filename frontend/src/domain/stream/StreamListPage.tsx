@@ -18,7 +18,7 @@ import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedM
 import StreamTypeDescription from "./utils/StreamTypeDescription"
 import StreamSupportWarning from "./components/StreamSupportWarning"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { i18n, raw } from "../../core/i18n/I18n"
+import { raw } from "../../core/i18n/I18n"
 
 export default class StreamListPage extends React.PureComponent {
     private readonly service: StreamService
@@ -45,7 +45,7 @@ export default class StreamListPage extends React.PureComponent {
             .then(() => {
                 const msgKey = stream.enabled ? MessageKey.CommonTypeDisabled : MessageKey.CommonTypeEnabled
                 Notification.success(
-                    { id: msgKey, params: { type: i18n(MessageKey.CommonEntityStream) } },
+                    { id: msgKey, params: { type: MessageKey.CommonEntityStream } },
                     MessageKey.CommonSuccessMessage,
                 )
                 ReloadNginxAction.execute()
@@ -54,7 +54,7 @@ export default class StreamListPage extends React.PureComponent {
             .catch(() => {
                 const msgKey = stream.enabled ? MessageKey.CommonUnableToDisable : MessageKey.CommonUnableToEnable
                 Notification.error(
-                    { id: msgKey, params: { type: i18n(MessageKey.CommonEntityStream) } },
+                    { id: msgKey, params: { type: MessageKey.CommonEntityStream } },
                     MessageKey.CommonUnexpectedErrorTryAgain,
                 )
             })

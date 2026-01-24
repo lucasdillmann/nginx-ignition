@@ -3,7 +3,7 @@ import Notification from "../../../core/components/notification/Notification"
 import ReloadNginxAction from "../../nginx/actions/ReloadNginxAction"
 import VpnService from "../VpnService"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { i18n, raw } from "../../../core/i18n/I18n"
+import { raw } from "../../../core/i18n/I18n"
 
 class DeleteVpnAction {
     private readonly service: VpnService
@@ -17,7 +17,7 @@ class DeleteVpnAction {
             .then(() => this.service.delete(vpnId))
             .then(() => {
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: i18n(MessageKey.CommonEntityVpnConnection) } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityVpnConnection } },
                     MessageKey.CommonSuccessMessage,
                 )
                 ReloadNginxAction.execute()
@@ -30,7 +30,7 @@ class DeleteVpnAction {
                 Notification.error(
                     {
                         id: MessageKey.CommonUnableToDelete,
-                        params: { type: i18n(MessageKey.CommonEntityVpnConnection) },
+                        params: { type: MessageKey.CommonEntityVpnConnection },
                     },
                     message,
                 )

@@ -25,7 +25,6 @@ import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import { accessListFormDefaults } from "./AccessListFormDefaults"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { i18n } from "../../core/i18n/I18n"
 
 interface AccessListFormState {
     formValues: AccessListFormValues
@@ -60,7 +59,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
         const { formValues } = this.state
         this.saveModal.show(MessageKey.CommonHangOnTight, {
             id: MessageKey.CommonSavingType,
-            params: { type: i18n(MessageKey.CommonEntityAccessList) },
+            params: { type: MessageKey.CommonEntityAccessList },
         })
         this.setState({ validationResult: new ValidationResult() })
 
@@ -82,7 +81,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
     private handleSuccess() {
         this.saveModal.close()
         Notification.success(
-            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityAccessList) } },
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonEntityAccessList } },
             MessageKey.CommonSuccessMessage,
         )
         ReloadNginxAction.execute()

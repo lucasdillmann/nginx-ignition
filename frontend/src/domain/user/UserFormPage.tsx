@@ -15,7 +15,6 @@ import UserResponse from "./model/UserResponse"
 import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
 import DeleteUserAction from "./actions/DeleteUserAction"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { i18n } from "../../core/i18n/I18n"
 import AppContext from "../../core/components/context/AppContext"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
@@ -73,7 +72,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
         const { formValues } = this.state
         this.saveModal.show(MessageKey.CommonHangOnTight, {
             id: MessageKey.CommonSavingType,
-            params: { type: i18n(MessageKey.CommonEntityUser) },
+            params: { type: MessageKey.CommonEntityUser },
         })
         this.setState({ validationResult: new ValidationResult() })
 
@@ -96,7 +95,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
 
     private handleSuccess() {
         Notification.success(
-            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityUser) } },
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonEntityUser } },
             MessageKey.CommonSuccessMessage,
         )
     }

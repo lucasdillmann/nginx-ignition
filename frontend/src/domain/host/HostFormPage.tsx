@@ -34,7 +34,6 @@ import HostVpns from "./components/HostVpns"
 import CacheService from "../cache/CacheService"
 import CacheResponse from "../cache/model/CacheResponse"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { i18n } from "../../core/i18n/I18n"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -80,7 +79,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         const payload = HostConverter.formValuesToRequest(this.state.formValues)
         this.saveModal.show(MessageKey.CommonHangOnTight, {
             id: MessageKey.CommonSavingType,
-            params: { type: i18n(MessageKey.CommonEntityHost) },
+            params: { type: MessageKey.CommonEntityHost },
         })
         this.setState({ validationResult: new ValidationResult() })
 
@@ -103,7 +102,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
     private handleSuccess() {
         Notification.success(
-            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityHost) } },
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonEntityHost } },
             MessageKey.CommonSuccessMessage,
         )
         ReloadNginxAction.execute()

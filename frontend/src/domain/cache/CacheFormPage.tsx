@@ -23,7 +23,6 @@ import GeneralTab from "./tabs/GeneralTab"
 import AdvancedTab from "./tabs/AdvancedTab"
 import "./CacheFormPage.css"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { i18n } from "../../core/i18n/I18n"
 
 interface CacheFormState {
     formValues: CacheRequest
@@ -58,7 +57,7 @@ export default class CacheFormPage extends React.Component<unknown, CacheFormSta
         const { formValues } = this.state
         this.saveModal.show(MessageKey.CommonHangOnTight, {
             id: MessageKey.CommonSavingType,
-            params: { type: i18n(MessageKey.CommonEntityCacheConfiguration) },
+            params: { type: MessageKey.CommonEntityCacheConfiguration },
         })
         this.setState({ validationResult: new ValidationResult() })
 
@@ -79,7 +78,7 @@ export default class CacheFormPage extends React.Component<unknown, CacheFormSta
     private handleSuccess() {
         this.saveModal.close()
         Notification.success(
-            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityCacheConfiguration) } },
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonEntityCacheConfiguration } },
             MessageKey.CommonSuccessMessage,
         )
         ReloadNginxAction.execute()

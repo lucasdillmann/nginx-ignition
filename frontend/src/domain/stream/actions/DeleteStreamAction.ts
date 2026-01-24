@@ -4,7 +4,7 @@ import Notification from "../../../core/components/notification/Notification"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
 import ReloadNginxAction from "../../nginx/actions/ReloadNginxAction"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { i18n, raw } from "../../../core/i18n/I18n"
+import { raw } from "../../../core/i18n/I18n"
 
 class DeleteStreamAction {
     private readonly service: StreamService
@@ -14,7 +14,7 @@ class DeleteStreamAction {
     }
 
     private handleError(error: Error) {
-        const title = { id: MessageKey.CommonUnableToDelete, params: { type: i18n(MessageKey.CommonEntityStream) } }
+        const title = { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonEntityStream } }
         if (error instanceof UnexpectedResponseError) {
             const message = error.response?.body?.message
             if (typeof message === "string") {
@@ -31,7 +31,7 @@ class DeleteStreamAction {
             .then(() => this.service.delete(streamId))
             .then(() =>
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: i18n(MessageKey.CommonEntityStream) } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityStream } },
                     MessageKey.CommonSuccessMessage,
                 ),
             )

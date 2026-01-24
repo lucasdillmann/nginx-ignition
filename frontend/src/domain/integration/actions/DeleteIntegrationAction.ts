@@ -3,7 +3,7 @@ import Notification from "../../../core/components/notification/Notification"
 import ReloadNginxAction from "../../nginx/actions/ReloadNginxAction"
 import IntegrationService from "../IntegrationService"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { i18n, raw } from "../../../core/i18n/I18n"
+import { raw } from "../../../core/i18n/I18n"
 
 class DeleteIntegrationAction {
     private readonly service: IntegrationService
@@ -17,7 +17,7 @@ class DeleteIntegrationAction {
             .then(() => this.service.delete(integrationId))
             .then(() => {
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: i18n(MessageKey.CommonEntityIntegration) } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityIntegration } },
                     MessageKey.CommonSuccessMessage,
                 )
                 ReloadNginxAction.execute()
@@ -28,7 +28,7 @@ class DeleteIntegrationAction {
                     : MessageKey.CommonUnexpectedErrorTryAgain
 
                 Notification.error(
-                    { id: MessageKey.CommonUnableToDelete, params: { type: i18n(MessageKey.CommonEntityIntegration) } },
+                    { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonEntityIntegration } },
                     message,
                 )
             })

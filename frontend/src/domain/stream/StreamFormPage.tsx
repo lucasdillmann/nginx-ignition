@@ -29,7 +29,6 @@ import StreamRoutesForm from "./components/StreamRoutesForm"
 import { streamFormDefaults, streamRouteDefaults } from "./StreamFormDefaults"
 import StreamSupportWarning from "./components/StreamSupportWarning"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { i18n } from "../../core/i18n/I18n"
 
 interface StreamFormPageState {
     formValues: StreamRequest
@@ -66,7 +65,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
         const { formValues } = this.state
         this.saveModal.show(MessageKey.CommonHangOnTight, {
             id: MessageKey.CommonSavingType,
-            params: { type: i18n(MessageKey.CommonEntityStream) },
+            params: { type: MessageKey.CommonEntityStream },
         })
         this.setState({ validationResult: new ValidationResult() })
 
@@ -87,7 +86,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
     private handleSuccess() {
         this.saveModal.close()
         Notification.success(
-            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityStream) } },
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonEntityStream } },
             MessageKey.CommonSuccessMessage,
         )
         ReloadNginxAction.execute()

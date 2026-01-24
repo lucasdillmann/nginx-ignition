@@ -3,7 +3,7 @@ import UserConfirmation from "../../../core/components/confirmation/UserConfirma
 import Notification from "../../../core/components/notification/Notification"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { i18n, raw } from "../../../core/i18n/I18n"
+import { raw } from "../../../core/i18n/I18n"
 
 class DeleteCertificateAction {
     private readonly service: CertificateService
@@ -15,7 +15,7 @@ class DeleteCertificateAction {
     private handleError(error: Error) {
         const title = {
             id: MessageKey.CommonUnableToDelete,
-            params: { type: i18n(MessageKey.CommonEntityCertificate) },
+            params: { type: MessageKey.CommonEntityCertificate },
         }
         if (error instanceof UnexpectedResponseError) {
             const message = error.response?.body?.message
@@ -33,7 +33,7 @@ class DeleteCertificateAction {
             .then(() => this.service.delete(certificateId))
             .then(() =>
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: i18n(MessageKey.CommonEntityCertificate) } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityCertificate } },
                     MessageKey.CommonSuccessMessage,
                 ),
             )

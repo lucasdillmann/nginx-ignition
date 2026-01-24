@@ -3,7 +3,6 @@ import Notification from "../../../core/components/notification/Notification"
 import HostService from "../HostService"
 import ReloadNginxAction from "../../nginx/actions/ReloadNginxAction"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { i18n } from "../../../core/i18n/I18n"
 
 class DeleteHostAction {
     private readonly service: HostService
@@ -17,14 +16,14 @@ class DeleteHostAction {
             .then(() => this.service.delete(hostId))
             .then(() => {
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: i18n(MessageKey.CommonEntityHost) } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityHost } },
                     MessageKey.CommonSuccessMessage,
                 )
                 ReloadNginxAction.execute()
             })
             .catch(() =>
                 Notification.error(
-                    { id: MessageKey.CommonUnableToDelete, params: { type: i18n(MessageKey.CommonEntityHost) } },
+                    { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonEntityHost } },
                     MessageKey.CommonUnexpectedErrorTryAgain,
                 ),
             )

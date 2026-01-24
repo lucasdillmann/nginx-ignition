@@ -3,7 +3,7 @@ import UserConfirmation from "../../../core/components/confirmation/UserConfirma
 import Notification from "../../../core/components/notification/Notification"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { i18n, raw } from "../../../core/i18n/I18n"
+import { raw } from "../../../core/i18n/I18n"
 
 class DeleteAccessListAction {
     private readonly service: AccessListService
@@ -16,7 +16,7 @@ class DeleteAccessListAction {
         const title = {
             id: MessageKey.CommonUnableToDelete,
             params: {
-                type: i18n(MessageKey.CommonEntityAccessList),
+                type: MessageKey.CommonEntityAccessList,
             },
         }
 
@@ -36,7 +36,7 @@ class DeleteAccessListAction {
             .then(() => this.service.delete(userId))
             .then(() =>
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: i18n(MessageKey.CommonEntityAccessList) } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityAccessList } },
                     MessageKey.CommonSuccessMessage,
                 ),
             )
