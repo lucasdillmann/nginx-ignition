@@ -2,6 +2,8 @@ import React from "react"
 import { Flex, Input } from "antd"
 import debounce from "debounce"
 import { SearchOutlined } from "@ant-design/icons"
+import { i18n } from "../../i18n/I18n"
+import MessageKey from "../../i18n/model/MessageKey.generated"
 
 export interface SearchBarProps {
     onSearch: (searchTerms?: string) => void
@@ -17,7 +19,7 @@ export default class DataTableSearchBar extends React.Component<SearchBarProps> 
                     // @ts-expect-error target is generic, but in this scenario is safe to use the value attribute
                     onInput={event => handleChange(event.nativeEvent.target!!.value)}
                     onClear={() => handleChange()}
-                    placeholder="Search terms"
+                    placeholder={i18n(MessageKey.FrontendComponentsDatatableSearchPlaceholder)}
                     className="data-table-search-bar"
                     autoFocus
                     allowClear

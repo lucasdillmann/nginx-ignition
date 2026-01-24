@@ -42,7 +42,7 @@ func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 		},
 		{
 			ID:          passwordFieldID,
-			Description: i18n.M(ctx, i18n.K.IntegrationTruenasPassword),
+			Description: i18n.M(ctx, i18n.K.CommonPassword),
 			Priority:    4,
 			Required:    true,
 			Sensitive:   true,

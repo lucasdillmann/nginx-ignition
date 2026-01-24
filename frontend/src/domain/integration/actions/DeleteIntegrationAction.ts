@@ -13,7 +13,7 @@ class DeleteIntegrationAction {
     }
 
     async execute(integrationId: string): Promise<void> {
-        return UserConfirmation.ask("Do you really want to delete the integration?")
+        return UserConfirmation.ask(MessageKey.FrontendIntegrationDeleteConfirmation)
             .then(() => this.service.delete(integrationId))
             .then(() => {
                 Notification.success(

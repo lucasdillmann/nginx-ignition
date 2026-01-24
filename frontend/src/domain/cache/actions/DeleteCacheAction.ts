@@ -30,7 +30,7 @@ class DeleteCacheAction {
     }
 
     async execute(userId: string): Promise<void> {
-        return UserConfirmation.ask("Do you really want to delete the cache configuration?")
+        return UserConfirmation.ask(MessageKey.FrontendCacheDeleteConfirmation)
             .then(() => this.service.delete(userId))
             .then(() =>
                 Notification.success(

@@ -6,6 +6,8 @@ import FormLayout from "../../../core/components/form/FormLayout"
 import Password from "antd/es/input/Password"
 import "./AccessListCredentials.css"
 import { accessListFormCredentialsDefaults } from "../AccessListFormDefaults"
+import { I18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -31,7 +33,7 @@ export default class AccessListCredentials extends React.Component<AccessListCre
                     name={[name, "username"]}
                     validateStatus={validationResult.getStatus(`credentials[${index}].username`)}
                     help={validationResult.getMessage(`credentials[${index}].username`)}
-                    label="Username"
+                    label={<I18n id={MessageKey.CommonUsername} />}
                     required
                 >
                     <Input />
@@ -43,7 +45,7 @@ export default class AccessListCredentials extends React.Component<AccessListCre
                     name={[name, "password"]}
                     validateStatus={validationResult.getStatus(`credentials[${index}].password`)}
                     help={validationResult.getMessage(`credentials[${index}].password`)}
-                    label="Password"
+                    label={<I18n id={MessageKey.CommonPassword} />}
                     required
                 >
                     <Password />
@@ -64,7 +66,7 @@ export default class AccessListCredentials extends React.Component<AccessListCre
                     onClick={() => operations.add(accessListFormCredentialsDefaults())}
                     icon={<PlusOutlined />}
                 >
-                    Add credentials
+                    <I18n id={MessageKey.FrontendAccesslistCredentialAdd} />
                 </Button>
             </Form.Item>
         )

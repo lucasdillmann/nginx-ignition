@@ -47,7 +47,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
     }
 
     private async handleLogout() {
-        return UserConfirmation.ask("Are you sure you want to logout?")
+        return UserConfirmation.ask(MessageKey.FrontendUserLogoutConfirmation)
             .then(() => this.service.logout())
             .then(() => Notification.success(MessageKey.CommonSeeYa, MessageKey.FrontendUserLoggedOut))
             .then(() => {

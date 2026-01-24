@@ -1,6 +1,8 @@
 import React from "react"
 import CodeEditor, { CodeEditorLanguage } from "./CodeEditor"
 import { Drawer, Flex, Form, Select } from "antd"
+import { i18n, I18n } from "../../i18n/I18n"
+import MessageKey from "../../i18n/model/MessageKey.generated"
 
 interface CodeEditorModalState {
     language: CodeEditorLanguage
@@ -59,7 +61,12 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
 
         return (
             <Flex justify="right">
-                <Form.Item label="Language" layout="horizontal" style={{ width: 250, margin: 0, padding: 0 }} required>
+                <Form.Item
+                    label={<I18n id={MessageKey.FrontendComponentsCodeeditorLanguage} />}
+                    layout="horizontal"
+                    style={{ width: 250, margin: 0, padding: 0 }}
+                    required
+                >
                     <Select
                         onChange={value => this.handleLanguageChange(value)}
                         value={currentLanguage}
@@ -86,7 +93,7 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
 
         return (
             <Drawer
-                title="Code editor"
+                title={i18n(MessageKey.FrontendComponentsCodeeditorTitle)}
                 placement="right"
                 width="80vw"
                 onClose={onClose}

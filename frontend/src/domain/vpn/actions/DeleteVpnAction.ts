@@ -13,7 +13,7 @@ class DeleteVpnAction {
     }
 
     async execute(vpnId: string): Promise<void> {
-        return UserConfirmation.ask("Do you really want to delete the VPN connection?")
+        return UserConfirmation.ask(MessageKey.FrontendVpnDeleteConfirmation)
             .then(() => this.service.delete(vpnId))
             .then(() => {
                 Notification.success(

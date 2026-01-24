@@ -29,7 +29,7 @@ class DeleteCertificateAction {
     }
 
     async execute(certificateId: string): Promise<void> {
-        return UserConfirmation.ask("Do you really want to delete the certificate?")
+        return UserConfirmation.ask(MessageKey.FrontendCertificateDeleteConfirmation)
             .then(() => this.service.delete(certificateId))
             .then(() =>
                 Notification.success(

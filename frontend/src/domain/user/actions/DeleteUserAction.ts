@@ -11,7 +11,7 @@ class DeleteUserAction {
     }
 
     async execute(userId: string): Promise<void> {
-        return UserConfirmation.ask("Do you really want to delete the user?")
+        return UserConfirmation.ask(MessageKey.FrontendUserDeleteConfirmation)
             .then(() => this.service.delete(userId))
             .then(() =>
                 Notification.success(

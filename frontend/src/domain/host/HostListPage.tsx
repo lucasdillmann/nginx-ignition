@@ -123,7 +123,7 @@ export default class HostListPage extends React.PureComponent {
         }
 
         const action = host.enabled ? "disable" : "enable"
-        UserConfirmation.ask(`Do you really want to ${action} the host?`)
+        UserConfirmation.ask({ id: MessageKey.FrontendHostToggleConfirmation, params: { action } })
             .then(() => this.service.toggleEnabled(host.id))
             .then(() => {
                 const msgKey = host.enabled ? MessageKey.CommonTypeDisabled : MessageKey.CommonTypeEnabled

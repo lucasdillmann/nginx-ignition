@@ -8,6 +8,8 @@ import { AccessListOutcome } from "../model/AccessListRequest"
 import "./AccessListEntrySets.css"
 import { AccessListEntrySetFormValues } from "../model/AccessListFormValues"
 import { accessListFormEntryDefaults } from "../AccessListFormDefaults"
+import { I18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -69,12 +71,16 @@ export default class AccessListEntrySets extends React.Component<AccessListEntry
                     name={[name, "outcome"]}
                     validateStatus={validationResult.getStatus(`entries[${index}].outcome`)}
                     help={validationResult.getMessage(`entries[${index}].outcome`)}
-                    label="Outcome"
+                    label={<I18n id={MessageKey.FrontendAccesslistEntryOutcome} />}
                     required
                 >
                     <Select>
-                        <Select.Option value={AccessListOutcome.DENY}>Deny access</Select.Option>
-                        <Select.Option value={AccessListOutcome.ALLOW}>Allow access</Select.Option>
+                        <Select.Option value={AccessListOutcome.DENY}>
+                            <I18n id={MessageKey.FrontendAccesslistOutcomeDeny} />
+                        </Select.Option>
+                        <Select.Option value={AccessListOutcome.ALLOW}>
+                            <I18n id={MessageKey.FrontendAccesslistOutcomeAllow} />
+                        </Select.Option>
                     </Select>
                 </Form.Item>
                 <Form.Item
@@ -84,7 +90,7 @@ export default class AccessListEntrySets extends React.Component<AccessListEntry
                     name={[name, "sourceAddresses"]}
                     validateStatus={validationResult.getStatus(`entries[${index}].sourceAddresses`)}
                     help={validationResult.getMessage(`entries[${index}].sourceAddresses`)}
-                    label="IP addresses or ranges"
+                    label={<I18n id={MessageKey.FrontendAccesslistIpAddressesOrRanges} />}
                     required
                 >
                     <TextArea rows={4} />
@@ -119,7 +125,7 @@ export default class AccessListEntrySets extends React.Component<AccessListEntry
                     }
                     icon={<PlusOutlined />}
                 >
-                    Add IP address list
+                    <I18n id={MessageKey.FrontendAccesslistIpAddressListAdd} />
                 </Button>
             </Form.Item>
         )

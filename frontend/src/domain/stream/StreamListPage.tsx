@@ -40,7 +40,7 @@ export default class StreamListPage extends React.PureComponent {
         }
 
         const action = stream.enabled ? "disable" : "enable"
-        UserConfirmation.ask(`Do you really want to ${action} the stream?`)
+        UserConfirmation.ask({ id: MessageKey.FrontendStreamToggleConfirmation, params: { action } })
             .then(() => this.service.toggleEnabled(stream.id))
             .then(() => {
                 const msgKey = stream.enabled ? MessageKey.CommonTypeDisabled : MessageKey.CommonTypeEnabled

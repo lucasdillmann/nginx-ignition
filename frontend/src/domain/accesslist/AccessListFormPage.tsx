@@ -25,6 +25,7 @@ import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import { accessListFormDefaults } from "./AccessListFormDefaults"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n } from "../../core/i18n/I18n"
 
 interface AccessListFormState {
     formValues: AccessListFormValues
@@ -139,16 +140,18 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
                 onValuesChange={(_, formValues) => this.handleChange(formValues)}
                 initialValues={formValues}
             >
-                <h2 className="access-lists-form-section-name">General</h2>
+                <h2 className="access-lists-form-section-name">
+                    <I18n id={MessageKey.FrontendAccesslistSectionGeneral} />
+                </h2>
                 <p className="access-lists-form-section-help-text">
-                    Main definitions and properties of the access list.
+                    <I18n id={MessageKey.FrontendAccesslistSectionGeneralDescription} />
                 </p>
                 <Form.Item
                     className="access-lists-form-name"
                     name="name"
                     validateStatus={validationResult.getStatus("name")}
                     help={validationResult.getMessage("name")}
-                    label="Name"
+                    label={<I18n id={MessageKey.CommonName} />}
                     required
                 >
                     <Input />
@@ -158,7 +161,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
                     name="realm"
                     validateStatus={validationResult.getStatus("realm")}
                     help={validationResult.getMessage("realm")}
-                    label="Realm name"
+                    label={<I18n id={MessageKey.FrontendAccesslistRealmName} />}
                 >
                     <Input />
                 </Form.Item>
@@ -167,15 +170,15 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
                     name="satisfyAll"
                     validateStatus={validationResult.getStatus("satisfyAll")}
                     help={validationResult.getMessage("satisfyAll")}
-                    label="Mode"
+                    label={<I18n id={MessageKey.CommonMode} />}
                     required
                 >
                     <Select>
                         <Select.Option value={true}>
-                            Both credentials (if any) and entry sets (if any) must be satisfied
+                            <I18n id={MessageKey.FrontendAccesslistModeSatisfyAll} />
                         </Select.Option>
                         <Select.Option value={false}>
-                            Either credentials (if any) or entry sets (if any) must be satisfied
+                            <I18n id={MessageKey.FrontendAccesslistModeSatisfyAny} />
                         </Select.Option>
                     </Select>
                 </Form.Item>
@@ -184,12 +187,16 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
                     name="defaultOutcome"
                     validateStatus={validationResult.getStatus("defaultOutcome")}
                     help={validationResult.getMessage("defaultOutcome")}
-                    label="Default outcome"
+                    label={<I18n id={MessageKey.FrontendAccesslistDefaultOutcome} />}
                     required
                 >
                     <Select>
-                        <Select.Option value={AccessListOutcome.ALLOW}>Allow access</Select.Option>
-                        <Select.Option value={AccessListOutcome.DENY}>Deny access</Select.Option>
+                        <Select.Option value={AccessListOutcome.ALLOW}>
+                            <I18n id={MessageKey.FrontendAccesslistOutcomeAllow} />
+                        </Select.Option>
+                        <Select.Option value={AccessListOutcome.DENY}>
+                            <I18n id={MessageKey.FrontendAccesslistOutcomeDeny} />
+                        </Select.Option>
                     </Select>
                 </Form.Item>
                 <Form.Item
@@ -197,25 +204,25 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
                     name="forwardAuthenticationHeader"
                     validateStatus={validationResult.getStatus("forwardAuthenticationHeader")}
                     help={validationResult.getMessage("forwardAuthenticationHeader")}
-                    label="Forward authentication headers"
+                    label={<I18n id={MessageKey.FrontendAccesslistForwardAuthHeaders} />}
                     required
                 >
                     <Switch />
                 </Form.Item>
 
-                <h2 className="access-lists-form-section-name">Credentials</h2>
+                <h2 className="access-lists-form-section-name">
+                    <I18n id={MessageKey.FrontendAccesslistSectionCredentials} />
+                </h2>
                 <p className="access-lists-form-section-help-text">
-                    Relation of username and password pairs to be accepted as valid login credentials to access a host
-                    or host's route. Leave empty to disable username and password authentication.
+                    <I18n id={MessageKey.FrontendAccesslistSectionCredentialsDescription} />
                 </p>
                 <AccessListCredentials validationResult={validationResult} />
 
-                <h2 className="access-lists-form-section-name">Entry sets</h2>
+                <h2 className="access-lists-form-section-name">
+                    <I18n id={MessageKey.FrontendAccesslistSectionEntrySets} />
+                </h2>
                 <p className="access-lists-form-section-help-text">
-                    Relation of IP addresses (such as 192.168.0.1) or IP ranges (like 192.168.0.0/24) to either allow or
-                    deny the access to the host or host's route. The nginx will evaluate them from top to bottom,
-                    executing the first one that matches the source IP address. Leave empty to disable source IP address
-                    or range checks.
+                    <I18n id={MessageKey.FrontendAccesslistSectionEntrySetsDescription} />
                 </p>
                 <AccessListEntrySets
                     entrySets={formValues.entries}

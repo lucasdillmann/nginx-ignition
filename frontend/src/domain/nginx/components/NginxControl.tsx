@@ -12,6 +12,7 @@ import { isAccessGranted } from "../../../core/components/accesscontrol/IsAccess
 import { UserAccessLevel } from "../../user/model/UserAccessLevel"
 import If from "../../../core/components/flowcontrol/If"
 import NginxMetadata, { NginxSupportType } from "../model/NginxMetadata"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 interface NginxStatusState {
     loading: boolean
@@ -82,7 +83,7 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
     }
 
     private confirmStop() {
-        UserConfirmation.ask("Do you really want to stop the nginx server?").then(() => {
+        UserConfirmation.ask(MessageKey.FrontendNginxStopConfirmation).then(() => {
             this.performNginxAction(ActionType.STOP)
         })
     }

@@ -12,7 +12,7 @@ class DeleteHostAction {
     }
 
     async execute(hostId: string): Promise<void> {
-        return UserConfirmation.ask("Do you really want to delete the host?")
+        return UserConfirmation.ask(MessageKey.FrontendHostDeleteConfirmation)
             .then(() => this.service.delete(hostId))
             .then(() => {
                 Notification.success(

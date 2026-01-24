@@ -4,6 +4,8 @@ import FormLayout from "../form/FormLayout"
 import If from "../flowcontrol/If"
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons"
 import ValidationResult from "../../validation/ValidationResult"
+import { i18n, I18n } from "../../i18n/I18n"
+import MessageKey from "../../i18n/model/MessageKey.generated"
 
 export interface DomainNamesListProps {
     pathPrefix?: { merged: string; name: any[] }
@@ -34,7 +36,7 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
                         help={validationResult.getMessage(`${pathPrefix}domainNames[${index}]`)}
                         style={{ marginBottom: 0, width: "100%" }}
                     >
-                        <Input placeholder="Domain name" />
+                        <Input placeholder={i18n(MessageKey.FrontendComponentsDomainnamesPlaceholder)} />
                     </Form.Item>
                     <If condition={fields.length > 1}>
                         <DeleteOutlined
@@ -49,7 +51,7 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
         const addAction = (
             <Form.Item {...layout} key="add-domain" className={className}>
                 <Button type="dashed" onClick={() => operations.add()} icon={<PlusOutlined />}>
-                    Add domain
+                    <I18n id={MessageKey.FrontendHostRouteAddDomain} />
                 </Button>
             </Form.Item>
         )

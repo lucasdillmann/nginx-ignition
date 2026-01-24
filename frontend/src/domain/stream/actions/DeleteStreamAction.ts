@@ -27,7 +27,7 @@ class DeleteStreamAction {
     }
 
     async execute(streamId: string): Promise<void> {
-        return UserConfirmation.ask("Do you really want to delete the stream?")
+        return UserConfirmation.ask(MessageKey.FrontendStreamDeleteConfirmation)
             .then(() => this.service.delete(streamId))
             .then(() =>
                 Notification.success(

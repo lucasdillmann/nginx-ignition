@@ -32,7 +32,7 @@ class DeleteAccessListAction {
     }
 
     async execute(userId: string): Promise<void> {
-        return UserConfirmation.ask("Do you really want to delete the access list?")
+        return UserConfirmation.ask(MessageKey.FrontendAccesslistDeleteConfirmation)
             .then(() => this.service.delete(userId))
             .then(() =>
                 Notification.success(
