@@ -57,8 +57,8 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
     private handleLoginError() {
         this.setState({ attemptFailed: true })
         Notification.error(
-            i18n(MessageKey.FrontendAuthenticationLoginFailedTitle),
-            i18n(MessageKey.FrontendAuthenticationLoginFailedMessage),
+            MessageKey.FrontendAuthenticationLoginFailedTitle,
+            MessageKey.FrontendAuthenticationLoginFailedMessage,
         )
     }
 

@@ -34,7 +34,7 @@ func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 		},
 		{
 			ID:          usernameFieldID,
-			Description: i18n.M(ctx, i18n.K.IntegrationTruenasUsername),
+			Description: i18n.M(ctx, i18n.K.CommonUsername),
 			Priority:    3,
 			Required:    true,
 			Sensitive:   false,

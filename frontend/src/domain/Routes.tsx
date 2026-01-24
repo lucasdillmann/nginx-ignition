@@ -65,7 +65,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <HostListPage />,
         menuItem: {
-            description: MessageKey.FrontendMenuHosts,
+            description: MessageKey.CommonHosts,
             icon: <HddOutlined />,
         },
     },
@@ -82,7 +82,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <StreamListPage />,
         menuItem: {
-            description: MessageKey.FrontendMenuStreams,
+            description: MessageKey.CommonStreams,
             icon: <MergeCellsOutlined />,
         },
     },
@@ -116,7 +116,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <LogsPage />,
         menuItem: {
-            description: MessageKey.FrontendMenuLogs,
+            description: MessageKey.CommonLogs,
             icon: <FileSearchOutlined />,
         },
     },
@@ -133,7 +133,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <IntegrationListPage />,
         menuItem: {
-            description: MessageKey.FrontendMenuIntegrations,
+            description: MessageKey.CommonIntegrations,
             icon: <BlockOutlined />,
         },
     },
@@ -167,7 +167,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <CacheListPage />,
         menuItem: {
-            description: MessageKey.FrontendMenuCache,
+            description: MessageKey.CommonCacheConfigurations,
             icon: <RocketOutlined />,
         },
     },
@@ -194,7 +194,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <ExportPage />,
         menuItem: {
-            description: MessageKey.FrontendMenuExport,
+            description: MessageKey.CommonExportAndBackup,
             icon: <DownloadOutlined />,
         },
     },
@@ -204,7 +204,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <SettingsPage />,
         menuItem: {
-            description: MessageKey.FrontendMenuSettings,
+            description: MessageKey.CommonSettings,
             icon: <SettingOutlined />,
         },
     },
@@ -221,7 +221,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <UserListPage />,
         menuItem: {
-            description: MessageKey.FrontendMenuUsers,
+            description: MessageKey.CommonUsers,
             icon: <TeamOutlined />,
         },
     },

@@ -17,6 +17,8 @@ import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGra
 import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
 import StreamTypeDescription from "./utils/StreamTypeDescription"
 import StreamSupportWarning from "./components/StreamSupportWarning"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { i18n, raw } from "../../core/i18n/I18n"
 
 export default class StreamListPage extends React.PureComponent {
     private readonly service: StreamService
@@ -41,46 +43,51 @@ export default class StreamListPage extends React.PureComponent {
         UserConfirmation.ask(`Do you really want to ${action} the stream?`)
             .then(() => this.service.toggleEnabled(stream.id))
             .then(() => {
-                Notification.success(`Host ${action}d`, `The stream was ${action}d successfully`)
+                const msgKey = stream.enabled ? MessageKey.CommonTypeDisabled : MessageKey.CommonTypeEnabled
+                Notification.success(
+                    { id: msgKey, params: { type: i18n(MessageKey.CommonEntityStream) } },
+                    MessageKey.CommonSuccessMessage,
+                )
                 ReloadNginxAction.execute()
                 this.table.current?.refresh()
             })
-            .catch(() =>
+            .catch(() => {
+                const msgKey = stream.enabled ? MessageKey.CommonUnableToDisable : MessageKey.CommonUnableToEnable
                 Notification.error(
-                    `Unable to ${action} the stream`,
-                    `An unexpected error was found while trying to ${action} the stream. Please try again later.`,
-                ),
-            )
+                    { id: msgKey, params: { type: i18n(MessageKey.CommonEntityStream) } },
+                    MessageKey.CommonUnexpectedErrorTryAgain,
+                )
+            })
     }
 
     private buildColumns(): DataTableColumn<StreamResponse>[] {
         return [
             {
                 id: "name",
-                description: "Name",
+                description: MessageKey.CommonName,
                 renderer: item => item.name,
             },
             {
                 id: "binding.type",
-                description: "Type",
+                description: MessageKey.CommonType,
                 renderer: item => StreamTypeDescription[item.type],
                 width: 200,
             },
             {
                 id: "binding.address",
-                description: "Binding",
+                description: MessageKey.CommonBinding,
                 renderer: item => `${item.binding.address}:${item.binding.port}`,
                 width: 200,
             },
             {
                 id: "enabled",
-                description: "Enabled",
+                description: MessageKey.CommonEnabled,
                 renderer: item => DataTableRenderers.yesNo(item.enabled),
                 width: 150,
             },
             {
                 id: "actions",
-                description: "",
+                description: raw(""),
                 renderer: item => (
                     <>
                         <Link to={`/streams/${item.id}`}>
@@ -119,11 +126,11 @@ export default class StreamListPage extends React.PureComponent {
 
     componentDidMount() {
         AppShellContext.get().updateConfig({
-            title: "Streams",
-            subtitle: "Relation of nginx's raw TCP, UDP and Unix socket proxies",
+            title: MessageKey.CommonStreams,
+            subtitle: MessageKey.FrontendStreamListSubtitle,
             actions: [
                 {
-                    description: "New stream",
+                    description: MessageKey.FrontendStreamNewButton,
                     onClick: "/streams/new",
                     disabled: this.isReadOnlyMode(),
                 },

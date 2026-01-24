@@ -11,6 +11,8 @@ import { AccessListOutcome } from "./model/AccessListRequest"
 import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { raw } from "../../core/i18n/I18n"
 
 export default class AccessListListPage extends React.PureComponent {
     private readonly service: AccessListService
@@ -26,18 +28,18 @@ export default class AccessListListPage extends React.PureComponent {
         return [
             {
                 id: "name",
-                description: "Name",
+                description: MessageKey.CommonName,
                 renderer: item => item.name,
             },
             {
                 id: "realm",
-                description: "Realm",
+                description: MessageKey.FrontendAccesslistRealm,
                 renderer: item => item.realm,
                 width: 250,
             },
             {
                 id: "defaultOutcome",
-                description: "Default outcome",
+                description: MessageKey.FrontendAccesslistDefaultOutcome,
                 renderer: item => {
                     switch (item.defaultOutcome) {
                         case AccessListOutcome.ALLOW:
@@ -50,13 +52,13 @@ export default class AccessListListPage extends React.PureComponent {
             },
             {
                 id: "satisfyAll",
-                description: "Mode",
+                description: MessageKey.CommonMode,
                 renderer: item => (item.satisfyAll ? "Satisfy all" : "Satisfy any"),
                 width: 150,
             },
             {
                 id: "actions",
-                description: "",
+                description: raw(""),
                 renderer: item => (
                     <>
                         <Link to={`/access-lists/${item.id}`}>
@@ -87,11 +89,11 @@ export default class AccessListListPage extends React.PureComponent {
 
     componentDidMount() {
         AppShellContext.get().updateConfig({
-            title: "Access lists",
-            subtitle: "Relation of the access lists for the nginx authentication and access control",
+            title: MessageKey.FrontendAccesslistListTitle,
+            subtitle: MessageKey.FrontendAccesslistListSubtitle,
             actions: [
                 {
-                    description: "New access list",
+                    description: MessageKey.FrontendAccesslistNewButton,
                     onClick: "/access-lists/new",
                     disabled: !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.accessLists),
                 },

@@ -4,6 +4,8 @@ import Notification from "../../../core/components/notification/Notification"
 import ReloadNginxAction from "../../nginx/actions/ReloadNginxAction"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
 import { RenewCertificateResponse } from "../model/RenewCertificateResponse"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { raw } from "../../../core/i18n/I18n"
 
 class RenewCertificateAction {
     private readonly service: CertificateService
@@ -16,14 +18,15 @@ class RenewCertificateAction {
         return this.service
             .renew(certificateId)
             .then(() => {
-                Notification.success(`Certificate renewed`, `The certificate was renewed successfully`)
+                Notification.success(MessageKey.FrontendCertificateRenewed, MessageKey.CommonSuccessMessage)
                 ReloadNginxAction.execute()
             })
             .catch((error: UnexpectedResponseError<RenewCertificateResponse>) =>
                 Notification.error(
-                    `Unable to renew the certificate`,
-                    error.response.body?.errorReason ??
-                        `An unexpected error was found while trying to renew the certificate. Please try again later.`,
+                    MessageKey.FrontendCertificateRenewFailed,
+                    error.response.body?.errorReason
+                        ? raw(error.response.body?.errorReason)
+                        : MessageKey.CommonUnexpectedErrorTryAgain,
                 ),
             )
     }

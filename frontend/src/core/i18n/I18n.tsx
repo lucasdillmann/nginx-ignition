@@ -54,6 +54,10 @@ export class I18n extends React.Component<I18nProps, I18nState> {
     }
 }
 
+export function raw(message: string): I18nMessage {
+    return { id: MessageKey.CommonRaw, params: { message } }
+}
+
 export function i18n(input: I18nMessage, fallback?: string): string {
     let id: MessageKey
     let params: Record<string, any> = {}
@@ -63,7 +67,7 @@ export function i18n(input: I18nMessage, fallback?: string): string {
 
     const dictionary = resolveDictionary()
     const template = dictionary.messages[id]
-    if (!template) return fallback ?? id
+    if (!template && template !== "") return fallback ?? id
 
     return template.replace(/\${(.*?)}/g, (match, varName) => {
         const value = params[varName]

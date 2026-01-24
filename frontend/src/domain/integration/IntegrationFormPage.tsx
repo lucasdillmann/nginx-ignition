@@ -21,6 +21,8 @@ import DeleteIntegrationAction from "./actions/DeleteIntegrationAction"
 import { integrationRequestDefaults } from "./model/IntegrationRequestDefaults"
 import AvailableDriverResponse from "./model/AvailableDriverResponse"
 import DynamicInput from "../../core/components/dynamicfield/DynamicInput"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { i18n } from "../../core/i18n/I18n"
 
 interface IntegrationFormPageState {
     availableDrivers: AvailableDriverResponse[]
@@ -62,7 +64,10 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
 
     private submit() {
         const { formValues } = this.state
-        this.saveModal.show("Hang on tight", "We're saving the integration")
+        this.saveModal.show(MessageKey.CommonHangOnTight, {
+            id: MessageKey.CommonSavingType,
+            params: { type: i18n(MessageKey.CommonEntityIntegration) },
+        })
         this.setState({ validationResult: new ValidationResult() })
 
         const action =
@@ -83,7 +88,10 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
     }
 
     private handleSuccess() {
-        Notification.success("Integration saved", "The integration was saved successfully")
+        Notification.success(
+            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityIntegration) } },
+            MessageKey.CommonSuccessMessage,
+        )
         ReloadNginxAction.execute()
     }
 
@@ -93,7 +101,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
             if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private updateShellConfig(enableActions: boolean) {
@@ -103,7 +111,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
 
         const actions: ShellAction[] = [
             {
-                description: "Save",
+                description: MessageKey.CommonSave,
                 disabled: !enableActions,
                 onClick: () => this.submit(),
             },
@@ -111,15 +119,15 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
 
         if (this.integrationId !== undefined)
             actions.unshift({
-                description: "Delete",
+                description: MessageKey.CommonDelete,
                 disabled: !enableActions,
                 color: "danger",
                 onClick: () => this.delete(),
             })
 
         AppShellContext.get().updateConfig({
-            title: "Integration details",
-            subtitle: "Full details and configurations of the integration with third-party apps",
+            title: MessageKey.FrontendIntegrationFormTitle,
+            subtitle: MessageKey.FrontendIntegrationFormSubtitle,
             actions,
         })
     }

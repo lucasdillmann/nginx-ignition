@@ -10,6 +10,7 @@ import OnboardingService from "./OnboardingService"
 import { UnexpectedResponseError } from "../../core/apiclient/ApiResponse"
 import ValidationResultConverter from "../../core/validation/ValidationResultConverter"
 import "./OnboardingPage.css"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
 
 const { Text, Title } = Typography
 
@@ -54,7 +55,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
             if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private renderForm() {

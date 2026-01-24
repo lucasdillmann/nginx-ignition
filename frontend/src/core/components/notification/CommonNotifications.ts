@@ -1,11 +1,9 @@
 import Notification from "./Notification"
+import MessageKey from "../../i18n/model/MessageKey.generated"
 
 class CommonNotifications {
     failedToFetch() {
-        Notification.error(
-            "Unable to fetch the data",
-            "We're unable to fetch the data at this time. Please try again later.",
-        )
+        Notification.error(MessageKey.CommonUnableToFetchData, MessageKey.CommonTryAgainLater)
     }
 }
 

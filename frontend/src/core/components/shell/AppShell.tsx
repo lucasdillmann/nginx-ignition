@@ -44,7 +44,11 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         return menuItems.map(item => ({
             key: item.path,
             icon: item.icon,
-            label: <Link to={item.path}><I18n id={item.description} /></Link>,
+            label: (
+                <Link to={item.path}>
+                    <I18n id={item.description} />
+                </Link>
+            ),
             className: "shell-sider-menu-item",
         }))
     }

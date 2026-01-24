@@ -9,6 +9,7 @@ import { DatabaseOutlined, DownloadOutlined, FileZipOutlined, QuestionCircleOutl
 import Notification from "../../core/components/notification/Notification"
 import { themedModal } from "../../core/components/theme/ThemedResources"
 import "./ExportPage.css"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
 
 interface ExportPageState {
     nginxModalOpen: boolean
@@ -262,13 +263,17 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                 content: <code>{error.response?.body?.message ?? error.message}</code>,
             })
 
-        Notification.error("Download failed", "Unable to download the file at this moment. Please try again later.", {
-            actions: [
-                <Button key="show-details" type="default" onClick={onClick}>
-                    Open error details
-                </Button>,
-            ],
-        })
+        Notification.error(
+            MessageKey.FrontendExportDownloadFailed,
+            MessageKey.FrontendExportDownloadFailedDescription,
+            {
+                actions: [
+                    <Button key="show-details" type="default" onClick={onClick}>
+                        Open error details
+                    </Button>,
+                ],
+            },
+        )
     }
 
     private renderPage(): ReactNode {
@@ -283,8 +288,8 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
 
     componentDidMount() {
         AppShellContext.get().updateConfig({
-            title: "Export and backup",
-            subtitle: "Download nginx configuration files and the ignition database contents for backup and recovery",
+            title: MessageKey.CommonExportAndBackup,
+            subtitle: MessageKey.FrontendExportSubtitle,
         })
     }
 

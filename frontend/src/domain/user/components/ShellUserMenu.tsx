@@ -16,6 +16,7 @@ import Password from "antd/es/input/Password"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
 import ValidationResultConverter from "../../../core/validation/ValidationResultConverter"
 import { buildLoginUrl } from "../../../core/authentication/buildLoginUrl"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const DEFAULT_FORM_VALUES: UserUpdatePasswordRequest = {
     currentPassword: "",
@@ -48,7 +49,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
     private async handleLogout() {
         return UserConfirmation.ask("Are you sure you want to logout?")
             .then(() => this.service.logout())
-            .then(() => Notification.success("See ya", "You was logged-out successfully"))
+            .then(() => Notification.success(MessageKey.CommonSeeYa, MessageKey.FrontendUserLoggedOut))
             .then(() => {
                 AppContext.get().user = undefined
             })
@@ -61,7 +62,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
 
         return this.service
             .changePassword(formValues)
-            .then(() => Notification.success("Password changed", "Your password was updated successfully"))
+            .then(() => Notification.success(MessageKey.CommonPasswordChanged, MessageKey.CommonSuccessMessage))
             .then(() => this.closeChangePasswordModal())
             .catch(error => this.handleErrorResponse(error))
     }
@@ -72,7 +73,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
             if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private openChangePasswordModal() {

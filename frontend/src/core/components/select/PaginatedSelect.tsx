@@ -6,6 +6,7 @@ import Notification from "../notification/Notification"
 import { LoadingOutlined } from "@ant-design/icons"
 import debounce from "debounce"
 import { I18n, I18nMessage } from "../../i18n/I18n"
+import MessageKey from "../../i18n/model/MessageKey.generated"
 
 const PAGE_SIZE = 10
 
@@ -83,8 +84,8 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
             })
             .catch(() => {
                 Notification.error(
-                    "Unable to fetch the next options",
-                    "We're unable to fetch the next available options to select at this time. Please try again later.",
+                    MessageKey.CommonUnableToFetchOptionsTitle,
+                    MessageKey.CommonUnableToFetchOptionsDescription,
                 )
 
                 this.setState({ loading: false })

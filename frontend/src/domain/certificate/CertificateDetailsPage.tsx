@@ -17,6 +17,7 @@ import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
 
 interface CertificateDetailsPageState {
     loading: boolean
@@ -55,17 +56,17 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
         }
 
         AppShellContext.get().updateConfig({
-            title: "SSL certificate details",
-            subtitle: "Details of a uploaded or issued SSL certificate",
+            title: MessageKey.FrontendCertificateDetailsTitle,
+            subtitle: MessageKey.FrontendCertificateDetailsSubtitle,
             actions: [
                 {
-                    description: "Delete",
+                    description: MessageKey.CommonDelete,
                     color: "danger",
                     disabled: !enableActions,
                     onClick: () => this.deleteCertificate(),
                 },
                 {
-                    description: "Renew",
+                    description: MessageKey.FrontendCertificateRenewButton,
                     disabled: !enableActions,
                     onClick: () => this.renewCertificate(),
                 },

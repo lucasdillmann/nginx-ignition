@@ -33,6 +33,8 @@ import HostSupportWarning from "./components/HostSupportWarning"
 import HostVpns from "./components/HostVpns"
 import CacheService from "../cache/CacheService"
 import CacheResponse from "../cache/model/CacheResponse"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { i18n } from "../../core/i18n/I18n"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -76,7 +78,10 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
     private submit() {
         const payload = HostConverter.formValuesToRequest(this.state.formValues)
-        this.saveModal.show("Hang on tight", "We're saving the host")
+        this.saveModal.show(MessageKey.CommonHangOnTight, {
+            id: MessageKey.CommonSavingType,
+            params: { type: i18n(MessageKey.CommonEntityHost) },
+        })
         this.setState({ validationResult: new ValidationResult() })
 
         const action =
@@ -97,7 +102,10 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     private handleSuccess() {
-        Notification.success("Host saved", "The host was saved successfully")
+        Notification.success(
+            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityHost) } },
+            MessageKey.CommonSuccessMessage,
+        )
         ReloadNginxAction.execute()
     }
 
@@ -107,7 +115,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
             if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private updateShellConfig(enableActions: boolean) {
@@ -117,7 +125,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
         const actions: ShellAction[] = [
             {
-                description: "Save",
+                description: MessageKey.CommonSave,
                 disabled: !enableActions,
                 onClick: () => this.submit(),
             },
@@ -125,15 +133,15 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
         if (this.hostId !== undefined)
             actions.unshift({
-                description: "Delete",
+                description: MessageKey.CommonDelete,
                 disabled: !enableActions,
                 color: "danger",
                 onClick: () => this.delete(),
             })
 
         AppShellContext.get().updateConfig({
-            title: "Host details",
-            subtitle: "Full details and configurations of the nginx's virtual host",
+            title: MessageKey.FrontendHostFormTitle,
+            subtitle: MessageKey.FrontendHostFormSubtitle,
             actions,
         })
     }
@@ -383,8 +391,8 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
                 if (copyFrom !== undefined)
                     Notification.success(
-                        "Host values copied",
-                        "The values from the selected host where successfully copied as a new host",
+                        MessageKey.FrontendHostValuesCopied,
+                        MessageKey.FrontendHostValuesCopiedFullDescription,
                     )
 
                 this.setState({ loading: false, formValues })

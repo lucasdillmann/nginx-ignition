@@ -22,6 +22,8 @@ import { cacheFormDefaults } from "./CacheFormDefaults"
 import GeneralTab from "./tabs/GeneralTab"
 import AdvancedTab from "./tabs/AdvancedTab"
 import "./CacheFormPage.css"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { i18n } from "../../core/i18n/I18n"
 
 interface CacheFormState {
     formValues: CacheRequest
@@ -54,7 +56,10 @@ export default class CacheFormPage extends React.Component<unknown, CacheFormSta
 
     private submit() {
         const { formValues } = this.state
-        this.saveModal.show("Hang on tight", "We're saving the cache configuration")
+        this.saveModal.show(MessageKey.CommonHangOnTight, {
+            id: MessageKey.CommonSavingType,
+            params: { type: i18n(MessageKey.CommonEntityCacheConfiguration) },
+        })
         this.setState({ validationResult: new ValidationResult() })
 
         const action =
@@ -73,7 +78,10 @@ export default class CacheFormPage extends React.Component<unknown, CacheFormSta
 
     private handleSuccess() {
         this.saveModal.close()
-        Notification.success("Cache configuration saved", "The cache configuration was saved successfully")
+        Notification.success(
+            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityCacheConfiguration) } },
+            MessageKey.CommonSuccessMessage,
+        )
         ReloadNginxAction.execute()
     }
 
@@ -84,7 +92,7 @@ export default class CacheFormPage extends React.Component<unknown, CacheFormSta
         }
 
         this.saveModal.close()
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private handleChange(newValues: CacheRequest) {
@@ -142,7 +150,7 @@ export default class CacheFormPage extends React.Component<unknown, CacheFormSta
 
         const actions: ShellAction[] = [
             {
-                description: "Save",
+                description: MessageKey.CommonSave,
                 disabled: !enableActions,
                 onClick: () => this.submit(),
             },
@@ -150,15 +158,15 @@ export default class CacheFormPage extends React.Component<unknown, CacheFormSta
 
         if (this.cacheId !== undefined)
             actions.unshift({
-                description: "Delete",
+                description: MessageKey.CommonDelete,
                 disabled: !enableActions,
                 color: "danger",
                 onClick: () => this.delete(),
             })
 
         AppShellContext.get().updateConfig({
-            title: "Cache configuration details",
-            subtitle: "Full details of the nginx content cache configuration",
+            title: MessageKey.FrontendCacheFormTitle,
+            subtitle: MessageKey.FrontendCacheFormSubtitle,
             actions,
         })
     }

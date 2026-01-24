@@ -21,6 +21,8 @@ import { navigateTo } from "../../core/components/router/AppRouter"
 import { Button } from "antd"
 import HostSupportWarning from "./components/HostSupportWarning"
 import { HostBindingType } from "./model/HostRequest"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { i18n, raw } from "../../core/i18n/I18n"
 
 const BUTTON_STYLE = {
     height: "auto",
@@ -59,24 +61,24 @@ export default class HostListPage extends React.PureComponent {
         return [
             {
                 id: "domainNames",
-                description: "Domain names",
+                description: MessageKey.FrontendCertificateDomainNames,
                 renderer: item => <TagGroup values={this.handleDomainNames(item)} />,
             },
             {
                 id: "defaultServer",
-                description: "Default",
+                description: MessageKey.FrontendHostDefault,
                 renderer: item => DataTableRenderers.yesNo(item.defaultServer),
                 width: 100,
             },
             {
                 id: "enabled",
-                description: "Enabled",
+                description: MessageKey.CommonEnabled,
                 renderer: item => DataTableRenderers.yesNo(item.enabled),
                 width: 100,
             },
             {
                 id: "actions",
-                description: "",
+                description: raw(""),
                 renderer: item => (
                     <>
                         <Link to={`/hosts/${item.id}`}>
@@ -124,16 +126,21 @@ export default class HostListPage extends React.PureComponent {
         UserConfirmation.ask(`Do you really want to ${action} the host?`)
             .then(() => this.service.toggleEnabled(host.id))
             .then(() => {
-                Notification.success(`Host ${action}d`, `The host was ${action}d successfully`)
+                const msgKey = host.enabled ? MessageKey.CommonTypeDisabled : MessageKey.CommonTypeEnabled
+                Notification.success(
+                    { id: msgKey, params: { type: i18n(MessageKey.CommonEntityHost) } },
+                    MessageKey.CommonSuccessMessage,
+                )
                 ReloadNginxAction.execute()
                 this.table.current?.refresh()
             })
-            .catch(() =>
+            .catch(() => {
+                const msgKey = host.enabled ? MessageKey.CommonUnableToDisable : MessageKey.CommonUnableToEnable
                 Notification.error(
-                    `Unable to ${action} the host`,
-                    `An unexpected error was found while trying to ${action} the host. Please try again later.`,
-                ),
-            )
+                    { id: msgKey, params: { type: i18n(MessageKey.CommonEntityHost) } },
+                    MessageKey.CommonUnexpectedErrorTryAgain,
+                )
+            })
     }
 
     private async deleteHost(host: HostResponse) {
@@ -150,11 +157,11 @@ export default class HostListPage extends React.PureComponent {
 
     componentDidMount() {
         AppShellContext.get().updateConfig({
-            title: "Hosts",
-            subtitle: "Relation of all nginx's virtual hosts definitions",
+            title: MessageKey.CommonHosts,
+            subtitle: MessageKey.FrontendHostListSubtitle,
             actions: [
                 {
-                    description: "New host",
+                    description: MessageKey.FrontendHostNewButton,
                     onClick: "/hosts/new",
                     disabled: this.isReadOnlyMode(),
                 },

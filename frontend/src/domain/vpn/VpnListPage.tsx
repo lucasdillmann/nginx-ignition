@@ -17,6 +17,8 @@ import VpnService from "./VpnService"
 import AvailableDriverResponse from "./model/AvailableDriverResponse"
 import DeleteVpnAction from "./actions/DeleteVpnAction"
 import DataTableRenderers from "../../core/components/datatable/DataTableRenderers"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { raw } from "../../core/i18n/I18n"
 
 interface VpnListPageState {
     loading: boolean
@@ -51,24 +53,24 @@ export default class VpnListPage extends React.Component<any, VpnListPageState> 
         return [
             {
                 id: "name",
-                description: "Name",
+                description: MessageKey.CommonName,
                 renderer: item => item.name,
             },
             {
                 id: "driver",
-                description: "Driver",
+                description: MessageKey.CommonDriver,
                 renderer: item => this.translateDriverName(item.driver),
                 width: 250,
             },
             {
                 id: "enabled",
-                description: "Enabled",
+                description: MessageKey.CommonEnabled,
                 renderer: item => DataTableRenderers.yesNo(item.enabled),
                 width: 100,
             },
             {
                 id: "actions",
-                description: "",
+                description: raw(""),
                 renderer: item => (
                     <>
                         <Link to={`/vpns/${item.id}`}>
@@ -112,11 +114,11 @@ export default class VpnListPage extends React.Component<any, VpnListPageState> 
             })
 
         AppShellContext.get().updateConfig({
-            title: "VPN connections",
-            subtitle: "Configuration of the nginx ignition VPN connections",
+            title: MessageKey.FrontendVpnListTitle,
+            subtitle: MessageKey.FrontendVpnListSubtitle,
             actions: [
                 {
-                    description: "New connection",
+                    description: MessageKey.FrontendVpnNewButton,
                     onClick: "/vpns/new",
                     disabled: this.isReadOnlyMode(),
                 },

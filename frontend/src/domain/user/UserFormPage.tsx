@@ -14,6 +14,8 @@ import ValidationResultConverter from "../../core/validation/ValidationResultCon
 import UserResponse from "./model/UserResponse"
 import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
 import DeleteUserAction from "./actions/DeleteUserAction"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { i18n } from "../../core/i18n/I18n"
 import AppContext from "../../core/components/context/AppContext"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
@@ -69,7 +71,10 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
 
     private submit() {
         const { formValues } = this.state
-        this.saveModal.show("Hang on tight", "We're saving the user")
+        this.saveModal.show(MessageKey.CommonHangOnTight, {
+            id: MessageKey.CommonSavingType,
+            params: { type: i18n(MessageKey.CommonEntityUser) },
+        })
         this.setState({ validationResult: new ValidationResult() })
 
         const action =
@@ -90,7 +95,10 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
     }
 
     private handleSuccess() {
-        Notification.success("User saved", "The user was saved successfully")
+        Notification.success(
+            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityUser) } },
+            MessageKey.CommonSuccessMessage,
+        )
     }
 
     private handleError(error: Error) {
@@ -99,7 +107,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
             if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private passwordHelpText() {
@@ -187,7 +195,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
 
         const actions: ShellAction[] = [
             {
-                description: "Save",
+                description: MessageKey.CommonSave,
                 disabled: !enableActions,
                 onClick: () => this.submit(),
             },
@@ -195,15 +203,15 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
 
         if (this.userId !== undefined)
             actions.unshift({
-                description: "Delete",
+                description: MessageKey.CommonDelete,
                 disabled: !enableActions || this.userId === AppContext.get().user?.id,
                 color: "danger",
                 onClick: () => this.delete(),
             })
 
         AppShellContext.get().updateConfig({
-            title: "User details",
-            subtitle: "Full details and configurations of the nginx ignition's user",
+            title: MessageKey.FrontendUserFormTitle,
+            subtitle: MessageKey.FrontendUserFormSubtitle,
             actions,
         })
     }

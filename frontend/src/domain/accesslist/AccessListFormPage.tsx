@@ -24,6 +24,8 @@ import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import { accessListFormDefaults } from "./AccessListFormDefaults"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { i18n } from "../../core/i18n/I18n"
 
 interface AccessListFormState {
     formValues: AccessListFormValues
@@ -56,7 +58,10 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
 
     private submit() {
         const { formValues } = this.state
-        this.saveModal.show("Hang on tight", "We're saving the access list")
+        this.saveModal.show(MessageKey.CommonHangOnTight, {
+            id: MessageKey.CommonSavingType,
+            params: { type: i18n(MessageKey.CommonEntityAccessList) },
+        })
         this.setState({ validationResult: new ValidationResult() })
 
         const data = AccessListConverter.toRequest(formValues)
@@ -76,7 +81,10 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
 
     private handleSuccess() {
         this.saveModal.close()
-        Notification.success("Access list saved", "The access list was saved successfully")
+        Notification.success(
+            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityAccessList) } },
+            MessageKey.CommonSuccessMessage,
+        )
         ReloadNginxAction.execute()
     }
 
@@ -87,7 +95,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
         }
 
         this.saveModal.close()
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private removeEntry(index: number) {
@@ -232,7 +240,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
 
         const actions: ShellAction[] = [
             {
-                description: "Save",
+                description: MessageKey.CommonSave,
                 disabled: !enableActions,
                 onClick: () => this.submit(),
             },
@@ -240,15 +248,15 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
 
         if (this.accessListId !== undefined)
             actions.unshift({
-                description: "Delete",
+                description: MessageKey.CommonDelete,
                 disabled: !enableActions,
                 color: "danger",
                 onClick: () => this.delete(),
             })
 
         AppShellContext.get().updateConfig({
-            title: "Access list details",
-            subtitle: "Full details and configurations of the access list",
+            title: MessageKey.FrontendAccesslistFormTitle,
+            subtitle: MessageKey.FrontendAccesslistFormSubtitle,
             actions,
         })
     }

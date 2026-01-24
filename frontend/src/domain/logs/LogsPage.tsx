@@ -24,6 +24,7 @@ import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
 
 interface LogsPageState {
     settings?: SettingsDto
@@ -98,11 +99,11 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         const disabledReason = disabled ? "Auto refresh is enabled" : undefined
 
         AppShellContext.get().updateConfig({
-            title: "Logs",
-            subtitle: "nginx's logs for the main process or virtual hosts",
+            title: MessageKey.CommonLogs,
+            subtitle: MessageKey.FrontendLogsSubtitle,
             actions: [
                 {
-                    description: "Refresh",
+                    description: MessageKey.CommonRefresh,
                     onClick: () => this.refreshLogs(),
                     disabled,
                     disabledReason,
@@ -229,7 +230,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                     <Flex className="log-settings-option log-settings-host" vertical>
                         <p>Host</p>
                         <PaginatedSelect
-                            placeholder="Select one"
+                            placeholder={MessageKey.CommonSelectOne}
                             onChange={host => this.handleHostChange(host)}
                             pageProvider={(pageSize, pageNumber, searchTerms) =>
                                 this.hostService.list(pageSize, pageNumber, searchTerms)

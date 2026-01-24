@@ -31,9 +31,34 @@ func Validate(files []reader.PropertiesFile) []string {
 	}
 
 	var violations []string
+	violations = append(violations, checkBlankStrings(files)...)
 	violations = append(violations, checkDuplicateKeys(keyCounts)...)
 	violations = append(violations, checkMissingKeys(keyUsage, allLanguageTags, len(files))...)
 	violations = append(violations, checkDuplicateValues(valueUsage)...)
+
+	return violations
+}
+
+func checkBlankStrings(files []reader.PropertiesFile) []string {
+	var violations []string
+
+	for _, file := range files {
+		for _, msg := range file.Messages {
+			if strings.TrimSpace(msg.PropertiesKey) == "" {
+				violations = append(
+					violations,
+					fmt.Sprintf("Blank key found in language '%s'", file.LanguageTag),
+				)
+			}
+
+			if strings.TrimSpace(msg.Value) == "" {
+				violations = append(
+					violations,
+					fmt.Sprintf("Blank value found for key '%s' in language '%s'", msg.PropertiesKey, file.LanguageTag),
+				)
+			}
+		}
+	}
 
 	return violations
 }

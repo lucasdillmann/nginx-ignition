@@ -2,6 +2,8 @@ import UserConfirmation from "../../../core/components/confirmation/UserConfirma
 import Notification from "../../../core/components/notification/Notification"
 import ReloadNginxAction from "../../nginx/actions/ReloadNginxAction"
 import IntegrationService from "../IntegrationService"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { i18n, raw } from "../../../core/i18n/I18n"
 
 class DeleteIntegrationAction {
     private readonly service: IntegrationService
@@ -14,14 +16,21 @@ class DeleteIntegrationAction {
         return UserConfirmation.ask("Do you really want to delete the integration?")
             .then(() => this.service.delete(integrationId))
             .then(() => {
-                Notification.success(`Integration deleted`, `The integration was deleted successfully`)
+                Notification.success(
+                    { id: MessageKey.CommonTypeDeleted, params: { type: i18n(MessageKey.CommonEntityIntegration) } },
+                    MessageKey.CommonSuccessMessage,
+                )
                 ReloadNginxAction.execute()
             })
             .catch(error => {
-                let message = `An unexpected error was found while trying to delete the integration. Please try again later.`
-                if (error?.response?.body?.message) message = error.response.body.message
+                const message = error?.response?.body?.message
+                    ? raw(error.response.body.message)
+                    : MessageKey.CommonUnexpectedErrorTryAgain
 
-                Notification.error(`Unable to delete the integration`, message)
+                Notification.error(
+                    { id: MessageKey.CommonUnableToDelete, params: { type: i18n(MessageKey.CommonEntityIntegration) } },
+                    message,
+                )
             })
     }
 }

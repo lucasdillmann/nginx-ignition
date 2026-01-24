@@ -28,6 +28,8 @@ import FormLayout from "../../core/components/form/FormLayout"
 import StreamRoutesForm from "./components/StreamRoutesForm"
 import { streamFormDefaults, streamRouteDefaults } from "./StreamFormDefaults"
 import StreamSupportWarning from "./components/StreamSupportWarning"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { i18n } from "../../core/i18n/I18n"
 
 interface StreamFormPageState {
     formValues: StreamRequest
@@ -62,7 +64,10 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
 
     private submit() {
         const { formValues } = this.state
-        this.saveModal.show("Hang on tight", "We're saving the stream")
+        this.saveModal.show(MessageKey.CommonHangOnTight, {
+            id: MessageKey.CommonSavingType,
+            params: { type: i18n(MessageKey.CommonEntityStream) },
+        })
         this.setState({ validationResult: new ValidationResult() })
 
         const action =
@@ -81,7 +86,10 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
 
     private handleSuccess() {
         this.saveModal.close()
-        Notification.success("Stream saved", "The stream was saved successfully")
+        Notification.success(
+            { id: MessageKey.CommonTypeSaved, params: { type: i18n(MessageKey.CommonEntityStream) } },
+            MessageKey.CommonSuccessMessage,
+        )
         ReloadNginxAction.execute()
     }
 
@@ -92,7 +100,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
         }
 
         this.saveModal.close()
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private handleChange(attribute: string, value: any) {
@@ -436,7 +444,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
 
         const actions: ShellAction[] = [
             {
-                description: "Save",
+                description: MessageKey.CommonSave,
                 disabled: !enableActions,
                 onClick: () => this.submit(),
             },
@@ -444,15 +452,15 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
 
         if (this.streamId !== undefined)
             actions.unshift({
-                description: "Delete",
+                description: MessageKey.CommonDelete,
                 disabled: !enableActions,
                 color: "danger",
                 onClick: () => this.delete(),
             })
 
         AppShellContext.get().updateConfig({
-            title: "Stream details",
-            subtitle: "Full details and configurations of the nginx stream",
+            title: MessageKey.FrontendStreamFormTitle,
+            subtitle: MessageKey.FrontendStreamFormSubtitle,
             actions,
         })
     }
