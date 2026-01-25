@@ -10,6 +10,8 @@ on:
 jobs:
   quality-checks:
     runs-on: self-hosted
+    container:
+      image: dillmann/github-actions-runtime
     services:
       postgres:
         image: postgres:18-alpine
@@ -53,6 +55,8 @@ jobs:
 
   build:
     runs-on: self-hosted
+    container:
+      image: dillmann/github-actions-runtime
     env:
       GOPATH: /data/cache/go
       GOMODCACHE: /data/cache/go/pkg/mod
