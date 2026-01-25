@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ContextKey = "nginxIgnition.i18n.languageTag"
+	ContextKey = "nginxIgnition.i18n.language"
 )
 
 var K = i18n.Keys
