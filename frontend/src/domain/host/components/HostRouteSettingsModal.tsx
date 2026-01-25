@@ -148,8 +148,11 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsEnableDirectoryListing} />}
                         validateStatus={validationResult.getStatus(`routes[${index}].settings.directoryListingEnabled`)}
                         help={
-                            validationResult.getMessage(`routes[${index}].settings.directoryListingEnabled`) ??
-                            <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsEnableDirectoryListingHelp} />
+                            validationResult.getMessage(`routes[${index}].settings.directoryListingEnabled`) ?? (
+                                <I18n
+                                    id={MessageKey.FrontendHostComponentsHostroutesettingsEnableDirectoryListingHelp}
+                                />
+                            )
                         }
                         required
                     >
@@ -163,8 +166,9 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIndexFile} />}
                         validateStatus={validationResult.getStatus(`routes[${index}].settings.indexFile`)}
                         help={
-                            validationResult.getMessage(`routes[${index}].settings.indexFile`) ??
-                            <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIndexFileHelp} />
+                            validationResult.getMessage(`routes[${index}].settings.indexFile`) ?? (
+                                <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIndexFileHelp} />
+                            )
                         }
                     >
                         <Input />
@@ -177,8 +181,11 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsKeepOriginalDomainName} />}
                         validateStatus={validationResult.getStatus(`routes[${index}].settings.keepOriginalDomainName`)}
                         help={
-                            validationResult.getMessage(`routes[${index}].settings.keepOriginalDomainName`) ??
-                            <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsKeepOriginalDomainNameHelp} />
+                            validationResult.getMessage(`routes[${index}].settings.keepOriginalDomainName`) ?? (
+                                <I18n
+                                    id={MessageKey.FrontendHostComponentsHostroutesettingsKeepOriginalDomainNameHelp}
+                                />
+                            )
                         }
                         required
                     >
@@ -192,8 +199,9 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsProxySslServerName} />}
                         validateStatus={validationResult.getStatus(`routes[${index}].settings.proxySslServerName`)}
                         help={
-                            validationResult.getMessage(`routes[${index}].settings.proxySslServerName`) ??
-                            <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsProxySslServerNameHelp} />
+                            validationResult.getMessage(`routes[${index}].settings.proxySslServerName`) ?? (
+                                <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsProxySslServerNameHelp} />
+                            )
                         }
                         required
                     >
@@ -207,8 +215,11 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIncludeForwardHeaders} />}
                         validateStatus={validationResult.getStatus(`routes[${index}].settings.includeForwardHeaders`)}
                         help={
-                            validationResult.getMessage(`routes[${index}].settings.includeForwardHeaders`) ??
-                            <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIncludeForwardHeadersHelp} />
+                            validationResult.getMessage(`routes[${index}].settings.includeForwardHeaders`) ?? (
+                                <I18n
+                                    id={MessageKey.FrontendHostComponentsHostroutesettingsIncludeForwardHeadersHelp}
+                                />
+                            )
                         }
                         required
                     >

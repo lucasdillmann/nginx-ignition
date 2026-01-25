@@ -46,9 +46,13 @@ export default class CacheListPage extends React.PureComponent {
                 id: "maximumSizeMb",
                 description: MessageKey.CommonMaximumSize,
                 renderer: item =>
-                    item.maximumSizeMb
-                        ? <>{item.maximumSizeMb} <I18n id={MessageKey.CommonUnitMb} /></>
-                        : <I18n id={MessageKey.FrontendCacheListUnlimited} />,
+                    item.maximumSizeMb ? (
+                        <>
+                            {item.maximumSizeMb} <I18n id={MessageKey.CommonUnitMb} />
+                        </>
+                    ) : (
+                        <I18n id={MessageKey.FrontendCacheListUnlimited} />
+                    ),
                 width: 150,
             },
             {

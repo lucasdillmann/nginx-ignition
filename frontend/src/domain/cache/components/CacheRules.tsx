@@ -3,7 +3,7 @@ import { Button, Flex, Form, FormListFieldData, FormListOperation, Input } from 
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons"
 import FormLayout from "../../../core/components/form/FormLayout"
 import ValidationResult from "../../../core/validation/ValidationResult"
-import { I18n, i18n, I18nMessage } from "../../../core/i18n/I18n"
+import { I18n, i18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const ACTION_ICON_STYLE = {

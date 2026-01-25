@@ -56,8 +56,9 @@ export default class AdvancedTab extends React.Component<AdvancedTabProps> {
                     label={<I18n id={MessageKey.FrontendCacheTabsAdvancedLockAge} />}
                     validateStatus={validationResult.getStatus("concurrencyLock.ageSeconds")}
                     help={
-                        validationResult.getMessage("concurrencyLock.ageSeconds") ??
-                        <I18n id={MessageKey.FrontendCacheTabsAdvancedLockAgeHelp} />
+                        validationResult.getMessage("concurrencyLock.ageSeconds") ?? (
+                            <I18n id={MessageKey.FrontendCacheTabsAdvancedLockAgeHelp} />
+                        )
                     }
                 >
                     <Space.Compact style={{ width: "100%" }}>

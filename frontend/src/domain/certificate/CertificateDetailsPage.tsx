@@ -209,9 +209,7 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
                         fieldProps={{ format: dateTimeFormat }}
                     />
                     <ProDescriptions.Item
-                        title={
-                            <I18n id={MessageKey.FrontendCertificateDetailsRenewRecommendedAfter} />
-                        }
+                        title={<I18n id={MessageKey.FrontendCertificateDetailsRenewRecommendedAfter} />}
                         dataIndex="renewAfter"
                         valueType="dateTime"
                         fieldProps={{ format: dateTimeFormat }}

@@ -19,7 +19,6 @@ import StreamTypeDescription from "./utils/StreamTypeDescription"
 import StreamSupportWarning from "./components/StreamSupportWarning"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n, raw } from "../../core/i18n/I18n"
-import { StreamType } from "./model/StreamRequest"
 
 export default class StreamListPage extends React.PureComponent {
     private readonly service: StreamService

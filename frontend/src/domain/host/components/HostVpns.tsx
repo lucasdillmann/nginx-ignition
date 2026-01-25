@@ -57,8 +57,9 @@ export default class HostVpns extends React.Component<HostVpnsProps> {
                     name={[name, "name"]}
                     validateStatus={validationResult.getStatus(`vpns[${index}].name`)}
                     help={
-                        validationResult.getMessage(`vpns[${index}].name`) ??
-                        <I18n id={MessageKey.FrontendHostComponentsHostvpnsSourceNameHelp} />
+                        validationResult.getMessage(`vpns[${index}].name`) ?? (
+                            <I18n id={MessageKey.FrontendHostComponentsHostvpnsSourceNameHelp} />
+                        )
                     }
                     label={index === 0 ? <I18n id={MessageKey.FrontendHostComponentsHostvpnsSourceName} /> : undefined}
                     required
@@ -72,8 +73,9 @@ export default class HostVpns extends React.Component<HostVpnsProps> {
                     name={[name, "host"]}
                     validateStatus={validationResult.getStatus(`vpns[${index}].host`)}
                     help={
-                        validationResult.getMessage(`vpns[${index}].host`) ??
-                        <I18n id={MessageKey.FrontendHostComponentsHostvpnsTargetHostHelp} />
+                        validationResult.getMessage(`vpns[${index}].host`) ?? (
+                            <I18n id={MessageKey.FrontendHostComponentsHostvpnsTargetHostHelp} />
+                        )
                     }
                     label={index === 0 ? <I18n id={MessageKey.FrontendHostComponentsHostvpnsTargetHost} /> : undefined}
                     required

@@ -97,8 +97,9 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                             label={<I18n id={MessageKey.FrontendCacheTabsGeneralInactiveTime} />}
                             validateStatus={validationResult.getStatus("inactiveSeconds")}
                             help={
-                                validationResult.getMessage("inactiveSeconds") ??
-                                <I18n id={MessageKey.FrontendCacheTabsGeneralInactiveTimeHelp} />
+                                validationResult.getMessage("inactiveSeconds") ?? (
+                                    <I18n id={MessageKey.FrontendCacheTabsGeneralInactiveTimeHelp} />
+                                )
                             }
                         >
                             <Space.Compact style={{ width: "100%" }}>
@@ -137,8 +138,9 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                             name="minimumUsesBeforeCaching"
                             validateStatus={validationResult.getStatus("minimumUsesBeforeCaching")}
                             help={
-                                validationResult.getMessage("minimumUsesBeforeCaching") ??
-                                <I18n id={MessageKey.FrontendCacheTabsGeneralMinimumUsesBeforeCachingHelp} />
+                                validationResult.getMessage("minimumUsesBeforeCaching") ?? (
+                                    <I18n id={MessageKey.FrontendCacheTabsGeneralMinimumUsesBeforeCachingHelp} />
+                                )
                             }
                             label={<I18n id={MessageKey.FrontendCacheTabsGeneralMinimumUsesBeforeCaching} />}
                             required
@@ -149,8 +151,9 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                             name="fileExtensions"
                             validateStatus={validationResult.getStatus("fileExtensions")}
                             help={
-                                validationResult.getMessage("fileExtensions") ??
-                                <I18n id={MessageKey.FrontendCacheTabsGeneralFileExtensionsHelp} />
+                                validationResult.getMessage("fileExtensions") ?? (
+                                    <I18n id={MessageKey.FrontendCacheTabsGeneralFileExtensionsHelp} />
+                                )
                             }
                             label={<I18n id={MessageKey.CommonFileExtensions} />}
                         >
@@ -160,8 +163,9 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                             name="ignoreUpstreamCacheHeaders"
                             validateStatus={validationResult.getStatus("ignoreUpstreamCacheHeaders")}
                             help={
-                                validationResult.getMessage("ignoreUpstreamCacheHeaders") ??
-                                <I18n id={MessageKey.FrontendCacheTabsGeneralIgnoreUpstreamCacheHeadersHelp} />
+                                validationResult.getMessage("ignoreUpstreamCacheHeaders") ?? (
+                                    <I18n id={MessageKey.FrontendCacheTabsGeneralIgnoreUpstreamCacheHeadersHelp} />
+                                )
                             }
                             label={<I18n id={MessageKey.FrontendCacheTabsGeneralIgnoreUpstreamCacheHeaders} />}
                             required
@@ -181,8 +185,9 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                     name="backgroundUpdate"
                     validateStatus={validationResult.getStatus("backgroundUpdate")}
                     help={
-                        validationResult.getMessage("backgroundUpdate") ??
-                        <I18n id={MessageKey.FrontendCacheTabsGeneralBackgroundUpdateHelp} />
+                        validationResult.getMessage("backgroundUpdate") ?? (
+                            <I18n id={MessageKey.FrontendCacheTabsGeneralBackgroundUpdateHelp} />
+                        )
                     }
                     label={<I18n id={MessageKey.FrontendCacheTabsGeneralBackgroundUpdate} />}
                     required
@@ -193,8 +198,9 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                     name="revalidate"
                     validateStatus={validationResult.getStatus("revalidate")}
                     help={
-                        validationResult.getMessage("revalidate") ??
-                        <I18n id={MessageKey.FrontendCacheTabsGeneralRevalidateHelp} />
+                        validationResult.getMessage("revalidate") ?? (
+                            <I18n id={MessageKey.FrontendCacheTabsGeneralRevalidateHelp} />
+                        )
                     }
                     label={<I18n id={MessageKey.FrontendCacheTabsGeneralRevalidate} />}
                     required
@@ -205,8 +211,9 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                     name="useStale"
                     validateStatus={validationResult.getStatus("useStale")}
                     help={
-                        validationResult.getMessage("useStale") ??
-                        <I18n id={MessageKey.FrontendCacheTabsGeneralUseStaleContentsHelp} />
+                        validationResult.getMessage("useStale") ?? (
+                            <I18n id={MessageKey.FrontendCacheTabsGeneralUseStaleContentsHelp} />
+                        )
                     }
                     label={<I18n id={MessageKey.FrontendCacheTabsGeneralUseStaleContents} />}
                     style={{ marginTop: 40 }}

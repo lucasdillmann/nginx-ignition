@@ -74,8 +74,9 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
                         label={<I18n id={MessageKey.FrontendStreamComponentsBackendsettingsMaxFailures} />}
                         validateStatus={validationResult.getStatus(`${validationBasePath}.circuitBreaker.maxFailures`)}
                         help={
-                            validationResult.getMessage(`${validationBasePath}.circuitBreaker.maxFailures`) ??
-                            <I18n id={MessageKey.FrontendStreamComponentsBackendsettingsMaxFailuresHelp} />
+                            validationResult.getMessage(`${validationBasePath}.circuitBreaker.maxFailures`) ?? (
+                                <I18n id={MessageKey.FrontendStreamComponentsBackendsettingsMaxFailuresHelp} />
+                            )
                         }
                         labelCol={CIRCUIT_BREAKER_SPACING}
                         style={FORM_INPUT_STYLE}
@@ -94,8 +95,9 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
                         label={<I18n id={MessageKey.FrontendStreamComponentsBackendsettingsOpenSeconds} />}
                         validateStatus={validationResult.getStatus(`${validationBasePath}.circuitBreaker.openSeconds`)}
                         help={
-                            validationResult.getMessage(`${validationBasePath}.circuitBreaker.openSeconds`) ??
-                            <I18n id={MessageKey.FrontendStreamComponentsBackendsettingsOpenSecondsHelp} />
+                            validationResult.getMessage(`${validationBasePath}.circuitBreaker.openSeconds`) ?? (
+                                <I18n id={MessageKey.FrontendStreamComponentsBackendsettingsOpenSecondsHelp} />
+                            )
                         }
                         labelCol={CIRCUIT_BREAKER_SPACING}
                         style={hideWeight ? undefined : FORM_INPUT_STYLE}
@@ -115,8 +117,9 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
                     label={<I18n id={MessageKey.FrontendStreamComponentsBackendsettingsWeight} />}
                     validateStatus={validationResult.getStatus(`${validationBasePath}.weight`)}
                     help={
-                        validationResult.getMessage(`${validationBasePath}.weight`) ??
-                        <I18n id={MessageKey.FrontendStreamComponentsBackendsettingsWeightHelp} />
+                        validationResult.getMessage(`${validationBasePath}.weight`) ?? (
+                            <I18n id={MessageKey.FrontendStreamComponentsBackendsettingsWeightHelp} />
+                        )
                     }
                     hidden={hideWeight}
                 >

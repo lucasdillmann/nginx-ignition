@@ -22,7 +22,7 @@ import { UserPermissionToggle } from "./components/UserPermissionToggle"
 import { UserAccessLevel } from "./model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
-import { I18n, i18n } from "../../core/i18n/I18n"
+import { I18n } from "../../core/i18n/I18n"
 
 interface UserFormState {
     formValues: UserRequest
