@@ -41,7 +41,7 @@ jobs:
           go-version: 1.25.6
       - name: Unit tests
         env:
-          TEST_POSTGRES_HOST: postgres
+          TEST_POSTGRES_HOST: runner.local
           TEST_POSTGRES_PORT: 44554
         run: make test
       - name: Lint
