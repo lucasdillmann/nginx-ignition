@@ -89,8 +89,17 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
         return (
             <Badge
                 className="nginx-control-status-badge"
-                count={<I18n id={metadata.description} />}
-                style={{ backgroundColor: metadata.color, borderColor: metadata.color }}
+                count={
+                    <span>
+                        <I18n id={metadata.description} />
+                    </span>
+                }
+                style={{
+                    backgroundColor: metadata.color,
+                    borderColor: metadata.color,
+                    padding: "2px 10px",
+                    borderRadius: 20,
+                }}
             />
         )
     }
