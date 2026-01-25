@@ -276,7 +276,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
             {
                 actions: [
                     <Button key="show-details" type="default" onClick={onClick}>
-                        Open error details
+                        <I18n id={MessageKey.CommonOpenErrorDetails} />
                     </Button>,
                 ],
             },

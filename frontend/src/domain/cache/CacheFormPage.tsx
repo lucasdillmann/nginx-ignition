@@ -23,6 +23,7 @@ import GeneralTab from "./tabs/GeneralTab"
 import AdvancedTab from "./tabs/AdvancedTab"
 import "./CacheFormPage.css"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n } from "../../core/i18n/I18n"
 
 interface CacheFormState {
     formValues: CacheRequest
@@ -108,13 +109,13 @@ export default class CacheFormPage extends React.Component<unknown, CacheFormSta
         return [
             {
                 key: "general",
-                label: "General",
+                label: <I18n id={MessageKey.CommonGeneral} />,
                 forceRender: true,
                 children: <GeneralTab validationResult={validationResult} />,
             },
             {
                 key: "advanced",
-                label: "Advanced",
+                label: <I18n id={MessageKey.CommonAdvanced} />,
                 forceRender: true,
                 children: <AdvancedTab validationResult={validationResult} />,
             },

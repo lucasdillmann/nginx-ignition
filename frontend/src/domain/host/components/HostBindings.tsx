@@ -63,8 +63,12 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     required
                 >
                     <Select>
-                        <Select.Option value={HostBindingType.HTTP}>HTTP</Select.Option>
-                        <Select.Option value={HostBindingType.HTTPS}>HTTPS</Select.Option>
+                        <Select.Option value={HostBindingType.HTTP}>
+                            <I18n id={MessageKey.CommonHttp} />
+                        </Select.Option>
+                        <Select.Option value={HostBindingType.HTTPS}>
+                            <I18n id={MessageKey.CommonHttps} />
+                        </Select.Option>
                     </Select>
                 </Form.Item>
                 <Form.Item

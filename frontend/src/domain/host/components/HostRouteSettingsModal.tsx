@@ -239,7 +239,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
             },
             {
                 key: "advanced",
-                label: <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsTabAdvanced} />,
+                label: <I18n id={MessageKey.CommonAdvanced} />,
                 children: this.renderAdvancedTab(),
             },
         ]

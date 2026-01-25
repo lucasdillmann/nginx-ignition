@@ -9,8 +9,7 @@ import ThemeContext from "../core/components/context/ThemeContext"
 import ThemedResources from "../core/components/theme/ThemedResources"
 import { Locale } from "antd/es/locale"
 import I18nContext from "../core/i18n/I18nContext"
-import MessageKey from "../core/i18n/model/MessageKey.generated"
-import { i18n } from "../core/i18n/I18n"
+import { buildI18nLocale } from "../core/i18n/I18nLocale"
 
 interface NginxIgnitionState {
     error?: Error
@@ -24,21 +23,7 @@ export default class NginxIgnition extends React.Component<unknown, NginxIgnitio
 
         this.state = {
             darkMode: ThemeContext.isDarkMode(),
-            locale: this.buildLocale(),
-        }
-    }
-
-    private buildLocale(): Locale {
-        const { currentLanguage, defaultLanguage } = I18nContext.get()
-        return {
-            locale: currentLanguage ?? defaultLanguage,
-            Form: {
-                optional: `(${i18n(MessageKey.CommonOptional)})`,
-                defaultValidateMessages: {},
-            },
-            Empty: {
-                description: i18n(MessageKey.CommonNoData),
-            },
+            locale: buildI18nLocale(),
         }
     }
 
@@ -49,7 +34,7 @@ export default class NginxIgnition extends React.Component<unknown, NginxIgnitio
 
     private handleLanguageChange() {
         this.setState({
-            locale: this.buildLocale(),
+            locale: buildI18nLocale(),
         })
     }
 
