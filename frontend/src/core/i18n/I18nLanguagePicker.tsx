@@ -60,6 +60,8 @@ export default class I18nLanguagePicker extends React.Component<I18nLanguagePick
         const { available, current, open } = this.state
         const selected = available.find(l => l.value === current)
 
+        // TODO: Add beta badge and additional instructions (link to report translation issues and alike)
+
         return (
             <>
                 <TranslationOutlined onClick={() => this.changeVisibility(true)} style={style} />
