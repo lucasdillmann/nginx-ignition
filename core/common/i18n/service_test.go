@@ -13,7 +13,7 @@ import (
 func Test_service(t *testing.T) {
 	t.Run("DefaultLanguage", func(t *testing.T) {
 		s := newCommands().(*service)
-		assert.Equal(t, language.AmericanEnglish, s.DefaultLanguage())
+		assert.Equal(t, language.English, s.DefaultLanguage())
 	})
 
 	t.Run("GetDictionaries", func(t *testing.T) {
