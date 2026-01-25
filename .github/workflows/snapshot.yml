@@ -22,7 +22,8 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 5
-          --network ix-github-runners_default
+        ports:
+          - 44554:5432
     env:
       GOPATH: /data/cache/go
       GOMODCACHE: /data/cache/go/pkg/mod
@@ -40,8 +41,8 @@ jobs:
           go-version: 1.25.6
       - name: Unit tests
         env:
-          TEST_POSTGRES_HOST: postgres
-          TEST_POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
+          TEST_POSTGRES_HOST: host.docker.internal
+          TEST_POSTGRES_PORT: 44554
         run: make test
       - name: Lint
         run: make lint
