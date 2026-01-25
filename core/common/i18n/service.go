@@ -12,10 +12,21 @@ type service struct {
 }
 
 func newCommands() Commands {
-	dictionaries := []i18n.Dictionary{i18n.En_US(), i18n.Pt_BR()}
+	dictionaries := []i18n.Dictionary{
+		i18n.Bn(),
+		i18n.En(),
+		i18n.Es(),
+		i18n.Hi(),
+		i18n.Ja(),
+		i18n.Pa(),
+		i18n.Pt(),
+		i18n.Ru(),
+		i18n.Vi(),
+		i18n.Zh(),
+	}
 	return &service{
 		dictionaries:      dictionaries,
-		defaultDictionary: dictionaries[0],
+		defaultDictionary: i18n.En(),
 	}
 }
 

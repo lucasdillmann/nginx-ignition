@@ -2,9 +2,12 @@ package validator
 
 import (
 	"fmt"
+	"path"
+	"regexp"
+	"slices"
+	"sort"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/tools/i18n/reader"
 )
 
@@ -12,6 +15,7 @@ var (
 	duplicatedValuesBypassPrefixes = []string{
 		"certificate/",
 	}
+	placeholderRegex = regexp.MustCompile(`\$\{[a-zA-Z0-9_\-]+\}`)
 )
 
 func Validate(files []reader.PropertiesFile) []string {
@@ -35,6 +39,7 @@ func Validate(files []reader.PropertiesFile) []string {
 	violations = append(violations, checkDuplicateKeys(keyCounts)...)
 	violations = append(violations, checkMissingKeys(keyUsage, allLanguageTags, len(files))...)
 	violations = append(violations, checkDuplicateValues(valueUsage)...)
+	violations = append(violations, checkPlaceholders(files)...)
 
 	return violations
 }
@@ -128,8 +133,7 @@ func checkDuplicateValues(valueUsage map[string]map[string][]string) []string {
 				continue
 			}
 
-			if bypassDuplicatedValueCheck(keys[0]) {
-				log.Warnf("Duplicate value '%s' ignored: key bypassed", val)
+			if bypassDuplicatedValueCheck(keys) {
 				continue
 			}
 
@@ -143,12 +147,58 @@ func checkDuplicateValues(valueUsage map[string]map[string][]string) []string {
 	return output
 }
 
-func bypassDuplicatedValueCheck(key string) bool {
-	for _, prefix := range duplicatedValuesBypassPrefixes {
-		if strings.HasPrefix(key, prefix) {
-			return true
+func bypassDuplicatedValueCheck(keys []string) bool {
+	for _, key := range keys {
+		for _, prefix := range duplicatedValuesBypassPrefixes {
+			if strings.HasPrefix(key, prefix) {
+				return true
+			}
 		}
 	}
 
-	return false
+	return areKeysSingularPluralVariants(keys)
+}
+
+func areKeysSingularPluralVariants(keys []string) bool {
+	normalized := make(map[string]bool)
+
+	for _, key := range keys {
+		base := path.Base(key)
+		stem := strings.TrimSuffix(base, "s")
+		normalized[stem] = true
+	}
+
+	return len(normalized) == 1
+}
+
+func checkPlaceholders(files []reader.PropertiesFile) []string {
+	var violations []string
+	type placeholderInfo struct {
+		placeholders []string
+		lang         string
+	}
+	refs := make(map[string]placeholderInfo)
+
+	for _, file := range files {
+		for _, msg := range file.Messages {
+			matches := placeholderRegex.FindAllString(msg.Value, -1)
+			sort.Strings(matches)
+
+			if ref, exists := refs[msg.PropertiesKey]; exists {
+				if !slices.Equal(ref.placeholders, matches) {
+					violations = append(
+						violations,
+						fmt.Sprintf(
+							"Placeholder mismatch for key '%s': Language '%s' has %v, but Language '%s' has %v",
+							msg.PropertiesKey, file.LanguageTag, matches, ref.lang, ref.placeholders,
+						),
+					)
+				}
+			} else {
+				refs[msg.PropertiesKey] = placeholderInfo{matches, file.LanguageTag}
+			}
+		}
+	}
+
+	return violations
 }
