@@ -17,7 +17,7 @@ class DeleteVpnAction {
             .then(() => this.service.delete(vpnId))
             .then(() => {
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityVpnConnection } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonVpnConnection } },
                     MessageKey.CommonSuccessMessage,
                 )
                 ReloadNginxAction.execute()
@@ -30,7 +30,7 @@ class DeleteVpnAction {
                 Notification.error(
                     {
                         id: MessageKey.CommonUnableToDelete,
-                        params: { type: MessageKey.CommonEntityVpnConnection },
+                        params: { type: MessageKey.CommonVpnConnection },
                     },
                     message,
                 )

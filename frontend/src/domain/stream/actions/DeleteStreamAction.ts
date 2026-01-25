@@ -14,7 +14,7 @@ class DeleteStreamAction {
     }
 
     private handleError(error: Error) {
-        const title = { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonEntityStream } }
+        const title = { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonStream } }
         if (error instanceof UnexpectedResponseError) {
             const message = error.response?.body?.message
             if (typeof message === "string") {
@@ -31,7 +31,7 @@ class DeleteStreamAction {
             .then(() => this.service.delete(streamId))
             .then(() =>
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityStream } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonStream } },
                     MessageKey.CommonSuccessMessage,
                 ),
             )

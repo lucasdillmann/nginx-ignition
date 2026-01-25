@@ -16,14 +16,14 @@ class DeleteHostAction {
             .then(() => this.service.delete(hostId))
             .then(() => {
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityHost } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonHost } },
                     MessageKey.CommonSuccessMessage,
                 )
                 ReloadNginxAction.execute()
             })
             .catch(() =>
                 Notification.error(
-                    { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonEntityHost } },
+                    { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonHost } },
                     MessageKey.CommonUnexpectedErrorTryAgain,
                 ),
             )

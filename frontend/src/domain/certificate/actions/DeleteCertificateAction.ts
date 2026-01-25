@@ -15,7 +15,7 @@ class DeleteCertificateAction {
     private handleError(error: Error) {
         const title = {
             id: MessageKey.CommonUnableToDelete,
-            params: { type: MessageKey.CommonEntityCertificate },
+            params: { type: MessageKey.CommonCertificate },
         }
         if (error instanceof UnexpectedResponseError) {
             const message = error.response?.body?.message
@@ -33,7 +33,7 @@ class DeleteCertificateAction {
             .then(() => this.service.delete(certificateId))
             .then(() =>
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityCertificate } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonCertificate } },
                     MessageKey.CommonSuccessMessage,
                 ),
             )

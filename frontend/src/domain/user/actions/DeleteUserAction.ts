@@ -15,13 +15,13 @@ class DeleteUserAction {
             .then(() => this.service.delete(userId))
             .then(() =>
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityUser } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonUser } },
                     MessageKey.CommonSuccessMessage,
                 ),
             )
             .catch(() =>
                 Notification.error(
-                    { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonEntityUser } },
+                    { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonUser } },
                     MessageKey.CommonUnexpectedErrorTryAgain,
                 ),
             )

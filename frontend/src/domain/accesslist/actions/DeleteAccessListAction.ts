@@ -16,7 +16,7 @@ class DeleteAccessListAction {
         const title = {
             id: MessageKey.CommonUnableToDelete,
             params: {
-                type: MessageKey.CommonEntityAccessList,
+                type: MessageKey.CommonAccessList,
             },
         }
 
@@ -36,7 +36,7 @@ class DeleteAccessListAction {
             .then(() => this.service.delete(userId))
             .then(() =>
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityAccessList } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonAccessList } },
                     MessageKey.CommonSuccessMessage,
                 ),
             )

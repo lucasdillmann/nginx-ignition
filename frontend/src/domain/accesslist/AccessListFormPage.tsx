@@ -60,7 +60,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
         const { formValues } = this.state
         this.saveModal.show(MessageKey.CommonHangOnTight, {
             id: MessageKey.CommonSavingType,
-            params: { type: MessageKey.CommonEntityAccessList },
+            params: { type: MessageKey.CommonAccessList },
         })
         this.setState({ validationResult: new ValidationResult() })
 
@@ -82,7 +82,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
     private handleSuccess() {
         this.saveModal.close()
         Notification.success(
-            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonEntityAccessList } },
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonAccessList } },
             MessageKey.CommonSuccessMessage,
         )
         ReloadNginxAction.execute()
@@ -141,7 +141,7 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
                 initialValues={formValues}
             >
                 <h2 className="access-lists-form-section-name">
-                    <I18n id={MessageKey.FrontendAccesslistSectionGeneral} />
+                    <I18n id={MessageKey.CommonGeneral} />
                 </h2>
                 <p className="access-lists-form-section-help-text">
                     <I18n id={MessageKey.FrontendAccesslistSectionGeneralDescription} />

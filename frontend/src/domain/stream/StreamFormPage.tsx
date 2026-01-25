@@ -29,6 +29,7 @@ import StreamRoutesForm from "./components/StreamRoutesForm"
 import { streamFormDefaults, streamRouteDefaults } from "./StreamFormDefaults"
 import StreamSupportWarning from "./components/StreamSupportWarning"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n } from "../../core/i18n/I18n"
 
 interface StreamFormPageState {
     formValues: StreamRequest
@@ -65,7 +66,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
         const { formValues } = this.state
         this.saveModal.show(MessageKey.CommonHangOnTight, {
             id: MessageKey.CommonSavingType,
-            params: { type: MessageKey.CommonEntityStream },
+            params: { type: MessageKey.CommonStream },
         })
         this.setState({ validationResult: new ValidationResult() })
 
@@ -86,7 +87,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
     private handleSuccess() {
         this.saveModal.close()
         Notification.success(
-            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonEntityStream } },
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonStream } },
             MessageKey.CommonSuccessMessage,
         )
         ReloadNginxAction.execute()
@@ -169,16 +170,14 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
     private buildTypeTooltipContents() {
         return (
             <>
-                <p>The type defines how the requests should be handled</p>
                 <p>
-                    <b>Simple:</b> Proxies requests to the backend server as-is, without any modifications or
-                    evaluations.
+                    <I18n id={MessageKey.FrontendStreamFormTypeTooltipIntro} />
                 </p>
                 <p>
-                    <b>Domain-based router:</b> Uses the SNI (Server Name Indication) from the TLS protocol to detect
-                    the domain name requested by the client and routes the request to the corresponding backend server.
-                    Please note that this type of routing only works with TLS (like HTTPS) connections, all remaining
-                    connections will be forwarded to the default backend server.
+                    <I18n id={MessageKey.FrontendStreamFormTypeTooltipSimple} />
+                </p>
+                <p>
+                    <I18n id={MessageKey.FrontendStreamFormTypeTooltipSni} />
                 </p>
             </>
         )
@@ -195,21 +194,21 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
         const { title, subtitle } =
             type == StreamType.SIMPLE
                 ? {
-                      title: "Backend",
-                      subtitle: "Address or socket file of the backing service that will reply to the requests",
+                      title: MessageKey.FrontendStreamFormBackendTitle,
+                      subtitle: MessageKey.FrontendStreamFormBackendSubtitle,
                   }
                 : {
-                      title: "Default backend",
-                      subtitle:
-                          "Address or socket file of the backing service that will reply to the requests when " +
-                          "either no SNI is available or no route matched the request",
+                      title: MessageKey.FrontendStreamFormDefaultBackendTitle,
+                      subtitle: MessageKey.FrontendStreamFormDefaultBackendSubtitle,
                   }
 
         return (
             <>
-                <h2 className="streams-form-section-name">{title}</h2>
+                <h2 className="streams-form-section-name">
+                    <I18n id={title} />
+                </h2>
                 <p className="streams-form-section-help-text" style={{ height: 50 }}>
-                    {subtitle}
+                    <I18n id={subtitle} />
                 </p>
                 <Flex style={{ flexGrow: 1 }}>
                     <Flex style={{ flexGrow: 1, alignContent: "center", flexShrink: 1 }}>
@@ -258,13 +257,17 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
 
         return (
             <>
-                <h2 className="streams-form-section-name">General</h2>
-                <p className="streams-form-section-help-text">Main definitions and properties of the stream.</p>
+                <h2 className="streams-form-section-name">
+                    <I18n id={MessageKey.CommonGeneral} />
+                </h2>
+                <p className="streams-form-section-help-text">
+                    <I18n id={MessageKey.FrontendStreamFormSectionGeneralHelp} />
+                </p>
                 <Form.Item
                     name="enabled"
                     validateStatus={validationResult.getStatus("enabled")}
                     help={validationResult.getMessage("enabled")}
-                    label="Enabled"
+                    label={<I18n id={MessageKey.CommonEnabled} />}
                     required
                 >
                     <Switch />
@@ -273,7 +276,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                     name="name"
                     validateStatus={validationResult.getStatus("name")}
                     help={validationResult.getMessage("name")}
-                    label="Name"
+                    label={<I18n id={MessageKey.CommonName} />}
                     required
                 >
                     <Input />
@@ -282,7 +285,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                     name="type"
                     validateStatus={validationResult.getStatus("type")}
                     help={validationResult.getMessage("type")}
-                    label="Type"
+                    label={<I18n id={MessageKey.CommonType} />}
                     tooltip={{
                         title: this.buildTypeTooltipContents(),
                         icon: <QuestionCircleFilled />,
@@ -292,12 +295,12 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                     <Segmented
                         options={[
                             {
-                                label: StreamTypeDescription[StreamType.SIMPLE],
+                                label: <I18n id={StreamTypeDescription[StreamType.SIMPLE]} />,
                                 value: StreamType.SIMPLE,
                                 icon: <ArrowRightOutlined />,
                             },
                             {
-                                label: StreamTypeDescription[StreamType.SNI_ROUTER],
+                                label: <I18n id={StreamTypeDescription[StreamType.SNI_ROUTER]} />,
                                 value: StreamType.SNI_ROUTER,
                                 icon: <SwapOutlined />,
                             },
@@ -314,9 +317,11 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
 
         return (
             <>
-                <h2 className="streams-form-section-name">Binding</h2>
+                <h2 className="streams-form-section-name">
+                    <I18n id={MessageKey.CommonBinding} />
+                </h2>
                 <p className="streams-form-section-help-text" style={{ height: 50 }}>
-                    Address or socket file where the nginx's stream will listen for requests
+                    <I18n id={MessageKey.FrontendStreamFormSectionBindingHelp} />
                 </p>
                 <StreamAddressInput
                     basePath="binding"
@@ -335,14 +340,18 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
 
         return (
             <>
-                <h2 className="streams-form-section-name">Features</h2>
-                <p className="streams-form-section-help-text">Personalization of the behaviours of the stream.</p>
+                <h2 className="streams-form-section-name">
+                    <I18n id={MessageKey.FrontendStreamFormSectionFeatures} />
+                </h2>
+                <p className="streams-form-section-help-text">
+                    <I18n id={MessageKey.FrontendStreamFormSectionFeaturesHelp} />
+                </p>
                 <Form.Item
                     name={["featureSet", "useProxyProtocol"]}
                     validateStatus={validationResult.getStatus("featureSet.useProxyProtocol")}
                     help={validationResult.getMessage("featureSet.useProxyProtocol")}
                     className="streams-form-expanded-label-size"
-                    label="Use the PROXY protocol"
+                    label={<I18n id={MessageKey.FrontendStreamFormUseProxyProtocol} />}
                     required
                 >
                     <Switch />
@@ -352,7 +361,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                     validateStatus={validationResult.getStatus("featureSet.socketKeepAlive")}
                     help={validationResult.getMessage("featureSet.socketKeepAlive")}
                     className="streams-form-expanded-label-size"
-                    label="Socket keep alive"
+                    label={<I18n id={MessageKey.FrontendStreamFormSocketKeepAlive} />}
                     required
                 >
                     <Switch />
@@ -362,7 +371,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                     validateStatus={validationResult.getStatus("featureSet.tcpKeepAlive")}
                     help={validationResult.getMessage("featureSet.tcpKeepAlive")}
                     className="streams-form-expanded-label-size"
-                    label="TCP keep alive"
+                    label={<I18n id={MessageKey.FrontendStreamFormTcpKeepAlive} />}
                     required
                 >
                     <Switch disabled={!bindingTcp} />
@@ -372,7 +381,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                     validateStatus={validationResult.getStatus("featureSet.tcpNoDelay")}
                     help={validationResult.getMessage("featureSet.tcpNoDelay")}
                     className="streams-form-expanded-label-size"
-                    label="TCP no delay"
+                    label={<I18n id={MessageKey.FrontendStreamFormTcpNoDelay} />}
                     required
                 >
                     <Switch disabled={!bindingTcp} />
@@ -382,7 +391,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                     validateStatus={validationResult.getStatus("featureSet.tcpDeferred")}
                     help={validationResult.getMessage("featureSet.tcpDeferred")}
                     className="streams-form-expanded-label-size"
-                    label="TCP deferred"
+                    label={<I18n id={MessageKey.FrontendStreamFormTcpDeferred} />}
                     required
                 >
                     <Switch disabled={!bindingTcp} />

@@ -18,6 +18,7 @@ import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGra
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n } from "../../core/i18n/I18n"
 
 interface CertificateDetailsPageState {
     loading: boolean
@@ -93,7 +94,16 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
         const { certificate } = this.state
         const value = certificate!!.parameters[field.id]
 
-        if (field.type === DynamicFieldType.BOOLEAN) return value ? "Yes / Accepted" : "No / Rejected"
+        if (field.type === DynamicFieldType.BOOLEAN)
+            return (
+                <I18n
+                    id={
+                        value
+                            ? MessageKey.FrontendCertificateDetailsBooleanYes
+                            : MessageKey.FrontendCertificateDetailsBooleanNo
+                    }
+                />
+            )
 
         if (field.type !== DynamicFieldType.ENUM) return value
 
@@ -159,10 +169,14 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
 
         return (
             <>
-                <h2 className="certificate-details-section-name">General</h2>
+                <h2 className="certificate-details-section-name">
+                    <I18n id={MessageKey.CommonGeneral} />
+                </h2>
                 <ProDescriptions {...DescriptionLayout.Defaults} dataSource={certificate}>
-                    <ProDescriptions.Item title="Provider">{provider?.name}</ProDescriptions.Item>
-                    <ProDescriptions.Item title="Domain names">
+                    <ProDescriptions.Item title={<I18n id={MessageKey.CommonProvider} />}>
+                        {provider?.name}
+                    </ProDescriptions.Item>
+                    <ProDescriptions.Item title={<I18n id={MessageKey.CommonDomainNames} />}>
                         {certificate?.domainNames.map(domain => (
                             <>
                                 {domain}
@@ -172,28 +186,32 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
                     </ProDescriptions.Item>
                 </ProDescriptions>
 
-                <h2 className="certificate-details-section-name">Validity</h2>
+                <h2 className="certificate-details-section-name">
+                    <I18n id={MessageKey.FrontendCertificateDetailsSectionValidity} />
+                </h2>
                 <ProDescriptions {...DescriptionLayout.Defaults} dataSource={certificate}>
                     <ProDescriptions.Item
-                        title="Issued at"
+                        title={<I18n id={MessageKey.FrontendCertificateDetailsIssuedAt} />}
                         dataIndex="issuedAt"
                         valueType="dateTime"
                         fieldProps={{ format: dateTimeFormat }}
                     />
                     <ProDescriptions.Item
-                        title="Valid from"
+                        title={<I18n id={MessageKey.FrontendCertificateDetailsValidFrom} />}
                         dataIndex="validFrom"
                         valueType="dateTime"
                         fieldProps={{ format: dateTimeFormat }}
                     />
                     <ProDescriptions.Item
-                        title="Valid until"
+                        title={<I18n id={MessageKey.FrontendCertificateDetailsValidUntil} />}
                         dataIndex="validUntil"
                         valueType="dateTime"
                         fieldProps={{ format: dateTimeFormat }}
                     />
                     <ProDescriptions.Item
-                        title="Renew recommended after"
+                        title={
+                            <I18n id={MessageKey.FrontendCertificateDetailsRenewRecommendedAfter} />
+                        }
                         dataIndex="renewAfter"
                         valueType="dateTime"
                         fieldProps={{ format: dateTimeFormat }}
@@ -201,7 +219,9 @@ export default class CertificateDetailsPage extends React.Component<unknown, Cer
                 </ProDescriptions>
 
                 <If condition={Object.keys(certificate!!.parameters).length > 0}>
-                    <h2 className="certificate-details-section-name">Provider-specific parameters</h2>
+                    <h2 className="certificate-details-section-name">
+                        <I18n id={MessageKey.FrontendCertificateDetailsParams} />
+                    </h2>
                     <ProDescriptions {...DescriptionLayout.Defaults} dataSource={certificate}>
                         {this.renderDynamicFields()}
                     </ProDescriptions>

@@ -12,7 +12,7 @@ import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { raw } from "../../core/i18n/I18n"
+import { I18n, raw } from "../../core/i18n/I18n"
 
 export default class AccessListListPage extends React.PureComponent {
     private readonly service: AccessListService
@@ -43,9 +43,9 @@ export default class AccessListListPage extends React.PureComponent {
                 renderer: item => {
                     switch (item.defaultOutcome) {
                         case AccessListOutcome.ALLOW:
-                            return "Allow access"
+                            return <I18n id={MessageKey.FrontendAccesslistOutcomeAllow} />
                         case AccessListOutcome.DENY:
-                            return "Deny access"
+                            return <I18n id={MessageKey.FrontendAccesslistOutcomeDeny} />
                     }
                 },
                 width: 150,
@@ -53,7 +53,15 @@ export default class AccessListListPage extends React.PureComponent {
             {
                 id: "satisfyAll",
                 description: MessageKey.CommonMode,
-                renderer: item => (item.satisfyAll ? "Satisfy all" : "Satisfy any"),
+                renderer: item => (
+                    <I18n
+                        id={
+                            item.satisfyAll
+                                ? MessageKey.FrontendAccesslistModeSatisfyAll
+                                : MessageKey.FrontendAccesslistModeSatisfyAny
+                        }
+                    />
+                ),
                 width: 150,
             },
             {
@@ -89,7 +97,7 @@ export default class AccessListListPage extends React.PureComponent {
 
     componentDidMount() {
         AppShellContext.get().updateConfig({
-            title: MessageKey.FrontendAccesslistListTitle,
+            title: MessageKey.CommonAccessLists,
             subtitle: MessageKey.FrontendAccesslistListSubtitle,
             actions: [
                 {

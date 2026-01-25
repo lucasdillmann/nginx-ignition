@@ -9,6 +9,8 @@ import VpnResponse from "../../vpn/model/VpnResponse"
 import VpnService from "../../vpn/VpnService"
 import { vpnRequestDefaults } from "../../vpn/model/VpnRequestDefaults"
 import "./HostVpns.css"
+import { I18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 export interface HostVpnsProps {
     vpns: HostFormVpn[]
@@ -37,7 +39,7 @@ export default class HostVpns extends React.Component<HostVpnsProps> {
                     name={[name, "vpn"]}
                     validateStatus={validationResult.getStatus(`vpns[${index}].vpnId`)}
                     help={validationResult.getMessage(`vpns[${index}].vpnId`)}
-                    label={index === 0 ? "VPN connection" : undefined}
+                    label={index === 0 ? <I18n id={MessageKey.CommonVpnConnection} /> : undefined}
                     required
                 >
                     <PaginatedSelect<VpnResponse>
@@ -56,10 +58,9 @@ export default class HostVpns extends React.Component<HostVpnsProps> {
                     validateStatus={validationResult.getStatus(`vpns[${index}].name`)}
                     help={
                         validationResult.getMessage(`vpns[${index}].name`) ??
-                        "The unique name to be used in the VPN connection. In Tailscale, this will be used as the " +
-                            "subdomain name on your ts.net domain."
+                        <I18n id={MessageKey.FrontendHostComponentsHostvpnsSourceNameHelp} />
                     }
-                    label={index === 0 ? "Source name" : undefined}
+                    label={index === 0 ? <I18n id={MessageKey.FrontendHostComponentsHostvpnsSourceName} /> : undefined}
                     required
                 >
                     <Input />
@@ -72,10 +73,9 @@ export default class HostVpns extends React.Component<HostVpnsProps> {
                     validateStatus={validationResult.getStatus(`vpns[${index}].host`)}
                     help={
                         validationResult.getMessage(`vpns[${index}].host`) ??
-                        "The hostname to be used when proxying requests to the target host. If left empty, ignition " +
-                            "will use the first option from the domain names above."
+                        <I18n id={MessageKey.FrontendHostComponentsHostvpnsTargetHostHelp} />
                     }
-                    label={index === 0 ? "Target host" : undefined}
+                    label={index === 0 ? <I18n id={MessageKey.FrontendHostComponentsHostvpnsTargetHost} /> : undefined}
                     required
                 >
                     <Input />
@@ -99,7 +99,7 @@ export default class HostVpns extends React.Component<HostVpnsProps> {
         const addAction = (
             <Form.Item>
                 <Button type="dashed" onClick={() => operations.add(vpnRequestDefaults())} icon={<PlusOutlined />}>
-                    Add VPN binding
+                    <I18n id={MessageKey.FrontendHostComponentsHostvpnsAddBinding} />
                 </Button>
             </Form.Item>
         )

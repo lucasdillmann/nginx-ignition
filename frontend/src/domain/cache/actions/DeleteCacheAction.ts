@@ -15,7 +15,7 @@ class DeleteCacheAction {
     private handleError(error: Error) {
         const title = {
             id: MessageKey.CommonUnableToDelete,
-            params: { type: MessageKey.CommonEntityCacheConfiguration },
+            params: { type: MessageKey.CommonCacheConfiguration },
         }
         let message: I18nMessage = MessageKey.CommonUnexpectedErrorTryAgain
 
@@ -36,7 +36,7 @@ class DeleteCacheAction {
                 Notification.success(
                     {
                         id: MessageKey.CommonTypeDeleted,
-                        params: { type: MessageKey.CommonEntityCacheConfiguration },
+                        params: { type: MessageKey.CommonCacheConfiguration },
                     },
                     MessageKey.CommonSuccessMessage,
                 ),

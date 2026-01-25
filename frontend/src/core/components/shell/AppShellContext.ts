@@ -6,7 +6,7 @@ export interface ShellAction {
     description: I18nMessage
     onClick: string | (() => Promise<void>) | (() => void)
     disabled?: boolean
-    disabledReason?: string
+    disabledReason?: I18nMessage
     type?: ButtonVariantType
     color?: ButtonColorType
 }

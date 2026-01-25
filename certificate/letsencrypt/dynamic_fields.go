@@ -15,10 +15,7 @@ const (
 	dnsProviderFieldID    = "challengeDnsProvider"
 )
 
-func mainDynamicFields(ctx context.Context) (
-	[]dynamicfields.DynamicField,
-	*dynamicfields.DynamicField,
-) {
+func mainDynamicFields(ctx context.Context) ([]dynamicfields.DynamicField, int) {
 	dnsField := dynamicfields.DynamicField{
 		ID:          dnsProviderFieldID,
 		Priority:    1,
@@ -45,7 +42,7 @@ func mainDynamicFields(ctx context.Context) (
 		Type:        dynamicfields.EmailType,
 	}
 
-	return []dynamicfields.DynamicField{dnsField, tosField, emailField}, &dnsField
+	return []dynamicfields.DynamicField{dnsField, tosField, emailField}, 0
 }
 
 func resolveDynamicFields(ctx context.Context) []dynamicfields.DynamicField {
@@ -70,7 +67,7 @@ func resolveDynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 		return leftValue < rightValue
 	})
 
-	dnsProviderField.EnumOptions = providerOptions
+	output[dnsProviderField].EnumOptions = providerOptions
 
 	return output
 }

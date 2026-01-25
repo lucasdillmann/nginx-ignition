@@ -17,7 +17,7 @@ class DeleteIntegrationAction {
             .then(() => this.service.delete(integrationId))
             .then(() => {
                 Notification.success(
-                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonEntityIntegration } },
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonIntegration } },
                     MessageKey.CommonSuccessMessage,
                 )
                 ReloadNginxAction.execute()
@@ -28,7 +28,7 @@ class DeleteIntegrationAction {
                     : MessageKey.CommonUnexpectedErrorTryAgain
 
                 Notification.error(
-                    { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonEntityIntegration } },
+                    { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonIntegration } },
                     message,
                 )
             })

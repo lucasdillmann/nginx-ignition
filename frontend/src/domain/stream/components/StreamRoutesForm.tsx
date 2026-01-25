@@ -6,6 +6,8 @@ import { PlusOutlined } from "@ant-design/icons"
 import { Button } from "antd"
 import If from "../../../core/components/flowcontrol/If"
 import { streamRouteDefaults } from "../StreamFormDefaults"
+import { I18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 export interface StreamRoutesFormProps {
     routes: StreamRoute[]
@@ -57,17 +59,16 @@ export default class StreamRoutesForm extends React.Component<StreamRoutesFormPr
     render() {
         return (
             <>
-                <h2 className="streams-form-section-name">Routes</h2>
+                <h2 className="streams-form-section-name">
+                    <I18n id={MessageKey.FrontendStreamComponentsRoutesformTitle} />
+                </h2>
                 <p className="streams-form-section-help-text">
-                    Routes to be configured in the stream. The nginx will lookup for the SNI (Server Name Indication) in
-                    TLS connections and route the request to the first group that matches the domain name. When either
-                    no SNI value is available or no match is found, the request will be forwarded to the default
-                    backend.
+                    <I18n id={MessageKey.FrontendStreamComponentsRoutesformDescription} />
                 </p>
                 {this.renderRoutes()}
                 <p>
                     <Button type="dashed" onClick={() => this.addRoute()} icon={<PlusOutlined />}>
-                        Add routing group
+                        <I18n id={MessageKey.FrontendStreamComponentsRoutesformAddGroup} />
                     </Button>
                 </p>
             </>

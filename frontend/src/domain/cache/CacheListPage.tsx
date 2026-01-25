@@ -12,7 +12,7 @@ import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import TagGroup from "../../core/components/taggroup/TagGroup"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { raw } from "../../core/i18n/I18n"
+import { I18n, raw } from "../../core/i18n/I18n"
 
 export default class CacheListPage extends React.PureComponent {
     private readonly service: CacheService
@@ -33,15 +33,22 @@ export default class CacheListPage extends React.PureComponent {
             },
             {
                 id: "fileExtensions",
-                description: MessageKey.FrontendCacheFileExtensions,
+                description: MessageKey.CommonFileExtensions,
                 renderer: item =>
-                    item.fileExtensions ? <TagGroup values={item.fileExtensions} maximumSize={3} /> : "All extensions",
+                    item.fileExtensions ? (
+                        <TagGroup values={item.fileExtensions} maximumSize={3} />
+                    ) : (
+                        <I18n id={MessageKey.FrontendCacheListAllExtensions} />
+                    ),
                 width: 300,
             },
             {
                 id: "maximumSizeMb",
-                description: MessageKey.FrontendCacheMaximumSize,
-                renderer: item => (item.maximumSizeMb ? `${item.maximumSizeMb} MB` : "Unlimited"),
+                description: MessageKey.CommonMaximumSize,
+                renderer: item =>
+                    item.maximumSizeMb
+                        ? <>{item.maximumSizeMb} <I18n id={MessageKey.CommonUnitMb} /></>
+                        : <I18n id={MessageKey.FrontendCacheListUnlimited} />,
                 width: 150,
             },
             {

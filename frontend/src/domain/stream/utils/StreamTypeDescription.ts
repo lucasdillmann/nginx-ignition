@@ -1,8 +1,9 @@
 import { StreamType } from "../model/StreamRequest"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const StreamTypeDescription = {
-    [StreamType.SIMPLE]: "Simple",
-    [StreamType.SNI_ROUTER]: "Domain-based router",
+    [StreamType.SIMPLE]: MessageKey.FrontendStreamUtilsSimple,
+    [StreamType.SNI_ROUTER]: MessageKey.FrontendStreamUtilsDomainRouter,
 }
 
 export default StreamTypeDescription

@@ -25,6 +25,8 @@ import { Link } from "react-router-dom"
 import CodeEditorModal from "../../../core/components/codeeditor/CodeEditorModal"
 import { CodeEditorLanguage } from "../../../core/components/codeeditor/CodeEditor"
 import { hostFormValuesDefaults } from "../model/HostFormValuesDefaults"
+import { I18n, i18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -77,7 +79,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 name={[name, "targetUri"]}
                 validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
                 help={validationResult.getMessage(`routes[${index}].targetUri`)}
-                label="Destination URL"
+                label={<I18n id={MessageKey.FrontendHostComponentsHostroutesDestinationUrl} />}
                 required
             >
                 <Input />
@@ -97,7 +99,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 name={[name, "targetUri"]}
                 validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
                 help={validationResult.getMessage(`routes[${index}].targetUri`)}
-                label="Target directory path"
+                label={<I18n id={MessageKey.FrontendHostComponentsHostroutesTargetDirectoryPath} />}
                 required
             >
                 <Input />
@@ -118,7 +120,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     name={[name, "redirectCode"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].redirectCode`)}
                     help={validationResult.getMessage(`routes[${index}].redirectCode`)}
-                    label="Status code"
+                    label={<I18n id={MessageKey.FrontendHostComponentsHostroutesStatusCode} />}
                     required
                 >
                     <InputNumber min={300} max={399} />
@@ -130,7 +132,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     name={[name, "targetUri"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
                     help={validationResult.getMessage(`routes[${index}].targetUri`)}
-                    label="Destination URL"
+                    label={<I18n id={MessageKey.FrontendHostComponentsHostroutesDestinationUrl} />}
                     required
                 >
                     <Input />
@@ -175,7 +177,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     name={[name, "integration", "integration"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].integration.integrationId`)}
                     help={validationResult.getMessage(`routes[${index}].integration.integrationId`)}
-                    label="Integration"
+                    label={<I18n id={MessageKey.CommonIntegration} />}
                     required
                 >
                     <PaginatedSelect<IntegrationResponse>
@@ -194,7 +196,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     name={[name, "integration", "option"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].integration.optionId`)}
                     help={validationResult.getMessage(`routes[${index}].integration.optionId`)}
-                    label="Option / App"
+                    label={<I18n id={MessageKey.FrontendHostComponentsHostroutesOptionApp} />}
                     required
                 >
                     <PaginatedSelect<IntegrationOptionResponse>
@@ -249,7 +251,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     name={[name, "response", "statusCode"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].response.statusCode`)}
                     help={validationResult.getMessage(`routes[${index}].response.statusCode`)}
-                    label="Status code"
+                    label={<I18n id={MessageKey.FrontendHostComponentsHostroutesStatusCode} />}
                     required
                 >
                     <InputNumber min={100} max={599} />
@@ -262,9 +264,9 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     validateStatus={validationResult.getStatus(`routes[${index}].response.headers`)}
                     help={
                         validationResult.getMessage(`routes[${index}].response.headers`) ??
-                        "One per line, as [key]: [value]"
+                        i18n(MessageKey.FrontendHostComponentsHostroutesHeadersHelp)
                     }
-                    label="Headers"
+                    label={<I18n id={MessageKey.FrontendHostComponentsHostroutesHeaders} />}
                     required
                 >
                     <TextArea rows={3} />
@@ -276,7 +278,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     name={[name, "response", "payload"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].response.payload`)}
                     help={validationResult.getMessage(`routes[${index}].response.payload`)}
-                    label="Body / Payload"
+                    label={<I18n id={MessageKey.FrontendHostComponentsHostroutesBodyPayload} />}
                     required
                 >
                     <TextArea rows={3} onClick={() => this.openRouteCodeEditorModal(index)} />
@@ -311,11 +313,11 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
 
         return (
             <>
-                Check{" "}
+                <I18n id={MessageKey.FrontendHostComponentsHostroutesSourceCodeHelpCheck} />{" "}
                 <Link to={url} target="_blank">
-                    this link
+                    <I18n id={MessageKey.CommonNginxDocLink} />
                 </Link>{" "}
-                for instructions
+                <I18n id={MessageKey.FrontendHostComponentsHostroutesSourceCodeHelpSuffix} />
             </>
         )
     }
@@ -336,12 +338,16 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     name={[name, "sourceCode", "language"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].sourceCode.language`)}
                     help={validationResult.getMessage(`routes[${index}].sourceCode.language`)}
-                    label="Language"
+                    label={<I18n id={MessageKey.CommonLanguage} />}
                     required
                 >
                     <Select>
-                        <Select.Option value={HostRouteSourceCodeLanguage.JAVASCRIPT}>JavaScript</Select.Option>
-                        <Select.Option value={HostRouteSourceCodeLanguage.LUA}>Lua</Select.Option>
+                        <Select.Option value={HostRouteSourceCodeLanguage.JAVASCRIPT}>
+                            <I18n id={MessageKey.FrontendComponentsCodeeditorLanguageJavascript} />
+                        </Select.Option>
+                        <Select.Option value={HostRouteSourceCodeLanguage.LUA}>
+                            <I18n id={MessageKey.FrontendComponentsCodeeditorLanguageLua} />
+                        </Select.Option>
                     </Select>
                 </Form.Item>
                 <Form.Item
@@ -351,7 +357,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     name={[name, "sourceCode", "code"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].sourceCode.code`)}
                     help={validationResult.getMessage(`routes[${index}].sourceCode.code`) ?? helpText}
-                    label="Source code"
+                    label={<I18n id={MessageKey.FrontendHostComponentsHostroutesSourceCode} />}
                     required
                 >
                     <TextArea rows={3} onClick={() => this.openRouteCodeEditorModal(index)} />
@@ -364,7 +370,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         name={[name, "sourceCode", "mainFunction"]}
                         validateStatus={validationResult.getStatus(`routes[${index}].sourceCode.mainFunction`)}
                         help={validationResult.getMessage(`routes[${index}].sourceCode.mainFunction`)}
-                        label="Main function name"
+                        label={<I18n id={MessageKey.FrontendHostComponentsHostroutesMainFunctionName} />}
                         required
                     >
                         <Input />
@@ -432,24 +438,26 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
     private buildRouteTypeTooltipContents() {
         return (
             <>
-                <p>The route type defines how the requests should be handled</p>
                 <p>
-                    <b>Integration:</b> Proxies requests to an app running in a TrueNAS or Docker container
+                    <I18n id={MessageKey.FrontendHostComponentsHostroutesRouteTypeHelpIntro} />
                 </p>
                 <p>
-                    <b>Proxy:</b> Proxies requests to an app using a target URL
+                    <I18n id={MessageKey.FrontendHostComponentsHostroutesRouteTypeHelpIntegration} />
                 </p>
                 <p>
-                    <b>Redirect:</b> Redirects requests to an third-party URL
+                    <I18n id={MessageKey.FrontendHostComponentsHostroutesRouteTypeHelpProxy} />
                 </p>
                 <p>
-                    <b>Static response:</b> Returns a static response with a predefined status code, headers and body
+                    <I18n id={MessageKey.FrontendHostComponentsHostroutesRouteTypeHelpRedirect} />
                 </p>
                 <p>
-                    <b>Source code:</b> Executes a JavaScript or Lua code to handle requests
+                    <I18n id={MessageKey.FrontendHostComponentsHostroutesRouteTypeHelpStaticResponse} />
                 </p>
                 <p>
-                    <b>Directory:</b> Serves static files from a directory with listing enabled
+                    <I18n id={MessageKey.FrontendHostComponentsHostroutesRouteTypeHelpExecuteCode} />
+                </p>
+                <p>
+                    <I18n id={MessageKey.FrontendHostComponentsHostroutesRouteTypeHelpDirectory} />
                 </p>
             </>
         )
@@ -470,7 +478,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     name={[name, "type"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].type`)}
                     help={validationResult.getMessage(`routes[${index}].type`)}
-                    label="Type"
+                    label={<I18n id={MessageKey.CommonType} />}
                     tooltip={{
                         title: this.buildRouteTypeTooltipContents(),
                         icon: <QuestionCircleFilled />,
@@ -478,12 +486,24 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     required
                 >
                     <Select>
-                        <Select.Option value={HostRouteType.INTEGRATION}>Integration</Select.Option>
-                        <Select.Option value={HostRouteType.PROXY}>Proxy</Select.Option>
-                        <Select.Option value={HostRouteType.REDIRECT}>Redirect</Select.Option>
-                        <Select.Option value={HostRouteType.STATIC_RESPONSE}>Static response</Select.Option>
-                        <Select.Option value={HostRouteType.STATIC_FILES}>Static files</Select.Option>
-                        <Select.Option value={HostRouteType.EXECUTE_CODE}>Execute code</Select.Option>
+                        <Select.Option value={HostRouteType.INTEGRATION}>
+                            <I18n id={MessageKey.CommonIntegration} />
+                        </Select.Option>
+                        <Select.Option value={HostRouteType.PROXY}>
+                            <I18n id={MessageKey.FrontendHostComponentsHostroutesTypeProxy} />
+                        </Select.Option>
+                        <Select.Option value={HostRouteType.REDIRECT}>
+                            <I18n id={MessageKey.FrontendHostComponentsHostroutesTypeRedirect} />
+                        </Select.Option>
+                        <Select.Option value={HostRouteType.STATIC_RESPONSE}>
+                            <I18n id={MessageKey.FrontendHostComponentsHostroutesTypeStaticResponse} />
+                        </Select.Option>
+                        <Select.Option value={HostRouteType.STATIC_FILES}>
+                            <I18n id={MessageKey.FrontendHostComponentsHostroutesTypeStaticFiles} />
+                        </Select.Option>
+                        <Select.Option value={HostRouteType.EXECUTE_CODE}>
+                            <I18n id={MessageKey.FrontendHostComponentsHostroutesTypeExecuteCode} />
+                        </Select.Option>
                     </Select>
                 </Form.Item>
                 <Form.Item
@@ -493,7 +513,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     name={[name, "sourcePath"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].sourcePath`)}
                     help={validationResult.getMessage(`routes[${index}].sourcePath`)}
-                    label="Source path"
+                    label={<I18n id={MessageKey.FrontendHostComponentsHostroutesSourcePath} />}
                     required
                 >
                     <Input />
@@ -554,7 +574,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     }
                     icon={<PlusOutlined />}
                 >
-                    Add route
+                    <I18n id={MessageKey.FrontendHostComponentsHostroutesAddRoute} />
                 </Button>
             </Form.Item>
         )

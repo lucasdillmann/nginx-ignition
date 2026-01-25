@@ -116,7 +116,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
         const loadingLabel = (
             <>
                 <LoadingOutlined style={{ fontSize: 14, marginRight: 8 }} />
-                Loading...
+                <I18n id={MessageKey.CommonLoading} />
             </>
         )
         return [...options, { value: "", label: loadingLabel, disabled: true }]

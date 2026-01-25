@@ -6,7 +6,7 @@ import { themedModal } from "../../../core/components/theme/ThemedResources"
 import { UserAccessLevel } from "../../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../../core/components/accesscontrol/IsAccessGranted"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { I18nMessage } from "../../../core/i18n/I18n"
+import { I18n, I18nMessage } from "../../../core/i18n/I18n"
 
 export enum ActionType {
     RELOAD,
@@ -115,7 +115,7 @@ export default class GenericNginxAction {
         const onClick = () =>
             themedModal().error({
                 width: 750,
-                title: "Error details",
+                title: <I18n id={MessageKey.FrontendComponentsErrorDetails} />,
                 content: <code>{error.response?.body?.message ?? error.message}</code>,
             })
 
@@ -123,7 +123,7 @@ export default class GenericNginxAction {
             ...this.messageProps(),
             actions: [
                 <Button key="show-details" type="default" onClick={onClick}>
-                    Open error details
+                    <I18n id={MessageKey.CommonOpenErrorDetails} />
                 </Button>,
             ],
         })

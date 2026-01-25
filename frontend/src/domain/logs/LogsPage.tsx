@@ -25,6 +25,7 @@ import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGra
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n, i18n, I18nMessage } from "../../core/i18n/I18n"
 
 interface LogsPageState {
     settings?: SettingsDto
@@ -96,7 +97,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     private configureShell() {
         const { autoRefreshSeconds } = this.state
         const disabled = autoRefreshSeconds !== undefined
-        const disabledReason = disabled ? "Auto refresh is enabled" : undefined
+        const disabledReason = disabled ? MessageKey.FrontendLogsAutoRefreshDisabledReason : undefined
 
         AppShellContext.get().updateConfig({
             title: MessageKey.CommonLogs,
@@ -181,7 +182,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
 
     private buildAutoRefreshOptions() {
         return [1, 5, 10, 30, 60].map(item => ({
-            label: `Every ${item} seconds`,
+            label: <I18n id={MessageKey.FrontendLogsAutoRefreshOption} params={{ seconds: item }} />,
             value: item,
         }))
     }
@@ -189,7 +190,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     private handleDomainNames(domainNames?: string[]): string[] {
         if (Array.isArray(domainNames) && domainNames.length > 0) return domainNames
 
-        return ["(default server)"]
+        return [i18n(MessageKey.CommonDefaultServerLabel)]
     }
 
     private renderSettings() {
@@ -197,18 +198,30 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         return (
             <Flex className="log-settings-option-container">
                 <Flex className="log-settings-option" vertical>
-                    <p>Category</p>
+                    <p>
+                        <I18n id={MessageKey.FrontendLogsCategory} />
+                    </p>
                     <Segmented
                         options={[
-                            { label: "Host logs", value: true, icon: <ClusterOutlined /> },
-                            { label: "Server logs", value: false, icon: <HddOutlined /> },
+                            {
+                                label: <I18n id={MessageKey.FrontendLogsHostLogs} />,
+                                value: true,
+                                icon: <ClusterOutlined />,
+                            },
+                            {
+                                label: <I18n id={MessageKey.FrontendLogsServerLogs} />,
+                                value: false,
+                                icon: <HddOutlined />,
+                            },
                         ]}
                         value={hostMode}
                         onChange={value => this.setHostMode(value)}
                     />
                 </Flex>
                 <Flex className="log-settings-option log-settings-line-count" vertical>
-                    <p>Lines</p>
+                    <p>
+                        <I18n id={MessageKey.FrontendLogsLines} />
+                    </p>
                     <Select
                         options={this.buildLineCountOptions()}
                         value={lineCount}
@@ -216,9 +229,11 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                     />
                 </Flex>
                 <Flex className="log-settings-option log-settings-auto-refresh" vertical>
-                    <p>Auto-refresh</p>
+                    <p>
+                        <I18n id={MessageKey.FrontendLogsAutoRefresh} />
+                    </p>
                     <Select
-                        placeholder="Disabled"
+                        placeholder={i18n(MessageKey.CommonDisabled)}
                         options={this.buildAutoRefreshOptions()}
                         value={autoRefreshSeconds}
                         onSelect={value => this.setAutoRefreshSeconds(value)}
@@ -228,7 +243,9 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                 </Flex>
                 <If condition={hostMode}>
                     <Flex className="log-settings-option log-settings-host" vertical>
-                        <p>Host</p>
+                        <p>
+                            <I18n id={MessageKey.CommonHost} />
+                        </p>
                         <PaginatedSelect
                             placeholder={MessageKey.CommonSelectOne}
                             onChange={host => this.handleHostChange(host)}
@@ -244,11 +261,21 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                         />
                     </Flex>
                     <Flex className="log-settings-option" vertical>
-                        <p>Type</p>
+                        <p>
+                            <I18n id={MessageKey.CommonType} />
+                        </p>
                         <Segmented
                             options={[
-                                { label: "Access logs", value: "access", icon: <AuditOutlined /> },
-                                { label: "Error logs", value: "error", icon: <FileExcelOutlined /> },
+                                {
+                                    label: <I18n id={MessageKey.FrontendLogsAccessLogs} />,
+                                    value: "access",
+                                    icon: <AuditOutlined />,
+                                },
+                                {
+                                    label: <I18n id={MessageKey.FrontendLogsErrorLogs} />,
+                                    value: "error",
+                                    icon: <FileExcelOutlined />,
+                                },
                             ]}
                             value={logType}
                             onChange={value => this.setLogType(value)}
@@ -259,12 +286,12 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         )
     }
 
-    private renderEmptyState(message: string, userActionOutcome: boolean = true) {
+    private renderEmptyState(message: I18nMessage, userActionOutcome: boolean = true) {
         const icon = userActionOutcome ? (
             <ExclamationCircleOutlined style={{ fontSize: 70, color: "var(--nginxIgnition-colorTextDisabled)" }} />
         ) : undefined
 
-        return <Empty image={icon} description={message} />
+        return <Empty image={icon} description={<I18n id={message} />} />
     }
 
     private renderEmptyStateIfNeeded() {
@@ -276,18 +303,17 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         } = settings!!
 
         if (!logSettings.accessLogsEnabled && hostMode && logType === "access")
-            return this.renderEmptyState("Host access logs are disabled in the nginx configuration")
+            return this.renderEmptyState(MessageKey.FrontendLogsAccessDisabled)
 
         if (!logSettings.errorLogsEnabled && hostMode && logType === "error")
-            return this.renderEmptyState("Host error logs are disabled in the nginx configuration")
+            return this.renderEmptyState(MessageKey.FrontendLogsErrorDisabled)
 
         if (!logSettings.serverLogsEnabled && !hostMode)
-            return this.renderEmptyState("nginx server logs are disabled in the nginx configuration")
+            return this.renderEmptyState(MessageKey.FrontendLogsServerDisabled)
 
-        if (hostMode && selectedHost === undefined)
-            return this.renderEmptyState("Please select a host in order to see its logs")
+        if (hostMode && selectedHost === undefined) return this.renderEmptyState(MessageKey.FrontendLogsSelectHost)
 
-        if (logs.length === 0) return this.renderEmptyState("No logs found", false)
+        if (logs.length === 0) return this.renderEmptyState(MessageKey.FrontendLogsNoLogs, false)
 
         return undefined
     }

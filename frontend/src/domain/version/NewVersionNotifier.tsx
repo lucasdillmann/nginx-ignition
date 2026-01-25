@@ -1,6 +1,8 @@
 import AppContext from "../../core/components/context/AppContext"
 import LocalStorageRepository from "../../core/repository/LocalStorageRepository"
 import { themedModal } from "../../core/components/theme/ThemedResources"
+import { i18n } from "../../core/i18n/I18n"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
 
 class NewVersionNotifier {
     private readonly repository: LocalStorageRepository<string>
@@ -18,9 +20,9 @@ class NewVersionNotifier {
             this.repository.set(latest)
             const modalInstance = themedModal().info({
                 type: "info",
-                title: "New version available",
-                content: `nginx ignition ${latest} is now available. You can check the project release page for the changelog and more details.`,
-                okText: "Open release page",
+                title: i18n(MessageKey.FrontendVersionNotifierTitle),
+                content: i18n({ id: MessageKey.FrontendVersionNotifierContent, params: { version: latest } }),
+                okText: i18n(MessageKey.FrontendVersionNotifierOpenRelease),
                 closable: true,
                 width: 600,
                 okButtonProps: {

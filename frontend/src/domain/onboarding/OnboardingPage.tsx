@@ -11,6 +11,7 @@ import { UnexpectedResponseError } from "../../core/apiclient/ApiResponse"
 import ValidationResultConverter from "../../core/validation/ValidationResultConverter"
 import "./OnboardingPage.css"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n, i18n } from "../../core/i18n/I18n"
 
 const { Text, Title } = Typography
 
@@ -65,10 +66,11 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
             <section className="onboarding-section">
                 <div className="onboarding-container">
                     <div className="onboarding-header">
-                        <Title className="onboarding-title">nginx ignition</Title>
+                        <Title className="onboarding-title">
+                            <I18n id={MessageKey.CommonAppName} />
+                        </Title>
                         <Text className="onboarding-text">
-                            Welcome to the nginx ignition. This seems to be your first access, please fill the form
-                            below to the create your user and we'll be ready to go.
+                            <I18n id={MessageKey.FrontendOnboardingSubtitle} />
                         </Text>
                     </div>
                     <Form onFinish={values => this.handleSubmit(values)} layout="vertical" requiredMark="optional">
@@ -79,7 +81,12 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                             className="onboarding-form-input"
                             initialValue={values.name}
                         >
-                            <Input size="large" prefix={<IdcardOutlined />} placeholder="Name" autoFocus />
+                            <Input
+                                size="large"
+                                prefix={<IdcardOutlined />}
+                                placeholder={i18n(MessageKey.CommonName)}
+                                autoFocus
+                            />
                         </Form.Item>
                         <Form.Item
                             name="username"
@@ -88,7 +95,11 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                             className="onboarding-form-input"
                             initialValue={values.username}
                         >
-                            <Input size="large" prefix={<UserOutlined />} placeholder="Username" />
+                            <Input
+                                size="large"
+                                prefix={<UserOutlined />}
+                                placeholder={i18n(MessageKey.CommonUsername)}
+                            />
                         </Form.Item>
                         <Form.Item
                             name="password"
@@ -100,12 +111,12 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                                 size="large"
                                 prefix={<LockOutlined />}
                                 type="password"
-                                placeholder="Password"
+                                placeholder={i18n(MessageKey.CommonPassword)}
                             />
                         </Form.Item>
                         <Form.Item>
                             <Button size="large" type="primary" htmlType="submit">
-                                Continue
+                                <I18n id={MessageKey.CommonContinue} />
                             </Button>
                         </Form.Item>
                     </Form>

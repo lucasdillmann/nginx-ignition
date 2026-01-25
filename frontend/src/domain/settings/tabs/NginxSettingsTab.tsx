@@ -5,6 +5,8 @@ import ValidationResult from "../../../core/validation/ValidationResult"
 import SettingsFormValues from "../model/SettingsFormValues"
 import { LogLevel } from "../model/SettingsDto"
 import { INTEGER_MAX } from "../SettingsConstants"
+import { I18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 export interface NginxSettingsTabProps {
     formValues: SettingsFormValues
@@ -20,7 +22,7 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     name={["nginx", "logs", enabledField]}
                     validateStatus={validationResult.getStatus(`nginx.logs.${enabledField}`)}
                     help={validationResult.getMessage(`nginx.logs.${enabledField}`)}
-                    label="Error logs enabled"
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxErrorLogsEnabled} />}
                     required
                 >
                     <Switch />
@@ -29,15 +31,25 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     name={["nginx", "logs", levelField]}
                     validateStatus={validationResult.getStatus(`nginx.logs.${levelField}`)}
                     help={validationResult.getMessage(`nginx.logs.${levelField}`)}
-                    label="Level"
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxErrorLogsLevel} />}
                     required
                 >
                     <Select>
-                        <Select.Option value={LogLevel.WARN}>warn</Select.Option>
-                        <Select.Option value={LogLevel.ALERT}>alert</Select.Option>
-                        <Select.Option value={LogLevel.ERROR}>error</Select.Option>
-                        <Select.Option value={LogLevel.CRIT}>crit</Select.Option>
-                        <Select.Option value={LogLevel.EMERG}>emerg</Select.Option>
+                        <Select.Option value={LogLevel.WARN}>
+                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogLevelWarn} />
+                        </Select.Option>
+                        <Select.Option value={LogLevel.ALERT}>
+                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogLevelAlert} />
+                        </Select.Option>
+                        <Select.Option value={LogLevel.ERROR}>
+                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogLevelError} />
+                        </Select.Option>
+                        <Select.Option value={LogLevel.CRIT}>
+                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogLevelCrit} />
+                        </Select.Option>
+                        <Select.Option value={LogLevel.EMERG}>
+                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogLevelEmerg} />
+                        </Select.Option>
                     </Select>
                 </Form.Item>
             </>
@@ -48,19 +60,23 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
         const { validationResult } = this.props
         return (
             <>
-                <h2 className="settings-form-section-name">Logs</h2>
+                <h2 className="settings-form-section-name">
+                    <I18n id={MessageKey.CommonLogs} />
+                </h2>
                 <p className="settings-form-section-help-text">
-                    Logging settings for the nginx server and virtual hosts
+                    <I18n id={MessageKey.FrontendSettingsTabsNginxLogsHelp} />
                 </p>
 
                 <Flex className="settings-form-inner-flex-container">
                     <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
-                        <h3 className="settings-form-subsection-name">Virtual hosts</h3>
+                        <h3 className="settings-form-subsection-name">
+                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogsVirtualHosts} />
+                        </h3>
                         <Form.Item
                             name={["nginx", "logs", "accessLogsEnabled"]}
                             validateStatus={validationResult.getStatus("nginx.logs.accessLogsEnabled")}
                             help={validationResult.getMessage("nginx.logs.accessLogsEnabled")}
-                            label="Access logs enabled"
+                            label={<I18n id={MessageKey.FrontendSettingsTabsNginxAccessLogsEnabled} />}
                             required
                         >
                             <Switch />
@@ -69,7 +85,9 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     </Flex>
 
                     <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
-                        <h3 className="settings-form-subsection-name">Server</h3>
+                        <h3 className="settings-form-subsection-name">
+                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogsServer} />
+                        </h3>
                         {this.renderErrorLogFieldset("serverLogsEnabled", "serverLogsLevel")}
                     </Flex>
                 </Flex>
@@ -85,12 +103,12 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     name={["nginx", "workerConnections"]}
                     validateStatus={validationResult.getStatus("nginx.workerConnections")}
                     help={validationResult.getMessage("nginx.workerConnections")}
-                    label="Connections per worker"
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxConnectionsPerWorker} />}
                     required
                 >
                     <InputNumber min={32} max={4096} className="settings-form-input-wide" />
                 </Form.Item>
-                <Form.Item label="Maximum body size" required>
+                <Form.Item label={<I18n id={MessageKey.FrontendSettingsTabsNginxMaximumBodySize} />} required>
                     <Space.Compact className="settings-form-input-wide">
                         <Form.Item
                             name={["nginx", "maximumBodySizeMb"]}
@@ -100,10 +118,12 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                         >
                             <InputNumber min={1} max={INTEGER_MAX} className="settings-form-input-wide" />
                         </Form.Item>
-                        <Space.Addon>MB</Space.Addon>
+                        <Space.Addon>
+                            <I18n id={MessageKey.CommonUnitMb} />
+                        </Space.Addon>
                     </Space.Compact>
                 </Form.Item>
-                <Form.Item label="Connect timeout" required>
+                <Form.Item label={<I18n id={MessageKey.FrontendSettingsTabsNginxConnectTimeout} />} required>
                     <Space.Compact className="settings-form-input-wide">
                         <Form.Item
                             name={["nginx", "timeouts", "connect"]}
@@ -113,10 +133,12 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                         >
                             <InputNumber min={1} max={INTEGER_MAX} className="settings-form-input-wide" />
                         </Form.Item>
-                        <Space.Addon>seconds</Space.Addon>
+                        <Space.Addon>
+                            <I18n id={MessageKey.CommonUnitSeconds} />
+                        </Space.Addon>
                     </Space.Compact>
                 </Form.Item>
-                <Form.Item label="Read timeout" required>
+                <Form.Item label={<I18n id={MessageKey.FrontendSettingsTabsNginxReadTimeout} />} required>
                     <Space.Compact className="settings-form-input-wide">
                         <Form.Item
                             name={["nginx", "timeouts", "read"]}
@@ -126,10 +148,12 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                         >
                             <InputNumber min={1} max={INTEGER_MAX} className="settings-form-input-wide" />
                         </Form.Item>
-                        <Space.Addon>seconds</Space.Addon>
+                        <Space.Addon>
+                            <I18n id={MessageKey.CommonUnitSeconds} />
+                        </Space.Addon>
                     </Space.Compact>
                 </Form.Item>
-                <Form.Item label="Send timeout" required>
+                <Form.Item label={<I18n id={MessageKey.FrontendSettingsTabsNginxSendTimeout} />} required>
                     <Space.Compact className="settings-form-input-wide">
                         <Form.Item
                             name={["nginx", "timeouts", "send"]}
@@ -139,10 +163,12 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                         >
                             <InputNumber min={1} max={INTEGER_MAX} className="settings-form-input-wide" />
                         </Form.Item>
-                        <Space.Addon>seconds</Space.Addon>
+                        <Space.Addon>
+                            <I18n id={MessageKey.CommonUnitSeconds} />
+                        </Space.Addon>
                     </Space.Compact>
                 </Form.Item>
-                <Form.Item label="Keepalive timeout" required>
+                <Form.Item label={<I18n id={MessageKey.FrontendSettingsTabsNginxKeepaliveTimeout} />} required>
                     <Space.Compact className="settings-form-input-wide">
                         <Form.Item
                             name={["nginx", "timeouts", "keepalive"]}
@@ -152,10 +178,12 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                         >
                             <InputNumber min={1} max={INTEGER_MAX} className="settings-form-input-wide" />
                         </Form.Item>
-                        <Space.Addon>seconds</Space.Addon>
+                        <Space.Addon>
+                            <I18n id={MessageKey.CommonUnitSeconds} />
+                        </Space.Addon>
                     </Space.Compact>
                 </Form.Item>
-                <Form.Item label="Client body timeout" required>
+                <Form.Item label={<I18n id={MessageKey.FrontendSettingsTabsNginxClientBodyTimeout} />} required>
                     <Space.Compact className="settings-form-input-wide">
                         <Form.Item
                             name={["nginx", "timeouts", "clientBody"]}
@@ -165,7 +193,9 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                         >
                             <InputNumber min={1} max={INTEGER_MAX} className="settings-form-input-wide" />
                         </Form.Item>
-                        <Space.Addon>seconds</Space.Addon>
+                        <Space.Addon>
+                            <I18n id={MessageKey.CommonUnitSeconds} />
+                        </Space.Addon>
                     </Space.Compact>
                 </Form.Item>
             </Flex>
@@ -180,7 +210,7 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     name={["nginx", "serverTokensEnabled"]}
                     validateStatus={validationResult.getStatus("nginx.serverTokensEnabled")}
                     help={validationResult.getMessage("nginx.serverTokensEnabled")}
-                    label="Server tokens"
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxServerTokens} />}
                     required
                 >
                     <Switch />
@@ -189,7 +219,7 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     name={["nginx", "gzipEnabled"]}
                     validateStatus={validationResult.getStatus("nginx.gzipEnabled")}
                     help={validationResult.getMessage("nginx.gzipEnabled")}
-                    label="GZIP enabled"
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxGzipEnabled} />}
                     required
                 >
                     <Switch />
@@ -198,7 +228,7 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     name={["nginx", "sendfileEnabled"]}
                     validateStatus={validationResult.getStatus("nginx.sendfileEnabled")}
                     help={validationResult.getMessage("nginx.sendfileEnabled")}
-                    label="Sendfile enabled"
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxSendfileEnabled} />}
                     required
                 >
                     <Switch />
@@ -207,7 +237,7 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     name={["nginx", "tcpNoDelayEnabled"]}
                     validateStatus={validationResult.getStatus("nginx.tcpNoDelayEnabled")}
                     help={validationResult.getMessage("nginx.tcpNoDelayEnabled")}
-                    label="TCP nodelay enabled"
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxTcpNodelayEnabled} />}
                     required
                 >
                     <Switch />
@@ -216,7 +246,7 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     name={["nginx", "defaultContentType"]}
                     validateStatus={validationResult.getStatus("nginx.defaultContentType")}
                     help={validationResult.getMessage("nginx.defaultContentType")}
-                    label="Default content type"
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxDefaultContentType} />}
                     required
                 >
                     <Input maxLength={128} minLength={1} />
@@ -225,7 +255,7 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     name={["nginx", "runtimeUser"]}
                     validateStatus={validationResult.getStatus("nginx.runtimeUser")}
                     help={validationResult.getMessage("nginx.runtimeUser")}
-                    label="Runtime user"
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxRuntimeUser} />}
                     required
                 >
                     <Input maxLength={32} minLength={1} />
@@ -234,7 +264,7 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     name={["nginx", "workerProcesses"]}
                     validateStatus={validationResult.getStatus("nginx.workerProcesses")}
                     help={validationResult.getMessage("nginx.workerProcesses")}
-                    label="Worker processes"
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxWorkerProcesses} />}
                     required
                 >
                     <InputNumber min={1} max={100} className="settings-form-input-wide" />
@@ -246,8 +276,12 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
     private renderGeneralFormPortion() {
         return (
             <>
-                <h2 className="settings-form-section-name">General</h2>
-                <p className="settings-form-section-help-text">General configurations properties of the nginx server</p>
+                <h2 className="settings-form-section-name">
+                    <I18n id={MessageKey.CommonGeneral} />
+                </h2>
+                <p className="settings-form-section-help-text">
+                    <I18n id={MessageKey.FrontendSettingsTabsNginxSectionGeneralHelp} />
+                </p>
                 <Flex className="settings-form-inner-flex-container">
                     {this.renderGeneralFirstColumn()}
                     {this.renderGeneralSecondColumn()}
@@ -261,10 +295,11 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
 
         return (
             <>
-                <h2 className="settings-form-section-name">Global bindings</h2>
+                <h2 className="settings-form-section-name">
+                    <I18n id={MessageKey.FrontendSettingsTabsNginxSectionBindings} />
+                </h2>
                 <p className="settings-form-section-help-text">
-                    Relation of IPs and ports where the virtual hosts will listen for requests by default (can be
-                    overwritten on every host if needed)
+                    <I18n id={MessageKey.FrontendSettingsTabsNginxSectionBindingsHelp} />
                 </p>
                 <HostBindings
                     pathPrefix="globalBindings"

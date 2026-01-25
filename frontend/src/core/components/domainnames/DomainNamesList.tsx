@@ -24,7 +24,7 @@ export default class DomainNamesList extends React.PureComponent<DomainNamesList
         const domainNameFields = fields.map((field, index) => (
             <Form.Item
                 {...(index > 0 && !disableTitle ? layout : undefined)}
-                label={index === 0 && !disableTitle ? "Domain names" : ""}
+                label={index === 0 && !disableTitle ? <I18n id={MessageKey.CommonDomainNames} /> : ""}
                 key={field.key}
                 className={className}
                 required

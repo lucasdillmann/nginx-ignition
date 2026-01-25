@@ -15,7 +15,7 @@ import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGra
 import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { raw } from "../../core/i18n/I18n"
+import { I18n, raw } from "../../core/i18n/I18n"
 
 export default class UserListPage extends React.PureComponent {
     private readonly service: UserService
@@ -41,7 +41,7 @@ export default class UserListPage extends React.PureComponent {
             )
 
         return (
-            <Tooltip title="You can't delete your own user">
+            <Tooltip title={<I18n id={MessageKey.FrontendUserListDeleteSelfTooltip} />}>
                 <DeleteOutlined className="action-icon" disabled />
             </Tooltip>
         )

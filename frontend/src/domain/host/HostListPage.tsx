@@ -22,7 +22,7 @@ import { Button } from "antd"
 import HostSupportWarning from "./components/HostSupportWarning"
 import { HostBindingType } from "./model/HostRequest"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { raw } from "../../core/i18n/I18n"
+import { i18n, raw } from "../../core/i18n/I18n"
 
 const BUTTON_STYLE = {
     height: "auto",
@@ -44,7 +44,7 @@ export default class HostListPage extends React.PureComponent {
 
     private handleDomainNames(host: HostResponse): string[] | TagGroupItem[] {
         const { domainNames, useGlobalBindings, globalBindings, bindings } = host
-        if (!Array.isArray(domainNames) || domainNames.length == 0) return ["(default server)"]
+        if (!Array.isArray(domainNames) || domainNames.length == 0) return [i18n(MessageKey.CommonDefaultServerLabel)]
 
         const targetBindings = useGlobalBindings ? globalBindings : bindings
         if (!Array.isArray(targetBindings) || targetBindings.length == 0) return domainNames
@@ -61,7 +61,7 @@ export default class HostListPage extends React.PureComponent {
         return [
             {
                 id: "domainNames",
-                description: MessageKey.FrontendCertificateDomainNames,
+                description: MessageKey.CommonDomainNames,
                 renderer: item => <TagGroup values={this.handleDomainNames(item)} />,
             },
             {
@@ -122,13 +122,13 @@ export default class HostListPage extends React.PureComponent {
             return AccessDeniedModal.show()
         }
 
-        const action = host.enabled ? "disable" : "enable"
+        const action = host.enabled ? i18n(MessageKey.CommonDisable) : i18n(MessageKey.CommonEnable)
         UserConfirmation.ask({ id: MessageKey.FrontendHostToggleConfirmation, params: { action } })
             .then(() => this.service.toggleEnabled(host.id))
             .then(() => {
                 const msgKey = host.enabled ? MessageKey.CommonTypeDisabled : MessageKey.CommonTypeEnabled
                 Notification.success(
-                    { id: msgKey, params: { type: MessageKey.CommonEntityHost } },
+                    { id: msgKey, params: { type: MessageKey.CommonHost } },
                     MessageKey.CommonSuccessMessage,
                 )
                 ReloadNginxAction.execute()
@@ -137,7 +137,7 @@ export default class HostListPage extends React.PureComponent {
             .catch(() => {
                 const msgKey = host.enabled ? MessageKey.CommonUnableToDisable : MessageKey.CommonUnableToEnable
                 Notification.error(
-                    { id: msgKey, params: { type: MessageKey.CommonEntityHost } },
+                    { id: msgKey, params: { type: MessageKey.CommonHost } },
                     MessageKey.CommonUnexpectedErrorTryAgain,
                 )
             })

@@ -23,7 +23,7 @@ import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGra
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { raw } from "../../core/i18n/I18n"
+import { I18n, raw } from "../../core/i18n/I18n"
 
 interface CertificateIssuePageState {
     availableProviders: AvailableProviderResponse[]
@@ -185,10 +185,13 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
                     name="providerId"
                     validateStatus={validationResult.getStatus("providerId")}
                     help={validationResult.getMessage("providerId")}
-                    label="Certificate provider"
+                    label={<I18n id={MessageKey.CommonProvider} />}
                     required
                 >
-                    <Select placeholder="Certificate provider" options={this.buildProviderSelectOptions()} />
+                    <Select
+                        placeholder={<I18n id={MessageKey.CommonProvider} />}
+                        options={this.buildProviderSelectOptions()}
+                    />
                 </Form.Item>
                 <DomainNamesList validationResult={validationResult} />
                 {this.renderDynamicFields()}

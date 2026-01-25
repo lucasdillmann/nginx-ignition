@@ -2,6 +2,7 @@ import NginxService from "../../nginx/NginxService"
 import NginxMetadata from "../../nginx/model/NginxMetadata"
 import { Alert } from "antd"
 import React, { CSSProperties } from "react"
+import { I18n, I18nMessage } from "../../../core/i18n/I18n"
 
 const ALERT_STYLE: CSSProperties = {
     marginBottom: 20,
@@ -12,8 +13,8 @@ interface NginxSupportWarningState {
 }
 
 export interface NginxSupportWarningMessage {
-    title: string
-    message: string
+    title: I18nMessage
+    message: I18nMessage
 }
 
 export default abstract class NginxSupportWarning extends React.Component<any, NginxSupportWarningState> {
@@ -45,8 +46,8 @@ export default abstract class NginxSupportWarning extends React.Component<any, N
                 {messages.map(({ title, message }, index) => (
                     <Alert
                         key={`nginx-support-alert-${index}`}
-                        message={title}
-                        description={message}
+                        message={<I18n id={title} />}
+                        description={<I18n id={message} />}
                         type="warning"
                         style={ALERT_STYLE}
                         showIcon

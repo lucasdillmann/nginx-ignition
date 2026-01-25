@@ -22,6 +22,7 @@ import { integrationRequestDefaults } from "./model/IntegrationRequestDefaults"
 import AvailableDriverResponse from "./model/AvailableDriverResponse"
 import DynamicInput from "../../core/components/dynamicfield/DynamicInput"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n } from "../../core/i18n/I18n"
 
 interface IntegrationFormPageState {
     availableDrivers: AvailableDriverResponse[]
@@ -65,7 +66,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
         const { formValues } = this.state
         this.saveModal.show(MessageKey.CommonHangOnTight, {
             id: MessageKey.CommonSavingType,
-            params: { type: MessageKey.CommonEntityIntegration },
+            params: { type: MessageKey.CommonIntegration },
         })
         this.setState({ validationResult: new ValidationResult() })
 
@@ -88,7 +89,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
 
     private handleSuccess() {
         Notification.success(
-            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonEntityIntegration } },
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonIntegration } },
             MessageKey.CommonSuccessMessage,
         )
         ReloadNginxAction.execute()
@@ -175,7 +176,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
                     name="enabled"
                     validateStatus={validationResult.getStatus("enabled")}
                     help={validationResult.getMessage("enabled")}
-                    label="Enabled"
+                    label={<I18n id={MessageKey.CommonEnabled} />}
                     required
                 >
                     <Switch />
@@ -184,7 +185,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
                     name="name"
                     validateStatus={validationResult.getStatus("name")}
                     help={validationResult.getMessage("name")}
-                    label="Name"
+                    label={<I18n id={MessageKey.CommonName} />}
                     required
                 >
                     <Input />
@@ -193,7 +194,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
                     name="driver"
                     validateStatus={validationResult.getStatus("driver")}
                     help={validationResult.getMessage("driver")}
-                    label="Driver"
+                    label={<I18n id={MessageKey.CommonDriver} />}
                     required
                 >
                     <Select options={this.buildDriverOptions()} />

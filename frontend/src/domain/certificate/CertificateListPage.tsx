@@ -54,12 +54,12 @@ export default class CertificateListPage extends React.Component<any, Certificat
         return [
             {
                 id: "domainNames",
-                description: MessageKey.FrontendCertificateDomainNames,
+                description: MessageKey.CommonDomainNames,
                 renderer: item => <TagGroup values={item.domainNames} />,
             },
             {
                 id: "provider",
-                description: MessageKey.FrontendCertificateProvider,
+                description: MessageKey.CommonProvider,
                 renderer: item => this.translateProviderName(item.providerId),
                 width: 250,
             },
@@ -124,7 +124,7 @@ export default class CertificateListPage extends React.Component<any, Certificat
             })
 
         AppShellContext.get().updateConfig({
-            title: MessageKey.FrontendCertificateListTitle,
+            title: MessageKey.CommonSslCertificates,
             subtitle: MessageKey.FrontendCertificateListSubtitle,
             actions: [
                 {

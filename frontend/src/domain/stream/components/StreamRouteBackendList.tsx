@@ -8,6 +8,8 @@ import StreamBackendSettingsModal from "./StreamBackendSettingsModal"
 import FormLayout from "../../../core/components/form/FormLayout"
 import If from "../../../core/components/flowcontrol/If"
 import { streamBackendDefaults } from "../StreamFormDefaults"
+import { I18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 interface StreamRouteBackendListState {
     openSettingsModalIndex?: number
@@ -95,7 +97,7 @@ export default class StreamRouteBackendList extends React.PureComponent<
         const addButton = (
             <Form.Item {...FormLayout.ExpandedUnlabeledItem} style={{ marginTop: 25 }}>
                 <Button type="dashed" onClick={() => operations.add(streamBackendDefaults())} icon={<PlusOutlined />}>
-                    Add backend
+                    <I18n id={MessageKey.FrontendStreamComponentsBackendlistAddBackend} />
                 </Button>
             </Form.Item>
         )

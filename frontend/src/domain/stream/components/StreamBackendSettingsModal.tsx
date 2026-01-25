@@ -3,6 +3,8 @@ import { Form, InputNumber, Modal, Switch } from "antd"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import { StreamBackend } from "../model/StreamRequest"
 import { streamCircuitBreakerDefaults } from "../StreamFormDefaults"
+import { I18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const FORM_INPUT_STYLE: React.CSSProperties = {
     paddingBottom: 20,
@@ -42,7 +44,7 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
             <Modal
                 afterClose={onClose}
                 onCancel={onClose}
-                title="Backend settings"
+                title={<I18n id={MessageKey.FrontendStreamComponentsBackendsettingsTitle} />}
                 width={800}
                 open={open}
                 cancelButtonProps={HIDDEN_BUTTON_PROPS}
@@ -50,11 +52,13 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
                 closable
                 maskClosable
             >
-                <Form.Item label="Circuit breaker" required>
+                <Form.Item
+                    label={<I18n id={MessageKey.FrontendStreamComponentsBackendsettingsCircuitBreaker} />}
+                    required
+                >
                     <Form.Item
-                        label="Enabled"
-                        help="Defines if a circuit breaker should be used for this backend or not,
-                            automatically interrupting the connection if the threshold is reached."
+                        label={<I18n id={MessageKey.CommonEnabled} />}
+                        help={<I18n id={MessageKey.FrontendStreamComponentsBackendsettingsEnabledHelp} />}
                         labelCol={CIRCUIT_BREAKER_SPACING}
                         style={FORM_INPUT_STYLE}
                         required
@@ -67,11 +71,11 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
                         />
                     </Form.Item>
                     <Form.Item
-                        label="Maximum failures"
+                        label={<I18n id={MessageKey.FrontendStreamComponentsBackendsettingsMaxFailures} />}
                         validateStatus={validationResult.getStatus(`${validationBasePath}.circuitBreaker.maxFailures`)}
                         help={
                             validationResult.getMessage(`${validationBasePath}.circuitBreaker.maxFailures`) ??
-                            "Maximum number of consecutive failures before the circuit breaker is opened"
+                            <I18n id={MessageKey.FrontendStreamComponentsBackendsettingsMaxFailuresHelp} />
                         }
                         labelCol={CIRCUIT_BREAKER_SPACING}
                         style={FORM_INPUT_STYLE}
@@ -87,11 +91,11 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
                         />
                     </Form.Item>
                     <Form.Item
-                        label="Open seconds"
+                        label={<I18n id={MessageKey.FrontendStreamComponentsBackendsettingsOpenSeconds} />}
                         validateStatus={validationResult.getStatus(`${validationBasePath}.circuitBreaker.openSeconds`)}
                         help={
                             validationResult.getMessage(`${validationBasePath}.circuitBreaker.openSeconds`) ??
-                            "Amount of time in seconds that the circuit breaker will be kept open (amount of time that the backend will not receive requests)"
+                            <I18n id={MessageKey.FrontendStreamComponentsBackendsettingsOpenSecondsHelp} />
                         }
                         labelCol={CIRCUIT_BREAKER_SPACING}
                         style={hideWeight ? undefined : FORM_INPUT_STYLE}
@@ -108,12 +112,11 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
                     </Form.Item>
                 </Form.Item>
                 <Form.Item
-                    label="Weight"
+                    label={<I18n id={MessageKey.FrontendStreamComponentsBackendsettingsWeight} />}
                     validateStatus={validationResult.getStatus(`${validationBasePath}.weight`)}
                     help={
                         validationResult.getMessage(`${validationBasePath}.weight`) ??
-                        "Defines how much of the traffic should be forwarded to this backend among the backend group. " +
-                            "The higher the value, the more requests will be routed to it."
+                        <I18n id={MessageKey.FrontendStreamComponentsBackendsettingsWeightHelp} />
                     }
                     hidden={hideWeight}
                 >

@@ -57,7 +57,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         const { description, type, color, onClick, disabled, disabledReason } = action
         if (typeof onClick === "string") {
             return (
-                <Tooltip title={disabledReason}>
+                <Tooltip title={disabledReason && <I18n id={disabledReason} />}>
                     <Link to={onClick} key={action.description as string}>
                         <Button
                             className="shell-content-actions-action-item"
@@ -72,7 +72,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
             )
         } else {
             return (
-                <Tooltip title={disabledReason}>
+                <Tooltip title={disabledReason && <I18n id={disabledReason} />}>
                     <Button
                         className="shell-content-actions-action-item"
                         key={action.description as string}

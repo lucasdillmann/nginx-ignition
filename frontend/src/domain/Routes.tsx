@@ -106,7 +106,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <CertificateListPage />,
         menuItem: {
-            description: MessageKey.FrontendMenuCertificates,
+            description: MessageKey.CommonSslCertificates,
             icon: <AuditOutlined />,
         },
     },
@@ -184,7 +184,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <AccessListListPage />,
         menuItem: {
-            description: MessageKey.FrontendMenuAccessLists,
+            description: MessageKey.CommonAccessList,
             icon: <FileProtectOutlined />,
         },
     },

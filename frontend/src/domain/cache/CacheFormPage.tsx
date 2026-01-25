@@ -57,7 +57,7 @@ export default class CacheFormPage extends React.Component<unknown, CacheFormSta
         const { formValues } = this.state
         this.saveModal.show(MessageKey.CommonHangOnTight, {
             id: MessageKey.CommonSavingType,
-            params: { type: MessageKey.CommonEntityCacheConfiguration },
+            params: { type: MessageKey.CommonCacheConfiguration },
         })
         this.setState({ validationResult: new ValidationResult() })
 
@@ -78,7 +78,7 @@ export default class CacheFormPage extends React.Component<unknown, CacheFormSta
     private handleSuccess() {
         this.saveModal.close()
         Notification.success(
-            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonEntityCacheConfiguration } },
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonCacheConfiguration } },
             MessageKey.CommonSuccessMessage,
         )
         ReloadNginxAction.execute()

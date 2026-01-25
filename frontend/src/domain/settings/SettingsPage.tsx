@@ -18,6 +18,7 @@ import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import { I18n } from "../../core/i18n/I18n"
 import { settingsDefaults } from "./SettingsDefaults"
 import NginxSettingsTab from "./tabs/NginxSettingsTab"
 import NginxIgnitionSettingsTab from "./tabs/NginxIgnitionSettingsTab"
@@ -99,19 +100,19 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
         return [
             {
                 key: "nginx-settings",
-                label: "nginx",
+                label: <I18n id={MessageKey.CommonNginx} />,
                 forceRender: true,
                 children: <NginxSettingsTab formValues={formValues!!} validationResult={validationResult} />,
             },
             {
                 key: "advanced-settings",
-                label: "nginx (advanced)",
+                label: <I18n id={MessageKey.FrontendSettingsPageTabAdvancedNginx} />,
                 forceRender: true,
                 children: <AdvancedNginxSettingsTab formValues={formValues!!} validationResult={validationResult} />,
             },
             {
                 key: "nginx-ignition-settings",
-                label: "nginx ignition",
+                label: <I18n id={MessageKey.CommonAppName} />,
                 forceRender: true,
                 children: <NginxIgnitionSettingsTab validationResult={validationResult} />,
             },

@@ -18,7 +18,8 @@ import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedM
 import StreamTypeDescription from "./utils/StreamTypeDescription"
 import StreamSupportWarning from "./components/StreamSupportWarning"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { raw } from "../../core/i18n/I18n"
+import { I18n, i18n, raw } from "../../core/i18n/I18n"
+import { StreamType } from "./model/StreamRequest"
 
 export default class StreamListPage extends React.PureComponent {
     private readonly service: StreamService
@@ -39,13 +40,13 @@ export default class StreamListPage extends React.PureComponent {
             return AccessDeniedModal.show()
         }
 
-        const action = stream.enabled ? "disable" : "enable"
+        const action = stream.enabled ? i18n(MessageKey.CommonDisable) : i18n(MessageKey.CommonEnable)
         UserConfirmation.ask({ id: MessageKey.FrontendStreamToggleConfirmation, params: { action } })
             .then(() => this.service.toggleEnabled(stream.id))
             .then(() => {
                 const msgKey = stream.enabled ? MessageKey.CommonTypeDisabled : MessageKey.CommonTypeEnabled
                 Notification.success(
-                    { id: msgKey, params: { type: MessageKey.CommonEntityStream } },
+                    { id: msgKey, params: { type: MessageKey.CommonStream } },
                     MessageKey.CommonSuccessMessage,
                 )
                 ReloadNginxAction.execute()
@@ -54,7 +55,7 @@ export default class StreamListPage extends React.PureComponent {
             .catch(() => {
                 const msgKey = stream.enabled ? MessageKey.CommonUnableToDisable : MessageKey.CommonUnableToEnable
                 Notification.error(
-                    { id: msgKey, params: { type: MessageKey.CommonEntityStream } },
+                    { id: msgKey, params: { type: MessageKey.CommonStream } },
                     MessageKey.CommonUnexpectedErrorTryAgain,
                 )
             })
@@ -70,7 +71,7 @@ export default class StreamListPage extends React.PureComponent {
             {
                 id: "binding.type",
                 description: MessageKey.CommonType,
-                renderer: item => StreamTypeDescription[item.type],
+                renderer: item => <I18n id={StreamTypeDescription[item.type]} />,
                 width: 200,
             },
             {

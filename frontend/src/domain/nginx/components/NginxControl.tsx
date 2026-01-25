@@ -13,6 +13,7 @@ import { UserAccessLevel } from "../../user/model/UserAccessLevel"
 import If from "../../../core/components/flowcontrol/If"
 import NginxMetadata, { NginxSupportType } from "../model/NginxMetadata"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { I18n, i18n, I18nMessage } from "../../../core/i18n/I18n"
 
 interface NginxStatusState {
     loading: boolean
@@ -68,15 +69,27 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
     private renderStatusBadge(): React.ReactNode {
         const { running } = this.state
 
-        let metadata: { color: string; description: string }
-        if (running === undefined) metadata = { color: "var(--nginxIgnition-colorWarning)", description: "unknown" }
-        else if (running) metadata = { color: "var(--nginxIgnition-colorSuccess)", description: "online" }
-        else metadata = { color: "var(--nginxIgnition-colorError)", description: "offline" }
+        let metadata: { color: string; description: I18nMessage }
+        if (running === undefined)
+            metadata = {
+                color: "var(--nginxIgnition-colorWarning)",
+                description: MessageKey.FrontendNginxControlStatusUnknown,
+            }
+        else if (running)
+            metadata = {
+                color: "var(--nginxIgnition-colorSuccess)",
+                description: MessageKey.FrontendNginxControlStatusOnline,
+            }
+        else
+            metadata = {
+                color: "var(--nginxIgnition-colorError)",
+                description: MessageKey.FrontendNginxControlStatusOffline,
+            }
 
         return (
             <Badge
                 className="nginx-control-status-badge"
-                count={metadata.description}
+                count={<I18n id={metadata.description} />}
                 style={{ backgroundColor: metadata.color, borderColor: metadata.color }}
             />
         )
@@ -109,14 +122,14 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
                     onClick={() => this.performNginxAction(ActionType.START)}
                     disabled={readOnly}
                 >
-                    start
+                    <I18n id={MessageKey.FrontendNginxControlStartButton} />
                 </Button>
             )
 
         return (
             <>
                 <Button color="danger" variant="outlined" onClick={() => this.confirmStop()} disabled={readOnly}>
-                    stop
+                    <I18n id={MessageKey.FrontendNginxControlStopButton} />
                 </Button>
                 <Button
                     className="nginx-reload-button"
@@ -125,7 +138,7 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
                     onClick={() => this.performNginxAction(ActionType.RELOAD)}
                     disabled={readOnly}
                 >
-                    reload
+                    <I18n id={MessageKey.FrontendNginxControlReloadButton} />
                 </Button>
             </>
         )
@@ -138,22 +151,27 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
         const { version, availableSupport } = metadata
 
         const supportedFeatures = [
-            "HTTP(S) servers",
-            availableSupport.streams != NginxSupportType.NONE ? "streams" : null,
-            availableSupport.tlsSni != NginxSupportType.NONE ? "TLS SNI" : null,
-            availableSupport.runCode != NginxSupportType.NONE ? "JS/Lua code execution" : null,
-        ].filter(feature => feature != null)
+            i18n(MessageKey.FrontendNginxControlFeatureHttp),
+            availableSupport.streams != NginxSupportType.NONE
+                ? i18n(MessageKey.FrontendNginxControlFeatureStreams)
+                : null,
+            availableSupport.tlsSni != NginxSupportType.NONE
+                ? i18n(MessageKey.FrontendNginxControlFeatureTlsSni)
+                : null,
+            availableSupport.runCode != NginxSupportType.NONE
+                ? i18n(MessageKey.FrontendNginxControlFeatureRunCode)
+                : null,
+        ].filter(feature => feature != null) as string[]
 
-        const formatFeatures = (features: string[]): string => {
-            if (features.length === 1) return features[0]
-            if (features.length === 2) return `${features[0]} and ${features[1]}`
-
-            const allButLast = features.slice(0, -1).join(", ")
-            const last = features[features.length - 1]
-            return `${allButLast}, and ${last}`
-        }
-
-        return `nginx version ${version} with support for ${formatFeatures(supportedFeatures)}`
+        const featuresList = supportedFeatures.join(", ")
+        return (
+            <I18n
+                id={{
+                    id: MessageKey.FrontendNginxControlTooltip,
+                    params: { version, features: featuresList },
+                }}
+            />
+        )
     }
 
     render() {
@@ -164,7 +182,9 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
             <Preloader loading={loading} size={32}>
                 <Flex className="nginx-control-container" vertical>
                     <Flex className="nginx-control-status-title" wrap>
-                        <span>server status</span>
+                        <span>
+                            <I18n id={MessageKey.FrontendNginxControlServerStatus} />
+                        </span>
                         <If condition={tooltipContents != undefined}>
                             <Tooltip title={tooltipContents}>
                                 <InfoCircleOutlined width="10" style={{ marginLeft: 8, color: "gray" }} />
