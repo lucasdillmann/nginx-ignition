@@ -14,6 +14,20 @@ import (
 var (
 	duplicatedValuesBypassPrefixes = []string{
 		"certificate/",
+		"frontend/components/domainnames/placeholder",
+		"frontend/stream/components/routeform/domains",
+		"frontend/settings/tabs/nginx/logs/server",
+		"frontend/user/menu/change-password-title",
+		"frontend/accesslist/section-credentials",
+		"frontend/nginx/control/feature-streams",
+		"frontend/settings/tabs/nginx/log-level-alert",
+		"frontend/settings/tabs/nginx/log-level-warn",
+		"frontend/stream/components/routeform/backends",
+		"frontend/stream/form/backend-title",
+		"frontend/logs/host-logs",
+		"frontend/logs/server-logs",
+		"frontend/host/components/hostbindings/protocol",
+		"frontend/settings/tabs/ignition/time-unit-minutes",
 	}
 	placeholderRegex = regexp.MustCompile(`\$\{[a-zA-Z0-9_\-]+\}`)
 )

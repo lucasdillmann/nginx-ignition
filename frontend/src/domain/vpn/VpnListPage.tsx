@@ -114,7 +114,7 @@ export default class VpnListPage extends React.Component<any, VpnListPageState> 
             })
 
         AppShellContext.get().updateConfig({
-            title: MessageKey.FrontendVpnListTitle,
+            title: MessageKey.CommonVpnConnection,
             subtitle: MessageKey.FrontendVpnListSubtitle,
             actions: [
                 {

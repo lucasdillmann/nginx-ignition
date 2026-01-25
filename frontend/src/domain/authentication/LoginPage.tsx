@@ -104,7 +104,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
             >
                 <ProFormText
                     name="username"
-                    placeholder={i18n(MessageKey.FrontendAuthenticationUsernamePlaceholder)}
+                    placeholder={i18n(MessageKey.CommonUsername)}
                     fieldProps={{
                         size: "large",
                         prefix: <UserOutlined />,
@@ -115,7 +115,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                 />
                 <ProFormText.Password
                     name="password"
-                    placeholder={i18n(MessageKey.FrontendAuthenticationPasswordPlaceholder)}
+                    placeholder={i18n(MessageKey.CommonPassword)}
                     fieldProps={{
                         size: "large",
                         prefix: <LockOutlined />,
