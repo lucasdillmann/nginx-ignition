@@ -23,6 +23,7 @@ export default class NginxIgnition extends React.Component<unknown, NginxIgnitio
     }
 
     private handleThemeChange(darkMode: boolean) {
+        document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light")
         this.setState({ darkMode })
     }
 

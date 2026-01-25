@@ -22,6 +22,10 @@ export default class I18nService {
         })
     }
 
+    getCustomLanguage(): string | null {
+        return this.repository.get()
+    }
+
     setCustomLanguage(languageTag: string | null) {
         if (!languageTag) this.repository.clear()
         else this.repository.set(languageTag)

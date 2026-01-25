@@ -13,15 +13,17 @@ import LightBackground from "./background/light.jpg"
 import DarkBackground from "./background/dark.jpg"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n } from "../../core/i18n/I18n"
+import ThemeToggle from "../../core/components/theme/ThemeToggle"
+import I18nLanguagePicker from "../../core/i18n/I18nLanguagePicker"
 
 interface LoginPageState {
     loading: boolean
     attemptFailed: boolean
+    backgroundImageUrl: string
 }
 
 export default class LoginPage extends React.Component<any, LoginPageState> {
     private readonly service: UserService
-    private readonly backgroundImageUrl: string
 
     constructor(props: any) {
         super(props)
@@ -29,9 +31,8 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
         this.state = {
             loading: false,
             attemptFailed: false,
+            backgroundImageUrl: ThemeContext.isDarkMode() ? DarkBackground : LightBackground,
         }
-
-        this.backgroundImageUrl = ThemeContext.isDarkMode() ? DarkBackground : LightBackground
     }
 
     private handleSubmit(values: { username: string; password: string }) {
@@ -62,14 +63,28 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
         )
     }
 
+    private renderSubtitle() {
+        return (
+            <>
+                <p style={{ paddingRight: 25 }}>
+                    <I18n id={MessageKey.FrontendAuthenticationLoginSubtitle} />
+                </p>
+                <ThemeToggle />
+                <I18nLanguagePicker style={{ marginLeft: 10 }} />
+            </>
+        )
+    }
+
     private renderForm() {
+        const { backgroundImageUrl } = this.state
+
         return (
             <LoginFormPage
                 id="nginx-ignition-login-form"
                 title={<I18n id={MessageKey.CommonAppName} />}
-                subTitle={<I18n id={MessageKey.FrontendAuthenticationLoginSubtitle} />}
+                subTitle={this.renderSubtitle()}
                 onFinish={this.handleSubmit.bind(this)}
-                backgroundImageUrl={this.backgroundImageUrl}
+                backgroundImageUrl={backgroundImageUrl}
                 submitter={{
                     searchConfig: {
                         submitText: i18n(MessageKey.FrontendAuthenticationLoginButton),
@@ -111,6 +126,19 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                 />
             </LoginFormPage>
         )
+    }
+
+    private handleThemeChange(darkMode: boolean) {
+        const backgroundImageUrl = darkMode ? DarkBackground : LightBackground
+        this.setState({ backgroundImageUrl })
+    }
+
+    componentDidMount() {
+        ThemeContext.register(this.handleThemeChange.bind(this))
+    }
+
+    componentWillUnmount() {
+        ThemeContext.deregister(this.handleThemeChange.bind(this))
     }
 
     render() {

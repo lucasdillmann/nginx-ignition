@@ -77,6 +77,7 @@ func readPropertiesFile(file *os.File) (PropertiesFile, error) {
 				PropertiesKey: propertiesKey,
 				CamelCaseKey:  camelCaseKey(propertiesKey),
 				SnakeCaseKey:  snakeCaseKey(propertiesKey),
+				RawValue:      parts[1],
 				Value:         normalizeValue(parts[1]),
 			})
 		}
@@ -93,7 +94,7 @@ func normalizeValue(value string) string {
 }
 
 func normalizeLanguageTag(languageTag string) string {
-	parts := strings.Split(languageTag, "_")
+	parts := strings.Split(languageTag, "-")
 	firstPart := cases.Title(language.English).String(parts[0])
 
 	if len(parts) == 1 {
