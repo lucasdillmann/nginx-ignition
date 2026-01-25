@@ -12,6 +12,8 @@ jobs:
     runs-on: self-hosted
     container:
       image: dillmann/github-actions-runtime
+      options: >-
+        -v /data/cache:/data/cache
     services:
       postgres:
         image: postgres:18-alpine
@@ -57,6 +59,8 @@ jobs:
     runs-on: self-hosted
     container:
       image: dillmann/github-actions-runtime
+      options: >-
+        -v /data/cache:/data/cache
     env:
       GOPATH: /data/cache/go
       GOMODCACHE: /data/cache/go/pkg/mod
