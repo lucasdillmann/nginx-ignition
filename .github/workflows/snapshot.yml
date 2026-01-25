@@ -10,10 +10,6 @@ on:
 jobs:
   quality-checks:
     runs-on: self-hosted
-    container:
-      image: dillmann/github-actions-runtime
-      options: >-
-        -v /data/cache:/data/cache
     services:
       postgres:
         image: postgres:18-alpine
@@ -26,8 +22,6 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 44554:5432
     env:
       GOPATH: /data/cache/go
       GOMODCACHE: /data/cache/go/pkg/mod
@@ -46,7 +40,7 @@ jobs:
       - name: Unit tests
         env:
           TEST_POSTGRES_HOST: postgres
-          TEST_POSTGRES_PORT: 44554
+          TEST_POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
         run: make test
       - name: Lint
         run: make lint
@@ -57,10 +51,6 @@ jobs:
 
   build:
     runs-on: self-hosted
-    container:
-      image: dillmann/github-actions-runtime
-      options: >-
-        -v /data/cache:/data/cache
     env:
       GOPATH: /data/cache/go
       GOMODCACHE: /data/cache/go/pkg/mod

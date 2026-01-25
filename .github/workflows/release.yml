@@ -7,10 +7,6 @@ on:
 jobs:
   build:
     runs-on: self-hosted
-    container:
-      image: dillmann/github-actions-runtime
-      options: >-
-        -v /data/cache:/data/cache
     permissions:
       contents: write
     env:
