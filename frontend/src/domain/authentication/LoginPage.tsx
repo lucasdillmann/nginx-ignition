@@ -87,7 +87,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                 backgroundImageUrl={backgroundImageUrl}
                 submitter={{
                     searchConfig: {
-                        submitText: i18n(MessageKey.FrontendAuthenticationLoginButton),
+                        submitText: <I18n id={MessageKey.FrontendAuthenticationLoginButton} />,
                     },
                 }}
                 containerStyle={{
