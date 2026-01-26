@@ -4,12 +4,8 @@ import If from "../../../core/components/flowcontrol/If"
 import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import CompatibleStreamProtocolResolver from "../utils/CompatibleStreamProtocolResolver"
-
-const PROTOCOL_NAMES: Record<StreamProtocol, string> = {
-    [StreamProtocol.TCP]: "TCP",
-    [StreamProtocol.UDP]: "UDP",
-    [StreamProtocol.SOCKET]: "Unix socket",
-}
+import { I18n, i18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const INPUT_STYLE = {
     width: 150,
@@ -35,6 +31,17 @@ export default class StreamAddressInput extends React.Component<StreamAddressInp
         })
     }
 
+    private protocolLabel(protocol: StreamProtocol) {
+        switch (protocol) {
+            case StreamProtocol.TCP:
+                return <I18n id={MessageKey.CommonProtocolTcp} />
+            case StreamProtocol.UDP:
+                return <I18n id={MessageKey.FrontendStreamComponentsAddressinputProtocolUdp} />
+            case StreamProtocol.SOCKET:
+                return <I18n id={MessageKey.FrontendStreamComponentsAddressinputProtocolSocket} />
+        }
+    }
+
     private buildOptions(): any[] {
         const { parentProtocol } = this.props
         const possibleProtocols = parentProtocol
@@ -43,7 +50,7 @@ export default class StreamAddressInput extends React.Component<StreamAddressInp
 
         return possibleProtocols.map(protocol => ({
             value: protocol,
-            label: PROTOCOL_NAMES[protocol],
+            label: this.protocolLabel(protocol),
         }))
     }
 
@@ -74,12 +81,16 @@ export default class StreamAddressInput extends React.Component<StreamAddressInp
                             <Input
                                 value={address.address}
                                 onChange={event => this.handleChange("address", event.target.value)}
-                                placeholder={backendSocket ? "Unix socket path" : "Address"}
+                                placeholder={
+                                    backendSocket
+                                        ? i18n(MessageKey.FrontendStreamComponentsAddressinputSocketPlaceholder)
+                                        : i18n(MessageKey.FrontendStreamComponentsAddressinputAddressPlaceholder)
+                                }
                             />
                             <If condition={!backendSocket}>
                                 <Space.Addon>:</Space.Addon>
                                 <InputNumber
-                                    placeholder="Port"
+                                    placeholder={i18n(MessageKey.CommonPort)}
                                     style={INPUT_STYLE}
                                     value={address.port}
                                     onChange={value => this.handleChange("port", value)}

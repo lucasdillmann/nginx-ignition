@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
@@ -27,7 +28,7 @@ func Test_handler(t *testing.T) {
 	}{
 		{
 			name:           "APIError",
-			err:            New(http.StatusBadRequest, "Bad Request"),
+			err:            New(http.StatusBadRequest, i18n.Static("Bad Request")),
 			expectedStatus: http.StatusBadRequest,
 			expectedBody:   `{"message":"Bad Request"}`,
 		},
@@ -37,17 +38,17 @@ func Test_handler(t *testing.T) {
 				Violations: []validation.ConsistencyViolation{
 					{
 						Path:    "field1",
-						Message: "error1",
+						Message: i18n.Static("error1"),
 					},
 				},
 			},
 			expectedStatus: http.StatusBadRequest,
-			expectedBody:   `{"consistencyProblems":[{"fieldPath":"field1","message":"error1"}],"message":"One or more consistency problems were found"}`,
+			expectedBody:   `{"consistencyProblems":[{"fieldPath":"field1","message":"error1"}],"message":"api/common/apierror/consistency-problems"}`,
 		},
 		{
 			name: "CoreError (UserRelated)",
 			err: &coreerror.CoreError{
-				Message:     "User error",
+				Message:     i18n.Static("User error"),
 				UserRelated: true,
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -56,7 +57,7 @@ func Test_handler(t *testing.T) {
 		{
 			name: "CoreError (Not UserRelated)",
 			err: &coreerror.CoreError{
-				Message:     "System error",
+				Message:     i18n.Static("System error"),
 				UserRelated: false,
 			},
 			expectedStatus: http.StatusInternalServerError,
@@ -118,7 +119,7 @@ func Test_canHandle(t *testing.T) {
 	}{
 		{
 			name:     "APIError",
-			err:      New(http.StatusBadRequest, "msg"),
+			err:      New(http.StatusBadRequest, i18n.Static("msg")),
 			expected: true,
 		},
 		{

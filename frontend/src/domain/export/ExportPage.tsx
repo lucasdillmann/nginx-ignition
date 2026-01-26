@@ -9,6 +9,8 @@ import { DatabaseOutlined, DownloadOutlined, FileZipOutlined, QuestionCircleOutl
 import Notification from "../../core/components/notification/Notification"
 import { themedModal } from "../../core/components/theme/ThemedResources"
 import "./ExportPage.css"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n, i18n } from "../../core/i18n/I18n"
 
 interface ExportPageState {
     nginxModalOpen: boolean
@@ -89,7 +91,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                 <Flex className="export-guide-section-content" vertical>
                     <Flex className="export-guide-section-title">
                         <h2>
-                            <DatabaseOutlined /> Database backup
+                            <DatabaseOutlined /> <I18n id={MessageKey.FrontendExportSectionDatabaseTitle} />
                         </h2>
                         <div className="export-guide-section-action">
                             <Button
@@ -107,24 +109,18 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                                 loading={databaseLoading}
                                 onClick={() => this.databaseBackup()}
                             >
-                                <DownloadOutlined /> Download
+                                <DownloadOutlined /> <I18n id={MessageKey.CommonDownload} />
                             </Button>
                         </div>
                     </Flex>
                     <p>
-                        A database backup is a snapshot of the nginx ignition configurations (hosts, certificates,
-                        streams, etc) that can be used to restore the app to a previous state or recover from a
-                        failure/data loss, enabling you to get nginx ignition back and running again.
+                        <I18n id={MessageKey.FrontendExportSectionDatabaseDescription1} />
                     </p>
                     <p>
-                        It's a good idea to backup your database regularly using an automated process whenever possible
-                        (which can be done using cron jobs or similar tools calling the nginx ignition API to generate
-                        the backup file or by interacting with the database directly).
+                        <I18n id={MessageKey.FrontendExportSectionDatabaseDescription2} />
                     </p>
                     <p>
-                        Please note that a backup file can take a while to be generated depending on the size of the
-                        database. The produced file type will vary depending if you're using SQLite or PostgreSQL (more
-                        details available at the nginx ignition's documentations).
+                        <I18n id={MessageKey.FrontendExportSectionDatabaseDescription3} />
                     </p>
                 </Flex>
             </Flex>
@@ -138,7 +134,7 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                 <Flex className="export-guide-section-content" vertical>
                     <Flex className="export-guide-section-title">
                         <h2>
-                            <FileZipOutlined /> nginx configuration
+                            <FileZipOutlined /> <I18n id={MessageKey.CommonNginxConfiguration} />
                         </h2>
                         <div className="export-guide-section-action">
                             <Button
@@ -147,18 +143,15 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                                 loading={nginxLoading}
                                 onClick={() => this.openNginxModal()}
                             >
-                                <DownloadOutlined /> Download
+                                <DownloadOutlined /> <I18n id={MessageKey.CommonDownload} />
                             </Button>
                         </div>
                     </Flex>
                     <p>
-                        Whenever you make a change using nginx ignition and reload the server, the nginx configuration
-                        files are generated or updated with all the hosts, streams, SSL certificates and more that
-                        you've enabled.
+                        <I18n id={MessageKey.FrontendExportSectionNginxDescription1} />
                     </p>
                     <p>
-                        By downloading the nginx configuration files, you can analyze/review its contents or even deploy
-                        a nginx server with these same settings and behaviours mostly the same way nginx ignition does.
+                        <I18n id={MessageKey.FrontendExportSectionNginxDescription2} />
                     </p>
                 </Flex>
             </Flex>
@@ -190,28 +183,31 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                 okButtonProps={{
                     disabled: nginxLoading,
                 }}
-                title="nginx configuration"
+                title={<I18n id={MessageKey.CommonNginxConfiguration} />}
                 width={800}
                 open={nginxModalOpen}
-                okText="Continue"
-                cancelText="Cancel"
+                okText={<I18n id={MessageKey.CommonContinue} />}
+                cancelText={<I18n id={MessageKey.CommonCancel} />}
             >
                 <p>
-                    If needed, you can customize the paths that the configuration files should use by filling the fields
-                    below. This action is optional and, if left empty, the files will be generated using relative paths.
+                    <I18n id={MessageKey.FrontendExportNginxModalDescription} />
                 </p>
                 <br />
-                <Form.Item label="Base path for the nginx files" initialValue={nginxBasePath} layout="vertical">
+                <Form.Item
+                    label={<I18n id={MessageKey.FrontendExportNginxModalBasePath} />}
+                    initialValue={nginxBasePath}
+                    layout="vertical"
+                >
                     <Input
                         size="large"
                         onChange={event => this.setValue("nginxBasePath", event.target.value)}
                         required={false}
-                        placeholder="e.g. /etc/nginx"
+                        placeholder={i18n(MessageKey.FrontendExportNginxModalBasePathPlaceholder)}
                         autoFocus
                     />
                 </Form.Item>
                 <Form.Item
-                    label="Path for the nginx configuration files"
+                    label={<I18n id={MessageKey.FrontendExportNginxModalConfigPath} />}
                     initialValue={nginxConfigPath}
                     layout="vertical"
                 >
@@ -219,34 +215,46 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
                         size="large"
                         onChange={event => this.setValue("nginxConfigPath", event.target.value)}
                         required={false}
-                        placeholder="e.g. /etc/nginx/config"
+                        placeholder={i18n(MessageKey.FrontendExportNginxModalConfigPathPlaceholder)}
                         autoFocus
                     />
                 </Form.Item>
-                <Form.Item label="Path for the nginx log files" initialValue={nginxLogPath} layout="vertical">
+                <Form.Item
+                    label={<I18n id={MessageKey.FrontendExportNginxModalLogPath} />}
+                    initialValue={nginxLogPath}
+                    layout="vertical"
+                >
                     <Input
                         size="large"
                         onChange={event => this.setValue("nginxLogPath", event.target.value)}
                         required={false}
-                        placeholder="e.g. /var/log/nginx"
+                        placeholder={i18n(MessageKey.FrontendExportNginxModalLogPathPlaceholder)}
                         autoFocus
                     />
                 </Form.Item>
-                <Form.Item label="Path for the nginx cache files" initialValue={nginxCachePath} layout="vertical">
+                <Form.Item
+                    label={<I18n id={MessageKey.FrontendExportNginxModalCachePath} />}
+                    initialValue={nginxCachePath}
+                    layout="vertical"
+                >
                     <Input
                         size="large"
                         onChange={event => this.setValue("nginxCachePath", event.target.value)}
                         required={false}
-                        placeholder="e.g. /var/run/nginx/cache"
+                        placeholder={i18n(MessageKey.FrontendExportNginxModalCachePathPlaceholder)}
                         autoFocus
                     />
                 </Form.Item>
-                <Form.Item label="Path for the nginx temp files" initialValue={nginxTempPath} layout="vertical">
+                <Form.Item
+                    label={<I18n id={MessageKey.FrontendExportNginxModalTempPath} />}
+                    initialValue={nginxTempPath}
+                    layout="vertical"
+                >
                     <Input
                         size="large"
                         onChange={event => this.setValue("nginxTempPath", event.target.value)}
                         required={false}
-                        placeholder="e.g. /tmp/nginx"
+                        placeholder={i18n(MessageKey.FrontendExportNginxModalTempPathPlaceholder)}
                         autoFocus
                     />
                 </Form.Item>
@@ -258,17 +266,21 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
         const onClick = () =>
             themedModal().error({
                 width: 750,
-                title: "Error details",
+                title: <I18n id={MessageKey.FrontendComponentsErrorDetails} />,
                 content: <code>{error.response?.body?.message ?? error.message}</code>,
             })
 
-        Notification.error("Download failed", "Unable to download the file at this moment. Please try again later.", {
-            actions: [
-                <Button key="show-details" type="default" onClick={onClick}>
-                    Open error details
-                </Button>,
-            ],
-        })
+        Notification.error(
+            MessageKey.FrontendExportDownloadFailed,
+            MessageKey.FrontendExportDownloadFailedDescription,
+            {
+                actions: [
+                    <Button key="show-details" type="default" onClick={onClick}>
+                        <I18n id={MessageKey.CommonOpenErrorDetails} />
+                    </Button>,
+                ],
+            },
+        )
     }
 
     private renderPage(): ReactNode {
@@ -283,8 +295,8 @@ export default class ExportPage extends React.Component<any, ExportPageState> {
 
     componentDidMount() {
         AppShellContext.get().updateConfig({
-            title: "Export and backup",
-            subtitle: "Download nginx configuration files and the ignition database contents for backup and recovery",
+            title: MessageKey.CommonExportAndBackup,
+            subtitle: MessageKey.FrontendExportSubtitle,
         })
     }
 

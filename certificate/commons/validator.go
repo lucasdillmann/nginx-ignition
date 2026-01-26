@@ -1,18 +1,28 @@
 package commons
 
 import (
+	"context"
 	"fmt"
 
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
-func Validate(request *certificate.IssueRequest, domainRules DomainRules) error {
-	violations := append(validateBaseFields(request), domainRules.Validate(request)...)
+func Validate(
+	ctx context.Context,
+	request *certificate.IssueRequest,
+	domainRules DomainRules,
+) error {
+	violations := append(validateBaseFields(ctx, request), domainRules.Validate(ctx, request)...)
 
-	dynamicFieldsResult := dynamicfields.Validate(domainRules.DynamicFields(), request.Parameters)
+	dynamicFieldsResult := dynamicfields.Validate(
+		ctx,
+		domainRules.DynamicFields(),
+		request.Parameters,
+	)
 	if dynamicFieldsResult != nil {
 		violations = append(violations, dynamicFieldsResult.Violations...)
 	}
@@ -24,12 +34,15 @@ func Validate(request *certificate.IssueRequest, domainRules DomainRules) error 
 	return nil
 }
 
-func validateBaseFields(request *certificate.IssueRequest) []validation.ConsistencyViolation {
+func validateBaseFields(
+	ctx context.Context,
+	request *certificate.IssueRequest,
+) []validation.ConsistencyViolation {
 	violations := make([]validation.ConsistencyViolation, 0)
 	if len(request.DomainNames) == 0 {
 		violations = append(violations, validation.ConsistencyViolation{
 			Path:    "domainNames",
-			Message: "At least one domain name must be informed",
+			Message: i18n.M(ctx, i18n.K.CommonAtLeastOneRequired),
 		})
 	}
 
@@ -37,7 +50,7 @@ func validateBaseFields(request *certificate.IssueRequest) []validation.Consiste
 		if !constants.TLDPattern.MatchString(domainName) {
 			violations = append(violations, validation.ConsistencyViolation{
 				Path:    fmt.Sprintf("domainNames[%d]", index),
-				Message: "Value is not a valid domain name",
+				Message: i18n.M(ctx, i18n.K.CommonInvalidDomainName),
 			})
 		}
 	}

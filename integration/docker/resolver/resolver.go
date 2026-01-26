@@ -7,6 +7,7 @@ import (
 	"github.com/docker/docker/client"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/integration/docker/fields"
 )
 
@@ -15,11 +16,11 @@ type Resolver interface {
 	ResolveOptionByID(ctx context.Context, optionID string) (*Option, error)
 }
 
-func For(parameters map[string]any) (Resolver, error) {
+func For(ctx context.Context, parameters map[string]any) (Resolver, error) {
 	var connectionURL string
-	switch parameters[fields.ConnectionMode.ID].(string) {
+	switch parameters[fields.ConnectionModeFieldID].(string) {
 	case fields.SocketConnectionMode:
-		socketPath := parameters[fields.SocketPath.ID].(string)
+		socketPath := parameters[fields.SocketPathFieldID].(string)
 		switch {
 		case strings.Contains(socketPath, "://"):
 			connectionURL = socketPath
@@ -30,10 +31,13 @@ func For(parameters map[string]any) (Resolver, error) {
 			connectionURL = "unix://" + socketPath
 		}
 	case fields.TCPConnectionMode:
-		hostURL := parameters[fields.HostURL.ID].(string)
+		hostURL := parameters[fields.HostURLFieldID].(string)
 		connectionURL = hostURL
 	default:
-		return nil, coreerror.New("Invalid connection mode", false)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.IntegrationDockerResolverInvalidConnectionMode),
+			false,
+		)
 	}
 
 	dockerClient, err := client.NewClientWithOpts(
@@ -44,7 +48,7 @@ func For(parameters map[string]any) (Resolver, error) {
 		return nil, err
 	}
 
-	publicURL, _ := parameters[fields.ProxyURL.ID].(string)
+	publicURL, _ := parameters[fields.ProxyURLFieldID].(string)
 	swarmEnabled, useServiceMesh, dnsResolvers := extractSwarmParams(parameters)
 
 	if swarmEnabled {
@@ -57,7 +61,7 @@ func For(parameters map[string]any) (Resolver, error) {
 	}
 
 	var useNameAsID bool
-	if rawValue, exists := parameters[fields.UseContainerNameAsID.ID]; exists {
+	if rawValue, exists := parameters[fields.UseContainerNameAsIDFieldID]; exists {
 		useNameAsID = rawValue.(bool)
 	}
 
@@ -73,16 +77,16 @@ func extractSwarmParams(parameters map[string]any) (
 	useServiceMesh bool,
 	dnsResolvers []string,
 ) {
-	if rawValue, exists := parameters[fields.SwarmMode.ID]; exists {
+	if rawValue, exists := parameters[fields.SwarmModeFieldID]; exists {
 		swarmMode = rawValue.(bool)
 	}
 
-	if rawValue, exists := parameters[fields.SwarmServiceMesh.ID]; exists {
+	if rawValue, exists := parameters[fields.SwarmServiceMeshFieldID]; exists {
 		useServiceMesh = rawValue.(bool)
 	}
 
 	if useServiceMesh {
-		if rawValue, exists := parameters[fields.SwarmDNSResolvers.ID]; exists {
+		if rawValue, exists := parameters[fields.SwarmDNSResolversFieldID]; exists {
 			textValue := rawValue.(string)
 			result := make([]string, 0)
 

@@ -6,6 +6,8 @@ import { INTEGER_MAX } from "../SettingsConstants"
 import { Link } from "react-router-dom"
 import FormLayout from "../../../core/components/form/FormLayout"
 import TextArea from "antd/es/input/TextArea"
+import { I18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 export interface AdvancedSettingsTabProps {
     formValues: SettingsFormValues
@@ -18,20 +20,19 @@ export default class AdvancedNginxSettingsTab extends React.Component<AdvancedSe
 
         return (
             <>
-                <h2 className="settings-form-section-name">Custom settings</h2>
+                <h2 className="settings-form-section-name">
+                    <I18n id={MessageKey.CommonCustomSettings} />
+                </h2>
                 <p className="settings-form-section-help-text">
-                    Anything placed here will be added as-is to the http directive of the main nginx configuration file.
-                    Custom configuration must be in the syntax expected by the nginx (refer to the documentation
-                    at&nbsp;
+                    <I18n id={MessageKey.FrontendSettingsTabsAdvancedCustomSettingsHelpPrefix} />{" "}
                     <Link
                         to="https://nginx.org/en/docs/http/ngx_http_core_module.html"
                         target="_blank"
                         rel="noreferrer"
                     >
-                        this link
-                    </Link>
-                    &nbsp;for more details). If you isn't sure about what to place here, it's probably the best to leave
-                    it empty.
+                        <I18n id={MessageKey.CommonNginxDocLink} />
+                    </Link>{" "}
+                    <I18n id={MessageKey.FrontendSettingsTabsAdvancedCustomSettingsHelpSuffix} />
                 </p>
 
                 <Form.Item
@@ -48,7 +49,7 @@ export default class AdvancedNginxSettingsTab extends React.Component<AdvancedSe
         )
     }
 
-    private renderBufferSizeFieldset(property: string, label: string) {
+    private renderBufferSizeFieldset(property: string, label: React.ReactNode) {
         const { validationResult } = this.props
         return (
             <Form.Item label={label} required>
@@ -61,7 +62,9 @@ export default class AdvancedNginxSettingsTab extends React.Component<AdvancedSe
                     >
                         <InputNumber min={1} max={INTEGER_MAX} />
                     </Form.Item>
-                    <Space.Addon>slots of</Space.Addon>
+                    <Space.Addon>
+                        <I18n id={MessageKey.FrontendSettingsTabsAdvancedBufferSlotsOf} />
+                    </Space.Addon>
                     <Form.Item
                         name={["nginx", "buffers", property, "sizeKb"]}
                         validateStatus={validationResult.getStatus(`nginx.buffers.${property}.sizeKb`)}
@@ -70,7 +73,9 @@ export default class AdvancedNginxSettingsTab extends React.Component<AdvancedSe
                     >
                         <InputNumber min={1} max={INTEGER_MAX} />
                     </Form.Item>
-                    <Space.Addon>KB each</Space.Addon>
+                    <Space.Addon>
+                        <I18n id={MessageKey.CommonUnitKbEach} />
+                    </Space.Addon>
                 </Space.Compact>
             </Form.Item>
         )
@@ -80,13 +85,18 @@ export default class AdvancedNginxSettingsTab extends React.Component<AdvancedSe
         const { validationResult } = this.props
         return (
             <>
-                <h2 className="settings-form-section-name">Buffers</h2>
+                <h2 className="settings-form-section-name">
+                    <I18n id={MessageKey.FrontendSettingsTabsAdvancedSectionBuffers} />
+                </h2>
                 <p className="settings-form-section-help-text">
-                    Configuration of the nginx's buffering of the input/output traffic
+                    <I18n id={MessageKey.FrontendSettingsTabsAdvancedSectionBuffersHelp} />
                 </p>
                 <Flex className="settings-form-inner-flex-container">
                     <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
-                        <Form.Item label="Client body" required>
+                        <Form.Item
+                            label={<I18n id={MessageKey.FrontendSettingsTabsAdvancedBufferClientBody} />}
+                            required
+                        >
                             <Space.Compact className="settings-form-input-wide">
                                 <Form.Item
                                     name={["nginx", "buffers", "clientBodyKb"]}
@@ -96,10 +106,15 @@ export default class AdvancedNginxSettingsTab extends React.Component<AdvancedSe
                                 >
                                     <InputNumber min={1} max={INTEGER_MAX} className="settings-form-input-wide" />
                                 </Form.Item>
-                                <Space.Addon>KB</Space.Addon>
+                                <Space.Addon>
+                                    <I18n id={MessageKey.CommonUnitKb} />
+                                </Space.Addon>
                             </Space.Compact>
                         </Form.Item>
-                        <Form.Item label="Client headers" required>
+                        <Form.Item
+                            label={<I18n id={MessageKey.FrontendSettingsTabsAdvancedBufferClientHeaders} />}
+                            required
+                        >
                             <Space.Compact className="settings-form-input-wide">
                                 <Form.Item
                                     name={["nginx", "buffers", "clientHeaderKb"]}
@@ -109,13 +124,21 @@ export default class AdvancedNginxSettingsTab extends React.Component<AdvancedSe
                                 >
                                     <InputNumber min={1} max={INTEGER_MAX} className="settings-form-input-wide" />
                                 </Form.Item>
-                                <Space.Addon>KB</Space.Addon>
+                                <Space.Addon>
+                                    <I18n id={MessageKey.CommonUnitKb} />
+                                </Space.Addon>
                             </Space.Compact>
                         </Form.Item>
                     </Flex>
                     <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
-                        {this.renderBufferSizeFieldset("largeClientHeader", "Large client headers")}
-                        {this.renderBufferSizeFieldset("output", "Output")}
+                        {this.renderBufferSizeFieldset(
+                            "largeClientHeader",
+                            <I18n id={MessageKey.FrontendSettingsTabsAdvancedBufferLargeClientHeader} />,
+                        )}
+                        {this.renderBufferSizeFieldset(
+                            "output",
+                            <I18n id={MessageKey.FrontendSettingsTabsAdvancedBufferOutput} />,
+                        )}
                     </Flex>
                 </Flex>
             </>
@@ -126,11 +149,8 @@ export default class AdvancedNginxSettingsTab extends React.Component<AdvancedSe
         return (
             <>
                 <Alert
-                    message="Proceed with caution"
-                    description={`
-                        These settings can break your nginx server or make it misbehave. Using the default values will 
-                        work just fine for almost all use cases. 
-                    `}
+                    message={<I18n id={MessageKey.CommonWarningProceedWithCaution} />}
+                    description={<I18n id={MessageKey.CommonWarningProceedWithCautionDescription} />}
                     type="warning"
                     style={{ marginBottom: 20 }}
                     showIcon

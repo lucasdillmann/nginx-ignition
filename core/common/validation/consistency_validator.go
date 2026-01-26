@@ -1,8 +1,7 @@
 package validation
 
-const (
-	ValueMissingMessage      = "A value is required"
-	ValueCannotBeZeroMessage = "Must be 1 or greater"
+import (
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 type ConsistencyValidator struct {
@@ -13,9 +12,11 @@ func NewValidator() *ConsistencyValidator {
 	return &ConsistencyValidator{}
 }
 
-func (v *ConsistencyValidator) Add(path, message string) {
-	violation := ConsistencyViolation{path, message}
-	v.violations = append(v.violations, violation)
+func (v *ConsistencyValidator) Add(path string, message *i18n.Message) {
+	v.violations = append(v.violations, ConsistencyViolation{
+		Path:    path,
+		Message: message,
+	})
 }
 
 func (v *ConsistencyValidator) Result() error {

@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -20,26 +21,28 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "LIQUIDWEB" }
 
-func (p *Provider) Name() string { return "LiquidWeb" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLiquidwebName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: "LiquidWeb username",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLiquidwebUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "LiquidWeb password",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLiquidwebPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          zoneFieldID,
-			Description: "LiquidWeb zone",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLiquidwebZone),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

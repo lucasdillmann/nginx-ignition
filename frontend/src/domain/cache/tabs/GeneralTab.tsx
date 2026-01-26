@@ -3,38 +3,40 @@ import { Flex, Form, Input, InputNumber, Select, Space, Switch } from "antd"
 import { HttpMethod, UseStale } from "../model/CacheRequest"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import CacheDurations from "../components/CacheDurations"
+import { I18n, I18nMessage, raw } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 export interface GeneralTabProps {
     validationResult: ValidationResult
 }
 
 export default class GeneralTab extends React.Component<GeneralTabProps> {
-    private formatStaleLabel(stale: UseStale): string {
+    private formatStaleLabel(stale: UseStale): I18nMessage {
         switch (stale) {
             case UseStale.ERROR:
-                return "When an error happens"
+                return MessageKey.FrontendCacheTabsGeneralStaleError
             case UseStale.TIMEOUT:
-                return "When timeout occurs"
+                return MessageKey.FrontendCacheTabsGeneralStaleTimeout
             case UseStale.INVALID_HEADER:
-                return "When an invalid header was sent"
+                return MessageKey.FrontendCacheTabsGeneralStaleInvalidHeader
             case UseStale.UPDATING:
-                return "While updating the cache"
+                return MessageKey.FrontendCacheTabsGeneralStaleUpdating
             case UseStale.HTTP_500:
-                return "On HTTP 500"
+                return MessageKey.FrontendCacheTabsGeneralStaleHttp500
             case UseStale.HTTP_502:
-                return "On HTTP 502"
+                return MessageKey.FrontendCacheTabsGeneralStaleHttp502
             case UseStale.HTTP_503:
-                return "On HTTP 503"
+                return MessageKey.FrontendCacheTabsGeneralStaleHttp503
             case UseStale.HTTP_504:
-                return "On HTTP 504"
+                return MessageKey.FrontendCacheTabsGeneralStaleHttp504
             case UseStale.HTTP_403:
-                return "On HTTP 403"
+                return MessageKey.FrontendCacheTabsGeneralStaleHttp403
             case UseStale.HTTP_404:
-                return "On HTTP 404"
+                return MessageKey.FrontendCacheTabsGeneralStaleHttp404
             case UseStale.HTTP_429:
-                return "On HTTP 429"
+                return MessageKey.FrontendCacheTabsGeneralStaleHttp429
             default:
-                return stale
+                return raw(stale)
         }
     }
 
@@ -45,15 +47,17 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
             <>
                 <Flex className="cache-form-inner-flex-container">
                     <Flex className="cache-form-inner-flex-container-column cache-form-expanded-label-size">
-                        <h2 className="cache-form-section-name">General</h2>
+                        <h2 className="cache-form-section-name">
+                            <I18n id={MessageKey.CommonGeneral} />
+                        </h2>
                         <p className="cache-form-section-help-text">
-                            Main definitions and properties of the cache configuration.
+                            <I18n id={MessageKey.FrontendCacheTabsGeneralSectionGeneralHelp} />
                         </p>
                         <Form.Item
                             name="cacheStatusResponseHeaderEnabled"
                             validateStatus={validationResult.getStatus("cacheStatusResponseHeaderEnabled")}
                             help={validationResult.getMessage("cacheStatusResponseHeaderEnabled")}
-                            label="Cache status response header"
+                            label={<I18n id={MessageKey.FrontendCacheTabsGeneralCacheStatusResponseHeader} />}
                             required
                         >
                             <Switch />
@@ -62,7 +66,7 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                             name="name"
                             validateStatus={validationResult.getStatus("name")}
                             help={validationResult.getMessage("name")}
-                            label="Name"
+                            label={<I18n id={MessageKey.CommonName} />}
                             required
                         >
                             <Input />
@@ -71,12 +75,12 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                             name="storagePath"
                             validateStatus={validationResult.getStatus("storagePath")}
                             help={validationResult.getMessage("storagePath")}
-                            label="Storage path"
+                            label={<I18n id={MessageKey.FrontendCacheTabsGeneralStoragePath} />}
                         >
                             <Input />
                         </Form.Item>
                         <Form.Item
-                            label="Maximum size"
+                            label={<I18n id={MessageKey.CommonMaximumSize} />}
                             validateStatus={validationResult.getStatus("maximumSizeMb")}
                             help={validationResult.getMessage("maximumSizeMb")}
                         >
@@ -84,34 +88,43 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                                 <Form.Item name="maximumSizeMb" noStyle>
                                     <InputNumber min={0} style={{ width: "100%" }} />
                                 </Form.Item>
-                                <Space.Addon>MB</Space.Addon>
+                                <Space.Addon>
+                                    <I18n id={MessageKey.CommonUnitMb} />
+                                </Space.Addon>
                             </Space.Compact>
                         </Form.Item>
                         <Form.Item
-                            label="Inactive time"
+                            label={<I18n id={MessageKey.FrontendCacheTabsGeneralInactiveTime} />}
                             validateStatus={validationResult.getStatus("inactiveSeconds")}
                             help={
-                                validationResult.getMessage("inactiveSeconds") ??
-                                "How much time should pass before a cached response with no uses is deleted"
+                                validationResult.getMessage("inactiveSeconds") ?? (
+                                    <I18n id={MessageKey.FrontendCacheTabsGeneralInactiveTimeHelp} />
+                                )
                             }
                         >
                             <Space.Compact style={{ width: "100%" }}>
                                 <Form.Item name="inactiveSeconds" noStyle>
                                     <InputNumber min={0} style={{ width: "100%" }} />
                                 </Form.Item>
-                                <Space.Addon>seconds</Space.Addon>
+                                <Space.Addon>
+                                    <I18n id={MessageKey.CommonUnitSeconds} />
+                                </Space.Addon>
                             </Space.Compact>
                         </Form.Item>
                     </Flex>
 
                     <Flex className="cache-form-inner-flex-container-column cache-form-expanded-label-size">
-                        <h2 className="cache-form-section-name">Request matching</h2>
-                        <p className="cache-form-section-help-text">Define which requests should be cached and how.</p>
+                        <h2 className="cache-form-section-name">
+                            <I18n id={MessageKey.FrontendCacheTabsGeneralRequestMatching} />
+                        </h2>
+                        <p className="cache-form-section-help-text">
+                            <I18n id={MessageKey.FrontendCacheTabsGeneralRequestMatchingHelp} />
+                        </p>
                         <Form.Item
                             name="allowedMethods"
                             validateStatus={validationResult.getStatus("allowedMethods")}
                             help={validationResult.getMessage("allowedMethods")}
-                            label="Allowed methods"
+                            label={<I18n id={MessageKey.FrontendCacheTabsGeneralAllowedMethods} />}
                         >
                             <Select mode="multiple">
                                 {Object.values(HttpMethod).map(method => (
@@ -125,10 +138,11 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                             name="minimumUsesBeforeCaching"
                             validateStatus={validationResult.getStatus("minimumUsesBeforeCaching")}
                             help={
-                                validationResult.getMessage("minimumUsesBeforeCaching") ??
-                                "The number of requests after which the response will be cached"
+                                validationResult.getMessage("minimumUsesBeforeCaching") ?? (
+                                    <I18n id={MessageKey.FrontendCacheTabsGeneralMinimumUsesBeforeCachingHelp} />
+                                )
                             }
-                            label="Minimum uses before caching"
+                            label={<I18n id={MessageKey.FrontendCacheTabsGeneralMinimumUsesBeforeCaching} />}
                             required
                         >
                             <InputNumber min={1} style={{ width: "100%" }} />
@@ -137,10 +151,11 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                             name="fileExtensions"
                             validateStatus={validationResult.getStatus("fileExtensions")}
                             help={
-                                validationResult.getMessage("fileExtensions") ??
-                                "If specified, only requests with these extensions will be cached (e.g. jpg, png, css)"
+                                validationResult.getMessage("fileExtensions") ?? (
+                                    <I18n id={MessageKey.FrontendCacheTabsGeneralFileExtensionsHelp} />
+                                )
                             }
-                            label="File extensions"
+                            label={<I18n id={MessageKey.CommonFileExtensions} />}
                         >
                             <Select mode="tags" />
                         </Form.Item>
@@ -148,10 +163,11 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                             name="ignoreUpstreamCacheHeaders"
                             validateStatus={validationResult.getStatus("ignoreUpstreamCacheHeaders")}
                             help={
-                                validationResult.getMessage("ignoreUpstreamCacheHeaders") ??
-                                "If enabled, nginx will ignore cache headers from upstream servers when deciding whether to cache a response or not"
+                                validationResult.getMessage("ignoreUpstreamCacheHeaders") ?? (
+                                    <I18n id={MessageKey.FrontendCacheTabsGeneralIgnoreUpstreamCacheHeadersHelp} />
+                                )
                             }
-                            label="Ignore upstream cache headers"
+                            label={<I18n id={MessageKey.FrontendCacheTabsGeneralIgnoreUpstreamCacheHeaders} />}
                             required
                         >
                             <Switch />
@@ -160,20 +176,20 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                 </Flex>
 
                 <h2 className="cache-form-section-name" style={{ marginTop: 40 }}>
-                    Stale contents and revalidation
+                    <I18n id={MessageKey.FrontendCacheTabsGeneralStaleContents} />
                 </h2>
                 <p className="cache-form-section-help-text">
-                    Define how the cache should behave when the content is stale and how nginx should handle
-                    revalidation.
+                    <I18n id={MessageKey.FrontendCacheTabsGeneralStaleContentsHelp} />
                 </p>
                 <Form.Item
                     name="backgroundUpdate"
                     validateStatus={validationResult.getStatus("backgroundUpdate")}
                     help={
-                        validationResult.getMessage("backgroundUpdate") ??
-                        "Allows starting a background subrequest to update an expired cache item, while a stale cached response is returned to the client"
+                        validationResult.getMessage("backgroundUpdate") ?? (
+                            <I18n id={MessageKey.FrontendCacheTabsGeneralBackgroundUpdateHelp} />
+                        )
                     }
-                    label="Background update"
+                    label={<I18n id={MessageKey.FrontendCacheTabsGeneralBackgroundUpdate} />}
                     required
                 >
                     <Switch />
@@ -182,10 +198,11 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                     name="revalidate"
                     validateStatus={validationResult.getStatus("revalidate")}
                     help={
-                        validationResult.getMessage("revalidate") ??
-                        "Enables revalidation of expired cache items using conditional requests with 'If-Modified-Since' and 'If-None-Match' header fields"
+                        validationResult.getMessage("revalidate") ?? (
+                            <I18n id={MessageKey.FrontendCacheTabsGeneralRevalidateHelp} />
+                        )
                     }
-                    label="Revalidate"
+                    label={<I18n id={MessageKey.FrontendCacheTabsGeneralRevalidate} />}
                     required
                 >
                     <Switch />
@@ -194,24 +211,27 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                     name="useStale"
                     validateStatus={validationResult.getStatus("useStale")}
                     help={
-                        validationResult.getMessage("useStale") ??
-                        "Determines in which cases a stale cached response can be used"
+                        validationResult.getMessage("useStale") ?? (
+                            <I18n id={MessageKey.FrontendCacheTabsGeneralUseStaleContentsHelp} />
+                        )
                     }
-                    label="Use stale contents"
+                    label={<I18n id={MessageKey.FrontendCacheTabsGeneralUseStaleContents} />}
                     style={{ marginTop: 40 }}
                 >
                     <Select mode="multiple">
                         {Object.values(UseStale).map(stale => (
                             <Select.Option key={stale} value={stale}>
-                                {this.formatStaleLabel(stale)}
+                                <I18n id={this.formatStaleLabel(stale)} />
                             </Select.Option>
                         ))}
                     </Select>
                 </Form.Item>
 
-                <h2 className="cache-form-section-name">Cache content expiration</h2>
+                <h2 className="cache-form-section-name">
+                    <I18n id={MessageKey.FrontendCacheTabsGeneralSectionCacheContentExpiration} />
+                </h2>
                 <p className="cache-form-section-help-text">
-                    Customization of how long the cache should be valid by HTTP status codes.
+                    <I18n id={MessageKey.FrontendCacheTabsGeneralSectionCacheContentExpirationHelp} />
                 </p>
                 <CacheDurations validationResult={validationResult} />
             </>

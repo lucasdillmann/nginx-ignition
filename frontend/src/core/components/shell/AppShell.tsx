@@ -8,12 +8,14 @@ import If from "../flowcontrol/If"
 import AppShellContext, { ShellAction, ShellConfig } from "./AppShellContext"
 import { GithubFilled, LinkedinFilled } from "@ant-design/icons"
 import AppContext from "../context/AppContext"
+import MessageKey from "../../i18n/model/MessageKey.generated"
+import { I18n, I18nMessage } from "../../i18n/I18n"
 
 const { Sider, Content } = Layout
 
 export interface AppShellMenuItem {
     icon: React.ReactNode
-    description: string
+    description: I18nMessage
     path: string
 }
 
@@ -42,7 +44,11 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         return menuItems.map(item => ({
             key: item.path,
             icon: item.icon,
-            label: <Link to={item.path}>{item.description}</Link>,
+            label: (
+                <Link to={item.path}>
+                    <I18n id={item.description} />
+                </Link>
+            ),
             className: "shell-sider-menu-item",
         }))
     }
@@ -51,31 +57,31 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         const { description, type, color, onClick, disabled, disabledReason } = action
         if (typeof onClick === "string") {
             return (
-                <Tooltip title={disabledReason}>
-                    <Link to={onClick} key={action.description}>
+                <Tooltip title={disabledReason && <I18n id={disabledReason} />}>
+                    <Link to={onClick} key={action.description as string}>
                         <Button
                             className="shell-content-actions-action-item"
                             variant={type ?? "solid"}
                             color={color ?? "primary"}
                             disabled={disabled}
                         >
-                            {description}
+                            <I18n id={description} />
                         </Button>
                     </Link>
                 </Tooltip>
             )
         } else {
             return (
-                <Tooltip title={disabledReason}>
+                <Tooltip title={disabledReason && <I18n id={disabledReason} />}>
                     <Button
                         className="shell-content-actions-action-item"
-                        key={action.description}
+                        key={action.description as string}
                         variant={type ?? "solid"}
                         color={color ?? "primary"}
                         onClick={onClick}
                         disabled={disabled}
                     >
-                        {description}
+                        <I18n id={description} />
                     </Button>
                 </Tooltip>
             )
@@ -116,8 +122,6 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         })
 
         const { version } = AppContext.get().configuration
-        const versionDescription = version.current ? `Version ${version.current}` : "Development version"
-
         const { activeRoute, children, userMenu, serverControl } = this.props
         const { config } = this.state
         const activeMenuItemPath = activeRoute.activeMenuItemPath ?? activeRoute.path
@@ -131,7 +135,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                 <Sider trigger={null} width={250} className="shell-sider-container">
                     <div className="shell-sider-logo">
                         <Link to="/" className="shell-sider-logo-link">
-                            nginx ignition
+                            <I18n id={MessageKey.CommonAppName} />
                         </Link>
                     </div>
                     <div className="shell-sider-server-control">{serverControl}</div>
@@ -144,9 +148,16 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                     />
                     <div className="shell-sider-bottom">
                         <div className="shell-sider-bottom-credits">
-                            {versionDescription}
+                            <I18n
+                                id={
+                                    version.current
+                                        ? MessageKey.FrontendComponentsShellVersionFormat
+                                        : MessageKey.FrontendComponentsShellVersionDev
+                                }
+                                params={{ version: version.current }}
+                            />
                             <br />
-                            Made by Lucas Dillmann
+                            <I18n id={MessageKey.FrontendComponentsShellCreditsMadeBy} />
                             <LinkedinFilled onClick={() => this.handleLinkedInClick()} />
                             <GithubFilled onClick={() => this.handleGithubClick()} />
                         </div>
@@ -157,9 +168,15 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                     <If condition={title !== undefined}>
                         <Flex className="shell-content-header-container">
                             <Flex className="shell-content-header" vertical>
-                                <h1 className="shell-content-header-title">{title}</h1>
+                                <If condition={title !== undefined}>
+                                    <h1 className="shell-content-header-title">
+                                        <I18n id={title!} />
+                                    </h1>
+                                </If>
                                 <If condition={subtitle !== undefined}>
-                                    <h2 className="shell-content-header-subtitle">{subtitle}</h2>
+                                    <h2 className="shell-content-header-subtitle">
+                                        <I18n id={subtitle!} />
+                                    </h2>
                                 </If>
                             </Flex>
                             <Flex className="shell-content-header-actions-container">{this.renderActions()}</Flex>

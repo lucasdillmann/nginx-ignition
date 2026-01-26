@@ -1,18 +1,19 @@
 import { ButtonColorType, ButtonVariantType } from "antd/es/button"
 import ContextHolder from "../../context/ContextHolder"
+import { I18nMessage } from "../../i18n/I18n"
 
 export interface ShellAction {
-    description: string
+    description: I18nMessage
     onClick: string | (() => Promise<void>) | (() => void)
     disabled?: boolean
-    disabledReason?: string
+    disabledReason?: I18nMessage
     type?: ButtonVariantType
     color?: ButtonColorType
 }
 
 export interface ShellConfig {
-    title?: string
-    subtitle?: string
+    title?: I18nMessage
+    subtitle?: I18nMessage
     actions?: ShellAction[]
     noContainerPadding?: boolean
 }

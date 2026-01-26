@@ -1,7 +1,6 @@
 package nginx
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -12,7 +11,6 @@ import (
 )
 
 func Test_logReader(t *testing.T) {
-	ctx := context.Background()
 	tmpDir, _ := os.MkdirTemp("", "logs")
 	defer os.RemoveAll(tmpDir)
 
@@ -27,7 +25,7 @@ func Test_logReader(t *testing.T) {
 
 	t.Run("read", func(t *testing.T) {
 		t.Run("reads and reverses lines correctly", func(t *testing.T) {
-			lines, err := reader.read(ctx, "test.log", 10)
+			lines, err := reader.read(t.Context(), "test.log", 10)
 			assert.NoError(t, err)
 			assert.Equal(t, []string{
 				"line3",
@@ -37,7 +35,7 @@ func Test_logReader(t *testing.T) {
 		})
 
 		t.Run("tails and reverses lines correctly", func(t *testing.T) {
-			lines, err := reader.read(ctx, "test.log", 2)
+			lines, err := reader.read(t.Context(), "test.log", 2)
 			assert.NoError(t, err)
 			assert.Equal(t, []string{
 				"line3",

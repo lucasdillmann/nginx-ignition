@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -23,37 +24,39 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "HTTP_REQUEST" }
 
-func (p *Provider) Name() string { return "HTTP request" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHttpreqName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          endpointFieldID,
-			Description: "HTTP endpoint URL",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHttpreqEndpointUrl),
 			Required:    true,
 			Type:        dynamicfields.URLType,
 		},
 		{
 			ID:          usernameFieldID,
-			Description: "HTTP basic auth username",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHttpreqUsername),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "HTTP basic auth password",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHttpreqPassword),
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          modeFieldID,
-			Description: "Raw mode",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHttpreqRawMode),
 			Type:        dynamicfields.BooleanType,
 		},
 	})
 }
 
 func (p *Provider) ChallengeProvider(
-	_ context.Context,
+	ctx context.Context,
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
@@ -69,7 +72,7 @@ func (p *Provider) ChallengeProvider(
 
 	endpoint, err := url.Parse(endpointStr)
 	if err != nil {
-		return nil, coreerror.New("Invalid endpoint URL", true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CommonInvalidUrl), true)
 	}
 
 	cfg := httpreq.NewDefaultConfig()

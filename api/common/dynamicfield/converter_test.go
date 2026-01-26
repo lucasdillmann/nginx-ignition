@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 func Test_toResponse(t *testing.T) {
@@ -16,7 +17,7 @@ func Test_toResponse(t *testing.T) {
 				Type:        dynamicfields.SingleLineTextType,
 				Required:    true,
 				Priority:    1,
-				Description: "Desc 1",
+				Description: i18n.Static("desc_1"),
 			},
 			{
 				ID:           "field2",
@@ -29,7 +30,7 @@ func Test_toResponse(t *testing.T) {
 				EnumOptions: []dynamicfields.EnumOption{
 					{
 						ID:          "A",
-						Description: "Desc A",
+						Description: i18n.Static("desc_a"),
 					},
 				},
 			},
@@ -42,7 +43,7 @@ func Test_toResponse(t *testing.T) {
 		assert.Equal(t, "SINGLE_LINE_TEXT", result[0].Type)
 		assert.True(t, result[0].Required)
 		assert.Equal(t, 1, result[0].Priority)
-		assert.Equal(t, "Desc 1", result[0].Description)
+		assert.Equal(t, "desc_1", result[0].Description.String())
 
 		assert.Equal(t, "field2", result[1].ID)
 		assert.Equal(t, "BOOLEAN", result[1].Type)

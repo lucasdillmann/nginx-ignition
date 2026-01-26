@@ -1,8 +1,9 @@
 import React from "react"
+import { I18nMessage } from "../../i18n/I18n"
 
 export interface AppRouteMenuItem {
     icon: React.ReactNode
-    description: string
+    description: I18nMessage
 }
 
 export default interface AppRoute {

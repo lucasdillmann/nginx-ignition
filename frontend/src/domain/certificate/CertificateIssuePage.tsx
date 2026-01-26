@@ -22,6 +22,8 @@ import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n, raw } from "../../core/i18n/I18n"
 
 interface CertificateIssuePageState {
     availableProviders: AvailableProviderResponse[]
@@ -79,10 +81,7 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
 
     private async submit() {
         const { formValues } = this.state
-        this.saveModal.show(
-            "Hang on tight",
-            "We're issuing your certificate. This can take several seconds, feel free to grab a cup of coffee.",
-        )
+        this.saveModal.show(MessageKey.CommonHangOnTight, MessageKey.FrontendCertificateIssuingPleaseWait)
         this.setState({ validationResult: new ValidationResult() })
 
         const certificateRequest: IssueCertificateRequest = {
@@ -104,12 +103,15 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
     private handleResponse(response: IssueCertificateResponse) {
         const { success, errorReason, certificateId } = response
         if (success) {
-            Notification.success("Certificate issued", "The SSL certificate was issued and is now ready to be used")
+            Notification.success(
+                MessageKey.FrontendCertificateIssued,
+                MessageKey.FrontendCertificateIssueSuccessDescription,
+            )
             navigateTo(`/certificates/${certificateId}`)
         } else {
             Notification.error(
-                "Issue failed",
-                errorReason ?? "Unable to issue the certificate at this moment. Please try again later.",
+                MessageKey.FrontendCertificateIssueFailed,
+                errorReason ? raw(errorReason) : MessageKey.FrontendCertificateIssueFailedDescription,
             )
         }
     }
@@ -120,7 +122,7 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
             if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private buildProviderSelectOptions() {
@@ -183,10 +185,13 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
                     name="providerId"
                     validateStatus={validationResult.getStatus("providerId")}
                     help={validationResult.getMessage("providerId")}
-                    label="Certificate provider"
+                    label={<I18n id={MessageKey.CommonProvider} />}
                     required
                 >
-                    <Select placeholder="Certificate provider" options={this.buildProviderSelectOptions()} />
+                    <Select
+                        placeholder={<I18n id={MessageKey.CommonProvider} />}
+                        options={this.buildProviderSelectOptions()}
+                    />
                 </Form.Item>
                 <DomainNamesList validationResult={validationResult} />
                 {this.renderDynamicFields()}
@@ -196,11 +201,11 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
 
     private updateShellConfig(enableActions: boolean) {
         AppShellContext.get().updateConfig({
-            title: "New SSL certificate",
-            subtitle: "Issue or upload a SSL certificate for use with the nginx's virtual hosts",
+            title: MessageKey.FrontendCertificateIssueTitle,
+            subtitle: MessageKey.FrontendCertificateIssueSubtitle,
             actions: [
                 {
-                    description: "Issue/Upload",
+                    description: MessageKey.FrontendCertificateIssueButton,
                     disabled: !enableActions,
                     onClick: () => this.submit(),
                 },

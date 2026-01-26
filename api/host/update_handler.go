@@ -26,7 +26,7 @@ func (h updateHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	domainModel := converter.Wrap(toDomain, payload)
+	domainModel := converter.Wrap(ctx.Request.Context(), toDomain, payload)
 	domainModel.ID = id
 
 	if err = h.commands.Save(ctx.Request.Context(), domainModel); err != nil {

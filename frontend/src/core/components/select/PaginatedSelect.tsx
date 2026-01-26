@@ -5,6 +5,8 @@ import { InputStatus } from "antd/es/_util/statusUtils"
 import Notification from "../notification/Notification"
 import { LoadingOutlined } from "@ant-design/icons"
 import debounce from "debounce"
+import { I18n, I18nMessage } from "../../i18n/I18n"
+import MessageKey from "../../i18n/model/MessageKey.generated"
 
 const PAGE_SIZE = 10
 
@@ -33,7 +35,7 @@ interface PaginatedSelectState<T> {
 }
 
 export interface PaginatedSelectProps<T> {
-    placeholder?: string
+    placeholder?: I18nMessage
     onChange?: (selected?: T) => void
     pageProvider: (pageSize: number, pageNumber: number, searchTerms?: string) => Promise<PageResponse<T>>
     itemKey: (item: T) => string
@@ -82,8 +84,8 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
             })
             .catch(() => {
                 Notification.error(
-                    "Unable to fetch the next options",
-                    "We're unable to fetch the next available options to select at this time. Please try again later.",
+                    MessageKey.CommonUnableToFetchOptionsTitle,
+                    MessageKey.CommonUnableToFetchOptionsDescription,
                 )
 
                 this.setState({ loading: false })
@@ -114,7 +116,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
         const loadingLabel = (
             <>
                 <LoadingOutlined style={{ fontSize: 14, marginRight: 8 }} />
-                Loading...
+                <I18n id={MessageKey.CommonLoading} />
             </>
         )
         return [...options, { value: "", label: loadingLabel, disabled: true }]
@@ -148,7 +150,7 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
         return (
             <Select<SelectOption<T>>
                 showSearch={disableSearch !== true}
-                placeholder={placeholder}
+                placeholder={placeholder ? <I18n id={placeholder} /> : undefined}
                 disabled={disabled}
                 allowClear={allowEmpty}
                 options={this.buildOptions()}

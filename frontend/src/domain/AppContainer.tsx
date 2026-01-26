@@ -8,6 +8,7 @@ import ShellUserMenu from "./user/components/ShellUserMenu"
 import NginxControl from "./nginx/components/NginxControl"
 import CommonNotifications from "../core/components/notification/CommonNotifications"
 import NewVersionNotifier from "./version/NewVersionNotifier"
+import I18nService from "../core/i18n/I18nService"
 
 interface AppContainerState {
     loading: boolean
@@ -22,10 +23,15 @@ export default class AppContainer extends React.Component<unknown, AppContainerS
         }
     }
 
-    componentDidMount() {
-        loadAppContextData()
+    private async boot() {
+        return new I18nService()
+            .initContext()
+            .then(() => loadAppContextData())
             .then(context => {
-                AppContext.replace(context)
+                AppContext.replace({
+                    ...context,
+                    container: this,
+                })
                 this.setState({ loading: false })
                 NewVersionNotifier.checkAndNotify()
             })
@@ -33,6 +39,14 @@ export default class AppContainer extends React.Component<unknown, AppContainerS
                 CommonNotifications.failedToFetch()
                 this.setState({ error, loading: false })
             })
+    }
+
+    async reload() {
+        this.setState({ loading: true }, () => this.boot())
+    }
+
+    componentDidMount() {
+        this.reload()
     }
 
     render() {

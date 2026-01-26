@@ -1,7 +1,6 @@
 package settings
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -18,17 +17,16 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expected := &Settings{}
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Get(ctx).Return(expected, nil)
+			repo.EXPECT().Get(t.Context()).Return(expected, nil)
 
 			bindingCommands := binding.NewMockedCommands(ctrl)
 			sched := &scheduler.Scheduler{}
 
 			settingsService := newCommands(repo, bindingCommands, sched)
-			result, err := settingsService.Get(ctx)
+			result, err := settingsService.Get(t.Context())
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -38,17 +36,16 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expectedErr := errors.New("repository error")
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Get(ctx).Return(nil, expectedErr)
+			repo.EXPECT().Get(t.Context()).Return(nil, expectedErr)
 
 			bindingCommands := binding.NewMockedCommands(ctrl)
 			sched := &scheduler.Scheduler{}
 
 			settingsService := newCommands(repo, bindingCommands, sched)
-			result, err := settingsService.Get(ctx)
+			result, err := settingsService.Get(t.Context())
 
 			assert.Error(t, err)
 			assert.Nil(t, result)
@@ -61,7 +58,6 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			s := newSettings()
 			s.Nginx.DefaultContentType = "" // Invalid
 
@@ -70,7 +66,7 @@ func Test_service(t *testing.T) {
 			sched := &scheduler.Scheduler{}
 
 			settingsService := newCommands(repo, bindingCommands, sched)
-			err := settingsService.Save(ctx, s)
+			err := settingsService.Save(t.Context(), s)
 
 			assert.Error(t, err)
 		})

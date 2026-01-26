@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -21,15 +22,15 @@ func (p *Provider) ID() string {
 	return "SAFEDNS"
 }
 
-func (p *Provider) Name() string {
-	return "SafeDNS"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsSafednsName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          authTokenFieldID,
-			Description: "SafeDNS auth token",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsSafednsAuthToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

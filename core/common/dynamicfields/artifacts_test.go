@@ -1,9 +1,15 @@
 package dynamicfields
 
-func newDynamicField() *DynamicField {
+import (
+	"context"
+
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
+)
+
+func newDynamicField(ctx context.Context) *DynamicField {
 	return &DynamicField{
 		ID:          "field1",
-		Description: "A test field",
+		Description: i18n.M(ctx, i18n.K.CertificateCustomName),
 		Type:        SingleLineTextType,
 		Priority:    100,
 		Required:    false,

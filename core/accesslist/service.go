@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -20,7 +21,7 @@ func newCommands(repository Repository) Commands {
 }
 
 func (s *service) Save(ctx context.Context, accessList *AccessList) error {
-	if err := newValidator().validate(accessList); err != nil {
+	if err := newValidator().validate(ctx, accessList); err != nil {
 		return err
 	}
 
@@ -34,7 +35,7 @@ func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if inUse {
-		return coreerror.New("Access list is in use by one or more hosts", true)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreAccesslistInUse), true)
 	}
 
 	return s.repository.DeleteByID(ctx, id)

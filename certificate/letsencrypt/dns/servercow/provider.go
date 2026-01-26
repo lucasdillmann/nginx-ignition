@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -21,21 +22,21 @@ func (p *Provider) ID() string {
 	return "SERVERCOW"
 }
 
-func (p *Provider) Name() string {
-	return "Servercow"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsServercowName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: "Servercow username",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsServercowUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "Servercow password",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsServercowPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

@@ -1,7 +1,6 @@
 package nginx
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -51,8 +50,6 @@ func Test_logRotator(t *testing.T) {
 	})
 
 	t.Run("getLogFiles", func(t *testing.T) {
-		ctx := context.Background()
-
 		t.Run("returns main log and host logs", func(t *testing.T) {
 			id1 := uuid.New()
 			id2 := uuid.New()
@@ -61,7 +58,7 @@ func Test_logRotator(t *testing.T) {
 			defer ctrl.Finish()
 
 			repo := host.NewMockedCommands(ctrl)
-			repo.EXPECT().GetAllEnabled(ctx).Return([]host.Host{
+			repo.EXPECT().GetAllEnabled(t.Context()).Return([]host.Host{
 				{
 					ID: id1,
 				},
@@ -73,7 +70,7 @@ func Test_logRotator(t *testing.T) {
 			rotator := &logRotator{
 				hostCommands: repo,
 			}
-			files, err := rotator.getLogFiles(ctx)
+			files, err := rotator.getLogFiles(t.Context())
 
 			assert.NoError(t, err)
 			assert.Contains(t, files, "main.log")
@@ -85,8 +82,6 @@ func Test_logRotator(t *testing.T) {
 	})
 
 	t.Run("rotate", func(t *testing.T) {
-		ctx := context.Background()
-
 		t.Run("rotates logs based on settings", func(t *testing.T) {
 			tmpDir := t.TempDir()
 			logsDir := filepath.Join(tmpDir, "logs")
@@ -109,7 +104,7 @@ func Test_logRotator(t *testing.T) {
 			defer ctrl.Finish()
 
 			settingsCmds := settings.NewMockedCommands(ctrl)
-			settingsCmds.EXPECT().Get(ctx).Return(&settings.Settings{
+			settingsCmds.EXPECT().Get(t.Context()).Return(&settings.Settings{
 				LogRotation: &settings.LogRotationSettings{
 					Enabled:      true,
 					MaximumLines: 2,
@@ -117,7 +112,7 @@ func Test_logRotator(t *testing.T) {
 			}, nil)
 
 			hostCmds := host.NewMockedCommands(ctrl)
-			hostCmds.EXPECT().GetAllEnabled(ctx).Return([]host.Host{}, nil)
+			hostCmds.EXPECT().GetAllEnabled(t.Context()).Return([]host.Host{}, nil)
 
 			pm := &processManager{
 				binaryPath: fakeNginx,
@@ -126,7 +121,7 @@ func Test_logRotator(t *testing.T) {
 
 			rotator := newLogRotator(cfg, settingsCmds, hostCmds, pm)
 
-			err = rotator.rotate(ctx)
+			err = rotator.rotate(t.Context())
 			assert.NoError(t, err)
 
 			content, err := os.ReadFile(mainLogPath)

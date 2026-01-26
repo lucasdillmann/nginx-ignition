@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -22,38 +23,40 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "BLUECAT" }
 
-func (p *Provider) Name() string { return "BlueCat" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBluecatName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          baseURLFieldID,
-			Description: "BlueCat base URL",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBluecatBaseUrl),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          usernameFieldID,
-			Description: "BlueCat username",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBluecatUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "BlueCat password",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBluecatPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          configNameFieldID,
-			Description: "BlueCat configuration name",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBluecatConfigName),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          dnsViewFieldID,
-			Description: "BlueCat DNS view",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBluecatDnsView),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

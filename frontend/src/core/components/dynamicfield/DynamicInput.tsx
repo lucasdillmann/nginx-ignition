@@ -5,6 +5,8 @@ import TextArea from "antd/es/input/TextArea"
 import { PlusOutlined } from "@ant-design/icons"
 import Password from "antd/es/input/Password"
 import DynamicField, { DynamicFieldType } from "../../dynamicfield/DynamicField"
+import { I18n } from "../../i18n/I18n"
+import MessageKey from "../../i18n/model/MessageKey.generated"
 
 export interface DynamicFieldProps {
     dataField?: string
@@ -76,7 +78,9 @@ export default class DynamicInput extends React.Component<DynamicFieldProps> {
             <Upload type="drag" maxCount={1} beforeUpload={() => false}>
                 <button style={{ border: 0, background: "none", color: "inherit" }} type="button">
                     <PlusOutlined style={{ color: "inherit" }} />
-                    <div style={{ marginTop: 8, color: "inherit" }}>Select or drop the file</div>
+                    <div style={{ marginTop: 8, color: "inherit" }}>
+                        <I18n id={MessageKey.FrontendComponentsDynamicfieldSelectOrDropFile} />
+                    </div>
                 </button>
             </Upload>
         )

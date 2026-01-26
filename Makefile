@@ -27,10 +27,10 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./integration/truenas/... \
 		./vpn/tailscale/...
 
-.frontend-build: .frontend-prerequisites
+.frontend-build: .frontend-prerequisites .generate-i18n-files
 	cd frontend/ && npm run build
 
-.backend-build: .backend-prerequisites
+.backend-build: .backend-prerequisites .generate-i18n-files
 	$(MAKE) .backend-build-file OS=linux ARCH=amd64 DIR=linux
 	$(MAKE) .backend-build-file OS=linux ARCH=arm64 DIR=linux
 	$(MAKE) .backend-build-file OS=darwin ARCH=arm64 DIR=macos
@@ -39,6 +39,9 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 
 .backend-build-file:
 	GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o build/$(DIR)/$(ARCH)$(EXT) application/main.go
+
+.generate-i18n-files:
+	go run ./tools/i18n/
 
 .build-release-docker-image:
 	docker buildx build \
@@ -118,14 +121,14 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 
 .backend-test-mocks: .backend-prerequisites
 	@echo "Generating mock files..."
-	@find api application certificate core database integration vpn -type f -name "*_mock.go" -delete;
-	@find api application certificate core database integration vpn -type f -name "*.go" \
+	@find api application certificate core database i18n integration vpn -type f -name "*.mock.go" -delete;
+	@find api application certificate core database i18n integration vpn -type f -name "*.go" \
 		-not -name "*_test.go" \
 		-exec sh -c 'grep -q "^type [a-zA-Z0-9_]* interface" "$$1" && echo "$$1"' _ {} \; | \
 	while read -r file; do \
 		dir=$$(dirname "$$file"); \
 		base=$$(basename "$$file" .go); \
-		mock_file="$$dir/$${base}_mock.go"; \
+		mock_file="$$dir/$${base}.mock.go"; \
 		package_name=$$(basename "$$dir"); \
 		interfaces=$$(grep -oE "^type [a-zA-Z0-9_]+ interface" "$$file" | awk '{print $$2}'); \
 		mock_names_flag=""; \
@@ -140,8 +143,8 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 			-self_package "$$(cd $$dir && go list)" || true; \
 	done
 
-.backend-test: .backend-test-mocks
-	go test -v \
+.backend-test: .backend-test-mocks .generate-i18n-files
+	go test \
 		./api/... \
 		./application/... \
 		./certificate/commons/... \

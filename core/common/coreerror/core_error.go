@@ -1,11 +1,15 @@
 package coreerror
 
+import (
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
+)
+
 type CoreError struct {
-	Message     string
+	Message     *i18n.Message
 	UserRelated bool
 }
 
-func New(message string, blameUser bool) *CoreError {
+func New(message *i18n.Message, blameUser bool) *CoreError {
 	return &CoreError{
 		Message:     message,
 		UserRelated: blameUser,
@@ -13,5 +17,5 @@ func New(message string, blameUser bool) *CoreError {
 }
 
 func (e CoreError) Error() string {
-	return e.Message
+	return e.Message.String()
 }

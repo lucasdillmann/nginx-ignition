@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -24,34 +25,34 @@ func (p *Provider) ID() string {
 	return "REGRU"
 }
 
-func (p *Provider) Name() string {
-	return "Reg.ru"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRegruName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: "Reg.ru username",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRegruUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "Reg.ru password",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRegruPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tlsCertFieldID,
-			Description: "Reg.ru TLS certificate (for mTLS)",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRegruTlsCertificate),
 			Sensitive:   true,
 			Type:        dynamicfields.MultiLineTextType,
 		},
 		{
 			ID:          tlsKeyFieldID,
-			Description: "Reg.ru TLS key (for mTLS)",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsRegruTlsKey),
 			Sensitive:   true,
 			Type:        dynamicfields.MultiLineTextType,
 		},

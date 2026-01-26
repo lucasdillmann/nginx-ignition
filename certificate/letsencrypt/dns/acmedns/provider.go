@@ -9,7 +9,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -23,33 +23,38 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "ACME_DNS" }
 
-func (p *Provider) Name() string { return "ACME-DNS" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiBaseFieldID,
-			Description: "ACME-DNS API base",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsApiBase),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          allowListFieldID,
-			Description: "CIDR sources allowed to update",
-			HelpText:    ptr.Of("Comma-separated key=value pairs"),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsAllowList),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsAllowListHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          storagePathFieldID,
-			Description: "Local storage file path for ACME-DNS accounts",
-			HelpText:    ptr.Of("Mutually exclusive with storage base URL"),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsStoragePath),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsStoragePathHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          storageBaseURLFieldID,
-			Description: "Remote storage base URL for ACME-DNS accounts",
-			HelpText:    ptr.Of("Mutually exclusive with storage path"),
-			Type:        dynamicfields.SingleLineTextType,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAcmednsStorageBaseUrl),
+			HelpText: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsAcmednsStorageBaseUrlHelp,
+			),
+			Type: dynamicfields.SingleLineTextType,
 		},
 	})
 }

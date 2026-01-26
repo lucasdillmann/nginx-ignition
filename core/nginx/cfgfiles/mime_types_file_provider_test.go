@@ -9,7 +9,7 @@ import (
 func Test_mimeTypesFileProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
 		provider := &mimeTypesFileProvider{}
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 		files, err := provider.provide(ctx)
 
 		assert.NoError(t, err)

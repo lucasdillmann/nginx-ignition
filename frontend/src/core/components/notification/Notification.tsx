@@ -2,6 +2,7 @@ import { IconType } from "antd/es/notification/interface"
 import React from "react"
 import { LoadingOutlined } from "@ant-design/icons"
 import { themedNotification } from "../theme/ThemedResources"
+import { I18n, I18nMessage } from "../../i18n/I18n"
 
 export interface Props {
     key?: React.Key
@@ -10,8 +11,8 @@ export interface Props {
 }
 
 function showNotification(
-    title: string,
-    message: string,
+    title: I18nMessage,
+    message: I18nMessage,
     type: IconType,
     props?: Props,
     role?: "alert" | "status",
@@ -29,10 +30,10 @@ function showNotification(
         showProgress: role !== "status",
         placement: "bottomRight",
         pauseOnHover: true,
-        description: message,
+        description: <I18n id={message} />,
         key: props?.key,
         actions: props?.actions,
-        message: title,
+        message: <I18n id={title} />,
         duration,
         type,
         role,
@@ -41,19 +42,19 @@ function showNotification(
 }
 
 class Notification {
-    warning(title: string, message: string, props?: Props) {
+    warning(title: I18nMessage, message: I18nMessage, props?: Props) {
         showNotification(title, message, "warning", props)
     }
 
-    error(title: string, message: string, props?: Props) {
+    error(title: I18nMessage, message: I18nMessage, props?: Props) {
         showNotification(title, message, "error", props)
     }
 
-    success(title: string, message: string, props?: Props) {
+    success(title: I18nMessage, message: I18nMessage, props?: Props) {
         showNotification(title, message, "success", props)
     }
 
-    progress(title: string, message: string, props?: Props) {
+    progress(title: I18nMessage, message: I18nMessage, props?: Props) {
         const icon = <LoadingOutlined style={{ fontSize: 24 }} spin />
         showNotification(title, message, "info", props, "status", icon)
     }

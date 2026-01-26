@@ -37,6 +37,7 @@ import VpnListPage from "./vpn/VpnListPage"
 import VpnFormPage from "./vpn/VpnFormPage"
 import CacheFormPage from "./cache/CacheFormPage"
 import CacheListPage from "./cache/CacheListPage"
+import MessageKey from "../core/i18n/model/MessageKey.generated"
 
 const Routes: AppRoute[] = [
     {
@@ -64,7 +65,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <HostListPage />,
         menuItem: {
-            description: "Hosts",
+            description: MessageKey.CommonHosts,
             icon: <HddOutlined />,
         },
     },
@@ -81,7 +82,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <StreamListPage />,
         menuItem: {
-            description: "Streams",
+            description: MessageKey.CommonStreams,
             icon: <MergeCellsOutlined />,
         },
     },
@@ -105,7 +106,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <CertificateListPage />,
         menuItem: {
-            description: "SSL certificates",
+            description: MessageKey.CommonSslCertificates,
             icon: <AuditOutlined />,
         },
     },
@@ -115,7 +116,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <LogsPage />,
         menuItem: {
-            description: "Logs",
+            description: MessageKey.CommonLogs,
             icon: <FileSearchOutlined />,
         },
     },
@@ -132,7 +133,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <IntegrationListPage />,
         menuItem: {
-            description: "Integrations",
+            description: MessageKey.CommonIntegrations,
             icon: <BlockOutlined />,
         },
     },
@@ -149,7 +150,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <VpnListPage />,
         menuItem: {
-            description: "VPNs",
+            description: MessageKey.FrontendMenuVpn,
             icon: <ApartmentOutlined />,
         },
     },
@@ -166,7 +167,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <CacheListPage />,
         menuItem: {
-            description: "Cache configurations",
+            description: MessageKey.CommonCacheConfigurations,
             icon: <RocketOutlined />,
         },
     },
@@ -183,7 +184,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <AccessListListPage />,
         menuItem: {
-            description: "Access lists",
+            description: MessageKey.CommonAccessList,
             icon: <FileProtectOutlined />,
         },
     },
@@ -193,7 +194,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <ExportPage />,
         menuItem: {
-            description: "Export and backup",
+            description: MessageKey.CommonExportAndBackup,
             icon: <DownloadOutlined />,
         },
     },
@@ -203,7 +204,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <SettingsPage />,
         menuItem: {
-            description: "Settings",
+            description: MessageKey.CommonSettings,
             icon: <SettingOutlined />,
         },
     },
@@ -220,7 +221,7 @@ const Routes: AppRoute[] = [
         fullPage: false,
         component: <UserListPage />,
         menuItem: {
-            description: "Users",
+            description: MessageKey.CommonUsers,
             icon: <TeamOutlined />,
         },
     },

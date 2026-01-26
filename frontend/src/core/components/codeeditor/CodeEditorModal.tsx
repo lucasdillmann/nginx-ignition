@@ -1,6 +1,8 @@
 import React from "react"
 import CodeEditor, { CodeEditorLanguage } from "./CodeEditor"
 import { Drawer, Flex, Form, Select } from "antd"
+import { i18n, I18n } from "../../i18n/I18n"
+import MessageKey from "../../i18n/model/MessageKey.generated"
 
 interface CodeEditorModalState {
     language: CodeEditorLanguage
@@ -28,24 +30,24 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
         this.setState({ language })
     }
 
-    private languageName(language: CodeEditorLanguage): string {
+    private languageName(language: CodeEditorLanguage): MessageKey {
         switch (language) {
             case CodeEditorLanguage.JAVASCRIPT:
-                return "JavaScript"
+                return MessageKey.FrontendComponentsCodeeditorLanguageJavascript
             case CodeEditorLanguage.JSON:
-                return "JSON"
+                return MessageKey.FrontendComponentsCodeeditorLanguageJson
             case CodeEditorLanguage.HTML:
-                return "HTML"
+                return MessageKey.FrontendComponentsCodeeditorLanguageHtml
             case CodeEditorLanguage.LUA:
-                return "Lua"
+                return MessageKey.FrontendComponentsCodeeditorLanguageLua
             case CodeEditorLanguage.CSS:
-                return "CSS"
+                return MessageKey.FrontendComponentsCodeeditorLanguageCss
             case CodeEditorLanguage.YAML:
-                return "YAML"
+                return MessageKey.FrontendComponentsCodeeditorLanguageYaml
             case CodeEditorLanguage.XML:
-                return "XML"
+                return MessageKey.FrontendComponentsCodeeditorLanguageXml
             case CodeEditorLanguage.PLAIN_TEXT:
-                return "Plain text"
+                return MessageKey.FrontendComponentsCodeeditorLanguagePlainText
         }
     }
 
@@ -59,7 +61,12 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
 
         return (
             <Flex justify="right">
-                <Form.Item label="Language" layout="horizontal" style={{ width: 250, margin: 0, padding: 0 }} required>
+                <Form.Item
+                    label={<I18n id={MessageKey.CommonLanguage} />}
+                    layout="horizontal"
+                    style={{ width: 250, margin: 0, padding: 0 }}
+                    required
+                >
                     <Select
                         onChange={value => this.handleLanguageChange(value)}
                         value={currentLanguage}
@@ -67,7 +74,7 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
                     >
                         {availableLanguages.map(language => (
                             <Select.Option key={language} value={language}>
-                                {this.languageName(language)}
+                                <I18n id={this.languageName(language)} />
                             </Select.Option>
                         ))}
                     </Select>
@@ -86,7 +93,7 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
 
         return (
             <Drawer
-                title="Code editor"
+                title={i18n(MessageKey.FrontendComponentsCodeeditorTitle)}
                 placement="right"
                 width="80vw"
                 onClose={onClose}

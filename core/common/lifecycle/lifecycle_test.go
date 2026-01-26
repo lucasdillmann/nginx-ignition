@@ -1,7 +1,6 @@
 package lifecycle
 
 import (
-	"context"
 	"errors"
 	"testing"
 	"time"
@@ -21,12 +20,11 @@ func Test_Lifecycle(t *testing.T) {
 
 			lc.RegisterStartup(command)
 
-			ctx := context.Background()
 			command.EXPECT().Priority().Return(1).AnyTimes()
 			command.EXPECT().Async().Return(false)
-			command.EXPECT().Run(ctx).Return(nil)
+			command.EXPECT().Run(t.Context()).Return(nil)
 
-			err := lc.FireStartup(ctx)
+			err := lc.FireStartup(t.Context())
 			assert.NoError(t, err)
 		})
 	})
@@ -41,11 +39,10 @@ func Test_Lifecycle(t *testing.T) {
 
 			lc.RegisterShutdown(command)
 
-			ctx := context.Background()
 			command.EXPECT().Priority().Return(1).AnyTimes()
-			command.EXPECT().Run(ctx)
+			command.EXPECT().Run(t.Context())
 
-			lc.FireShutdown(ctx)
+			lc.FireShutdown(t.Context())
 		})
 	})
 
@@ -55,22 +52,21 @@ func Test_Lifecycle(t *testing.T) {
 			defer ctrl.Finish()
 
 			lc := New()
-			ctx := context.Background()
 
 			command1 := NewMockedStartupCommand(ctrl)
 			command1.EXPECT().Priority().Return(2).AnyTimes()
 			command1.EXPECT().Async().Return(false)
-			command1.EXPECT().Run(ctx).Return(nil)
+			command1.EXPECT().Run(t.Context()).Return(nil)
 
 			command2 := NewMockedStartupCommand(ctrl)
 			command2.EXPECT().Priority().Return(1).AnyTimes()
 			command2.EXPECT().Async().Return(false)
-			command2.EXPECT().Run(ctx).Return(nil)
+			command2.EXPECT().Run(t.Context()).Return(nil)
 
 			lc.RegisterStartup(command1)
 			lc.RegisterStartup(command2)
 
-			err := lc.FireStartup(ctx)
+			err := lc.FireStartup(t.Context())
 			assert.NoError(t, err)
 		})
 
@@ -79,16 +75,15 @@ func Test_Lifecycle(t *testing.T) {
 			defer ctrl.Finish()
 
 			lc := New()
-			ctx := context.Background()
 
 			command := NewMockedStartupCommand(ctrl)
 			command.EXPECT().Priority().Return(1).AnyTimes()
 			command.EXPECT().Async().Return(false)
-			command.EXPECT().Run(ctx).Return(errors.New("startup error"))
+			command.EXPECT().Run(t.Context()).Return(errors.New("startup error"))
 
 			lc.RegisterStartup(command)
 
-			err := lc.FireStartup(ctx)
+			err := lc.FireStartup(t.Context())
 			assert.Error(t, err)
 		})
 
@@ -97,16 +92,15 @@ func Test_Lifecycle(t *testing.T) {
 			defer ctrl.Finish()
 
 			lc := New()
-			ctx := context.Background()
 
 			command := NewMockedStartupCommand(ctrl)
 			command.EXPECT().Priority().Return(1).AnyTimes()
 			command.EXPECT().Async().Return(true)
-			command.EXPECT().Run(ctx).Return(nil)
+			command.EXPECT().Run(t.Context()).Return(nil)
 
 			lc.RegisterStartup(command)
 
-			err := lc.FireStartup(ctx)
+			err := lc.FireStartup(t.Context())
 			assert.NoError(t, err)
 
 			time.Sleep(10 * time.Millisecond)
@@ -119,20 +113,19 @@ func Test_Lifecycle(t *testing.T) {
 			defer ctrl.Finish()
 
 			lc := New()
-			ctx := context.Background()
 
 			command1 := NewMockedShutdownCommand(ctrl)
 			command1.EXPECT().Priority().Return(2).AnyTimes()
-			command1.EXPECT().Run(ctx)
+			command1.EXPECT().Run(t.Context())
 
 			command2 := NewMockedShutdownCommand(ctrl)
 			command2.EXPECT().Priority().Return(1).AnyTimes()
-			command2.EXPECT().Run(ctx)
+			command2.EXPECT().Run(t.Context())
 
 			lc.RegisterShutdown(command1)
 			lc.RegisterShutdown(command2)
 
-			lc.FireShutdown(ctx)
+			lc.FireShutdown(t.Context())
 		})
 	})
 }

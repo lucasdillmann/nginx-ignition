@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -21,26 +22,28 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "INWX" }
 
-func (p *Provider) Name() string { return "INWX" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInwxName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: "INWX username",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInwxUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "INWX password",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInwxPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          sharedSecretFieldID,
-			Description: "INWX shared secret",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInwxSharedSecret),
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

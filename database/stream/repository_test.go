@@ -1,7 +1,6 @@
 package stream
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -17,17 +16,16 @@ func Test_Repository(t *testing.T) {
 }
 
 func runRepositoryTests(t *testing.T, db *database.Database) {
-	ctx := context.Background()
 	repo := New(db)
 
 	t.Run("Save", func(t *testing.T) {
 		t.Run("successfully saves a new stream", func(t *testing.T) {
 			cmd := newStream()
 
-			err := repo.Save(ctx, cmd)
+			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
-			saved, err := repo.FindByID(ctx, cmd.ID)
+			saved, err := repo.FindByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			require.NotNil(t, saved)
 			assert.Equal(t, cmd.Name, saved.Name)
@@ -42,14 +40,14 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			id := uuid.New()
 			cmd := newStream()
 			cmd.ID = id
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
 			cmd.Name = "Updated Stream"
 			cmd.Enabled = false
-			err := repo.Save(ctx, cmd)
+			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
-			saved, err := repo.FindByID(ctx, id)
+			saved, err := repo.FindByID(t.Context(), id)
 			require.NoError(t, err)
 			assert.Equal(t, "Updated Stream", saved.Name)
 			assert.False(t, saved.Enabled)
@@ -59,15 +57,15 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	t.Run("ExistsByID", func(t *testing.T) {
 		t.Run("returns true when exists", func(t *testing.T) {
 			cmd := newStream()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			exists, err := repo.ExistsByID(ctx, cmd.ID)
+			exists, err := repo.ExistsByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			assert.True(t, exists)
 		})
 
 		t.Run("returns false when not exists", func(t *testing.T) {
-			exists, err := repo.ExistsByID(ctx, uuid.New())
+			exists, err := repo.ExistsByID(t.Context(), uuid.New())
 			require.NoError(t, err)
 			assert.False(t, exists)
 		})
@@ -86,16 +84,16 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 				cmd := newStream()
 				cmd.ID = uuid.New()
 				cmd.Name = name
-				require.NoError(t, repo.Save(ctx, cmd))
+				require.NoError(t, repo.Save(t.Context(), cmd))
 			}
 
 			other := newStream()
 			other.ID = uuid.New()
 			other.Name = "Other" + uuid.New().String()
-			require.NoError(t, repo.Save(ctx, other))
+			require.NoError(t, repo.Save(t.Context(), other))
 
 			search := prefix
-			page, err := repo.FindPage(ctx, 10, 0, &search)
+			page, err := repo.FindPage(t.Context(), 10, 0, &search)
 			require.NoError(t, err)
 
 			assert.GreaterOrEqual(t, page.TotalItems, 3)
@@ -111,14 +109,14 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			enabled := newStream()
 			enabled.ID = uuid.New()
 			enabled.Enabled = true
-			require.NoError(t, repo.Save(ctx, enabled))
+			require.NoError(t, repo.Save(t.Context(), enabled))
 
 			disabled := newStream()
 			disabled.ID = uuid.New()
 			disabled.Enabled = false
-			require.NoError(t, repo.Save(ctx, disabled))
+			require.NoError(t, repo.Save(t.Context(), disabled))
 
-			all, err := repo.FindAllEnabled(ctx)
+			all, err := repo.FindAllEnabled(t.Context())
 			require.NoError(t, err)
 
 			foundEnabled := false
@@ -139,12 +137,12 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	t.Run("DeleteByID", func(t *testing.T) {
 		t.Run("removes the stream", func(t *testing.T) {
 			cmd := newStream()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			err := repo.DeleteByID(ctx, cmd.ID)
+			err := repo.DeleteByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 
-			exists, err := repo.ExistsByID(ctx, cmd.ID)
+			exists, err := repo.ExistsByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			assert.False(t, exists)
 		})

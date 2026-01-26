@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
@@ -29,72 +30,83 @@ func (v *validator) validate(
 ) error {
 	if !updatedState.Enabled && currentState != nil && currentUserID != nil &&
 		currentState.ID == *currentUserID {
-		v.delegate.Add("enabled", "You cannot disable your own user")
+		v.delegate.Add("enabled", i18n.M(ctx, i18n.K.CoreUserCannotDisableSelf))
 	}
 
 	if request.Password == nil && currentState == nil {
-		v.delegate.Add("password", validation.ValueMissingMessage)
+		v.delegate.Add("password", i18n.M(ctx, i18n.K.CommonValueMissing))
 	}
 
 	databaseUser, _ := v.repository.FindByUsername(ctx, updatedState.Username)
 	if databaseUser != nil && databaseUser.ID != updatedState.ID {
-		v.delegate.Add("username", "There's already a user with the same username")
+		v.delegate.Add("username", i18n.M(ctx, i18n.K.CoreUserDuplicatedUsername))
 	}
 
 	if len(updatedState.Username) < minimumUsernameLength {
-		v.delegate.Add("username", minimumLengthMessage(minimumUsernameLength))
+		v.delegate.Add(
+			"username",
+			i18n.M(ctx, i18n.K.CoreUserTooShort).V("min", minimumUsernameLength),
+		)
 	}
 
 	if len(updatedState.Name) < minimumNameLength {
-		v.delegate.Add("name", minimumLengthMessage(minimumNameLength))
+		v.delegate.Add(
+			"name",
+			i18n.M(ctx, i18n.K.CoreUserTooShort).V("min", minimumNameLength),
+		)
 	}
 
 	if request.Password != nil && len(*request.Password) < minimumPasswordLength {
-		v.delegate.Add("password", minimumLengthMessage(minimumPasswordLength))
+		v.delegate.Add(
+			"password",
+			i18n.M(ctx, i18n.K.CoreUserTooShort).V("min", minimumPasswordLength),
+		)
 	}
 
-	v.validatePermissions(request.Permissions)
+	v.validatePermissions(ctx, request.Permissions)
 
 	return v.delegate.Result()
 }
 
-func (v *validator) validatePermissions(permissions Permissions) {
-	v.validatePermission("hosts", permissions.Hosts)
-	v.validatePermission("streams", permissions.Streams)
-	v.validatePermission("certificates", permissions.Certificates)
-	v.validatePermission("logs", permissions.Logs)
-	v.validatePermission("integrations", permissions.Integrations)
-	v.validatePermission("accessLists", permissions.AccessLists)
-	v.validatePermission("settings", permissions.Settings)
-	v.validatePermission("users", permissions.Users)
-	v.validatePermission("nginxServer", permissions.NginxServer)
-	v.validatePermission("exportData", permissions.ExportData)
-	v.validatePermission("vpns", permissions.VPNs)
-	v.validatePermission("caches", permissions.Caches)
+func (v *validator) validatePermissions(ctx context.Context, permissions Permissions) {
+	v.validatePermission(ctx, "hosts", permissions.Hosts)
+	v.validatePermission(ctx, "streams", permissions.Streams)
+	v.validatePermission(ctx, "certificates", permissions.Certificates)
+	v.validatePermission(ctx, "logs", permissions.Logs)
+	v.validatePermission(ctx, "integrations", permissions.Integrations)
+	v.validatePermission(ctx, "accessLists", permissions.AccessLists)
+	v.validatePermission(ctx, "settings", permissions.Settings)
+	v.validatePermission(ctx, "users", permissions.Users)
+	v.validatePermission(ctx, "nginxServer", permissions.NginxServer)
+	v.validatePermission(ctx, "exportData", permissions.ExportData)
+	v.validatePermission(ctx, "vpns", permissions.VPNs)
+	v.validatePermission(ctx, "caches", permissions.Caches)
 
 	if permissions.NginxServer == NoAccessAccessLevel {
-		v.delegate.Add("permissions.nginxServer", "At least read-only access is required")
+		v.delegate.Add("permissions.nginxServer", i18n.M(ctx, i18n.K.CoreUserAtLeastReadOnly))
 	}
 
 	if permissions.Logs == ReadWriteAccessLevel {
-		v.delegate.Add("permissions.logs", "Cannot have read-write access to logs")
+		v.delegate.Add("permissions.logs", i18n.M(ctx, i18n.K.CoreUserCannotHaveWriteAccess))
 	}
 
 	if permissions.ExportData == ReadWriteAccessLevel {
-		v.delegate.Add("permissions.exportData", "Cannot have read-write access to data export")
+		v.delegate.Add(
+			"permissions.exportData",
+			i18n.M(ctx, i18n.K.CoreUserCannotHaveWriteAccess),
+		)
 	}
 }
 
-func (v *validator) validatePermission(key string, value AccessLevel) {
+func (v *validator) validatePermission(ctx context.Context, key string, value AccessLevel) {
 	switch value {
 	case NoAccessAccessLevel, ReadOnlyAccessLevel, ReadWriteAccessLevel:
 	default:
-		v.delegate.Add(fmt.Sprintf("permissions.%s", key), "Invalid access level")
+		v.delegate.Add(
+			fmt.Sprintf("permissions.%s", key),
+			i18n.M(ctx, i18n.K.CoreUserInvalidAccessLevel),
+		)
 	}
-}
-
-func minimumLengthMessage(length int) string {
-	return fmt.Sprintf("Should have at least %d characters", length)
 }
 
 func newValidator(repository Repository) *validator {

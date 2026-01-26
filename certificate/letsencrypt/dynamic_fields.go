@@ -1,66 +1,73 @@
 package letsencrypt
 
 import (
+	"context"
 	"sort"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
-var (
-	termsOfService = dynamicfields.DynamicField{
-		ID:          "acceptTheTermsOfService",
-		Priority:    99,
-		Description: "Terms of service",
-		HelpText: ptr.Of(
-			"I agree to the Let's Encrypt terms of service available at theirs website",
-		),
+const (
+	termsOfServiceFieldID = "acceptTheTermsOfService"
+	emailAddressFieldID   = "emailAddress"
+	dnsProviderFieldID    = "challengeDnsProvider"
+)
+
+func mainDynamicFields(ctx context.Context) ([]dynamicfields.DynamicField, int) {
+	dnsField := dynamicfields.DynamicField{
+		ID:          dnsProviderFieldID,
+		Priority:    1,
+		Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsProvider),
+		Required:    true,
+		Type:        dynamicfields.EnumType,
+	}
+
+	tosField := dynamicfields.DynamicField{
+		ID:           termsOfServiceFieldID,
+		Priority:     99,
+		Description:  i18n.M(ctx, i18n.K.CertificateLetsencryptTos),
+		HelpText:     i18n.M(ctx, i18n.K.CertificateLetsencryptTosHelp),
 		Required:     true,
 		DefaultValue: false,
 		Type:         dynamicfields.BooleanType,
 	}
 
-	emailAddress = dynamicfields.DynamicField{
-		ID:          "emailAddress",
+	emailField := dynamicfields.DynamicField{
+		ID:          emailAddressFieldID,
 		Priority:    0,
-		Description: "E-mail address",
+		Description: i18n.M(ctx, i18n.K.CertificateLetsencryptEmail),
 		Required:    true,
 		Type:        dynamicfields.EmailType,
 	}
 
-	dnsProvider = dynamicfields.DynamicField{
-		ID:          "challengeDnsProvider",
-		Priority:    1,
-		Description: "DNS provider",
-		Required:    true,
-		Type:        dynamicfields.EnumType,
-	}
-)
+	return []dynamicfields.DynamicField{dnsField, tosField, emailField}, 0
+}
 
-func resolveDynamicFields() []dynamicfields.DynamicField {
-	output := make([]dynamicfields.DynamicField, 0, len(providers))
-
-	output = append(output, termsOfService, emailAddress, dnsProvider)
+func resolveDynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	mainFields, dnsProviderField := mainDynamicFields(ctx)
+	output := make([]dynamicfields.DynamicField, 0, 3+len(providers))
+	output = append(output, mainFields...)
 	providerOptions := make([]dynamicfields.EnumOption, 0, len(providers))
 
 	for _, provider := range providers {
-		output = append(output, provider.DynamicFields()...)
+		output = append(output, provider.DynamicFields(ctx)...)
 
 		providerOptions = append(providerOptions, dynamicfields.EnumOption{
 			ID:          provider.ID(),
-			Description: provider.Name(),
+			Description: provider.Name(ctx),
 		})
 	}
 
 	sort.Slice(providerOptions, func(leftIndex, rightIndex int) bool {
-		leftValue := strings.ToUpper(providerOptions[leftIndex].Description)
-		rightValue := strings.ToUpper(providerOptions[rightIndex].Description)
+		leftValue := strings.ToUpper(providerOptions[leftIndex].Description.String())
+		rightValue := strings.ToUpper(providerOptions[rightIndex].Description.String())
 
 		return leftValue < rightValue
 	})
 
-	dnsProvider.EnumOptions = providerOptions
+	output[dnsProviderField].EnumOptions = providerOptions
 
 	return output
 }

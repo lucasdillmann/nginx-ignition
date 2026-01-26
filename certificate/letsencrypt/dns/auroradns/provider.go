@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -20,20 +21,22 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "AURORA_DNS" }
 
-func (p *Provider) Name() string { return "Aurora DNS" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAuroradnsName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiKeyFieldID,
-			Description: "Aurora DNS API key",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAuroradnsApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretFieldID,
-			Description: "Aurora DNS secret",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAuroradnsSecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

@@ -1,7 +1,6 @@
 package user
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -18,17 +17,16 @@ func Test_Repository(t *testing.T) {
 }
 
 func runRepositoryTests(t *testing.T, db *database.Database) {
-	ctx := context.Background()
 	repo := New(db)
 
 	t.Run("Save", func(t *testing.T) {
 		t.Run("successfully saves a new user", func(t *testing.T) {
 			cmd := newUser()
 
-			err := repo.Save(ctx, cmd)
+			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
-			saved, err := repo.FindByID(ctx, cmd.ID)
+			saved, err := repo.FindByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			require.NotNil(t, saved)
 			assert.Equal(t, cmd.Name, saved.Name)
@@ -43,14 +41,14 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			id := uuid.New()
 			cmd := newUser()
 			cmd.ID = id
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
 			cmd.Name = "Updated User"
 			cmd.Enabled = false
-			err := repo.Save(ctx, cmd)
+			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
-			saved, err := repo.FindByID(ctx, id)
+			saved, err := repo.FindByID(t.Context(), id)
 			require.NoError(t, err)
 			assert.Equal(t, "Updated User", saved.Name)
 			assert.False(t, saved.Enabled)
@@ -60,16 +58,16 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	t.Run("FindByUsername", func(t *testing.T) {
 		t.Run("returns user by exact username", func(t *testing.T) {
 			cmd := newUser()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			saved, err := repo.FindByUsername(ctx, cmd.Username)
+			saved, err := repo.FindByUsername(t.Context(), cmd.Username)
 			require.NoError(t, err)
 			require.NotNil(t, saved)
 			assert.Equal(t, cmd.ID, saved.ID)
 		})
 
 		t.Run("returns nil if not found", func(t *testing.T) {
-			saved, err := repo.FindByUsername(ctx, "nonexistent")
+			saved, err := repo.FindByUsername(t.Context(), "nonexistent")
 			require.NoError(t, err)
 			assert.Nil(t, saved)
 		})
@@ -89,23 +87,23 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 				cmd.ID = uuid.New()
 				cmd.Name = name
 				cmd.Username = uuid.New().String()
-				require.NoError(t, repo.Save(ctx, cmd))
+				require.NoError(t, repo.Save(t.Context(), cmd))
 			}
 
 			byUsername := newUser()
 			byUsername.ID = uuid.New()
 			byUsername.Name = "Hidden Name"
 			byUsername.Username = prefix + "User"
-			require.NoError(t, repo.Save(ctx, byUsername))
+			require.NoError(t, repo.Save(t.Context(), byUsername))
 
 			other := newUser()
 			other.ID = uuid.New()
 			other.Name = "Other" + uuid.New().String()
 			other.Username = "Other" + uuid.New().String()
-			require.NoError(t, repo.Save(ctx, other))
+			require.NoError(t, repo.Save(t.Context(), other))
 
 			search := prefix
-			page, err := repo.FindPage(ctx, 10, 0, &search)
+			page, err := repo.FindPage(t.Context(), 10, 0, &search)
 			require.NoError(t, err)
 
 			assert.GreaterOrEqual(t, page.TotalItems, 4)
@@ -131,9 +129,9 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 		t.Run("returns true when enabled", func(t *testing.T) {
 			cmd := newUser()
 			cmd.Enabled = true
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			enabled, err := repo.IsEnabledByID(ctx, cmd.ID)
+			enabled, err := repo.IsEnabledByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			assert.True(t, enabled)
 		})
@@ -141,15 +139,15 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 		t.Run("returns false when disabled", func(t *testing.T) {
 			cmd := newUser()
 			cmd.Enabled = false
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			enabled, err := repo.IsEnabledByID(ctx, cmd.ID)
+			enabled, err := repo.IsEnabledByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			assert.False(t, enabled)
 		})
 
 		t.Run("returns false when not exists", func(t *testing.T) {
-			enabled, err := repo.IsEnabledByID(ctx, uuid.New())
+			enabled, err := repo.IsEnabledByID(t.Context(), uuid.New())
 			require.NoError(t, err)
 			assert.False(t, enabled)
 		})
@@ -157,18 +155,18 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 
 	t.Run("Count", func(t *testing.T) {
 		t.Run("returns total user count", func(t *testing.T) {
-			initial, err := repo.Count(ctx)
+			initial, err := repo.Count(t.Context())
 			require.NoError(t, err)
 
 			cmd := newUser()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
 			cmd2 := newUser()
 			cmd2.ID = uuid.New()
 			cmd2.Username = uuid.New().String()
-			require.NoError(t, repo.Save(ctx, cmd2))
+			require.NoError(t, repo.Save(t.Context(), cmd2))
 
-			current, err := repo.Count(ctx)
+			current, err := repo.Count(t.Context())
 			require.NoError(t, err)
 			assert.Equal(t, initial+2, current)
 		})
@@ -177,12 +175,12 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	t.Run("DeleteByID", func(t *testing.T) {
 		t.Run("removes the user", func(t *testing.T) {
 			cmd := newUser()
-			require.NoError(t, repo.Save(ctx, cmd))
+			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			err := repo.DeleteByID(ctx, cmd.ID)
+			err := repo.DeleteByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 
-			saved, err := repo.FindByID(ctx, cmd.ID)
+			saved, err := repo.FindByID(t.Context(), cmd.ID)
 			require.NoError(t, err)
 			assert.Nil(t, saved)
 		})

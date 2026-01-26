@@ -13,6 +13,8 @@ import { HostFormRoute } from "../model/HostFormValues"
 import CacheResponse from "../../cache/model/CacheResponse"
 import CacheService from "../../cache/CacheService"
 import HostRouteConditionalConfig from "./HostRouteConditionalConfig"
+import { I18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const PROXY_ROUTE_TYPES: HostRouteType[] = [HostRouteType.INTEGRATION, HostRouteType.PROXY]
 const ACCESS_LIST_SUPPORTED_ROUTE_TYPES: HostRouteType[] = [
@@ -55,21 +57,18 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
         return (
             <>
                 <p>
-                    Any instruction placed here will be placed in the nginx configuration files as-is. Use this field
-                    for any customized configuration parameters that you need in the host route.
+                    <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsCustomSettingsDescription1} />
                 </p>
                 <p>
-                    Please note that the text below must be in the syntax expected by the nginx. Please refer to the
-                    documentation at &nbsp;
+                    <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsCustomSettingsDescription2} />{" "}
                     <Link
                         to="https://nginx.org/en/docs/http/ngx_http_core_module.html#location"
                         target="_blank"
                         rel="noreferrer"
                     >
-                        this link
-                    </Link>
-                    &nbsp; for more details. If you isn't sure about what to place here, it's probably the best to leave
-                    it empty.
+                        <I18n id={MessageKey.CommonNginxDocLink} />
+                    </Link>{" "}
+                    <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsCustomSettingsDescription3} />
                 </p>
 
                 <Form.Item
@@ -78,6 +77,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     name={[fieldPath, "settings", "custom"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].settings.custom`)}
                     help={validationResult.getMessage(`routes[${index}].settings.custom`)}
+                    label={<I18n id={MessageKey.CommonCustomSettings} />}
                     required
                 >
                     <TextArea rows={10} />
@@ -112,7 +112,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     name={[fieldPath, "cache"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].cacheId`)}
                     help={validationResult.getMessage(`routes[${index}].cacheId`)}
-                    label="Cache"
+                    label={<I18n id={MessageKey.CommonCache} />}
                 >
                     <PaginatedSelect<CacheResponse>
                         itemDescription={item => item?.name}
@@ -129,7 +129,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         name={[fieldPath, "accessList"]}
                         validateStatus={validationResult.getStatus(`routes[${index}].accessListId`)}
                         help={validationResult.getMessage(`routes[${index}].accessListId`)}
-                        label="Access list"
+                        label={<I18n id={MessageKey.CommonAccessList} />}
                     >
                         <PaginatedSelect<AccessListResponse>
                             itemDescription={item => item?.name}
@@ -145,11 +145,14 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "directoryListingEnabled"]}
-                        label="Enable directory listing"
+                        label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsEnableDirectoryListing} />}
                         validateStatus={validationResult.getStatus(`routes[${index}].settings.directoryListingEnabled`)}
                         help={
-                            validationResult.getMessage(`routes[${index}].settings.directoryListingEnabled`) ??
-                            "Defines if the list of files in the directories should be shown"
+                            validationResult.getMessage(`routes[${index}].settings.directoryListingEnabled`) ?? (
+                                <I18n
+                                    id={MessageKey.FrontendHostComponentsHostroutesettingsEnableDirectoryListingHelp}
+                                />
+                            )
                         }
                         required
                     >
@@ -160,11 +163,12 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "indexFile"]}
-                        label="Index file"
+                        label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIndexFile} />}
                         validateStatus={validationResult.getStatus(`routes[${index}].settings.indexFile`)}
                         help={
-                            validationResult.getMessage(`routes[${index}].settings.indexFile`) ??
-                            "The default, index file to be used by nginx when a folder is requested"
+                            validationResult.getMessage(`routes[${index}].settings.indexFile`) ?? (
+                                <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIndexFileHelp} />
+                            )
                         }
                     >
                         <Input />
@@ -174,11 +178,14 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "keepOriginalDomainName"]}
-                        label="Keep the original domain name"
+                        label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsKeepOriginalDomainName} />}
                         validateStatus={validationResult.getStatus(`routes[${index}].settings.keepOriginalDomainName`)}
                         help={
-                            validationResult.getMessage(`routes[${index}].settings.keepOriginalDomainName`) ??
-                            "Defines if the request made by nginx to the target host should use the target's domain as the host"
+                            validationResult.getMessage(`routes[${index}].settings.keepOriginalDomainName`) ?? (
+                                <I18n
+                                    id={MessageKey.FrontendHostComponentsHostroutesettingsKeepOriginalDomainNameHelp}
+                                />
+                            )
                         }
                         required
                     >
@@ -189,11 +196,12 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "proxySslServerName"]}
-                        label="Proxy SSL server name"
+                        label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsProxySslServerName} />}
                         validateStatus={validationResult.getStatus(`routes[${index}].settings.proxySslServerName`)}
                         help={
-                            validationResult.getMessage(`routes[${index}].settings.proxySslServerName`) ??
-                            "Defines if the SSL negotiation should be made using the target's domain"
+                            validationResult.getMessage(`routes[${index}].settings.proxySslServerName`) ?? (
+                                <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsProxySslServerNameHelp} />
+                            )
                         }
                         required
                     >
@@ -204,11 +212,14 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     <Form.Item
                         {...ItemProps}
                         name={[fieldPath, "settings", "includeForwardHeaders"]}
-                        label="Include forward headers"
+                        label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIncludeForwardHeaders} />}
                         validateStatus={validationResult.getStatus(`routes[${index}].settings.includeForwardHeaders`)}
                         help={
-                            validationResult.getMessage(`routes[${index}].settings.includeForwardHeaders`) ??
-                            "Defines if headers like 'x-forwarded-for' should be included in the request to the target"
+                            validationResult.getMessage(`routes[${index}].settings.includeForwardHeaders`) ?? (
+                                <I18n
+                                    id={MessageKey.FrontendHostComponentsHostroutesettingsIncludeForwardHeadersHelp}
+                                />
+                            )
                         }
                         required
                     >
@@ -223,12 +234,12 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
         return [
             {
                 key: "main",
-                label: "Main",
+                label: <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsTabMain} />,
                 children: this.renderMainTab(),
             },
             {
                 key: "advanced",
-                label: "Advanced",
+                label: <I18n id={MessageKey.CommonAdvanced} />,
                 children: this.renderAdvancedTab(),
             },
         ]
@@ -238,7 +249,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
         const { open, onClose, onCancel } = this.props
         return (
             <Modal
-                title="Route settings"
+                title={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsTitle} />}
                 open={open}
                 afterClose={onClose}
                 onCancel={onCancel}

@@ -2,10 +2,10 @@ package settings
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 )
@@ -38,9 +38,9 @@ func newValidator(commands binding.Commands) *validator {
 }
 
 func (v *validator) validate(ctx context.Context, settings *Settings) error {
-	v.validateNginx(settings.Nginx)
-	v.validateLogRotation(settings.LogRotation)
-	v.validateCertificateAutoRenew(settings.CertificateAutoRenew)
+	v.validateNginx(ctx, settings.Nginx)
+	v.validateLogRotation(ctx, settings.LogRotation)
+	v.validateCertificateAutoRenew(ctx, settings.CertificateAutoRenew)
 
 	if err := v.validateGlobalBindings(ctx, settings.GlobalBindings); err != nil {
 		return err
@@ -49,39 +49,49 @@ func (v *validator) validate(ctx context.Context, settings *Settings) error {
 	return v.delegate.Result()
 }
 
-func (v *validator) validateNginx(settings *NginxSettings) {
-	v.checkRange(settings.Timeouts.Read, timeoutRange, "nginx.timeouts.read")
-	v.checkRange(settings.Timeouts.Send, timeoutRange, "nginx.timeouts.send")
-	v.checkRange(settings.Timeouts.Connect, timeoutRange, "nginx.timeouts.connect")
-	v.checkRange(settings.Timeouts.Keepalive, timeoutRange, "nginx.timeouts.keepalive")
-	v.checkRange(settings.WorkerProcesses, workerProcessesRange, "nginx.workerProcesses")
-	v.checkRange(settings.WorkerConnections, workerConnectionsRange, "nginx.workerConnections")
-	v.checkRange(settings.MaximumBodySizeMb, maximumBodySizeRange, "nginx.maximumBodySizeMb")
+func (v *validator) validateNginx(ctx context.Context, settings *NginxSettings) {
+	v.checkRange(ctx, settings.Timeouts.Read, timeoutRange, "nginx.timeouts.read")
+	v.checkRange(ctx, settings.Timeouts.Send, timeoutRange, "nginx.timeouts.send")
+	v.checkRange(ctx, settings.Timeouts.Connect, timeoutRange, "nginx.timeouts.connect")
+	v.checkRange(ctx, settings.Timeouts.Keepalive, timeoutRange, "nginx.timeouts.keepalive")
+	v.checkRange(ctx, settings.WorkerProcesses, workerProcessesRange, "nginx.workerProcesses")
+	v.checkRange(ctx, settings.WorkerConnections, workerConnectionsRange, "nginx.workerConnections")
+	v.checkRange(ctx, settings.MaximumBodySizeMb, maximumBodySizeRange, "nginx.maximumBodySizeMb")
 
 	if settings.DefaultContentType == "" {
-		v.delegate.Add(defaultContentTypePath, "A value is required")
+		v.delegate.Add(defaultContentTypePath, i18n.M(ctx, i18n.K.CommonValueMissing))
 	}
 
 	if len(settings.DefaultContentType) > maximumDefaultContentTypeLength {
-		v.delegate.Add(defaultContentTypePath, "Cannot have more than 128 characters")
+		v.delegate.Add(
+			defaultContentTypePath,
+			i18n.M(ctx, i18n.K.CoreSettingsTooLong).V("max", maximumDefaultContentTypeLength),
+		)
 	}
 
 	if strings.TrimSpace(settings.RuntimeUser) == "" {
-		v.delegate.Add("nginx.runtimeUser", validation.ValueMissingMessage)
+		v.delegate.Add("nginx.runtimeUser", i18n.M(ctx, i18n.K.CommonValueMissing))
 	}
 
 	if len(settings.RuntimeUser) > maximumRuntimeUserLength {
-		v.delegate.Add(defaultContentTypePath, "Cannot have more than 32 characters")
+		v.delegate.Add(
+			"nginx.runtimeUser",
+			i18n.M(ctx, i18n.K.CoreSettingsTooLong).V("max", maximumRuntimeUserLength),
+		)
 	}
 }
 
-func (v *validator) validateLogRotation(settings *LogRotationSettings) {
-	v.checkRange(settings.IntervalUnitCount, intervalRange, "logRotation.intervalUnitCount")
-	v.checkRange(settings.MaximumLines, logLinesRange, "logRotation.maximumLines")
+func (v *validator) validateLogRotation(ctx context.Context, settings *LogRotationSettings) {
+	v.checkRange(ctx, settings.IntervalUnitCount, intervalRange, "logRotation.intervalUnitCount")
+	v.checkRange(ctx, settings.MaximumLines, logLinesRange, "logRotation.maximumLines")
 }
 
-func (v *validator) validateCertificateAutoRenew(settings *CertificateAutoRenewSettings) {
+func (v *validator) validateCertificateAutoRenew(
+	ctx context.Context,
+	settings *CertificateAutoRenewSettings,
+) {
 	v.checkRange(
+		ctx,
 		settings.IntervalUnitCount,
 		intervalRange,
 		"certificateAutoRenew.intervalUnitCount",
@@ -98,11 +108,16 @@ func (v *validator) validateGlobalBindings(ctx context.Context, settings []bindi
 	return nil
 }
 
-func (v *validator) checkRange(value int, r *valuerange.ValueRange, path string) {
+func (v *validator) checkRange(
+	ctx context.Context,
+	value int,
+	r *valuerange.ValueRange,
+	path string,
+) {
 	if !r.Contains(value) {
 		v.delegate.Add(
 			path,
-			fmt.Sprintf("Must be between %d and %d", r.Min, r.Max),
+			i18n.M(ctx, i18n.K.CommonBetweenValues).V("min", r.Min).V("max", r.Max),
 		)
 	}
 }

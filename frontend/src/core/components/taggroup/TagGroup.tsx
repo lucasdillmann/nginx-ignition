@@ -1,5 +1,7 @@
 import React from "react"
 import { Tag, Tooltip } from "antd"
+import { I18n, I18nMessage, raw } from "../../i18n/I18n"
+import MessageKey from "../../i18n/model/MessageKey.generated"
 
 const DEFAULT_MAXIMUM_SIZE = 3
 
@@ -62,12 +64,16 @@ export default class TagGroup extends React.Component<TagGroupProps> {
         const limit = maximumSize ?? DEFAULT_MAXIMUM_SIZE
         const tags = values.slice(0, limit).map(value => this.renderTag(value))
         const tooltipContents = <>{values.slice(limit).map(value => this.renderTooltipItem(value))}</>
-        const additionalMessage = values.length > limit ? `and ${values.length - limit} more` : ""
+        const remaining = values.length - limit
+        const additionalMessage: I18nMessage =
+            remaining > 0 ? { id: MessageKey.FrontendComponentsTaggroupRemaining, params: { remaining } } : raw("")
 
         return (
             <>
                 {tags}
-                <Tooltip title={tooltipContents}>{additionalMessage}</Tooltip>
+                <Tooltip title={tooltipContents}>
+                    <I18n id={additionalMessage} />
+                </Tooltip>
             </>
         )
     }

@@ -4,8 +4,10 @@ import UserOnboardingStatusResponse from "../../../domain/user/model/UserOnboard
 import ContextHolder from "../../context/ContextHolder"
 import Configuration from "../../../domain/configuration/Configuration"
 import ConfigurationService from "../../../domain/configuration/ConfigurationService"
+import AppContainer from "../../../domain/AppContainer"
 
 export interface AppContextData {
+    container?: AppContainer
     user?: UserResponse
     onboardingStatus: UserOnboardingStatusResponse
     configuration: Configuration

@@ -12,7 +12,7 @@ func Test_validator(t *testing.T) {
 			accessList := newAccessList()
 			accessListValidator := newValidator()
 
-			err := accessListValidator.validate(accessList)
+			err := accessListValidator.validate(t.Context(), accessList)
 
 			assert.NoError(t, err)
 		})
@@ -22,7 +22,7 @@ func Test_validator(t *testing.T) {
 			accessList.Name = ""
 			accessListValidator := newValidator()
 
-			err := accessListValidator.validate(accessList)
+			err := accessListValidator.validate(t.Context(), accessList)
 
 			assert.Error(t, err)
 		})
@@ -32,7 +32,7 @@ func Test_validator(t *testing.T) {
 			accessList.Name = "   "
 			accessListValidator := newValidator()
 
-			err := accessListValidator.validate(accessList)
+			err := accessListValidator.validate(t.Context(), accessList)
 
 			assert.Error(t, err)
 		})
@@ -44,7 +44,7 @@ func Test_validator(t *testing.T) {
 			knownPriorities := map[int]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateEntry(0, entry, &knownPriorities)
+			accessListValidator.validateEntry(t.Context(), 0, entry, &knownPriorities)
 
 			assert.NoError(t, accessListValidator.delegate.Result())
 		})
@@ -56,8 +56,8 @@ func Test_validator(t *testing.T) {
 			knownPriorities := map[int]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateEntry(0, entry1, &knownPriorities)
-			accessListValidator.validateEntry(1, entry2, &knownPriorities)
+			accessListValidator.validateEntry(t.Context(), 0, entry1, &knownPriorities)
+			accessListValidator.validateEntry(t.Context(), 1, entry2, &knownPriorities)
 
 			assert.Error(t, accessListValidator.delegate.Result())
 		})
@@ -68,7 +68,7 @@ func Test_validator(t *testing.T) {
 			knownPriorities := map[int]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateEntry(0, entry, &knownPriorities)
+			accessListValidator.validateEntry(t.Context(), 0, entry, &knownPriorities)
 
 			assert.Error(t, accessListValidator.delegate.Result())
 		})
@@ -79,7 +79,7 @@ func Test_validator(t *testing.T) {
 			knownPriorities := map[int]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateEntry(0, entry, &knownPriorities)
+			accessListValidator.validateEntry(t.Context(), 0, entry, &knownPriorities)
 
 			assert.NoError(t, accessListValidator.delegate.Result())
 		})
@@ -90,7 +90,7 @@ func Test_validator(t *testing.T) {
 			knownPriorities := map[int]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateEntry(0, entry, &knownPriorities)
+			accessListValidator.validateEntry(t.Context(), 0, entry, &knownPriorities)
 
 			assert.Error(t, accessListValidator.delegate.Result())
 		})
@@ -101,7 +101,7 @@ func Test_validator(t *testing.T) {
 			knownPriorities := map[int]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateEntry(0, entry, &knownPriorities)
+			accessListValidator.validateEntry(t.Context(), 0, entry, &knownPriorities)
 
 			assert.NoError(t, accessListValidator.delegate.Result())
 		})
@@ -112,7 +112,7 @@ func Test_validator(t *testing.T) {
 			knownPriorities := map[int]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateEntry(0, entry, &knownPriorities)
+			accessListValidator.validateEntry(t.Context(), 0, entry, &knownPriorities)
 
 			assert.NoError(t, accessListValidator.delegate.Result())
 		})
@@ -123,7 +123,7 @@ func Test_validator(t *testing.T) {
 			knownPriorities := map[int]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateEntry(0, entry, &knownPriorities)
+			accessListValidator.validateEntry(t.Context(), 0, entry, &knownPriorities)
 
 			assert.NoError(t, accessListValidator.delegate.Result())
 		})
@@ -134,7 +134,7 @@ func Test_validator(t *testing.T) {
 			knownPriorities := map[int]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateEntry(0, entry, &knownPriorities)
+			accessListValidator.validateEntry(t.Context(), 0, entry, &knownPriorities)
 
 			assert.Error(t, accessListValidator.delegate.Result())
 		})
@@ -145,7 +145,7 @@ func Test_validator(t *testing.T) {
 			knownPriorities := map[int]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateEntry(0, entry, &knownPriorities)
+			accessListValidator.validateEntry(t.Context(), 0, entry, &knownPriorities)
 
 			assert.Error(t, accessListValidator.delegate.Result())
 		})
@@ -157,7 +157,7 @@ func Test_validator(t *testing.T) {
 			knownUsernames := map[string]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateCredentials(0, credentials, &knownUsernames)
+			accessListValidator.validateCredentials(t.Context(), 0, credentials, &knownUsernames)
 
 			assert.NoError(t, accessListValidator.delegate.Result())
 		})
@@ -168,7 +168,7 @@ func Test_validator(t *testing.T) {
 			knownUsernames := map[string]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateCredentials(0, credentials, &knownUsernames)
+			accessListValidator.validateCredentials(t.Context(), 0, credentials, &knownUsernames)
 
 			assert.Error(t, accessListValidator.delegate.Result())
 		})
@@ -179,7 +179,7 @@ func Test_validator(t *testing.T) {
 			knownUsernames := map[string]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateCredentials(0, credentials, &knownUsernames)
+			accessListValidator.validateCredentials(t.Context(), 0, credentials, &knownUsernames)
 
 			assert.Error(t, accessListValidator.delegate.Result())
 		})
@@ -190,8 +190,8 @@ func Test_validator(t *testing.T) {
 			knownUsernames := map[string]bool{}
 			accessListValidator := newValidator()
 
-			accessListValidator.validateCredentials(0, credentials1, &knownUsernames)
-			accessListValidator.validateCredentials(1, credentials2, &knownUsernames)
+			accessListValidator.validateCredentials(t.Context(), 0, credentials1, &knownUsernames)
+			accessListValidator.validateCredentials(t.Context(), 1, credentials2, &knownUsernames)
 
 			assert.Error(t, accessListValidator.delegate.Result())
 		})

@@ -9,6 +9,8 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
@@ -66,10 +68,14 @@ func (s *simpleAdapter) ResolveOptions(
 		containers = filteredResults
 	}
 
-	return s.buildOptions(containers, tcpOnly), nil
+	return s.buildOptions(ctx, containers, tcpOnly), nil
 }
 
-func (s *simpleAdapter) buildOptions(containers []container.Summary, tcpOnly bool) []Option {
+func (s *simpleAdapter) buildOptions(
+	ctx context.Context,
+	containers []container.Summary,
+	tcpOnly bool,
+) []Option {
 	optionIDs := make(map[string]bool)
 	options := make([]Option, 0, len(containers))
 
@@ -79,13 +85,22 @@ func (s *simpleAdapter) buildOptions(containers []container.Summary, tcpOnly boo
 				continue
 			}
 
-			if option := s.buildOption(&port, &item, true); option != nil && !optionIDs[option.ID] {
+			if option := s.buildOption(
+				ctx,
+				&port,
+				&item,
+				true,
+			); option != nil && !optionIDs[option.ID] {
 				options = append(options, *option)
 				optionIDs[option.ID] = true
 			}
 
-			if option := s.buildOption(&port, &item, false); option != nil &&
-				!optionIDs[option.ID] {
+			if option := s.buildOption(
+				ctx,
+				&port,
+				&item,
+				false,
+			); option != nil && !optionIDs[option.ID] {
 				options = append(options, *option)
 				optionIDs[option.ID] = true
 			}
@@ -96,6 +111,7 @@ func (s *simpleAdapter) buildOptions(containers []container.Summary, tcpOnly boo
 }
 
 func (s *simpleAdapter) buildOption(
+	ctx context.Context,
 	port *container.Port,
 	item *container.Summary,
 	usePublicPort bool,
@@ -128,12 +144,13 @@ func (s *simpleAdapter) buildOption(
 			Protocol:  integration.Protocol(port.Type),
 		},
 		urlResolver: func(_ context.Context, option *Option) (*string, []string, error) {
-			return s.buildOptionURL(option, item)
+			return s.buildOptionURL(ctx, option, item)
 		},
 	}
 }
 
 func (s *simpleAdapter) buildOptionURL(
+	ctx context.Context,
 	option *Option,
 	summary *container.Summary,
 ) (*string, []string, error) {
@@ -154,9 +171,9 @@ func (s *simpleAdapter) buildOptionURL(
 		}
 
 		if targetHost == "" {
-			return nil, nil, fmt.Errorf(
-				"no network or IP address found for the container with ID %s",
-				option.ID,
+			return nil, nil, coreerror.New(
+				i18n.M(ctx, i18n.K.IntegrationDockerResolverNoNetwork).V("id", option.ID),
+				false,
 			)
 		}
 	}

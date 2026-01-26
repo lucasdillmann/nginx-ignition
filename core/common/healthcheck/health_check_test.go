@@ -1,7 +1,6 @@
 package healthcheck
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -15,15 +14,14 @@ func Test_HealthCheck(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			hc := New()
 			provider := NewMockedProvider(ctrl)
 			provider.EXPECT().ID().Return("test-provider")
-			provider.EXPECT().Check(ctx).Return(nil)
+			provider.EXPECT().Check(t.Context()).Return(nil)
 
 			hc.Register(provider)
 
-			status := hc.Status(ctx)
+			status := hc.Status(t.Context())
 			assert.Len(t, status.Details, 1)
 		})
 	})
@@ -33,21 +31,20 @@ func Test_HealthCheck(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			hc := New()
 
 			provider1 := NewMockedProvider(ctrl)
 			provider1.EXPECT().ID().Return("provider1")
-			provider1.EXPECT().Check(ctx).Return(nil)
+			provider1.EXPECT().Check(t.Context()).Return(nil)
 
 			provider2 := NewMockedProvider(ctrl)
 			provider2.EXPECT().ID().Return("provider2")
-			provider2.EXPECT().Check(ctx).Return(nil)
+			provider2.EXPECT().Check(t.Context()).Return(nil)
 
 			hc.Register(provider1)
 			hc.Register(provider2)
 
-			status := hc.Status(ctx)
+			status := hc.Status(t.Context())
 
 			assert.True(t, status.Healthy)
 			assert.Len(t, status.Details, 2)
@@ -59,21 +56,20 @@ func Test_HealthCheck(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			hc := New()
 
 			provider1 := NewMockedProvider(ctrl)
 			provider1.EXPECT().ID().Return("provider1")
-			provider1.EXPECT().Check(ctx).Return(nil)
+			provider1.EXPECT().Check(t.Context()).Return(nil)
 
 			provider2 := NewMockedProvider(ctrl)
 			provider2.EXPECT().ID().Return("provider2")
-			provider2.EXPECT().Check(ctx).Return(errors.New("provider error"))
+			provider2.EXPECT().Check(t.Context()).Return(errors.New("provider error"))
 
 			hc.Register(provider1)
 			hc.Register(provider2)
 
-			status := hc.Status(ctx)
+			status := hc.Status(t.Context())
 
 			assert.False(t, status.Healthy)
 			assert.Len(t, status.Details, 2)

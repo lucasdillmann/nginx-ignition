@@ -6,6 +6,8 @@ import GenericNginxAction, { ActionType } from "./GenericNginxAction"
 import { themedModal } from "../../../core/components/theme/ThemedResources"
 import { isAccessGranted } from "../../../core/components/accesscontrol/IsAccessGranted"
 import { UserAccessLevel } from "../../user/model/UserAccessLevel"
+import { I18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 class ReloadNginxAction {
     private readonly repository: LocalStorageRepository<boolean>
@@ -35,15 +37,19 @@ class ReloadNginxAction {
                     return this.delegate.execute().then(resolve)
                 },
                 type: "confirm",
-                title: "Reload nginx configuration?",
+                title: <I18n id={MessageKey.FrontendNginxReloadModalTitle} />,
                 content: (
                     <div className="reload-confirmation-content">
-                        <p>In order to apply your changes, we need to reload the nginx server configuration.</p>
-                        <Checkbox ref={skipRef}>Always reload automatically</Checkbox>
+                        <p>
+                            <I18n id={MessageKey.FrontendNginxReloadModalDescription} />
+                        </p>
+                        <Checkbox ref={skipRef}>
+                            <I18n id={MessageKey.FrontendNginxReloadAlwaysCheckbox} />
+                        </Checkbox>
                     </div>
                 ),
-                okText: "Reload now",
-                cancelText: "Don't reload",
+                okText: <I18n id={MessageKey.FrontendNginxReloadOk} />,
+                cancelText: <I18n id={MessageKey.FrontendNginxReloadCancel} />,
             })
         })
     }

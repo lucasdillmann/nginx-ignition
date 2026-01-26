@@ -9,6 +9,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -24,42 +25,56 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "EDGEDNS" }
 
-func (p *Provider) Name() string { return "Akamai EdgeDNS" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEdgednsName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          hostFieldID,
-			Description: "Akamai EdgeGrid host",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEdgednsEdgegridHost),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
-			ID:          clientTokenFieldID,
-			Description: "Akamai EdgeGrid client token",
-			Required:    true,
-			Sensitive:   true,
-			Type:        dynamicfields.SingleLineTextType,
+			ID: clientTokenFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsEdgednsEdgegridClientToken,
+			),
+			Required:  true,
+			Sensitive: true,
+			Type:      dynamicfields.SingleLineTextType,
 		},
 		{
-			ID:          clientSecretFieldID,
-			Description: "Akamai EdgeGrid client secret",
-			Required:    true,
-			Sensitive:   true,
-			Type:        dynamicfields.SingleLineTextType,
+			ID: clientSecretFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsEdgednsEdgegridClientSecret,
+			),
+			Required:  true,
+			Sensitive: true,
+			Type:      dynamicfields.SingleLineTextType,
 		},
 		{
-			ID:          accessTokenFieldID,
-			Description: "Akamai EdgeGrid access token",
-			Required:    true,
-			Sensitive:   true,
-			Type:        dynamicfields.SingleLineTextType,
+			ID: accessTokenFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsEdgednsEdgegridAccessToken,
+			),
+			Required:  true,
+			Sensitive: true,
+			Type:      dynamicfields.SingleLineTextType,
 		},
 		{
-			ID:          accountKeyFieldID,
-			Description: "Akamai EdgeGrid account key",
-			Required:    true,
-			Type:        dynamicfields.SingleLineTextType,
+			ID: accountKeyFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsEdgednsEdgegridAccountKey,
+			),
+			Required: true,
+			Type:     dynamicfields.SingleLineTextType,
 		},
 	})
 }

@@ -30,7 +30,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 		provider.settingsCommands = settingsCmds
 
 		t.Run("successfully generates basic config", func(t *testing.T) {
-			ctx := newProviderContext()
+			ctx := newProviderContext(t)
 			ctx.paths = paths
 			ctx.supportedFeatures.StreamType = NoneSupportType
 			ctx.supportedFeatures.RunCodeType = NoneSupportType
@@ -44,7 +44,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 		})
 
 		t.Run("includes dynamic modules and stream block when enabled", func(t *testing.T) {
-			ctx := newProviderContext()
+			ctx := newProviderContext(t)
 			ctx.paths = paths
 			ctx.supportedFeatures.StreamType = DynamicSupportType
 			ctx.supportedFeatures.RunCodeType = DynamicSupportType
@@ -60,7 +60,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 
 		t.Run("includes custom configuration", func(t *testing.T) {
 			mockSettings.Nginx.Custom = ptr.Of("custom_directive on;")
-			ctx := newProviderContext()
+			ctx := newProviderContext(t)
 			ctx.paths = paths
 			ctx.supportedFeatures.StreamType = NoneSupportType
 			ctx.supportedFeatures.RunCodeType = NoneSupportType
@@ -74,7 +74,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			settingsCmds := settings.NewMockedCommands(ctrl)
 			settingsCmds.EXPECT().Get(gomock.Any()).Return(nil, assert.AnError)
 			provider.settingsCommands = settingsCmds
-			ctx := newProviderContext()
+			ctx := newProviderContext(t)
 			_, err := provider.provide(ctx)
 			assert.ErrorIs(t, err, assert.AnError)
 		})

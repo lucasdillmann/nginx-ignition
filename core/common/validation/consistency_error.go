@@ -1,12 +1,16 @@
 package validation
 
+import (
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
+)
+
 type ConsistencyError struct {
 	Violations []ConsistencyViolation
 }
 
 type ConsistencyViolation struct {
+	Message *i18n.Message
 	Path    string
-	Message string
 }
 
 func (err ConsistencyError) Error() string {
@@ -17,10 +21,7 @@ func NewError(violations []ConsistencyViolation) *ConsistencyError {
 	return &ConsistencyError{Violations: violations}
 }
 
-func SingleFieldError(
-	path string,
-	message string,
-) *ConsistencyError {
+func SingleFieldError(path string, message *i18n.Message) *ConsistencyError {
 	violation := ConsistencyViolation{
 		Path:    path,
 		Message: message,

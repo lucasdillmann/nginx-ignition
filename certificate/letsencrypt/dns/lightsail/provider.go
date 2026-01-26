@@ -8,7 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -20,20 +20,22 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "LIGHTSAIL" }
 
-func (p *Provider) Name() string { return "AWS Lightsail" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLightsailName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          dnsZoneFieldID,
-			Description: "DNS zone name",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLightsailDnsZoneName),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionFieldID,
-			Description: "AWS region",
-			HelpText:    ptr.Of("Defaults to us-east-1 when left empty"),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLightsailAwsRegion),
+			HelpText:    i18n.M(ctx, i18n.K.CertificateLetsencryptDnsLightsailAwsRegionHelp),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

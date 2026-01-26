@@ -10,13 +10,13 @@ import (
 
 func Test_Validate(t *testing.T) {
 	t.Run("reports missing required field", func(t *testing.T) {
-		dynamicField := newDynamicField()
+		dynamicField := newDynamicField(t.Context())
 		dynamicField.ID = "field1"
 		dynamicField.Type = SingleLineTextType
 		dynamicField.Required = true
 
 		dynamicFields := []DynamicField{*dynamicField}
-		err := Validate(dynamicFields, map[string]any{})
+		err := Validate(t.Context(), dynamicFields, map[string]any{})
 
 		var consistencyErr *validation.ConsistencyError
 		assert.ErrorAs(t, err, &consistencyErr)
@@ -24,27 +24,27 @@ func Test_Validate(t *testing.T) {
 	})
 
 	t.Run("reports invalid email", func(t *testing.T) {
-		dynamicField := newDynamicField()
+		dynamicField := newDynamicField(t.Context())
 		dynamicField.ID = "email"
 		dynamicField.Type = EmailType
 		dynamicField.Required = true
 
 		dynamicFields := []DynamicField{*dynamicField}
-		assert.Error(t, Validate(dynamicFields, map[string]any{"email": "invalid"}))
+		assert.Error(t, Validate(t.Context(), dynamicFields, map[string]any{"email": "invalid"}))
 	})
 
 	t.Run("reports invalid boolean", func(t *testing.T) {
-		dynamicField := newDynamicField()
+		dynamicField := newDynamicField(t.Context())
 		dynamicField.ID = "bool"
 		dynamicField.Type = BooleanType
 		dynamicField.Required = true
 
 		dynamicFields := []DynamicField{*dynamicField}
-		assert.Error(t, Validate(dynamicFields, map[string]any{"bool": "not bool"}))
+		assert.Error(t, Validate(t.Context(), dynamicFields, map[string]any{"bool": "not bool"}))
 	})
 
 	t.Run("reports invalid enum", func(t *testing.T) {
-		dynamicField := newDynamicField()
+		dynamicField := newDynamicField(t.Context())
 		dynamicField.ID = "enum"
 		dynamicField.Type = EnumType
 		dynamicField.Required = true
@@ -53,6 +53,6 @@ func Test_Validate(t *testing.T) {
 		}
 
 		dynamicFields := []DynamicField{*dynamicField}
-		assert.Error(t, Validate(dynamicFields, map[string]any{"enum": "invalid"}))
+		assert.Error(t, Validate(t.Context(), dynamicFields, map[string]any{"enum": "invalid"}))
 	})
 }

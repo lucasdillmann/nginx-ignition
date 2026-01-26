@@ -20,7 +20,7 @@ func (h issueHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	domainModel := converter.Wrap(toIssueCertificateRequest, payload)
+	domainModel := converter.Wrap(ctx.Request.Context(), toIssueCertificateRequest, payload)
 
 	cert, err := h.commands.Issue(ctx.Request.Context(), domainModel)
 	if apierror.CanHandle(err) {

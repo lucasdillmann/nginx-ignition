@@ -18,6 +18,8 @@ import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGra
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { raw } from "../../core/i18n/I18n"
 
 interface CertificateListPageState {
     loading: boolean
@@ -52,18 +54,18 @@ export default class CertificateListPage extends React.Component<any, Certificat
         return [
             {
                 id: "domainNames",
-                description: "Domain names",
+                description: MessageKey.CommonDomainNames,
                 renderer: item => <TagGroup values={item.domainNames} />,
             },
             {
                 id: "provider",
-                description: "Provider",
+                description: MessageKey.CommonProvider,
                 renderer: item => this.translateProviderName(item.providerId),
                 width: 250,
             },
             {
                 id: "actions",
-                description: "",
+                description: raw(""),
                 renderer: item => (
                     <>
                         <Link to={`/certificates/${item.id}`}>
@@ -122,11 +124,11 @@ export default class CertificateListPage extends React.Component<any, Certificat
             })
 
         AppShellContext.get().updateConfig({
-            title: "SSL certificates",
-            subtitle: "Relation of issued SSL certificates for use in the nginx's virtual hosts",
+            title: MessageKey.CommonSslCertificates,
+            subtitle: MessageKey.FrontendCertificateListSubtitle,
             actions: [
                 {
-                    description: "Issue or upload a certificate",
+                    description: MessageKey.FrontendCertificateIssueTitle,
                     onClick: "/certificates/new",
                     disabled: this.isReadOnlyMode(),
                 },

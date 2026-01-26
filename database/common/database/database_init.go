@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"github.com/uptrace/bun/schema"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 
 	// Loads the PostgreSQL driver to be dynamically used by bun
@@ -20,7 +22,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func (d *Database) Init() error {
+func (d *Database) Init(ctx context.Context) error {
 	var driver string
 	var err error
 
@@ -34,7 +36,10 @@ func (d *Database) Init() error {
 	case "sqlite":
 		return d.initSqlite()
 	default:
-		return coreerror.New(fmt.Sprintf("unsupported database driver: %s", driver), true)
+		return coreerror.New(
+			i18n.M(ctx, i18n.K.DatabaseCommonDatabaseUnsupportedDriver).V("driver", driver),
+			true,
+		)
 	}
 }
 

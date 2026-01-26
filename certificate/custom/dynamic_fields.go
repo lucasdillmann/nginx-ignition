@@ -1,36 +1,48 @@
 package custom
 
-import "dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+import (
+	"context"
+
+	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
+)
 
 const (
 	textFieldUploadModeID = "textField"
 	fileUploadModeID      = "fileUpload"
+	uploadModeFieldID     = "uploadMode"
+	publicKeyTextFieldID  = "publicKeyPem"
+	privateKeyTextFieldID = "privateKeyPem"
+	chainTextFieldID      = "certificationChainPem"
+	publicKeyFileFieldID  = "publicKeyFile"
+	privateKeyFileFieldID = "privateKeyFile"
+	chainFileFieldID      = "certificationChainFile"
 )
 
-var (
-	uploadModeField = dynamicfields.DynamicField{
-		ID:          "uploadMode",
+func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	uploadModeField := dynamicfields.DynamicField{
+		ID:          uploadModeFieldID,
 		Priority:    0,
-		Description: "Upload mode",
+		Description: i18n.M(ctx, i18n.K.CertificateCustomUploadMode),
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.EnumType,
 		EnumOptions: []dynamicfields.EnumOption{
 			{
 				ID:          textFieldUploadModeID,
-				Description: "PEM-encoded text",
+				Description: i18n.M(ctx, i18n.K.CertificateCustomUploadModeText),
 			},
 			{
 				ID:          fileUploadModeID,
-				Description: "PEM-encoded file",
+				Description: i18n.M(ctx, i18n.K.CertificateCustomUploadModeFile),
 			},
 		},
 	}
 
-	publicKeyTextField = dynamicfields.DynamicField{
-		ID:          "publicKeyPem",
+	publicKeyTextField := dynamicfields.DynamicField{
+		ID:          publicKeyTextFieldID,
 		Priority:    1,
-		Description: "Public key",
+		Description: i18n.M(ctx, i18n.K.CertificateCustomPublicKey),
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.MultiLineTextType,
@@ -40,10 +52,10 @@ var (
 		}},
 	}
 
-	privateKeyTextField = dynamicfields.DynamicField{
-		ID:          "privateKeyPem",
+	privateKeyTextField := dynamicfields.DynamicField{
+		ID:          privateKeyTextFieldID,
 		Priority:    2,
-		Description: "Private key",
+		Description: i18n.M(ctx, i18n.K.CertificateCustomPrivateKey),
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.MultiLineTextType,
@@ -53,10 +65,10 @@ var (
 		}},
 	}
 
-	certificationChainTextField = dynamicfields.DynamicField{
-		ID:          "certificationChainPem",
+	certificationChainTextField := dynamicfields.DynamicField{
+		ID:          chainTextFieldID,
 		Priority:    3,
-		Description: "Certification chain",
+		Description: i18n.M(ctx, i18n.K.CertificateCustomChain),
 		Required:    false,
 		Sensitive:   true,
 		Type:        dynamicfields.MultiLineTextType,
@@ -66,10 +78,10 @@ var (
 		}},
 	}
 
-	publicKeyFileField = dynamicfields.DynamicField{
-		ID:          "publicKeyFile",
+	publicKeyFileField := dynamicfields.DynamicField{
+		ID:          publicKeyFileFieldID,
 		Priority:    1,
-		Description: "Public key",
+		Description: i18n.M(ctx, i18n.K.CertificateCustomPublicKey),
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
@@ -79,10 +91,10 @@ var (
 		}},
 	}
 
-	privateKeyFileField = dynamicfields.DynamicField{
-		ID:          "privateKeyFile",
+	privateKeyFileField := dynamicfields.DynamicField{
+		ID:          privateKeyFileFieldID,
 		Priority:    2,
-		Description: "Private key",
+		Description: i18n.M(ctx, i18n.K.CertificateCustomPrivateKey),
 		Required:    true,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
@@ -92,10 +104,10 @@ var (
 		}},
 	}
 
-	certificationChainFileField = dynamicfields.DynamicField{
-		ID:          "certificationChainFile",
+	certificationChainFileField := dynamicfields.DynamicField{
+		ID:          chainFileFieldID,
 		Priority:    3,
-		Description: "Certification chain",
+		Description: i18n.M(ctx, i18n.K.CertificateCustomChain),
 		Required:    false,
 		Sensitive:   true,
 		Type:        dynamicfields.FileType,
@@ -104,4 +116,14 @@ var (
 			Value:       fileUploadModeID,
 		}},
 	}
-)
+
+	return []dynamicfields.DynamicField{
+		uploadModeField,
+		publicKeyTextField,
+		privateKeyTextField,
+		certificationChainTextField,
+		publicKeyFileField,
+		privateKeyFileField,
+		certificationChainFileField,
+	}
+}

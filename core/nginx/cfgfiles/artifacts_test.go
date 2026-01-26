@@ -1,7 +1,7 @@
 package cfgfiles
 
 import (
-	"context"
+	"testing"
 
 	"github.com/google/uuid"
 
@@ -25,9 +25,9 @@ func newPaths() *Paths {
 	}
 }
 
-func newProviderContext() *providerContext {
+func newProviderContext(t *testing.T) *providerContext {
 	return &providerContext{
-		context: context.Background(),
+		context: t.Context(),
 		paths:   newPaths(),
 		supportedFeatures: &SupportedFeatures{
 			TLSSNI:      StaticSupportType,

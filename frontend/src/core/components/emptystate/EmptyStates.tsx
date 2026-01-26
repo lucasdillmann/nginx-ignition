@@ -1,6 +1,8 @@
 import { ExclamationCircleOutlined } from "@ant-design/icons"
 import { Empty } from "antd"
 import React from "react"
+import { I18n } from "../../i18n/I18n"
+import MessageKey from "../../i18n/model/MessageKey.generated"
 
 class EmptyStates {
     public FailedToFetch = (
@@ -8,11 +10,11 @@ class EmptyStates {
             image={
                 <ExclamationCircleOutlined style={{ fontSize: 70, color: "var(--nginxIgnition-colorTextDisabled)" }} />
             }
-            description="Unable to fetch the data. Please try again later."
+            description={<I18n id={MessageKey.FrontendComponentsEmptystateFailedToFetch} />}
         />
     )
 
-    public NotFound = (<Empty description="Not found" />)
+    public NotFound = (<Empty description={<I18n id={MessageKey.CommonNotFoundTitle} />} />)
 }
 
 export default new EmptyStates()

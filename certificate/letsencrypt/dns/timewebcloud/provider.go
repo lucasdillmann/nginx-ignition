@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -21,15 +22,15 @@ func (p *Provider) ID() string {
 	return "TIMEWEBCLOUD"
 }
 
-func (p *Provider) Name() string {
-	return "Timeweb Cloud"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsTimewebcloudName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          authTokenFieldID,
-			Description: "Timeweb Cloud auth token",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsTimewebcloudAuthToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

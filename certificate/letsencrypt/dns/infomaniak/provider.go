@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -18,16 +19,21 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "INFOMANIAK" }
 
-func (p *Provider) Name() string { return "Infomaniak" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsInfomaniakName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
-			ID:          accessTokenFieldID,
-			Description: "Infomaniak API access token",
-			Required:    true,
-			Sensitive:   true,
-			Type:        dynamicfields.SingleLineTextType,
+			ID: accessTokenFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsInfomaniakApiAccessToken,
+			),
+			Required:  true,
+			Sensitive: true,
+			Type:      dynamicfields.SingleLineTextType,
 		},
 	})
 }

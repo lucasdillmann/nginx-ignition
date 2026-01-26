@@ -8,6 +8,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/broadcast"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
@@ -34,10 +35,7 @@ func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if inUse {
-		return coreerror.New(
-			"Certificate is being used by at least one host or by a global binding. Please update them and try again.",
-			true,
-		)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreCertificateInUse), true)
 	}
 
 	return s.repository.DeleteByID(ctx, id)
@@ -56,7 +54,7 @@ func (s *service) Get(ctx context.Context, id uuid.UUID) (*Certificate, error) {
 		}
 
 		provider := providerByID(availableProviders, cert.ProviderID)
-		dynamicfields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields())
+		dynamicfields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields(ctx))
 	}
 
 	return cert, nil
@@ -83,7 +81,7 @@ func (s *service) List(
 
 	for _, cert := range certs.Contents {
 		provider := providerByID(availableProviders, cert.ProviderID)
-		dynamicfields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields())
+		dynamicfields.RemoveSensitiveFields(&cert.Parameters, provider.DynamicFields(ctx))
 	}
 
 	return certs, nil
@@ -142,7 +140,7 @@ func (s *service) Renew(ctx context.Context, certificateID uuid.UUID) error {
 
 	provider := providerByID(providers, certificate.ProviderID)
 	if provider == nil {
-		return coreerror.New("Provider not found", true)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreCertificateProviderNotFound), true)
 	}
 
 	certificate, err = provider.Renew(ctx, certificate)
@@ -162,7 +160,7 @@ func (s *service) Issue(ctx context.Context, request *IssueRequest) (*Certificat
 
 	provider := providerByID(providers, request.ProviderID)
 	if provider == nil {
-		return nil, coreerror.New("Provider not found", true)
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CoreCertificateProviderNotFound), true)
 	}
 
 	certificate, err := provider.Issue(ctx, request)

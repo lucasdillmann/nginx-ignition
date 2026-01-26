@@ -13,6 +13,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -28,21 +29,21 @@ func (p *Provider) ID() string {
 	return "AWS_ROUTE53"
 }
 
-func (p *Provider) Name() string {
-	return "AWS Route53"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,
-			Description: "AWS access key",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsAccessKey),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretKeyFieldID,
-			Description: "AWS secret key",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsSecretKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
@@ -112,5 +113,8 @@ func resolveHostedZoneID(
 		}
 	}
 
-	return nil, coreerror.New("AWS Hosted Zone ID not found from given domain names", true)
+	return nil, coreerror.New(
+		i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsErrorAwsHostedZoneNotFound),
+		true,
+	)
 }

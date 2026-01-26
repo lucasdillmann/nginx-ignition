@@ -11,6 +11,8 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
@@ -31,7 +33,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			},
 		}
 
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 		ctx.hosts = []host.Host{h}
 
 		ctrl := gomock.NewController(t)
@@ -111,7 +113,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 	t.Run("BuildRedirectRoute", func(t *testing.T) {
 		provider := &hostConfigurationFileProvider{}
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 
 		t.Run("generates redirect route config", func(t *testing.T) {
 			r := &host.Route{
@@ -127,7 +129,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 	t.Run("BuildIntegrationRoute", func(t *testing.T) {
 		provider := &hostConfigurationFileProvider{}
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 
 		t.Run("generates integration route config with dns resolvers", func(t *testing.T) {
 			integrationID := uuid.New()
@@ -169,13 +171,15 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			provider.integrationCommands = integrationCmds
 			_, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "Integration option not found")
+			var coreErr *coreerror.CoreError
+			assert.ErrorAs(t, err, &coreErr)
+			assert.Equal(t, i18n.K.CoreNginxCfgfilesOptionNotFound, coreErr.Message.Key)
 		})
 	})
 
 	t.Run("BuildExecuteCodeRoute", func(t *testing.T) {
 		provider := &hostConfigurationFileProvider{}
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 		h := &host.Host{ID: uuid.New()}
 
 		t.Run("generates javascript route config", func(t *testing.T) {
@@ -225,7 +229,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 	t.Run("BuildStaticResponseRoute", func(t *testing.T) {
 		provider := &hostConfigurationFileProvider{}
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 		h := &host.Host{ID: uuid.New()}
 
 		t.Run("generates static response route config", func(t *testing.T) {
@@ -273,7 +277,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 	t.Run("BuildRouteSettings", func(t *testing.T) {
 		provider := &hostConfigurationFileProvider{}
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 
 		t.Run("includes forward headers when enabled", func(t *testing.T) {
 			r := &host.Route{
@@ -316,7 +320,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 	t.Run("BuildBinding", func(t *testing.T) {
 		provider := &hostConfigurationFileProvider{}
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 		h := &host.Host{ID: uuid.New()}
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -408,7 +412,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 	t.Run("BuildRoute", func(t *testing.T) {
 		provider := &hostConfigurationFileProvider{}
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 		h := &host.Host{}
 
 		t.Run("returns error for invalid route type", func(t *testing.T) {
@@ -488,7 +492,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 	t.Run("BuildStaticFilesRoute", func(t *testing.T) {
 		provider := &hostConfigurationFileProvider{}
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 
 		t.Run("generates static files config", func(t *testing.T) {
 			r := &host.Route{

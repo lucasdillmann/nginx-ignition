@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -58,7 +59,7 @@ func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if *inUse {
-		return coreerror.New("VPN is in use by one or more hosts", true)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreVpnInUse), true)
 	}
 
 	return s.repository.DeleteByID(ctx, id)
@@ -68,19 +69,19 @@ func (s *service) Exists(ctx context.Context, id uuid.UUID) (*bool, error) {
 	return s.repository.ExistsByID(ctx, id)
 }
 
-func (s *service) GetAvailableDrivers(_ context.Context) ([]AvailableDriver, error) {
+func (s *service) GetAvailableDrivers(ctx context.Context) ([]AvailableDriver, error) {
 	drivers := s.drivers()
 	sort.Slice(drivers, func(left, right int) bool {
-		return drivers[left].Name() < drivers[right].Name()
+		return drivers[left].Name(ctx).String() < drivers[right].Name(ctx).String()
 	})
 
 	output := make([]AvailableDriver, len(drivers))
 	for index, driver := range drivers {
 		output[index] = AvailableDriver{
 			ID:                    driver.ID(),
-			Name:                  driver.Name(),
-			ImportantInstructions: driver.ImportantInstructions(),
-			ConfigurationFields:   driver.ConfigurationFields(),
+			Name:                  driver.Name(ctx),
+			ImportantInstructions: driver.ImportantInstructions(ctx),
+			ConfigurationFields:   driver.ConfigurationFields(ctx),
 		}
 	}
 
@@ -122,7 +123,7 @@ func (s *service) resolveValues(ctx context.Context, id uuid.UUID) (*VPN, Driver
 
 	driver := s.findDriver(data)
 	if driver == nil {
-		return nil, nil, nil, coreerror.New("VPN driver not found", false)
+		return nil, nil, nil, coreerror.New(i18n.M(ctx, i18n.K.CoreVpnDriverNotFound), false)
 	}
 
 	configDir, err := s.cfg.Get("nginx-ignition.vpn.config-path")

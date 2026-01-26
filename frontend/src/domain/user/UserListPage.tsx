@@ -14,6 +14,8 @@ import { UserAccessLevel } from "./model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n, raw } from "../../core/i18n/I18n"
 
 export default class UserListPage extends React.PureComponent {
     private readonly service: UserService
@@ -39,7 +41,7 @@ export default class UserListPage extends React.PureComponent {
             )
 
         return (
-            <Tooltip title="You can't delete your own user">
+            <Tooltip title={<I18n id={MessageKey.FrontendUserListDeleteSelfTooltip} />}>
                 <DeleteOutlined className="action-icon" disabled />
             </Tooltip>
         )
@@ -49,24 +51,24 @@ export default class UserListPage extends React.PureComponent {
         return [
             {
                 id: "name",
-                description: "Name",
+                description: MessageKey.CommonName,
                 renderer: item => item.name,
             },
             {
                 id: "username",
-                description: "Username",
+                description: MessageKey.CommonUsername,
                 renderer: item => item.username,
                 width: 250,
             },
             {
                 id: "enabled",
-                description: "Enabled",
+                description: MessageKey.CommonEnabled,
                 renderer: item => DataTableRenderers.yesNo(item.enabled),
-                width: 100,
+                width: 120,
             },
             {
                 id: "actions",
-                description: "",
+                description: raw(""),
                 renderer: item => (
                     <>
                         <Link to={`/users/${item.id}`}>
@@ -95,11 +97,11 @@ export default class UserListPage extends React.PureComponent {
 
     componentDidMount() {
         AppShellContext.get().updateConfig({
-            title: "Users",
-            subtitle: "Relation of the nginx ignition's users",
+            title: MessageKey.CommonUsers,
+            subtitle: MessageKey.FrontendUserListSubtitle,
             actions: [
                 {
-                    description: "New user",
+                    description: MessageKey.FrontendUserNewButton,
                     onClick: "/users/new",
                     disabled: this.isReadOnlyMode(),
                 },

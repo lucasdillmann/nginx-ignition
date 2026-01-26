@@ -1,7 +1,6 @@
 package nginx
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -80,7 +79,6 @@ func Test_endpointAdapter(t *testing.T) {
 
 func Test_vpnManager(t *testing.T) {
 	t.Run("buildEndpoints", func(t *testing.T) {
-		ctx := context.Background()
 		vpnID := uuid.New()
 		globalBindings := []binding.Binding{
 			{
@@ -99,7 +97,7 @@ func Test_vpnManager(t *testing.T) {
 		defer ctrl.Finish()
 
 		settingsCmds := settings.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(ctx).AnyTimes().Return(&settings.Settings{
+		settingsCmds.EXPECT().Get(t.Context()).AnyTimes().Return(&settings.Settings{
 			GlobalBindings: globalBindings,
 		}, nil)
 
@@ -121,7 +119,7 @@ func Test_vpnManager(t *testing.T) {
 				},
 			}
 
-			endpoints, err := manager.buildEndpoints(ctx, hosts)
+			endpoints, err := manager.buildEndpoints(t.Context(), hosts)
 			assert.NoError(t, err)
 			assert.Len(t, endpoints, 1)
 			assert.Equal(t, hostBindings, endpoints[0].(*endpointAdapter).bindings)
@@ -143,7 +141,7 @@ func Test_vpnManager(t *testing.T) {
 				},
 			}
 
-			endpoints, err := manager.buildEndpoints(ctx, hosts)
+			endpoints, err := manager.buildEndpoints(t.Context(), hosts)
 			assert.NoError(t, err)
 			assert.Len(t, endpoints, 1)
 			assert.Equal(t, globalBindings, endpoints[0].(*endpointAdapter).bindings)
@@ -163,14 +161,13 @@ func Test_vpnManager(t *testing.T) {
 				},
 			}
 
-			endpoints, err := manager.buildEndpoints(ctx, hosts)
+			endpoints, err := manager.buildEndpoints(t.Context(), hosts)
 			assert.NoError(t, err)
 			assert.Equal(t, "fallback.com", *endpoints[0].(*endpointAdapter).domainName)
 		})
 	})
 
 	t.Run("stopObsoleteEndpoints", func(t *testing.T) {
-		ctx := context.Background()
 		vpnID := uuid.New()
 		ep1 := &endpointAdapter{
 			vpnID: vpnID,
@@ -186,20 +183,19 @@ func Test_vpnManager(t *testing.T) {
 			defer ctrl.Finish()
 
 			vpnCmds := vpn.NewMockedCommands(ctrl)
-			vpnCmds.EXPECT().Stop(ctx, ep2).Return(nil)
+			vpnCmds.EXPECT().Stop(t.Context(), ep2).Return(nil)
 
 			manager := &vpnManager{
 				vpnCommands:      vpnCmds,
 				currentEndpoints: []vpn.Endpoint{ep1, ep2},
 			}
 
-			err := manager.stopObsoleteEndpoints(ctx, []vpn.Endpoint{ep1})
+			err := manager.stopObsoleteEndpoints(t.Context(), []vpn.Endpoint{ep1})
 			assert.NoError(t, err)
 		})
 	})
 
 	t.Run("startNewEndpoints", func(t *testing.T) {
-		ctx := context.Background()
 		vpnID := uuid.New()
 		ep1 := &endpointAdapter{
 			vpnID: vpnID,
@@ -215,14 +211,14 @@ func Test_vpnManager(t *testing.T) {
 			defer ctrl.Finish()
 
 			vpnCmds := vpn.NewMockedCommands(ctrl)
-			vpnCmds.EXPECT().Start(ctx, ep2).Return(nil)
+			vpnCmds.EXPECT().Start(t.Context(), ep2).Return(nil)
 
 			manager := &vpnManager{
 				vpnCommands:      vpnCmds,
 				currentEndpoints: []vpn.Endpoint{ep1},
 			}
 
-			err := manager.startNewEndpoints(ctx, []vpn.Endpoint{ep1, ep2})
+			err := manager.startNewEndpoints(t.Context(), []vpn.Endpoint{ep1, ep2})
 			assert.NoError(t, err)
 		})
 	})

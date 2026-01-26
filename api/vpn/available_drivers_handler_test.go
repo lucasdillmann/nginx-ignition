@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
@@ -24,8 +25,14 @@ func Test_availableDriversHandler(t *testing.T) {
 			defer controller.Finish()
 
 			drivers := []vpn.AvailableDriver{
-				{ID: "openvpn", Name: "OpenVPN"},
-				{ID: "wireguard", Name: "WireGuard"},
+				{
+					ID:   "openvpn",
+					Name: i18n.Static("OpenVPN"),
+				},
+				{
+					ID:   "wireguard",
+					Name: i18n.Static("WireGuard"),
+				},
 			}
 
 			commands := vpn.NewMockedCommands(controller)

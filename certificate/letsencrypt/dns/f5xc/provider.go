@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -21,26 +22,28 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "F5_XC" }
 
-func (p *Provider) Name() string { return "F5 XC" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsF5xcName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiTokenFieldID,
-			Description: "F5 XC API token",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsF5xcApiToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tenantNameFieldID,
-			Description: "F5 XC tenant name",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsF5xcTenantName),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          groupNameFieldID,
-			Description: "F5 XC group name",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsF5xcGroupName),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

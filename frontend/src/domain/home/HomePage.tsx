@@ -15,6 +15,8 @@ import {
 import { Flex } from "antd"
 import Videos from "./videos/Videos"
 import { Link } from "react-router-dom"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n } from "../../core/i18n/I18n"
 
 export default class HomePage extends React.PureComponent {
     componentDidMount() {
@@ -27,31 +29,27 @@ export default class HomePage extends React.PureComponent {
         return (
             <div className="home-guide-container">
                 <div className="home-guide-header-container">
-                    <h1>Hello, and welcome to nginx ignition 👋</h1>
+                    <h1>
+                        <I18n id={MessageKey.FrontendHomeWelcomeTitle} />
+                    </h1>
                     <p className="home-guide-subtitle">
-                        Here are some quick start info to help you make the most of the app. We hope you enjoy it.
+                        <I18n id={MessageKey.FrontendHomeWelcomeSubtitle} />
                     </p>
                 </div>
 
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
-                            <HddOutlined /> Hosts
+                            <HddOutlined /> <I18n id={MessageKey.CommonHosts} />
                         </h2>
                         <p>
-                            A virtual host, host in short, is a website that the nginx server will make available to be
-                            opened in a browser. You can find all hosts managed at the left, on the main menu.
+                            <I18n id={MessageKey.FrontendHomeHostsDescription1} />
                         </p>
                         <p>
-                            nginx ignition provides an intuitive way to configure such websites. For example, if you
-                            have a NAS and have some services running on it (like Jellyfin, Vaultwarden and more),
-                            ignition enables an easy way to access it from a domain like jellyfin.myhome.com, way easier
-                            to remember and use than an IP and port.
+                            <I18n id={MessageKey.FrontendHomeHostsDescription2} />
                         </p>
                         <p>
-                            Each host will have a set of routes, which are rules that define which requests patterns
-                            should be forwarded and to where, and bindings, which are the definitions at what ports the
-                            nginx should listen for such requests.
+                            <I18n id={MessageKey.FrontendHomeHostsDescription3} />
                         </p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
@@ -69,15 +67,13 @@ export default class HomePage extends React.PureComponent {
                     </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
-                            <MergeCellsOutlined /> Streams
+                            <MergeCellsOutlined /> <I18n id={MessageKey.CommonStreams} />
                         </h2>
                         <p>
-                            While hosts are the main way to expose your HTTP and HTTPS-based services, streams enable
-                            you to expose other services that rely on TCP, UDP and unix sockets.
+                            <I18n id={MessageKey.FrontendHomeStreamsDescription1} />
                         </p>
                         <p>
-                            If you need to expose a game server, a database, a DNS server and anything else that don't
-                            use the HTTP protocol, streams are the way to go.
+                            <I18n id={MessageKey.FrontendHomeStreamsDescription2} />
                         </p>
                     </Flex>
                 </Flex>
@@ -85,20 +81,16 @@ export default class HomePage extends React.PureComponent {
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
-                            <AuditOutlined /> SSL certificates
+                            <AuditOutlined /> <I18n id={MessageKey.CommonSslCertificates} />
                         </h2>
                         <p>
-                            If you want to or need to protect your domains with HTTPS encryption, the app comes with an
-                            easy way to manage such SSL certificates too.
+                            <I18n id={MessageKey.FrontendHomeSslDescription1} />
                         </p>
                         <p>
-                            Either if you need a valid certificate backed by Let's Encrypt, a self-signed, or bring your
-                            custom one for a third-party provider, ignition will allow it with ease. Even when the
-                            certificate is about to expire, the app will automatically renew it for you.
+                            <I18n id={MessageKey.FrontendHomeSslDescription2} />
                         </p>
                         <p>
-                            Once an SSL certificate is created or imported, you can use it on the hosts by simply
-                            selecting an option in the form.
+                            <I18n id={MessageKey.FrontendHomeSslDescription3} />
                         </p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
@@ -116,18 +108,13 @@ export default class HomePage extends React.PureComponent {
                     </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
-                            <FileSearchOutlined /> Logs
+                            <FileSearchOutlined /> <I18n id={MessageKey.CommonLogs} />
                         </h2>
                         <p>
-                            Need to know what has been requested or why something isn't working the way it was expected?
-                            ignition provides a simple way for you to check the nginx logs too. Just select the host (or
-                            the nginx server itself) that you want to check what's going on, and we will get the logs
-                            for you.
+                            <I18n id={MessageKey.FrontendHomeLogsDescription1} />
                         </p>
                         <p>
-                            And you don't need to worry about your disk getting full of logs, ignition will rotate them
-                            automatically for you (and you can control how much to keep, or even disable the rotation if
-                            it suits you best).
+                            <I18n id={MessageKey.FrontendHomeLogsDescription2} />
                         </p>
                     </Flex>
                 </Flex>
@@ -135,12 +122,10 @@ export default class HomePage extends React.PureComponent {
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
-                            <BlockOutlined /> Integrations
+                            <BlockOutlined /> <I18n id={MessageKey.CommonIntegrations} />
                         </h2>
                         <p>
-                            Is your app running in a Docker container or in a TrueNAS? You can enable the native
-                            integration nginx ignition offers and easily pick a container or app as the destination app
-                            that the host should forward the requests to.
+                            <I18n id={MessageKey.FrontendHomeIntegrationsDescription} />
                         </p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
@@ -158,12 +143,10 @@ export default class HomePage extends React.PureComponent {
                     </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
-                            <ApartmentOutlined /> VPNs
+                            <ApartmentOutlined /> <I18n id={MessageKey.CommonVpns} />
                         </h2>
                         <p>
-                            Easily expose your hosts in your VPNs. If you're using Tailscale, nginx ignition can
-                            automatically create a virtual machine in your network and forward the requests to the host
-                            whenever the machine IP or hostname is accessed.
+                            <I18n id={MessageKey.FrontendHomeVpnsDescription} />
                         </p>
                     </Flex>
                 </Flex>
@@ -171,12 +154,10 @@ export default class HomePage extends React.PureComponent {
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
-                            <FileProtectOutlined /> Access lists
+                            <FileProtectOutlined /> <I18n id={MessageKey.CommonAccessLists} />
                         </h2>
                         <p>
-                            Access lists provide a simple way to protect either a route or the entire host by checking
-                            if the user is from a range of authorized IPs or is identified by a valid username and
-                            password (or even both, IP and credentials)
+                            <I18n id={MessageKey.FrontendHomeAccessListsDescription} />
                         </p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
@@ -194,17 +175,13 @@ export default class HomePage extends React.PureComponent {
                     </Flex>
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
-                            <RocketOutlined /> Cache configuration
+                            <RocketOutlined /> <I18n id={MessageKey.CommonCacheConfiguration} />
                         </h2>
                         <p>
-                            Speed up your websites and reduce load on your upstream servers by enabling nginx's content
-                            caching capabilities. Ignition makes it easy to configure cache rules that determine which
-                            requests should be cached and for how long.
+                            <I18n id={MessageKey.FrontendHomeCacheDescription1} />
                         </p>
                         <p>
-                            You can customize cache behavior by HTTP status codes, file extensions, request methods, and
-                            more. Advanced features like stale content handling, background updates, and concurrency
-                            locks give you fine-grained control over how your content is cached and served.
+                            <I18n id={MessageKey.FrontendHomeCacheDescription2} />
                         </p>
                     </Flex>
                 </Flex>
@@ -212,20 +189,16 @@ export default class HomePage extends React.PureComponent {
                 <Flex className="home-guide-section">
                     <Flex className="home-guide-section-content" vertical>
                         <h2>
-                            <SettingOutlined /> Settings
+                            <SettingOutlined /> <I18n id={MessageKey.CommonSettings} />
                         </h2>
                         <p>
-                            Ignition abstracts away the complexity of the nginx's configuration files, but that doesn't
-                            mean that you lose the ability to apply some fine adjustments.
+                            <I18n id={MessageKey.FrontendHomeSettingsDescription1} />
                         </p>
                         <p>
-                            With the settings page, you can define some important definitions such as the timeout
-                            values, the maximum upload/body size of the requests, the default ports that the nginx will
-                            listen for requests and more.
+                            <I18n id={MessageKey.FrontendHomeSettingsDescription2} />
                         </p>
                         <p>
-                            Beyond that, you can also configure some of the nginx ignition's features there, like the
-                            automatic renewal of SSL certificates and log rotation.
+                            <I18n id={MessageKey.FrontendHomeSettingsDescription3} />
                         </p>
                     </Flex>
                     <Flex className="home-guide-right-side-video">
@@ -236,12 +209,14 @@ export default class HomePage extends React.PureComponent {
                 </Flex>
 
                 <div className="home-guide-footer-container">
-                    <h1>Still have questions or missed something?</h1>
+                    <h1>
+                        <I18n id={MessageKey.FrontendHomeFooterTitle} />
+                    </h1>
                     <p className="home-guide-subtitle">
                         <Link to="https://github.com/lucasdillmann/nginx-ignition" target="_blank">
-                            Reach us out at our GitHub page
+                            <I18n id={MessageKey.FrontendHomeFooterLink} />
                         </Link>
-                        . We'd love some feedback from you.
+                        . <I18n id={MessageKey.FrontendHomeFooterSubtitle} />
                     </p>
                 </div>
             </div>

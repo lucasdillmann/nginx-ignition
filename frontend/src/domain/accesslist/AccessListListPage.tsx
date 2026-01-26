@@ -11,6 +11,8 @@ import { AccessListOutcome } from "./model/AccessListRequest"
 import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n, raw } from "../../core/i18n/I18n"
 
 export default class AccessListListPage extends React.PureComponent {
     private readonly service: AccessListService
@@ -26,37 +28,45 @@ export default class AccessListListPage extends React.PureComponent {
         return [
             {
                 id: "name",
-                description: "Name",
+                description: MessageKey.CommonName,
                 renderer: item => item.name,
             },
             {
                 id: "realm",
-                description: "Realm",
+                description: MessageKey.FrontendAccesslistRealm,
                 renderer: item => item.realm,
                 width: 250,
             },
             {
                 id: "defaultOutcome",
-                description: "Default outcome",
+                description: MessageKey.FrontendAccesslistDefaultOutcome,
                 renderer: item => {
                     switch (item.defaultOutcome) {
                         case AccessListOutcome.ALLOW:
-                            return "Allow access"
+                            return <I18n id={MessageKey.FrontendAccesslistOutcomeAllow} />
                         case AccessListOutcome.DENY:
-                            return "Deny access"
+                            return <I18n id={MessageKey.FrontendAccesslistOutcomeDeny} />
                     }
                 },
                 width: 150,
             },
             {
                 id: "satisfyAll",
-                description: "Mode",
-                renderer: item => (item.satisfyAll ? "Satisfy all" : "Satisfy any"),
+                description: MessageKey.CommonMode,
+                renderer: item => (
+                    <I18n
+                        id={
+                            item.satisfyAll
+                                ? MessageKey.FrontendAccesslistModeSatisfyAll
+                                : MessageKey.FrontendAccesslistModeSatisfyAny
+                        }
+                    />
+                ),
                 width: 150,
             },
             {
                 id: "actions",
-                description: "",
+                description: raw(""),
                 renderer: item => (
                     <>
                         <Link to={`/access-lists/${item.id}`}>
@@ -87,11 +97,11 @@ export default class AccessListListPage extends React.PureComponent {
 
     componentDidMount() {
         AppShellContext.get().updateConfig({
-            title: "Access lists",
-            subtitle: "Relation of the access lists for the nginx authentication and access control",
+            title: MessageKey.CommonAccessLists,
+            subtitle: MessageKey.FrontendAccesslistListSubtitle,
             actions: [
                 {
-                    description: "New access list",
+                    description: MessageKey.FrontendAccesslistNewButton,
                     onClick: "/access-lists/new",
                     disabled: !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.accessLists),
                 },

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
@@ -16,7 +17,10 @@ func (s *service) GetMetadata(ctx context.Context) (*Metadata, error) {
 	cmd := exec.CommandContext(ctx, s.processManager.binaryPath, "-V")
 	rawOutput, err := cmd.CombinedOutput()
 	if err != nil {
-		return nil, coreerror.New("failed to execute nginx -V: "+err.Error(), false)
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CoreNginxVersionCheckFailed).V("error", err.Error()),
+			false,
+		)
 	}
 
 	output := string(rawOutput)

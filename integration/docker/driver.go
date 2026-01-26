@@ -3,6 +3,8 @@ package docker
 import (
 	"context"
 
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
+
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
@@ -20,17 +22,16 @@ func (a *Driver) ID() string {
 	return "DOCKER"
 }
 
-func (a *Driver) Name() string {
-	return "Docker"
+func (a *Driver) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CommonDocker)
 }
 
-func (a *Driver) Description() string {
-	return "Enables easy pick of a Docker container with ports exposing a service as a target for your nginx " +
-		"ignition's host routes."
+func (a *Driver) Description(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.IntegrationDockerDescription)
 }
 
-func (a *Driver) ConfigurationFields() []dynamicfields.DynamicField {
-	return fields.All
+func (a *Driver) ConfigurationFields(ctx context.Context) []dynamicfields.DynamicField {
+	return fields.DynamicFields(ctx)
 }
 
 func (a *Driver) GetAvailableOptions(
@@ -40,7 +41,7 @@ func (a *Driver) GetAvailableOptions(
 	searchTerms *string,
 	tcpOnly bool,
 ) (*pagination.Page[integration.DriverOption], error) {
-	optionResolver, err := resolver.For(parameters)
+	optionResolver, err := resolver.For(ctx, parameters)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +65,7 @@ func (a *Driver) GetAvailableOptionByID(
 	parameters map[string]any,
 	id string,
 ) (*integration.DriverOption, error) {
-	optionResolver, err := resolver.For(parameters)
+	optionResolver, err := resolver.For(ctx, parameters)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +83,7 @@ func (a *Driver) GetOptionProxyURL(
 	parameters map[string]any,
 	id string,
 ) (*string, []string, error) {
-	optionResolver, err := resolver.For(parameters)
+	optionResolver, err := resolver.For(ctx, parameters)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -1,7 +1,6 @@
 package host
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -37,17 +36,16 @@ func Test_service(t *testing.T) {
 				cacheCmds,
 				bindingCmds,
 			)
-			ctx := context.Background()
 
 			input := newHost()
 			input.Routes = nil
 
-			repo.EXPECT().FindDefault(ctx).Return(nil, nil).AnyTimes()
+			repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
 			bindingCmds.EXPECT().
-				Validate(ctx, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+				Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil)
 
-			err := hostService.Save(ctx, input)
+			err := hostService.Save(t.Context(), input)
 			assert.Error(t, err)
 		})
 
@@ -69,18 +67,17 @@ func Test_service(t *testing.T) {
 				cacheCmds,
 				bindingCmds,
 			)
-			ctx := context.Background()
 
 			input := newHost()
 
 			// Mocks for validation
 			bindingCmds.EXPECT().
-				Validate(ctx, "bindings", 0, &input.Bindings[0], gomock.Any()).
+				Validate(t.Context(), "bindings", 0, &input.Bindings[0], gomock.Any()).
 				Return(nil)
 
-			repo.EXPECT().Save(ctx, input).Return(nil)
+			repo.EXPECT().Save(t.Context(), input).Return(nil)
 
-			err := hostService.Save(ctx, input)
+			err := hostService.Save(t.Context(), input)
 			assert.NoError(t, err)
 		})
 	})
@@ -92,12 +89,11 @@ func Test_service(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			hostService := newCommands(repo, nil, nil, nil, nil, nil)
-			ctx := context.Background()
 			id := uuid.New()
 
-			repo.EXPECT().DeleteByID(ctx, id).Return(nil)
+			repo.EXPECT().DeleteByID(t.Context(), id).Return(nil)
 
-			err := hostService.Delete(ctx, id)
+			err := hostService.Delete(t.Context(), id)
 			assert.NoError(t, err)
 		})
 	})
@@ -109,15 +105,16 @@ func Test_service(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			hostService := newCommands(repo, nil, nil, nil, nil, nil)
-			ctx := context.Background()
 			pageSize := 10
 			pageNumber := 1
 			search := ptr.Of("term")
 
 			expectedPage := &pagination.Page[Host]{}
-			repo.EXPECT().FindPage(ctx, pageSize, pageNumber, search).Return(expectedPage, nil)
+			repo.EXPECT().
+				FindPage(t.Context(), pageSize, pageNumber, search).
+				Return(expectedPage, nil)
 
-			page, err := hostService.List(ctx, pageSize, pageNumber, search)
+			page, err := hostService.List(t.Context(), pageSize, pageNumber, search)
 			assert.NoError(t, err)
 			assert.Equal(t, expectedPage, page)
 		})
@@ -130,13 +127,12 @@ func Test_service(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			hostService := newCommands(repo, nil, nil, nil, nil, nil)
-			ctx := context.Background()
 			id := uuid.New()
 
 			expectedHost := newHost()
-			repo.EXPECT().FindByID(ctx, id).Return(expectedHost, nil)
+			repo.EXPECT().FindByID(t.Context(), id).Return(expectedHost, nil)
 
-			result, err := hostService.Get(ctx, id)
+			result, err := hostService.Get(t.Context(), id)
 			assert.NoError(t, err)
 			assert.Equal(t, expectedHost, result)
 		})
@@ -149,12 +145,11 @@ func Test_service(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			hostService := newCommands(repo, nil, nil, nil, nil, nil)
-			ctx := context.Background()
 
 			expectedHosts := []Host{*newHost()}
-			repo.EXPECT().FindAllEnabled(ctx).Return(expectedHosts, nil)
+			repo.EXPECT().FindAllEnabled(t.Context()).Return(expectedHosts, nil)
 
-			result, err := hostService.GetAllEnabled(ctx)
+			result, err := hostService.GetAllEnabled(t.Context())
 			assert.NoError(t, err)
 			assert.Equal(t, expectedHosts, result)
 		})
@@ -167,12 +162,11 @@ func Test_service(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			hostService := newCommands(repo, nil, nil, nil, nil, nil)
-			ctx := context.Background()
 			id := uuid.New()
 
-			repo.EXPECT().ExistsByID(ctx, id).Return(true, nil)
+			repo.EXPECT().ExistsByID(t.Context(), id).Return(true, nil)
 
-			exists, err := hostService.Exists(ctx, id)
+			exists, err := hostService.Exists(t.Context(), id)
 			assert.NoError(t, err)
 			assert.True(t, exists)
 		})

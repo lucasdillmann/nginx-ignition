@@ -33,6 +33,8 @@ import HostSupportWarning from "./components/HostSupportWarning"
 import HostVpns from "./components/HostVpns"
 import CacheService from "../cache/CacheService"
 import CacheResponse from "../cache/model/CacheResponse"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n } from "../../core/i18n/I18n"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -76,7 +78,10 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
     private submit() {
         const payload = HostConverter.formValuesToRequest(this.state.formValues)
-        this.saveModal.show("Hang on tight", "We're saving the host")
+        this.saveModal.show(MessageKey.CommonHangOnTight, {
+            id: MessageKey.CommonSavingType,
+            params: { type: MessageKey.CommonHost },
+        })
         this.setState({ validationResult: new ValidationResult() })
 
         const action =
@@ -97,7 +102,10 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     private handleSuccess() {
-        Notification.success("Host saved", "The host was saved successfully")
+        Notification.success(
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonHost } },
+            MessageKey.CommonSuccessMessage,
+        )
         ReloadNginxAction.execute()
     }
 
@@ -107,7 +115,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
             if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private updateShellConfig(enableActions: boolean) {
@@ -117,7 +125,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
         const actions: ShellAction[] = [
             {
-                description: "Save",
+                description: MessageKey.CommonSave,
                 disabled: !enableActions,
                 onClick: () => this.submit(),
             },
@@ -125,15 +133,15 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
         if (this.hostId !== undefined)
             actions.unshift({
-                description: "Delete",
+                description: MessageKey.CommonDelete,
                 disabled: !enableActions,
                 color: "danger",
                 onClick: () => this.delete(),
             })
 
         AppShellContext.get().updateConfig({
-            title: "Host details",
-            subtitle: "Full details and configurations of the nginx's virtual host",
+            title: MessageKey.FrontendHostFormTitle,
+            subtitle: MessageKey.FrontendHostFormSubtitle,
             actions,
         })
     }
@@ -215,9 +223,11 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
             >
                 <HostSupportWarning />
 
-                <h2 className="hosts-form-section-name">General</h2>
+                <h2 className="hosts-form-section-name">
+                    <I18n id={MessageKey.CommonGeneral} />
+                </h2>
                 <p className="hosts-form-section-help-text">
-                    General configurations properties of the nginx's virtual host
+                    <I18n id={MessageKey.FrontendHostFormSectionGeneralHelp} />
                 </p>
                 <Flex className="hosts-form-inner-flex-container">
                     <Flex
@@ -228,7 +238,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             name="enabled"
                             validateStatus={validationResult.getStatus("enabled")}
                             help={validationResult.getMessage("enabled")}
-                            label="Enabled"
+                            label={<I18n id={MessageKey.CommonEnabled} />}
                             required
                         >
                             <Switch />
@@ -237,7 +247,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             name="defaultServer"
                             validateStatus={validationResult.getStatus("defaultServer")}
                             help={validationResult.getMessage("defaultServer")}
-                            label="Default server"
+                            label={<I18n id={MessageKey.FrontendHostFormDefaultServer} />}
                             required
                         >
                             <Switch />
@@ -246,7 +256,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             name={["featureSet", "websocketsSupport"]}
                             validateStatus={validationResult.getStatus("featureSet.websocketsSupport")}
                             help={validationResult.getMessage("featureSet.websocketsSupport")}
-                            label="Websockets support"
+                            label={<I18n id={MessageKey.FrontendHostFormWebsocketsSupport} />}
                             required
                         >
                             <Switch />
@@ -255,7 +265,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             name={["featureSet", "http2Support"]}
                             validateStatus={validationResult.getStatus("featureSet.http2Support")}
                             help={validationResult.getMessage("featureSet.http2Support")}
-                            label="HTTP2 support"
+                            label={<I18n id={MessageKey.FrontendHostFormHttp2Support} />}
                             required
                         >
                             <Switch />
@@ -264,7 +274,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             name={["featureSet", "redirectHttpToHttps"]}
                             validateStatus={validationResult.getStatus("featureSet.redirectHttpToHttps")}
                             help={validationResult.getMessage("featureSet.redirectHttpToHttps")}
-                            label="Redirect HTTP to HTTPS"
+                            label={<I18n id={MessageKey.FrontendHostFormRedirectHttpToHttps} />}
                             required
                         >
                             <Switch />
@@ -275,7 +285,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             name="cache"
                             validateStatus={validationResult.getStatus("cacheId")}
                             help={validationResult.getMessage("cacheId")}
-                            label="Cache"
+                            label={<I18n id={MessageKey.CommonCache} />}
                         >
                             <PaginatedSelect<CacheResponse>
                                 itemDescription={item => item?.name}
@@ -290,7 +300,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             name="accessList"
                             validateStatus={validationResult.getStatus("accessListId")}
                             help={validationResult.getMessage("accessListId")}
-                            label="Access list"
+                            label={<I18n id={MessageKey.CommonAccessList} />}
                         >
                             <PaginatedSelect<AccessListResponse>
                                 itemDescription={item => item?.name}
@@ -302,8 +312,10 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             />
                         </Form.Item>
                         <If condition={formValues.defaultServer}>
-                            <Form.Item label="Domain names" required>
-                                <Flex>Not available for the default server</Flex>
+                            <Form.Item label={<I18n id={MessageKey.CommonDomainNames} />} required>
+                                <Flex>
+                                    <I18n id={MessageKey.FrontendHostFormDefaultServerUnavailable} />
+                                </Flex>
                             </Form.Item>
                         </If>
                         <DomainNamesList
@@ -313,10 +325,11 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                     </Flex>
                 </Flex>
 
-                <h2 className="hosts-form-section-name">Routing</h2>
+                <h2 className="hosts-form-section-name">
+                    <I18n id={MessageKey.FrontendHostFormSectionRouting} />
+                </h2>
                 <p className="hosts-form-section-help-text">
-                    Routes to be configured in the host. The nginx will evaluate them from top to bottom, executing the
-                    first one that matches the source path.
+                    <I18n id={MessageKey.FrontendHostFormSectionRoutingHelp} />
                 </p>
                 <HostRoutes
                     routes={formValues.routes}
@@ -327,9 +340,11 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
                 <Flex style={{ marginTop: 50 }}>
                     <Flex style={{ flexGrow: 1 }} vertical>
-                        <h2 className="hosts-form-section-name">Standard bindings</h2>
+                        <h2 className="hosts-form-section-name">
+                            <I18n id={MessageKey.FrontendHostFormSectionStandardBindings} />
+                        </h2>
                         <p className="hosts-form-section-help-text">
-                            Relation of IPs and ports where the host will listen for requests
+                            <I18n id={MessageKey.FrontendHostFormSectionStandardBindingsHelp} />
                         </p>
                     </Flex>
                     <Flex>
@@ -337,7 +352,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             name="useGlobalBindings"
                             validateStatus={validationResult.getStatus("useGlobalBindings")}
                             help={validationResult.getMessage("useGlobalBindings")}
-                            label="Use global bindings"
+                            label={<I18n id={MessageKey.FrontendHostFormUseGlobalBindings} />}
                             wrapperCol={{ style: { flexGrow: 0, minWidth: 65 } }}
                             labelCol={{ style: { order: 2, flexGrow: 1 } }}
                             required
@@ -353,9 +368,11 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                     validationResult={validationResult}
                 />
 
-                <h2 className="hosts-form-section-name">VPN bindings</h2>
+                <h2 className="hosts-form-section-name">
+                    <I18n id={MessageKey.FrontendHostFormSectionVpnBindings} />
+                </h2>
                 <p className="hosts-form-section-help-text">
-                    Relation of VPN connections on where this host should be exposed to
+                    <I18n id={MessageKey.FrontendHostFormSectionVpnBindingsHelp} />
                 </p>
                 <HostVpns vpns={formValues.vpns} validationResult={validationResult} />
             </Form>
@@ -383,8 +400,8 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
                 if (copyFrom !== undefined)
                     Notification.success(
-                        "Host values copied",
-                        "The values from the selected host where successfully copied as a new host",
+                        MessageKey.FrontendHostValuesCopied,
+                        MessageKey.FrontendHostValuesCopiedFullDescription,
                     )
 
                 this.setState({ loading: false, formValues })

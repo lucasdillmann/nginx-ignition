@@ -6,20 +6,24 @@ import Preloader from "../../core/components/preloader/Preloader"
 import Notification from "../../core/components/notification/Notification"
 import "./LoginPage.css"
 import UserService from "../user/UserService"
-import { queryParams } from "../../core/components/router/AppRouter"
+import { navigateTo, queryParams } from "../../core/components/router/AppRouter"
 import { LoginFormPage, ProFormText } from "@ant-design/pro-components"
 import ThemeContext from "../../core/components/context/ThemeContext"
 import LightBackground from "./background/light.jpg"
 import DarkBackground from "./background/dark.jpg"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n, i18n } from "../../core/i18n/I18n"
+import ThemeToggle from "../../core/components/theme/ThemeToggle"
+import I18nLanguagePicker from "../../core/i18n/I18nLanguagePicker"
 
 interface LoginPageState {
     loading: boolean
     attemptFailed: boolean
+    backgroundImageUrl: string
 }
 
 export default class LoginPage extends React.Component<any, LoginPageState> {
     private readonly service: UserService
-    private readonly backgroundImageUrl: string
 
     constructor(props: any) {
         super(props)
@@ -27,9 +31,8 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
         this.state = {
             loading: false,
             attemptFailed: false,
+            backgroundImageUrl: ThemeContext.isDarkMode() ? DarkBackground : LightBackground,
         }
-
-        this.backgroundImageUrl = ThemeContext.isDarkMode() ? DarkBackground : LightBackground
     }
 
     private handleSubmit(values: { username: string; password: string }) {
@@ -43,53 +46,99 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
             .then(() => this.setState({ loading: false }))
     }
 
-    private handleSuccessfulLogin() {
+    private async handleSuccessfulLogin() {
         const returnTo = queryParams().returnTo as string | undefined
-        location.href = returnTo ?? "/"
+        return AppContext.get()
+            .container!!.reload()
+            .then(() => {
+                if (returnTo) navigateTo(returnTo, true)
+            })
     }
 
     private handleLoginError() {
         this.setState({ attemptFailed: true })
-        Notification.error("Login failed", "Please check your username and password.")
+        Notification.error(
+            MessageKey.FrontendAuthenticationLoginFailedTitle,
+            MessageKey.FrontendAuthenticationLoginFailedMessage,
+        )
+    }
+
+    private renderSubtitle() {
+        return (
+            <>
+                <p style={{ paddingRight: 25 }}>
+                    <I18n id={MessageKey.FrontendAuthenticationLoginSubtitle} />
+                </p>
+                <ThemeToggle />
+                <I18nLanguagePicker style={{ marginLeft: 10 }} />
+            </>
+        )
     }
 
     private renderForm() {
+        const { backgroundImageUrl } = this.state
+
         return (
             <LoginFormPage
                 id="nginx-ignition-login-form"
-                title="nginx ignition"
-                subTitle="Welcome back. Please sign in to continue."
+                title={<I18n id={MessageKey.CommonAppName} />}
+                subTitle={this.renderSubtitle()}
                 onFinish={this.handleSubmit.bind(this)}
-                backgroundImageUrl={this.backgroundImageUrl}
+                backgroundImageUrl={backgroundImageUrl}
                 submitter={{
                     searchConfig: {
-                        submitText: "Log in",
+                        submitText: <I18n id={MessageKey.FrontendAuthenticationLoginButton} />,
                     },
                 }}
                 containerStyle={{
+                    display: "flex",
+                    justifyContent: "center",
                     backgroundColor: "rgba(0, 0, 0, 0.65)",
                     backdropFilter: "blur(4px)",
                     color: "white",
+                    padding: "60px 40px",
+                }}
+                otherStyle={{
+                    width: 10,
                 }}
             >
                 <ProFormText
                     name="username"
-                    placeholder="username"
+                    placeholder={i18n(MessageKey.CommonUsername)}
                     fieldProps={{
                         size: "large",
                         prefix: <UserOutlined />,
                     }}
+                    style={{
+                        marginLeft: 20,
+                    }}
                 />
                 <ProFormText.Password
                     name="password"
-                    placeholder="password"
+                    placeholder={i18n(MessageKey.CommonPassword)}
                     fieldProps={{
                         size: "large",
                         prefix: <LockOutlined />,
                     }}
+                    style={{
+                        marginLeft: 20,
+                    }}
                 />
             </LoginFormPage>
         )
+    }
+
+    private handleThemeChange(darkMode: boolean) {
+        const backgroundImageUrl = darkMode ? DarkBackground : LightBackground
+        this.setState({ backgroundImageUrl })
+    }
+
+    componentDidMount() {
+        ThemeContext.register(this.handleThemeChange.bind(this))
+    }
+
+    componentWillUnmount() {
+        ThemeContext.deregister(this.handleThemeChange.bind(this))
     }
 
     render() {

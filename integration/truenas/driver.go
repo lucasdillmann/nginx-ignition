@@ -8,7 +8,9 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/integration/truenas/client"
@@ -32,23 +34,16 @@ func (a *Driver) ID() string {
 	return "TRUENAS"
 }
 
-func (a *Driver) Name() string {
-	return "TrueNAS"
+func (a *Driver) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.IntegrationTruenasName)
 }
 
-func (a *Driver) Description() string {
-	return "TrueNAS allows, alongside many other things, to run your favorite apps under Docker containers. With this " +
-		"integration enabled, you will be able to easily pick any app exposing a service in your TrueNAS as a " +
-		"target for your nginx ignition's host routes."
+func (a *Driver) Description(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.IntegrationTruenasDescription)
 }
 
-func (a *Driver) ConfigurationFields() []dynamicfields.DynamicField {
-	return []dynamicfields.DynamicField{
-		urlField,
-		proxyURLField,
-		usernameField,
-		passwordField,
-	}
+func (a *Driver) ConfigurationFields(ctx context.Context) []dynamicfields.DynamicField {
+	return dynamicFields(ctx)
 }
 
 func (a *Driver) GetAvailableOptions(
@@ -107,12 +102,12 @@ func (a *Driver) GetAvailableOptionByID(
 }
 
 func (a *Driver) GetOptionProxyURL(
-	_ context.Context,
+	ctx context.Context,
 	parameters map[string]any,
 	id string,
 ) (*string, []string, error) {
-	baseURL := parameters[urlField.ID].(string)
-	proxyURL := parameters[proxyURLField.ID].(string)
+	baseURL := parameters[urlFieldID].(string)
+	proxyURL := parameters[proxyURLFieldID].(string)
 	parts := strings.Split(id, ":")
 	appID := parts[0]
 	containerPort := parts[1]
@@ -123,9 +118,9 @@ func (a *Driver) GetOptionProxyURL(
 	}
 
 	if port == nil || len(port.HostPorts) == 0 {
-		return nil, nil, fmt.Errorf(
-			"unable to resolve proxy URL for %s: service is probably offline/stopped",
-			id,
+		return nil, nil, coreerror.New(
+			i18n.M(ctx, i18n.K.IntegrationTruenasProxyUrlResolutionFailed).V("id", id),
+			false,
 		)
 	}
 
@@ -212,9 +207,9 @@ func (a *Driver) buildOptions(
 }
 
 func (a *Driver) getAvailableApps(parameters map[string]any) ([]client.AvailableAppDTO, error) {
-	baseURL := parameters[urlField.ID].(string)
-	username := parameters[usernameField.ID].(string)
-	password := parameters[passwordField.ID].(string)
+	baseURL := parameters[urlFieldID].(string)
+	username := parameters[usernameFieldID].(string)
+	password := parameters[passwordFieldID].(string)
 
 	if a.client == nil {
 		a.client = client.New(baseURL, username, password, a.cacheDuration)

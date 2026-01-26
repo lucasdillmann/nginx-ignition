@@ -1,7 +1,6 @@
 package pagination
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -9,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"dillmann.com.br/nginx-ignition/api/common/apierror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 )
 
@@ -28,18 +28,18 @@ func ExtractPaginationParameters(ctx *gin.Context) (
 	if err != nil {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
-			"Page size must be an integer",
+			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonPaginationMustBeAnInteger).
+				V("type", "size"),
 		)
 	}
 
 	if !pageSizeRange.Contains(pageSize) {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
-			fmt.Sprintf(
-				"Page size must be between %d and %d",
-				pageSizeRange.Min,
-				pageSizeRange.Max,
-			),
+			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonPaginationMustBeBetweenRange).
+				V("type", "size").
+				V("min", pageSizeRange.Min).
+				V("max", pageSizeRange.Max),
 		)
 	}
 
@@ -47,14 +47,16 @@ func ExtractPaginationParameters(ctx *gin.Context) (
 	if err != nil {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
-			"Page number must be an integer",
+			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonPaginationMustBeAnInteger).
+				V("type", "number"),
 		)
 	}
 
 	if pageNumber < 0 {
 		return 0, 0, nil, apierror.New(
 			http.StatusBadRequest,
-			"Page number must be greater than or equal to 0",
+			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonPaginationCantBeNegative).
+				V("type", "number"),
 		)
 	}
 

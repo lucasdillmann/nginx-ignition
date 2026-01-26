@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -22,28 +23,28 @@ func (p *Provider) ID() string {
 	return "GRAVITY"
 }
 
-func (p *Provider) Name() string {
-	return "Gravity"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGravityName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: "Gravity username",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGravityUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "Gravity password",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGravityPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          serverURLFieldID,
-			Description: "Gravity server URL",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGravityServerUrl),
 			Required:    true,
 			Type:        dynamicfields.URLType,
 		},

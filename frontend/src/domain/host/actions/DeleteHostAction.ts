@@ -2,6 +2,7 @@ import UserConfirmation from "../../../core/components/confirmation/UserConfirma
 import Notification from "../../../core/components/notification/Notification"
 import HostService from "../HostService"
 import ReloadNginxAction from "../../nginx/actions/ReloadNginxAction"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 class DeleteHostAction {
     private readonly service: HostService
@@ -11,16 +12,19 @@ class DeleteHostAction {
     }
 
     async execute(hostId: string): Promise<void> {
-        return UserConfirmation.ask("Do you really want to delete the host?")
+        return UserConfirmation.ask(MessageKey.FrontendHostDeleteConfirmation)
             .then(() => this.service.delete(hostId))
             .then(() => {
-                Notification.success(`Host deleted`, `The host was deleted successfully`)
+                Notification.success(
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonHost } },
+                    MessageKey.CommonSuccessMessage,
+                )
                 ReloadNginxAction.execute()
             })
             .catch(() =>
                 Notification.error(
-                    `Unable to delete the host`,
-                    `An unexpected error was found while trying to delete the host. Please try again later.`,
+                    { id: MessageKey.CommonUnableToDelete, params: { type: MessageKey.CommonHost } },
+                    MessageKey.CommonUnexpectedErrorTryAgain,
                 ),
             )
     }

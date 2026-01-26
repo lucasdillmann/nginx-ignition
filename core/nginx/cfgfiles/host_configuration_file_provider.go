@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -337,8 +338,11 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	}
 
 	if proxyURL == nil {
-		msg := fmt.Sprintf("Integration option not found: %s", r.Integration.OptionID)
-		return "", coreerror.New(msg, false)
+		return "", coreerror.New(
+			i18n.M(ctx.context, i18n.K.CoreNginxCfgfilesOptionNotFound).
+				V("optionID", r.Integration.OptionID),
+			false,
+		)
 	}
 
 	dnsConfig := ""

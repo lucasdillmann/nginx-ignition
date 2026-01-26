@@ -11,6 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 type Provider struct{}
@@ -23,11 +24,11 @@ func (p *Provider) ID() string {
 	return "SELF_SIGNED"
 }
 
-func (p *Provider) Name() string {
-	return "Self-signed certificate"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateSelfsignedName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(_ context.Context) []dynamicfields.DynamicField {
 	return []dynamicfields.DynamicField{}
 }
 
@@ -36,10 +37,10 @@ func (p *Provider) Priority() int {
 }
 
 func (p *Provider) Issue(
-	_ context.Context,
+	ctx context.Context,
 	request *certificate.IssueRequest,
 ) (*certificate.Certificate, error) {
-	if err := commons.Validate(request, validationRules{}); err != nil {
+	if err := commons.Validate(ctx, request, validationRules{}); err != nil {
 		return nil, err
 	}
 

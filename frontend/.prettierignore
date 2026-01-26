@@ -3,3 +3,4 @@ build
 .node
 node_modules
 build.gradle.kts
+**/*.generated.ts

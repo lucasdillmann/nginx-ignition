@@ -9,6 +9,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
@@ -27,53 +28,67 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "ORACLE_CLOUD" }
 
-func (p *Provider) Name() string { return "Oracle Cloud (OCI)" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOraclecloudName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
-			ID:          compartmentOCIDFieldID,
-			Description: "OCI compartment OCID",
-			Required:    true,
-			Type:        dynamicfields.SingleLineTextType,
+			ID: compartmentOCIDFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsOraclecloudCompartmentOcid,
+			),
+			Required: true,
+			Type:     dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          regionFieldID,
-			Description: "OCI region",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOraclecloudRegion),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          tenancyOCIDFieldID,
-			Description: "OCI tenancy OCID",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOraclecloudTenancyOcid),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          userOCIDFieldID,
-			Description: "OCI user OCID",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOraclecloudUserOcid),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
-			ID:          pubKeyFingerprintFieldID,
-			Description: "OCI public key fingerprint",
-			Required:    true,
-			Type:        dynamicfields.SingleLineTextType,
+			ID: pubKeyFingerprintFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsOraclecloudPublicKeyFingerprint,
+			),
+			Required: true,
+			Type:     dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          privateKeyFieldID,
-			Description: "OCI private key",
-			HelpText:    ptr.Of("PEM contents"),
-			Required:    true,
-			Sensitive:   true,
-			Type:        dynamicfields.MultiLineTextType,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsOraclecloudPrivateKey),
+			HelpText: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsOraclecloudPrivateKeyHelp,
+			),
+			Required:  true,
+			Sensitive: true,
+			Type:      dynamicfields.MultiLineTextType,
 		},
 		{
-			ID:          privateKeyPassFieldID,
-			Description: "OCI private key passphrase",
-			Sensitive:   true,
-			Type:        dynamicfields.SingleLineTextType,
+			ID: privateKeyPassFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsOraclecloudPrivateKeyPassphrase,
+			),
+			Sensitive: true,
+			Type:      dynamicfields.SingleLineTextType,
 		},
 	})
 }

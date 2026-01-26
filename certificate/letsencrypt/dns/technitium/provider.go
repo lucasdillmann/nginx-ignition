@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -21,21 +22,21 @@ func (p *Provider) ID() string {
 	return "TECHNITIUM"
 }
 
-func (p *Provider) Name() string {
-	return "Technitium"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsTechnitiumName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          baseURLFieldID,
-			Description: "Technitium base URL",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsTechnitiumBaseUrl),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          apiTokenFieldID,
-			Description: "Technitium API token",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsTechnitiumApiToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

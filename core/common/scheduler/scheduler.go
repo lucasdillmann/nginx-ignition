@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
@@ -18,7 +19,7 @@ type Scheduler struct {
 
 func (s *Scheduler) Register(ctx context.Context, task Task) error {
 	if s.stopped {
-		return schedulerStoppedError()
+		return schedulerStoppedError(ctx)
 	}
 
 	s.tickers[task] = time.NewTicker(placeholderDuration)
@@ -32,11 +33,11 @@ func (s *Scheduler) Register(ctx context.Context, task Task) error {
 
 func (s *Scheduler) start(ctx context.Context) error {
 	if s.started {
-		return coreerror.New("Scheduler already started", false)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreCommonSchedulerAlreadyStarted), false)
 	}
 
 	if s.stopped {
-		return coreerror.New("Scheduler is shutting-down or was already stopped", false)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreCommonSchedulerShuttingDown), false)
 	}
 
 	s.started = true
@@ -90,7 +91,7 @@ func (s *Scheduler) stop() {
 
 func (s *Scheduler) Reload(ctx context.Context) error {
 	if s.stopped {
-		return schedulerStoppedError()
+		return schedulerStoppedError(ctx)
 	}
 
 	for task, ticker := range s.tickers {
@@ -109,6 +110,6 @@ func (s *Scheduler) Reload(ctx context.Context) error {
 	return nil
 }
 
-func schedulerStoppedError() error {
-	return coreerror.New("Scheduler is shutting-down or was already stopped", false)
+func schedulerStoppedError(ctx context.Context) error {
+	return coreerror.New(i18n.M(ctx, i18n.K.CoreCommonSchedulerShuttingDown), false)
 }

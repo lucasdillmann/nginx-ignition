@@ -5,6 +5,8 @@ import { Button } from "antd"
 import { themedModal } from "../../../core/components/theme/ThemedResources"
 import { UserAccessLevel } from "../../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../../core/components/accesscontrol/IsAccessGranted"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { I18n, I18nMessage } from "../../../core/i18n/I18n"
 
 export enum ActionType {
     RELOAD,
@@ -13,8 +15,8 @@ export enum ActionType {
 }
 
 interface Message {
-    title: string
-    content: string
+    title: I18nMessage
+    content: I18nMessage
 }
 
 interface Action {
@@ -46,16 +48,16 @@ export default class GenericNginxAction {
                     action: () => this.service.reloadConfiguration(),
                     messages: {
                         inProgress: {
-                            title: "Reloading nginx configuration...",
-                            content: "Please wait while we reload the nginx configuration",
+                            title: MessageKey.FrontendNginxReloadInProgress,
+                            content: MessageKey.FrontendNginxReloadInProgressContent,
                         },
                         success: {
-                            title: "Nginx configuration reloaded",
-                            content: "The nginx configuration was reloaded successfully",
+                            title: MessageKey.FrontendNginxReloadSuccess,
+                            content: MessageKey.FrontendNginxReloadSuccessDescription,
                         },
                         error: {
-                            title: "Unable to reload nginx configuration",
-                            content: "An unexpected error was found while trying to reload the nginx configuration",
+                            title: MessageKey.FrontendNginxReloadError,
+                            content: MessageKey.FrontendNginxReloadErrorDescription,
                         },
                     },
                 }
@@ -64,16 +66,16 @@ export default class GenericNginxAction {
                     action: () => this.service.start(),
                     messages: {
                         inProgress: {
-                            title: "Starting nginx...",
-                            content: "Please wait while we start the nginx server",
+                            title: MessageKey.FrontendNginxStartInProgress,
+                            content: MessageKey.FrontendNginxStartInProgressContent,
                         },
                         success: {
-                            title: "Nginx server started",
-                            content: "The nginx server was started successfully",
+                            title: MessageKey.FrontendNginxStartSuccess,
+                            content: MessageKey.FrontendNginxStartSuccessDescription,
                         },
                         error: {
-                            title: "Unable to start nginx server",
-                            content: "An unexpected error was found while trying to start the nginx server",
+                            title: MessageKey.FrontendNginxStartError,
+                            content: MessageKey.FrontendNginxStartErrorDescription,
                         },
                     },
                 }
@@ -82,16 +84,16 @@ export default class GenericNginxAction {
                     action: () => this.service.stop(),
                     messages: {
                         inProgress: {
-                            title: "Stopping nginx...",
-                            content: "Please wait while we stop the nginx server",
+                            title: MessageKey.FrontendNginxStopInProgress,
+                            content: MessageKey.FrontendNginxStopInProgressContent,
                         },
                         success: {
-                            title: "Nginx server stopped",
-                            content: "The nginx server was stopped successfully",
+                            title: MessageKey.FrontendNginxStopSuccess,
+                            content: MessageKey.FrontendNginxStopSuccessDescription,
                         },
                         error: {
-                            title: "Unable to stop nginx server",
-                            content: "An unexpected error was found while trying to stop the nginx server",
+                            title: MessageKey.FrontendNginxStopError,
+                            content: MessageKey.FrontendNginxStopErrorDescription,
                         },
                     },
                 }
@@ -113,7 +115,7 @@ export default class GenericNginxAction {
         const onClick = () =>
             themedModal().error({
                 width: 750,
-                title: "Error details",
+                title: <I18n id={MessageKey.FrontendComponentsErrorDetails} />,
                 content: <code>{error.response?.body?.message ?? error.message}</code>,
             })
 
@@ -121,7 +123,7 @@ export default class GenericNginxAction {
             ...this.messageProps(),
             actions: [
                 <Button key="show-details" type="default" onClick={onClick}>
-                    Open error details
+                    <I18n id={MessageKey.CommonOpenErrorDetails} />
                 </Button>,
             ],
         })

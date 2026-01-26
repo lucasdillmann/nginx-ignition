@@ -1,7 +1,6 @@
 package user
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -12,8 +11,6 @@ import (
 )
 
 func Test_validator(t *testing.T) {
-	ctx := context.Background()
-
 	t.Run("validate", func(t *testing.T) {
 		t.Run("valid user passes", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
@@ -23,10 +20,10 @@ func Test_validator(t *testing.T) {
 			request := newSaveRequest()
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.NoError(t, err)
 		})
@@ -43,10 +40,10 @@ func Test_validator(t *testing.T) {
 			currentUserID := usr.ID
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, currentUser, request, &currentUserID)
+			err := userValidator.validate(t.Context(), usr, currentUser, request, &currentUserID)
 
 			assert.Error(t, err)
 		})
@@ -60,10 +57,10 @@ func Test_validator(t *testing.T) {
 			request.Password = nil
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -78,10 +75,10 @@ func Test_validator(t *testing.T) {
 			currentUser := &User{ID: usr.ID}
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(currentUser, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(currentUser, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, currentUser, request, nil)
+			err := userValidator.validate(t.Context(), usr, currentUser, request, nil)
 
 			assert.NoError(t, err)
 		})
@@ -95,10 +92,10 @@ func Test_validator(t *testing.T) {
 			otherID := uuid.New()
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(&User{ID: otherID}, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(&User{ID: otherID}, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -113,10 +110,10 @@ func Test_validator(t *testing.T) {
 			request.Username = "ab"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "ab").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "ab").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -131,10 +128,10 @@ func Test_validator(t *testing.T) {
 			request.Name = "ab"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -148,10 +145,10 @@ func Test_validator(t *testing.T) {
 			request.Password = ptr.Of("short")
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -166,10 +163,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.Hosts = "INVALID"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -184,10 +181,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.Streams = "INVALID"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -202,10 +199,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.Certificates = "INVALID"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -220,10 +217,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.Logs = "INVALID"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -238,10 +235,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.Integrations = "INVALID"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -256,10 +253,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.AccessLists = "INVALID"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -274,10 +271,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.Settings = "INVALID"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -292,10 +289,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.Users = "INVALID"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -310,10 +307,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.NginxServer = "INVALID"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -328,10 +325,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.ExportData = "INVALID"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -346,10 +343,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.VPNs = "INVALID"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -364,10 +361,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.Caches = "INVALID"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -382,10 +379,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.NginxServer = NoAccessAccessLevel
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -400,10 +397,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.Logs = ReadWriteAccessLevel
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})
@@ -418,10 +415,10 @@ func Test_validator(t *testing.T) {
 			request.Permissions.ExportData = ReadWriteAccessLevel
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "testuser").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(ctx, usr, nil, request, nil)
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
 			assert.Error(t, err)
 		})

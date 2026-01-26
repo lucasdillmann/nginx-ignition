@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -24,41 +25,43 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "NICMANAGER" }
 
-func (p *Provider) Name() string { return "Nicmanager" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          loginFieldID,
-			Description: "Nicmanager API login",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerApiLogin),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "Nicmanager API password",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerApiPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          emailFieldID,
-			Description: "Nicmanager API email",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerApiEmail),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          usernameFieldID,
-			Description: "Nicmanager API username",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerApiUsername),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          otpSecretFieldID,
-			Description: "Nicmanager OTP secret",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerOtpSecret),
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          modeFieldID,
-			Description: "Nicmanager API mode",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNicmanagerApiMode),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

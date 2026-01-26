@@ -5,6 +5,8 @@ import AppContext from "../components/context/AppContext"
 import { navigateTo } from "../components/router/AppRouter"
 import { buildLoginUrl } from "./buildLoginUrl"
 import { themedModal } from "../components/theme/ThemedResources"
+import { I18n } from "../i18n/I18n"
+import MessageKey from "../i18n/model/MessageKey.generated"
 
 export default class SessionExpiredApiClientEventListener implements ApiClientEventListener {
     private alreadyShown: boolean
@@ -29,22 +31,19 @@ export default class SessionExpiredApiClientEventListener implements ApiClientEv
         this.alreadyShown = true
 
         themedModal().confirm({
-            title: "Your AFK was too long",
+            title: <I18n id={MessageKey.FrontendAuthenticationSessionExpiredTitle} />,
             content: (
                 <>
                     <p>
-                        Seems like you've kept the nginx ignition open but without using it for a while and your session
-                        expired.
+                        <I18n id={MessageKey.FrontendAuthenticationSessionExpiredDescription1} />
                     </p>
                     <p>
-                        We need to login again to continue, but you can choose to stay here if you have some unfinished
-                        action that you don't want to lose or start from scratch (you can try to finish it again after
-                        logging-in in another tab).
+                        <I18n id={MessageKey.FrontendAuthenticationSessionExpiredDescription2} />
                     </p>
                 </>
             ),
-            okText: "Login again",
-            cancelText: "Keep me here for now",
+            okText: <I18n id={MessageKey.FrontendAuthenticationSessionExpiredLogin} />,
+            cancelText: <I18n id={MessageKey.FrontendAuthenticationSessionExpiredStay} />,
             onOk: () => this.redirectToLogin(),
         })
     }

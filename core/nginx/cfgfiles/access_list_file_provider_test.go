@@ -17,7 +17,7 @@ func Test_accessListFileProvider(t *testing.T) {
 		t.Run("generate the file successfully", func(t *testing.T) {
 			provider := &accessListFileProvider{}
 			id := uuid.New()
-			ctx := newProviderContext()
+			ctx := newProviderContext(t)
 			ctx.hosts = []host.Host{
 				{
 					AccessListID: &id,
@@ -52,7 +52,7 @@ func Test_accessListFileProvider(t *testing.T) {
 				GetAll(gomock.Any()).
 				Return(nil, assert.AnError)
 
-			ctx := newProviderContext()
+			ctx := newProviderContext(t)
 			provider := &accessListFileProvider{
 				commands: commands,
 			}

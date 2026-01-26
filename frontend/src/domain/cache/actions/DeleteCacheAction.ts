@@ -2,6 +2,8 @@ import CacheService from "../CacheService"
 import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
 import Notification from "../../../core/components/notification/Notification"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { I18nMessage, raw } from "../../../core/i18n/I18n"
 
 class DeleteCacheAction {
     private readonly service: CacheService
@@ -11,24 +13,33 @@ class DeleteCacheAction {
     }
 
     private handleError(error: Error) {
-        let message =
-            "An unexpected error was found while trying to delete the cache configuration. Please try again later."
+        const title = {
+            id: MessageKey.CommonUnableToDelete,
+            params: { type: MessageKey.CommonCacheConfiguration },
+        }
+        let message: I18nMessage = MessageKey.CommonUnexpectedErrorTryAgain
 
         if (error instanceof UnexpectedResponseError) {
             const responseMessage = error.response?.body?.message
             if (typeof responseMessage === "string") {
-                message = responseMessage
+                message = raw(responseMessage)
             }
         }
 
-        Notification.error("Unable to delete the cache configuration", message)
+        Notification.error(title, message)
     }
 
     async execute(userId: string): Promise<void> {
-        return UserConfirmation.ask("Do you really want to delete the cache configuration?")
+        return UserConfirmation.ask(MessageKey.FrontendCacheDeleteConfirmation)
             .then(() => this.service.delete(userId))
             .then(() =>
-                Notification.success(`Cache configuration deleted`, `The cache configuration was deleted successfully`),
+                Notification.success(
+                    {
+                        id: MessageKey.CommonTypeDeleted,
+                        params: { type: MessageKey.CommonCacheConfiguration },
+                    },
+                    MessageKey.CommonSuccessMessage,
+                ),
             )
             .catch(error => this.handleError(error))
     }

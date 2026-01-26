@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -20,27 +21,32 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "HYPERONE" }
 
-func (p *Provider) Name() string { return "HyperOne" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHyperoneName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiEndpointFieldID,
-			Description: "HyperOne API endpoint",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHyperoneApiEndpoint),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          locationIDFieldID,
-			Description: "HyperOne location ID",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsHyperoneLocationId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
-			ID:          passportLocationFieldID,
-			Description: "HyperOne passport file location",
-			Required:    true,
-			Type:        dynamicfields.SingleLineTextType,
+			ID: passportLocationFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsHyperonePassportFileLocation,
+			),
+			Required: true,
+			Type:     dynamicfields.SingleLineTextType,
 		},
 	})
 }

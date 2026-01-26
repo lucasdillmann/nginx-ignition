@@ -1,7 +1,6 @@
 package user
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -12,6 +11,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 )
 
@@ -21,15 +21,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expected := newUser()
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByID(ctx, expected.ID).Return(expected, nil)
+			repo.EXPECT().FindByID(t.Context(), expected.ID).Return(expected, nil)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			result, err := svc.Get(ctx, expected.ID)
+			result, err := svc.Get(t.Context(), expected.ID)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -39,16 +38,15 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 			expectedErr := errors.New("not found")
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByID(ctx, id).Return(nil, expectedErr)
+			repo.EXPECT().FindByID(t.Context(), id).Return(nil, expectedErr)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			result, err := svc.Get(ctx, id)
+			result, err := svc.Get(t.Context(), id)
 
 			assert.Error(t, err)
 			assert.Nil(t, result)
@@ -61,15 +59,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().DeleteByID(ctx, id).Return(nil)
+			repo.EXPECT().DeleteByID(t.Context(), id).Return(nil)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			err := svc.Delete(ctx, id)
+			err := svc.Delete(t.Context(), id)
 
 			assert.NoError(t, err)
 		})
@@ -80,16 +77,15 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expectedPage := pagination.Of([]User{*newUser()})
 			searchTerms := "test"
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindPage(ctx, 10, 1, &searchTerms).Return(expectedPage, nil)
+			repo.EXPECT().FindPage(t.Context(), 10, 1, &searchTerms).Return(expectedPage, nil)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			result, err := svc.List(ctx, 10, 1, &searchTerms)
+			result, err := svc.List(t.Context(), 10, 1, &searchTerms)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expectedPage, result)
@@ -101,15 +97,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			expectedCount := 5
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Count(ctx).Return(expectedCount, nil)
+			repo.EXPECT().Count(t.Context()).Return(expectedCount, nil)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			count, err := svc.GetCount(ctx)
+			count, err := svc.GetCount(t.Context())
 
 			assert.NoError(t, err)
 			assert.Equal(t, expectedCount, count)
@@ -121,14 +116,12 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Count(ctx).Return(1, nil)
+			repo.EXPECT().Count(t.Context()).Return(1, nil)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			completed, err := svc.OnboardingCompleted(ctx)
+			completed, err := svc.OnboardingCompleted(t.Context())
 
 			assert.NoError(t, err)
 			assert.True(t, completed)
@@ -138,14 +131,12 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().Count(ctx).Return(0, nil)
+			repo.EXPECT().Count(t.Context()).Return(0, nil)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			completed, err := svc.OnboardingCompleted(ctx)
+			completed, err := svc.OnboardingCompleted(t.Context())
 
 			assert.NoError(t, err)
 			assert.False(t, completed)
@@ -157,20 +148,18 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindByUsername(ctx, "nonexistent").Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "nonexistent").Return(nil, nil)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			result, err := svc.Authenticate(ctx, "nonexistent", "password")
+			result, err := svc.Authenticate(t.Context(), "nonexistent", "password")
 
 			require.Error(t, err)
 			assert.Nil(t, result)
 			var coreErr *coreerror.CoreError
 			require.ErrorAs(t, err, &coreErr)
-			assert.Contains(t, coreErr.Message, "Invalid username or password")
+			assert.Equal(t, i18n.K.CoreUserInvalidCredentials, coreErr.Message.Key)
 		})
 	})
 
@@ -179,15 +168,14 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			ctx := context.Background()
 			id := uuid.New()
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().IsEnabledByID(ctx, id).Return(true, nil)
+			repo.EXPECT().IsEnabledByID(t.Context(), id).Return(true, nil)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			enabled, err := svc.GetStatus(ctx, id)
+			enabled, err := svc.GetStatus(t.Context(), id)
 
 			assert.NoError(t, err)
 			assert.True(t, enabled)

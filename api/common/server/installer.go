@@ -7,6 +7,7 @@ import (
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/container"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
@@ -20,7 +21,8 @@ func Install() error {
 
 func build(
 	cfg *configuration.Configuration,
-	commands user.Commands,
+	userCommands user.Commands,
+	i18nCommands i18n.Commands,
 ) (
 	*gin.Engine,
 	*state,
@@ -30,9 +32,10 @@ func build(
 	gin.SetMode(gin.ReleaseMode)
 
 	engine := gin.New()
+	engine.Use(i18nMiddleware(i18nCommands))
 	engine.Use(gin.CustomRecoveryWithWriter(nil, apierror.Handler))
 
-	authorizer, err := authorization.New(cfg, commands)
+	authorizer, err := authorization.New(cfg, userCommands)
 	if err != nil {
 		return nil, nil, nil, err
 	}

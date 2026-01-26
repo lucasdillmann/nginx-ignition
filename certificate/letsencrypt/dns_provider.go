@@ -183,6 +183,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zoneee"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zonomi"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 var providers = []dns.Provider{
@@ -369,7 +370,7 @@ func resolveProviderChallenge(
 	domainNames []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
-	providerID, _ := parameters[dnsProvider.ID].(string)
+	providerID, _ := parameters[dnsProviderFieldID].(string)
 
 	for _, provider := range providers {
 		if provider.ID() == providerID {
@@ -377,5 +378,8 @@ func resolveProviderChallenge(
 		}
 	}
 
-	return nil, coreerror.New("Unknown DNS provider", true)
+	return nil, coreerror.New(
+		i18n.M(ctx, i18n.K.CertificateLetsencryptUnknownDnsProvider),
+		true,
+	)
 }

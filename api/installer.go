@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/api/frontend"
 	"dillmann.com.br/nginx-ignition/api/healthcheck"
 	"dillmann.com.br/nginx-ignition/api/host"
+	"dillmann.com.br/nginx-ignition/api/i18n"
 	"dillmann.com.br/nginx-ignition/api/integration"
 	"dillmann.com.br/nginx-ignition/api/nginx"
 	"dillmann.com.br/nginx-ignition/api/settings"
@@ -29,6 +30,7 @@ func Install() error {
 		certificate.Install,
 		user.Install,
 		host.Install,
+		i18n.Install,
 		integration.Install,
 		nginx.Install,
 		stream.Install,

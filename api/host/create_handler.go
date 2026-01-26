@@ -20,7 +20,7 @@ func (h createHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	domainModel := converter.Wrap(toDomain, payload)
+	domainModel := converter.Wrap(ctx.Request.Context(), toDomain, payload)
 	domainModel.ID = uuid.New()
 
 	if err := h.commands.Save(ctx.Request.Context(), domainModel); err != nil {

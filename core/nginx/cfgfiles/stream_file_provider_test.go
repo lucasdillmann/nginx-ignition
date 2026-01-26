@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
+	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
@@ -18,7 +20,7 @@ func Test_streamFileProvider(t *testing.T) {
 		s := newStream()
 		s.ID = id
 
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 		ctx.supportedFeatures.StreamType = StaticSupportType
 		ctx.streams = []stream.Stream{s}
 
@@ -31,7 +33,9 @@ func Test_streamFileProvider(t *testing.T) {
 			ctx.supportedFeatures.StreamType = NoneSupportType
 			_, err := provider.provide(ctx)
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "Support for streams is not enabled")
+			var coreErr *coreerror.CoreError
+			assert.ErrorAs(t, err, &coreErr)
+			assert.Equal(t, i18n.K.CoreNginxCfgfilesStreamNotEnabled, coreErr.Message.Key)
 		})
 
 		t.Run("returns error for unknown stream type", func(t *testing.T) {
@@ -163,7 +167,7 @@ func Test_streamFileProvider(t *testing.T) {
 		idStr := nginxID(&stream.Stream{ID: id})
 
 		t.Run("generates SNI routing configuration", func(t *testing.T) {
-			ctx := newProviderContext()
+			ctx := newProviderContext(t)
 			ctx.supportedFeatures.TLSSNI = StaticSupportType
 			s := &stream.Stream{
 				ID:   id,
@@ -210,12 +214,14 @@ func Test_streamFileProvider(t *testing.T) {
 		})
 
 		t.Run("returns error when TLSSNI not supported", func(t *testing.T) {
-			ctx := newProviderContext()
+			ctx := newProviderContext(t)
 			ctx.supportedFeatures.TLSSNI = NoneSupportType
 			s := &stream.Stream{Type: stream.SNIRouterType}
 			_, err := provider.buildRoutedStream(ctx, s)
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "Support for TLS SNI is not enabled")
+			var coreErr *coreerror.CoreError
+			assert.ErrorAs(t, err, &coreErr)
+			assert.Equal(t, i18n.K.CoreNginxCfgfilesStreamSniNotEnabled, coreErr.Message.Key)
 		})
 	})
 }

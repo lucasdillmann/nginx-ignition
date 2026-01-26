@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -21,27 +22,29 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "IIJ" }
 
-func (p *Provider) Name() string { return "IIJ" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIijName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          accessKeyFieldID,
-			Description: "IIJ access key",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIijAccessKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretKeyFieldID,
-			Description: "IIJ secret key",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIijSecretKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          doServiceCodeFieldID,
-			Description: "IIJ service code",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIijServiceCode),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

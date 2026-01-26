@@ -3,6 +3,8 @@ import { Button, Flex, Form, FormListFieldData, FormListOperation, Input } from 
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons"
 import FormLayout from "../../../core/components/form/FormLayout"
 import ValidationResult from "../../../core/validation/ValidationResult"
+import { I18n, i18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
@@ -11,7 +13,7 @@ const ACTION_ICON_STYLE = {
 
 export interface CacheRulesProps {
     name: string
-    label: string
+    label: MessageKey
     validationResult: ValidationResult
 }
 
@@ -31,7 +33,7 @@ export default class CacheRules extends React.Component<CacheRulesProps> {
                     required
                     style={{ flex: 1 }}
                 >
-                    <Input placeholder="e.g. $http_cache_control ~* no-cache" />
+                    <Input placeholder={i18n(MessageKey.FrontendCacheComponentsRulesPlaceholder)} />
                 </Form.Item>
 
                 <DeleteOutlined onClick={() => operations.remove(index)} style={ACTION_ICON_STYLE} />
@@ -46,7 +48,7 @@ export default class CacheRules extends React.Component<CacheRulesProps> {
         const addAction = (
             <Form.Item>
                 <Button type="dashed" onClick={() => operations.add("")} icon={<PlusOutlined />}>
-                    Add {label.toLowerCase()}
+                    <I18n id={MessageKey.FrontendCacheComponentsRulesAddRule} params={{ label }} />
                 </Button>
             </Form.Item>
         )

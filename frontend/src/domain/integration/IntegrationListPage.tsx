@@ -17,6 +17,8 @@ import IntegrationService from "./IntegrationService"
 import AvailableDriverResponse from "./model/AvailableDriverResponse"
 import DeleteIntegrationAction from "./actions/DeleteIntegrationAction"
 import DataTableRenderers from "../../core/components/datatable/DataTableRenderers"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { raw } from "../../core/i18n/I18n"
 
 interface IntegrationListPageState {
     loading: boolean
@@ -51,24 +53,24 @@ export default class IntegrationListPage extends React.Component<any, Integratio
         return [
             {
                 id: "name",
-                description: "Name",
+                description: MessageKey.CommonName,
                 renderer: item => item.name,
             },
             {
                 id: "driver",
-                description: "Driver",
+                description: MessageKey.CommonDriver,
                 renderer: item => this.translateDriverName(item.driver),
                 width: 250,
             },
             {
                 id: "enabled",
-                description: "Enabled",
+                description: MessageKey.CommonEnabled,
                 renderer: item => DataTableRenderers.yesNo(item.enabled),
-                width: 100,
+                width: 120,
             },
             {
                 id: "actions",
-                description: "",
+                description: raw(""),
                 renderer: item => (
                     <>
                         <Link to={`/integrations/${item.id}`}>
@@ -80,7 +82,7 @@ export default class IntegrationListPage extends React.Component<any, Integratio
                         </Link>
                     </>
                 ),
-                width: 100,
+                width: 120,
             },
         ]
     }
@@ -116,11 +118,11 @@ export default class IntegrationListPage extends React.Component<any, Integratio
             })
 
         AppShellContext.get().updateConfig({
-            title: "Integrations",
-            subtitle: "Configuration of the nginx ignition integration with third-party apps",
+            title: MessageKey.CommonIntegrations,
+            subtitle: MessageKey.FrontendIntegrationListSubtitle,
             actions: [
                 {
-                    description: "New integration",
+                    description: MessageKey.FrontendIntegrationNewButton,
                     onClick: "/integrations/new",
                     disabled: this.isReadOnlyMode(),
                 },

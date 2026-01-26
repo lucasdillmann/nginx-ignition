@@ -14,6 +14,7 @@ import ValidationResultConverter from "../../core/validation/ValidationResultCon
 import UserResponse from "./model/UserResponse"
 import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
 import DeleteUserAction from "./actions/DeleteUserAction"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import AppContext from "../../core/components/context/AppContext"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
@@ -21,6 +22,7 @@ import { UserPermissionToggle } from "./components/UserPermissionToggle"
 import { UserAccessLevel } from "./model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import { I18n } from "../../core/i18n/I18n"
 
 interface UserFormState {
     formValues: UserRequest
@@ -69,7 +71,10 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
 
     private submit() {
         const { formValues } = this.state
-        this.saveModal.show("Hang on tight", "We're saving the user")
+        this.saveModal.show(MessageKey.CommonHangOnTight, {
+            id: MessageKey.CommonSavingType,
+            params: { type: MessageKey.CommonUser },
+        })
         this.setState({ validationResult: new ValidationResult() })
 
         const action =
@@ -90,7 +95,10 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
     }
 
     private handleSuccess() {
-        Notification.success("User saved", "The user was saved successfully")
+        Notification.success(
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonUser } },
+            MessageKey.CommonSuccessMessage,
+        )
     }
 
     private handleError(error: Error) {
@@ -99,11 +107,11 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
             if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private passwordHelpText() {
-        return this.userId === undefined ? undefined : "Leave empty if you want to keep the user's password unchanged"
+        return this.userId === undefined ? undefined : <I18n id={MessageKey.FrontendUserFormPasswordHelp} />
     }
 
     private renderForm() {
@@ -119,7 +127,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     name="enabled"
                     validateStatus={validationResult.getStatus("enabled")}
                     help={validationResult.getMessage("enabled")}
-                    label="Enabled"
+                    label={<I18n id={MessageKey.CommonEnabled} />}
                     required
                 >
                     <Switch />
@@ -128,7 +136,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     name="name"
                     validateStatus={validationResult.getStatus("name")}
                     help={validationResult.getMessage("name")}
-                    label="Name"
+                    label={<I18n id={MessageKey.CommonName} />}
                     required
                 >
                     <Input />
@@ -137,7 +145,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     name="username"
                     validateStatus={validationResult.getStatus("username")}
                     help={validationResult.getMessage("username")}
-                    label="Username"
+                    label={<I18n id={MessageKey.CommonUsername} />}
                     required
                 >
                     <Input />
@@ -146,24 +154,28 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     name="password"
                     validateStatus={validationResult.getStatus("password")}
                     help={validationResult.getMessage("password") ?? this.passwordHelpText()}
-                    label="Password"
+                    label={<I18n id={MessageKey.CommonPassword} />}
                     required={this.userId === undefined}
                 >
                     <Password />
                 </Form.Item>
-                <Form.Item label="Permissions" required>
-                    <UserPermissionToggle id="hosts" label="Hosts" />
-                    <UserPermissionToggle id="streams" label="Streams" />
-                    <UserPermissionToggle id="certificates" label="SSL certificates" />
-                    <UserPermissionToggle id="integrations" label="Integrations" />
-                    <UserPermissionToggle id="vpns" label="VPNs" />
-                    <UserPermissionToggle id="caches" label="Cache configurations" />
-                    <UserPermissionToggle id="accessLists" label="Access lists" />
-                    <UserPermissionToggle id="settings" label="Settings" />
-                    <UserPermissionToggle id="users" label="Users" />
-                    <UserPermissionToggle id="logs" label="Logs" disableReadWrite />
-                    <UserPermissionToggle id="exportData" label="Export and backup" disableReadWrite />
-                    <UserPermissionToggle id="nginxServer" label="Nginx server control" disableNoAccess />
+                <Form.Item label={<I18n id={MessageKey.FrontendUserFormPermissions} />} required>
+                    <UserPermissionToggle id="hosts" label={MessageKey.CommonHosts} />
+                    <UserPermissionToggle id="streams" label={MessageKey.CommonStreams} />
+                    <UserPermissionToggle id="certificates" label={MessageKey.CommonSslCertificates} />
+                    <UserPermissionToggle id="integrations" label={MessageKey.CommonIntegrations} />
+                    <UserPermissionToggle id="vpns" label={MessageKey.CommonVpns} />
+                    <UserPermissionToggle id="caches" label={MessageKey.CommonCacheConfigurations} />
+                    <UserPermissionToggle id="accessLists" label={MessageKey.CommonAccessLists} />
+                    <UserPermissionToggle id="settings" label={MessageKey.CommonSettings} />
+                    <UserPermissionToggle id="users" label={MessageKey.CommonUsers} />
+                    <UserPermissionToggle id="logs" label={MessageKey.CommonLogs} disableReadWrite />
+                    <UserPermissionToggle id="exportData" label={MessageKey.CommonExportAndBackup} disableReadWrite />
+                    <UserPermissionToggle
+                        id="nginxServer"
+                        label={MessageKey.FrontendUserFormPermissionsNginxServer}
+                        disableNoAccess
+                    />
                 </Form.Item>
             </Form>
         )
@@ -187,7 +199,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
 
         const actions: ShellAction[] = [
             {
-                description: "Save",
+                description: MessageKey.CommonSave,
                 disabled: !enableActions,
                 onClick: () => this.submit(),
             },
@@ -195,15 +207,15 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
 
         if (this.userId !== undefined)
             actions.unshift({
-                description: "Delete",
+                description: MessageKey.CommonDelete,
                 disabled: !enableActions || this.userId === AppContext.get().user?.id,
                 color: "danger",
                 onClick: () => this.delete(),
             })
 
         AppShellContext.get().updateConfig({
-            title: "User details",
-            subtitle: "Full details and configurations of the nginx ignition's user",
+            title: MessageKey.FrontendUserFormTitle,
+            subtitle: MessageKey.FrontendUserFormSubtitle,
             actions,
         })
     }

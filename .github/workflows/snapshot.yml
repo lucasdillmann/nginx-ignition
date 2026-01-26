@@ -38,10 +38,10 @@ jobs:
           node-version: 24
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.25.5
+          go-version: 1.25.6
       - name: Unit tests
         env:
-          TEST_POSTGRES_HOST: postgres
+          TEST_POSTGRES_HOST: runner.local
           TEST_POSTGRES_PORT: 44554
         run: make test
       - name: Lint
@@ -64,7 +64,7 @@ jobs:
           node-version: 24
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.25.5
+          go-version: 1.25.6
       - name: Install nfpm
         run: |
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list

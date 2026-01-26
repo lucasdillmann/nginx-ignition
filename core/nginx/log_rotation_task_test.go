@@ -1,7 +1,6 @@
 package nginx
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -12,15 +11,13 @@ import (
 )
 
 func Test_logRotationTask(t *testing.T) {
-	ctx := context.Background()
-
 	t.Run("Schedule", func(t *testing.T) {
 		t.Run("converts minutes to duration correctly", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
 			repo := settings.NewMockedCommands(ctrl)
-			repo.EXPECT().Get(ctx).Return(&settings.Settings{
+			repo.EXPECT().Get(t.Context()).Return(&settings.Settings{
 				LogRotation: &settings.LogRotationSettings{
 					Enabled:           true,
 					IntervalUnit:      settings.MinutesTimeUnit,
@@ -31,7 +28,7 @@ func Test_logRotationTask(t *testing.T) {
 			task := &logRotationTask{
 				settingsCommands: repo,
 			}
-			schedule, err := task.Schedule(ctx)
+			schedule, err := task.Schedule(t.Context())
 
 			assert.NoError(t, err)
 			assert.True(t, schedule.Enabled)
@@ -43,7 +40,7 @@ func Test_logRotationTask(t *testing.T) {
 			defer ctrl.Finish()
 
 			repo := settings.NewMockedCommands(ctrl)
-			repo.EXPECT().Get(ctx).Return(&settings.Settings{
+			repo.EXPECT().Get(t.Context()).Return(&settings.Settings{
 				LogRotation: &settings.LogRotationSettings{
 					Enabled:           true,
 					IntervalUnit:      settings.HoursTimeUnit,
@@ -54,7 +51,7 @@ func Test_logRotationTask(t *testing.T) {
 			task := &logRotationTask{
 				settingsCommands: repo,
 			}
-			schedule, err := task.Schedule(ctx)
+			schedule, err := task.Schedule(t.Context())
 
 			assert.NoError(t, err)
 			assert.Equal(t, 2*time.Hour, schedule.Interval)
@@ -65,7 +62,7 @@ func Test_logRotationTask(t *testing.T) {
 			defer ctrl.Finish()
 
 			repo := settings.NewMockedCommands(ctrl)
-			repo.EXPECT().Get(ctx).Return(&settings.Settings{
+			repo.EXPECT().Get(t.Context()).Return(&settings.Settings{
 				LogRotation: &settings.LogRotationSettings{
 					Enabled:           false,
 					IntervalUnit:      settings.DaysTimeUnit,
@@ -76,7 +73,7 @@ func Test_logRotationTask(t *testing.T) {
 			task := &logRotationTask{
 				settingsCommands: repo,
 			}
-			schedule, err := task.Schedule(ctx)
+			schedule, err := task.Schedule(t.Context())
 
 			assert.NoError(t, err)
 			assert.False(t, schedule.Enabled)
@@ -88,7 +85,7 @@ func Test_logRotationTask(t *testing.T) {
 			defer ctrl.Finish()
 
 			repo := settings.NewMockedCommands(ctrl)
-			repo.EXPECT().Get(ctx).Return(&settings.Settings{
+			repo.EXPECT().Get(t.Context()).Return(&settings.Settings{
 				LogRotation: &settings.LogRotationSettings{
 					IntervalUnit: "invalid",
 				},
@@ -97,7 +94,7 @@ func Test_logRotationTask(t *testing.T) {
 			task := &logRotationTask{
 				settingsCommands: repo,
 			}
-			_, err := task.Schedule(ctx)
+			_, err := task.Schedule(t.Context())
 
 			assert.Error(t, err)
 		})
@@ -107,12 +104,12 @@ func Test_logRotationTask(t *testing.T) {
 			defer ctrl.Finish()
 
 			repo := settings.NewMockedCommands(ctrl)
-			repo.EXPECT().Get(ctx).Return(nil, assert.AnError)
+			repo.EXPECT().Get(t.Context()).Return(nil, assert.AnError)
 
 			task := &logRotationTask{
 				settingsCommands: repo,
 			}
-			_, err := task.Schedule(ctx)
+			_, err := task.Schedule(t.Context())
 
 			assert.Error(t, err)
 			assert.Equal(t, assert.AnError, err)

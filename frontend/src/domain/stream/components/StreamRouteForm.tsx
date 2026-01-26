@@ -5,6 +5,8 @@ import { Button, Card, Flex } from "antd"
 import DomainNamesList from "../../../core/components/domainnames/DomainNamesList"
 import StreamRouteBackendList from "./StreamRouteBackendList"
 import { DeleteOutlined } from "@ant-design/icons"
+import { I18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 export interface StreamRouteFormProps {
     route: StreamRoute
@@ -14,11 +16,11 @@ export interface StreamRouteFormProps {
 }
 
 export default class StreamRouteForm extends React.Component<StreamRouteFormProps> {
-    private buildCardHeader(): { title?: string; extra?: React.ReactNode } {
+    private buildCardHeader(): { title?: React.ReactNode; extra?: React.ReactNode } {
         const { onRemove, index } = this.props
 
         return {
-            title: `Group ${index + 1}`,
+            title: <I18n id={MessageKey.FrontendStreamComponentsRouteformGroupTitle} params={{ index: index + 1 }} />,
             extra: (
                 <Button onClick={onRemove} disabled={onRemove === undefined}>
                     <DeleteOutlined />
@@ -35,7 +37,9 @@ export default class StreamRouteForm extends React.Component<StreamRouteFormProp
             <Card key={`route-${index}`} title={title} extra={extra}>
                 <Flex style={{ flexGrow: 1, flexShrink: 1 }}>
                     <Flex style={{ width: "45%" }} vertical>
-                        <p>Domains</p>
+                        <p>
+                            <I18n id={MessageKey.FrontendStreamComponentsRouteformDomains} />
+                        </p>
                         <DomainNamesList
                             pathPrefix={{
                                 merged: `routes[${index}]`,
@@ -47,7 +51,9 @@ export default class StreamRouteForm extends React.Component<StreamRouteFormProp
                         />
                     </Flex>
                     <Flex style={{ width: "55%" }} vertical>
-                        <p>Backends</p>
+                        <p>
+                            <I18n id={MessageKey.FrontendStreamComponentsRouteformBackends} />
+                        </p>
                         <StreamRouteBackendList
                             routeIndex={index}
                             backends={route.backends}

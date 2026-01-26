@@ -15,7 +15,7 @@ func Test_hostRouteStaticResponseFileProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
 		provider := &hostRouteStaticResponseFileProvider{}
 		hostID := uuid.New()
-		ctx := newProviderContext()
+		ctx := newProviderContext(t)
 		ctx.hosts = []host.Host{
 			{
 				ID: hostID,

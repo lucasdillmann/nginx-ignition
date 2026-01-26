@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -25,44 +26,44 @@ func (p *Provider) ID() string {
 	return "VK_CLOUD"
 }
 
-func (p *Provider) Name() string {
-	return "VK Cloud"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          usernameFieldID,
-			Description: "VK Cloud username",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "VK Cloud password",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          projectIDFieldID,
-			Description: "VK Cloud project ID",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudProjectId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          dnsEndpointFieldID,
-			Description: "VK Cloud DNS endpoint",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudDnsEndpoint),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          identityEndpointFieldID,
-			Description: "VK Cloud identity endpoint",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudIdentityEndpoint),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          domainNameFieldID,
-			Description: "VK Cloud domain name",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsVkcloudDomainName),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

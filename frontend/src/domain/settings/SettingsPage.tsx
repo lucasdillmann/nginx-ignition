@@ -18,10 +18,12 @@ import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
+import { I18n } from "../../core/i18n/I18n"
 import { settingsDefaults } from "./SettingsDefaults"
 import NginxSettingsTab from "./tabs/NginxSettingsTab"
 import NginxIgnitionSettingsTab from "./tabs/NginxIgnitionSettingsTab"
 import AdvancedNginxSettingsTab from "./tabs/AdvancedNginxSettingsTab"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
 
 interface SettingsPageState {
     loading: boolean
@@ -58,15 +60,12 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
             },
         }))
 
-        Notification.success(
-            "Values reset",
-            "Settings were changed back to the default values (except the global bindings), but not yet saved",
-        )
+        Notification.success(MessageKey.FrontendSettingsValuesReset, MessageKey.FrontendSettingsResetDescription)
     }
 
     private async submit() {
         const { formValues } = this.state
-        this.saveModal.show("Hang on tight", "We're saving the settings")
+        this.saveModal.show(MessageKey.CommonHangOnTight, MessageKey.FrontendSettingsSaving)
         this.setState({ validationResult: new ValidationResult() })
 
         const settings = SettingsConverter.formValuesToSettings(formValues!!)
@@ -77,7 +76,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
     }
 
     private async handleSuccess() {
-        Notification.success("Settings saved", "Global settings were updated successfully")
+        Notification.success(MessageKey.FrontendSettingsSaved, MessageKey.FrontendSettingsSavedDescription)
         this.saveModal.close()
         ReloadNginxAction.execute()
     }
@@ -88,7 +87,7 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
             if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
         this.saveModal.close()
     }
 
@@ -101,19 +100,19 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
         return [
             {
                 key: "nginx-settings",
-                label: "nginx",
+                label: <I18n id={MessageKey.CommonNginx} />,
                 forceRender: true,
                 children: <NginxSettingsTab formValues={formValues!!} validationResult={validationResult} />,
             },
             {
                 key: "advanced-settings",
-                label: "nginx (advanced)",
+                label: <I18n id={MessageKey.FrontendSettingsPageTabAdvancedNginx} />,
                 forceRender: true,
                 children: <AdvancedNginxSettingsTab formValues={formValues!!} validationResult={validationResult} />,
             },
             {
                 key: "nginx-ignition-settings",
-                label: "nginx ignition",
+                label: <I18n id={MessageKey.CommonAppName} />,
                 forceRender: true,
                 children: <NginxIgnitionSettingsTab validationResult={validationResult} />,
             },
@@ -141,18 +140,18 @@ export default class SettingsPage extends React.Component<any, SettingsPageState
         }
 
         AppShellContext.get().updateConfig({
-            title: "Settings",
-            subtitle: "Globals settings for the nginx server and nginx ignition",
+            title: MessageKey.CommonSettings,
+            subtitle: MessageKey.FrontendSettingsSubtitle,
             actions: [
                 {
-                    description: "Reset to defaults",
+                    description: MessageKey.CommonResetToDefaults,
                     disabled: !enableActions,
                     onClick: () => this.resetToDefaultValues(),
                     color: "default",
                     type: "outlined",
                 },
                 {
-                    description: "Save",
+                    description: MessageKey.CommonSave,
                     disabled: !enableActions,
                     onClick: () => this.submit(),
                 },

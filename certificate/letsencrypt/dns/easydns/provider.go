@@ -9,6 +9,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -22,26 +23,28 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "EASYDNS" }
 
-func (p *Provider) Name() string { return "EasyDNS" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEasydnsName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          tokenFieldID,
-			Description: "EasyDNS API token",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEasydnsApiToken),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          keyFieldID,
-			Description: "EasyDNS API key",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEasydnsApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          endpointFieldID,
-			Description: "EasyDNS API endpoint",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEasydnsApiEndpoint),
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})

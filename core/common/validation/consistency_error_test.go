@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 func Test_ConsistencyError(t *testing.T) {
@@ -12,7 +14,7 @@ func Test_ConsistencyError(t *testing.T) {
 			err := NewError([]ConsistencyViolation{
 				{
 					Path:    "field1",
-					Message: "error 1",
+					Message: i18n.Static("error 1"),
 				},
 			})
 
@@ -23,10 +25,11 @@ func Test_ConsistencyError(t *testing.T) {
 
 func Test_SingleFieldError(t *testing.T) {
 	t.Run("creates error with single violation", func(t *testing.T) {
-		err := SingleFieldError("field1", "error message")
+		message := i18n.Static("error message")
+		err := SingleFieldError("field1", message)
 
 		assert.Len(t, err.Violations, 1)
 		assert.Equal(t, "field1", err.Violations[0].Path)
-		assert.Equal(t, "error message", err.Violations[0].Message)
+		assert.Equal(t, message, err.Violations[0].Message)
 	})
 }

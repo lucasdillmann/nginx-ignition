@@ -14,6 +14,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
@@ -29,7 +30,12 @@ type staticFilesHandler struct {
 func (h staticFilesHandler) handle(ctx *gin.Context) {
 	urlPath := ctx.Request.URL.Path
 	if h.basePath == nil || strings.HasPrefix(urlPath, "/api/") {
-		ctx.JSON(http.StatusNotFound, gin.H{"message": "Not found"})
+		ctx.JSON(
+			http.StatusNotFound,
+			gin.H{
+				"message": i18n.M(ctx.Request.Context(), i18n.K.CommonNotFoundTitle),
+			},
+		)
 		return
 	}
 

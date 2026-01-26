@@ -1,7 +1,6 @@
 package cfgfiles
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -22,7 +21,6 @@ func Test_Facade(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		ctx := context.Background()
 		paths := &Paths{
 			Base: "/etc/nginx/",
 		}
@@ -33,7 +31,7 @@ func Test_Facade(t *testing.T) {
 		t.Run("successfully collects files from providers", func(t *testing.T) {
 			hostCmds := host.NewMockedCommands(ctrl)
 			hostCmds.EXPECT().
-				GetAllEnabled(ctx).
+				GetAllEnabled(t.Context()).
 				Return([]host.Host{
 					{
 						ID:          uuid.New(),
@@ -41,9 +39,9 @@ func Test_Facade(t *testing.T) {
 					},
 				}, nil)
 			streamCmds := stream.NewMockedCommands(ctrl)
-			streamCmds.EXPECT().GetAllEnabled(ctx).Return([]stream.Stream{}, nil)
+			streamCmds.EXPECT().GetAllEnabled(t.Context()).Return([]stream.Stream{}, nil)
 			cacheCmds := cache.NewMockedCommands(ctrl)
-			cacheCmds.EXPECT().GetAllInUse(ctx).Return([]cache.Cache{}, nil)
+			cacheCmds.EXPECT().GetAllInUse(t.Context()).Return([]cache.Cache{}, nil)
 
 			provider := NewMockedfileProvider(ctrl)
 			provider.EXPECT().
@@ -62,7 +60,11 @@ func Test_Facade(t *testing.T) {
 				providers:      []fileProvider{provider},
 			}
 
-			configFiles, hosts, streams, err := facade.GetConfigurationFiles(ctx, paths, features)
+			configFiles, hosts, streams, err := facade.GetConfigurationFiles(
+				t.Context(),
+				paths,
+				features,
+			)
 
 			assert.NoError(t, err)
 			assert.Len(t, configFiles, 1)
@@ -73,48 +75,48 @@ func Test_Facade(t *testing.T) {
 
 		t.Run("returns error when hostCommands fails", func(t *testing.T) {
 			hostCmds := host.NewMockedCommands(ctrl)
-			hostCmds.EXPECT().GetAllEnabled(ctx).Return(nil, assert.AnError)
+			hostCmds.EXPECT().GetAllEnabled(t.Context()).Return(nil, assert.AnError)
 			facade := &Facade{hostCommands: hostCmds}
-			_, _, _, err := facade.GetConfigurationFiles(ctx, paths, features)
+			_, _, _, err := facade.GetConfigurationFiles(t.Context(), paths, features)
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 
 		t.Run("returns error when streamCommands fails", func(t *testing.T) {
 			hostCmds := host.NewMockedCommands(ctrl)
-			hostCmds.EXPECT().GetAllEnabled(ctx).Return([]host.Host{}, nil)
+			hostCmds.EXPECT().GetAllEnabled(t.Context()).Return([]host.Host{}, nil)
 			streamCmds := stream.NewMockedCommands(ctrl)
-			streamCmds.EXPECT().GetAllEnabled(ctx).Return(nil, assert.AnError)
+			streamCmds.EXPECT().GetAllEnabled(t.Context()).Return(nil, assert.AnError)
 			facade := &Facade{
 				hostCommands:   hostCmds,
 				streamCommands: streamCmds,
 			}
-			_, _, _, err := facade.GetConfigurationFiles(ctx, paths, features)
+			_, _, _, err := facade.GetConfigurationFiles(t.Context(), paths, features)
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 
 		t.Run("returns error when cacheCommands fails", func(t *testing.T) {
 			hostCmds := host.NewMockedCommands(ctrl)
-			hostCmds.EXPECT().GetAllEnabled(ctx).Return([]host.Host{}, nil)
+			hostCmds.EXPECT().GetAllEnabled(t.Context()).Return([]host.Host{}, nil)
 			streamCmds := stream.NewMockedCommands(ctrl)
-			streamCmds.EXPECT().GetAllEnabled(ctx).Return([]stream.Stream{}, nil)
+			streamCmds.EXPECT().GetAllEnabled(t.Context()).Return([]stream.Stream{}, nil)
 			cacheCmds := cache.NewMockedCommands(ctrl)
-			cacheCmds.EXPECT().GetAllInUse(ctx).Return(nil, assert.AnError)
+			cacheCmds.EXPECT().GetAllInUse(t.Context()).Return(nil, assert.AnError)
 			facade := &Facade{
 				hostCommands:   hostCmds,
 				streamCommands: streamCmds,
 				cacheCommands:  cacheCmds,
 			}
-			_, _, _, err := facade.GetConfigurationFiles(ctx, paths, features)
+			_, _, _, err := facade.GetConfigurationFiles(t.Context(), paths, features)
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 
 		t.Run("returns error when provider fails", func(t *testing.T) {
 			hostCmds := host.NewMockedCommands(ctrl)
-			hostCmds.EXPECT().GetAllEnabled(ctx).Return([]host.Host{}, nil)
+			hostCmds.EXPECT().GetAllEnabled(t.Context()).Return([]host.Host{}, nil)
 			streamCmds := stream.NewMockedCommands(ctrl)
-			streamCmds.EXPECT().GetAllEnabled(ctx).Return([]stream.Stream{}, nil)
+			streamCmds.EXPECT().GetAllEnabled(t.Context()).Return([]stream.Stream{}, nil)
 			cacheCmds := cache.NewMockedCommands(ctrl)
-			cacheCmds.EXPECT().GetAllInUse(ctx).Return([]cache.Cache{}, nil)
+			cacheCmds.EXPECT().GetAllInUse(t.Context()).Return([]cache.Cache{}, nil)
 
 			provider := NewMockedfileProvider(ctrl)
 			provider.EXPECT().provide(gomock.Any()).Return(nil, assert.AnError)
@@ -126,17 +128,17 @@ func Test_Facade(t *testing.T) {
 				providers:      []fileProvider{provider},
 			}
 
-			_, _, _, err := facade.GetConfigurationFiles(ctx, paths, features)
+			_, _, _, err := facade.GetConfigurationFiles(t.Context(), paths, features)
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 
 		t.Run("collects files from multiple providers", func(t *testing.T) {
 			hostCmds := host.NewMockedCommands(ctrl)
-			hostCmds.EXPECT().GetAllEnabled(ctx).Return([]host.Host{}, nil)
+			hostCmds.EXPECT().GetAllEnabled(t.Context()).Return([]host.Host{}, nil)
 			streamCmds := stream.NewMockedCommands(ctrl)
-			streamCmds.EXPECT().GetAllEnabled(ctx).Return([]stream.Stream{}, nil)
+			streamCmds.EXPECT().GetAllEnabled(t.Context()).Return([]stream.Stream{}, nil)
 			cacheCmds := cache.NewMockedCommands(ctrl)
-			cacheCmds.EXPECT().GetAllInUse(ctx).Return([]cache.Cache{}, nil)
+			cacheCmds.EXPECT().GetAllInUse(t.Context()).Return([]cache.Cache{}, nil)
 
 			p1 := NewMockedfileProvider(ctrl)
 			p1.EXPECT().provide(gomock.Any()).Return([]File{{Name: "f1.conf"}}, nil)
@@ -150,7 +152,7 @@ func Test_Facade(t *testing.T) {
 				providers:      []fileProvider{p1, p2},
 			}
 
-			files, _, _, err := facade.GetConfigurationFiles(ctx, paths, features)
+			files, _, _, err := facade.GetConfigurationFiles(t.Context(), paths, features)
 			assert.NoError(t, err)
 			assert.Len(t, files, 2)
 		})
@@ -160,7 +162,6 @@ func Test_Facade(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		ctx := context.Background()
 		tmpDir := t.TempDir()
 		cfg := configuration.NewWithOverrides(map[string]string{
 			"nginx-ignition.nginx.config-path": tmpDir,
@@ -172,11 +173,11 @@ func Test_Facade(t *testing.T) {
 
 		t.Run("successfully replaces all files", func(t *testing.T) {
 			hostCmds := host.NewMockedCommands(ctrl)
-			hostCmds.EXPECT().GetAllEnabled(ctx).Return([]host.Host{}, nil)
+			hostCmds.EXPECT().GetAllEnabled(t.Context()).Return([]host.Host{}, nil)
 			streamCmds := stream.NewMockedCommands(ctrl)
-			streamCmds.EXPECT().GetAllEnabled(ctx).Return([]stream.Stream{}, nil)
+			streamCmds.EXPECT().GetAllEnabled(t.Context()).Return([]stream.Stream{}, nil)
 			cacheCmds := cache.NewMockedCommands(ctrl)
-			cacheCmds.EXPECT().GetAllInUse(ctx).Return([]cache.Cache{}, nil)
+			cacheCmds.EXPECT().GetAllInUse(t.Context()).Return([]cache.Cache{}, nil)
 
 			provider := NewMockedfileProvider(ctrl)
 			provider.EXPECT().
@@ -196,7 +197,7 @@ func Test_Facade(t *testing.T) {
 				providers:      []fileProvider{provider},
 			}
 
-			hosts, streams, err := facade.ReplaceConfigurationFiles(ctx, features)
+			hosts, streams, err := facade.ReplaceConfigurationFiles(t.Context(), features)
 
 			assert.NoError(t, err)
 			assert.Empty(t, hosts)

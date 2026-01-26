@@ -22,6 +22,8 @@ import { vpnRequestDefaults } from "./model/VpnRequestDefaults"
 import AvailableDriverResponse from "./model/AvailableDriverResponse"
 import DynamicInput from "../../core/components/dynamicfield/DynamicInput"
 import If from "../../core/components/flowcontrol/If"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n } from "../../core/i18n/I18n"
 
 interface VpnFormPageState {
     availableDrivers: AvailableDriverResponse[]
@@ -63,7 +65,10 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
 
     private submit() {
         const { formValues } = this.state
-        this.saveModal.show("Hang on tight", "We're saving the VPN connection")
+        this.saveModal.show(MessageKey.CommonHangOnTight, {
+            id: MessageKey.CommonSavingType,
+            params: { type: MessageKey.CommonVpnConnection },
+        })
         this.setState({ validationResult: new ValidationResult() })
 
         const action =
@@ -84,7 +89,10 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
     }
 
     private handleSuccess() {
-        Notification.success("VPN connection saved", "The VPN connection was saved successfully")
+        Notification.success(
+            { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonVpnConnection } },
+            MessageKey.CommonSuccessMessage,
+        )
         ReloadNginxAction.execute()
     }
 
@@ -94,7 +102,7 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
             if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private updateShellConfig(enableActions: boolean) {
@@ -104,7 +112,7 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
 
         const actions: ShellAction[] = [
             {
-                description: "Save",
+                description: MessageKey.CommonSave,
                 disabled: !enableActions,
                 onClick: () => this.submit(),
             },
@@ -112,15 +120,15 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
 
         if (this.vpnId !== undefined)
             actions.unshift({
-                description: "Delete",
+                description: MessageKey.CommonDelete,
                 disabled: !enableActions,
                 color: "danger",
                 onClick: () => this.delete(),
             })
 
         AppShellContext.get().updateConfig({
-            title: "VPN connection details",
-            subtitle: "Full details and configurations of the VPN connection",
+            title: MessageKey.FrontendVpnFormTitle,
+            subtitle: MessageKey.FrontendVpnFormSubtitle,
             actions,
         })
     }
@@ -170,7 +178,7 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
                     name="enabled"
                     validateStatus={validationResult.getStatus("enabled")}
                     help={validationResult.getMessage("enabled")}
-                    label="Enabled"
+                    label={<I18n id={MessageKey.CommonEnabled} />}
                     required
                 >
                     <Switch />
@@ -179,7 +187,7 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
                     name="name"
                     validateStatus={validationResult.getStatus("name")}
                     help={validationResult.getMessage("name")}
-                    label="Name"
+                    label={<I18n id={MessageKey.CommonName} />}
                     required
                 >
                     <Input />
@@ -188,13 +196,13 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
                     name="driver"
                     validateStatus={validationResult.getStatus("driver")}
                     help={validationResult.getMessage("driver")}
-                    label="Driver"
+                    label={<I18n id={MessageKey.CommonDriver} />}
                     required
                 >
                     <Select options={this.buildDriverOptions()} />
                 </Form.Item>
                 <If condition={driverDetails != undefined && driverDetails.importantInstructions.length > 0}>
-                    <Form.Item label="Important instructions" required>
+                    <Form.Item label={<I18n id={MessageKey.FrontendVpnFormImportantInstructions} />} required>
                         <ul>
                             {driverDetails?.importantInstructions.map(instruction => (
                                 <li key={instruction}>{instruction}</li>

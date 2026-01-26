@@ -2,6 +2,8 @@ import AccessListService from "../AccessListService"
 import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
 import Notification from "../../../core/components/notification/Notification"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { raw } from "../../../core/i18n/I18n"
 
 class DeleteAccessListAction {
     private readonly service: AccessListService
@@ -11,24 +13,33 @@ class DeleteAccessListAction {
     }
 
     private handleError(error: Error) {
+        const title = {
+            id: MessageKey.CommonUnableToDelete,
+            params: {
+                type: MessageKey.CommonAccessList,
+            },
+        }
+
         if (error instanceof UnexpectedResponseError) {
             const message = error.response?.body?.message
             if (typeof message === "string") {
-                Notification.error(`Unable to delete the access list`, message)
+                Notification.error(title, raw(message))
                 return
             }
         }
 
-        Notification.error(
-            `Unable to delete the access list`,
-            `An unexpected error was found while trying to delete the access list. Please try again later.`,
-        )
+        Notification.error(title, MessageKey.CommonUnexpectedErrorTryAgain)
     }
 
     async execute(userId: string): Promise<void> {
-        return UserConfirmation.ask("Do you really want to delete the access list?")
+        return UserConfirmation.ask(MessageKey.FrontendAccesslistDeleteConfirmation)
             .then(() => this.service.delete(userId))
-            .then(() => Notification.success(`Access list deleted`, `The access list was deleted successfully`))
+            .then(() =>
+                Notification.success(
+                    { id: MessageKey.CommonTypeDeleted, params: { type: MessageKey.CommonAccessList } },
+                    MessageKey.CommonSuccessMessage,
+                ),
+            )
             .catch(error => this.handleError(error))
     }
 }

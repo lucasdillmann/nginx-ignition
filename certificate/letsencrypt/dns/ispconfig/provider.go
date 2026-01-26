@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 const (
@@ -23,36 +24,39 @@ func (p *Provider) ID() string {
 	return "ISPCONFIG"
 }
 
-func (p *Provider) Name() string {
-	return "ISPConfig 3"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIspconfigName)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          serverURLFieldID,
-			Description: "ISPConfig 3 server URL",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIspconfigServerUrl),
 			Required:    true,
 			Type:        dynamicfields.URLType,
 		},
 		{
 			ID:          usernameFieldID,
-			Description: "ISPConfig 3 username",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIspconfigUsername),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          passwordFieldID,
-			Description: "ISPConfig 3 password",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsIspconfigPassword),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
-			ID:          insecureSkipVerifyFieldID,
-			Description: "Insecure skip verify (TLS)",
-			Required:    false,
-			Type:        dynamicfields.BooleanType,
+			ID: insecureSkipVerifyFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsIspconfigInsecureSkipVerify,
+			),
+			Required: false,
+			Type:     dynamicfields.BooleanType,
 		},
 	})
 }

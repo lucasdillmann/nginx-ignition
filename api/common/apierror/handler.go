@@ -9,13 +9,14 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
 type problemDetail struct {
-	FieldPath string `json:"fieldPath"`
-	Message   string `json:"message"`
+	Message   *i18n.Message `json:"message"`
+	FieldPath string        `json:"fieldPath"`
 }
 
 func Handler(ctx *gin.Context, outcome any) {
@@ -93,7 +94,7 @@ func handleConsistencyError(ctx *gin.Context, err *validation.ConsistencyError) 
 
 func sendError(ctx *gin.Context, details []problemDetail) {
 	ctx.JSON(http.StatusBadRequest, gin.H{
-		"message":             "One or more consistency problems were found",
+		"message":             i18n.M(ctx, i18n.K.ApiCommonApierrorConsistencyProblems),
 		"consistencyProblems": details,
 	})
 }

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
@@ -29,17 +30,17 @@ func (v *validator) validate(ctx context.Context, data *VPN) error {
 	}
 
 	if *inUse && !data.Enabled {
-		v.delegate.Add("enabled", "VPN is in use by one or more hosts. It cannot be disabled.")
+		v.delegate.Add("enabled", i18n.M(ctx, i18n.K.CoreVpnCannotDisableInUse))
 	}
 
 	if strings.TrimSpace(data.Name) == "" {
-		v.delegate.Add("name", validation.ValueMissingMessage)
+		v.delegate.Add("name", i18n.M(ctx, i18n.K.CommonValueMissing))
 	}
 
 	if strings.TrimSpace(data.Driver) == "" {
-		v.delegate.Add("driver", validation.ValueMissingMessage)
+		v.delegate.Add("driver", i18n.M(ctx, i18n.K.CommonValueMissing))
 	} else if v.driver == nil {
-		v.delegate.Add("driver", "Invalid value")
+		v.delegate.Add("driver", i18n.M(ctx, i18n.K.CommonInvalidValue))
 	}
 
 	params := data.Parameters
@@ -48,7 +49,11 @@ func (v *validator) validate(ctx context.Context, data *VPN) error {
 	}
 
 	if v.driver != nil {
-		if err := dynamicfields.Validate(v.driver.ConfigurationFields(), params); err != nil {
+		if err := dynamicfields.Validate(
+			ctx,
+			v.driver.ConfigurationFields(ctx),
+			params,
+		); err != nil {
 			for _, violation := range err.Violations {
 				v.delegate.Add(violation.Path, violation.Message)
 			}

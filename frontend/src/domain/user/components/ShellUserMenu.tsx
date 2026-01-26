@@ -16,6 +16,9 @@ import Password from "antd/es/input/Password"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
 import ValidationResultConverter from "../../../core/validation/ValidationResultConverter"
 import { buildLoginUrl } from "../../../core/authentication/buildLoginUrl"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import I18nLanguagePicker from "../../../core/i18n/I18nLanguagePicker"
+import { I18n } from "../../../core/i18n/I18n"
 
 const DEFAULT_FORM_VALUES: UserUpdatePasswordRequest = {
     currentPassword: "",
@@ -46,9 +49,9 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
     }
 
     private async handleLogout() {
-        return UserConfirmation.ask("Are you sure you want to logout?")
+        return UserConfirmation.ask(MessageKey.FrontendUserLogoutConfirmation)
             .then(() => this.service.logout())
-            .then(() => Notification.success("See ya", "You was logged-out successfully"))
+            .then(() => Notification.success(MessageKey.CommonSeeYa, MessageKey.FrontendUserLoggedOut))
             .then(() => {
                 AppContext.get().user = undefined
             })
@@ -61,7 +64,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
 
         return this.service
             .changePassword(formValues)
-            .then(() => Notification.success("Password changed", "Your password was updated successfully"))
+            .then(() => Notification.success(MessageKey.CommonPasswordChanged, MessageKey.CommonSuccessMessage))
             .then(() => this.closeChangePasswordModal())
             .catch(error => this.handleErrorResponse(error))
     }
@@ -72,7 +75,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
             if (validationResult != null) this.setState({ validationResult })
         }
 
-        Notification.error("That didn't work", "Please check the form to see if everything seems correct")
+        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
     }
 
     private openChangePasswordModal() {
@@ -93,7 +96,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
         return (
             <Preloader loading={loading}>
                 <Modal
-                    title="Change password"
+                    title={<I18n id={MessageKey.FrontendUserMenuChangePasswordTitle} />}
                     onCancel={() => this.closeChangePasswordModal()}
                     afterClose={() => this.closeChangePasswordModal()}
                     onOk={() => this.executePasswordChange()}
@@ -111,7 +114,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
                             name="currentPassword"
                             validateStatus={validationResult.getStatus("currentPassword")}
                             help={validationResult.getMessage("currentPassword")}
-                            label="Current password"
+                            label={<I18n id={MessageKey.FrontendUserMenuCurrentPassword} />}
                             required
                         >
                             <Password />
@@ -120,7 +123,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
                             name="newPassword"
                             validateStatus={validationResult.getStatus("newPassword")}
                             help={validationResult.getMessage("newPassword")}
-                            label="New password"
+                            label={<I18n id={MessageKey.FrontendUserMenuNewPassword} />}
                             required
                         >
                             <Password />
@@ -141,6 +144,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
                 <Flex className="shell-user-menu-user-name">{user?.name}</Flex>
                 <Flex className="shell-user-menu-actions">
                     <ThemeToggle />
+                    <I18nLanguagePicker />
                     <LockOutlined onClick={() => this.openChangePasswordModal()} />
                     <LogoutOutlined onClick={() => this.handleLogout()} />
                 </Flex>

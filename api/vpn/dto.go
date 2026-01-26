@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/api/common/dynamicfield"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 type vpnRequest struct {
@@ -23,7 +24,7 @@ type vpnResponse struct {
 
 type vpnDriverResponse struct {
 	ID                    string                  `json:"id"`
-	Name                  string                  `json:"name"`
-	ImportantInstructions []string                `json:"importantInstructions"`
+	Name                  *i18n.Message           `json:"name"`
+	ImportantInstructions []*i18n.Message         `json:"importantInstructions"`
 	ConfigurationFields   []dynamicfield.Response `json:"configurationFields"`
 }

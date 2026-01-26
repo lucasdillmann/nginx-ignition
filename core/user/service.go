@@ -7,12 +7,11 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/user/passwordhash"
 )
-
-var invalidCredentialsError = coreerror.New("Invalid username or password", true)
 
 type service struct {
 	repository    Repository
@@ -33,7 +32,10 @@ func (s *service) Authenticate(ctx context.Context, username, password string) (
 	}
 
 	if usr == nil {
-		return nil, invalidCredentialsError
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CoreUserInvalidCredentials),
+			true,
+		)
 	}
 
 	passwordMatches, err := passwordhash.New(s.configuration).
@@ -43,7 +45,10 @@ func (s *service) Authenticate(ctx context.Context, username, password string) (
 	}
 
 	if !passwordMatches {
-		return nil, invalidCredentialsError
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.CoreUserInvalidCredentials),
+			true,
+		)
 	}
 
 	return usr, nil
@@ -61,7 +66,7 @@ func (s *service) UpdatePassword(
 	}
 
 	if databaseState == nil {
-		return coreerror.New("No user found with provided ID", true)
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreUserNotFoundById), true)
 	}
 
 	passwordMatches, err := hash.Verify(
@@ -74,11 +79,17 @@ func (s *service) UpdatePassword(
 	}
 
 	if !passwordMatches {
-		return validation.SingleFieldError("currentPassword", "Not your current password")
+		return validation.SingleFieldError(
+			"currentPassword",
+			i18n.M(ctx, i18n.K.CoreUserCurrentPasswordMismatch),
+		)
 	}
 
 	if len(newPassword) < minimumPasswordLength {
-		return validation.SingleFieldError("newPassword", "Must have at least 8 characters")
+		return validation.SingleFieldError(
+			"newPassword",
+			i18n.M(ctx, i18n.K.CoreUserTooShort).V("min", minimumPasswordLength),
+		)
 	}
 
 	updatedHash, updatedSalt, err := hash.Hash(newPassword)
@@ -174,7 +185,7 @@ func (s *service) resetPassword(ctx context.Context, username string) (string, e
 	}
 
 	if user == nil {
-		return "", coreerror.New("User not found", true)
+		return "", coreerror.New(i18n.M(ctx, i18n.K.CoreUserNotFound), true)
 	}
 
 	newPassword := uuid.NewString()[:8]

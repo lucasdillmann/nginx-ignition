@@ -12,6 +12,8 @@ import { CertificateResponse } from "../../certificate/model/CertificateResponse
 import "./HostBindings.css"
 import FormLayout from "../../../core/components/form/FormLayout"
 import TagGroup from "../../../core/components/taggroup/TagGroup"
+import { I18n } from "../../../core/i18n/I18n"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const DEFAULT_VALUES: HostFormBinding = {
     type: HostBindingType.HTTP,
@@ -55,12 +57,18 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     name={[name, "type"]}
                     validateStatus={validationResult.getStatus(`${pathPrefix}[${index}].type`)}
                     help={validationResult.getMessage(`${pathPrefix}[${index}].type`)}
-                    label={index === 0 ? "Protocol" : undefined}
+                    label={
+                        index === 0 ? <I18n id={MessageKey.FrontendHostComponentsHostbindingsProtocol} /> : undefined
+                    }
                     required
                 >
                     <Select>
-                        <Select.Option value={HostBindingType.HTTP}>HTTP</Select.Option>
-                        <Select.Option value={HostBindingType.HTTPS}>HTTPS</Select.Option>
+                        <Select.Option value={HostBindingType.HTTP}>
+                            <I18n id={MessageKey.CommonHttp} />
+                        </Select.Option>
+                        <Select.Option value={HostBindingType.HTTPS}>
+                            <I18n id={MessageKey.CommonHttps} />
+                        </Select.Option>
                     </Select>
                 </Form.Item>
                 <Form.Item
@@ -70,7 +78,9 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     name={[name, "ip"]}
                     validateStatus={validationResult.getStatus(`${pathPrefix}[${index}].ip`)}
                     help={validationResult.getMessage(`${pathPrefix}[${index}].ip`)}
-                    label={index === 0 ? "IP address" : undefined}
+                    label={
+                        index === 0 ? <I18n id={MessageKey.FrontendHostComponentsHostbindingsIpAddress} /> : undefined
+                    }
                     required
                 >
                     <Input />
@@ -82,7 +92,7 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     name={[name, "port"]}
                     validateStatus={validationResult.getStatus(`${pathPrefix}[${index}].port`)}
                     help={validationResult.getMessage(`${pathPrefix}[${index}].port`)}
-                    label={index === 0 ? "Port" : undefined}
+                    label={index === 0 ? <I18n id={MessageKey.CommonPort} /> : undefined}
                     required
                 >
                     <InputNumber min={1} max={65535} />
@@ -95,7 +105,11 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     name={[name, "certificate"]}
                     validateStatus={validationResult.getStatus(`${pathPrefix}[${index}].certificateId`)}
                     help={validationResult.getMessage(`${pathPrefix}[${index}].certificateId`)}
-                    label={index === 0 ? "SSL certificate" : undefined}
+                    label={
+                        index === 0 ? (
+                            <I18n id={MessageKey.FrontendHostComponentsHostbindingsSslCertificate} />
+                        ) : undefined
+                    }
                     required
                 >
                     <PaginatedSelect<CertificateResponse>
@@ -127,7 +141,7 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
         const addAction = (
             <Form.Item>
                 <Button type="dashed" onClick={() => operations.add(DEFAULT_VALUES)} icon={<PlusOutlined />}>
-                    Add binding
+                    <I18n id={MessageKey.FrontendHostComponentsHostbindingsAddBinding} />
                 </Button>
             </Form.Item>
         )

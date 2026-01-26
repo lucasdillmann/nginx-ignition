@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"dillmann.com.br/nginx-ignition/core/certificate"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 )
@@ -36,14 +37,16 @@ func (v *validator) validate(
 	if net.ParseIP(binding.IP) == nil {
 		v.delegate.Add(
 			fmt.Sprintf("%s[%d].ip", pathPrefix, index),
-			"Not a valid IPv4 or IPv6 address",
+			i18n.M(ctx, i18n.K.CoreBindingInvalidIp),
 		)
 	}
 
 	if !portRange.Contains(binding.Port) {
 		v.delegate.Add(
 			fmt.Sprintf("%s[%d].port", pathPrefix, index),
-			fmt.Sprintf("Value must be between %d and %d", portRange.Min, portRange.Max),
+			i18n.M(ctx, i18n.K.CommonBetweenValues).
+				V("min", portRange.Min).
+				V("max", portRange.Max),
 		)
 	}
 
@@ -51,11 +54,17 @@ func (v *validator) validate(
 
 	switch {
 	case binding.Type == HTTPBindingType && binding.CertificateID != nil:
-		v.delegate.Add(certificateIDField, "Value cannot be informed for a HTTP binding")
+		v.delegate.Add(
+			certificateIDField,
+			i18n.M(ctx, i18n.K.CoreBindingCertificateIdNotAllowed),
+		)
 	case binding.Type == HTTPBindingType && binding.CertificateID == nil:
 		return nil
 	case binding.Type == HTTPSBindingType && binding.CertificateID == nil:
-		v.delegate.Add(certificateIDField, "Value must be informed for a HTTPS binding")
+		v.delegate.Add(
+			certificateIDField,
+			i18n.M(ctx, i18n.K.CoreBindingCertificateIdRequired),
+		)
 	case binding.Type == HTTPSBindingType:
 		exists, err := v.certificateCommands.Exists(ctx, *binding.CertificateID)
 		if err != nil {
@@ -63,12 +72,15 @@ func (v *validator) validate(
 		}
 
 		if !exists {
-			v.delegate.Add(certificateIDField, "No SSL certificate found with provided ID")
+			v.delegate.Add(
+				certificateIDField,
+				i18n.M(ctx, i18n.K.CoreBindingCertificateIdNotFound),
+			)
 		}
 	default:
 		v.delegate.Add(
 			fmt.Sprintf("%s[%d].certificateId", pathPrefix, index),
-			"Invalid binding type",
+			i18n.M(ctx, i18n.K.CoreBindingInvalidType),
 		)
 	}
 

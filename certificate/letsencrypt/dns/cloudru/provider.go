@@ -8,6 +8,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -21,25 +22,30 @@ type Provider struct{}
 
 func (p *Provider) ID() string { return "CLOUDRU" }
 
-func (p *Provider) Name() string { return "Cloud.ru" }
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCloudruName)
+}
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
-			ID:          serviceInstanceIDFieldID,
-			Description: "Cloud.ru service instance ID",
-			Required:    true,
-			Type:        dynamicfields.SingleLineTextType,
+			ID: serviceInstanceIDFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsCloudruServiceInstanceId,
+			),
+			Required: true,
+			Type:     dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          keyIDFieldID,
-			Description: "Cloud.ru key ID",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCloudruKeyId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          secretFieldID,
-			Description: "Cloud.ru secret",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsCloudruSecret),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,

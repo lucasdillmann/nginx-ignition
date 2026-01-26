@@ -9,6 +9,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 //nolint:gosec
@@ -23,22 +24,22 @@ func (p *Provider) ID() string {
 	return "YANDEX360"
 }
 
-func (p *Provider) Name() string {
-	return "Yandex 360"
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsYandex360Name)
 }
 
-func (p *Provider) DynamicFields() []dynamicfields.DynamicField {
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          oauthTokenFieldID,
-			Description: "Yandex 360 OAuth token",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsYandex360OauthToken),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
 			ID:          orgIDFieldID,
-			Description: "Yandex 360 organization ID",
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsYandex360OrgId),
 			Required:    true,
 			Type:        dynamicfields.SingleLineTextType,
 		},

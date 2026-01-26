@@ -11,6 +11,8 @@ import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import TagGroup from "../../core/components/taggroup/TagGroup"
+import MessageKey from "../../core/i18n/model/MessageKey.generated"
+import { I18n, raw } from "../../core/i18n/I18n"
 
 export default class CacheListPage extends React.PureComponent {
     private readonly service: CacheService
@@ -26,25 +28,36 @@ export default class CacheListPage extends React.PureComponent {
         return [
             {
                 id: "name",
-                description: "Name",
+                description: MessageKey.CommonName,
                 renderer: item => item.name,
             },
             {
                 id: "fileExtensions",
-                description: "File extensions",
+                description: MessageKey.CommonFileExtensions,
                 renderer: item =>
-                    item.fileExtensions ? <TagGroup values={item.fileExtensions} maximumSize={3} /> : "All extensions",
+                    item.fileExtensions ? (
+                        <TagGroup values={item.fileExtensions} maximumSize={3} />
+                    ) : (
+                        <I18n id={MessageKey.FrontendCacheListAllExtensions} />
+                    ),
                 width: 300,
             },
             {
                 id: "maximumSizeMb",
-                description: "Maximum size",
-                renderer: item => (item.maximumSizeMb ? `${item.maximumSizeMb} MB` : "Unlimited"),
+                description: MessageKey.CommonMaximumSize,
+                renderer: item =>
+                    item.maximumSizeMb ? (
+                        <>
+                            {item.maximumSizeMb} <I18n id={MessageKey.CommonUnitMb} />
+                        </>
+                    ) : (
+                        <I18n id={MessageKey.FrontendCacheListUnlimited} />
+                    ),
                 width: 150,
             },
             {
                 id: "actions",
-                description: "",
+                description: raw(""),
                 renderer: item => (
                     <>
                         <Link to={`/caches/${item.id}`}>
@@ -56,7 +69,7 @@ export default class CacheListPage extends React.PureComponent {
                         </Link>
                     </>
                 ),
-                width: 100,
+                width: 120,
             },
         ]
     }
@@ -75,11 +88,11 @@ export default class CacheListPage extends React.PureComponent {
 
     componentDidMount() {
         AppShellContext.get().updateConfig({
-            title: "Cache configurations",
-            subtitle: "Relation of the cache configurations for the nginx content cache",
+            title: MessageKey.CommonCacheConfigurations,
+            subtitle: MessageKey.FrontendCacheListSubtitle,
             actions: [
                 {
-                    description: "New cache configuration",
+                    description: MessageKey.FrontendCacheNewButton,
                     onClick: "/caches/new",
                     disabled: !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.caches),
                 },

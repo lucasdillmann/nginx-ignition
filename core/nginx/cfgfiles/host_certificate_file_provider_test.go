@@ -1,7 +1,6 @@
 package cfgfiles
 
 import (
-	"context"
 	"encoding/base64"
 	"fmt"
 	"testing"
@@ -26,7 +25,7 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 		certID := uuid.New()
 
 		ctx := &providerContext{
-			context: context.Background(),
+			context: t.Context(),
 			paths:   paths,
 			hosts: []host.Host{
 				{
@@ -144,7 +143,7 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 			}
 
 			subCtx := &providerContext{
-				context: context.Background(),
+				context: t.Context(),
 				paths:   paths,
 				hosts: []host.Host{
 					{
