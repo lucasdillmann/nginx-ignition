@@ -31,6 +31,29 @@
 
 <br />
 
+## 🌐 Multi-language support
+
+nginx ignition supports multiple languages, including:
+
+- 🇧🇷 **Brazilian Portuguese**
+- 🇺🇸 **English**
+- 🇨🇳 **Chinese (Simplified)**
+- 🇮🇳 **Hindi**
+- 🇪🇸 **Spanish**
+- 🇻🇳 **Vietnamese**
+- 🇷🇺 **Russian**
+- 🇧🇩 **Bengali**
+- 🇯🇵 **Japanese**
+- 🇮🇳 **Punjabi**
+
+> [!NOTE]
+> This is currently a **beta feature**. If you find any translation issues or have suggestions for improvements, please 
+> feel free to [raise an issue](https://github.com/lucasdillmann/nginx-ignition/issues).
+> 
+> If you'd like to see a new language added, please [start a discussion](https://github.com/lucasdillmann/nginx-ignition/discussions).
+
+<br />
+
 ## 🎯 Goals
 
 nginx ignition is **built for developers and enthusiasts** who want a balance between ease of use and the power of nginx.
