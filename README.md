@@ -35,16 +35,16 @@
 
 nginx ignition supports multiple languages, including:
 
-- 🇧🇷 **Brazilian Portuguese**
-- 🇺🇸 **English**
-- 🇨🇳 **Chinese (Simplified)**
-- 🇮🇳 **Hindi**
-- 🇪🇸 **Spanish**
-- 🇻🇳 **Vietnamese**
-- 🇷🇺 **Russian**
-- 🇧🇩 **Bengali**
-- 🇯🇵 **Japanese**
-- 🇮🇳 **Punjabi**
+- 🇧🇷 Brazilian Portuguese
+- 🇺🇸 English
+- 🇨🇳 Chinese (Simplified)
+- 🇮🇳 Hindi
+- 🇪🇸 Spanish
+- 🇻🇳 Vietnamese
+- 🇷🇺 Russian
+- 🇧🇩 Bengali
+- 🇯🇵 Japanese
+- 🇮🇳 Punjabi
 
 <br />
 
