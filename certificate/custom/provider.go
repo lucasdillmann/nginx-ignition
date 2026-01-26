@@ -166,7 +166,7 @@ func parseCertificateChain(
 
 	certs := make([]x509.Certificate, 0)
 	for _, cert := range strings.Split(string(decodedChain), "-----END CERTIFICATE-----") {
-		if cert == "" {
+		if !strings.Contains(cert, "BEGIN CERTIFICATE") {
 			continue
 		}
 
