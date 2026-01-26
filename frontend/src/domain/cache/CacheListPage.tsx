@@ -69,7 +69,7 @@ export default class CacheListPage extends React.PureComponent {
                         </Link>
                     </>
                 ),
-                width: 100,
+                width: 120,
             },
         ]
     }

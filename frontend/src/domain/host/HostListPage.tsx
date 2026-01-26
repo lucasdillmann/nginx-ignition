@@ -68,13 +68,13 @@ export default class HostListPage extends React.PureComponent {
                 id: "defaultServer",
                 description: MessageKey.FrontendHostDefault,
                 renderer: item => DataTableRenderers.yesNo(item.defaultServer),
-                width: 100,
+                width: 120,
             },
             {
                 id: "enabled",
                 description: MessageKey.CommonEnabled,
                 renderer: item => DataTableRenderers.yesNo(item.enabled),
-                width: 100,
+                width: 120,
             },
             {
                 id: "actions",

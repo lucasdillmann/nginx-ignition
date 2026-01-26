@@ -66,7 +66,7 @@ export default class VpnListPage extends React.Component<any, VpnListPageState> 
                 id: "enabled",
                 description: MessageKey.CommonEnabled,
                 renderer: item => DataTableRenderers.yesNo(item.enabled),
-                width: 100,
+                width: 120,
             },
             {
                 id: "actions",
@@ -82,7 +82,7 @@ export default class VpnListPage extends React.Component<any, VpnListPageState> 
                         </Link>
                     </>
                 ),
-                width: 100,
+                width: 120,
             },
         ]
     }

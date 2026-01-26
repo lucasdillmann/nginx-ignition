@@ -64,7 +64,7 @@ export default class UserListPage extends React.PureComponent {
                 id: "enabled",
                 description: MessageKey.CommonEnabled,
                 renderer: item => DataTableRenderers.yesNo(item.enabled),
-                width: 100,
+                width: 120,
             },
             {
                 id: "actions",
