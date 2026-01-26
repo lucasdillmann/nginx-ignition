@@ -46,7 +46,6 @@ nginx ignition supports multiple languages, including:
 - 🇯🇵 **Japanese**
 - 🇮🇳 **Punjabi**
 
-> [!NOTE]
 > This is currently a **beta feature**. If you find any translation issues or have suggestions for improvements, please 
 > feel free to [raise an issue](https://github.com/lucasdillmann/nginx-ignition/issues).
 > 
