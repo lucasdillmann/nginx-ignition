@@ -24,7 +24,7 @@ func ReadPropertiesFiles(baseFolder string) ([]PropertiesFile, error) {
 	for _, fileInfo := range folderContents {
 		if fileInfo.IsDir() ||
 			!strings.HasSuffix(fileInfo.Name(), ".properties") ||
-			!strings.HasPrefix(fileInfo.Name(), "messages-") {
+			!strings.HasPrefix(fileInfo.Name(), "messages_") {
 			continue
 		}
 
@@ -51,7 +51,7 @@ func ReadPropertiesFiles(baseFolder string) ([]PropertiesFile, error) {
 func readPropertiesFile(file *os.File) (PropertiesFile, error) {
 	baseName := filepath.Base(file.Name())
 	languageTag := strings.TrimSuffix(baseName, ".properties")
-	languageTag = strings.TrimPrefix(languageTag, "messages-")
+	languageTag = strings.TrimPrefix(languageTag, "messages_")
 
 	scanner := bufio.NewScanner(file)
 	properties := PropertiesFile{

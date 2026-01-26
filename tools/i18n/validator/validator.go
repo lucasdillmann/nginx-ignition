@@ -14,6 +14,16 @@ import (
 var (
 	duplicatedValuesBypassPrefixes = []string{
 		"certificate/",
+		"frontend/nginx/control/feature-streams",
+		"frontend/stream/form/backend-title",
+		"frontend/stream/utils/simple",
+		"frontend/certificate/renew-button",
+		"frontend/components/domainnames/placeholder",
+		"frontend/components/error/fallback-title",
+		"frontend/settings/tabs/ignition/auto-renew-enabled",
+		"frontend/stream/components/routesform/title",
+		"frontend/settings/tabs/nginx/logs/server",
+		"frontend/logs/server-logs",
 	}
 	placeholderRegex = regexp.MustCompile(`\$\{[a-zA-Z0-9_\-]+\}`)
 )

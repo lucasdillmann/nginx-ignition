@@ -43,7 +43,7 @@ func Write(propertiesFiles []reader.PropertiesFile) error {
 		if err := writeFile(
 			propertiesFile,
 			sortedproperties.New(),
-			fmt.Sprintf("i18n/messages-%s.properties", strings.ToLower(propertiesFile.LanguageTag)),
+			fmt.Sprintf("i18n/messages_%s.properties", strings.ToLower(propertiesFile.LanguageTag)),
 		); err != nil {
 			return err
 		}

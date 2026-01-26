@@ -3,7 +3,7 @@ import I18nService from "./I18nService"
 import I18nContext from "./I18nContext"
 import { I18n } from "./I18n"
 import MessageKey from "./model/MessageKey.generated"
-import { Form, Modal, Select } from "antd"
+import { Alert, Form, Modal, Select } from "antd"
 import { TranslationOutlined } from "@ant-design/icons"
 import FormLayout from "../components/form/FormLayout"
 
@@ -73,6 +73,16 @@ export default class I18nLanguagePicker extends React.Component<I18nLanguagePick
                     onCancel={() => this.changeVisibility(false)}
                     footer={null}
                 >
+                    <br />
+                    <Alert
+                        description={<I18n id={MessageKey.FrontendI18nBetaNotice} />}
+                        type="info"
+                        style={{
+                            fontSize: 14,
+                            padding: 14,
+                        }}
+                        showIcon
+                    />
                     <br />
                     <Form {...FormLayout.FormDefaults} layout="horizontal">
                         <Form.Item
