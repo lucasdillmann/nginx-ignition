@@ -34,10 +34,11 @@ func Test_validator(t *testing.T) {
 
 		t.Run("validates simple host fields", func(t *testing.T) {
 			t.Run("invalid domain names", func(t *testing.T) {
-				hostValidator, _, _, _, _, _, bindingCmds := setupValidator(t)
+				hostValidator, repo, _, _, _, _, bindingCmds := setupValidator(t)
 				h := newHost()
 				h.DomainNames = []string{"invalid_domain"}
 
+				repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
 				bindingCmds.EXPECT().
 					Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 					Return(nil)
@@ -101,10 +102,11 @@ func Test_validator(t *testing.T) {
 
 		t.Run("validates routes", func(t *testing.T) {
 			t.Run("requires at least one route", func(t *testing.T) {
-				hostValidator, _, _, _, _, _, bindingCmds := setupValidator(t)
+				hostValidator, repo, _, _, _, _, bindingCmds := setupValidator(t)
 				h := newHost()
 				h.Routes = nil
 
+				repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
 				bindingCmds.EXPECT().
 					Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 					Return(nil)
@@ -232,32 +234,96 @@ func Test_validator(t *testing.T) {
 				})
 
 				t.Run("Integration", func(t *testing.T) {
-					hostValidator, repo, integrationCmds, _, _, _, bindingCmds := setupValidator(t)
-					h := newHost()
-					h.Routes[0].Type = IntegrationRouteType
-					h.Routes[0].Integration = nil
+					t.Run("missing integration data", func(t *testing.T) {
+						hostValidator, repo, _, _, _, _, bindingCmds := setupValidator(t)
+						h := newHost()
+						h.Routes[0].Type = IntegrationRouteType
+						h.Routes[0].Integration = nil
 
-					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-					bindingCmds.EXPECT().
-						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
-						Return(nil).
-						AnyTimes()
+						repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+						bindingCmds.EXPECT().
+							Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+							Return(nil).
+							AnyTimes()
 
-					err := hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.CoreHostIntegrationRequired)
+						err := hostValidator.validate(t.Context(), h)
+						assertViolations(t, err, i18n.K.CoreHostIntegrationRequired)
+					})
 
-					integrationID := uuid.New()
-					h.Routes[0].Integration = &RouteIntegrationConfig{
-						IntegrationID: integrationID,
-						OptionID:      "",
-					}
-					integrationCmds.EXPECT().
-						Exists(t.Context(), integrationID).
-						Return(ptr.Of(false), nil)
+					t.Run("missing integration option", func(t *testing.T) {
+						hostValidator, repo, integrationCmds, _, _, _, bindingCmds := setupValidator(
+							t,
+						)
+						h := newHost()
+						h.Routes[0].Type = IntegrationRouteType
+						integrationID := uuid.New()
+						h.Routes[0].Integration = &RouteIntegrationConfig{
+							IntegrationID: integrationID,
+							OptionID:      "",
+						}
 
-					hostValidator = newValidator(repo, integrationCmds, nil, nil, nil, bindingCmds)
-					err = hostValidator.validate(t.Context(), h)
-					assertViolations(t, err, i18n.K.CoreHostIntegrationRequired)
+						repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+						bindingCmds.EXPECT().
+							Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+							Return(nil).
+							AnyTimes()
+						integrationCmds.EXPECT().
+							Exists(t.Context(), integrationID).
+							Return(ptr.Of(false), nil)
+
+						err := hostValidator.validate(t.Context(), h)
+						assertViolations(t, err, i18n.K.CoreHostIntegrationRequired)
+					})
+
+					t.Run("invalid TargetURI", func(t *testing.T) {
+						hostValidator, repo, integrationCmds, _, _, _, bindingCmds := setupValidator(
+							t,
+						)
+						h := newHost()
+						h.Routes[0].Type = IntegrationRouteType
+						h.Routes[0].Integration = &RouteIntegrationConfig{
+							IntegrationID: uuid.New(),
+							OptionID:      "opt-1",
+						}
+						h.Routes[0].TargetURI = ptr.Of("invalid uri")
+
+						repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+						bindingCmds.EXPECT().
+							Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+							Return(nil).
+							AnyTimes()
+						integrationCmds.EXPECT().
+							Exists(t.Context(), h.Routes[0].Integration.IntegrationID).
+							Return(ptr.Of(true), nil)
+
+						err := hostValidator.validate(t.Context(), h)
+						assertViolations(t, err, i18n.K.CoreHostInvalidUri)
+					})
+
+					t.Run("valid TargetURI", func(t *testing.T) {
+						hostValidator, repo, integrationCmds, _, _, _, bindingCmds := setupValidator(
+							t,
+						)
+						h := newHost()
+						h.Routes[0].Type = IntegrationRouteType
+						h.Routes[0].Integration = &RouteIntegrationConfig{
+							IntegrationID: uuid.New(),
+							OptionID:      "opt-1",
+						}
+						h.Routes[0].TargetURI = ptr.Of("/api/v1")
+
+						repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+						bindingCmds.EXPECT().
+							Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+							Return(nil).
+							AnyTimes()
+						integrationCmds.EXPECT().
+							Exists(t.Context(), h.Routes[0].Integration.IntegrationID).
+							Return(ptr.Of(true), nil)
+
+						err := hostValidator.validate(t.Context(), h)
+						assert.NoError(t, err)
+					})
 				})
 
 				t.Run("ExecuteCode", func(t *testing.T) {
@@ -276,7 +342,11 @@ func Test_validator(t *testing.T) {
 					assertViolations(t, err, i18n.K.CoreHostSourceCodeRequired)
 
 					h.Routes[0].SourceCode = &RouteSourceCode{Language: "INVALID", Contents: ""}
-					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
+					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+					bindingCmds.EXPECT().
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Return(nil).
+						AnyTimes()
 					err = hostValidator.validate(t.Context(), h)
 					assertViolations(
 						t,
@@ -302,7 +372,11 @@ func Test_validator(t *testing.T) {
 					assertViolations(t, err, i18n.K.CoreHostTargetUriRequired)
 
 					h.Routes[0].TargetURI = ptr.Of("invalid/path")
-					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
+					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+					bindingCmds.EXPECT().
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Return(nil).
+						AnyTimes()
 					err = hostValidator.validate(t.Context(), h)
 					assertViolations(t, err, i18n.K.CommonStartsWithSlashRequired)
 				})

@@ -67,7 +67,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         this.state = {}
     }
 
-    private renderProxyRoute(field: FormListFieldData, index: number): React.ReactNode {
+    private renderTargetUriField(field: FormListFieldData, index: number, label: MessageKey): React.ReactNode {
         const { validationResult } = this.props
         const { name } = field
 
@@ -79,7 +79,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 name={[name, "targetUri"]}
                 validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
                 help={validationResult.getMessage(`routes[${index}].targetUri`)}
-                label={<I18n id={MessageKey.FrontendHostComponentsHostroutesDestinationUrl} />}
+                label={<I18n id={label} />}
                 required
             >
                 <Input />
@@ -87,24 +87,12 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         )
     }
 
-    private renderStaticFilesRoute(field: FormListFieldData, index: number): React.ReactNode {
-        const { validationResult } = this.props
-        const { name } = field
+    private renderProxyRoute(field: FormListFieldData, index: number): React.ReactNode {
+        return this.renderTargetUriField(field, index, MessageKey.FrontendHostComponentsHostroutesDestinationUrl)
+    }
 
-        return (
-            <Form.Item
-                {...FormLayout.ExpandedLabeledItem}
-                className="host-form-route-target-uri"
-                layout="vertical"
-                name={[name, "targetUri"]}
-                validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
-                help={validationResult.getMessage(`routes[${index}].targetUri`)}
-                label={<I18n id={MessageKey.FrontendHostComponentsHostroutesTargetDirectoryPath} />}
-                required
-            >
-                <Input />
-            </Form.Item>
-        )
+    private renderStaticFilesRoute(field: FormListFieldData, index: number): React.ReactNode {
+        return this.renderTargetUriField(field, index, MessageKey.FrontendHostComponentsHostroutesTargetDirectoryPath)
     }
 
     private renderRedirectRoute(field: FormListFieldData, index: number): React.ReactNode {
@@ -125,18 +113,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 >
                     <InputNumber min={300} max={399} />
                 </Form.Item>
-                <Form.Item
-                    {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-target-uri"
-                    layout="vertical"
-                    name={[name, "targetUri"]}
-                    validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
-                    help={validationResult.getMessage(`routes[${index}].targetUri`)}
-                    label={<I18n id={MessageKey.FrontendHostComponentsHostroutesDestinationUrl} />}
-                    required
-                >
-                    <Input />
-                </Form.Item>
+                {this.renderTargetUriField(field, index, MessageKey.FrontendHostComponentsHostroutesDestinationUrl)}
             </>
         )
     }
@@ -209,6 +186,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         }
                     />
                 </Form.Item>
+                {this.renderTargetUriField(field, index, MessageKey.FrontendHostComponentsHostroutesDestinationUrl)}
             </>
         )
     }

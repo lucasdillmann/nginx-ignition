@@ -329,6 +329,13 @@ func (v *validator) validateIntegrationRoute(ctx context.Context, route *Route, 
 		v.delegate.Add(buildIndexedRoutePath(index, "integration.optionId"), requiredMessage)
 	}
 
+	if route.TargetURI != nil && strings.TrimSpace(*route.TargetURI) != "" {
+		if _, err := url.ParseRequestURI(*route.TargetURI); err != nil {
+			fieldPath := buildIndexedRoutePath(index, "targetUri")
+			v.delegate.Add(fieldPath, i18n.M(ctx, i18n.K.CoreHostInvalidUri))
+		}
+	}
+
 	return nil
 }
 
