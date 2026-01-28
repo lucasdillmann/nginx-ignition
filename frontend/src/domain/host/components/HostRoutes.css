@@ -14,22 +14,9 @@
     margin-right: 0;
 }
 
-.host-form-route-type,
-.host-form-route-source-code-language {
-    min-width: 150px;
-}
-
-.host-form-route-source-path {
-    min-width: 300px;
-}
-
 .host-form-route-target-uri,
 .host-form-route-response-payload,
 .host-form-route-integration-option,
 .host-form-route-source-code-code {
     flex-grow: 1;
-}
-
-.host-form-route-integration-app {
-    min-width: 200px;
 }
