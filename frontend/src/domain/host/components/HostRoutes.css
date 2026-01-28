@@ -19,4 +19,5 @@
 .host-form-route-integration-option,
 .host-form-route-source-code-code {
     flex-grow: 1;
+    flex-shrink: 1;
 }
