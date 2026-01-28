@@ -157,6 +157,31 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			assert.Contains(t, result, "proxy_pass http://1.2.3.4:80;")
 		})
 
+		t.Run("generates integration route config with target URI", func(t *testing.T) {
+			integrationID := uuid.New()
+			r := &host.Route{
+				SourcePath: "/api",
+				TargetURI:  ptr.Of("/v1/resource"),
+				Integration: &host.RouteIntegrationConfig{
+					IntegrationID: integrationID,
+					OptionID:      "opt-1",
+				},
+			}
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			integrationCmds := integration.NewMockedCommands(ctrl)
+			integrationCmds.EXPECT().
+				GetOptionURL(gomock.Any(), integrationID, "opt-1").
+				Return(ptr.Of("http://1.2.3.4:80"), nil, nil)
+			provider.integrationCommands = integrationCmds
+
+			result, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
+			assert.NoError(t, err)
+			assert.Contains(t, result, "proxy_pass http://1.2.3.4:80/v1/resource;")
+		})
+
 		t.Run("returns error when integration option not found", func(t *testing.T) {
 			r := &host.Route{
 				Integration: &host.RouteIntegrationConfig{},

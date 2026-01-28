@@ -14,9 +14,11 @@ const LabeledItem: FormItemProps = {
 const ExpandedLabeledItem: FormItemProps = {
     labelCol: {
         flex: "auto",
+        style: { minWidth: 150 },
     },
     wrapperCol: {
         flex: "auto",
+        style: { minWidth: 150 },
     },
 }
 

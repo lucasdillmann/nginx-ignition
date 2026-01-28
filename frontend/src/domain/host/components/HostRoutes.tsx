@@ -67,19 +67,19 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         this.state = {}
     }
 
-    private renderProxyRoute(field: FormListFieldData, index: number): React.ReactNode {
+    private renderTargetUriField(field: FormListFieldData, index: number, label: MessageKey): React.ReactNode {
         const { validationResult } = this.props
         const { name } = field
 
         return (
             <Form.Item
                 {...FormLayout.ExpandedLabeledItem}
-                className="host-form-route-target-uri"
+                className="host-form-route-field host-form-route-target-uri"
                 layout="vertical"
                 name={[name, "targetUri"]}
                 validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
                 help={validationResult.getMessage(`routes[${index}].targetUri`)}
-                label={<I18n id={MessageKey.FrontendHostComponentsHostroutesDestinationUrl} />}
+                label={<I18n id={label} />}
                 required
             >
                 <Input />
@@ -87,24 +87,12 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         )
     }
 
-    private renderStaticFilesRoute(field: FormListFieldData, index: number): React.ReactNode {
-        const { validationResult } = this.props
-        const { name } = field
+    private renderProxyRoute(field: FormListFieldData, index: number): React.ReactNode {
+        return this.renderTargetUriField(field, index, MessageKey.FrontendHostComponentsHostroutesDestinationUrl)
+    }
 
-        return (
-            <Form.Item
-                {...FormLayout.ExpandedLabeledItem}
-                className="host-form-route-target-uri"
-                layout="vertical"
-                name={[name, "targetUri"]}
-                validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
-                help={validationResult.getMessage(`routes[${index}].targetUri`)}
-                label={<I18n id={MessageKey.FrontendHostComponentsHostroutesTargetDirectoryPath} />}
-                required
-            >
-                <Input />
-            </Form.Item>
-        )
+    private renderStaticFilesRoute(field: FormListFieldData, index: number): React.ReactNode {
+        return this.renderTargetUriField(field, index, MessageKey.FrontendHostComponentsHostroutesTargetDirectoryPath)
     }
 
     private renderRedirectRoute(field: FormListFieldData, index: number): React.ReactNode {
@@ -115,7 +103,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
             <>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-status-code"
+                    className="host-form-route-field host-form-route-status-code"
                     layout="vertical"
                     name={[name, "redirectCode"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].redirectCode`)}
@@ -125,18 +113,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 >
                     <InputNumber min={300} max={399} />
                 </Form.Item>
-                <Form.Item
-                    {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-target-uri"
-                    layout="vertical"
-                    name={[name, "targetUri"]}
-                    validateStatus={validationResult.getStatus(`routes[${index}].targetUri`)}
-                    help={validationResult.getMessage(`routes[${index}].targetUri`)}
-                    label={<I18n id={MessageKey.FrontendHostComponentsHostroutesDestinationUrl} />}
-                    required
-                >
-                    <Input />
-                </Form.Item>
+                {this.renderTargetUriField(field, index, MessageKey.FrontendHostComponentsHostroutesDestinationUrl)}
             </>
         )
     }
@@ -172,7 +149,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
             <>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-integration-app"
+                    className="host-form-route-field host-form-route-integration-app"
                     layout="vertical"
                     name={[name, "integration", "integration"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].integration.integrationId`)}
@@ -191,7 +168,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-integration-option"
+                    className="host-form-route-field host-form-route-integration-option"
                     layout="vertical"
                     name={[name, "integration", "option"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].integration.optionId`)}
@@ -209,6 +186,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         }
                     />
                 </Form.Item>
+                {this.renderTargetUriField(field, index, MessageKey.FrontendHostComponentsHostroutesDestinationUrl)}
             </>
         )
     }
@@ -246,7 +224,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
             <>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-status-code"
+                    className="host-form-route-field host-form-route-status-code"
                     layout="vertical"
                     name={[name, "response", "statusCode"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].response.statusCode`)}
@@ -258,7 +236,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-response-headers"
+                    className="host-form-route-field host-form-route-response-headers"
                     layout="vertical"
                     name={[name, "response", "headers"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].response.headers`)}
@@ -273,7 +251,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-response-payload"
+                    className="host-form-route-field host-form-route-response-payload"
                     layout="vertical"
                     name={[name, "response", "payload"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].response.payload`)}
@@ -333,7 +311,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
             <>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-source-code-language"
+                    className="host-form-route-field host-form-route-source-code-language"
                     layout="vertical"
                     name={[name, "sourceCode", "language"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].sourceCode.language`)}
@@ -352,7 +330,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-source-code-code"
+                    className="host-form-route-field host-form-route-source-code-code"
                     layout="vertical"
                     name={[name, "sourceCode", "code"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].sourceCode.code`)}
@@ -365,7 +343,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 <If condition={sourceCode?.language === HostRouteSourceCodeLanguage.JAVASCRIPT}>
                     <Form.Item
                         {...FormLayout.ExpandedLabeledItem}
-                        className="host-form-route-source-code-main-function"
+                        className="host-form-route-field host-form-route-source-code-main-function"
                         layout="vertical"
                         name={[name, "sourceCode", "mainFunction"]}
                         validateStatus={validationResult.getStatus(`routes[${index}].sourceCode.mainFunction`)}
@@ -473,7 +451,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
             <Flex className="host-form-route-container">
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-type"
+                    className="host-form-route-field host-form-route-type"
                     layout="vertical"
                     name={[name, "type"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].type`)}
@@ -508,7 +486,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                 </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-route-source-path"
+                    className="host-form-route-field host-form-route-source-path"
                     layout="vertical"
                     name={[name, "sourcePath"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].sourcePath`)}
