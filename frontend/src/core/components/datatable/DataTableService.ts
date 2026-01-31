@@ -1,16 +1,13 @@
 import LocalStorageRepository from "../../repository/LocalStorageRepository"
 import SessionStorageRepository from "../../repository/SessionStorageRepository"
 import { DataTableInitialState } from "./model/DataTableInitialState"
-
-enum Mode {
-    GLOBAL = "GLOBAL",
-    BY_TABLE = "BY_TABLE",
-    DISABLED = "DISABLED",
-}
+import { DataTablePersistentStateMode } from "./model/DataTablePersistentStateMode"
+import DataTablePersistentStateConfig from "./model/DataTablePersistentStateConfig"
+import { DataTablePageSize } from "./model/DataTablePageSize"
 
 const DEFAULT_PAGE_SIZE = 10
 
-const DEFAULT_SHORT_TERM_DATA: ShortTermData = {
+const DEFAULT_SHORT_TERM_DATA = {
     pageNumber: {
         enabled: true,
         tables: {},
@@ -19,15 +16,15 @@ const DEFAULT_SHORT_TERM_DATA: ShortTermData = {
         enabled: true,
         tables: {},
     },
-}
+} satisfies ShortTermData
 
-const DEFAULT_LONG_TERM_DATA: LongTermData = {
-    mode: Mode.GLOBAL,
+const DEFAULT_LONG_TERM_DATA = {
+    mode: DataTablePersistentStateMode.GLOBAL,
     global: {
         pageSize: DEFAULT_PAGE_SIZE,
     },
     pageSize: {},
-}
+} satisfies LongTermData
 
 interface ShortTermData {
     pageNumber: {
@@ -45,12 +42,12 @@ interface ShortTermData {
 }
 
 interface LongTermData {
-    mode: Mode
+    mode: DataTablePersistentStateMode
     global: {
-        pageSize: number
+        pageSize: DataTablePageSize
     }
     pageSize: {
-        [tableId: string]: number
+        [tableId: string]: DataTablePageSize
     }
 }
 
@@ -63,7 +60,43 @@ export default class DataTableService {
         this.shortTermRepository = new SessionStorageRepository("nginxIgnition.datatable.shortTerm")
     }
 
-    public paginationChanged(tableId: string, pageSize: number, pageNumber: number) {
+    public currentConfig(): DataTablePersistentStateConfig {
+        const { mode, global } = this.longTermRepository.getOrDefault(DEFAULT_LONG_TERM_DATA)
+        const { pageNumber, searchTerms } = this.shortTermRepository.getOrDefault(DEFAULT_SHORT_TERM_DATA)
+
+        return {
+            mode,
+            pageSize: global.pageSize,
+            persistPageNumber: pageNumber.enabled,
+            persistSearchTerms: searchTerms.enabled,
+        }
+    }
+
+    public updateConfig(config: DataTablePersistentStateConfig) {
+        const longTerm = this.longTermRepository.getOrDefault(DEFAULT_LONG_TERM_DATA)
+        const shortTerm = this.shortTermRepository.getOrDefault(DEFAULT_SHORT_TERM_DATA)
+
+        this.longTermRepository.set({
+            mode: config.mode,
+            global: {
+                pageSize: config.pageSize,
+            },
+            pageSize: longTerm.pageSize,
+        })
+
+        this.shortTermRepository.set({
+            pageNumber: {
+                enabled: config.persistPageNumber,
+                tables: shortTerm.pageNumber.tables,
+            },
+            searchTerms: {
+                enabled: config.persistSearchTerms,
+                tables: shortTerm.searchTerms.tables,
+            },
+        })
+    }
+
+    public paginationChanged(tableId: string, pageSize: DataTablePageSize, pageNumber: number) {
         const shortTerm = this.shortTermRepository.getOrDefault(DEFAULT_SHORT_TERM_DATA)
         if (shortTerm.pageNumber.enabled) {
             this.shortTermRepository.set({
@@ -80,7 +113,7 @@ export default class DataTableService {
 
         const longTerm = this.longTermRepository.getOrDefault(DEFAULT_LONG_TERM_DATA)
         switch (longTerm.mode) {
-            case Mode.GLOBAL:
+            case DataTablePersistentStateMode.GLOBAL:
                 this.longTermRepository.set({
                     ...longTerm,
                     global: {
@@ -90,7 +123,7 @@ export default class DataTableService {
                 })
                 break
 
-            case Mode.BY_TABLE:
+            case DataTablePersistentStateMode.BY_TABLE:
                 this.longTermRepository.set({
                     ...longTerm,
                     pageSize: {
@@ -125,20 +158,11 @@ export default class DataTableService {
         let pageSize, pageNumber: number
         let searchTerms: string | undefined
 
-        switch (longTermData.mode) {
-            case Mode.DISABLED:
-                pageSize = DEFAULT_PAGE_SIZE
-                break
-            case Mode.GLOBAL:
-                pageSize = longTermData.global.pageSize
-                break
-            case Mode.BY_TABLE:
-                pageSize = longTermData.pageSize[tableId] ?? longTermData.global.pageSize
-                break
-        }
+        if (longTermData.mode !== DataTablePersistentStateMode.BY_TABLE) pageSize = longTermData.global.pageSize
+        else pageSize = longTermData.pageSize[tableId] ?? longTermData.global.pageSize
 
-        if (shortTermData.pageNumber.enabled) pageNumber = shortTermData.pageNumber.tables[tableId] ?? 0
-        else pageNumber = 0
+        if (!shortTermData.pageNumber.enabled) pageNumber = 0
+        else pageNumber = shortTermData.pageNumber.tables[tableId] ?? 0
 
         if (shortTermData.searchTerms.enabled) searchTerms = shortTermData.searchTerms.tables[tableId]
 

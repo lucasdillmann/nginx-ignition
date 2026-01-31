@@ -12,9 +12,8 @@ import { I18n, i18n, I18nMessage } from "../../i18n/I18n"
 import MessageKey from "../../i18n/model/MessageKey.generated"
 import DataTableService from "./DataTableService"
 import { DataTableInitialState } from "./model/DataTableInitialState"
+import { DATA_TABLE_PAGE_SIZES, DataTablePageSize, DEFAULT_PAGE_SIZE } from "./model/DataTablePageSize"
 
-const DEFAULT_PAGE_SIZE = 10
-const PAGE_SIZES = [10, 25, 50, 100, 250, 500]
 const DEFAULT_DATA: PageResponse<any> = {
     pageSize: DEFAULT_PAGE_SIZE,
     pageNumber: 0,
@@ -76,7 +75,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
         }))
     }
 
-    private changePage(pageSize: number, pageNumber: number) {
+    private changePage(pageSize: DataTablePageSize, pageNumber: number) {
         const { id } = this.props
 
         this.service.paginationChanged(id, pageSize, pageNumber)
@@ -103,8 +102,8 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
             defaultCurrent: data.pageNumber + 1,
             total: data.totalItems,
             pageSize: data.pageSize,
-            pageSizeOptions: PAGE_SIZES,
-            onChange: (pageNumber, pageSize) => this.changePage(pageSize, pageNumber - 1),
+            pageSizeOptions: DATA_TABLE_PAGE_SIZES,
+            onChange: (pageNumber, pageSize) => this.changePage(pageSize as DataTablePageSize, pageNumber - 1),
             showTotal: (total, [start, end]) => (
                 <I18n id={MessageKey.FrontendComponentsDatatablePaginationSummary} params={{ start, end, total }} />
             ),
