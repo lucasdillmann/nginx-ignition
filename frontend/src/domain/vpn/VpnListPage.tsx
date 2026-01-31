@@ -19,6 +19,7 @@ import DeleteVpnAction from "./actions/DeleteVpnAction"
 import DataTableRenderers from "../../core/components/datatable/DataTableRenderers"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { raw } from "../../core/i18n/I18n"
+import { themedColors } from "../../core/components/theme/ThemedResources"
 
 interface VpnListPageState {
     loading: boolean
@@ -78,7 +79,7 @@ export default class VpnListPage extends React.Component<any, VpnListPageState> 
                         </Link>
 
                         <Link to="" onClick={() => this.deleteVpn(item)}>
-                            <DeleteOutlined className="action-icon" />
+                            <DeleteOutlined style={{ color: themedColors().DANGER }} className="action-icon" />
                         </Link>
                     </>
                 ),

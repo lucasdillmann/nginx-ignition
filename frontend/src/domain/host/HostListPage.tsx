@@ -23,6 +23,7 @@ import HostSupportWarning from "./components/HostSupportWarning"
 import { HostBindingType } from "./model/HostRequest"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { i18n, raw } from "../../core/i18n/I18n"
+import { themedColors } from "../../core/components/theme/ThemedResources"
 
 const BUTTON_STYLE = {
     height: "auto",
@@ -94,13 +95,21 @@ export default class HostListPage extends React.PureComponent {
                             type="link"
                             onClick={() => this.toggleHostStatus(item)}
                             style={BUTTON_STYLE}
-                            icon={<PoweroffOutlined className="action-icon" />}
+                            color={item.enabled ? "danger" : "green"}
+                            icon={
+                                <PoweroffOutlined
+                                    style={{
+                                        color: item.enabled ? themedColors().SUCCESS : themedColors().DANGER,
+                                    }}
+                                    className="action-icon"
+                                />
+                            }
                         />
                         <Button
                             type="link"
                             onClick={() => this.deleteHost(item)}
                             style={BUTTON_STYLE}
-                            icon={<DeleteOutlined className="action-icon" />}
+                            icon={<DeleteOutlined className="action-icon" style={{ color: themedColors().DANGER }} />}
                         />
                     </>
                 ),

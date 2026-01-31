@@ -20,6 +20,7 @@ import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPa
 import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { raw } from "../../core/i18n/I18n"
+import { themedColors } from "../../core/components/theme/ThemedResources"
 
 interface CertificateListPageState {
     loading: boolean
@@ -76,7 +77,7 @@ export default class CertificateListPage extends React.Component<any, Certificat
                         </Link>
 
                         <Link to="" onClick={() => this.deleteCertificate(item)}>
-                            <DeleteOutlined className="action-icon" />
+                            <DeleteOutlined style={{ color: themedColors().DANGER }} className="action-icon" />
                         </Link>
                     </>
                 ),
