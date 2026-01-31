@@ -63,7 +63,7 @@ export default class DataTableService {
         this.shortTermRepository = new SessionStorageRepository("nginxIgnition.datatable.shortTerm")
     }
 
-    public paginationChanged(tableId: string, pageNumber: number, pageSize: number) {
+    public paginationChanged(tableId: string, pageSize: number, pageNumber: number) {
         const shortTerm = this.shortTermRepository.getOrDefault(DEFAULT_SHORT_TERM_DATA)
         if (shortTerm.pageNumber.enabled) {
             this.shortTermRepository.set({

@@ -1,6 +1,5 @@
 import React from "react"
 import { Modal } from "antd"
-import DataTableService from "./DataTableService"
 
 export interface DataTableOptionsProps {
     id: string
@@ -9,11 +8,8 @@ export interface DataTableOptionsProps {
 }
 
 export default class DataTableOptions extends React.Component<DataTableOptionsProps, any> {
-    private readonly service: DataTableService
-
     constructor(props: DataTableOptionsProps) {
         super(props)
-        this.service = new DataTableService()
     }
 
     private save() {
