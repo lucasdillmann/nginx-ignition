@@ -1,5 +1,5 @@
 import React from "react"
-import { Form, Modal, Select, Switch } from "antd"
+import { Form, FormInstance, Modal, Select, Switch } from "antd"
 import DataTablePersistentStateConfig from "./model/DataTablePersistentStateConfig"
 import DataTableService from "./DataTableService"
 import { DataTablePersistentStateMode } from "./model/DataTablePersistentStateMode"
@@ -26,6 +26,7 @@ interface DataTableOptionsState {
 
 export default class DataTableOptions extends React.Component<DataTableOptionsProps, DataTableOptionsState> {
     private readonly service: DataTableService
+    private readonly formRef = React.createRef<FormInstance>()
 
     constructor(props: DataTableOptionsProps) {
         super(props)
@@ -44,9 +45,23 @@ export default class DataTableOptions extends React.Component<DataTableOptionsPr
         onClose()
     }
 
+    private refreshForm() {
+        const { config } = this.state
+        this.formRef.current?.setFieldsValue(config)
+    }
+
     private cancel() {
         const { onClose } = this.props
-        onClose()
+
+        this.setState(
+            {
+                config: this.service.currentConfig(),
+            },
+            () => {
+                this.refreshForm()
+                onClose()
+            },
+        )
     }
 
     private handleChange(newConfig: Partial<DataTablePersistentStateConfig>) {
@@ -63,9 +78,12 @@ export default class DataTableOptions extends React.Component<DataTableOptionsPr
         const { open } = this.props
 
         if (prevProps.open !== open && open) {
-            this.setState({
-                config: this.service.currentConfig(),
-            })
+            this.setState(
+                {
+                    config: this.service.currentConfig(),
+                },
+                () => this.refreshForm(),
+            )
         }
     }
 
@@ -83,6 +101,7 @@ export default class DataTableOptions extends React.Component<DataTableOptionsPr
             >
                 <Form
                     {...FormStyle}
+                    ref={this.formRef}
                     initialValues={config}
                     onValuesChange={(_, values) => this.handleChange(values)}
                     style={{
