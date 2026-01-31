@@ -107,6 +107,7 @@ export default class CacheListPage extends React.PureComponent {
                 permissionResolver={permissions => permissions.caches}
             >
                 <DataTable
+                    id="cache-configurations"
                     ref={this.table}
                     columns={this.buildColumns()}
                     dataProvider={(pageSize, pageNumber, searchTerms) =>

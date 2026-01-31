@@ -153,6 +153,7 @@ export default class CertificateListPage extends React.Component<any, Certificat
 
         return (
             <DataTable
+                id="certificates"
                 ref={this.table}
                 columns={this.buildColumns()}
                 dataProvider={(pageSize, pageNumber, searchTerms) => this.fetchData(pageSize, pageNumber, searchTerms)}

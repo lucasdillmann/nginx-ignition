@@ -147,6 +147,7 @@ export default class StreamListPage extends React.PureComponent {
                 <StreamSupportWarning />
 
                 <DataTable
+                    id="streams"
                     ref={this.table}
                     columns={this.buildColumns()}
                     dataProvider={(pageSize, pageNumber, searchTerms) =>

@@ -116,6 +116,7 @@ export default class AccessListListPage extends React.PureComponent {
                 permissionResolver={permissions => permissions.accessLists}
             >
                 <DataTable
+                    id="access-lists"
                     ref={this.table}
                     columns={this.buildColumns()}
                     dataProvider={(pageSize, pageNumber, searchTerms) =>

@@ -147,6 +147,7 @@ export default class IntegrationListPage extends React.Component<any, Integratio
 
         return (
             <DataTable
+                id="integrations"
                 ref={this.table}
                 columns={this.buildColumns()}
                 dataProvider={(pageSize, pageNumber, searchTerms) => this.fetchData(pageSize, pageNumber, searchTerms)}

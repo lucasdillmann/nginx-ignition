@@ -143,6 +143,7 @@ export default class VpnListPage extends React.Component<any, VpnListPageState> 
 
         return (
             <DataTable
+                id="vpns"
                 ref={this.table}
                 columns={this.buildColumns()}
                 dataProvider={(pageSize, pageNumber, searchTerms) => this.fetchData(pageSize, pageNumber, searchTerms)}

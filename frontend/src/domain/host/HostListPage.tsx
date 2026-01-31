@@ -178,6 +178,7 @@ export default class HostListPage extends React.PureComponent {
                 <HostSupportWarning />
 
                 <DataTable
+                    id="hosts"
                     ref={this.table}
                     columns={this.buildColumns()}
                     dataProvider={(pageSize, pageNumber, searchTerms) =>

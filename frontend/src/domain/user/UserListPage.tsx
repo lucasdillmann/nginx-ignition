@@ -116,6 +116,7 @@ export default class UserListPage extends React.PureComponent {
                 permissionResolver={permissions => permissions.users}
             >
                 <DataTable
+                    id="users"
                     ref={this.table}
                     columns={this.buildColumns()}
                     dataProvider={(pageSize, pageNumber, searchTerms) =>
