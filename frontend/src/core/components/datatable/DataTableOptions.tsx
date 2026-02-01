@@ -111,7 +111,7 @@ export default class DataTableOptions extends React.Component<DataTableOptionsPr
                 >
                     <Form.Item
                         label={<I18n id={MessageKey.FrontendComponentsDatatableOptionsMode} />}
-                        name="mode"
+                        name="paginationMode"
                         required
                     >
                         <Select>
@@ -128,7 +128,7 @@ export default class DataTableOptions extends React.Component<DataTableOptionsPr
                     </Form.Item>
                     <Form.Item
                         label={<I18n id={MessageKey.FrontendComponentsDatatableOptionsPageSize} />}
-                        name="pageSize"
+                        name="defaultPageSize"
                         required
                     >
                         <Select>

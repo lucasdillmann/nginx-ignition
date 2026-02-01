@@ -2,8 +2,8 @@ import { DataTablePersistentStateMode } from "./DataTablePersistentStateMode"
 import { DataTablePageSize } from "./DataTablePageSize"
 
 export default interface DataTablePersistentStateConfig {
-    mode: DataTablePersistentStateMode
-    pageSize: DataTablePageSize
+    paginationMode: DataTablePersistentStateMode
+    defaultPageSize: DataTablePageSize
     rememberPageNumber: boolean
     rememberSearchTerms: boolean
 }
