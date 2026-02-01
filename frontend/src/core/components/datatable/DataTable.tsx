@@ -8,7 +8,7 @@ import "./DataTable.css"
 import DataTableHeader from "./DataTableHeader"
 import CommonNotifications from "../notification/CommonNotifications"
 import EmptyStates from "../emptystate/EmptyStates"
-import { I18n, i18n, I18nMessage } from "../../i18n/I18n"
+import { I18n, I18nMessage } from "../../i18n/I18n"
 import MessageKey from "../../i18n/model/MessageKey.generated"
 import DataTableService from "./DataTableService"
 import { DataTableInitialState } from "./model/DataTableInitialState"
@@ -67,7 +67,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
         const { columns } = this.props
         return columns.map(column => ({
             key: column.id,
-            title: i18n(column.description),
+            title: <I18n id={column.description} />,
             render: (_, row, index) => column.renderer(row, index),
             width: column.width,
             minWidth: column.minWidth,

@@ -5,39 +5,30 @@ import { DataTablePersistentStateMode } from "./model/DataTablePersistentStateMo
 import DataTablePersistentStateConfig from "./model/DataTablePersistentStateConfig"
 import { DataTablePageSize } from "./model/DataTablePageSize"
 
+const PERSISTENT_STORAGE_KEY = "nginxIgnition.datatable.preferences"
 const DEFAULT_PAGE_SIZE = 10
 
 const DEFAULT_SHORT_TERM_DATA = {
-    pageNumber: {
-        enabled: true,
-        tables: {},
-    },
-    searchTerms: {
-        enabled: true,
-        tables: {},
-    },
+    pageNumber: {},
+    searchTerms: {},
 } satisfies ShortTermData
 
 const DEFAULT_LONG_TERM_DATA = {
     mode: DataTablePersistentStateMode.GLOBAL,
     global: {
         pageSize: DEFAULT_PAGE_SIZE,
+        rememberPageNumber: true,
+        rememberSearchTerms: true,
     },
     pageSize: {},
 } satisfies LongTermData
 
 interface ShortTermData {
     pageNumber: {
-        enabled: boolean
-        tables: {
-            [tableId: string]: number
-        }
+        [tableId: string]: number
     }
     searchTerms: {
-        enabled: boolean
-        tables: {
-            [tableId: string]: string | undefined
-        }
+        [tableId: string]: string | undefined
     }
 }
 
@@ -45,6 +36,8 @@ interface LongTermData {
     mode: DataTablePersistentStateMode
     global: {
         pageSize: DataTablePageSize
+        rememberPageNumber: boolean
+        rememberSearchTerms: boolean
     }
     pageSize: {
         [tableId: string]: DataTablePageSize
@@ -56,62 +49,42 @@ export default class DataTableService {
     private readonly shortTermRepository: SessionStorageRepository<ShortTermData>
 
     constructor() {
-        this.longTermRepository = new LocalStorageRepository("nginxIgnition.datatable.longTerm")
-        this.shortTermRepository = new SessionStorageRepository("nginxIgnition.datatable.shortTerm")
+        this.longTermRepository = new LocalStorageRepository(PERSISTENT_STORAGE_KEY)
+        this.shortTermRepository = new SessionStorageRepository(PERSISTENT_STORAGE_KEY)
     }
 
     public currentConfig(): DataTablePersistentStateConfig {
         const { mode, global } = this.longTermRepository.getOrDefault(DEFAULT_LONG_TERM_DATA)
-        const { pageNumber, searchTerms } = this.shortTermRepository.getOrDefault(DEFAULT_SHORT_TERM_DATA)
+        const { pageSize, rememberPageNumber, rememberSearchTerms } = global
 
-        return {
-            mode,
-            pageSize: global.pageSize,
-            persistPageNumber: pageNumber.enabled,
-            persistSearchTerms: searchTerms.enabled,
-        }
+        return { mode, pageSize, rememberPageNumber, rememberSearchTerms }
     }
 
     public updateConfig(config: DataTablePersistentStateConfig) {
         const longTerm = this.longTermRepository.getOrDefault(DEFAULT_LONG_TERM_DATA)
-        const shortTerm = this.shortTermRepository.getOrDefault(DEFAULT_SHORT_TERM_DATA)
+        const { mode, pageSize, rememberPageNumber, rememberSearchTerms } = config
 
         this.longTermRepository.set({
-            mode: config.mode,
-            global: {
-                pageSize: config.pageSize,
-            },
+            mode,
+            global: { pageSize, rememberPageNumber, rememberSearchTerms },
             pageSize: longTerm.pageSize,
-        })
-
-        this.shortTermRepository.set({
-            pageNumber: {
-                enabled: config.persistPageNumber,
-                tables: shortTerm.pageNumber.tables,
-            },
-            searchTerms: {
-                enabled: config.persistSearchTerms,
-                tables: shortTerm.searchTerms.tables,
-            },
         })
     }
 
     public paginationChanged(tableId: string, pageSize: DataTablePageSize, pageNumber: number) {
-        const shortTerm = this.shortTermRepository.getOrDefault(DEFAULT_SHORT_TERM_DATA)
-        if (shortTerm.pageNumber.enabled) {
+        const longTerm = this.longTermRepository.getOrDefault(DEFAULT_LONG_TERM_DATA)
+
+        if (longTerm.global.rememberPageNumber) {
+            const shortTerm = this.shortTermRepository.getOrDefault(DEFAULT_SHORT_TERM_DATA)
             this.shortTermRepository.set({
                 ...shortTerm,
                 pageNumber: {
                     ...shortTerm.pageNumber,
-                    tables: {
-                        ...shortTerm.pageNumber.tables,
-                        [tableId]: pageNumber,
-                    },
+                    [tableId]: pageNumber,
                 },
             })
         }
 
-        const longTerm = this.longTermRepository.getOrDefault(DEFAULT_LONG_TERM_DATA)
         switch (longTerm.mode) {
             case DataTablePersistentStateMode.GLOBAL:
                 this.longTermRepository.set({
@@ -136,17 +109,15 @@ export default class DataTableService {
     }
 
     public searchTermsChanged(tableId: string, searchTerms?: string) {
-        const currentData = this.shortTermRepository.getOrDefault(DEFAULT_SHORT_TERM_DATA)
-        if (!currentData.searchTerms.enabled) return
+        const longTerm = this.longTermRepository.getOrDefault(DEFAULT_LONG_TERM_DATA)
+        if (!longTerm.global.rememberSearchTerms) return
 
+        const shortTerm = this.shortTermRepository.getOrDefault(DEFAULT_SHORT_TERM_DATA)
         this.shortTermRepository.set({
-            ...currentData,
+            ...shortTerm,
             searchTerms: {
-                ...currentData.searchTerms,
-                tables: {
-                    ...currentData.searchTerms.tables,
-                    [tableId]: searchTerms,
-                },
+                ...shortTerm.searchTerms,
+                [tableId]: searchTerms,
             },
         })
     }
@@ -161,10 +132,10 @@ export default class DataTableService {
         if (longTermData.mode !== DataTablePersistentStateMode.BY_TABLE) pageSize = longTermData.global.pageSize
         else pageSize = longTermData.pageSize[tableId] ?? longTermData.global.pageSize
 
-        if (!shortTermData.pageNumber.enabled) pageNumber = 0
-        else pageNumber = shortTermData.pageNumber.tables[tableId] ?? 0
+        if (!longTermData.global.rememberPageNumber) pageNumber = 0
+        else pageNumber = shortTermData.pageNumber[tableId] ?? 0
 
-        if (shortTermData.searchTerms.enabled) searchTerms = shortTermData.searchTerms.tables[tableId]
+        if (longTermData.global.rememberSearchTerms) searchTerms = shortTermData.searchTerms[tableId]
 
         return { searchTerms, pageSize, pageNumber }
     }

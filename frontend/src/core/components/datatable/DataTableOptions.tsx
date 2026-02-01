@@ -141,7 +141,7 @@ export default class DataTableOptions extends React.Component<DataTableOptionsPr
                     </Form.Item>
                     <Form.Item
                         label={<I18n id={MessageKey.FrontendComponentsDatatableOptionsPersistPageNumber} />}
-                        name="persistPageNumber"
+                        name="rememberPageNumber"
                         valuePropName="checked"
                         help={<I18n id={MessageKey.FrontendComponentsDatatableOptionsPersistPageNumberHelp} />}
                         required
@@ -150,7 +150,7 @@ export default class DataTableOptions extends React.Component<DataTableOptionsPr
                     </Form.Item>
                     <Form.Item
                         label={<I18n id={MessageKey.FrontendComponentsDatatableOptionsPersistSearchTerms} />}
-                        name="persistSearchTerms"
+                        name="rememberSearchTerms"
                         valuePropName="checked"
                         help={<I18n id={MessageKey.FrontendComponentsDatatableOptionsPersistSearchTermsHelp} />}
                         required

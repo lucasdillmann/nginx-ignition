@@ -25,7 +25,7 @@ import { Link } from "react-router-dom"
 import CodeEditorModal from "../../../core/components/codeeditor/CodeEditorModal"
 import { CodeEditorLanguage } from "../../../core/components/codeeditor/CodeEditor"
 import { hostFormValuesDefaults } from "../model/HostFormValuesDefaults"
-import { I18n, i18n } from "../../../core/i18n/I18n"
+import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const ACTION_ICON_STYLE = {
@@ -241,8 +241,9 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     name={[name, "response", "headers"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].response.headers`)}
                     help={
-                        validationResult.getMessage(`routes[${index}].response.headers`) ??
-                        i18n(MessageKey.FrontendHostComponentsHostroutesHeadersHelp)
+                        validationResult.getMessage(`routes[${index}].response.headers`) ?? (
+                            <I18n id={MessageKey.FrontendHostComponentsHostroutesHeadersHelp} />
+                        )
                     }
                     label={<I18n id={MessageKey.FrontendHostComponentsHostroutesHeaders} />}
                     required

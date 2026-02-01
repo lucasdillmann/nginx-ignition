@@ -22,7 +22,7 @@ import { Button } from "antd"
 import HostSupportWarning from "./components/HostSupportWarning"
 import { HostBindingType } from "./model/HostRequest"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { i18n, raw } from "../../core/i18n/I18n"
+import { I18n, i18n, raw } from "../../core/i18n/I18n"
 import { themedColors } from "../../core/components/theme/ThemedResources"
 
 const BUTTON_STYLE = {
@@ -45,7 +45,7 @@ export default class HostListPage extends React.PureComponent {
 
     private handleDomainNames(host: HostResponse): string[] | TagGroupItem[] {
         const { domainNames, useGlobalBindings, globalBindings, bindings } = host
-        if (!Array.isArray(domainNames) || domainNames.length == 0) return [i18n(MessageKey.CommonDefaultServerLabel)]
+        if (!Array.isArray(domainNames) || domainNames.length == 0) return []
 
         const targetBindings = useGlobalBindings ? globalBindings : bindings
         if (!Array.isArray(targetBindings) || targetBindings.length == 0) return domainNames
@@ -63,13 +63,20 @@ export default class HostListPage extends React.PureComponent {
             {
                 id: "domainNames",
                 description: MessageKey.CommonDomainNames,
-                renderer: item => <TagGroup values={this.handleDomainNames(item)} />,
+                renderer: item =>
+                    item.defaultServer ? (
+                        <span style={{ fontStyle: "italic", color: "grey" }}>
+                            <I18n id={MessageKey.CommonDefaultServerLabel} />
+                        </span>
+                    ) : (
+                        <TagGroup values={this.handleDomainNames(item)} />
+                    ),
             },
             {
-                id: "defaultServer",
-                description: MessageKey.FrontendHostDefault,
-                renderer: item => DataTableRenderers.yesNo(item.defaultServer),
-                width: 120,
+                id: "standardBindings",
+                description: MessageKey.FrontendHostFormSectionStandardBindings,
+                renderer: item => DataTableRenderers.yesNo(item.useGlobalBindings),
+                width: 175,
             },
             {
                 id: "enabled",
