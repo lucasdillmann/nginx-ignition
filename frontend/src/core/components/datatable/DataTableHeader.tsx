@@ -20,6 +20,7 @@ export interface DataTableHeaderProps {
 
 interface DataTableHeaderState {
     optionsOpen: boolean
+    searchTerms?: string
 }
 
 export default class DataTableHeader extends React.Component<DataTableHeaderProps, DataTableHeaderState> {
@@ -34,10 +35,21 @@ export default class DataTableHeader extends React.Component<DataTableHeaderProp
         this.setState({ optionsOpen })
     }
 
+    private fireSearchAction() {
+        const { searchTerms } = this.state
+        const { onSearch } = this.props
+        onSearch(searchTerms)
+    }
+
+    private handleSearchTermsChange(searchTerms?: string) {
+        this.setState({ searchTerms }, () => this.fireSearchAction())
+    }
+
+    private debounceSearchTermsChange = debounce(this.handleSearchTermsChange.bind(this), 500)
+
     render() {
         const { id, initialSearchTerms } = this.props
         const { optionsOpen } = this.state
-        const handleChange = debounce((searchTerms?: string) => this.props.onSearch(searchTerms), 500)
 
         return (
             <>
@@ -45,15 +57,15 @@ export default class DataTableHeader extends React.Component<DataTableHeaderProp
                 <Flex className="data-table-search-bar-container">
                     <Input
                         // @ts-expect-error target is generic, but in this scenario is safe to use the value attribute
-                        onInput={event => handleChange(event.nativeEvent.target!!.value)}
-                        onClear={() => handleChange()}
+                        onInput={event => this.debounceSearchTermsChange(event.nativeEvent.target?.value)}
+                        onClear={() => this.debounceSearchTermsChange()}
                         defaultValue={initialSearchTerms}
                         placeholder={i18n(MessageKey.FrontendComponentsDatatableSearchPlaceholder)}
                         className="data-table-search-bar"
                         autoFocus
                         allowClear
                     />
-                    <SearchOutlined style={ICON_STYLE} />
+                    <SearchOutlined style={ICON_STYLE} onClick={() => this.fireSearchAction()} />
                     <SettingOutlined style={ICON_STYLE} onClick={() => this.setOptionsVisibility(true)} />
                 </Flex>
             </>
