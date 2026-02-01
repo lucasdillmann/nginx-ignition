@@ -5,14 +5,15 @@ import { AlignType } from "rc-table/lib/interface"
 import Preloader from "../preloader/Preloader"
 import { Pagination, Table } from "antd"
 import "./DataTable.css"
-import DataTableSearchBar from "./DataTableSearchBar"
+import DataTableHeader from "./DataTableHeader"
 import CommonNotifications from "../notification/CommonNotifications"
 import EmptyStates from "../emptystate/EmptyStates"
-import { I18n, i18n, I18nMessage } from "../../i18n/I18n"
+import { I18n, I18nMessage } from "../../i18n/I18n"
 import MessageKey from "../../i18n/model/MessageKey.generated"
+import DataTableService from "./DataTableService"
+import { DataTableInitialState } from "./model/DataTableInitialState"
+import { DATA_TABLE_PAGE_SIZES, DataTablePageSize, DEFAULT_PAGE_SIZE } from "./model/DataTablePageSize"
 
-const DEFAULT_PAGE_SIZE = 10
-const PAGE_SIZES = [10, 25, 50, 100, 250, 500]
 const DEFAULT_DATA: PageResponse<any> = {
     pageSize: DEFAULT_PAGE_SIZE,
     pageNumber: 0,
@@ -30,6 +31,7 @@ export interface DataTableColumn<T> {
 }
 
 export interface DataTableProps<T> {
+    id: string
     columns: DataTableColumn<T>[]
     dataProvider: (pageSize: number, pageNumber: number, searchTerms?: string) => Promise<PageResponse<T>>
     rowKey: (row: T) => React.Key
@@ -41,14 +43,23 @@ interface DataTableState<T> {
     data: PageResponse<T>
     error?: Error
     searchTerms?: string
+    initialValues: DataTableInitialState
 }
 
 export default class DataTable<T> extends React.Component<DataTableProps<T>, DataTableState<T>> {
+    private readonly service: DataTableService
+
     constructor(props: DataTableProps<T>) {
         super(props)
+
+        this.service = new DataTableService()
+        const initialValues = this.service.getInitialState(props.id)
+
         this.state = {
             loading: true,
             data: DEFAULT_DATA,
+            searchTerms: initialValues.searchTerms,
+            initialValues,
         }
     }
 
@@ -56,7 +67,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
         const { columns } = this.props
         return columns.map(column => ({
             key: column.id,
-            title: i18n(column.description),
+            title: <I18n id={column.description} />,
             render: (_, row, index) => column.renderer(row, index),
             width: column.width,
             minWidth: column.minWidth,
@@ -64,7 +75,10 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
         }))
     }
 
-    private changePage(pageSize: number, pageNumber: number) {
+    private changePage(pageSize: DataTablePageSize, pageNumber: number) {
+        const { id } = this.props
+
+        this.service.paginationChanged(id, pageSize, pageNumber)
         this.setState({ loading: true }, () => this.fetchData(pageSize, pageNumber))
     }
 
@@ -88,8 +102,8 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
             defaultCurrent: data.pageNumber + 1,
             total: data.totalItems,
             pageSize: data.pageSize,
-            pageSizeOptions: PAGE_SIZES,
-            onChange: (pageNumber, pageSize) => this.changePage(pageSize, pageNumber - 1),
+            pageSizeOptions: DATA_TABLE_PAGE_SIZES,
+            onChange: (pageNumber, pageSize) => this.changePage(pageSize as DataTablePageSize, pageNumber - 1),
             showTotal: (total, [start, end]) => (
                 <I18n id={MessageKey.FrontendComponentsDatatablePaginationSummary} params={{ start, end, total }} />
             ),
@@ -100,6 +114,9 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
     }
 
     private handleSearchTerms(searchTerms?: string) {
+        const { id } = this.props
+
+        this.service.searchTermsChanged(id, searchTerms)
         this.setState(
             {
                 loading: true,
@@ -116,18 +133,23 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
     }
 
     componentDidMount() {
-        this.fetchData(DEFAULT_PAGE_SIZE, 0)
+        const { initialValues } = this.state
+        this.fetchData(initialValues.pageSize, initialValues.pageNumber)
     }
 
     render() {
-        const { loading, data, error } = this.state
-        const { rowKey } = this.props
+        const { loading, data, error, initialValues } = this.state
+        const { id, rowKey } = this.props
 
         if (error !== undefined) return EmptyStates.FailedToFetch
 
         return (
             <Preloader loading={loading}>
-                <DataTableSearchBar onSearch={searchTerms => this.handleSearchTerms(searchTerms)} />
+                <DataTableHeader
+                    id={id}
+                    initialSearchTerms={initialValues.searchTerms}
+                    onSearch={searchTerms => this.handleSearchTerms(searchTerms)}
+                />
                 <Table
                     className="data-table"
                     columns={this.buildColumnAdapters()}

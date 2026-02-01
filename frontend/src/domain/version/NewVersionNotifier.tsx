@@ -1,7 +1,8 @@
+import React from "react"
 import AppContext from "../../core/components/context/AppContext"
 import LocalStorageRepository from "../../core/repository/LocalStorageRepository"
 import { themedModal } from "../../core/components/theme/ThemedResources"
-import { i18n } from "../../core/i18n/I18n"
+import { I18n } from "../../core/i18n/I18n"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 
 class NewVersionNotifier {
@@ -20,9 +21,9 @@ class NewVersionNotifier {
             this.repository.set(latest)
             const modalInstance = themedModal().info({
                 type: "info",
-                title: i18n(MessageKey.FrontendVersionNotifierTitle),
-                content: i18n({ id: MessageKey.FrontendVersionNotifierContent, params: { version: latest } }),
-                okText: i18n(MessageKey.FrontendVersionNotifierOpenRelease),
+                title: <I18n id={MessageKey.FrontendVersionNotifierTitle} />,
+                content: <I18n id={MessageKey.FrontendVersionNotifierContent} params={{ version: latest }} />,
+                okText: <I18n id={MessageKey.FrontendVersionNotifierOpenRelease} />,
                 closable: true,
                 width: 600,
                 okButtonProps: {

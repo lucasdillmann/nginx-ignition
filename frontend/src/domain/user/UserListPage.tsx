@@ -16,6 +16,7 @@ import AccessControl from "../../core/components/accesscontrol/AccessControl"
 import AccessDeniedModal from "../../core/components/accesscontrol/AccessDeniedModal"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, raw } from "../../core/i18n/I18n"
+import { themedColors } from "../../core/components/theme/ThemedResources"
 
 export default class UserListPage extends React.PureComponent {
     private readonly service: UserService
@@ -36,13 +37,13 @@ export default class UserListPage extends React.PureComponent {
         if (user?.id !== item.id)
             return (
                 <Link to="" onClick={() => this.deleteUser(item)}>
-                    <DeleteOutlined className="action-icon" />
+                    <DeleteOutlined style={{ color: themedColors().DANGER }} className="action-icon" />
                 </Link>
             )
 
         return (
             <Tooltip title={<I18n id={MessageKey.FrontendUserListDeleteSelfTooltip} />}>
-                <DeleteOutlined className="action-icon" disabled />
+                <DeleteOutlined style={{ color: themedColors().DANGER }} className="action-icon" disabled />
             </Tooltip>
         )
     }
@@ -116,6 +117,7 @@ export default class UserListPage extends React.PureComponent {
                 permissionResolver={permissions => permissions.users}
             >
                 <DataTable
+                    id="users"
                     ref={this.table}
                     columns={this.buildColumns()}
                     dataProvider={(pageSize, pageNumber, searchTerms) =>

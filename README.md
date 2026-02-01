@@ -44,7 +44,7 @@ nginx ignition supports multiple languages, including:
 - 🇷🇺 Russian
 - 🇧🇩 Bengali
 - 🇯🇵 Japanese
-- 🇮🇳 Punjabi
+- 🇮🇳 Western Punjabi
 
 <br />
 

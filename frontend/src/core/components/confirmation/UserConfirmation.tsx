@@ -1,6 +1,6 @@
 import React from "react"
 import { themedModal } from "../theme/ThemedResources"
-import { I18n, I18nMessage, i18n } from "../../i18n/I18n"
+import { I18n, I18nMessage } from "../../i18n/I18n"
 import MessageKey from "../../i18n/model/MessageKey.generated"
 
 class UserConfirmation {
@@ -17,10 +17,10 @@ class UserConfirmation {
 
         return new Promise(resolve => {
             themedModal().confirm({
-                title: i18n(MessageKey.FrontendComponentsConfirmationTitle),
+                title: <I18n id={MessageKey.FrontendComponentsConfirmationTitle} />,
                 content: messageContainer,
-                cancelText: i18n(MessageKey.CommonNo),
-                okText: i18n(MessageKey.CommonYes),
+                cancelText: <I18n id={MessageKey.CommonNo} />,
+                okText: <I18n id={MessageKey.CommonYes} />,
                 okButtonProps: {
                     color: "danger",
                     variant: "solid",

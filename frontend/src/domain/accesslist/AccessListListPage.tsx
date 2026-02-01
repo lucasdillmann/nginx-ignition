@@ -13,6 +13,7 @@ import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, raw } from "../../core/i18n/I18n"
+import { themedColors } from "../../core/components/theme/ThemedResources"
 
 export default class AccessListListPage extends React.PureComponent {
     private readonly service: AccessListService
@@ -74,7 +75,7 @@ export default class AccessListListPage extends React.PureComponent {
                         </Link>
 
                         <Link to="" onClick={() => this.deleteAccessList(item)}>
-                            <DeleteOutlined className="action-icon" />
+                            <DeleteOutlined style={{ color: themedColors().DANGER }} className="action-icon" />
                         </Link>
                     </>
                 ),
@@ -116,6 +117,7 @@ export default class AccessListListPage extends React.PureComponent {
                 permissionResolver={permissions => permissions.accessLists}
             >
                 <DataTable
+                    id="access-lists"
                     ref={this.table}
                     columns={this.buildColumns()}
                     dataProvider={(pageSize, pageNumber, searchTerms) =>

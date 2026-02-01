@@ -19,6 +19,7 @@ import DeleteIntegrationAction from "./actions/DeleteIntegrationAction"
 import DataTableRenderers from "../../core/components/datatable/DataTableRenderers"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { raw } from "../../core/i18n/I18n"
+import { themedColors } from "../../core/components/theme/ThemedResources"
 
 interface IntegrationListPageState {
     loading: boolean
@@ -78,7 +79,7 @@ export default class IntegrationListPage extends React.Component<any, Integratio
                         </Link>
 
                         <Link to="" onClick={() => this.deleteIntegration(item)}>
-                            <DeleteOutlined className="action-icon" />
+                            <DeleteOutlined style={{ color: themedColors().DANGER }} className="action-icon" />
                         </Link>
                     </>
                 ),
@@ -147,6 +148,7 @@ export default class IntegrationListPage extends React.Component<any, Integratio
 
         return (
             <DataTable
+                id="integrations"
                 ref={this.table}
                 columns={this.buildColumns()}
                 dataProvider={(pageSize, pageNumber, searchTerms) => this.fetchData(pageSize, pageNumber, searchTerms)}

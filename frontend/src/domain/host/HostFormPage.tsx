@@ -247,7 +247,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                             name="defaultServer"
                             validateStatus={validationResult.getStatus("defaultServer")}
                             help={validationResult.getMessage("defaultServer")}
-                            label={<I18n id={MessageKey.FrontendHostFormDefaultServer} />}
+                            label={<I18n id={MessageKey.CommonDefaultServerLabel} />}
                             required
                         >
                             <Switch />

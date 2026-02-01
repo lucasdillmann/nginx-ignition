@@ -22,7 +22,8 @@ import { Button } from "antd"
 import HostSupportWarning from "./components/HostSupportWarning"
 import { HostBindingType } from "./model/HostRequest"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { i18n, raw } from "../../core/i18n/I18n"
+import { I18n, i18n, raw } from "../../core/i18n/I18n"
+import { themedColors } from "../../core/components/theme/ThemedResources"
 
 const BUTTON_STYLE = {
     height: "auto",
@@ -44,7 +45,7 @@ export default class HostListPage extends React.PureComponent {
 
     private handleDomainNames(host: HostResponse): string[] | TagGroupItem[] {
         const { domainNames, useGlobalBindings, globalBindings, bindings } = host
-        if (!Array.isArray(domainNames) || domainNames.length == 0) return [i18n(MessageKey.CommonDefaultServerLabel)]
+        if (!Array.isArray(domainNames) || domainNames.length == 0) return []
 
         const targetBindings = useGlobalBindings ? globalBindings : bindings
         if (!Array.isArray(targetBindings) || targetBindings.length == 0) return domainNames
@@ -62,13 +63,20 @@ export default class HostListPage extends React.PureComponent {
             {
                 id: "domainNames",
                 description: MessageKey.CommonDomainNames,
-                renderer: item => <TagGroup values={this.handleDomainNames(item)} />,
+                renderer: item =>
+                    item.defaultServer ? (
+                        <span style={{ fontStyle: "italic", color: "grey" }}>
+                            <I18n id={MessageKey.CommonDefaultServerLabel} />
+                        </span>
+                    ) : (
+                        <TagGroup values={this.handleDomainNames(item)} />
+                    ),
             },
             {
-                id: "defaultServer",
-                description: MessageKey.FrontendHostDefault,
-                renderer: item => DataTableRenderers.yesNo(item.defaultServer),
-                width: 120,
+                id: "standardBindings",
+                description: MessageKey.FrontendHostFormSectionStandardBindings,
+                renderer: item => DataTableRenderers.yesNo(item.useGlobalBindings),
+                width: 175,
             },
             {
                 id: "enabled",
@@ -94,13 +102,21 @@ export default class HostListPage extends React.PureComponent {
                             type="link"
                             onClick={() => this.toggleHostStatus(item)}
                             style={BUTTON_STYLE}
-                            icon={<PoweroffOutlined className="action-icon" />}
+                            color={item.enabled ? "danger" : "green"}
+                            icon={
+                                <PoweroffOutlined
+                                    style={{
+                                        color: item.enabled ? themedColors().SUCCESS : themedColors().DANGER,
+                                    }}
+                                    className="action-icon"
+                                />
+                            }
                         />
                         <Button
                             type="link"
                             onClick={() => this.deleteHost(item)}
                             style={BUTTON_STYLE}
-                            icon={<DeleteOutlined className="action-icon" />}
+                            icon={<DeleteOutlined className="action-icon" style={{ color: themedColors().DANGER }} />}
                         />
                     </>
                 ),
@@ -178,6 +194,7 @@ export default class HostListPage extends React.PureComponent {
                 <HostSupportWarning />
 
                 <DataTable
+                    id="hosts"
                     ref={this.table}
                     columns={this.buildColumns()}
                     dataProvider={(pageSize, pageNumber, searchTerms) =>

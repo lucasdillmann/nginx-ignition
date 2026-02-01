@@ -13,6 +13,7 @@ import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGra
 import TagGroup from "../../core/components/taggroup/TagGroup"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, raw } from "../../core/i18n/I18n"
+import { themedColors } from "../../core/components/theme/ThemedResources"
 
 export default class CacheListPage extends React.PureComponent {
     private readonly service: CacheService
@@ -65,7 +66,7 @@ export default class CacheListPage extends React.PureComponent {
                         </Link>
 
                         <Link to="" onClick={() => this.deleteCache(item)}>
-                            <DeleteOutlined className="action-icon" />
+                            <DeleteOutlined style={{ color: themedColors().DANGER }} className="action-icon" />
                         </Link>
                     </>
                 ),
@@ -107,6 +108,7 @@ export default class CacheListPage extends React.PureComponent {
                 permissionResolver={permissions => permissions.caches}
             >
                 <DataTable
+                    id="cache-configurations"
                     ref={this.table}
                     columns={this.buildColumns()}
                     dataProvider={(pageSize, pageNumber, searchTerms) =>

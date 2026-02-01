@@ -19,6 +19,7 @@ import StreamTypeDescription from "./utils/StreamTypeDescription"
 import StreamSupportWarning from "./components/StreamSupportWarning"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n, raw } from "../../core/i18n/I18n"
+import { themedColors } from "../../core/components/theme/ThemedResources"
 
 export default class StreamListPage extends React.PureComponent {
     private readonly service: StreamService
@@ -99,7 +100,7 @@ export default class StreamListPage extends React.PureComponent {
                         </Link>
 
                         <Link to="" onClick={() => this.deleteStream(item)}>
-                            <DeleteOutlined className="action-icon" />
+                            <DeleteOutlined style={{ color: themedColors().DANGER }} className="action-icon" />
                         </Link>
                     </>
                 ),
@@ -147,6 +148,7 @@ export default class StreamListPage extends React.PureComponent {
                 <StreamSupportWarning />
 
                 <DataTable
+                    id="streams"
                     ref={this.table}
                     columns={this.buildColumns()}
                     dataProvider={(pageSize, pageNumber, searchTerms) =>

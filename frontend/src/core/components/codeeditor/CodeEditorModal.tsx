@@ -1,7 +1,7 @@
 import React from "react"
 import CodeEditor, { CodeEditorLanguage } from "./CodeEditor"
 import { Drawer, Flex, Form, Select } from "antd"
-import { i18n, I18n } from "../../i18n/I18n"
+import { I18n } from "../../i18n/I18n"
 import MessageKey from "../../i18n/model/MessageKey.generated"
 
 interface CodeEditorModalState {
@@ -93,7 +93,7 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
 
         return (
             <Drawer
-                title={i18n(MessageKey.FrontendComponentsCodeeditorTitle)}
+                title={<I18n id={MessageKey.FrontendComponentsCodeeditorTitle} />}
                 placement="right"
                 width="80vw"
                 onClose={onClose}
