@@ -45,7 +45,7 @@ export default class DataTableHeader extends React.Component<DataTableHeaderProp
         this.setState({ searchTerms }, () => this.fireSearchAction())
     }
 
-    private debounceSearchTermsChange = debounce(this.handleSearchTermsChange.bind(this), 500)
+    private readonly debounceSearchTermsChange = debounce(this.handleSearchTermsChange.bind(this), 500)
 
     render() {
         const { id, initialSearchTerms } = this.props
