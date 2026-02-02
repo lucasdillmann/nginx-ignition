@@ -207,13 +207,18 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         return (
             <Flex className="log-search-container">
                 <Flex className="log-search-search-input">
-                    <Form.Item label="Search terms" layout="vertical" colon={false} style={{ flexGrow: 1 }}>
+                    <Form.Item
+                        label={<I18n id={MessageKey.CommonSearchTerms} />}
+                        layout="vertical"
+                        colon={false}
+                        style={{ flexGrow: 1 }}
+                    >
                         <Input value={searchTerms} onChange={event => this.handleSearchChange(event.target.value)} />
                     </Form.Item>
                 </Flex>
                 <Form.Item
                     className="log-search-surrounding-lines-input"
-                    label="Surrounding lines"
+                    label={<I18n id={MessageKey.FrontendLogsSurroundingLines} />}
                     layout="vertical"
                     colon={false}
                 >
