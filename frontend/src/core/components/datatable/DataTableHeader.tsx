@@ -47,6 +47,10 @@ export default class DataTableHeader extends React.Component<DataTableHeaderProp
 
     private readonly debounceSearchTermsChange = debounce(this.handleSearchTermsChange.bind(this), 500)
 
+    componentWillUnmount() {
+        this.debounceSearchTermsChange.clear()
+    }
+
     render() {
         const { id, initialSearchTerms } = this.props
         const { optionsOpen } = this.state

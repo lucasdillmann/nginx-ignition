@@ -5,39 +5,60 @@ import (
 	"strings"
 )
 
-func Search(logLines []LogLine, query string, surroundingLines int) (result []LogLine, err error) {
+func Search(logLines []LogLine, query string, surroundingLines int) ([]LogLine, error) {
 	if query == "" {
 		return logLines, nil
 	}
 
+	re, err := compileRegex(query)
+	if err != nil {
+		return nil, err
+	}
+
+	surroundingLines = clampSurroundingLines(surroundingLines)
+	matchedIndices := findMatchedIndices(logLines, re)
+	if len(matchedIndices) == 0 {
+		return []LogLine{}, nil
+	}
+
+	includeMap := calculateIncludedIndices(matchedIndices, surroundingLines, len(logLines))
+	return buildResult(logLines, includeMap, re), nil
+}
+
+func compileRegex(query string) (*regexp.Regexp, error) {
 	parts := strings.Split(query, " ")
 	for i, part := range parts {
 		parts[i] = regexp.QuoteMeta(part)
 	}
 
-	regexStr := "(?i)" + strings.Join(parts, ".*")
-	re, err := regexp.Compile(regexStr)
-	if err != nil {
-		return nil, err
+	regexStr := "(?i)" + strings.Join(parts, ".*?")
+	return regexp.Compile(regexStr)
+}
+
+func clampSurroundingLines(lines int) int {
+	if lines < 0 {
+		return 0
 	}
 
-	if surroundingLines < 0 {
-		surroundingLines = 0
-	} else if surroundingLines > 10 {
-		surroundingLines = 10
+	if lines > 10 {
+		return 10
 	}
 
+	return lines
+}
+
+func findMatchedIndices(logLines []LogLine, re *regexp.Regexp) []int {
 	var matchedIndices []int
-	for i, line := range logLines {
+	for index, line := range logLines {
 		if re.MatchString(line.Contents) {
-			matchedIndices = append(matchedIndices, i)
+			matchedIndices = append(matchedIndices, index)
 		}
 	}
 
-	if len(matchedIndices) == 0 {
-		return []LogLine{}, nil
-	}
+	return matchedIndices
+}
 
+func calculateIncludedIndices(matchedIndices []int, surroundingLines, totalLines int) map[int]bool {
 	includeMap := make(map[int]bool)
 	for _, index := range matchedIndices {
 		start := index - surroundingLines
@@ -46,14 +67,20 @@ func Search(logLines []LogLine, query string, surroundingLines int) (result []Lo
 		}
 
 		end := index + surroundingLines
-		if end >= len(logLines) {
-			end = len(logLines) - 1
+		if end >= totalLines {
+			end = totalLines - 1
 		}
 
 		for idx := start; idx <= end; idx++ {
 			includeMap[idx] = true
 		}
 	}
+
+	return includeMap
+}
+
+func buildResult(logLines []LogLine, includeMap map[int]bool, re *regexp.Regexp) []LogLine {
+	var result []LogLine
 
 	for index := 0; index < len(logLines); index++ {
 		if includeMap[index] {
@@ -71,5 +98,5 @@ func Search(logLines []LogLine, query string, surroundingLines int) (result []Lo
 		}
 	}
 
-	return result, nil
+	return result
 }

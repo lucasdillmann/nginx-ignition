@@ -7,16 +7,33 @@ export interface LogViewerProps {
     lines: LogLine[]
 }
 
-export default class LogViewer extends React.Component<LogViewerProps> {
+interface LogViewerState {
+    sortedLines: LogLine[]
+}
+
+export default class LogViewer extends React.Component<LogViewerProps, LogViewerState> {
     private readonly containerRef: React.RefObject<HTMLDivElement | null>
 
     constructor(props: LogViewerProps) {
         super(props)
         this.containerRef = React.createRef()
+        this.state = {
+            sortedLines: this.sortLines(props.lines),
+        }
     }
 
-    componentDidUpdate() {
+    private sortLines(lines: LogLine[]): LogLine[] {
+        return [...lines].sort((left, right) => left.lineNumber - right.lineNumber)
+    }
+
+    componentDidUpdate(prevProps: Readonly<LogViewerProps>): void {
         if (this.containerRef.current) this.containerRef.current.scrollTop = this.containerRef.current.scrollHeight
+
+        if (prevProps.lines !== this.props.lines) {
+            const { lines } = this.props
+            const sortedLines = this.sortLines(lines)
+            this.setState({ sortedLines })
+        }
     }
 
     private renderLineContent(line: LogLine) {
@@ -28,8 +45,8 @@ export default class LogViewer extends React.Component<LogViewerProps> {
 
         const { start, end } = highlight
         const before = contents.substring(0, start)
-        const highlighted = contents.substring(start, end + 1)
-        const after = contents.substring(end + 1)
+        const highlighted = contents.substring(start, end)
+        const after = contents.substring(end)
 
         return (
             <span className="log-viewer-line-text">
@@ -80,8 +97,7 @@ export default class LogViewer extends React.Component<LogViewerProps> {
     }
 
     render() {
-        const { lines } = this.props
-        const sortedLines = [...lines].sort((left, right) => left.lineNumber - right.lineNumber)
+        const { sortedLines } = this.state
         const maxLineNumber = sortedLines.length > 0 ? sortedLines[sortedLines.length - 1].lineNumber : 0
         const lineNumberWidth = Math.max(String(maxLineNumber).length, 3)
 

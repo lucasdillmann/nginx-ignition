@@ -81,6 +81,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
 
     componentWillUnmount() {
         this.stopAutoRefresh()
+        this.debounceApplyOptions.clear()
     }
 
     private stopAutoRefresh() {
@@ -196,8 +197,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     }
 
     private handleSurroundingLinesChange(surroundingLines: number | null) {
-        if (surroundingLines === null) surroundingLines = 0
-
+        surroundingLines ??= 0
         this.setState({ surroundingLines }, () => this.applyOptions())
     }
 

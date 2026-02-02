@@ -145,6 +145,10 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
         }
     }
 
+    componentWillUnmount() {
+        this.handleSearch.clear()
+    }
+
     render() {
         const { allowEmpty, disabled, status, value, onChange, placeholder, disableSearch, autoFocus } = this.props
         return (
