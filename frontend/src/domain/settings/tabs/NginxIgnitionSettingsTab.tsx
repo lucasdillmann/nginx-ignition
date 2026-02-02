@@ -79,7 +79,7 @@ export default class NginxIgnitionSettingsTab extends React.Component<NginxIgnit
                             label={<I18n id={MessageKey.FrontendSettingsTabsIgnitionLinesToKeep} />}
                             required
                         >
-                            <InputNumber min={0} max={10000} className="settings-form-input-wide" />
+                            <InputNumber min={0} max={99_999} className="settings-form-input-wide" />
                         </Form.Item>
                         {this.renderExecutionIntervalFieldset("logRotation")}
                     </Flex>
