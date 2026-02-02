@@ -5,12 +5,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"dillmann.com.br/nginx-ignition/core/nginx"
+	"dillmann.com.br/nginx-ignition/core/common/logline"
 )
 
 func TestToResponseDTO(t *testing.T) {
 	t.Run("converts LogLine without highlight correctly", func(t *testing.T) {
-		input := nginx.LogLine{
+		input := logline.LogLine{
 			LineNumber: 10,
 			Contents:   "some log message",
 			Highlight:  nil,
@@ -24,10 +24,10 @@ func TestToResponseDTO(t *testing.T) {
 	})
 
 	t.Run("converts LogLine with highlight correctly", func(t *testing.T) {
-		input := nginx.LogLine{
+		input := logline.LogLine{
 			LineNumber: 20,
 			Contents:   "highlighted message",
-			Highlight: &nginx.LogLineHighlight{
+			Highlight: &logline.Highlight{
 				Start: 5,
 				End:   15,
 			},
@@ -45,7 +45,7 @@ func TestToResponseDTO(t *testing.T) {
 
 func TestToResponseDTOs(t *testing.T) {
 	t.Run("converts multiple LogLines correctly", func(t *testing.T) {
-		input := []nginx.LogLine{
+		input := []logline.LogLine{
 			{LineNumber: 1, Contents: "line 1"},
 			{LineNumber: 2, Contents: "line 2"},
 		}
@@ -60,7 +60,7 @@ func TestToResponseDTOs(t *testing.T) {
 	})
 
 	t.Run("returns empty slice for empty input", func(t *testing.T) {
-		var input []nginx.LogLine
+		var input []logline.LogLine
 		result := ToResponseDTOs(input)
 		assert.Empty(t, result)
 	})

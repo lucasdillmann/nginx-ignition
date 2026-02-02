@@ -61,7 +61,9 @@ func (h logsHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	logs, err := h.commands.GetHostLogs(ctx.Request.Context(), id, qualifier, lineCount)
+	search := logline.ExtractSearchParams(ctx)
+
+	logs, err := h.commands.GetHostLogs(ctx.Request.Context(), id, qualifier, lineCount, search)
 	if err != nil {
 		panic(err)
 	}

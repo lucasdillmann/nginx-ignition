@@ -33,8 +33,14 @@ export default class HostGateway {
         return this.client.post(`/${id}/toggle-enabled`)
     }
 
-    async getLogs(id: string, type: string, lines: number): Promise<ApiResponse<LogLine[]>> {
-        return this.client.get(`/${id}/logs/${type}`, undefined, { lines })
+    async getLogs(
+        id: string,
+        type: string,
+        lines: number,
+        surroundingLines: number,
+        searchTerms?: string,
+    ): Promise<ApiResponse<LogLine[]>> {
+        return this.client.get(`/${id}/logs/${type}`, undefined, { lines, searchTerms, surroundingLines })
     }
 
     async putById(id: string, user: HostRequest): Promise<ApiResponse<void>> {

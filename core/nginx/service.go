@@ -12,6 +12,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/log"
+	"dillmann.com.br/nginx-ignition/core/common/logline"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/nginx/cfgfiles"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -134,12 +135,27 @@ func (s *service) GetHostLogs(
 	hostID uuid.UUID,
 	qualifier string,
 	lines int,
-) ([]LogLine, error) {
-	return s.logReader.read(ctx, "host-"+hostID.String()+"."+qualifier+".log", lines)
+	search *LogSearch,
+) ([]logline.LogLine, error) {
+	logLines, err := s.logReader.read(ctx, "host-"+hostID.String()+"."+qualifier+".log", lines)
+	if err != nil || search == nil {
+		return logLines, err
+	}
+
+	return logline.Search(logLines, search.Query, search.SurroundingLines)
 }
 
-func (s *service) GetMainLogs(ctx context.Context, lines int) ([]LogLine, error) {
-	return s.logReader.read(ctx, "main.log", lines)
+func (s *service) GetMainLogs(
+	ctx context.Context,
+	lines int,
+	search *LogSearch,
+) ([]logline.LogLine, error) {
+	logLines, err := s.logReader.read(ctx, "main.log", lines)
+	if err != nil || search == nil {
+		return logLines, err
+	}
+
+	return logline.Search(logLines, search.Query, search.SurroundingLines)
 }
 
 func (s *service) rotateLogs(ctx context.Context) error {

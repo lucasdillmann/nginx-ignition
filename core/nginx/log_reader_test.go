@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/core/common/logline"
 )
 
 func Test_logReader(t *testing.T) {
@@ -27,7 +28,7 @@ func Test_logReader(t *testing.T) {
 		t.Run("reads and reverses lines correctly", func(t *testing.T) {
 			lines, err := reader.read(t.Context(), "test.log", 10)
 			assert.NoError(t, err)
-			assert.Equal(t, []LogLine{
+			assert.Equal(t, []logline.LogLine{
 				{LineNumber: 2, Contents: "line3"},
 				{LineNumber: 1, Contents: "line2"},
 				{LineNumber: 0, Contents: "line1"},
@@ -37,7 +38,7 @@ func Test_logReader(t *testing.T) {
 		t.Run("tails and reverses lines correctly", func(t *testing.T) {
 			lines, err := reader.read(t.Context(), "test.log", 2)
 			assert.NoError(t, err)
-			assert.Equal(t, []LogLine{
+			assert.Equal(t, []logline.LogLine{
 				{LineNumber: 2, Contents: "line3"},
 				{LineNumber: 1, Contents: "line2"},
 			}, lines)

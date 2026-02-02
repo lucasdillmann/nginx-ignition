@@ -38,6 +38,8 @@ interface LogsPageState {
     loading: boolean
     logs: LogLine[]
     error?: Error
+    searchTerms?: string
+    surroundingLines: number
 }
 
 export default class LogsPage extends React.Component<any, LogsPageState> {
@@ -57,6 +59,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
             lineCount: 50,
             loading: true,
             logs: [],
+            surroundingLines: 0,
         }
     }
 
@@ -125,12 +128,12 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     }
 
     private fetchLogs(omitNotifications?: boolean) {
-        const { hostMode, lineCount, selectedHost, logType } = this.state
+        const { hostMode, lineCount, selectedHost, logType, searchTerms, surroundingLines } = this.state
         if (hostMode && selectedHost === undefined) return this.setState({ loading: false })
 
         const logs = hostMode
-            ? this.hostService.logs(selectedHost!!.id, logType, lineCount)
-            : this.nginxService.logs(lineCount)
+            ? this.hostService.logs(selectedHost!!.id, logType, lineCount, surroundingLines, searchTerms)
+            : this.nginxService.logs(lineCount, surroundingLines, searchTerms)
 
         return logs
             .then(lines => {

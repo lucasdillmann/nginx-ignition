@@ -52,3 +52,12 @@
     border-radius: 2px;
     padding: 0 2px;
 }
+
+.log-viewer-gap {
+    color: var(--ant-color-text-quaternary);
+    font-style: italic;
+}
+
+.log-viewer-gap:hover {
+    background-color: transparent;
+}

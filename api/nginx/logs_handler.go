@@ -42,7 +42,9 @@ func (h logsHandler) handle(ctx *gin.Context) {
 		}
 	}
 
-	logs, err := h.commands.GetMainLogs(ctx.Request.Context(), lineCount)
+	search := logline.ExtractSearchParams(ctx)
+
+	logs, err := h.commands.GetMainLogs(ctx.Request.Context(), lineCount, search)
 	if err != nil {
 		panic(err)
 	}

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/core/common/logline"
 )
 
 type logReader struct {
@@ -19,7 +20,11 @@ func newLogReader(configProvider *configuration.Configuration) *logReader {
 	}
 }
 
-func (r *logReader) read(_ context.Context, fileName string, tailSize int) ([]LogLine, error) {
+func (r *logReader) read(
+	_ context.Context,
+	fileName string,
+	tailSize int,
+) ([]logline.LogLine, error) {
 	basePath, err := r.configProvider.Get("nginx-ignition.nginx.config-path")
 	if err != nil {
 		return nil, err
@@ -35,10 +40,10 @@ func (r *logReader) read(_ context.Context, fileName string, tailSize int) ([]Lo
 	//nolint:errcheck
 	defer file.Close()
 
-	lines := make([]LogLine, 0)
+	lines := make([]logline.LogLine, 0)
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		lines = append(lines, LogLine{
+		lines = append(lines, logline.LogLine{
 			LineNumber: len(lines),
 			Contents:   scanner.Text(),
 		})

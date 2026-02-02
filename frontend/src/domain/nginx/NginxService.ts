@@ -53,7 +53,7 @@ export default class NginxService {
             })
     }
 
-    async logs(lines: number): Promise<LogLine[]> {
-        return this.gateway.getLogs(lines).then(requireSuccessPayload)
+    async logs(lines: number, surroundingLines: number, searchTerms?: string): Promise<LogLine[]> {
+        return this.gateway.getLogs(lines, surroundingLines, searchTerms).then(requireSuccessPayload)
     }
 }

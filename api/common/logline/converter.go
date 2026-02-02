@@ -1,10 +1,10 @@
 package logline
 
 import (
-	"dillmann.com.br/nginx-ignition/core/nginx"
+	"dillmann.com.br/nginx-ignition/core/common/logline"
 )
 
-func ToResponseDTOs(logLines []nginx.LogLine) []ResponseDTO {
+func ToResponseDTOs(logLines []logline.LogLine) []ResponseDTO {
 	result := make([]ResponseDTO, len(logLines))
 	for index, logLine := range logLines {
 		result[index] = ToResponseDTO(logLine)
@@ -13,7 +13,7 @@ func ToResponseDTOs(logLines []nginx.LogLine) []ResponseDTO {
 	return result
 }
 
-func ToResponseDTO(logLine nginx.LogLine) ResponseDTO {
+func ToResponseDTO(logLine logline.LogLine) ResponseDTO {
 	var highlight *HighlightResponseDTO
 	if logLine.Highlight != nil {
 		highlight = &HighlightResponseDTO{

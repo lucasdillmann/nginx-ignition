@@ -29,8 +29,14 @@ export default class HostService {
         return this.gateway.toggleEnabled(id).then(requireSuccessResponse)
     }
 
-    async logs(id: string, type: string, lines: number): Promise<LogLine[]> {
-        return this.gateway.getLogs(id, type, lines).then(requireSuccessPayload)
+    async logs(
+        id: string,
+        type: string,
+        lines: number,
+        surroundingLines: number,
+        searchTerms?: string,
+    ): Promise<LogLine[]> {
+        return this.gateway.getLogs(id, type, lines, surroundingLines, searchTerms).then(requireSuccessPayload)
     }
 
     async updateById(id: string, host: HostRequest): Promise<void> {

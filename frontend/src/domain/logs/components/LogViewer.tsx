@@ -40,6 +40,45 @@ export default class LogViewer extends React.Component<LogViewerProps> {
         )
     }
 
+    private renderGapIndicator(lineNumberWidth: number) {
+        return (
+            <Flex className="log-viewer-line log-viewer-gap">
+                <span className="log-viewer-line-number" style={{ minWidth: `${lineNumberWidth}ch` }}>
+                    ...
+                </span>
+                <span className="log-viewer-line-text log-viewer-gap-text">...</span>
+            </Flex>
+        )
+    }
+
+    private renderLines(sortedLines: LogLine[], lineNumberWidth: number) {
+        const elements: React.ReactNode[] = []
+
+        sortedLines.forEach((line, index) => {
+            if (index > 0) {
+                const previousLineNumber = sortedLines[index - 1].lineNumber
+                if (line.lineNumber > previousLineNumber + 1) {
+                    elements.push(
+                        <React.Fragment key={`gap-${previousLineNumber}-${line.lineNumber}`}>
+                            {this.renderGapIndicator(lineNumberWidth)}
+                        </React.Fragment>,
+                    )
+                }
+            }
+
+            elements.push(
+                <Flex key={line.lineNumber} className="log-viewer-line">
+                    <span className="log-viewer-line-number" style={{ minWidth: `${lineNumberWidth}ch` }}>
+                        {line.lineNumber}
+                    </span>
+                    {this.renderLineContent(line)}
+                </Flex>,
+            )
+        })
+
+        return elements
+    }
+
     render() {
         const { lines } = this.props
         const sortedLines = [...lines].sort((left, right) => left.lineNumber - right.lineNumber)
@@ -49,14 +88,7 @@ export default class LogViewer extends React.Component<LogViewerProps> {
         return (
             <Flex ref={this.containerRef} className="log-viewer-container" vertical>
                 <Flex className="log-viewer-content" vertical>
-                    {sortedLines.map(line => (
-                        <Flex key={line.lineNumber} className="log-viewer-line">
-                            <span className="log-viewer-line-number" style={{ minWidth: `${lineNumberWidth}ch` }}>
-                                {line.lineNumber}
-                            </span>
-                            {this.renderLineContent(line)}
-                        </Flex>
-                    ))}
+                    {this.renderLines(sortedLines, lineNumberWidth)}
                 </Flex>
             </Flex>
         )

@@ -31,8 +31,8 @@ export default class NginxGateway {
         return this.client.get("/metadata")
     }
 
-    async getLogs(lines: number): Promise<ApiResponse<LogLine[]>> {
-        return this.client.get("/logs", undefined, { lines })
+    async getLogs(lines: number, surroundingLines: number, searchTerms?: string): Promise<ApiResponse<LogLine[]>> {
+        return this.client.get("/logs", undefined, { lines, surroundingLines, searchTerms })
     }
 
     async configFiles(
