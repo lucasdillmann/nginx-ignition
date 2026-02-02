@@ -22,7 +22,7 @@ const (
 )
 
 var (
-	lineCountRange    = valuerange.New(1, 10_000)
+	lineCountRange    = valuerange.New(1, 99_999)
 	allowedQualifiers = map[string]bool{
 		"access": true,
 		"error":  true,
