@@ -45,3 +45,23 @@
     font-family: monospace;
     font-size: 12px;
 }
+
+.log-search-container {
+    margin: 20px 0 0 0;
+}
+
+.log-search-container .ant-form-item {
+    margin-bottom: 0;
+}
+
+.log-search-container .log-search-search-input {
+    flex-grow: 1;
+}
+
+.log-search-container .log-search-surrounding-lines-input {
+    margin-left: 10px;
+}
+
+.log-search-container .log-search-surrounding-lines-input input {
+    flex-grow: 1;
+}

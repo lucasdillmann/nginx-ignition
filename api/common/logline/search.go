@@ -10,7 +10,7 @@ import (
 )
 
 func ExtractSearchParams(ctx *gin.Context) *nginx.LogSearch {
-	searchQuery := ctx.Query("search")
+	searchQuery := ctx.Query("searchTerms")
 	if searchQuery == "" {
 		return nil
 	}

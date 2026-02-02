@@ -3,8 +3,8 @@
     flex-grow: 1;
     flex-shrink: 1;
     overflow: scroll;
-    min-height: calc(100vh - 250px);
-    max-height: calc(100vh - 250px);
+    min-height: calc(100vh - 340px);
+    max-height: calc(100vh - 340px);
     background-color: var(--ant-color-bg-container);
     border-radius: var(--ant-border-radius);
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;

@@ -2,7 +2,7 @@ import React from "react"
 import HostService from "../host/HostService"
 import HostResponse from "../host/model/HostResponse"
 import PaginatedSelect from "../../core/components/select/PaginatedSelect"
-import { Empty, Flex, Segmented, Select } from "antd"
+import { Empty, Flex, Form, Input, InputNumber, Segmented, Select } from "antd"
 import {
     AuditOutlined,
     ClusterOutlined,
@@ -27,6 +27,7 @@ import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n, I18nMessage } from "../../core/i18n/I18n"
 import LogViewer from "./components/LogViewer"
 import LogLine from "./model/LogLine"
+import debounce from "debounce"
 
 interface LogsPageState {
     settings?: SettingsDto
@@ -56,7 +57,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         this.state = {
             hostMode: true,
             logType: "access",
-            lineCount: 50,
+            lineCount: 25,
             loading: true,
             logs: [],
             surroundingLines: 0,
@@ -127,6 +128,8 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         this.setState({ loading: true }, () => this.fetchLogs())
     }
 
+    private readonly debounceApplyOptions = debounce(this.applyOptions.bind(this), 500)
+
     private fetchLogs(omitNotifications?: boolean) {
         const { hostMode, lineCount, selectedHost, logType, searchTerms, surroundingLines } = this.state
         if (hostMode && selectedHost === undefined) return this.setState({ loading: false })
@@ -186,6 +189,44 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         if (Array.isArray(domainNames) && domainNames.length > 0) return domainNames
 
         return []
+    }
+
+    private handleSearchChange(searchTerms: string | undefined) {
+        this.setState({ searchTerms }, () => this.debounceApplyOptions())
+    }
+
+    private handleSurroundingLinesChange(surroundingLines: number | null) {
+        if (surroundingLines === null) surroundingLines = 0
+
+        this.setState({ surroundingLines }, () => this.applyOptions())
+    }
+
+    private renderSearch() {
+        const { searchTerms, surroundingLines } = this.state
+
+        return (
+            <Flex className="log-search-container">
+                <Flex className="log-search-search-input">
+                    <Form.Item label="Search terms" layout="vertical" colon={false} style={{ flexGrow: 1 }}>
+                        <Input value={searchTerms} onChange={event => this.handleSearchChange(event.target.value)} />
+                    </Form.Item>
+                </Flex>
+                <Form.Item
+                    className="log-search-surrounding-lines-input"
+                    label="Surrounding lines"
+                    layout="vertical"
+                    colon={false}
+                >
+                    <InputNumber
+                        style={{ width: "100%" }}
+                        min={0}
+                        max={10}
+                        value={surroundingLines}
+                        onChange={value => this.handleSurroundingLinesChange(value)}
+                    />
+                </Form.Item>
+            </Flex>
+        )
     }
 
     private renderSettings() {
@@ -339,6 +380,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
             <Flex className="log-container" vertical>
                 <Preloader loading={loading}>
                     {this.renderSettings()}
+                    {this.renderSearch()}
 
                     <Flex className="log-contents-container">{this.renderLogContents()}</Flex>
                 </Preloader>

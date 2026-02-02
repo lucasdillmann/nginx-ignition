@@ -26,7 +26,7 @@ func Test_ExtractSearchParams(t *testing.T) {
 	t.Run("returns result when only search query is provided", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		ginContext, _ := gin.CreateTestContext(recorder)
-		ginContext.Request = httptest.NewRequest("GET", "/?search=term", nil)
+		ginContext.Request = httptest.NewRequest("GET", "/?searchTerms=term", nil)
 
 		result := ExtractSearchParams(ginContext)
 
@@ -38,7 +38,7 @@ func Test_ExtractSearchParams(t *testing.T) {
 	t.Run("trims search query whitespace", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		ginContext, _ := gin.CreateTestContext(recorder)
-		ginContext.Request = httptest.NewRequest("GET", "/?search=%20term%20", nil)
+		ginContext.Request = httptest.NewRequest("GET", "/?searchTerms=%20term%20", nil)
 
 		result := ExtractSearchParams(ginContext)
 
@@ -49,7 +49,11 @@ func Test_ExtractSearchParams(t *testing.T) {
 	t.Run("extracts surroundingLines when provided", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		ginContext, _ := gin.CreateTestContext(recorder)
-		ginContext.Request = httptest.NewRequest("GET", "/?search=term&surroundingLines=5", nil)
+		ginContext.Request = httptest.NewRequest(
+			"GET",
+			"/?searchTerms=term&surroundingLines=5",
+			nil,
+		)
 
 		result := ExtractSearchParams(ginContext)
 
@@ -61,7 +65,11 @@ func Test_ExtractSearchParams(t *testing.T) {
 	t.Run("clamps negative surroundingLines to 0", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		ginContext, _ := gin.CreateTestContext(recorder)
-		ginContext.Request = httptest.NewRequest("GET", "/?search=term&surroundingLines=-5", nil)
+		ginContext.Request = httptest.NewRequest(
+			"GET",
+			"/?searchTerms=term&surroundingLines=-5",
+			nil,
+		)
 
 		result := ExtractSearchParams(ginContext)
 
@@ -72,7 +80,11 @@ func Test_ExtractSearchParams(t *testing.T) {
 	t.Run("clamps large surroundingLines to 10", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		ginContext, _ := gin.CreateTestContext(recorder)
-		ginContext.Request = httptest.NewRequest("GET", "/?search=term&surroundingLines=100", nil)
+		ginContext.Request = httptest.NewRequest(
+			"GET",
+			"/?searchTerms=term&surroundingLines=100",
+			nil,
+		)
 
 		result := ExtractSearchParams(ginContext)
 

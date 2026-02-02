@@ -46,7 +46,7 @@ export default class LogViewer extends React.Component<LogViewerProps> {
                 <span className="log-viewer-line-number" style={{ minWidth: `${lineNumberWidth}ch` }}>
                     ...
                 </span>
-                <span className="log-viewer-line-text log-viewer-gap-text">...</span>
+                <span className="log-viewer-line-text log-viewer-gap-text"></span>
             </Flex>
         )
     }
@@ -69,7 +69,7 @@ export default class LogViewer extends React.Component<LogViewerProps> {
             elements.push(
                 <Flex key={line.lineNumber} className="log-viewer-line">
                     <span className="log-viewer-line-number" style={{ minWidth: `${lineNumberWidth}ch` }}>
-                        {line.lineNumber}
+                        {line.lineNumber + 1}
                     </span>
                     {this.renderLineContent(line)}
                 </Flex>,
