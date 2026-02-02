@@ -19,7 +19,7 @@ const (
 var (
 	timeoutRange           = valuerange.New(1, int(^uint(0)>>1))
 	intervalRange          = valuerange.New(1, int(^uint(0)>>1))
-	logLinesRange          = valuerange.New(0, 10000)
+	logLinesRange          = valuerange.New(0, 50000)
 	workerProcessesRange   = valuerange.New(1, 100)
 	workerConnectionsRange = valuerange.New(32, 4096)
 	maximumBodySizeRange   = valuerange.New(1, int(^uint(0)>>1))

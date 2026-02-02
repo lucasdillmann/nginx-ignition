@@ -60,7 +60,7 @@ export default class LogViewer extends React.Component<LogViewerProps, LogViewer
     private renderGapIndicator(lineNumberWidth: number) {
         return (
             <Flex className="log-viewer-line log-viewer-gap">
-                <span className="log-viewer-line-number" style={{ minWidth: `${lineNumberWidth}ch` }}>
+                <span className="log-viewer-line-number" style={{ width: `${lineNumberWidth}ch` }}>
                     ...
                 </span>
                 <span className="log-viewer-line-text log-viewer-gap-text"></span>
@@ -85,7 +85,7 @@ export default class LogViewer extends React.Component<LogViewerProps, LogViewer
 
             elements.push(
                 <Flex key={line.lineNumber} className="log-viewer-line">
-                    <span className="log-viewer-line-number" style={{ minWidth: `${lineNumberWidth}ch` }}>
+                    <span className="log-viewer-line-number" style={{ width: `${lineNumberWidth}ch` }}>
                         {line.lineNumber + 1}
                     </span>
                     {this.renderLineContent(line)}
@@ -99,7 +99,7 @@ export default class LogViewer extends React.Component<LogViewerProps, LogViewer
     render() {
         const { sortedLines } = this.state
         const maxLineNumber = sortedLines.length > 0 ? sortedLines[sortedLines.length - 1].lineNumber : 0
-        const lineNumberWidth = Math.max(String(maxLineNumber).length, 5)
+        const lineNumberWidth = Math.max(String(maxLineNumber).length, 6)
 
         return (
             <Flex ref={this.containerRef} className="log-viewer-container" vertical>
