@@ -14,7 +14,6 @@ import If from "../../core/components/flowcontrol/If"
 import "./LogsPage.css"
 import NginxService from "../nginx/NginxService"
 import Preloader from "../../core/components/preloader/Preloader"
-import TextArea, { TextAreaRef } from "antd/es/input/TextArea"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import TagGroup from "../../core/components/taggroup/TagGroup"
 import SettingsDto from "../settings/model/SettingsDto"
@@ -26,6 +25,8 @@ import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n, I18nMessage } from "../../core/i18n/I18n"
+import LogViewer from "./components/LogViewer"
+import LogLine from "./model/LogLine"
 
 interface LogsPageState {
     settings?: SettingsDto
@@ -35,7 +36,7 @@ interface LogsPageState {
     lineCount: number
     logType: string
     loading: boolean
-    logs: string[]
+    logs: LogLine[]
     error?: Error
 }
 
@@ -43,7 +44,6 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     private readonly hostService: HostService
     private readonly nginxService: NginxService
     private readonly settingsService: SettingsService
-    private readonly contentsRef: React.RefObject<TextAreaRef | null>
     private refreshIntervalId?: number
 
     constructor(props: any) {
@@ -51,7 +51,6 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         this.hostService = new HostService()
         this.nginxService = new NginxService()
         this.settingsService = new SettingsService()
-        this.contentsRef = React.createRef()
         this.state = {
             hostMode: true,
             logType: "access",
@@ -74,13 +73,6 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
             })
 
         this.configureShell()
-    }
-
-    componentDidUpdate() {
-        const textarea = this.contentsRef.current?.resizableTextArea?.textArea
-        if (textarea === undefined) return
-
-        textarea.scrollTop = textarea.scrollHeight
     }
 
     componentWillUnmount() {
@@ -144,7 +136,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
             .then(lines => {
                 this.setState({
                     loading: false,
-                    logs: lines.reverse(),
+                    logs: lines,
                 })
             })
             .catch(error => {
@@ -329,8 +321,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         if (emptyState !== undefined) return emptyState
 
         const { logs } = this.state
-        const contents = logs.join("\n")
-        return <TextArea ref={this.contentsRef} className="log-contents-lines" value={contents} readOnly />
+        return <LogViewer lines={logs} />
     }
 
     render() {

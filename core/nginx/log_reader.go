@@ -19,7 +19,7 @@ func newLogReader(configProvider *configuration.Configuration) *logReader {
 	}
 }
 
-func (r *logReader) read(_ context.Context, fileName string, tailSize int) ([]string, error) {
+func (r *logReader) read(_ context.Context, fileName string, tailSize int) ([]LogLine, error) {
 	basePath, err := r.configProvider.Get("nginx-ignition.nginx.config-path")
 	if err != nil {
 		return nil, err
@@ -35,10 +35,13 @@ func (r *logReader) read(_ context.Context, fileName string, tailSize int) ([]st
 	//nolint:errcheck
 	defer file.Close()
 
-	lines := make([]string, 0)
+	lines := make([]LogLine, 0)
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		lines = append(lines, LogLine{
+			LineNumber: len(lines),
+			Contents:   scanner.Text(),
+		})
 	}
 
 	if err = scanner.Err(); err != nil {

@@ -8,6 +8,17 @@ const (
 	NoneSupportType    SupportType = "NONE"
 )
 
+type LogLine struct {
+	Highlight  *LogLineHighlight
+	Contents   string
+	LineNumber int
+}
+
+type LogLineHighlight struct {
+	Start int
+	End   int
+}
+
 type Metadata struct {
 	Version       string
 	BuildDetails  string

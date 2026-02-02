@@ -59,7 +59,7 @@ export default class NginxIgnition extends React.Component<unknown, NginxIgnitio
 
         return (
             <ErrorBoundary>
-                <ConfigProvider theme={{ algorithm: ThemeContext.algorithm() }} locale={locale}>
+                <ConfigProvider theme={{ algorithm: ThemeContext.algorithm(), cssVar: true }} locale={locale}>
                     <App>
                         <ThemedResources />
                         <AppContainer />

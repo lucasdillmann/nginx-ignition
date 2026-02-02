@@ -134,11 +134,11 @@ func (s *service) GetHostLogs(
 	hostID uuid.UUID,
 	qualifier string,
 	lines int,
-) ([]string, error) {
+) ([]LogLine, error) {
 	return s.logReader.read(ctx, "host-"+hostID.String()+"."+qualifier+".log", lines)
 }
 
-func (s *service) GetMainLogs(ctx context.Context, lines int) ([]string, error) {
+func (s *service) GetMainLogs(ctx context.Context, lines int) ([]LogLine, error) {
 	return s.logReader.read(ctx, "main.log", lines)
 }
 

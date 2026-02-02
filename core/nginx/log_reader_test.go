@@ -27,19 +27,19 @@ func Test_logReader(t *testing.T) {
 		t.Run("reads and reverses lines correctly", func(t *testing.T) {
 			lines, err := reader.read(t.Context(), "test.log", 10)
 			assert.NoError(t, err)
-			assert.Equal(t, []string{
-				"line3",
-				"line2",
-				"line1",
+			assert.Equal(t, []LogLine{
+				{LineNumber: 2, Contents: "line3"},
+				{LineNumber: 1, Contents: "line2"},
+				{LineNumber: 0, Contents: "line1"},
 			}, lines)
 		})
 
 		t.Run("tails and reverses lines correctly", func(t *testing.T) {
 			lines, err := reader.read(t.Context(), "test.log", 2)
 			assert.NoError(t, err)
-			assert.Equal(t, []string{
-				"line3",
-				"line2",
+			assert.Equal(t, []LogLine{
+				{LineNumber: 2, Contents: "line3"},
+				{LineNumber: 1, Contents: "line2"},
 			}, lines)
 		})
 	})

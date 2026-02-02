@@ -4,6 +4,7 @@ import PageResponse from "../../core/pagination/PageResponse"
 import HostResponse from "./model/HostResponse"
 import HostRequest from "./model/HostRequest"
 import GenericCreateResponse from "../../core/common/GenericCreateResponse"
+import LogLine from "../logs/model/LogLine"
 
 export default class HostGateway {
     private readonly client: ApiClient
@@ -32,7 +33,7 @@ export default class HostGateway {
         return this.client.post(`/${id}/toggle-enabled`)
     }
 
-    async getLogs(id: string, type: string, lines: number): Promise<ApiResponse<string[]>> {
+    async getLogs(id: string, type: string, lines: number): Promise<ApiResponse<LogLine[]>> {
         return this.client.get(`/${id}/logs/${type}`, undefined, { lines })
     }
 

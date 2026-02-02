@@ -39,7 +39,10 @@ func Test_service(t *testing.T) {
 		t.Run("returns requested number of lines in reverse order", func(t *testing.T) {
 			lines, err := nginxService.GetMainLogs(t.Context(), 2)
 			assert.NoError(t, err)
-			assert.Equal(t, []string{"line3", "line2"}, lines)
+			assert.Equal(t, []LogLine{
+				{LineNumber: 2, Contents: "line3"},
+				{LineNumber: 1, Contents: "line2"},
+			}, lines)
 		})
 	})
 
@@ -64,7 +67,9 @@ func Test_service(t *testing.T) {
 		t.Run("returns host specific logs", func(t *testing.T) {
 			lines, err := nginxService.GetHostLogs(t.Context(), hostID, "access", 1)
 			assert.NoError(t, err)
-			assert.Equal(t, []string{"access2"}, lines)
+			assert.Equal(t, []LogLine{
+				{LineNumber: 1, Contents: "access2"},
+			}, lines)
 		})
 	})
 

@@ -20,8 +20,8 @@ type Commands interface {
 		hostID uuid.UUID,
 		qualifier string,
 		lines int,
-	) ([]string, error)
-	GetMainLogs(ctx context.Context, lines int) ([]string, error)
+	) ([]LogLine, error)
+	GetMainLogs(ctx context.Context, lines int) ([]LogLine, error)
 	GetStatus(ctx context.Context) bool
 	GetConfigFiles(ctx context.Context, input GetConfigFilesInput) ([]byte, error)
 	GetMetadata(ctx context.Context) (*Metadata, error)

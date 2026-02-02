@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"dillmann.com.br/nginx-ignition/api/common/logline"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 	"dillmann.com.br/nginx-ignition/core/nginx"
 )
@@ -46,5 +47,6 @@ func (h logsHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	ctx.JSON(http.StatusOK, logs)
+	payload := logline.ToResponseDTOs(logs)
+	ctx.JSON(http.StatusOK, payload)
 }
