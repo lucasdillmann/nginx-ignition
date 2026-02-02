@@ -173,7 +173,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     }
 
     private buildLineCountOptions() {
-        return [10, 25, 50, 100, 250, 500, 1000, 5000, 10000].map(item => ({
+        return [10, 25, 50, 100, 250, 500, 1000, 5000, 10000, 25000, 50000].map(item => ({
             label: item,
             value: item,
         }))
@@ -213,7 +213,11 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                         colon={false}
                         style={{ flexGrow: 1 }}
                     >
-                        <Input value={searchTerms} onChange={event => this.handleSearchChange(event.target.value)} />
+                        <Input
+                            value={searchTerms}
+                            onChange={event => this.handleSearchChange(event.target.value)}
+                            allowClear
+                        />
                     </Form.Item>
                 </Flex>
                 <Form.Item

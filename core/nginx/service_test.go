@@ -37,12 +37,12 @@ func Test_service(t *testing.T) {
 			logReader: newLogReader(cfg),
 		}
 
-		t.Run("returns requested number of lines in reverse order", func(t *testing.T) {
+		t.Run("returns requested number of lines", func(t *testing.T) {
 			lines, err := nginxService.GetMainLogs(t.Context(), 2, nil)
 			assert.NoError(t, err)
 			assert.Equal(t, []logline.LogLine{
-				{LineNumber: 2, Contents: "line3"},
 				{LineNumber: 1, Contents: "line2"},
+				{LineNumber: 2, Contents: "line3"},
 			}, lines)
 		})
 	})

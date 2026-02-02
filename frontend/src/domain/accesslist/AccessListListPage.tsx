@@ -49,7 +49,7 @@ export default class AccessListListPage extends React.PureComponent {
                             return <I18n id={MessageKey.FrontendAccesslistOutcomeDeny} />
                     }
                 },
-                width: 150,
+                width: 200,
             },
             {
                 id: "satisfyAll",

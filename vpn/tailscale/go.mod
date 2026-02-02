@@ -44,7 +44,7 @@ require (
 	github.com/mdlayher/socket v0.5.1 // indirect
 	github.com/miekg/dns v1.1.72 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
-	github.com/pires/go-proxyproto v0.9.1 // indirect
+	github.com/pires/go-proxyproto v0.9.2 // indirect
 	github.com/pkg/sftp v1.13.7 // indirect
 	github.com/prometheus-community/pro-bing v0.7.0 // indirect
 	github.com/prometheus/common v0.67.5 // indirect
@@ -60,7 +60,7 @@ require (
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
 	golang.org/x/crypto v0.47.0 // indirect
 	golang.org/x/exp v0.0.0-20260112195511-716be5621a96 // indirect
-	golang.org/x/exp/typeparams v0.0.0-20251219203646-944ab1f22d93 // indirect
+	golang.org/x/exp/typeparams v0.0.0-20260112195511-716be5621a96 // indirect
 	golang.org/x/net v0.49.0 // indirect
 	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect

@@ -99,7 +99,7 @@ export default class LogViewer extends React.Component<LogViewerProps, LogViewer
     render() {
         const { sortedLines } = this.state
         const maxLineNumber = sortedLines.length > 0 ? sortedLines[sortedLines.length - 1].lineNumber : 0
-        const lineNumberWidth = Math.max(String(maxLineNumber).length, 3)
+        const lineNumberWidth = Math.max(String(maxLineNumber).length, 5)
 
         return (
             <Flex ref={this.containerRef} className="log-viewer-container" vertical>

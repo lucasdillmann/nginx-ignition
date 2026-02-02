@@ -100,6 +100,7 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
             align: "end",
             className: "pagination-container",
             defaultCurrent: data.pageNumber + 1,
+            current: data.pageNumber + 1,
             total: data.totalItems,
             pageSize: data.pageSize,
             pageSizeOptions: DATA_TABLE_PAGE_SIZES,
