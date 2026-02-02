@@ -2,7 +2,7 @@ import React from "react"
 import HostService from "../host/HostService"
 import HostResponse from "../host/model/HostResponse"
 import PaginatedSelect from "../../core/components/select/PaginatedSelect"
-import { Empty, Flex, Form, Input, InputNumber, Segmented, Select } from "antd"
+import { AutoComplete, Empty, Flex, Form, Input, InputNumber, Segmented, Select } from "antd"
 import {
     AuditOutlined,
     ClusterOutlined,
@@ -165,7 +165,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     }
 
     private setLineCount(lineCount: number) {
-        this.setState({ lineCount }, () => this.applyOptions())
+        this.setState({ lineCount }, () => this.debounceApplyOptions())
     }
 
     private setAutoRefreshSeconds(autoRefreshSeconds?: number) {
@@ -173,10 +173,17 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
     }
 
     private buildLineCountOptions() {
-        return [10, 25, 50, 100, 250, 500, 1000, 5000, 10000].map(item => ({
-            label: item,
-            value: item,
+        return [10, 25, 50, 100, 250, 500, 1000].map(item => ({
+            label: String(item),
+            value: String(item),
         }))
+    }
+
+    private handleLineCountChange(value: string) {
+        const parsed = parseInt(value, 10)
+        if (!isNaN(parsed) && parsed >= 1 && parsed <= 99_999) {
+            this.setLineCount(parsed)
+        }
     }
 
     private buildAutoRefreshOptions() {
@@ -213,7 +220,11 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                         colon={false}
                         style={{ flexGrow: 1 }}
                     >
-                        <Input value={searchTerms} onChange={event => this.handleSearchChange(event.target.value)} />
+                        <Input
+                            value={searchTerms}
+                            onChange={event => this.handleSearchChange(event.target.value)}
+                            allowClear
+                        />
                     </Form.Item>
                 </Flex>
                 <Form.Item
@@ -263,10 +274,12 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                     <p>
                         <I18n id={MessageKey.FrontendLogsLines} />
                     </p>
-                    <Select
+                    <AutoComplete
                         options={this.buildLineCountOptions()}
-                        value={lineCount}
-                        onSelect={value => this.setLineCount(value)}
+                        value={String(lineCount)}
+                        onChange={value => this.handleLineCountChange(value)}
+                        onSelect={value => this.setLineCount(Number(value))}
+                        filterOption={false}
                     />
                 </Flex>
                 <Flex className="log-settings-option log-settings-auto-refresh" vertical>

@@ -208,7 +208,7 @@ func Test_validator(t *testing.T) {
 
 		t.Run("log rotation maximum lines above range fails", func(t *testing.T) {
 			s := newSettings()
-			s.LogRotation.MaximumLines = 10001
+			s.LogRotation.MaximumLines = 100000
 			settingsValidator := newValidator(bindingCommands)
 
 			err := settingsValidator.validate(t.Context(), s)

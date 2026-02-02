@@ -20,11 +20,7 @@ func newLogReader(configProvider *configuration.Configuration) *logReader {
 	}
 }
 
-func (r *logReader) read(
-	_ context.Context,
-	fileName string,
-	tailSize int,
-) ([]logline.LogLine, error) {
+func (r *logReader) read(_ context.Context, fileName string) ([]logline.LogLine, error) {
 	basePath, err := r.configProvider.Get("nginx-ignition.nginx.config-path")
 	if err != nil {
 		return nil, err
@@ -49,17 +45,5 @@ func (r *logReader) read(
 		})
 	}
 
-	if err = scanner.Err(); err != nil {
-		return nil, err
-	}
-
-	if len(lines) > tailSize {
-		lines = lines[len(lines)-tailSize:]
-	}
-
-	for i := 0; i < len(lines)/2; i++ {
-		lines[i], lines[len(lines)-1-i] = lines[len(lines)-1-i], lines[i]
-	}
-
-	return lines, nil
+	return lines, scanner.Err()
 }

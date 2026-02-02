@@ -36,6 +36,11 @@ export default class LogViewer extends React.Component<LogViewerProps, LogViewer
         }
     }
 
+    private renderWithPrefixSpaces(value: string, length: number): React.ReactNode {
+        const spaces = "&nbsp;".repeat(Math.max(0, length - value.length))
+        return <span dangerouslySetInnerHTML={{ __html: spaces + value }}></span>
+    }
+
     private renderLineContent(line: LogLine) {
         const { contents, highlight } = line
 
@@ -60,9 +65,7 @@ export default class LogViewer extends React.Component<LogViewerProps, LogViewer
     private renderGapIndicator(lineNumberWidth: number) {
         return (
             <Flex className="log-viewer-line log-viewer-gap">
-                <span className="log-viewer-line-number" style={{ minWidth: `${lineNumberWidth}ch` }}>
-                    ...
-                </span>
+                <span className="log-viewer-line-number">{this.renderWithPrefixSpaces("...", lineNumberWidth)}</span>
                 <span className="log-viewer-line-text log-viewer-gap-text"></span>
             </Flex>
         )
@@ -85,8 +88,8 @@ export default class LogViewer extends React.Component<LogViewerProps, LogViewer
 
             elements.push(
                 <Flex key={line.lineNumber} className="log-viewer-line">
-                    <span className="log-viewer-line-number" style={{ minWidth: `${lineNumberWidth}ch` }}>
-                        {line.lineNumber + 1}
+                    <span className="log-viewer-line-number">
+                        {this.renderWithPrefixSpaces(String(line.lineNumber + 1), lineNumberWidth)}
                     </span>
                     {this.renderLineContent(line)}
                 </Flex>,
@@ -99,7 +102,7 @@ export default class LogViewer extends React.Component<LogViewerProps, LogViewer
     render() {
         const { sortedLines } = this.state
         const maxLineNumber = sortedLines.length > 0 ? sortedLines[sortedLines.length - 1].lineNumber : 0
-        const lineNumberWidth = Math.max(String(maxLineNumber).length, 3)
+        const lineNumberWidth = Math.max(String(maxLineNumber).length, 5)
 
         return (
             <Flex ref={this.containerRef} className="log-viewer-container" vertical>

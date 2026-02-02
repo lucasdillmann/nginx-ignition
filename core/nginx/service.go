@@ -137,12 +137,7 @@ func (s *service) GetHostLogs(
 	lines int,
 	search *LogSearch,
 ) ([]logline.LogLine, error) {
-	logLines, err := s.logReader.read(ctx, "host-"+hostID.String()+"."+qualifier+".log", lines)
-	if err != nil || search == nil {
-		return logLines, err
-	}
-
-	return logline.Search(logLines, search.Query, search.SurroundingLines)
+	return s.readLogs(ctx, lines, "host-"+hostID.String()+"."+qualifier+".log", search)
 }
 
 func (s *service) GetMainLogs(
@@ -150,12 +145,32 @@ func (s *service) GetMainLogs(
 	lines int,
 	search *LogSearch,
 ) ([]logline.LogLine, error) {
-	logLines, err := s.logReader.read(ctx, "main.log", lines)
-	if err != nil || search == nil {
-		return logLines, err
+	return s.readLogs(ctx, lines, "main.log", search)
+}
+
+func (s *service) readLogs(
+	ctx context.Context,
+	lines int,
+	fileName string,
+	search *LogSearch,
+) ([]logline.LogLine, error) {
+	output, err := s.logReader.read(ctx, fileName)
+	if err != nil {
+		return nil, err
 	}
 
-	return logline.Search(logLines, search.Query, search.SurroundingLines)
+	if search != nil {
+		output, err = logline.Search(output, search.Query, search.SurroundingLines)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if len(output) > lines {
+		output = output[len(output)-lines:]
+	}
+
+	return output, nil
 }
 
 func (s *service) rotateLogs(ctx context.Context) error {
