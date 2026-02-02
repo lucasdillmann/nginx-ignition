@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
+	apilogline "dillmann.com.br/nginx-ignition/api/common/logline"
+	"dillmann.com.br/nginx-ignition/core/common/logline"
 	"dillmann.com.br/nginx-ignition/core/nginx"
 )
 
@@ -23,10 +25,13 @@ func Test_logsHandler(t *testing.T) {
 			controller := gomock.NewController(t)
 			defer controller.Finish()
 
-			logs := []string{"log line 1", "log line 2"}
+			logs := []logline.LogLine{
+				{LineNumber: 0, Contents: "log line 1"},
+				{LineNumber: 1, Contents: "log line 2"},
+			}
 			commands := nginx.NewMockedCommands(controller)
 			commands.EXPECT().
-				GetMainLogs(gomock.Any(), 50).
+				GetMainLogs(gomock.Any(), 50, nil).
 				Return(logs, nil)
 
 			handler := logsHandler{
@@ -40,9 +45,14 @@ func Test_logsHandler(t *testing.T) {
 			engine.ServeHTTP(recorder, request)
 
 			assert.Equal(t, http.StatusOK, recorder.Code)
-			var response []string
+			var response []apilogline.ResponseDTO
 			json.Unmarshal(recorder.Body.Bytes(), &response)
-			assert.Equal(t, logs, response)
+
+			expectedResponse := []apilogline.ResponseDTO{
+				{LineNumber: 0, Contents: "log line 1"},
+				{LineNumber: 1, Contents: "log line 2"},
+			}
+			assert.Equal(t, expectedResponse, response)
 		})
 
 		t.Run("returns 400 Bad Request on invalid line count", func(t *testing.T) {
@@ -66,7 +76,7 @@ func Test_logsHandler(t *testing.T) {
 			expectedErr := assert.AnError
 			commands := nginx.NewMockedCommands(controller)
 			commands.EXPECT().
-				GetMainLogs(gomock.Any(), 50).
+				GetMainLogs(gomock.Any(), 50, nil).
 				Return(nil, expectedErr)
 
 			handler := logsHandler{

@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/api/common/logline"
 	"dillmann.com.br/nginx-ignition/core/common/valuerange"
 	"dillmann.com.br/nginx-ignition/core/nginx"
 )
@@ -60,10 +61,13 @@ func (h logsHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	logs, err := h.commands.GetHostLogs(ctx.Request.Context(), id, qualifier, lineCount)
+	search := logline.ExtractSearchParams(ctx)
+
+	logs, err := h.commands.GetHostLogs(ctx.Request.Context(), id, qualifier, lineCount, search)
 	if err != nil {
 		panic(err)
 	}
 
-	ctx.JSON(http.StatusOK, logs)
+	payload := logline.ToResponseDTOs(logs)
+	ctx.JSON(http.StatusOK, payload)
 }

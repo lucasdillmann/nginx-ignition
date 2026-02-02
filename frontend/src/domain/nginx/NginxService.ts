@@ -3,6 +3,7 @@ import { requireSuccessPayload, requireSuccessResponse } from "../../core/apicli
 import NginxEventDispatcher from "./listener/NginxEventDispatcher"
 import { NginxOperation } from "./listener/NginxEventListener"
 import NginxMetadata from "./model/NginxMetadata"
+import LogLine from "../logs/model/LogLine"
 
 export default class NginxService {
     private readonly gateway: NginxGateway
@@ -52,7 +53,7 @@ export default class NginxService {
             })
     }
 
-    async logs(lines: number): Promise<string[]> {
-        return this.gateway.getLogs(lines).then(requireSuccessPayload)
+    async logs(lines: number, surroundingLines: number, searchTerms?: string): Promise<LogLine[]> {
+        return this.gateway.getLogs(lines, surroundingLines, searchTerms).then(requireSuccessPayload)
     }
 }

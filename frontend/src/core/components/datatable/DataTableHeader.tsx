@@ -47,6 +47,10 @@ export default class DataTableHeader extends React.Component<DataTableHeaderProp
 
     private readonly debounceSearchTermsChange = debounce(this.handleSearchTermsChange.bind(this), 500)
 
+    componentWillUnmount() {
+        this.debounceSearchTermsChange.clear()
+    }
+
     render() {
         const { id, initialSearchTerms } = this.props
         const { optionsOpen } = this.state
@@ -60,7 +64,7 @@ export default class DataTableHeader extends React.Component<DataTableHeaderProp
                         onInput={event => this.debounceSearchTermsChange(event.nativeEvent.target?.value)}
                         onClear={() => this.debounceSearchTermsChange()}
                         defaultValue={initialSearchTerms}
-                        placeholder={i18n(MessageKey.FrontendComponentsDatatableSearchPlaceholder)}
+                        placeholder={i18n(MessageKey.CommonSearchTerms)}
                         className="data-table-search-bar"
                         autoFocus
                         allowClear

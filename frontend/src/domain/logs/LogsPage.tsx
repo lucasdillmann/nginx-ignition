@@ -2,7 +2,7 @@ import React from "react"
 import HostService from "../host/HostService"
 import HostResponse from "../host/model/HostResponse"
 import PaginatedSelect from "../../core/components/select/PaginatedSelect"
-import { Empty, Flex, Segmented, Select } from "antd"
+import { Empty, Flex, Form, Input, InputNumber, Segmented, Select } from "antd"
 import {
     AuditOutlined,
     ClusterOutlined,
@@ -14,7 +14,6 @@ import If from "../../core/components/flowcontrol/If"
 import "./LogsPage.css"
 import NginxService from "../nginx/NginxService"
 import Preloader from "../../core/components/preloader/Preloader"
-import TextArea, { TextAreaRef } from "antd/es/input/TextArea"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import TagGroup from "../../core/components/taggroup/TagGroup"
 import SettingsDto from "../settings/model/SettingsDto"
@@ -26,6 +25,9 @@ import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n, I18nMessage } from "../../core/i18n/I18n"
+import LogViewer from "./components/LogViewer"
+import LogLine from "./model/LogLine"
+import debounce from "debounce"
 
 interface LogsPageState {
     settings?: SettingsDto
@@ -35,15 +37,16 @@ interface LogsPageState {
     lineCount: number
     logType: string
     loading: boolean
-    logs: string[]
+    logs: LogLine[]
     error?: Error
+    searchTerms?: string
+    surroundingLines: number
 }
 
 export default class LogsPage extends React.Component<any, LogsPageState> {
     private readonly hostService: HostService
     private readonly nginxService: NginxService
     private readonly settingsService: SettingsService
-    private readonly contentsRef: React.RefObject<TextAreaRef | null>
     private refreshIntervalId?: number
 
     constructor(props: any) {
@@ -51,13 +54,13 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         this.hostService = new HostService()
         this.nginxService = new NginxService()
         this.settingsService = new SettingsService()
-        this.contentsRef = React.createRef()
         this.state = {
             hostMode: true,
             logType: "access",
-            lineCount: 50,
+            lineCount: 25,
             loading: true,
             logs: [],
+            surroundingLines: 0,
         }
     }
 
@@ -76,15 +79,9 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         this.configureShell()
     }
 
-    componentDidUpdate() {
-        const textarea = this.contentsRef.current?.resizableTextArea?.textArea
-        if (textarea === undefined) return
-
-        textarea.scrollTop = textarea.scrollHeight
-    }
-
     componentWillUnmount() {
         this.stopAutoRefresh()
+        this.debounceApplyOptions.clear()
     }
 
     private stopAutoRefresh() {
@@ -132,19 +129,21 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         this.setState({ loading: true }, () => this.fetchLogs())
     }
 
+    private readonly debounceApplyOptions = debounce(this.applyOptions.bind(this), 500)
+
     private fetchLogs(omitNotifications?: boolean) {
-        const { hostMode, lineCount, selectedHost, logType } = this.state
+        const { hostMode, lineCount, selectedHost, logType, searchTerms, surroundingLines } = this.state
         if (hostMode && selectedHost === undefined) return this.setState({ loading: false })
 
         const logs = hostMode
-            ? this.hostService.logs(selectedHost!!.id, logType, lineCount)
-            : this.nginxService.logs(lineCount)
+            ? this.hostService.logs(selectedHost!!.id, logType, lineCount, surroundingLines, searchTerms)
+            : this.nginxService.logs(lineCount, surroundingLines, searchTerms)
 
         return logs
             .then(lines => {
                 this.setState({
                     loading: false,
-                    logs: lines.reverse(),
+                    logs: lines,
                 })
             })
             .catch(error => {
@@ -191,6 +190,48 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         if (Array.isArray(domainNames) && domainNames.length > 0) return domainNames
 
         return []
+    }
+
+    private handleSearchChange(searchTerms: string | undefined) {
+        this.setState({ searchTerms }, () => this.debounceApplyOptions())
+    }
+
+    private handleSurroundingLinesChange(surroundingLines: number | null) {
+        surroundingLines ??= 0
+        this.setState({ surroundingLines }, () => this.applyOptions())
+    }
+
+    private renderSearch() {
+        const { searchTerms, surroundingLines } = this.state
+
+        return (
+            <Flex className="log-search-container">
+                <Flex className="log-search-search-input">
+                    <Form.Item
+                        label={<I18n id={MessageKey.CommonSearchTerms} />}
+                        layout="vertical"
+                        colon={false}
+                        style={{ flexGrow: 1 }}
+                    >
+                        <Input value={searchTerms} onChange={event => this.handleSearchChange(event.target.value)} />
+                    </Form.Item>
+                </Flex>
+                <Form.Item
+                    className="log-search-surrounding-lines-input"
+                    label={<I18n id={MessageKey.FrontendLogsSurroundingLines} />}
+                    layout="vertical"
+                    colon={false}
+                >
+                    <InputNumber
+                        style={{ width: "100%" }}
+                        min={0}
+                        max={10}
+                        value={surroundingLines}
+                        onChange={value => this.handleSurroundingLinesChange(value)}
+                    />
+                </Form.Item>
+            </Flex>
+        )
     }
 
     private renderSettings() {
@@ -329,8 +370,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
         if (emptyState !== undefined) return emptyState
 
         const { logs } = this.state
-        const contents = logs.join("\n")
-        return <TextArea ref={this.contentsRef} className="log-contents-lines" value={contents} readOnly />
+        return <LogViewer lines={logs} />
     }
 
     render() {
@@ -345,6 +385,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
             <Flex className="log-container" vertical>
                 <Preloader loading={loading}>
                     {this.renderSettings()}
+                    {this.renderSearch()}
 
                     <Flex className="log-contents-container">{this.renderLogContents()}</Flex>
                 </Preloader>

@@ -4,7 +4,14 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+
+	"dillmann.com.br/nginx-ignition/core/common/logline"
 )
+
+type LogSearch struct {
+	Query            string
+	SurroundingLines int
+}
 
 type GetConfigFilesInput struct {
 	BasePath   string
@@ -20,8 +27,9 @@ type Commands interface {
 		hostID uuid.UUID,
 		qualifier string,
 		lines int,
-	) ([]string, error)
-	GetMainLogs(ctx context.Context, lines int) ([]string, error)
+		search *LogSearch,
+	) ([]logline.LogLine, error)
+	GetMainLogs(ctx context.Context, lines int, search *LogSearch) ([]logline.LogLine, error)
 	GetStatus(ctx context.Context) bool
 	GetConfigFiles(ctx context.Context, input GetConfigFilesInput) ([]byte, error)
 	GetMetadata(ctx context.Context) (*Metadata, error)

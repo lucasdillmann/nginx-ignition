@@ -4,6 +4,7 @@ import HostResponse from "./model/HostResponse"
 import { requireNullablePayload, requireSuccessPayload, requireSuccessResponse } from "../../core/apiclient/ApiResponse"
 import HostRequest from "./model/HostRequest"
 import GenericCreateResponse from "../../core/common/GenericCreateResponse"
+import LogLine from "../logs/model/LogLine"
 
 export default class HostService {
     private readonly gateway: HostGateway
@@ -28,8 +29,14 @@ export default class HostService {
         return this.gateway.toggleEnabled(id).then(requireSuccessResponse)
     }
 
-    async logs(id: string, type: string, lines: number): Promise<string[]> {
-        return this.gateway.getLogs(id, type, lines).then(requireSuccessPayload)
+    async logs(
+        id: string,
+        type: string,
+        lines: number,
+        surroundingLines: number,
+        searchTerms?: string,
+    ): Promise<LogLine[]> {
+        return this.gateway.getLogs(id, type, lines, surroundingLines, searchTerms).then(requireSuccessPayload)
     }
 
     async updateById(id: string, host: HostRequest): Promise<void> {
