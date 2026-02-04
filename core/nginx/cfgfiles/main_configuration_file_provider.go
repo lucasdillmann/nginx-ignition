@@ -50,7 +50,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 	}
 
 	if ctx.supportedFeatures.StreamType == DynamicSupportType {
-		_, _ = moduleLines.WriteString("load_module modules/ngx_http_vts_module.so;\n")
+		_, _ = moduleLines.WriteString("load_module modules/ngx_http_vhost_traffic_status_module.so;\n")
 	}
 
 	var customCfg string
