@@ -144,8 +144,8 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		customCfg,
 		p.getCacheDefinitions(ctx.paths, ctx.caches),
 		p.getHostIncludes(ctx.paths, ctx.hosts),
-		streamLines.String(),
 		flag(statsEnabled, "vhost_traffic_status_zone;", ""),
+		streamLines.String(),
 	)
 
 	return []File{

@@ -511,6 +511,8 @@ func (p *hostConfigurationFileProvider) buildStatsConfig(h *host.Host) string {
 		return ""
 	}
 
+	// TODO: Check the possibility and migrate to a dedicated server{} block that listens on a unix socket only,
+	//       enabling ignition to read the stats from it without the need to any endpoint, specially in the user's host
 	return fmt.Sprintf(
 		`
 		set $host_id "%s";
