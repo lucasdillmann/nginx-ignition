@@ -12,14 +12,7 @@ import { I18n, I18nMessage } from "../../i18n/I18n"
 import MessageKey from "../../i18n/model/MessageKey.generated"
 import DataTableService from "./DataTableService"
 import { DataTableInitialState } from "./model/DataTableInitialState"
-import { DATA_TABLE_PAGE_SIZES, DataTablePageSize, DEFAULT_PAGE_SIZE } from "./model/DataTablePageSize"
-
-const DEFAULT_DATA: PageResponse<any> = {
-    pageSize: DEFAULT_PAGE_SIZE,
-    pageNumber: 0,
-    totalItems: 0,
-    contents: [],
-}
+import { DATA_TABLE_PAGE_SIZES, DataTablePageSize } from "./model/DataTablePageSize"
 
 export interface DataTableColumn<T> {
     id: string
@@ -57,7 +50,12 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
 
         this.state = {
             loading: true,
-            data: DEFAULT_DATA,
+            data: {
+                pageSize: initialValues.pageSize,
+                pageNumber: initialValues.pageNumber,
+                totalItems: 0,
+                contents: [],
+            },
             searchTerms: initialValues.searchTerms,
             initialValues,
         }
@@ -119,11 +117,16 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
 
         this.service.searchTermsChanged(id, searchTerms)
         this.setState(
-            {
+            ({ data }) => ({
                 loading: true,
-                data: DEFAULT_DATA,
+                data: {
+                    pageSize: data.pageSize,
+                    pageNumber: 0,
+                    totalItems: 0,
+                    contents: [],
+                },
                 searchTerms,
-            },
+            }),
             () => this.refresh(),
         )
     }
