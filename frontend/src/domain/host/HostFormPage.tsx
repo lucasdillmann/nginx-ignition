@@ -279,6 +279,15 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                         >
                             <Switch />
                         </Form.Item>
+                        <Form.Item
+                            name={["featureSet", "statsEnabled"]}
+                            validateStatus={validationResult.getStatus("featureSet.statsEnabled")}
+                            help={validationResult.getMessage("featureSet.statsEnabled")}
+                            label={<I18n id={MessageKey.FrontendHostFormStatsSupport} />}
+                            required
+                        >
+                            <Switch />
+                        </Form.Item>
                     </Flex>
                     <Flex className="hosts-form-inner-flex-container-column">
                         <Form.Item

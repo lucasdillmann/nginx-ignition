@@ -14,6 +14,7 @@ type hostModel struct {
 	ID                  uuid.UUID `bun:"id,pk"`
 	AccessListID        uuid.UUID `bun:"access_list_id"`
 	Enabled             bool      `bun:"enabled,notnull"`
+	StatsEnabled        bool      `bun:"stats_enabled,notnull"`
 	DefaultServer       bool      `bun:"default_server,notnull"`
 	WebsocketSupport    bool      `bun:"websocket_support,notnull"`
 	HTTP2Support        bool      `bun:"http2_support,notnull"`

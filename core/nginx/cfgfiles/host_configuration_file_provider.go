@@ -167,6 +167,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			%s
 			%s
 			%s
+			%s
 		}`,
 		flag(
 			logs.AccessLogsEnabled,
@@ -195,6 +196,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		http2,
 		listen,
 		serverNames,
+		p.buildStatsConfig(h),
 		strings.Join(routes, "\n"),
 	), nil
 }
@@ -502,6 +504,28 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(
 	_, _ = builder.WriteString(p.buildCacheConfig(ctx.caches, r.CacheID))
 
 	return builder.String()
+}
+
+func (p *hostConfigurationFileProvider) buildStatsConfig(h *host.Host) string {
+	if !h.FeatureSet.StatsEnabled {
+		return ""
+	}
+
+	return fmt.Sprintf(
+		`
+		set $host_id "%s";
+		vhost_traffic_status_filter_by_set_key $host_id hosts;
+
+		location /__nginx-ignition/internal-metadata/traffic-stats {
+			vhost_traffic_status_display;
+			vhost_traffic_status_display_format json;
+			access_log off;
+			allow 127.0.0.1;
+			deny all;
+		}
+		`,
+		h.ID,
+	)
 }
 
 func (p *hostConfigurationFileProvider) buildCacheConfig(
