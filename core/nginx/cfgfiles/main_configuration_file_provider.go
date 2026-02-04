@@ -49,6 +49,10 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		_, _ = moduleLines.WriteString("load_module modules/ngx_http_lua_module.so;\n")
 	}
 
+	if ctx.supportedFeatures.StreamType == DynamicSupportType {
+		_, _ = moduleLines.WriteString("load_module modules/ngx_http_vts_module.so;\n")
+	}
+
 	var customCfg string
 	if cfg.Nginx.Custom != nil {
 		customCfg = fmt.Sprintf("\n%s\n", *cfg.Nginx.Custom)

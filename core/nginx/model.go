@@ -35,6 +35,14 @@ func (m *Metadata) StreamSupportType() SupportType {
 	return NoneSupportType
 }
 
+func (m *Metadata) StatsSupportType() SupportType {
+	if m.hasModule("nginx-module-vts") || m.hasModule("ngx_http_vts_module") {
+		return DynamicSupportType
+	}
+
+	return NoneSupportType
+}
+
 func (m *Metadata) RunCodeSupportType() SupportType {
 	jsModule := m.hasModule("ngx_http_js_module")
 	luaModule := m.hasModule("ngx_http_lua_module")
