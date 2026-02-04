@@ -522,9 +522,6 @@ func (p *hostConfigurationFileProvider) buildStatsConfig(h *host.Host) string {
 		location /__nginx-ignition/internal-metadata/traffic-stats {
 			vhost_traffic_status_display;
 			vhost_traffic_status_display_format json;
-			access_log off;
-			allow 127.0.0.1;
-			deny all;
 		}
 		`,
 		h.ID,
