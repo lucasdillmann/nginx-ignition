@@ -12,7 +12,6 @@ import (
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/host"
-	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 func Test_hostCertificateFileProvider(t *testing.T) {
@@ -38,14 +37,12 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 					},
 				},
 			},
+			cfg: newSettings(),
 		}
 
 		t.Run("successfully provides certificates", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-
-			settingsCmds := settings.NewMockedCommands(ctrl)
-			settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(newSettings(), nil)
 
 			cert := newCertificate()
 			cert.ID = certID
@@ -62,7 +59,6 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 				Return(cert, nil)
 
 			provider := &hostCertificateFileProvider{
-				settingsCommands:    settingsCmds,
 				certificateCommands: certificateCmds,
 			}
 
@@ -90,32 +86,14 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 			)
 		})
 
-		t.Run("returns error when settingsCommands fails", func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-
-			settingsCmds := settings.NewMockedCommands(ctrl)
-			settingsCmds.EXPECT().Get(gomock.Any()).Return(nil, assert.AnError)
-
-			provider := &hostCertificateFileProvider{settingsCommands: settingsCmds}
-			_, err := provider.provide(ctx)
-			assert.ErrorIs(t, err, assert.AnError)
-		})
-
 		t.Run("returns error when certificateCommands fails", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-
-			settingsCmds := settings.NewMockedCommands(ctrl)
-			settingsCmds.EXPECT().
-				Get(gomock.Any()).
-				Return(newSettings(), nil)
 
 			certificateCmds := certificate.NewMockedCommands(ctrl)
 			certificateCmds.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil, assert.AnError)
 
 			provider := &hostCertificateFileProvider{
-				settingsCommands:    settingsCmds,
 				certificateCommands: certificateCmds,
 			}
 			_, err := provider.provide(ctx)
@@ -126,19 +104,12 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			settingsCmds := settings.NewMockedCommands(ctrl)
-			settingsCmds.EXPECT().
-				Get(gomock.Any()).
-				AnyTimes().
-				Return(newSettings(), nil)
-
 			certificateCmds := certificate.NewMockedCommands(ctrl)
 			certificateCmds.EXPECT().
 				Get(gomock.Any(), gomock.Any()).
 				Return(newCertificate(), nil)
 
 			provider := &hostCertificateFileProvider{
-				settingsCommands:    settingsCmds,
 				certificateCommands: certificateCmds,
 			}
 
@@ -153,6 +124,7 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 						},
 					},
 				},
+				cfg: newSettings(),
 			}
 
 			files, err := provider.provide(subCtx)

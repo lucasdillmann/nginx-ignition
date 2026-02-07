@@ -14,21 +14,17 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
-	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 type hostConfigurationFileProvider struct {
 	integrationCommands integration.Commands
-	settingsCommands    settings.Commands
 }
 
 func newHostConfigurationFileProvider(
-	settingsCommands settings.Commands,
 	integrationCommands integration.Commands,
 ) *hostConfigurationFileProvider {
 	return &hostConfigurationFileProvider{
 		integrationCommands: integrationCommands,
-		settingsCommands:    settingsCommands,
 	}
 }
 
@@ -78,12 +74,7 @@ func (p *hostConfigurationFileProvider) buildHost(
 
 	bindings := h.Bindings
 	if h.UseGlobalBindings {
-		cfg, err := p.settingsCommands.Get(ctx.context)
-		if err != nil {
-			return nil, err
-		}
-
-		bindings = cfg.GlobalBindings
+		bindings = ctx.cfg.GlobalBindings
 	}
 
 	contents := make([]string, 0)
@@ -146,12 +137,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		conditionalHTTPSRedirect = httpsRedirect
 	}
 
-	cfg, err := p.settingsCommands.Get(ctx.context)
-	if err != nil {
-		return "", err
-	}
-
-	logs := cfg.Nginx.Logs
+	logs := ctx.cfg.Nginx.Logs
 
 	return fmt.Sprintf(
 		`server {
@@ -183,8 +169,8 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			),
 			"off",
 		),
-		statusFlag(cfg.Nginx.GzipEnabled),
-		cfg.Nginx.MaximumBodySizeMb,
+		statusFlag(ctx.cfg.Nginx.GzipEnabled),
+		ctx.cfg.Nginx.MaximumBodySizeMb,
 		flag(
 			h.AccessListID != nil,
 			fmt.Sprintf("include \"%saccess-list-%s.conf\";", ctx.paths.Config, h.AccessListID),

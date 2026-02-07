@@ -16,7 +16,6 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
-	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 func Test_hostConfigurationFileProvider(t *testing.T) {
@@ -35,13 +34,10 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 		ctx := newProviderContext(t)
 		ctx.hosts = []host.Host{h}
+		ctx.cfg = newSettings()
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-
-		settingsCmds := settings.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(newSettings(), nil)
-		provider.settingsCommands = settingsCmds
 
 		integrationCmds := integration.NewMockedCommands(ctrl)
 		provider.integrationCommands = integrationCmds
@@ -346,13 +342,10 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	t.Run("BuildBinding", func(t *testing.T) {
 		provider := &hostConfigurationFileProvider{}
 		ctx := newProviderContext(t)
+		ctx.cfg = newSettings()
 		h := &host.Host{ID: uuid.New()}
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-
-		settingsCmds := settings.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(newSettings(), nil)
-		provider.settingsCommands = settingsCmds
 
 		t.Run("generates HTTP binding", func(t *testing.T) {
 			b := &binding.Binding{
@@ -423,15 +416,6 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			_, err := provider.buildBinding(ctx, h, b, []string{}, "", "", "")
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "invalid binding type")
-		})
-
-		t.Run("returns error when settingsCommands fails", func(t *testing.T) {
-			settingsCmds := settings.NewMockedCommands(ctrl)
-			settingsCmds.EXPECT().Get(gomock.Any()).Return(nil, assert.AnError)
-			provider.settingsCommands = settingsCmds
-			b := &binding.Binding{Type: binding.HTTPBindingType}
-			_, err := provider.buildBinding(ctx, h, b, []string{}, "", "", "")
-			assert.ErrorIs(t, err, assert.AnError)
 		})
 	})
 

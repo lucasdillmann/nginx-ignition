@@ -15,26 +15,19 @@ import (
 )
 
 type mainConfigurationFileProvider struct {
-	settingsCommands settings.Commands
-	config           *configuration.Configuration
+	config *configuration.Configuration
 }
 
 func newMainConfigurationFileProvider(
-	settingsCommands settings.Commands,
 	config *configuration.Configuration,
 ) *mainConfigurationFileProvider {
 	return &mainConfigurationFileProvider{
-		settingsCommands: settingsCommands,
-		config:           config,
+		config: config,
 	}
 }
 
 func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, error) {
-	cfg, err := p.settingsCommands.Get(ctx.context)
-	if err != nil {
-		return nil, err
-	}
-
+	cfg := ctx.cfg
 	logs := cfg.Nginx.Logs
 	moduleLines := strings.Builder{}
 	streamLines := strings.Builder{}

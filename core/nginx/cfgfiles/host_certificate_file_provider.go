@@ -11,36 +11,27 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 type hostCertificateFileProvider struct {
 	certificateCommands certificate.Commands
-	settingsCommands    settings.Commands
 }
 
 func newHostCertificateFileProvider(
 	certificateCommands certificate.Commands,
-	settingsCommands settings.Commands,
 ) *hostCertificateFileProvider {
 	return &hostCertificateFileProvider{
 		certificateCommands: certificateCommands,
-		settingsCommands:    settingsCommands,
 	}
 }
 
 func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, error) {
-	bindings := make([]binding.Binding, 0)
+	bindings := make([]binding.Binding, 0, len(ctx.hosts)+len(ctx.cfg.GlobalBindings))
 	for _, h := range ctx.hosts {
 		bindings = append(bindings, h.Bindings...)
 	}
 
-	cgf, err := p.settingsCommands.Get(ctx.context)
-	if err != nil {
-		return nil, err
-	}
-
-	bindings = append(bindings, cgf.GlobalBindings...)
+	bindings = append(bindings, ctx.cfg.GlobalBindings...)
 
 	outputs := make([]File, 0)
 	uniqueCertIDs := map[string]bool{}

@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
@@ -21,20 +20,14 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 		provider := &mainConfigurationFileProvider{
 			config: configuration.New(),
 		}
+
 		paths := newPaths()
-
 		mockSettings := newSettings()
-
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		settingsCmds := settings.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(mockSettings, nil)
-		provider.settingsCommands = settingsCmds
 
 		t.Run("successfully generates basic config", func(t *testing.T) {
 			ctx := newProviderContext(t)
 			ctx.paths = paths
+			ctx.cfg = mockSettings
 			ctx.supportedFeatures.StreamType = NoneSupportType
 			ctx.supportedFeatures.RunCodeType = NoneSupportType
 
@@ -49,6 +42,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 		t.Run("includes dynamic modules and stream block when enabled", func(t *testing.T) {
 			ctx := newProviderContext(t)
 			ctx.paths = paths
+			ctx.cfg = mockSettings
 			ctx.supportedFeatures.StreamType = DynamicSupportType
 			ctx.supportedFeatures.RunCodeType = DynamicSupportType
 			ctx.streams = []stream.Stream{{ID: uuid.New()}}
@@ -65,21 +59,13 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			mockSettings.Nginx.Custom = ptr.Of("custom_directive on;")
 			ctx := newProviderContext(t)
 			ctx.paths = paths
+			ctx.cfg = mockSettings
 			ctx.supportedFeatures.StreamType = NoneSupportType
 			ctx.supportedFeatures.RunCodeType = NoneSupportType
 
 			files, err := provider.provide(ctx)
 			assert.NoError(t, err)
 			assert.Contains(t, files[0].Contents, "custom_directive on;")
-		})
-
-		t.Run("returns error when settingsCommands fails", func(t *testing.T) {
-			settingsCmds := settings.NewMockedCommands(ctrl)
-			settingsCmds.EXPECT().Get(gomock.Any()).Return(nil, assert.AnError)
-			provider.settingsCommands = settingsCmds
-			ctx := newProviderContext(t)
-			_, err := provider.provide(ctx)
-			assert.ErrorIs(t, err, assert.AnError)
 		})
 	})
 
