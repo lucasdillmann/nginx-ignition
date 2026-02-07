@@ -248,7 +248,10 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 	output := strings.Builder{}
 	_, _ = fmt.Fprintf(
 		&output,
-		"\nvhost_traffic_status_zone shared:nginx-ignition-traffic-stats:%dm;\n",
+		`
+		vhost_traffic_status_zone shared:nginx-ignition-traffic-stats:%dm;
+		vhost_traffic_status_filter_by_host off;
+		`,
 		cfg.MaximumSizeMB,
 	)
 

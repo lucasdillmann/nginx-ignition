@@ -77,9 +77,24 @@ func (p *hostConfigurationFileProvider) buildHost(
 		bindings = ctx.cfg.GlobalBindings
 	}
 
+	stats := ""
+	statsCfg := ctx.cfg.Nginx.Stats
+
+	if statsCfg.Enabled {
+		stats = fmt.Sprintf(
+			`
+			set $stats_host_id "%s";
+			vhost_traffic_status %s;
+			vhost_traffic_status_filter_by_set_key $stats_host_id hosts;
+			`,
+			h.ID,
+			statusFlag(statsCfg.AllHosts || h.FeatureSet.StatsEnabled),
+		)
+	}
+
 	contents := make([]string, 0)
 	for _, b := range bindings {
-		b, err := p.buildBinding(ctx, h, &b, routes, serverNames, httpsRedirect, http2)
+		b, err := p.buildBinding(ctx, h, &b, routes, serverNames, httpsRedirect, http2, stats)
 		if err != nil {
 			return nil, err
 		}
@@ -105,7 +120,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 	h *host.Host,
 	b *binding.Binding,
 	routes []string,
-	serverNames, httpsRedirect, http2 string,
+	serverNames, httpsRedirect, http2, stats string,
 ) (string, error) {
 	listen := ""
 	switch b.Type {
@@ -153,6 +168,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			%s
 			%s
 			%s
+			%s
 		}`,
 		flag(
 			logs.AccessLogsEnabled,
@@ -179,6 +195,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		p.buildCacheConfig(ctx.caches, h.CacheID),
 		conditionalHTTPSRedirect,
 		http2,
+		stats,
 		listen,
 		serverNames,
 		strings.Join(routes, "\n"),

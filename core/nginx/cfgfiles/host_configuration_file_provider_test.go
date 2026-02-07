@@ -51,6 +51,77 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		assert.Contains(t, files[0].Contents, "proxy_pass http://backend:8080;")
 	})
 
+	t.Run("Provide with traffic stats enabled", func(t *testing.T) {
+		provider := &hostConfigurationFileProvider{}
+
+		h := newHost()
+		h.FeatureSet.StatsEnabled = true
+		h.Routes = []host.Route{
+			{
+				Enabled:    true,
+				Type:       host.ProxyRouteType,
+				SourcePath: "/",
+				TargetURI:  ptr.Of("http://backend:8080"),
+			},
+		}
+
+		ctx := newProviderContext(t)
+		ctx.hosts = []host.Host{h}
+		ctx.cfg = newSettings()
+		ctx.cfg.Nginx.Stats.Enabled = true
+		ctx.supportedFeatures.Stats = StaticSupportType
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		integrationCmds := integration.NewMockedCommands(ctrl)
+		provider.integrationCommands = integrationCmds
+
+		files, err := provider.provide(ctx)
+		assert.NoError(t, err)
+		assert.Len(t, files, 1)
+		assert.Contains(t, files[0].Contents, fmt.Sprintf("set $stats_host_id \"%s\";", h.ID))
+		assert.Contains(t, files[0].Contents, "vhost_traffic_status on;")
+		assert.Contains(
+			t,
+			files[0].Contents,
+			"vhost_traffic_status_filter_by_set_key $stats_host_id hosts;",
+		)
+	})
+
+	t.Run("Provide with global traffic stats enabled", func(t *testing.T) {
+		provider := &hostConfigurationFileProvider{}
+
+		h := newHost()
+		h.FeatureSet.StatsEnabled = false
+		h.Routes = []host.Route{
+			{
+				Enabled:    true,
+				Type:       host.ProxyRouteType,
+				SourcePath: "/",
+				TargetURI:  ptr.Of("http://backend:8080"),
+			},
+		}
+
+		ctx := newProviderContext(t)
+		ctx.hosts = []host.Host{h}
+		ctx.cfg = newSettings()
+		ctx.cfg.Nginx.Stats.Enabled = true
+		ctx.cfg.Nginx.Stats.AllHosts = true
+		ctx.supportedFeatures.Stats = StaticSupportType
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		integrationCmds := integration.NewMockedCommands(ctrl)
+		provider.integrationCommands = integrationCmds
+
+		files, err := provider.provide(ctx)
+		assert.NoError(t, err)
+		assert.Len(t, files, 1)
+		assert.Contains(t, files[0].Contents, "vhost_traffic_status on;")
+	})
+
 	t.Run("BuildServerNames", func(t *testing.T) {
 		provider := &hostConfigurationFileProvider{}
 
@@ -361,6 +432,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				"server_name example.com;",
 				"",
 				"",
+				"",
 			)
 			assert.NoError(t, err)
 			assert.Contains(t, result, "listen 127.0.0.1:8080 ;")
@@ -382,6 +454,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				"server_name example.com;",
 				"",
 				"",
+				"",
 			)
 			assert.NoError(t, err)
 			assert.Contains(t, result, "listen 0.0.0.0:443 ssl ;")
@@ -395,7 +468,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		t.Run("includes HTTP to HTTPS redirect in HTTP binding", func(t *testing.T) {
 			b := &binding.Binding{Type: binding.HTTPBindingType}
 			redirect := "return 301 https://$server_name$request_uri;"
-			result, err := provider.buildBinding(ctx, h, b, []string{}, "", redirect, "")
+			result, err := provider.buildBinding(ctx, h, b, []string{}, "", redirect, "", "")
 			assert.NoError(t, err)
 			assert.Contains(t, result, redirect)
 		})
@@ -406,14 +479,14 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				Type:          binding.HTTPSBindingType,
 				CertificateID: &certID,
 			}
-			result, err := provider.buildBinding(ctx, h, b, []string{}, "", "", "http2 on;")
+			result, err := provider.buildBinding(ctx, h, b, []string{}, "", "", "http2 on;", "")
 			assert.NoError(t, err)
 			assert.Contains(t, result, "http2 on;")
 		})
 
 		t.Run("returns error for invalid binding type", func(t *testing.T) {
 			b := &binding.Binding{Type: "INVALID"}
-			_, err := provider.buildBinding(ctx, h, b, []string{}, "", "", "")
+			_, err := provider.buildBinding(ctx, h, b, []string{}, "", "", "", "")
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "invalid binding type")
 		})

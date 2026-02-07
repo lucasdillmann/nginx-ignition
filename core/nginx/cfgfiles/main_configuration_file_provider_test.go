@@ -231,6 +231,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 				result,
 				"vhost_traffic_status_zone shared:nginx-ignition-traffic-stats:10m;",
 			)
+			assert.Contains(t, result, "vhost_traffic_status_filter_by_host off;")
 			assert.Contains(t, result, "server {")
 			assert.Contains(t, result, "listen unix:/etc/nginx/traffic-stats.socket;")
 			assert.NotContains(t, result, "vhost_traffic_status_dump")
