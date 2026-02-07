@@ -9,7 +9,7 @@ create table settings_nginx_stats (
 );
 
 insert into settings_nginx_stats (id, enabled, persistent, all_hosts, maximum_size_mb)
-values ('32f9a2e6-815c-4b53-b924-11887e74880b', true, true, true, 64);
+values ('32f9a2e6-815c-4b53-b924-11887e74880b', true, true, true, 16);
 
 alter table nginx_settings_buffers rename to settings_nginx_buffers;
 alter table host add column stats_enabled boolean not null default true;

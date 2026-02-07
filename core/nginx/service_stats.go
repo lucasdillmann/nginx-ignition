@@ -10,6 +10,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
+	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
 type statsResponse struct {
@@ -135,6 +136,7 @@ func (s *service) GetTrafficStats(ctx context.Context) (*Stats, error) {
 
 	response, err := s.fetchStatsFromSocket(ctx)
 	if err != nil {
+		log.Errorf("unable to fetch traffic stats from the unix socket: %v", err)
 		return nil, coreerror.New(i18n.M(ctx, i18n.K.CoreNginxStatsFetchFailed), false)
 	}
 
