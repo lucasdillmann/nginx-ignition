@@ -19,7 +19,7 @@ func Test_toDTO(t *testing.T) {
 	t.Run("converts domain object to DTO", func(t *testing.T) {
 		subject := newSettings()
 		subject.Nginx.Custom = ptr.Of("custom-config")
-		subject.Nginx.Stats.DatabaseLocation = ptr.Of("/var/lib/nginx/stats.db")
+		subject.Nginx.Stats.DatabaseLocation = ptr.Of("/var/lib/nginx/traffic-stats.db")
 		subject.GlobalBindings = []binding.Binding{
 			{
 				Type:          binding.HTTPBindingType,
@@ -139,7 +139,7 @@ func Test_toDomain(t *testing.T) {
 	t.Run("converts DTO to domain object", func(t *testing.T) {
 		payload := newSettingsDTO()
 		payload.Nginx.Custom = ptr.Of("custom-config")
-		payload.Nginx.Stats.DatabaseLocation = ptr.Of("/var/lib/nginx/stats.db")
+		payload.Nginx.Stats.DatabaseLocation = ptr.Of("/var/lib/nginx/traffic-stats.db")
 		payload.GlobalBindings = []bindingDTO{
 			{
 				Type:          ptr.Of(binding.HTTPSBindingType),

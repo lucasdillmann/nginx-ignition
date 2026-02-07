@@ -249,7 +249,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			assert.Contains(
 				t,
 				result,
-				"vhost_traffic_status_dump \"/tmp/nginx-ignition/data/stats.db\" 5s;",
+				"vhost_traffic_status_dump \"/tmp/nginx-ignition/data/traffic-stats.db\" 5s;",
 			)
 		})
 
@@ -258,11 +258,15 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 				Enabled:          true,
 				MaximumSizeMB:    10,
 				Persistent:       true,
-				DatabaseLocation: ptr.Of("/var/lib/nginx/stats.db"),
+				DatabaseLocation: ptr.Of("/var/lib/nginx/traffic-stats.db"),
 			}
 			result, err := provider.getStatsDefinitions(paths, cfg)
 			assert.NoError(t, err)
-			assert.Contains(t, result, "vhost_traffic_status_dump \"/var/lib/nginx/stats.db\" 5s;")
+			assert.Contains(
+				t,
+				result,
+				"vhost_traffic_status_dump \"/var/lib/nginx/traffic-stats.db\" 5s;",
+			)
 		})
 	})
 }

@@ -246,7 +246,7 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 		return "", nil
 	}
 
-	geoIPFilePath := filepath.Join(paths.Base, "geoip.dat")
+	geoIPFilePath := filepath.Join(paths.Config, "geoip.dat")
 	output := strings.Builder{}
 
 	_, _ = fmt.Fprintf(
@@ -277,7 +277,7 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 				return "", err
 			}
 
-			dbLocation = ptr.Of(filepath.Join(dataPath, "stats.db"))
+			dbLocation = ptr.Of(filepath.Join(dataPath, "traffic-stats.db"))
 		}
 
 		_, _ = fmt.Fprintf(&output, "vhost_traffic_status_dump \"%s\" 5s;\n", *dbLocation)
