@@ -54,8 +54,16 @@ func (m *processManager) sendStopSignal() error {
 		return err
 	}
 
+	m.deleteTrafficStatsSocket()
 	log.Infof("nginx stopped")
 	return nil
+}
+
+func (m *processManager) deleteTrafficStatsSocket() {
+	socketFile := filepath.Join(m.configPath, "traffic-stats.socket")
+	if err := os.Remove(socketFile); err != nil && !os.IsNotExist(err) {
+		log.Warnf("Failed to delete traffic-stats.socket: %v", err)
+	}
 }
 
 func (m *processManager) currentPid() (int64, error) {
