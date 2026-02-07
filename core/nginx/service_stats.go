@@ -142,10 +142,7 @@ func (s *service) GetTrafficStats(ctx context.Context) (*Stats, error) {
 	return convertToStats(response), nil
 }
 
-func (s *service) fetchStatsFromSocket(
-	ctx context.Context,
-	socketPath string,
-) (*statsResponse, error) {
+func (s *service) fetchStatsFromSocket(ctx context.Context, socketPath string) (*statsResponse, error) {
 	transport := &http.Transport{
 		DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
 			return net.Dial("unix", socketPath)
@@ -181,15 +178,11 @@ func (s *service) fetchStatsFromSocket(
 func convertToStats(src *statsResponse) *Stats {
 	return &Stats{
 		HostName:      src.HostName,
-		Connections:   convertConnections(src.Connections),
+		Connections:   StatsConnections(src.Connections),
 		ServerZones:   convertServerZones(src.ServerZones),
 		FilterZones:   convertFilterZones(src.FilterZones),
 		UpstreamZones: convertUpstreamZones(src.UpstreamZones),
 	}
-}
-
-func convertConnections(src statsConnections) StatsConnections {
-	return StatsConnections(src)
 }
 
 func convertServerZones(src map[string]statsZoneData) map[string]StatsZoneData {
@@ -204,9 +197,7 @@ func convertServerZones(src map[string]statsZoneData) map[string]StatsZoneData {
 	return result
 }
 
-func convertFilterZones(
-	src map[string]map[string]statsZoneData,
-) map[string]map[string]StatsZoneData {
+func convertFilterZones(src map[string]map[string]statsZoneData) map[string]map[string]StatsZoneData {
 	if src == nil {
 		return nil
 	}
@@ -226,9 +217,7 @@ func convertFilterZones(
 	return result
 }
 
-func convertUpstreamZones(
-	src map[string][]statsUpstreamZoneData,
-) map[string][]StatsUpstreamZoneData {
+func convertUpstreamZones(src map[string][]statsUpstreamZoneData) map[string][]StatsUpstreamZoneData {
 	if src == nil {
 		return nil
 	}
@@ -253,29 +242,13 @@ func convertZoneData(src statsZoneData) StatsZoneData {
 		RequestCounter:     src.RequestCounter,
 		InBytes:            src.InBytes,
 		OutBytes:           src.OutBytes,
-		Responses:          convertResponses(src.Responses),
+		Responses:          StatsResponses(src.Responses),
 		RequestMsec:        src.RequestMsec,
 		RequestMsecCounter: src.RequestMsecCounter,
-		RequestMsecs:       convertTimeSeries(src.RequestMsecs),
-		RequestBuckets:     convertBuckets(src.RequestBuckets),
-		OverCounts:         convertOverCounts(src.OverCounts),
+		RequestMsecs:       StatsTimeSeries(src.RequestMsecs),
+		RequestBuckets:     StatsBuckets(src.RequestBuckets),
+		OverCounts:         StatsOverCounts(src.OverCounts),
 	}
-}
-
-func convertResponses(src statsResponses) StatsResponses {
-	return StatsResponses(src)
-}
-
-func convertTimeSeries(src statsTimeSeries) StatsTimeSeries {
-	return StatsTimeSeries(src)
-}
-
-func convertBuckets(src statsBuckets) StatsBuckets {
-	return StatsBuckets(src)
-}
-
-func convertOverCounts(src statsOverCounts) StatsOverCounts {
-	return StatsOverCounts(src)
 }
 
 func convertUpstreamZoneData(src statsUpstreamZoneData) StatsUpstreamZoneData {
@@ -284,24 +257,20 @@ func convertUpstreamZoneData(src statsUpstreamZoneData) StatsUpstreamZoneData {
 		RequestCounter:      src.RequestCounter,
 		InBytes:             src.InBytes,
 		OutBytes:            src.OutBytes,
-		Responses:           convertUpstreamResponses(src.Responses),
+		Responses:           StatsUpstreamResponses(src.Responses),
 		RequestMsec:         src.RequestMsec,
 		RequestMsecCounter:  src.RequestMsecCounter,
-		RequestMsecs:        convertTimeSeries(src.RequestMsecs),
-		RequestBuckets:      convertBuckets(src.RequestBuckets),
+		RequestMsecs:        StatsTimeSeries(src.RequestMsecs),
+		RequestBuckets:      StatsBuckets(src.RequestBuckets),
 		ResponseMsec:        src.ResponseMsec,
 		ResponseMsecCounter: src.ResponseMsecCounter,
-		ResponseMsecs:       convertTimeSeries(src.ResponseMsecs),
-		ResponseBuckets:     convertBuckets(src.ResponseBuckets),
+		ResponseMsecs:       StatsTimeSeries(src.ResponseMsecs),
+		ResponseBuckets:     StatsBuckets(src.ResponseBuckets),
 		Weight:              src.Weight,
 		MaxFails:            src.MaxFails,
 		FailTimeout:         src.FailTimeout,
 		Backup:              src.Backup,
 		Down:                src.Down,
-		OverCounts:          convertOverCounts(src.OverCounts),
+		OverCounts:          StatsOverCounts(src.OverCounts),
 	}
-}
-
-func convertUpstreamResponses(src statsUpstreamResponses) StatsUpstreamResponses {
-	return StatsUpstreamResponses(src)
 }

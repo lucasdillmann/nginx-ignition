@@ -38,13 +38,14 @@ nginx ignition supports multiple languages, including:
 - 🇧🇷 Brazilian Portuguese
 - 🇺🇸 English
 - 🇨🇳 Chinese (Simplified)
+- 🇩🇪 German
+- 🇫🇷 French
 - 🇮🇳 Hindi
 - 🇪🇸 Spanish
 - 🇻🇳 Vietnamese
 - 🇷🇺 Russian
 - 🇧🇩 Bengali
 - 🇯🇵 Japanese
-- 🇮🇳 Western Punjabi
 
 <br />
 
