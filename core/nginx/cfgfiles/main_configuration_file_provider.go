@@ -237,7 +237,7 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 	paths *Paths,
 	cfg *settings.NginxStatsSettings,
 ) string {
-	if !cfg.Enabled {
+	if cfg == nil || !cfg.Enabled {
 		return ""
 	}
 

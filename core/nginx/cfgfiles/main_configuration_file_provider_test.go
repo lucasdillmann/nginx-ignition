@@ -197,4 +197,60 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			assert.NotContains(t, result, "max_size=")
 		})
 	})
+
+	t.Run("getStatsDefinitions", func(t *testing.T) {
+		provider := &mainConfigurationFileProvider{}
+		paths := &Paths{
+			Base: "/etc/nginx/",
+		}
+
+		t.Run("returns empty string when disabled", func(t *testing.T) {
+			cfg := &settings.NginxStatsSettings{
+				Enabled: false,
+			}
+			assert.Equal(t, "", provider.getStatsDefinitions(paths, cfg))
+		})
+
+		t.Run("returns empty string when nil", func(t *testing.T) {
+			assert.Equal(t, "", provider.getStatsDefinitions(paths, nil))
+		})
+
+		t.Run("generates base config when enabled", func(t *testing.T) {
+			cfg := &settings.NginxStatsSettings{
+				Enabled:       true,
+				MaximumSizeMB: 10,
+				Persistent:    false,
+			}
+			result := provider.getStatsDefinitions(paths, cfg)
+			assert.Contains(
+				t,
+				result,
+				"vhost_traffic_status_zone shared:nginx-ignition-traffic-stats:10m;",
+			)
+			assert.Contains(t, result, "server {")
+			assert.Contains(t, result, "listen unix:/etc/nginx/traffic-stats.socket;")
+			assert.NotContains(t, result, "vhost_traffic_status_dump")
+		})
+
+		t.Run("includes persistent dump with default path", func(t *testing.T) {
+			cfg := &settings.NginxStatsSettings{
+				Enabled:       true,
+				MaximumSizeMB: 10,
+				Persistent:    true,
+			}
+			result := provider.getStatsDefinitions(paths, cfg)
+			assert.Contains(t, result, "vhost_traffic_status_dump \"/etc/nginx/stats.db\" 5s;")
+		})
+
+		t.Run("includes persistent dump with custom path", func(t *testing.T) {
+			cfg := &settings.NginxStatsSettings{
+				Enabled:          true,
+				MaximumSizeMB:    10,
+				Persistent:       true,
+				DatabaseLocation: ptr.Of("/var/lib/nginx/stats.db"),
+			}
+			result := provider.getStatsDefinitions(paths, cfg)
+			assert.Contains(t, result, "vhost_traffic_status_dump \"/var/lib/nginx/stats.db\" 5s;")
+		})
+	})
 }
