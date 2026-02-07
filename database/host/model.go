@@ -21,7 +21,6 @@ type hostModel struct {
 	HTTP2Support        bool               `bun:"http2_support,notnull"`
 	WebsocketSupport    bool               `bun:"websocket_support,notnull"`
 	Enabled             bool               `bun:"enabled,notnull"`
-	StatsEnabled        bool               `bun:"stats_enabled,notnull"`
 }
 
 type hostBindingModel struct {

@@ -65,14 +65,6 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		userStatement = ""
 	}
 
-	statsEnabled := false
-	for _, h := range ctx.hosts {
-		if h.FeatureSet.StatsEnabled {
-			statsEnabled = true
-			break
-		}
-	}
-
 	contents := fmt.Sprintf(
 		`
 			%s
@@ -113,7 +105,6 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				%s
 				%s
 				%s
-				%s
 			}
 			
 			%s
@@ -150,7 +141,6 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		customCfg,
 		p.getCacheDefinitions(ctx.paths, ctx.caches),
 		p.getHostIncludes(ctx.paths, ctx.hosts),
-		flag(statsEnabled, "vhost_traffic_status_zone;", ""),
 		streamLines.String(),
 	)
 

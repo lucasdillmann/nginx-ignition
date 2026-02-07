@@ -106,7 +106,6 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			host := &hostModel{
 				ID:           uuid.New(),
 				Enabled:      true,
-				StatsEnabled: false,
 				DomainNames:  []string{},
 				AccessListID: cmd.ID,
 			}

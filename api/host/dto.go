@@ -65,7 +65,6 @@ type featureSetDTO struct {
 	WebsocketsSupport   *bool `json:"websocketsSupport"`
 	HTTP2Support        *bool `json:"http2Support"`
 	RedirectHTTPToHTTPS *bool `json:"redirectHttpToHttps"`
-	StatsEnabled        *bool `json:"statsEnabled"`
 }
 
 type bindingDTO struct {

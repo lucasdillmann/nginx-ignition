@@ -167,7 +167,6 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			%s
 			%s
 			%s
-			%s
 		}`,
 		flag(
 			logs.AccessLogsEnabled,
@@ -196,7 +195,6 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		http2,
 		listen,
 		serverNames,
-		p.buildStatsConfig(h),
 		strings.Join(routes, "\n"),
 	), nil
 }
@@ -504,28 +502,6 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(
 	_, _ = builder.WriteString(p.buildCacheConfig(ctx.caches, r.CacheID))
 
 	return builder.String()
-}
-
-func (p *hostConfigurationFileProvider) buildStatsConfig(h *host.Host) string {
-	if !h.FeatureSet.StatsEnabled {
-		return ""
-	}
-
-	// TODO: Check the possibility and migrate to a dedicated server{} block that listens on a unix socket only,
-	//       enabling ignition to read the stats from it without the need to any endpoint, specially in the user's host.
-	//       Keeping as-is for now, but only in the discovery and Proof of Concept stages.
-	return fmt.Sprintf(
-		`
-		set $host_id "%s";
-		vhost_traffic_status_filter_by_set_key $host_id hosts;
-
-		location /__nginx-ignition/internal-metadata/traffic-stats {
-			vhost_traffic_status_display;
-			vhost_traffic_status_display_format json;
-		}
-		`,
-		h.ID,
-	)
 }
 
 func (p *hostConfigurationFileProvider) buildCacheConfig(

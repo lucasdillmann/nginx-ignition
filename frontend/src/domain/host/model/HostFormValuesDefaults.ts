@@ -34,7 +34,6 @@ export function hostFormValuesDefaults(): HostFormValues {
             websocketsSupport: true,
             http2Support: true,
             redirectHttpToHttps: false,
-            statsEnabled: false,
         },
     }
 }

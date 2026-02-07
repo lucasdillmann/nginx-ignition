@@ -21,7 +21,6 @@ export interface HostFeatureSet {
     websocketsSupport: boolean
     http2Support: boolean
     redirectHttpToHttps: boolean
-    statsEnabled: boolean
 }
 
 export interface HostBinding {
