@@ -42,4 +42,5 @@ type Permissions struct {
 	ExportData   AccessLevel
 	VPNs         AccessLevel
 	Caches       AccessLevel
+	TrafficStats AccessLevel
 }

@@ -25,6 +25,7 @@ func newUser() *User {
 			ExportData:   NoAccessAccessLevel,
 			VPNs:         NoAccessAccessLevel,
 			Caches:       NoAccessAccessLevel,
+			TrafficStats: NoAccessAccessLevel,
 		},
 	}
 }
@@ -49,6 +50,7 @@ func newSaveRequest() *SaveRequest {
 			ExportData:   NoAccessAccessLevel,
 			VPNs:         NoAccessAccessLevel,
 			Caches:       NoAccessAccessLevel,
+			TrafficStats: NoAccessAccessLevel,
 		},
 	}
 }

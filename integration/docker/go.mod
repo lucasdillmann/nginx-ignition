@@ -1,8 +1,11 @@
 module dillmann.com.br/nginx-ignition/integration/docker
 
-go 1.25.6
+go 1.25.7
 
-require github.com/docker/docker v28.5.2+incompatible
+require (
+	github.com/docker/docker v28.5.2+incompatible
+	go.uber.org/mock v0.6.0
+)
 
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect

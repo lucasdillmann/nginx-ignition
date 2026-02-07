@@ -13,3 +13,6 @@ values ('32f9a2e6-815c-4b53-b924-11887e74880b', true, true, true, 64);
 
 alter table nginx_settings_buffers rename to settings_nginx_buffers;
 alter table host add column stats_enabled boolean not null default true;
+
+alter table "user" add column traffic_stats_access_level varchar(32) not null default 'NO_ACCESS';
+alter table "user" alter column traffic_stats_access_level drop default;

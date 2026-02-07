@@ -33,4 +33,11 @@ func Install(router *gin.Engine, commands nginx.Commands, authorizer *authorizat
 		func(permissions user.Permissions) user.AccessLevel { return permissions.ExportData },
 	)
 	exportPath.GET("", configFilesHandler{commands}.handle)
+
+	trafficStatsPath := authorizer.ConfigureGroup(
+		router,
+		"/api/nginx/traffic-stats",
+		func(permissions user.Permissions) user.AccessLevel { return permissions.TrafficStats },
+	)
+	trafficStatsPath.GET("", trafficStatsHandler{commands}.handle)
 }

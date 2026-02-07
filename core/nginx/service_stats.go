@@ -142,7 +142,10 @@ func (s *service) GetTrafficStats(ctx context.Context) (*Stats, error) {
 	return convertToStats(response), nil
 }
 
-func (s *service) fetchStatsFromSocket(ctx context.Context, socketPath string) (*statsResponse, error) {
+func (s *service) fetchStatsFromSocket(
+	ctx context.Context,
+	socketPath string,
+) (*statsResponse, error) {
 	transport := &http.Transport{
 		DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
 			return net.Dial("unix", socketPath)
@@ -197,7 +200,9 @@ func convertServerZones(src map[string]statsZoneData) map[string]StatsZoneData {
 	return result
 }
 
-func convertFilterZones(src map[string]map[string]statsZoneData) map[string]map[string]StatsZoneData {
+func convertFilterZones(
+	src map[string]map[string]statsZoneData,
+) map[string]map[string]StatsZoneData {
 	if src == nil {
 		return nil
 	}
@@ -217,7 +222,9 @@ func convertFilterZones(src map[string]map[string]statsZoneData) map[string]map[
 	return result
 }
 
-func convertUpstreamZones(src map[string][]statsUpstreamZoneData) map[string][]StatsUpstreamZoneData {
+func convertUpstreamZones(
+	src map[string][]statsUpstreamZoneData,
+) map[string][]StatsUpstreamZoneData {
 	if src == nil {
 		return nil
 	}

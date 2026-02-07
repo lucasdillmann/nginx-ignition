@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/vpn/tailscale
 
-go 1.25.6
+go 1.25.7
 
 require tailscale.com v1.94.1
 

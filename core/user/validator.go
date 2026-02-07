@@ -81,6 +81,7 @@ func (v *validator) validatePermissions(ctx context.Context, permissions Permiss
 	v.validatePermission(ctx, "exportData", permissions.ExportData)
 	v.validatePermission(ctx, "vpns", permissions.VPNs)
 	v.validatePermission(ctx, "caches", permissions.Caches)
+	v.validatePermission(ctx, "trafficStats", permissions.TrafficStats)
 
 	if permissions.NginxServer == NoAccessAccessLevel {
 		v.delegate.Add("permissions.nginxServer", i18n.M(ctx, i18n.K.CoreUserAtLeastReadOnly))
@@ -93,6 +94,13 @@ func (v *validator) validatePermissions(ctx context.Context, permissions Permiss
 	if permissions.ExportData == ReadWriteAccessLevel {
 		v.delegate.Add(
 			"permissions.exportData",
+			i18n.M(ctx, i18n.K.CoreUserCannotHaveWriteAccess),
+		)
+	}
+
+	if permissions.TrafficStats == ReadWriteAccessLevel {
+		v.delegate.Add(
+			"permissions.trafficStats",
 			i18n.M(ctx, i18n.K.CoreUserCannotHaveWriteAccess),
 		)
 	}

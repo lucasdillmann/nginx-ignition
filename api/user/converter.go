@@ -30,6 +30,7 @@ func toDomain(dto *userRequestDTO) *user.SaveRequest {
 			ExportData:   user.AccessLevel(dto.Permissions.ExportData),
 			VPNs:         user.AccessLevel(dto.Permissions.VPNs),
 			Caches:       user.AccessLevel(dto.Permissions.Caches),
+			TrafficStats: user.AccessLevel(dto.Permissions.TrafficStats),
 		},
 	}
 }
@@ -57,6 +58,7 @@ func toDTO(domain *user.User) *userResponseDTO {
 			ExportData:   string(domain.Permissions.ExportData),
 			VPNs:         string(domain.Permissions.VPNs),
 			Caches:       string(domain.Permissions.Caches),
+			TrafficStats: string(domain.Permissions.TrafficStats),
 		},
 	}
 }
