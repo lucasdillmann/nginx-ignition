@@ -26,6 +26,7 @@ type service struct {
 	logReader          *logReader
 	logRotator         *logRotator
 	vpnManager         *vpnManager
+	settingsCommands   settings.Commands
 }
 
 func newService(
@@ -49,6 +50,7 @@ func newService(
 		semaphore:          newSemaphore(),
 		logReader:          newLogReader(cfg),
 		logRotator:         newLogRotator(cfg, settingsCommands, hostCommands, pManager),
+		settingsCommands:   settingsCommands,
 	}, nil
 }
 

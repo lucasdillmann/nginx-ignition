@@ -8,6 +8,113 @@ const (
 	NoneSupportType    SupportType = "NONE"
 )
 
+type Stats struct {
+	HostName      string
+	Connections   StatsConnections
+	ServerZones   map[string]StatsZoneData
+	FilterZones   map[string]map[string]StatsZoneData
+	UpstreamZones map[string][]StatsUpstreamZoneData
+}
+
+type StatsConnections struct {
+	Active   uint64
+	Reading  uint64
+	Writing  uint64
+	Waiting  uint64
+	Accepted uint64
+	Handled  uint64
+	Requests uint64
+}
+
+type StatsZoneData struct {
+	RequestCounter     uint64
+	InBytes            uint64
+	OutBytes           uint64
+	Responses          StatsResponses
+	RequestMsec        uint64
+	RequestMsecCounter uint64
+	RequestMsecs       StatsTimeSeries
+	RequestBuckets     StatsBuckets
+	OverCounts         StatsOverCounts
+}
+
+type StatsResponses struct {
+	Status1xx   uint64
+	Status2xx   uint64
+	Status3xx   uint64
+	Status4xx   uint64
+	Status5xx   uint64
+	Miss        uint64
+	Bypass      uint64
+	Expired     uint64
+	Stale       uint64
+	Updating    uint64
+	Revalidated uint64
+	Hit         uint64
+	Scarce      uint64
+}
+
+type StatsTimeSeries struct {
+	Times []int64
+	Msecs []int64
+}
+
+type StatsBuckets struct {
+	Msecs    []int64
+	Counters []int64
+}
+
+type StatsOverCounts struct {
+	RequestCounter      uint64
+	InBytes             uint64
+	OutBytes            uint64
+	Status1xx           uint64
+	Status2xx           uint64
+	Status3xx           uint64
+	Status4xx           uint64
+	Status5xx           uint64
+	Miss                uint64
+	Bypass              uint64
+	Expired             uint64
+	Stale               uint64
+	Updating            uint64
+	Revalidated         uint64
+	Hit                 uint64
+	Scarce              uint64
+	RequestMsecCounter  uint64
+	ResponseMsecCounter uint64
+}
+
+type StatsUpstreamZoneData struct {
+	Server              string
+	RequestCounter      uint64
+	InBytes             uint64
+	OutBytes            uint64
+	Responses           StatsUpstreamResponses
+	RequestMsec         uint64
+	RequestMsecCounter  uint64
+	RequestMsecs        StatsTimeSeries
+	RequestBuckets      StatsBuckets
+	ResponseMsec        uint64
+	ResponseMsecCounter uint64
+	ResponseMsecs       StatsTimeSeries
+	ResponseBuckets     StatsBuckets
+	Weight              int
+	MaxFails            int
+	FailTimeout         int
+	Backup              bool
+	Down                bool
+	OverCounts          StatsOverCounts
+}
+
+type StatsUpstreamResponses struct {
+	Status1xx uint64
+	Status2xx uint64
+	Status3xx uint64
+	Status4xx uint64
+	Status5xx uint64
+}
+
 type Metadata struct {
 	Version       string
 	BuildDetails  string
