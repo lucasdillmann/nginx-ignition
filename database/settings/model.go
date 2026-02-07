@@ -71,3 +71,12 @@ type buffersModel struct {
 	OutputSizeKb            int       `bun:"output_size_kb"`
 	OutputAmount            int       `bun:"output_amount"`
 }
+
+type statsModel struct {
+	bun.BaseModel    `bun:"nginx_settings_stats"`
+	DatabaseLocation *string   `bun:"database_location"`
+	MaximumSizeMB    int       `bun:"maximum_size_mb"`
+	ID               uuid.UUID `bun:"id,pk"`
+	Enabled          bool      `bun:"enabled"`
+	Persistent       bool      `bun:"persistent"`
+}

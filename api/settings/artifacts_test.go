@@ -8,9 +8,14 @@ import (
 func newSettings() *settings.Settings {
 	return &settings.Settings{
 		Nginx: &settings.NginxSettings{
-			WorkerProcesses:     1,
-			WorkerConnections:   1024,
-			DefaultContentType:  "text/plain",
+			WorkerProcesses:    1,
+			WorkerConnections:  1024,
+			DefaultContentType: "text/plain",
+			Stats: &settings.NginxStatsSettings{
+				Enabled:       true,
+				Persistent:    true,
+				MaximumSizeMB: 16,
+			},
 			ServerTokensEnabled: true,
 			MaximumBodySizeMb:   10,
 			SendfileEnabled:     true,
@@ -61,9 +66,14 @@ func newSettings() *settings.Settings {
 func newSettingsDTO() *settingsDTO {
 	return &settingsDTO{
 		Nginx: &nginxSettingsDTO{
-			WorkerProcesses:     ptr.Of(1),
-			WorkerConnections:   ptr.Of(1024),
-			DefaultContentType:  ptr.Of("text/plain"),
+			WorkerProcesses:    ptr.Of(1),
+			WorkerConnections:  ptr.Of(1024),
+			DefaultContentType: ptr.Of("text/plain"),
+			Stats: &nginxStatsSettingsDTO{
+				Enabled:       ptr.Of(true),
+				Persistent:    ptr.Of(true),
+				MaximumSizeMB: ptr.Of(16),
+			},
 			ServerTokensEnabled: ptr.Of(true),
 			MaximumBodySizeMb:   ptr.Of(10),
 			SendfileEnabled:     ptr.Of(true),

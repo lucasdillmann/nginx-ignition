@@ -225,5 +225,58 @@ func Test_validator(t *testing.T) {
 
 			assert.Error(t, err)
 		})
+
+		t.Run("stats maximum size below range fails", func(t *testing.T) {
+			s := newSettings()
+			s.Nginx.Stats.MaximumSizeMB = 0
+			settingsValidator := newValidator(bindingCommands)
+
+			err := settingsValidator.validate(t.Context(), s)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("stats maximum size above range fails", func(t *testing.T) {
+			s := newSettings()
+			s.Nginx.Stats.MaximumSizeMB = 513
+			settingsValidator := newValidator(bindingCommands)
+
+			err := settingsValidator.validate(t.Context(), s)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("stats database location invalid extension fails", func(t *testing.T) {
+			s := newSettings()
+			path := "/tmp/test.txt"
+			s.Nginx.Stats.DatabaseLocation = &path
+			settingsValidator := newValidator(bindingCommands)
+
+			err := settingsValidator.validate(t.Context(), s)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("stats database location invalid folder fails", func(t *testing.T) {
+			s := newSettings()
+			path := "/non-existing-folder/test.db"
+			s.Nginx.Stats.DatabaseLocation = &path
+			settingsValidator := newValidator(bindingCommands)
+
+			err := settingsValidator.validate(t.Context(), s)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("stats database location too long fails", func(t *testing.T) {
+			s := newSettings()
+			path := "/tmp/" + strings.Repeat("a", 122) + ".db"
+			s.Nginx.Stats.DatabaseLocation = &path
+			settingsValidator := newValidator(bindingCommands)
+
+			err := settingsValidator.validate(t.Context(), s)
+
+			assert.Error(t, err)
+		})
 	})
 }
