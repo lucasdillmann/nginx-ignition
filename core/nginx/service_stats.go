@@ -13,11 +13,11 @@ import (
 )
 
 type statsResponse struct {
-	HostName      string                              `json:"hostName"`
-	Connections   statsConnections                    `json:"connections"`
 	ServerZones   map[string]statsZoneData            `json:"serverZones"`
 	FilterZones   map[string]map[string]statsZoneData `json:"filterZones"`
 	UpstreamZones map[string][]statsUpstreamZoneData  `json:"upstreamZones"`
+	HostName      string                              `json:"hostName"`
+	Connections   statsConnections                    `json:"connections"`
 }
 
 type statsConnections struct {
@@ -31,15 +31,15 @@ type statsConnections struct {
 }
 
 type statsZoneData struct {
-	RequestCounter     uint64          `json:"requestCounter"`
-	InBytes            uint64          `json:"inBytes"`
-	OutBytes           uint64          `json:"outBytes"`
-	Responses          statsResponses  `json:"responses"`
-	RequestMsec        uint64          `json:"requestMsec"`
-	RequestMsecCounter uint64          `json:"requestMsecCounter"`
 	RequestMsecs       statsTimeSeries `json:"requestMsecs"`
 	RequestBuckets     statsBuckets    `json:"requestBuckets"`
 	OverCounts         statsOverCounts `json:"overCounts"`
+	Responses          statsResponses  `json:"responses"`
+	RequestCounter     uint64          `json:"requestCounter"`
+	InBytes            uint64          `json:"inBytes"`
+	OutBytes           uint64          `json:"outBytes"`
+	RequestMsec        uint64          `json:"requestMsec"`
+	RequestMsecCounter uint64          `json:"requestMsecCounter"`
 }
 
 type statsResponses struct {
@@ -91,24 +91,24 @@ type statsOverCounts struct {
 
 type statsUpstreamZoneData struct {
 	Server              string                 `json:"server"`
-	RequestCounter      uint64                 `json:"requestCounter"`
-	InBytes             uint64                 `json:"inBytes"`
-	OutBytes            uint64                 `json:"outBytes"`
-	Responses           statsUpstreamResponses `json:"responses"`
-	RequestMsec         uint64                 `json:"requestMsec"`
-	RequestMsecCounter  uint64                 `json:"requestMsecCounter"`
-	RequestMsecs        statsTimeSeries        `json:"requestMsecs"`
-	RequestBuckets      statsBuckets           `json:"requestBuckets"`
-	ResponseMsec        uint64                 `json:"responseMsec"`
-	ResponseMsecCounter uint64                 `json:"responseMsecCounter"`
-	ResponseMsecs       statsTimeSeries        `json:"responseMsecs"`
 	ResponseBuckets     statsBuckets           `json:"responseBuckets"`
+	RequestMsecs        statsTimeSeries        `json:"requestMsecs"`
+	ResponseMsecs       statsTimeSeries        `json:"responseMsecs"`
+	RequestBuckets      statsBuckets           `json:"requestBuckets"`
+	OverCounts          statsOverCounts        `json:"overCounts"`
+	Responses           statsUpstreamResponses `json:"responses"`
+	RequestMsecCounter  uint64                 `json:"requestMsecCounter"`
+	ResponseMsec        uint64                 `json:"responseMsec"`
+	InBytes             uint64                 `json:"inBytes"`
+	RequestMsec         uint64                 `json:"requestMsec"`
+	ResponseMsecCounter uint64                 `json:"responseMsecCounter"`
+	RequestCounter      uint64                 `json:"requestCounter"`
 	Weight              int                    `json:"weight"`
 	MaxFails            int                    `json:"maxFails"`
 	FailTimeout         int                    `json:"failTimeout"`
+	OutBytes            uint64                 `json:"outBytes"`
 	Backup              bool                   `json:"backup"`
 	Down                bool                   `json:"down"`
-	OverCounts          statsOverCounts        `json:"overCounts"`
 }
 
 type statsUpstreamResponses struct {
@@ -142,7 +142,10 @@ func (s *service) GetTrafficStats(ctx context.Context) (*Stats, error) {
 	return convertToStats(response), nil
 }
 
-func (s *service) fetchStatsFromSocket(ctx context.Context, socketPath string) (*statsResponse, error) {
+func (s *service) fetchStatsFromSocket(
+	ctx context.Context,
+	socketPath string,
+) (*statsResponse, error) {
 	transport := &http.Transport{
 		DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
 			return net.Dial("unix", socketPath)
@@ -186,15 +189,7 @@ func convertToStats(src *statsResponse) *Stats {
 }
 
 func convertConnections(src statsConnections) StatsConnections {
-	return StatsConnections{
-		Active:   src.Active,
-		Reading:  src.Reading,
-		Writing:  src.Writing,
-		Waiting:  src.Waiting,
-		Accepted: src.Accepted,
-		Handled:  src.Handled,
-		Requests: src.Requests,
-	}
+	return StatsConnections(src)
 }
 
 func convertServerZones(src map[string]statsZoneData) map[string]StatsZoneData {
@@ -209,7 +204,9 @@ func convertServerZones(src map[string]statsZoneData) map[string]StatsZoneData {
 	return result
 }
 
-func convertFilterZones(src map[string]map[string]statsZoneData) map[string]map[string]StatsZoneData {
+func convertFilterZones(
+	src map[string]map[string]statsZoneData,
+) map[string]map[string]StatsZoneData {
 	if src == nil {
 		return nil
 	}
@@ -229,7 +226,9 @@ func convertFilterZones(src map[string]map[string]statsZoneData) map[string]map[
 	return result
 }
 
-func convertUpstreamZones(src map[string][]statsUpstreamZoneData) map[string][]StatsUpstreamZoneData {
+func convertUpstreamZones(
+	src map[string][]statsUpstreamZoneData,
+) map[string][]StatsUpstreamZoneData {
 	if src == nil {
 		return nil
 	}
@@ -264,58 +263,19 @@ func convertZoneData(src statsZoneData) StatsZoneData {
 }
 
 func convertResponses(src statsResponses) StatsResponses {
-	return StatsResponses{
-		Status1xx:   src.Status1xx,
-		Status2xx:   src.Status2xx,
-		Status3xx:   src.Status3xx,
-		Status4xx:   src.Status4xx,
-		Status5xx:   src.Status5xx,
-		Miss:        src.Miss,
-		Bypass:      src.Bypass,
-		Expired:     src.Expired,
-		Stale:       src.Stale,
-		Updating:    src.Updating,
-		Revalidated: src.Revalidated,
-		Hit:         src.Hit,
-		Scarce:      src.Scarce,
-	}
+	return StatsResponses(src)
 }
 
 func convertTimeSeries(src statsTimeSeries) StatsTimeSeries {
-	return StatsTimeSeries{
-		Times: src.Times,
-		Msecs: src.Msecs,
-	}
+	return StatsTimeSeries(src)
 }
 
 func convertBuckets(src statsBuckets) StatsBuckets {
-	return StatsBuckets{
-		Msecs:    src.Msecs,
-		Counters: src.Counters,
-	}
+	return StatsBuckets(src)
 }
 
 func convertOverCounts(src statsOverCounts) StatsOverCounts {
-	return StatsOverCounts{
-		RequestCounter:      src.RequestCounter,
-		InBytes:             src.InBytes,
-		OutBytes:            src.OutBytes,
-		Status1xx:           src.Status1xx,
-		Status2xx:           src.Status2xx,
-		Status3xx:           src.Status3xx,
-		Status4xx:           src.Status4xx,
-		Status5xx:           src.Status5xx,
-		Miss:                src.Miss,
-		Bypass:              src.Bypass,
-		Expired:             src.Expired,
-		Stale:               src.Stale,
-		Updating:            src.Updating,
-		Revalidated:         src.Revalidated,
-		Hit:                 src.Hit,
-		Scarce:              src.Scarce,
-		RequestMsecCounter:  src.RequestMsecCounter,
-		ResponseMsecCounter: src.ResponseMsecCounter,
-	}
+	return StatsOverCounts(src)
 }
 
 func convertUpstreamZoneData(src statsUpstreamZoneData) StatsUpstreamZoneData {
@@ -343,11 +303,5 @@ func convertUpstreamZoneData(src statsUpstreamZoneData) StatsUpstreamZoneData {
 }
 
 func convertUpstreamResponses(src statsUpstreamResponses) StatsUpstreamResponses {
-	return StatsUpstreamResponses{
-		Status1xx: src.Status1xx,
-		Status2xx: src.Status2xx,
-		Status3xx: src.Status3xx,
-		Status4xx: src.Status4xx,
-		Status5xx: src.Status5xx,
-	}
+	return StatsUpstreamResponses(src)
 }

@@ -9,11 +9,11 @@ const (
 )
 
 type Stats struct {
-	HostName      string
-	Connections   StatsConnections
 	ServerZones   map[string]StatsZoneData
 	FilterZones   map[string]map[string]StatsZoneData
 	UpstreamZones map[string][]StatsUpstreamZoneData
+	HostName      string
+	Connections   StatsConnections
 }
 
 type StatsConnections struct {
@@ -27,15 +27,15 @@ type StatsConnections struct {
 }
 
 type StatsZoneData struct {
-	RequestCounter     uint64
-	InBytes            uint64
-	OutBytes           uint64
-	Responses          StatsResponses
-	RequestMsec        uint64
-	RequestMsecCounter uint64
 	RequestMsecs       StatsTimeSeries
 	RequestBuckets     StatsBuckets
 	OverCounts         StatsOverCounts
+	Responses          StatsResponses
+	RequestCounter     uint64
+	InBytes            uint64
+	OutBytes           uint64
+	RequestMsec        uint64
+	RequestMsecCounter uint64
 }
 
 type StatsResponses struct {
@@ -87,24 +87,24 @@ type StatsOverCounts struct {
 
 type StatsUpstreamZoneData struct {
 	Server              string
-	RequestCounter      uint64
-	InBytes             uint64
-	OutBytes            uint64
-	Responses           StatsUpstreamResponses
-	RequestMsec         uint64
-	RequestMsecCounter  uint64
-	RequestMsecs        StatsTimeSeries
-	RequestBuckets      StatsBuckets
-	ResponseMsec        uint64
-	ResponseMsecCounter uint64
-	ResponseMsecs       StatsTimeSeries
 	ResponseBuckets     StatsBuckets
+	RequestMsecs        StatsTimeSeries
+	ResponseMsecs       StatsTimeSeries
+	RequestBuckets      StatsBuckets
+	OverCounts          StatsOverCounts
+	Responses           StatsUpstreamResponses
+	RequestMsecCounter  uint64
+	ResponseMsec        uint64
+	InBytes             uint64
+	RequestMsec         uint64
+	ResponseMsecCounter uint64
+	RequestCounter      uint64
 	Weight              int
 	MaxFails            int
 	FailTimeout         int
+	OutBytes            uint64
 	Backup              bool
 	Down                bool
-	OverCounts          StatsOverCounts
 }
 
 type StatsUpstreamResponses struct {

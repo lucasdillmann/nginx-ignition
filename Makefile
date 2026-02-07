@@ -13,7 +13,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 .frontend-lint: .frontend-prerequisites
 	cd frontend/ && npm run check
 
-.backend-lint: .backend-prerequisites
+.backend-lint: .backend-prerequisites .backend-test-mocks
 	go tool golangci-lint run \
 		./api/... \
 		./application/... \
@@ -93,7 +93,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 .frontend-format: .frontend-prerequisites
 	cd frontend/ && npx prettier --write .
 
-.backend-format: .backend-prerequisites
+.backend-format: .backend-prerequisites .backend-test-mocks
 	go tool fieldalignment -fix \
 		./api/... \
 		./application/... \
