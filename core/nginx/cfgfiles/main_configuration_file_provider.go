@@ -245,13 +245,18 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 		return "", nil
 	}
 
+	geoIPFilePath := filepath.Join(paths.Base, "geoip.dat")
 	output := strings.Builder{}
+
 	_, _ = fmt.Fprintf(
 		&output,
 		`
+		geoip_country %s;
 		vhost_traffic_status_zone shared:nginx-ignition-traffic-stats:%dm;
-		vhost_traffic_status_filter_by_host off;
+		vhost_traffic_status_filter_by_host on;
+		vhost_traffic_status_stats_by_upstream on;
 		`,
+		geoIPFilePath,
 		cfg.MaximumSizeMB,
 	)
 

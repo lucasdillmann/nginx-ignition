@@ -45,6 +45,7 @@ func newFacade(
 		newMainConfigurationFileProvider(cfg),
 		newMimeTypesFileProvider(),
 		newStreamFileProvider(),
+		newGeoIPFileProvider(cfg),
 	}
 
 	return &Facade{
