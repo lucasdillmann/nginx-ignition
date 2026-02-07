@@ -133,8 +133,7 @@ func (s *service) GetTrafficStats(ctx context.Context) (*Stats, error) {
 		return nil, coreerror.New(i18n.M(ctx, i18n.K.CoreNginxNotRunning), false)
 	}
 
-	socketPath := filepath.Join(s.processManager.configPath, "traffic-stats.socket")
-	response, err := s.fetchStatsFromSocket(ctx, socketPath)
+	response, err := s.fetchStatsFromSocket(ctx)
 	if err != nil {
 		return nil, coreerror.New(i18n.M(ctx, i18n.K.CoreNginxStatsFetchFailed), false)
 	}
@@ -142,24 +141,13 @@ func (s *service) GetTrafficStats(ctx context.Context) (*Stats, error) {
 	return convertToStats(response), nil
 }
 
-func (s *service) fetchStatsFromSocket(
-	ctx context.Context,
-	socketPath string,
-) (*statsResponse, error) {
-	transport := &http.Transport{
-		DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
-			return net.Dial("unix", socketPath)
-		},
-	}
-
-	client := &http.Client{Transport: transport}
-
+func (s *service) fetchStatsFromSocket(ctx context.Context) (*statsResponse, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://localhost/", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := client.Do(req)
+	resp, err := s.statsClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -176,6 +164,17 @@ func (s *service) fetchStatsFromSocket(
 	}
 
 	return &stats, nil
+}
+
+func buildStatsClient(configPath string) *http.Client {
+	socketPath := filepath.Join(configPath, "traffic-stats.socket")
+	transport := &http.Transport{
+		DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
+			return net.Dial("unix", socketPath)
+		},
+	}
+
+	return &http.Client{Transport: transport}
 }
 
 func convertToStats(src *statsResponse) *Stats {

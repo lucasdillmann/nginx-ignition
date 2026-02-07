@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
+	"net/http"
 
 	"github.com/google/uuid"
 
@@ -27,6 +28,7 @@ type service struct {
 	logRotator         *logRotator
 	vpnManager         *vpnManager
 	settingsCommands   settings.Commands
+	statsClient        *http.Client
 }
 
 func newService(
@@ -47,10 +49,11 @@ func newService(
 		configFilesManager: configFilesManager,
 		processManager:     pManager,
 		vpnManager:         vManager,
+		settingsCommands:   settingsCommands,
 		semaphore:          newSemaphore(),
 		logReader:          newLogReader(cfg),
 		logRotator:         newLogRotator(cfg, settingsCommands, hostCommands, pManager),
-		settingsCommands:   settingsCommands,
+		statsClient:        buildStatsClient(pManager.configPath),
 	}, nil
 }
 

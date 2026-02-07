@@ -1,7 +1,10 @@
 package nginx
 
 import (
+	"bytes"
 	"context"
+	"io"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,6 +16,48 @@ import (
 )
 
 func Test_service_GetTrafficStats(t *testing.T) {
+	t.Run("returns stats when nginx returns valid json", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().Get(gomock.Any()).Return(&settings.Settings{
+			Nginx: &settings.NginxSettings{
+				Stats: &settings.NginxStatsSettings{
+					Enabled: true,
+				},
+			},
+		}, nil)
+
+		mockJSON := `{"hostName": "test-host", "connections": {"active": 10}}`
+		client := &http.Client{
+			Transport: &mockTransport{
+				RoundTripFunc: func(_ *http.Request) (*http.Response, error) {
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(bytes.NewBufferString(mockJSON)),
+						Header:     make(http.Header),
+					}, nil
+				},
+			},
+		}
+
+		nginxService := &service{
+			settingsCommands: settingsCmds,
+			semaphore: &semaphore{
+				state: runningState,
+			},
+			statsClient: client,
+		}
+
+		stats, err := nginxService.GetTrafficStats(context.Background())
+
+		assert.NoError(t, err)
+		assert.NotNil(t, stats)
+		assert.Equal(t, "test-host", stats.HostName)
+		assert.Equal(t, uint64(10), stats.Connections.Active)
+	})
+
 	t.Run("returns error when stats not enabled in settings", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
