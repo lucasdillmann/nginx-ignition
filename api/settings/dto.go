@@ -75,6 +75,7 @@ type nginxLogsSettingsDTO struct {
 type nginxStatsSettingsDTO struct {
 	Enabled          *bool   `json:"enabled"`
 	Persistent       *bool   `json:"persistent"`
+	AllHosts         *bool   `json:"allHosts"`
 	MaximumSizeMB    *int    `json:"maximumSizeMb"`
 	DatabaseLocation *string `json:"databaseLocation"`
 }

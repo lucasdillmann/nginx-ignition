@@ -33,6 +33,7 @@ type NginxStatsSettings struct {
 	MaximumSizeMB    int
 	Enabled          bool
 	Persistent       bool
+	AllHosts         bool
 }
 
 type LogRotationSettings struct {

@@ -92,6 +92,7 @@ func Test_toDTO(t *testing.T) {
 
 		assert.Equal(t, statsSubject.Enabled, *statsResult.Enabled)
 		assert.Equal(t, statsSubject.Persistent, *statsResult.Persistent)
+		assert.Equal(t, statsSubject.AllHosts, *statsResult.AllHosts)
 		assert.Equal(t, statsSubject.MaximumSizeMB, *statsResult.MaximumSizeMB)
 		assert.Equal(t, statsSubject.DatabaseLocation, statsResult.DatabaseLocation)
 
@@ -211,6 +212,7 @@ func Test_toDomain(t *testing.T) {
 
 		assert.Equal(t, *statsPayload.Enabled, statsResult.Enabled)
 		assert.Equal(t, *statsPayload.Persistent, statsResult.Persistent)
+		assert.Equal(t, *statsPayload.AllHosts, statsResult.AllHosts)
 		assert.Equal(t, *statsPayload.MaximumSizeMB, statsResult.MaximumSizeMB)
 		assert.Equal(t, statsPayload.DatabaseLocation, statsResult.DatabaseLocation)
 

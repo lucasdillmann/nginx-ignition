@@ -44,6 +44,7 @@ func toDTO(set *settings.Settings) *settingsDTO {
 		Stats: &nginxStatsSettingsDTO{
 			Enabled:          &set.Nginx.Stats.Enabled,
 			Persistent:       &set.Nginx.Stats.Persistent,
+			AllHosts:         &set.Nginx.Stats.AllHosts,
 			MaximumSizeMB:    &set.Nginx.Stats.MaximumSizeMB,
 			DatabaseLocation: set.Nginx.Stats.DatabaseLocation,
 		},
@@ -135,6 +136,7 @@ func toDomain(input *settingsDTO) *settings.Settings {
 		Stats: &settings.NginxStatsSettings{
 			Enabled:          *nginx.Stats.Enabled,
 			Persistent:       *nginx.Stats.Persistent,
+			AllHosts:         *nginx.Stats.AllHosts,
 			MaximumSizeMB:    *nginx.Stats.MaximumSizeMB,
 			DatabaseLocation: databaseLocation,
 		},

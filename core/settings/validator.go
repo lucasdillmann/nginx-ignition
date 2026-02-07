@@ -89,11 +89,12 @@ func (v *validator) validateNginx(ctx context.Context, settings *NginxSettings) 
 func (v *validator) validateStats(ctx context.Context, settings *NginxStatsSettings) {
 	v.checkRange(ctx, settings.MaximumSizeMB, statsMaximumSizeRange, "nginx.stats.maximumSizeMb")
 
+	dbPathField := "nginx.stats.databaseLocation"
 	if settings.DatabaseLocation != nil && *settings.DatabaseLocation != "" {
 		location := *settings.DatabaseLocation
 		if !strings.HasSuffix(strings.ToLower(location), ".db") {
 			v.delegate.Add(
-				"nginx.stats.databaseLocation",
+				dbPathField,
 				i18n.M(ctx, i18n.K.CoreSettingsInvalidExtension).V("extension", ".db"),
 			)
 		}
@@ -101,14 +102,14 @@ func (v *validator) validateStats(ctx context.Context, settings *NginxStatsSetti
 		dir := filepath.Dir(location)
 		if info, err := os.Stat(dir); err != nil || !info.IsDir() {
 			v.delegate.Add(
-				"nginx.stats.databaseLocation",
+				dbPathField,
 				i18n.M(ctx, i18n.K.CoreSettingsInvalidFolder),
 			)
 		}
 
 		if len(location) > maximumDatabaseLocationLength {
 			v.delegate.Add(
-				"nginx.stats.databaseLocation",
+				dbPathField,
 				i18n.M(ctx, i18n.K.CommonValueTooLong).V("max", maximumDatabaseLocationLength),
 			)
 		}

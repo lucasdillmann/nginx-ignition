@@ -14,6 +14,7 @@ func newSettings() *settings.Settings {
 			Stats: &settings.NginxStatsSettings{
 				Enabled:       true,
 				Persistent:    true,
+				AllHosts:      true,
 				MaximumSizeMB: 16,
 			},
 			ServerTokensEnabled: true,
@@ -72,6 +73,7 @@ func newSettingsDTO() *settingsDTO {
 			Stats: &nginxStatsSettingsDTO{
 				Enabled:       ptr.Of(true),
 				Persistent:    ptr.Of(true),
+				AllHosts:      ptr.Of(true),
 				MaximumSizeMB: ptr.Of(16),
 			},
 			ServerTokensEnabled: ptr.Of(true),

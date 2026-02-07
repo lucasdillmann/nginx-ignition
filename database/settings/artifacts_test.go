@@ -44,6 +44,7 @@ func newSettings() *settings.Settings {
 			Stats: &settings.NginxStatsSettings{
 				Enabled:       false,
 				Persistent:    false,
+				AllHosts:      false,
 				MaximumSizeMB: 16,
 			},
 			ServerTokensEnabled: false,

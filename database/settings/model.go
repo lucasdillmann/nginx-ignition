@@ -80,4 +80,5 @@ type statsModel struct {
 	ID               uuid.UUID `bun:"id,pk"`
 	Enabled          bool      `bun:"enabled"`
 	Persistent       bool      `bun:"persistent"`
+	AllHosts         bool      `bun:"all_hosts"`
 }

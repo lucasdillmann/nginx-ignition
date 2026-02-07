@@ -44,6 +44,7 @@ func toDomain(
 			Stats: &settings.NginxStatsSettings{
 				Enabled:          stats.Enabled,
 				Persistent:       stats.Persistent,
+				AllHosts:         stats.AllHosts,
 				MaximumSizeMB:    stats.MaximumSizeMB,
 				DatabaseLocation: stats.DatabaseLocation,
 			},
@@ -147,6 +148,7 @@ func toModel(set *settings.Settings) (
 	stats := &statsModel{
 		Enabled:          set.Nginx.Stats.Enabled,
 		Persistent:       set.Nginx.Stats.Persistent,
+		AllHosts:         set.Nginx.Stats.AllHosts,
 		MaximumSizeMB:    set.Nginx.Stats.MaximumSizeMB,
 		DatabaseLocation: set.Nginx.Stats.DatabaseLocation,
 	}
