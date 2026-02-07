@@ -105,6 +105,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				%s
 				%s
 				%s
+				%s
 			}
 			
 			%s
@@ -140,6 +141,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		ctx.paths.Config,
 		customCfg,
 		p.getCacheDefinitions(ctx.paths, ctx.caches),
+		p.getStatsDefinitions(ctx.paths, cfg.Nginx.Stats),
 		p.getHostIncludes(ctx.paths, ctx.hosts),
 		streamLines.String(),
 	)
@@ -229,4 +231,47 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(
 	}
 
 	return strings.Join(results, "\n")
+}
+
+func (p *mainConfigurationFileProvider) getStatsDefinitions(
+	paths *Paths,
+	cfg *settings.NginxStatsSettings,
+) string {
+	if !cfg.Enabled {
+		return ""
+	}
+
+	output := strings.Builder{}
+	_, _ = fmt.Fprintf(
+		&output,
+		"\nvhost_traffic_status_zone shared:nginx-ignition-traffic-stats:%dm;\n",
+		cfg.MaximumSizeMB,
+	)
+
+	if cfg.Persistent {
+		dbLocation := cfg.DatabaseLocation
+		if dbLocation == nil {
+			dbLocation = ptr.Of(filepath.Join(paths.Base, "stats.db"))
+		}
+
+		_, _ = fmt.Fprintf(&output, "vhost_traffic_status_dump \"%s\" 5s;\n", *dbLocation)
+	}
+
+	_, _ = fmt.Fprintf(&output,
+		`
+		server { 
+			root /dev/null;
+            access_log off;
+            listen unix:%s;
+			
+			location / {
+				vhost_traffic_status_display;
+				vhost_traffic_status_display_format json;
+			}
+        }
+		`,
+		filepath.Join(paths.Base, "traffic-stats.socket"),
+	)
+
+	return output.String()
 }
