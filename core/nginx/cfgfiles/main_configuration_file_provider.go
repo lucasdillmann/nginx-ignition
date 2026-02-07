@@ -252,9 +252,17 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 		&output,
 		`
 		geoip_country %s;
+		map $http_user_agent $stats_user_agent {
+			default 'unknown';
+			~iPhone ios;
+			~Android android;
+		}
+
 		vhost_traffic_status_zone shared:nginx-ignition-traffic-stats:%dm;
 		vhost_traffic_status_filter_by_host on;
 		vhost_traffic_status_stats_by_upstream on;
+		vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode::*;
+		vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent::*;
 		`,
 		geoIPFilePath,
 		cfg.MaximumSizeMB,
