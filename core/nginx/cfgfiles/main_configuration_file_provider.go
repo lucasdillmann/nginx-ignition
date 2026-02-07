@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/common/runtime"
 	"dillmann.com.br/nginx-ignition/core/host"
@@ -15,12 +16,17 @@ import (
 
 type mainConfigurationFileProvider struct {
 	settingsCommands settings.Commands
+	config           *configuration.Configuration
 }
 
 func newMainConfigurationFileProvider(
 	settingsCommands settings.Commands,
+	config *configuration.Configuration,
 ) *mainConfigurationFileProvider {
-	return &mainConfigurationFileProvider{settingsCommands: settingsCommands}
+	return &mainConfigurationFileProvider{
+		settingsCommands: settingsCommands,
+		config:           config,
+	}
 }
 
 func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, error) {
@@ -63,6 +69,11 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 	userStatement := fmt.Sprintf("user %s %s;", cfg.Nginx.RuntimeUser, cfg.Nginx.RuntimeUser)
 	if runtime.IsWindows() {
 		userStatement = ""
+	}
+
+	statsDefinitions, err := p.getStatsDefinitions(ctx.paths, cfg.Nginx.Stats)
+	if err != nil {
+		return nil, err
 	}
 
 	contents := fmt.Sprintf(
@@ -141,7 +152,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		ctx.paths.Config,
 		customCfg,
 		p.getCacheDefinitions(ctx.paths, ctx.caches),
-		p.getStatsDefinitions(ctx.paths, cfg.Nginx.Stats),
+		statsDefinitions,
 		p.getHostIncludes(ctx.paths, ctx.hosts),
 		streamLines.String(),
 	)
@@ -236,9 +247,9 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(
 func (p *mainConfigurationFileProvider) getStatsDefinitions(
 	paths *Paths,
 	cfg *settings.NginxStatsSettings,
-) string {
+) (string, error) {
 	if cfg == nil || !cfg.Enabled {
-		return ""
+		return "", nil
 	}
 
 	output := strings.Builder{}
@@ -251,7 +262,12 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 	if cfg.Persistent {
 		dbLocation := cfg.DatabaseLocation
 		if dbLocation == nil {
-			dbLocation = ptr.Of(filepath.Join(paths.Base, "stats.db"))
+			dataPath, err := p.config.Get("nginx-ignition.database.data-path")
+			if err != nil {
+				return "", err
+			}
+
+			dbLocation = ptr.Of(filepath.Join(dataPath, "stats.db"))
 		}
 
 		_, _ = fmt.Fprintf(&output, "vhost_traffic_status_dump \"%s\" 5s;\n", *dbLocation)
@@ -273,5 +289,5 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 		filepath.Join(paths.Base, "traffic-stats.socket"),
 	)
 
-	return output.String()
+	return output.String(), nil
 }

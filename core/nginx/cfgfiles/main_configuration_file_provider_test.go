@@ -9,6 +9,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -17,7 +18,9 @@ import (
 
 func Test_mainConfigurationFileProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{}
+		provider := &mainConfigurationFileProvider{
+			config: configuration.New(),
+		}
 		paths := newPaths()
 
 		mockSettings := newSettings()
@@ -81,7 +84,9 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("getErrorLogPath", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{}
+		provider := &mainConfigurationFileProvider{
+			config: configuration.New(),
+		}
 		paths := &Paths{
 			Logs: "/var/log/nginx/",
 		}
@@ -107,7 +112,9 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("getHostIncludes", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{}
+		provider := &mainConfigurationFileProvider{
+			config: configuration.New(),
+		}
 		paths := &Paths{
 			Config: "/etc/nginx/",
 		}
@@ -134,7 +141,9 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("getStreamIncludes", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{}
+		provider := &mainConfigurationFileProvider{
+			config: configuration.New(),
+		}
 		paths := &Paths{
 			Config: "/etc/nginx/",
 		}
@@ -152,7 +161,9 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("getCacheDefinitions", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{}
+		provider := &mainConfigurationFileProvider{
+			config: configuration.New(),
+		}
 		paths := &Paths{
 			Cache: "/var/cache/nginx/",
 		}
@@ -199,7 +210,9 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("getStatsDefinitions", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{}
+		provider := &mainConfigurationFileProvider{
+			config: configuration.New(),
+		}
 		paths := &Paths{
 			Base: "/etc/nginx/",
 		}
@@ -208,11 +221,15 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			cfg := &settings.NginxStatsSettings{
 				Enabled: false,
 			}
-			assert.Equal(t, "", provider.getStatsDefinitions(paths, cfg))
+			result, err := provider.getStatsDefinitions(paths, cfg)
+			assert.NoError(t, err)
+			assert.Equal(t, "", result)
 		})
 
 		t.Run("returns empty string when nil", func(t *testing.T) {
-			assert.Equal(t, "", provider.getStatsDefinitions(paths, nil))
+			result, err := provider.getStatsDefinitions(paths, nil)
+			assert.NoError(t, err)
+			assert.Equal(t, "", result)
 		})
 
 		t.Run("generates base config when enabled", func(t *testing.T) {
@@ -221,7 +238,8 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 				MaximumSizeMB: 10,
 				Persistent:    false,
 			}
-			result := provider.getStatsDefinitions(paths, cfg)
+			result, err := provider.getStatsDefinitions(paths, cfg)
+			assert.NoError(t, err)
 			assert.Contains(
 				t,
 				result,
@@ -238,8 +256,13 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 				MaximumSizeMB: 10,
 				Persistent:    true,
 			}
-			result := provider.getStatsDefinitions(paths, cfg)
-			assert.Contains(t, result, "vhost_traffic_status_dump \"/etc/nginx/stats.db\" 5s;")
+			result, err := provider.getStatsDefinitions(paths, cfg)
+			assert.NoError(t, err)
+			assert.Contains(
+				t,
+				result,
+				"vhost_traffic_status_dump \"/tmp/nginx-ignition/data/stats.db\" 5s;",
+			)
 		})
 
 		t.Run("includes persistent dump with custom path", func(t *testing.T) {
@@ -249,7 +272,8 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 				Persistent:       true,
 				DatabaseLocation: ptr.Of("/var/lib/nginx/stats.db"),
 			}
-			result := provider.getStatsDefinitions(paths, cfg)
+			result, err := provider.getStatsDefinitions(paths, cfg)
+			assert.NoError(t, err)
 			assert.Contains(t, result, "vhost_traffic_status_dump \"/var/lib/nginx/stats.db\" 5s;")
 		})
 	})

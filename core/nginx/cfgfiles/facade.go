@@ -41,7 +41,7 @@ func newFacade(
 		newHostConfigurationFileProvider(settingsCommands, integrationCommands),
 		newHostRouteStaticResponseFileProvider(),
 		newHostRouteSourceCodeFileProvider(),
-		newMainConfigurationFileProvider(settingsCommands),
+		newMainConfigurationFileProvider(settingsCommands, cfg),
 		newMimeTypesFileProvider(),
 		newStreamFileProvider(),
 	}
