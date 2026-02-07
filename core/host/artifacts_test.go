@@ -32,5 +32,8 @@ func newHost() *Host {
 				},
 			},
 		},
+		FeatureSet: FeatureSet{
+			StatsEnabled: true,
+		},
 	}
 }
