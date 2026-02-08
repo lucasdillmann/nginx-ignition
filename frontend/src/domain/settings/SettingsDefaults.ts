@@ -30,6 +30,12 @@ export function settingsDefaults(): SettingsFormValues {
                     sizeKb: 32,
                 },
             },
+            stats: {
+                enabled: true,
+                persistent: false,
+                allHosts: false,
+                maximumSizeMb: 16,
+            },
             defaultContentType: "application/octet-stream",
             gzipEnabled: true,
             maximumBodySizeMb: 1024,

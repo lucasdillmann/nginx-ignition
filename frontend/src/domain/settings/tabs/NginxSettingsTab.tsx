@@ -56,6 +56,68 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
         )
     }
 
+    private renderStatsColumn() {
+        const { validationResult } = this.props
+        return (
+            <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
+                <h3 className="settings-form-subsection-name">
+                    <I18n id={MessageKey.CommonTrafficStats} />
+                </h3>
+                <Form.Item
+                    name={["nginx", "stats", "enabled"]}
+                    validateStatus={validationResult.getStatus("nginx.stats.enabled")}
+                    help={validationResult.getMessage("nginx.stats.enabled")}
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsEnabled} />}
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                <Form.Item
+                    name={["nginx", "stats", "persistent"]}
+                    validateStatus={validationResult.getStatus("nginx.stats.persistent")}
+                    help={validationResult.getMessage("nginx.stats.persistent")}
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsPersistent} />}
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                <Form.Item
+                    name={["nginx", "stats", "allHosts"]}
+                    validateStatus={validationResult.getStatus("nginx.stats.allHosts")}
+                    help={validationResult.getMessage("nginx.stats.allHosts")}
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsAllHosts} />}
+                    tooltip={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsAllHostsHelp} />}
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                <Form.Item label={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsMaximumSize} />} required>
+                    <Space.Compact className="settings-form-input-wide">
+                        <Form.Item
+                            name={["nginx", "stats", "maximumSizeMb"]}
+                            validateStatus={validationResult.getStatus("nginx.stats.maximumSizeMb")}
+                            help={validationResult.getMessage("nginx.stats.maximumSizeMb")}
+                            noStyle
+                        >
+                            <InputNumber min={1} max={512} className="settings-form-input-wide" />
+                        </Form.Item>
+                        <Space.Addon>
+                            <I18n id={MessageKey.CommonUnitMb} />
+                        </Space.Addon>
+                    </Space.Compact>
+                </Form.Item>
+                <Form.Item
+                    name={["nginx", "stats", "databaseLocation"]}
+                    validateStatus={validationResult.getStatus("nginx.stats.databaseLocation")}
+                    help={validationResult.getMessage("nginx.stats.databaseLocation")}
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsDatabaseLocation} />}
+                >
+                    <Input maxLength={256} />
+                </Form.Item>
+            </Flex>
+        )
+    }
+
     private renderLogsFormPortion() {
         const { validationResult } = this.props
         return (
@@ -82,14 +144,13 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                             <Switch />
                         </Form.Item>
                         {this.renderErrorLogFieldset("errorLogsEnabled", "errorLogsLevel")}
-                    </Flex>
-
-                    <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
                         <h3 className="settings-form-subsection-name">
                             <I18n id={MessageKey.FrontendSettingsTabsNginxLogsServer} />
                         </h3>
                         {this.renderErrorLogFieldset("serverLogsEnabled", "serverLogsLevel")}
                     </Flex>
+
+                    {this.renderStatsColumn()}
                 </Flex>
             </>
         )

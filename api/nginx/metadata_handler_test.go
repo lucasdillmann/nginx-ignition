@@ -30,7 +30,7 @@ func Test_metadataHandler(t *testing.T) {
 				Return(metadataData, nil)
 
 			handler := metadataHandler{
-				commands: commands,
+				nginxCommands: commands,
 			}
 			engine := gin.New()
 			engine.GET("/api/nginx/metadata", handler.handle)
@@ -56,7 +56,7 @@ func Test_metadataHandler(t *testing.T) {
 				Return(nil, expectedErr)
 
 			handler := metadataHandler{
-				commands: commands,
+				nginxCommands: commands,
 			}
 			engine := gin.New()
 			engine.GET("/api/nginx/metadata", func(ginContext *gin.Context) {
