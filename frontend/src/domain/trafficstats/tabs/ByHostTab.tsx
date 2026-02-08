@@ -144,7 +144,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
         const { selectedHost } = this.state
         if (!selectedHost) return null
 
-        const userAgentZone = filterZones[`userAgent@host:${selectedHost}`]
+        const userAgentZone = filterZones[`userAgent@host:${selectedHost.id}`]
         const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
         return <UserAgentChart data={data} theme={this.props.theme} />
     }
@@ -154,33 +154,39 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
         const { selectedHost } = this.state
         if (!selectedHost) return null
 
-        const countryCodeZone = filterZones[`countryCode@host:${selectedHost}`]
+        const countryCodeZone = filterZones[`countryCode@host:${selectedHost.id}`]
         const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
         return <CountryCodeChart data={data} theme={this.props.theme} />
     }
 
-    render() {
-        const zone = this.getSelectedZoneData()
+    private renderMainContents() {
+        const { selectedHost } = this.state
+        if (!selectedHost) return <Empty description={<I18n id={MessageKey.FrontendTrafficStatsSelectHost} />} />
 
+        const zone = this.getSelectedZoneData()
+        if (!zone) return <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
+
+        return (
+            <>
+                {this.renderStatCards(zone)}
+                <Flex className="traffic-stats-charts-row">
+                    {this.renderStatusPieChart(zone)}
+                    {this.renderResponsesTable(zone)}
+                </Flex>
+                <Flex className="traffic-stats-charts-row">{this.renderResponseTimeChart(zone)}</Flex>
+                <Flex className="traffic-stats-charts-row">
+                    {this.renderUserAgentChart()}
+                    {this.renderCountryCodeChart()}
+                </Flex>
+            </>
+        )
+    }
+
+    render() {
         return (
             <div className="traffic-stats-tab-content">
                 {this.renderHostSelector()}
-                {zone ? (
-                    <>
-                        {this.renderStatCards(zone)}
-                        <Flex className="traffic-stats-charts-row">
-                            {this.renderStatusPieChart(zone)}
-                            {this.renderResponsesTable(zone)}
-                        </Flex>
-                        <Flex className="traffic-stats-charts-row">{this.renderResponseTimeChart(zone)}</Flex>
-                        <Flex className="traffic-stats-charts-row">
-                            {this.renderUserAgentChart()}
-                            {this.renderCountryCodeChart()}
-                        </Flex>
-                    </>
-                ) : (
-                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsSelectHost} />} />
-                )}
+                {this.renderMainContents()}
             </div>
         )
     }
