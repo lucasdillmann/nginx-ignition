@@ -1,6 +1,6 @@
 import React from "react"
 import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
-import { Flex, Form, FormInstance, Switch, Tooltip } from "antd"
+import { Flex, Form, FormInstance, Switch } from "antd"
 import FormLayout from "../../core/components/form/FormLayout"
 import DomainNamesList from "../../core/components/domainnames/DomainNamesList"
 import { navigateTo, queryParams, routeParams } from "../../core/components/router/AppRouter"
@@ -34,9 +34,10 @@ import HostVpns from "./components/HostVpns"
 import CacheService from "../cache/CacheService"
 import CacheResponse from "../cache/model/CacheResponse"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { i18n, I18n } from "../../core/i18n/I18n"
+import { I18n } from "../../core/i18n/I18n"
 import NginxService from "../nginx/NginxService"
 import NginxMetadata, { NginxSupportType } from "../nginx/model/NginxMetadata"
+import { QuestionCircleFilled } from "@ant-design/icons"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -219,41 +220,41 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     private renderStatsSwitch() {
         const { metadata, validationResult } = this.state
 
-        const statsUnsupported = metadata !== undefined && metadata.availableSupport.stats === NginxSupportType.NONE
+        const statsUnsupported = metadata?.availableSupport.stats === NginxSupportType.NONE
         if (statsUnsupported) return null
 
-        const statsDisabled = metadata !== undefined && !metadata.stats.enabled
-        const statsAllHosts = metadata !== undefined && metadata.stats.allHosts
+        const statsDisabled = metadata?.stats?.enabled === false
+        const statsAllHosts = metadata?.stats?.allHosts
 
         let switchDisabled = false
         let switchChecked: boolean | undefined = undefined
-        let tooltipText: string | undefined = undefined
+        let tooltipText: MessageKey | undefined = undefined
 
         if (statsDisabled) {
             switchDisabled = true
             switchChecked = false
-            tooltipText = i18n(MessageKey.FrontendHostFormStatsDisabledTooltip)
+            tooltipText = MessageKey.FrontendHostFormStatsDisabledTooltip
         } else if (statsAllHosts) {
             switchDisabled = true
             switchChecked = true
-            tooltipText = i18n(MessageKey.FrontendHostFormStatsAllHostsTooltip)
+            tooltipText = MessageKey.FrontendHostFormStatsAllHostsTooltip
         }
 
-        const switchElement = (
+        const tooltip =
+            tooltipText !== undefined ? { title: <I18n id={tooltipText} />, icon: <QuestionCircleFilled /> } : undefined
+
+        return (
             <Form.Item
-                name="statsEnabled"
-                validateStatus={validationResult.getStatus("statsEnabled")}
-                help={validationResult.getMessage("statsEnabled")}
+                name={["featureSet", "statsEnabled"]}
+                validateStatus={validationResult.getStatus("featureSet.statsEnabled")}
+                help={validationResult.getMessage("featureSet.statsEnabled")}
                 label={<I18n id={MessageKey.FrontendHostFormStatsEnabled} />}
+                tooltip={tooltip}
                 required
             >
                 <Switch disabled={switchDisabled} checked={switchChecked} />
             </Form.Item>
         )
-
-        if (tooltipText !== undefined) return <Tooltip title={tooltipText}>{switchElement}</Tooltip>
-
-        return switchElement
     }
 
     private renderForm() {

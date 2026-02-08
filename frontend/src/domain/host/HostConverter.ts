@@ -205,16 +205,7 @@ class HostConverter {
     }
 
     async responseToFormValues(response: HostResponse): Promise<HostFormValues> {
-        const {
-            enabled,
-            domainNames,
-            featureSet,
-            defaultServer,
-            useGlobalBindings,
-            accessListId,
-            cacheId,
-            statsEnabled,
-        } = response
+        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessListId, cacheId } = response
 
         const routes = response.routes.map(route => this.routeToFormValues(route))
         const responseBindings = response.bindings ?? []
@@ -239,7 +230,6 @@ class HostConverter {
             featureSet,
             defaultServer,
             useGlobalBindings,
-            statsEnabled,
             accessList,
             cache,
             domainNames: domainNames ?? [""],
@@ -248,8 +238,7 @@ class HostConverter {
     }
 
     formValuesToRequest(formValues: HostFormValues): HostRequest {
-        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessList, cache, statsEnabled } =
-            formValues
+        const { enabled, domainNames, featureSet, defaultServer, useGlobalBindings, accessList, cache } = formValues
 
         const routes = formValues.routes.map(route => this.formValuesToRoute(route))
         const bindings = useGlobalBindings ? [] : formValues.bindings.map(binding => this.formValuesToBinding(binding))
@@ -260,7 +249,6 @@ class HostConverter {
             featureSet,
             defaultServer,
             useGlobalBindings,
-            statsEnabled,
             bindings,
             routes,
             vpns,

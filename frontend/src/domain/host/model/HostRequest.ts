@@ -21,6 +21,7 @@ export interface HostFeatureSet {
     websocketsSupport: boolean
     http2Support: boolean
     redirectHttpToHttps: boolean
+    statsEnabled: boolean
 }
 
 export interface HostBinding {
@@ -81,7 +82,6 @@ export default interface HostRequest {
     enabled: boolean
     defaultServer: boolean
     useGlobalBindings: boolean
-    statsEnabled: boolean
     domainNames?: string[]
     routes: HostRoute[]
     bindings?: HostBinding[]

@@ -7,6 +7,7 @@ import { LogLevel } from "../model/SettingsDto"
 import { INTEGER_MAX } from "../SettingsConstants"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { QuestionCircleFilled } from "@ant-design/icons"
 
 export interface NginxSettingsTabProps {
     formValues: SettingsFormValues
@@ -86,7 +87,10 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     validateStatus={validationResult.getStatus("nginx.stats.allHosts")}
                     help={validationResult.getMessage("nginx.stats.allHosts")}
                     label={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsAllHosts} />}
-                    tooltip={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsAllHostsHelp} />}
+                    tooltip={{
+                        title: <I18n id={MessageKey.FrontendSettingsTabsNginxStatsAllHostsHelp} />,
+                        icon: <QuestionCircleFilled />,
+                    }}
                     required
                 >
                     <Switch />

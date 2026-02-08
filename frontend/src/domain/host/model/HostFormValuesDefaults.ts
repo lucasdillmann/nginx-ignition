@@ -6,7 +6,6 @@ export function hostFormValuesDefaults(): HostFormValues {
         enabled: true,
         defaultServer: false,
         useGlobalBindings: true,
-        statsEnabled: false,
         domainNames: [""],
         vpns: [],
         bindings: [
@@ -35,6 +34,7 @@ export function hostFormValuesDefaults(): HostFormValues {
             websocketsSupport: true,
             http2Support: true,
             redirectHttpToHttps: false,
+            statsEnabled: true,
         },
     }
 }

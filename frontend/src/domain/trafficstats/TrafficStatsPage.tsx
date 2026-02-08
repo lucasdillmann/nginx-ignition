@@ -99,7 +99,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
             actions: [
                 {
                     description: MessageKey.CommonRefresh,
-                    onClick: () => this.fetchStats(),
+                    onClick: () => this.fetchMetadataAndStats(),
                     disabled: autoRefreshEnabled,
                     disabledReason: autoRefreshEnabled
                         ? MessageKey.FrontendTrafficStatsAutoRefreshDisabledReason
@@ -134,7 +134,10 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
         this.setState({ autoRefreshSeconds }, () => {
             this.configureShell()
             if (autoRefreshSeconds !== undefined) {
-                this.refreshIntervalId = window.setInterval(() => this.fetchStats(), autoRefreshSeconds * 1000)
+                this.refreshIntervalId = window.setInterval(
+                    () => this.fetchMetadataAndStats(),
+                    autoRefreshSeconds * 1000,
+                )
             }
         })
     }
@@ -205,7 +208,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
     private renderEmptyState() {
         const { metadata, nginxRunning } = this.state
 
-        if (metadata && metadata.availableSupport.stats === NginxSupportType.NONE)
+        if (metadata?.availableSupport?.stats === NginxSupportType.NONE)
             return (
                 <Empty
                     description={
@@ -267,8 +270,8 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
 
         const { loading, error, stats, metadata, nginxRunning } = this.state
 
-        const statsUnsupported = metadata && metadata.availableSupport.stats === NginxSupportType.NONE
-        const statsDisabled = metadata && !metadata.stats.enabled
+        const statsUnsupported = metadata?.availableSupport?.stats === NginxSupportType.NONE
+        const statsDisabled = metadata?.stats?.enabled === false
         const nginxOffline = nginxRunning === false
         const showEmptyState = statsUnsupported || statsDisabled || nginxOffline
 
