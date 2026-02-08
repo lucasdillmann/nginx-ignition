@@ -287,8 +287,9 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 		`
 		server { 
 			root /dev/null;
-            access_log off;
             listen unix:%s;
+			access_log off;
+			vhost_traffic_status off;
 			
 			location / {
 				vhost_traffic_status_display;
