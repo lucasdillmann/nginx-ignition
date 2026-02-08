@@ -169,7 +169,7 @@ func Test_geoIPFileProvider(t *testing.T) {
 			_, err := provider.provide(ctx)
 
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "failed to fetch latest GeoIP release")
+			assert.Contains(t, err.Error(), "Failed to fetch latest GeoIP release")
 		})
 
 		t.Run("returns nothing if stats are disabled", func(t *testing.T) {

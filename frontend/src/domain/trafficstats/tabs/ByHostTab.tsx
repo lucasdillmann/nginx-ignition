@@ -11,7 +11,7 @@ import {
     buildCityData,
 } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { I18n, i18n } from "../../../core/i18n/I18n"
+import { I18n } from "../../../core/i18n/I18n"
 import UserAgentChart from "../components/UserAgentChart"
 import CountryCodeChart from "../components/CountryCodeChart"
 import CityChart from "../components/CityChart"
@@ -57,15 +57,6 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
         } catch {
             this.setState({ loading: false })
         }
-    }
-
-    private getHostLabel(hostId: string): string {
-        const host = this.state.hosts.find(h => h.id === hostId)
-        if (host) {
-            if (host.defaultServer) return i18n(MessageKey.CommonDefaultServerLabel)
-            if (host.domainNames && host.domainNames.length > 0) return host.domainNames.join(", ")
-        }
-        return hostId
     }
 
     private getSelectedZoneData(): ZoneData | undefined {

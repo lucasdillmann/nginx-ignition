@@ -81,6 +81,7 @@ export default interface HostRequest {
     enabled: boolean
     defaultServer: boolean
     useGlobalBindings: boolean
+    statsEnabled: boolean
     domainNames?: string[]
     routes: HostRoute[]
     bindings?: HostBinding[]

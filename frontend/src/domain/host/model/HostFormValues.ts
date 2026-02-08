@@ -49,6 +49,7 @@ export default interface HostFormValues {
     enabled: boolean
     defaultServer: boolean
     useGlobalBindings: boolean
+    statsEnabled: boolean
     domainNames: string[]
     routes: HostFormRoute[]
     bindings: HostFormBinding[]

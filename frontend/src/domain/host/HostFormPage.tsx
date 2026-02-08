@@ -1,6 +1,6 @@
 import React from "react"
 import AppShellContext, { ShellAction } from "../../core/components/shell/AppShellContext"
-import { Flex, Form, FormInstance, Switch } from "antd"
+import { Flex, Form, FormInstance, Switch, Tooltip } from "antd"
 import FormLayout from "../../core/components/form/FormLayout"
 import DomainNamesList from "../../core/components/domainnames/DomainNamesList"
 import { navigateTo, queryParams, routeParams } from "../../core/components/router/AppRouter"
@@ -34,7 +34,9 @@ import HostVpns from "./components/HostVpns"
 import CacheService from "../cache/CacheService"
 import CacheResponse from "../cache/model/CacheResponse"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { I18n } from "../../core/i18n/I18n"
+import { i18n, I18n } from "../../core/i18n/I18n"
+import NginxService from "../nginx/NginxService"
+import NginxMetadata, { NginxSupportType } from "../nginx/model/NginxMetadata"
 
 interface HostFormPageState {
     formValues: HostFormValues
@@ -42,12 +44,14 @@ interface HostFormPageState {
     loading: boolean
     notFound: boolean
     error?: Error
+    metadata?: NginxMetadata
 }
 
 export default class HostFormPage extends React.Component<any, HostFormPageState> {
     private readonly hostService: HostService
     private readonly accessListService: AccessListService
     private readonly cacheService: CacheService
+    private readonly nginxService: NginxService
     private readonly saveModal: ModalPreloader
     private readonly formRef: React.RefObject<FormInstance | null>
     private hostId?: string
@@ -60,6 +64,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         this.hostService = new HostService()
         this.accessListService = new AccessListService()
         this.cacheService = new CacheService()
+        this.nginxService = new NginxService()
         this.saveModal = new ModalPreloader()
         this.formRef = React.createRef()
         this.state = {
@@ -211,6 +216,46 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
         return this.cacheService.list(pageSize, pageNumber, searchTerms)
     }
 
+    private renderStatsSwitch() {
+        const { metadata, validationResult } = this.state
+
+        const statsUnsupported = metadata !== undefined && metadata.availableSupport.stats === NginxSupportType.NONE
+        if (statsUnsupported) return null
+
+        const statsDisabled = metadata !== undefined && !metadata.stats.enabled
+        const statsAllHosts = metadata !== undefined && metadata.stats.allHosts
+
+        let switchDisabled = false
+        let switchChecked: boolean | undefined = undefined
+        let tooltipText: string | undefined = undefined
+
+        if (statsDisabled) {
+            switchDisabled = true
+            switchChecked = false
+            tooltipText = i18n(MessageKey.FrontendHostFormStatsDisabledTooltip)
+        } else if (statsAllHosts) {
+            switchDisabled = true
+            switchChecked = true
+            tooltipText = i18n(MessageKey.FrontendHostFormStatsAllHostsTooltip)
+        }
+
+        const switchElement = (
+            <Form.Item
+                name="statsEnabled"
+                validateStatus={validationResult.getStatus("statsEnabled")}
+                help={validationResult.getMessage("statsEnabled")}
+                label={<I18n id={MessageKey.FrontendHostFormStatsEnabled} />}
+                required
+            >
+                <Switch disabled={switchDisabled} checked={switchChecked} />
+            </Form.Item>
+        )
+
+        if (tooltipText !== undefined) return <Tooltip title={tooltipText}>{switchElement}</Tooltip>
+
+        return switchElement
+    }
+
     private renderForm() {
         const { validationResult, formValues } = this.state
 
@@ -279,6 +324,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                         >
                             <Switch />
                         </Form.Item>
+                        {this.renderStatsSwitch()}
                     </Flex>
                     <Flex className="hosts-form-inner-flex-container-column">
                         <Form.Item
@@ -381,20 +427,23 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
 
     componentDidMount() {
         this.updateShellConfig(false)
+        const metadataPromise = this.nginxService.getMetadata()
 
         const copyFrom = queryParams().copyFrom as string | undefined
         if (this.hostId === undefined && copyFrom === undefined) {
-            this.setState({ loading: false })
+            metadataPromise.then(metadata => this.setState({ metadata, loading: false }))
             this.updateShellConfig(true)
             return
         }
 
-        this.hostService
+        const hostPromisse = this.hostService
             .getById((this.hostId ?? copyFrom)!!)
             .then(response => (response === undefined ? undefined : HostConverter.responseToFormValues(response)))
-            .then(formValues => {
+
+        Promise.all([metadataPromise, hostPromisse])
+            .then(([metadata, formValues]) => {
                 if (formValues === undefined) {
-                    this.setState({ loading: false, notFound: true })
+                    this.setState({ metadata, loading: false, notFound: true })
                     return
                 }
 
@@ -404,7 +453,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                         MessageKey.FrontendHostValuesCopiedFullDescription,
                     )
 
-                this.setState({ loading: false, formValues })
+                this.setState({ formValues, metadata, loading: false })
                 this.updateShellConfig(true)
             })
             .catch(error => {

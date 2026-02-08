@@ -1,5 +1,5 @@
 import React from "react"
-import { Tabs, Flex, Select } from "antd"
+import { Tabs, Flex, Select, Button, Empty } from "antd"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
@@ -15,6 +15,9 @@ import ByUpstreamTab from "./tabs/ByUpstreamTab"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { i18n, I18n } from "../../core/i18n/I18n"
 import ThemeContext from "../../core/components/context/ThemeContext"
+import NginxService from "../nginx/NginxService"
+import NginxMetadata, { NginxSupportType } from "../nginx/model/NginxMetadata"
+import { navigateTo } from "../../core/components/router/AppRouter"
 import "./TrafficStatsPage.css"
 
 interface TrafficStatsPageState {
@@ -24,6 +27,8 @@ interface TrafficStatsPageState {
     autoRefreshSeconds?: number
     activeTab: string
     theme: "light" | "dark"
+    metadata?: NginxMetadata
+    nginxRunning?: boolean
 }
 
 const AUTO_REFRESH_OPTIONS = [
@@ -36,11 +41,13 @@ const AUTO_REFRESH_OPTIONS = [
 
 export default class TrafficStatsPage extends React.Component<object, TrafficStatsPageState> {
     private readonly service: TrafficStatsService
+    private readonly nginxService: NginxService
     private refreshIntervalId?: number
 
     constructor(props: object) {
         super(props)
         this.service = new TrafficStatsService()
+        this.nginxService = new NginxService()
         this.state = {
             loading: true,
             activeTab: "global",
@@ -50,13 +57,32 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
 
     componentDidMount() {
         this.configureShell()
-        this.fetchStats()
+        this.fetchMetadataAndStats()
         ThemeContext.register(this.handleThemeChange.bind(this))
     }
 
     componentWillUnmount() {
         this.stopAutoRefresh()
         ThemeContext.deregister(this.handleThemeChange.bind(this))
+    }
+
+    private async fetchMetadataAndStats() {
+        this.setState({ loading: true })
+        try {
+            const [metadata, nginxRunning] = await Promise.all([
+                this.nginxService.getMetadata(),
+                this.nginxService.isRunning(),
+            ])
+            this.setState({ metadata, nginxRunning })
+
+            const statsSupported = metadata.availableSupport.stats !== NginxSupportType.NONE
+            const statsEnabled = metadata.stats.enabled
+
+            if (statsSupported && statsEnabled && nginxRunning) await this.fetchStats()
+            else this.setState({ loading: false })
+        } catch (error) {
+            this.setState({ loading: false, error: error as Error })
+        }
     }
 
     private handleThemeChange(darkMode: boolean) {
@@ -176,18 +202,82 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
         )
     }
 
+    private renderEmptyState() {
+        const { metadata, nginxRunning } = this.state
+
+        if (metadata && metadata.availableSupport.stats === NginxSupportType.NONE)
+            return (
+                <Empty
+                    description={
+                        <>
+                            <h3>
+                                <I18n id={MessageKey.FrontendTrafficStatsUnsupportedTitle} />
+                            </h3>
+                            <p>
+                                <I18n id={MessageKey.FrontendTrafficStatsUnsupportedDescription} />
+                            </p>
+                        </>
+                    }
+                />
+            )
+
+        if (metadata && !metadata.stats.enabled)
+            return (
+                <Empty
+                    description={
+                        <>
+                            <h3>
+                                <I18n id={MessageKey.FrontendTrafficStatsDisabledTitle} />
+                            </h3>
+                            <p>
+                                <I18n id={MessageKey.FrontendTrafficStatsDisabledDescription} />
+                            </p>
+                        </>
+                    }
+                >
+                    <Button type="primary" onClick={() => navigateTo("/settings")}>
+                        <I18n id={MessageKey.FrontendTrafficStatsGoToSettings} />
+                    </Button>
+                </Empty>
+            )
+
+        if (nginxRunning === false)
+            return (
+                <Empty
+                    description={
+                        <>
+                            <h3>
+                                <I18n id={MessageKey.FrontendTrafficStatsNginxOfflineTitle} />
+                            </h3>
+                            <p>
+                                <I18n id={MessageKey.FrontendTrafficStatsNginxOfflineDescription} />
+                            </p>
+                        </>
+                    }
+                />
+            )
+
+        return null
+    }
+
     render() {
         if (!isAccessGranted(UserAccessLevel.READ_ONLY, permissions => permissions.trafficStats)) {
             return <AccessDeniedPage />
         }
 
-        const { loading, error, stats } = this.state
+        const { loading, error, stats, metadata, nginxRunning } = this.state
+
+        const statsUnsupported = metadata && metadata.availableSupport.stats === NginxSupportType.NONE
+        const statsDisabled = metadata && !metadata.stats.enabled
+        const nginxOffline = nginxRunning === false
+        const showEmptyState = statsUnsupported || statsDisabled || nginxOffline
 
         return (
             <Flex className="traffic-stats-container" vertical>
                 <Preloader loading={loading}>
-                    {error && EmptyStates.FailedToFetch}
-                    {!error && stats && this.renderTabs()}
+                    {showEmptyState && this.renderEmptyState()}
+                    {!showEmptyState && error && EmptyStates.FailedToFetch}
+                    {!showEmptyState && !error && stats && this.renderTabs()}
                 </Preloader>
             </Flex>
         )

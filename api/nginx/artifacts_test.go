@@ -1,6 +1,9 @@
 package nginx
 
-import "dillmann.com.br/nginx-ignition/core/nginx"
+import (
+	"dillmann.com.br/nginx-ignition/core/nginx"
+	"dillmann.com.br/nginx-ignition/core/settings"
+)
 
 func newMetadata() *nginx.Metadata {
 	return &nginx.Metadata{
@@ -31,5 +34,16 @@ func newTrafficStats() *nginx.Stats {
 		},
 		FilterZones:   make(map[string]map[string]nginx.StatsZoneData),
 		UpstreamZones: make(map[string][]nginx.StatsUpstreamZoneData),
+	}
+}
+
+func newSettings() *settings.Settings {
+	return &settings.Settings{
+		Nginx: &settings.NginxSettings{
+			Stats: &settings.NginxStatsSettings{
+				Enabled:  true,
+				AllHosts: false,
+			},
+		},
 	}
 }
