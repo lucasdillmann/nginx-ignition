@@ -95,8 +95,6 @@ func toZoneDataDTO(data nginx.StatsZoneData) trafficStatsZoneDataDTO {
 		RequestMsec:        data.RequestMsec,
 		RequestMsecCounter: data.RequestMsecCounter,
 		RequestMsecs:       toTimeSeriesDTO(data.RequestMsecs),
-		RequestBuckets:     toBucketsDTO(data.RequestBuckets),
-		OverCounts:         toOverCountsDTO(data.OverCounts),
 	}
 }
 
@@ -110,17 +108,14 @@ func toUpstreamZoneDataDTO(data nginx.StatsUpstreamZoneData) trafficStatsUpstrea
 		RequestMsec:         data.RequestMsec,
 		RequestMsecCounter:  data.RequestMsecCounter,
 		RequestMsecs:        toTimeSeriesDTO(data.RequestMsecs),
-		RequestBuckets:      toBucketsDTO(data.RequestBuckets),
 		ResponseMsec:        data.ResponseMsec,
 		ResponseMsecCounter: data.ResponseMsecCounter,
 		ResponseMsecs:       toTimeSeriesDTO(data.ResponseMsecs),
-		ResponseBuckets:     toBucketsDTO(data.ResponseBuckets),
 		Weight:              data.Weight,
 		MaxFails:            data.MaxFails,
 		FailTimeout:         data.FailTimeout,
 		Backup:              data.Backup,
 		Down:                data.Down,
-		OverCounts:          toOverCountsDTO(data.OverCounts),
 	}
 }
 
@@ -158,35 +153,5 @@ func toTimeSeriesDTO(timeSeries nginx.StatsTimeSeries) trafficStatsTimeSeriesDTO
 	return trafficStatsTimeSeriesDTO{
 		Times: timeSeries.Times,
 		Msecs: timeSeries.Msecs,
-	}
-}
-
-func toBucketsDTO(buckets nginx.StatsBuckets) trafficStatsBucketsDTO {
-	return trafficStatsBucketsDTO{
-		Msecs:    buckets.Msecs,
-		Counters: buckets.Counters,
-	}
-}
-
-func toOverCountsDTO(overCounts nginx.StatsOverCounts) trafficStatsOverCountsDTO {
-	return trafficStatsOverCountsDTO{
-		RequestCounter:      overCounts.RequestCounter,
-		InBytes:             overCounts.InBytes,
-		OutBytes:            overCounts.OutBytes,
-		Status1xx:           overCounts.Status1xx,
-		Status2xx:           overCounts.Status2xx,
-		Status3xx:           overCounts.Status3xx,
-		Status4xx:           overCounts.Status4xx,
-		Status5xx:           overCounts.Status5xx,
-		Miss:                overCounts.Miss,
-		Bypass:              overCounts.Bypass,
-		Expired:             overCounts.Expired,
-		Stale:               overCounts.Stale,
-		Updating:            overCounts.Updating,
-		Revalidated:         overCounts.Revalidated,
-		Hit:                 overCounts.Hit,
-		Scarce:              overCounts.Scarce,
-		RequestMsecCounter:  overCounts.RequestMsecCounter,
-		ResponseMsecCounter: overCounts.ResponseMsecCounter,
 	}
 }

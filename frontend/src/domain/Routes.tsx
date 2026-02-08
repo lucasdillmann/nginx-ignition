@@ -6,6 +6,7 @@ import OnboardingPage from "./onboarding/OnboardingPage"
 import {
     AuditOutlined,
     BlockOutlined,
+    AreaChartOutlined,
     FileProtectOutlined,
     FileSearchOutlined,
     HddOutlined,
@@ -37,6 +38,7 @@ import VpnListPage from "./vpn/VpnListPage"
 import VpnFormPage from "./vpn/VpnFormPage"
 import CacheFormPage from "./cache/CacheFormPage"
 import CacheListPage from "./cache/CacheListPage"
+import TrafficStatsPage from "./trafficstats/TrafficStatsPage"
 import MessageKey from "../core/i18n/model/MessageKey.generated"
 
 const Routes: AppRoute[] = [
@@ -118,6 +120,16 @@ const Routes: AppRoute[] = [
         menuItem: {
             description: MessageKey.CommonLogs,
             icon: <FileSearchOutlined />,
+        },
+    },
+    {
+        path: "/traffic-stats",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <TrafficStatsPage />,
+        menuItem: {
+            description: MessageKey.CommonTrafficStats,
+            icon: <AreaChartOutlined />,
         },
     },
     {

@@ -33,8 +33,6 @@ type statsConnections struct {
 
 type statsZoneData struct {
 	RequestMsecs       statsTimeSeries `json:"requestMsecs"`
-	RequestBuckets     statsBuckets    `json:"requestBuckets"`
-	OverCounts         statsOverCounts `json:"overCounts"`
 	Responses          statsResponses  `json:"responses"`
 	RequestCounter     uint64          `json:"requestCounter"`
 	InBytes            uint64          `json:"inBytes"`
@@ -64,39 +62,10 @@ type statsTimeSeries struct {
 	Msecs []int64 `json:"msecs"`
 }
 
-type statsBuckets struct {
-	Msecs    []int64 `json:"msecs"`
-	Counters []int64 `json:"counters"`
-}
-
-type statsOverCounts struct {
-	RequestCounter      uint64 `json:"requestCounter"`
-	InBytes             uint64 `json:"inBytes"`
-	OutBytes            uint64 `json:"outBytes"`
-	Status1xx           uint64 `json:"1xx"`
-	Status2xx           uint64 `json:"2xx"`
-	Status3xx           uint64 `json:"3xx"`
-	Status4xx           uint64 `json:"4xx"`
-	Status5xx           uint64 `json:"5xx"`
-	Miss                uint64 `json:"miss"`
-	Bypass              uint64 `json:"bypass"`
-	Expired             uint64 `json:"expired"`
-	Stale               uint64 `json:"stale"`
-	Updating            uint64 `json:"updating"`
-	Revalidated         uint64 `json:"revalidated"`
-	Hit                 uint64 `json:"hit"`
-	Scarce              uint64 `json:"scarce"`
-	RequestMsecCounter  uint64 `json:"requestMsecCounter"`
-	ResponseMsecCounter uint64 `json:"responseMsecCounter"`
-}
-
 type statsUpstreamZoneData struct {
 	Server              string                 `json:"server"`
-	ResponseBuckets     statsBuckets           `json:"responseBuckets"`
 	RequestMsecs        statsTimeSeries        `json:"requestMsecs"`
 	ResponseMsecs       statsTimeSeries        `json:"responseMsecs"`
-	RequestBuckets      statsBuckets           `json:"requestBuckets"`
-	OverCounts          statsOverCounts        `json:"overCounts"`
 	Responses           statsUpstreamResponses `json:"responses"`
 	RequestMsecCounter  uint64                 `json:"requestMsecCounter"`
 	ResponseMsec        uint64                 `json:"responseMsec"`
@@ -254,8 +223,6 @@ func convertZoneData(src statsZoneData) StatsZoneData {
 		RequestMsec:        src.RequestMsec,
 		RequestMsecCounter: src.RequestMsecCounter,
 		RequestMsecs:       StatsTimeSeries(src.RequestMsecs),
-		RequestBuckets:     StatsBuckets(src.RequestBuckets),
-		OverCounts:         StatsOverCounts(src.OverCounts),
 	}
 }
 
@@ -269,16 +236,13 @@ func convertUpstreamZoneData(src statsUpstreamZoneData) StatsUpstreamZoneData {
 		RequestMsec:         src.RequestMsec,
 		RequestMsecCounter:  src.RequestMsecCounter,
 		RequestMsecs:        StatsTimeSeries(src.RequestMsecs),
-		RequestBuckets:      StatsBuckets(src.RequestBuckets),
 		ResponseMsec:        src.ResponseMsec,
 		ResponseMsecCounter: src.ResponseMsecCounter,
 		ResponseMsecs:       StatsTimeSeries(src.ResponseMsecs),
-		ResponseBuckets:     StatsBuckets(src.ResponseBuckets),
 		Weight:              src.Weight,
 		MaxFails:            src.MaxFails,
 		FailTimeout:         src.FailTimeout,
 		Backup:              src.Backup,
 		Down:                src.Down,
-		OverCounts:          StatsOverCounts(src.OverCounts),
 	}
 }

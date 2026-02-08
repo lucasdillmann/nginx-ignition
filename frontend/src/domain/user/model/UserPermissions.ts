@@ -13,4 +13,5 @@ export default interface UserPermissions {
     exportData: UserAccessLevel
     vpns: UserAccessLevel
     caches: UserAccessLevel
+    trafficStats: UserAccessLevel
 }

@@ -1,0 +1,287 @@
+import React from "react"
+import { Flex, Select, Statistic, Empty, Table } from "antd"
+import { Pie, Area } from "@ant-design/charts"
+import TrafficStatsResponse, { ZoneData } from "../model/TrafficStatsResponse"
+import HostService from "../../host/HostService"
+import HostResponse from "../../host/model/HostResponse"
+import { formatBytes, formatNumber, formatMs } from "../utils/StatsFormatters"
+import {
+    buildStatusDistributionData,
+    STATUS_COLORS,
+    buildResponseTimeData,
+    buildUserAgentData,
+} from "../utils/StatsChartUtils"
+import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { I18n, i18n } from "../../../core/i18n/I18n"
+
+interface ByHostTabProps {
+    stats: TrafficStatsResponse
+}
+
+interface ByHostTabState {
+    hosts: HostResponse[]
+    selectedHostId?: string
+    loading: boolean
+}
+
+export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTabState> {
+    private readonly hostService: HostService
+
+    constructor(props: ByHostTabProps) {
+        super(props)
+        this.hostService = new HostService()
+        this.state = {
+            hosts: [],
+            loading: true,
+        }
+    }
+
+    componentDidMount() {
+        this.loadHosts()
+    }
+
+    private async loadHosts() {
+        try {
+            const page = await this.hostService.list(100, 0)
+            this.setState({ hosts: page.contents, loading: false })
+        } catch {
+            this.setState({ loading: false })
+        }
+    }
+
+    private getHostLabel(hostId: string): string {
+        const host = this.state.hosts.find(h => h.id === hostId)
+        if (host) {
+            if (host.defaultServer) return i18n(MessageKey.CommonDefaultServerLabel)
+            if (host.domainNames && host.domainNames.length > 0) return host.domainNames.join(", ")
+        }
+        return hostId
+    }
+
+    private getSelectedZoneData(): ZoneData | undefined {
+        const { filterZones } = this.props.stats
+        const { selectedHostId } = this.state
+        if (!selectedHostId || !filterZones.hosts) return undefined
+        return filterZones.hosts[selectedHostId]
+    }
+
+    private getAvgResponseTime(zone: ZoneData): number {
+        if (zone.requestCounter === 0) return 0
+        return zone.requestMsecCounter / zone.requestCounter
+    }
+
+    private renderHostSelector() {
+        const { filterZones } = this.props.stats
+        const { selectedHostId, loading } = this.state
+        const hostIds = filterZones.hosts ? Object.keys(filterZones.hosts) : []
+
+        const options = hostIds.map(id => ({
+            value: id,
+            label: this.getHostLabel(id),
+        }))
+
+        return (
+            <Flex className="traffic-stats-settings-option">
+                <p>
+                    <I18n id={MessageKey.CommonHost} />
+                </p>
+                <Select
+                    className="traffic-stats-selector"
+                    placeholder={<I18n id={MessageKey.FrontendTrafficstatsSelectHost} />}
+                    options={options}
+                    value={selectedHostId}
+                    onChange={value => this.setState({ selectedHostId: value })}
+                    loading={loading}
+                    showSearch
+                    filterOption={(input, option) =>
+                        (option?.label?.toString() ?? "").toLowerCase().includes(input.toLowerCase())
+                    }
+                />
+            </Flex>
+        )
+    }
+
+    private renderStatCards(zone: ZoneData) {
+        return (
+            <Flex className="traffic-stats-cards-row">
+                <div className="traffic-stats-stat-card">
+                    <Statistic
+                        title={<I18n id={MessageKey.FrontendTrafficstatsConnectionsRequests} />}
+                        value={formatNumber(zone.requestCounter)}
+                    />
+                </div>
+                <div className="traffic-stats-stat-card">
+                    <Statistic
+                        title={<I18n id={MessageKey.FrontendTrafficstatsBytesReceived} />}
+                        value={formatBytes(zone.inBytes)}
+                    />
+                </div>
+                <div className="traffic-stats-stat-card">
+                    <Statistic
+                        title={<I18n id={MessageKey.FrontendTrafficstatsBytesSent} />}
+                        value={formatBytes(zone.outBytes)}
+                    />
+                </div>
+                <div className="traffic-stats-stat-card">
+                    <Statistic
+                        title={<I18n id={MessageKey.FrontendTrafficstatsAverageResponseTime} />}
+                        value={formatMs(this.getAvgResponseTime(zone))}
+                    />
+                </div>
+            </Flex>
+        )
+    }
+
+    private renderStatusPieChart(zone: ZoneData) {
+        const data = buildStatusDistributionData(zone.responses)
+
+        if (data.length === 0) {
+            return <Empty description={<I18n id={MessageKey.FrontendTrafficstatsNoData} />} />
+        }
+
+        return (
+            <div className="traffic-stats-chart-container">
+                <p className="traffic-stats-chart-title">
+                    <I18n id={MessageKey.FrontendTrafficstatsStatusDistribution} />
+                </p>
+                <Pie
+                    data={data}
+                    angleField="count"
+                    colorField="status"
+                    radius={0.8}
+                    innerRadius={0.6}
+                    label={{
+                        text: "status",
+                        position: "outside",
+                    }}
+                    legend={{
+                        color: {
+                            position: "bottom",
+                        },
+                    }}
+                    scale={{
+                        color: {
+                            range: Object.values(STATUS_COLORS),
+                        },
+                    }}
+                    height={300}
+                />
+            </div>
+        )
+    }
+
+    private renderResponsesTable(zone: ZoneData) {
+        const data = [
+            { status: "1xx", count: zone.responses["1xx"] },
+            { status: "2xx", count: zone.responses["2xx"] },
+            { status: "3xx", count: zone.responses["3xx"] },
+            { status: "4xx", count: zone.responses["4xx"] },
+            { status: "5xx", count: zone.responses["5xx"] },
+        ]
+
+        const columns = [
+            {
+                title: <I18n id={MessageKey.FrontendTrafficstatsResponseStatus} />,
+                dataIndex: "status",
+                key: "status",
+            },
+            {
+                title: <I18n id={MessageKey.FrontendTrafficstatsConnectionsRequests} />,
+                dataIndex: "count",
+                key: "count",
+                render: (count: number) => formatNumber(count),
+            },
+        ]
+
+        return (
+            <div className="traffic-stats-table-container">
+                <p className="traffic-stats-chart-title">
+                    <I18n id={MessageKey.FrontendTrafficstatsStatusDistribution} />
+                </p>
+                <Table dataSource={data} columns={columns} pagination={false} rowKey="status" size="small" />
+            </div>
+        )
+    }
+
+    private renderResponseTimeChart(zone: ZoneData) {
+        const data = buildResponseTimeData(zone.requestMsecs)
+
+        if (data.length === 0) {
+            return null
+        }
+
+        return (
+            <div className="traffic-stats-chart-container">
+                <p className="traffic-stats-chart-title">
+                    <I18n id={MessageKey.FrontendTrafficstatsResponseTime} />
+                </p>
+                <Area data={data} xField="time" yField="value" height={300} axis={{ x: { labelAutoHide: true } }} />
+            </div>
+        )
+    }
+
+    private renderUserAgentChart() {
+        const { filterZones } = this.props.stats
+        const { selectedHostId } = this.state
+        if (!selectedHostId) return null
+
+        const userAgentZone = filterZones[`userAgent@${selectedHostId}`]
+        if (!userAgentZone) return null
+
+        const data = buildUserAgentData(userAgentZone)
+
+        if (data.length === 0) {
+            return null
+        }
+
+        return (
+            <div className="traffic-stats-chart-container">
+                <p className="traffic-stats-chart-title">
+                    <I18n id={MessageKey.FrontendTrafficstatsUserAgents} />
+                </p>
+                <Pie
+                    data={data}
+                    angleField="value"
+                    colorField="type"
+                    radius={0.8}
+                    innerRadius={0.6}
+                    label={{
+                        text: "type",
+                        position: "outside",
+                    }}
+                    legend={{
+                        color: {
+                            position: "bottom",
+                        },
+                    }}
+                    height={300}
+                />
+            </div>
+        )
+    }
+
+    render() {
+        const zone = this.getSelectedZoneData()
+
+        return (
+            <div className="traffic-stats-tab-content">
+                {this.renderHostSelector()}
+                {zone ? (
+                    <>
+                        {this.renderStatCards(zone)}
+                        <Flex className="traffic-stats-charts-row">
+                            {this.renderStatusPieChart(zone)}
+                            {this.renderResponsesTable(zone)}
+                        </Flex>
+                        <Flex className="traffic-stats-charts-row">
+                            {this.renderResponseTimeChart(zone)}
+                            {this.renderUserAgentChart()}
+                        </Flex>
+                    </>
+                ) : (
+                    <Empty description={<I18n id={MessageKey.FrontendTrafficstatsSelectHost} />} />
+                )}
+            </div>
+        )
+    }
+}

@@ -28,8 +28,6 @@ type StatsConnections struct {
 
 type StatsZoneData struct {
 	RequestMsecs       StatsTimeSeries
-	RequestBuckets     StatsBuckets
-	OverCounts         StatsOverCounts
 	Responses          StatsResponses
 	RequestCounter     uint64
 	InBytes            uint64
@@ -59,39 +57,10 @@ type StatsTimeSeries struct {
 	Msecs []int64
 }
 
-type StatsBuckets struct {
-	Msecs    []int64
-	Counters []int64
-}
-
-type StatsOverCounts struct {
-	RequestCounter      uint64
-	InBytes             uint64
-	OutBytes            uint64
-	Status1xx           uint64
-	Status2xx           uint64
-	Status3xx           uint64
-	Status4xx           uint64
-	Status5xx           uint64
-	Miss                uint64
-	Bypass              uint64
-	Expired             uint64
-	Stale               uint64
-	Updating            uint64
-	Revalidated         uint64
-	Hit                 uint64
-	Scarce              uint64
-	RequestMsecCounter  uint64
-	ResponseMsecCounter uint64
-}
-
 type StatsUpstreamZoneData struct {
 	Server              string
-	ResponseBuckets     StatsBuckets
 	RequestMsecs        StatsTimeSeries
 	ResponseMsecs       StatsTimeSeries
-	RequestBuckets      StatsBuckets
-	OverCounts          StatsOverCounts
 	Responses           StatsUpstreamResponses
 	RequestMsecCounter  uint64
 	ResponseMsec        uint64

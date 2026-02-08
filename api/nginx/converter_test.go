@@ -275,14 +275,6 @@ func Test_toZoneDataDTO(t *testing.T) {
 				Times: []int64{1000, 2000},
 				Msecs: []int64{10, 20},
 			},
-			RequestBuckets: nginx.StatsBuckets{
-				Msecs:    []int64{100, 200},
-				Counters: []int64{5, 10},
-			},
-			OverCounts: nginx.StatsOverCounts{
-				RequestCounter: 50,
-				InBytes:        512,
-			},
 		}
 
 		result := toZoneDataDTO(data)
@@ -294,8 +286,6 @@ func Test_toZoneDataDTO(t *testing.T) {
 		assert.Equal(t, uint64(5000), result.RequestMsecCounter)
 		assert.Equal(t, uint64(80), result.Responses.Status2xx)
 		assert.Len(t, result.RequestMsecs.Times, 2)
-		assert.Len(t, result.RequestBuckets.Msecs, 2)
-		assert.Equal(t, uint64(50), result.OverCounts.RequestCounter)
 	})
 }
 
@@ -326,17 +316,6 @@ func Test_toUpstreamZoneDataDTO(t *testing.T) {
 			ResponseMsecs: nginx.StatsTimeSeries{
 				Times: []int64{1000},
 				Msecs: []int64{30},
-			},
-			RequestBuckets: nginx.StatsBuckets{
-				Msecs:    []int64{100},
-				Counters: []int64{5},
-			},
-			ResponseBuckets: nginx.StatsBuckets{
-				Msecs:    []int64{100},
-				Counters: []int64{10},
-			},
-			OverCounts: nginx.StatsOverCounts{
-				RequestCounter: 25,
 			},
 		}
 
@@ -433,65 +412,5 @@ func Test_toTimeSeriesDTO(t *testing.T) {
 
 		assert.Empty(t, result.Times)
 		assert.Empty(t, result.Msecs)
-	})
-}
-
-func Test_toBucketsDTO(t *testing.T) {
-	t.Run("converts buckets", func(t *testing.T) {
-		buckets := nginx.StatsBuckets{
-			Msecs:    []int64{100, 200, 300},
-			Counters: []int64{5, 10, 15},
-		}
-
-		result := toBucketsDTO(buckets)
-
-		assert.Equal(t, []int64{100, 200, 300}, result.Msecs)
-		assert.Equal(t, []int64{5, 10, 15}, result.Counters)
-	})
-}
-
-func Test_toOverCountsDTO(t *testing.T) {
-	t.Run("converts all over count fields", func(t *testing.T) {
-		overCounts := nginx.StatsOverCounts{
-			RequestCounter:      100,
-			InBytes:             1024,
-			OutBytes:            2048,
-			Status1xx:           1,
-			Status2xx:           80,
-			Status3xx:           10,
-			Status4xx:           5,
-			Status5xx:           4,
-			Miss:                15,
-			Bypass:              8,
-			Expired:             3,
-			Stale:               2,
-			Updating:            1,
-			Revalidated:         5,
-			Hit:                 60,
-			Scarce:              1,
-			RequestMsecCounter:  5000,
-			ResponseMsecCounter: 6000,
-		}
-
-		result := toOverCountsDTO(overCounts)
-
-		assert.Equal(t, uint64(100), result.RequestCounter)
-		assert.Equal(t, uint64(1024), result.InBytes)
-		assert.Equal(t, uint64(2048), result.OutBytes)
-		assert.Equal(t, uint64(1), result.Status1xx)
-		assert.Equal(t, uint64(80), result.Status2xx)
-		assert.Equal(t, uint64(10), result.Status3xx)
-		assert.Equal(t, uint64(5), result.Status4xx)
-		assert.Equal(t, uint64(4), result.Status5xx)
-		assert.Equal(t, uint64(15), result.Miss)
-		assert.Equal(t, uint64(8), result.Bypass)
-		assert.Equal(t, uint64(3), result.Expired)
-		assert.Equal(t, uint64(2), result.Stale)
-		assert.Equal(t, uint64(1), result.Updating)
-		assert.Equal(t, uint64(5), result.Revalidated)
-		assert.Equal(t, uint64(60), result.Hit)
-		assert.Equal(t, uint64(1), result.Scarce)
-		assert.Equal(t, uint64(5000), result.RequestMsecCounter)
-		assert.Equal(t, uint64(6000), result.ResponseMsecCounter)
 	})
 }

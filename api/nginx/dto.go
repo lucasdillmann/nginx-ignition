@@ -20,8 +20,6 @@ type trafficStatsConnectionsDTO struct {
 
 type trafficStatsZoneDataDTO struct {
 	RequestMsecs       trafficStatsTimeSeriesDTO `json:"requestMsecs"`
-	RequestBuckets     trafficStatsBucketsDTO    `json:"requestBuckets"`
-	OverCounts         trafficStatsOverCountsDTO `json:"overCounts"`
 	Responses          trafficStatsResponsesDTO  `json:"responses"`
 	RequestCounter     uint64                    `json:"requestCounter"`
 	InBytes            uint64                    `json:"inBytes"`
@@ -51,39 +49,10 @@ type trafficStatsTimeSeriesDTO struct {
 	Msecs []int64 `json:"msecs"`
 }
 
-type trafficStatsBucketsDTO struct {
-	Msecs    []int64 `json:"msecs"`
-	Counters []int64 `json:"counters"`
-}
-
-type trafficStatsOverCountsDTO struct {
-	RequestCounter      uint64 `json:"requestCounter"`
-	InBytes             uint64 `json:"inBytes"`
-	OutBytes            uint64 `json:"outBytes"`
-	Status1xx           uint64 `json:"1xx"`
-	Status2xx           uint64 `json:"2xx"`
-	Status3xx           uint64 `json:"3xx"`
-	Status4xx           uint64 `json:"4xx"`
-	Status5xx           uint64 `json:"5xx"`
-	Miss                uint64 `json:"miss"`
-	Bypass              uint64 `json:"bypass"`
-	Expired             uint64 `json:"expired"`
-	Stale               uint64 `json:"stale"`
-	Updating            uint64 `json:"updating"`
-	Revalidated         uint64 `json:"revalidated"`
-	Hit                 uint64 `json:"hit"`
-	Scarce              uint64 `json:"scarce"`
-	RequestMsecCounter  uint64 `json:"requestMsecCounter"`
-	ResponseMsecCounter uint64 `json:"responseMsecCounter"`
-}
-
 type trafficStatsUpstreamZoneDataDTO struct {
 	Server              string                           `json:"server"`
-	ResponseBuckets     trafficStatsBucketsDTO           `json:"responseBuckets"`
 	RequestMsecs        trafficStatsTimeSeriesDTO        `json:"requestMsecs"`
 	ResponseMsecs       trafficStatsTimeSeriesDTO        `json:"responseMsecs"`
-	RequestBuckets      trafficStatsBucketsDTO           `json:"requestBuckets"`
-	OverCounts          trafficStatsOverCountsDTO        `json:"overCounts"`
 	Responses           trafficStatsUpstreamResponsesDTO `json:"responses"`
 	RequestMsecCounter  uint64                           `json:"requestMsecCounter"`
 	ResponseMsec        uint64                           `json:"responseMsec"`
