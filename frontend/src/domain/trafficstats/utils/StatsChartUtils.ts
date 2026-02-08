@@ -118,3 +118,15 @@ export function buildCountryCodeData(countryCodes: Record<string, ZoneData>) {
         .filter(item => item.value > 0)
         .sort((a, b) => b.value - a.value)
 }
+
+export function buildCityData(cities: Record<string, ZoneData>) {
+    if (!cities) return []
+
+    return Object.entries(cities)
+        .map(([city, data]) => ({
+            city,
+            value: data.requestCounter,
+        }))
+        .filter(item => item.value > 0)
+        .sort((a, b) => b.value - a.value)
+}

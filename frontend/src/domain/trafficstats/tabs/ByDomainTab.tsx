@@ -6,11 +6,13 @@ import {
     buildResponseTimeData,
     buildUserAgentData,
     buildCountryCodeData,
+    buildCityData,
 } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
 import UserAgentChart from "../components/UserAgentChart"
 import CountryCodeChart from "../components/CountryCodeChart"
+import CityChart from "../components/CityChart"
 import ResponseTimeChart from "../components/ResponseTimeChart"
 import StatusDistributionChart from "../components/StatusDistributionChart"
 import ResponsesTable from "../components/ResponsesTable"
@@ -29,6 +31,16 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps, ByDom
     constructor(props: ByDomainTabProps) {
         super(props)
         this.state = {}
+    }
+
+    componentDidMount() {
+        const { serverZones } = this.props.stats
+        const { selectedDomain } = this.state
+        const domains = Object.keys(serverZones).filter(d => d !== "*")
+
+        if (!selectedDomain && domains.length > 0) {
+            this.setState({ selectedDomain: domains[0] })
+        }
     }
 
     private getSelectedZoneData(): ZoneData | undefined {
@@ -118,6 +130,16 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps, ByDom
         return <CountryCodeChart data={data} theme={this.props.theme} />
     }
 
+    private renderCityChart() {
+        const { filterZones } = this.props.stats
+        const { selectedDomain } = this.state
+        if (!selectedDomain) return null
+
+        const cityZone = filterZones[`city@domain:${selectedDomain}`]
+        const data = cityZone ? buildCityData(cityZone) : []
+        return <CityChart data={data} theme={this.props.theme} />
+    }
+
     render() {
         const zone = this.getSelectedZoneData()
 
@@ -135,6 +157,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps, ByDom
                         <Flex className="traffic-stats-charts-row">
                             {this.renderUserAgentChart()}
                             {this.renderCountryCodeChart()}
+                            {this.renderCityChart()}
                         </Flex>
                     </>
                 ) : (

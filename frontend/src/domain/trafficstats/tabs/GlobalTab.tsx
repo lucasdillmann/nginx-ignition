@@ -10,11 +10,13 @@ import {
     buildResponseTimeData,
     buildUserAgentData,
     buildCountryCodeData,
+    buildCityData,
 } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
 import UserAgentChart from "../components/UserAgentChart"
 import CountryCodeChart from "../components/CountryCodeChart"
+import CityChart from "../components/CityChart"
 import ResponseTimeChart from "../components/ResponseTimeChart"
 import StatusDistributionChart from "../components/StatusDistributionChart"
 
@@ -144,6 +146,13 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
         return <CountryCodeChart data={data} theme={this.props.theme} />
     }
 
+    private renderCityChart() {
+        const { filterZones } = this.props.stats
+        const cityZone = filterZones["city@global"]
+        const data = cityZone ? buildCityData(cityZone) : []
+        return <CityChart data={data} theme={this.props.theme} />
+    }
+
     private renderBytesTable() {
         const { serverZones } = this.props.stats
         const data = buildTrafficByDomainData(serverZones, 10)
@@ -204,7 +213,11 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
                 <Flex className="traffic-stats-charts-row">
                     {this.renderStatusPieChart()}
                     {this.renderUserAgentChart()}
+                </Flex>
+
+                <Flex className="traffic-stats-charts-row">
                     {this.renderCountryCodeChart()}
+                    {this.renderCityChart()}
                 </Flex>
             </div>
         )

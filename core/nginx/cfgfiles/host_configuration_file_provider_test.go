@@ -69,7 +69,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		ctx.hosts = []host.Host{h}
 		ctx.cfg = newSettings()
 		ctx.cfg.Nginx.Stats.Enabled = true
-		ctx.supportedFeatures.Stats = StaticSupportType
+		ctx.supportedFeatures.StatsType = StaticSupportType
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -108,7 +108,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		ctx.cfg = newSettings()
 		ctx.cfg.Nginx.Stats.Enabled = true
 		ctx.cfg.Nginx.Stats.AllHosts = true
-		ctx.supportedFeatures.Stats = StaticSupportType
+		ctx.supportedFeatures.StatsType = StaticSupportType
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

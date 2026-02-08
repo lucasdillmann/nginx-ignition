@@ -48,8 +48,8 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		_, _ = moduleLines.WriteString("load_module modules/ngx_http_lua_module.so;\n")
 	}
 
-	if ctx.supportedFeatures.StreamType == DynamicSupportType {
-		_, _ = moduleLines.WriteString("load_module modules/ngx_http_geoip_module.so;\n")
+	if ctx.supportedFeatures.StatsType == DynamicSupportType {
+		_, _ = moduleLines.WriteString("load_module modules/ngx_http_geoip2_module.so;\n")
 		_, _ = moduleLines.WriteString(
 			"load_module modules/ngx_http_vhost_traffic_status_module.so;\n",
 		)
@@ -246,15 +246,20 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 		return "", nil
 	}
 
-	geoIPFilePath := filepath.Join(paths.Config, "geoip.dat")
+	geoIPCountryFilePath := filepath.Join(paths.Config, "geoip-country.mmdb")
+	geoIPCityFilePath := filepath.Join(paths.Config, "geoip-city.mmdb")
 	output := strings.Builder{}
 
 	_, _ = fmt.Fprintf(
 		&output,
 		`
-		geoip_country %s;
-		real_ip_header X-Forwarded-For;
-		real_ip_recursive on;
+		geoip2 %s {
+			$geoip_country_code default=Unknown source=$remote_addr country iso_code;
+		}
+
+		geoip2 %s {
+			$geoip_city_name default=Unknown source=$remote_addr city names en;
+		}
 		
 		map $http_user_agent $stats_user_agent {
 			default "Unknown";
@@ -274,9 +279,11 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 		vhost_traffic_status_filter_by_host on;
 		vhost_traffic_status_stats_by_upstream on;
 		vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@global;
+		vhost_traffic_status_filter_by_set_key $geoip_city_name city@global;
 		vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@global;
 		`,
-		geoIPFilePath,
+		geoIPCountryFilePath,
+		geoIPCityFilePath,
 		cfg.MaximumSizeMB,
 	)
 

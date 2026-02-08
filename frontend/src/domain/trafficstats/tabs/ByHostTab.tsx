@@ -8,17 +8,20 @@ import {
     buildResponseTimeData,
     buildUserAgentData,
     buildCountryCodeData,
+    buildCityData,
 } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n } from "../../../core/i18n/I18n"
 import UserAgentChart from "../components/UserAgentChart"
 import CountryCodeChart from "../components/CountryCodeChart"
+import CityChart from "../components/CityChart"
 import ResponseTimeChart from "../components/ResponseTimeChart"
 import StatusDistributionChart from "../components/StatusDistributionChart"
 import ResponsesTable from "../components/ResponsesTable"
 import ZoneStatCards from "../components/ZoneStatCards"
 import TagGroup from "../../../core/components/taggroup/TagGroup"
 import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
+import { ExclamationCircleOutlined } from "@ant-design/icons"
 
 interface ByHostTabProps {
     stats: TrafficStatsResponse
@@ -159,9 +162,25 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
         return <CountryCodeChart data={data} theme={this.props.theme} />
     }
 
+    private renderCityChart() {
+        const { filterZones } = this.props.stats
+        const { selectedHost } = this.state
+        if (!selectedHost) return null
+
+        const cityZone = filterZones[`city@host:${selectedHost.id}`]
+        const data = cityZone ? buildCityData(cityZone) : []
+        return <CityChart data={data} theme={this.props.theme} />
+    }
+
     private renderMainContents() {
         const { selectedHost } = this.state
-        if (!selectedHost) return <Empty description={<I18n id={MessageKey.FrontendTrafficStatsSelectHost} />} />
+        if (!selectedHost) {
+            const icon = (
+                <ExclamationCircleOutlined style={{ fontSize: 70, color: "var(--nginxIgnition-colorTextDisabled)" }} />
+            )
+
+            return <Empty image={icon} description={<I18n id={MessageKey.FrontendTrafficStatsSelectHost} />} />
+        }
 
         const zone = this.getSelectedZoneData()
         if (!zone) return <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
@@ -177,6 +196,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
                 <Flex className="traffic-stats-charts-row">
                     {this.renderUserAgentChart()}
                     {this.renderCountryCodeChart()}
+                    {this.renderCityChart()}
                 </Flex>
             </>
         )

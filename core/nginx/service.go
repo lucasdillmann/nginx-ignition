@@ -254,6 +254,6 @@ func (s *service) resolveSupportedFeatures(
 		TLSSNI:      cfgfiles.SupportType(metadata.SNISupportType()),
 		RunCodeType: cfgfiles.SupportType(metadata.RunCodeSupportType()),
 		StreamType:  cfgfiles.SupportType(metadata.StreamSupportType()),
-		Stats:       cfgfiles.SupportType(metadata.StatsSupportType()),
+		StatsType:   cfgfiles.SupportType(metadata.StatsSupportType()),
 	}, nil
 }

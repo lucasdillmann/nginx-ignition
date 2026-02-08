@@ -24,6 +24,16 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
         this.state = {}
     }
 
+    componentDidMount() {
+        const { upstreamZones } = this.props.stats
+        const { selectedUpstream } = this.state
+        const upstreams = Object.keys(upstreamZones)
+
+        if (!selectedUpstream && upstreams.length > 0) {
+            this.setState({ selectedUpstream: upstreams[0] })
+        }
+    }
+
     private getSelectedUpstreamData(): UpstreamZoneData[] | undefined {
         const { upstreamZones } = this.props.stats
         const { selectedUpstream } = this.state

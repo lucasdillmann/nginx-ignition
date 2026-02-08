@@ -22,7 +22,7 @@ type SupportedFeatures struct {
 	TLSSNI      SupportType //nolint:misspell
 	StreamType  SupportType
 	RunCodeType SupportType
-	Stats       SupportType
+	StatsType   SupportType
 }
 
 type providerContext struct {

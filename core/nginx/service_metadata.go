@@ -144,12 +144,20 @@ func (s *service) extractDynamicModules(configureArgs string) []string {
 	for _, match := range prefixMatches {
 		if len(match) > 1 {
 			path := match[1]
-			moduleName := filepath.Base(path)
-			moduleName = strings.TrimSuffix(moduleName, "/")
+			originalName := filepath.Base(path)
+			originalName = strings.TrimSuffix(originalName, "/")
 
-			if !modulesSet[moduleName] {
-				modulesSet[moduleName] = true
-				modules = append(modules, moduleName)
+			if !modulesSet[originalName] {
+				modulesSet[originalName] = true
+				modules = append(modules, originalName)
+			}
+
+			versionRegex := regexp.MustCompile(`-v?\d+\.[\d.]+[a-z0-9]*$`)
+			cleanedName := versionRegex.ReplaceAllString(originalName, "")
+
+			if cleanedName != originalName && !modulesSet[cleanedName] {
+				modulesSet[cleanedName] = true
+				modules = append(modules, cleanedName)
 			}
 		}
 	}
