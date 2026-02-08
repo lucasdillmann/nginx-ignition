@@ -25,25 +25,25 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
             <Flex className="traffic-stats-cards-row">
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsConnectionsActive} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsActive} />}
                         value={stats.connections.active}
                     />
                 </div>
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsConnectionsReading} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsReading} />}
                         value={stats.connections.reading}
                     />
                 </div>
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsConnectionsWriting} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsWriting} />}
                         value={stats.connections.writing}
                     />
                 </div>
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsConnectionsWaiting} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsWaiting} />}
                         value={stats.connections.waiting}
                     />
                 </div>
@@ -57,19 +57,19 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
             <Flex className="traffic-stats-cards-row">
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsConnectionsAccepted} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsAccepted} />}
                         value={formatNumber(stats.connections.accepted)}
                     />
                 </div>
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsConnectionsHandled} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsHandled} />}
                         value={formatNumber(stats.connections.handled)}
                     />
                 </div>
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsConnectionsRequests} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsRequests} />}
                         value={formatNumber(stats.connections.requests)}
                     />
                 </div>
@@ -83,13 +83,13 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
         const data = buildStatusDistributionData(aggregated)
 
         if (data.length === 0) {
-            return <Empty description={<I18n id={MessageKey.FrontendTrafficstatsNoData} />} />
+            return <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
         }
 
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsStatusDistribution} />
+                    <I18n id={MessageKey.FrontendTrafficStatsStatusDistribution} />
                 </p>
                 <Pie
                     data={data}
@@ -122,13 +122,13 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
         const data = buildTrafficByDomainData(serverZones)
 
         if (data.length === 0) {
-            return <Empty description={<I18n id={MessageKey.FrontendTrafficstatsNoData} />} />
+            return <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
         }
 
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsTrafficByDomain} />
+                    <I18n id={MessageKey.FrontendTrafficStatsTrafficByDomain} />
                 </p>
                 <Column
                     data={data}
@@ -164,7 +164,7 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsResponseTime} />
+                    <I18n id={MessageKey.FrontendTrafficStatsResponseTime} />
                 </p>
                 <Area data={data} xField="time" yField="value" height={300} axis={{ x: { labelAutoHide: true } }} />
             </div>
@@ -185,7 +185,7 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsUserAgents} />
+                    <I18n id={MessageKey.FrontendTrafficStatsUserAgents} />
                 </p>
                 <Pie
                     data={data}
@@ -215,7 +215,7 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
         return (
             <div className="traffic-stats-table-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsTrafficByDomain} />
+                    <I18n id={MessageKey.FrontendTrafficStatsTrafficByDomain} />
                 </p>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
@@ -224,13 +224,13 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
                                 <I18n id={MessageKey.CommonDomain} />
                             </th>
                             <th style={{ textAlign: "right", padding: "8px" }}>
-                                <I18n id={MessageKey.FrontendTrafficstatsConnectionsRequests} />
+                                <I18n id={MessageKey.FrontendTrafficStatsConnectionsRequests} />
                             </th>
                             <th style={{ textAlign: "right", padding: "8px" }}>
-                                <I18n id={MessageKey.FrontendTrafficstatsBytesReceived} />
+                                <I18n id={MessageKey.FrontendTrafficStatsBytesReceived} />
                             </th>
                             <th style={{ textAlign: "right", padding: "8px" }}>
-                                <I18n id={MessageKey.FrontendTrafficstatsBytesSent} />
+                                <I18n id={MessageKey.FrontendTrafficStatsBytesSent} />
                             </th>
                         </tr>
                     </thead>

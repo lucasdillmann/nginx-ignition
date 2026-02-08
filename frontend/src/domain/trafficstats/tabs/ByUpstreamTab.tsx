@@ -60,11 +60,11 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
         return (
             <Flex className="traffic-stats-settings-option">
                 <p>
-                    <I18n id={MessageKey.FrontendTrafficstatsUpstreamServers} />
+                    <I18n id={MessageKey.FrontendTrafficStatsUpstreamServers} />
                 </p>
                 <Select
                     className="traffic-stats-selector"
-                    placeholder={<I18n id={MessageKey.FrontendTrafficstatsSelectUpstream} />}
+                    placeholder={<I18n id={MessageKey.FrontendTrafficStatsSelectUpstream} />}
                     options={options}
                     value={selectedUpstream}
                     onChange={value => this.setState({ selectedUpstream: value })}
@@ -86,25 +86,25 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
             <Flex className="traffic-stats-cards-row">
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsUpstreamServers} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsUpstreamServers} />}
                         value={`${upServers}/${servers.length}`}
                     />
                 </div>
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsConnectionsRequests} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsRequests} />}
                         value={formatNumber(totals.requests)}
                     />
                 </div>
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsBytesReceived} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsBytesReceived} />}
                         value={formatBytes(totals.inBytes)}
                     />
                 </div>
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsAverageResponseTime} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsAverageResponseTime} />}
                         value={formatMs(avgResponseTime)}
                     />
                 </div>
@@ -115,31 +115,31 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
     private renderServerTable(servers: UpstreamZoneData[]) {
         const columns = [
             {
-                title: <I18n id={MessageKey.FrontendTrafficstatsServer} />,
+                title: <I18n id={MessageKey.FrontendTrafficStatsServer} />,
                 dataIndex: "server",
                 key: "server",
             },
             {
-                title: <I18n id={MessageKey.FrontendTrafficstatsServerStatus} />,
+                title: <I18n id={MessageKey.FrontendTrafficStatsServerStatus} />,
                 key: "status",
                 render: (_: unknown, record: UpstreamZoneData) => {
                     if (record.down) {
                         return (
                             <Tag color="error" icon={<CloseCircleOutlined />}>
-                                <I18n id={MessageKey.FrontendTrafficstatsUpstreamDown} />
+                                <I18n id={MessageKey.FrontendTrafficStatsUpstreamDown} />
                             </Tag>
                         )
                     }
                     if (record.backup) {
                         return (
                             <Tag color="warning" icon={<WarningOutlined />}>
-                                <I18n id={MessageKey.FrontendTrafficstatsUpstreamBackup} />
+                                <I18n id={MessageKey.FrontendTrafficStatsUpstreamBackup} />
                             </Tag>
                         )
                     }
                     return (
                         <Tag color="success" icon={<CheckCircleOutlined />}>
-                            <I18n id={MessageKey.FrontendTrafficstatsConnectionsActive} />
+                            <I18n id={MessageKey.FrontendTrafficStatsConnectionsActive} />
                         </Tag>
                     )
                 },
@@ -150,12 +150,12 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
                 key: "weight",
             },
             {
-                title: <I18n id={MessageKey.FrontendTrafficstatsConnectionsRequests} />,
+                title: <I18n id={MessageKey.FrontendTrafficStatsConnectionsRequests} />,
                 key: "requests",
                 render: (_: unknown, record: UpstreamZoneData) => formatNumber(record.requestCounter),
             },
             {
-                title: <I18n id={MessageKey.FrontendTrafficstatsAverageResponseTime} />,
+                title: <I18n id={MessageKey.FrontendTrafficStatsAverageResponseTime} />,
                 key: "responseTime",
                 render: (_: unknown, record: UpstreamZoneData) => {
                     if (record.requestCounter === 0) return "-"
@@ -163,7 +163,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
                 },
             },
             {
-                title: <I18n id={MessageKey.FrontendTrafficstatsBytesSent} />,
+                title: <I18n id={MessageKey.FrontendTrafficStatsBytesSent} />,
                 key: "outBytes",
                 render: (_: unknown, record: UpstreamZoneData) => formatBytes(record.outBytes),
             },
@@ -172,7 +172,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
         return (
             <div className="traffic-stats-table-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsUpstreamServers} />
+                    <I18n id={MessageKey.FrontendTrafficStatsUpstreamServers} />
                 </p>
                 <Table dataSource={servers} columns={columns} pagination={false} rowKey="server" size="small" />
             </div>
@@ -204,7 +204,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsResponseTime} />
+                    <I18n id={MessageKey.FrontendTrafficStatsResponseTime} />
                 </p>
                 <Line
                     data={data}
@@ -234,7 +234,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsTrafficDistribution} />
+                    <I18n id={MessageKey.FrontendTrafficStatsTrafficDistribution} />
                 </p>
                 <Pie
                     data={data}
@@ -284,7 +284,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsStatusDistribution} />
+                    <I18n id={MessageKey.FrontendTrafficStatsStatusDistribution} />
                 </p>
                 <Pie
                     data={data}
@@ -329,7 +329,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
                         </Flex>
                     </>
                 ) : (
-                    <Empty description={<I18n id={MessageKey.FrontendTrafficstatsSelectUpstream} />} />
+                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsSelectUpstream} />} />
                 )}
             </div>
         )

@@ -87,7 +87,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
                 </p>
                 <Select
                     className="traffic-stats-selector"
-                    placeholder={<I18n id={MessageKey.FrontendTrafficstatsSelectHost} />}
+                    placeholder={<I18n id={MessageKey.FrontendTrafficStatsSelectHost} />}
                     options={options}
                     value={selectedHostId}
                     onChange={value => this.setState({ selectedHostId: value })}
@@ -106,25 +106,25 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
             <Flex className="traffic-stats-cards-row">
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsConnectionsRequests} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsRequests} />}
                         value={formatNumber(zone.requestCounter)}
                     />
                 </div>
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsBytesReceived} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsBytesReceived} />}
                         value={formatBytes(zone.inBytes)}
                     />
                 </div>
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsBytesSent} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsBytesSent} />}
                         value={formatBytes(zone.outBytes)}
                     />
                 </div>
                 <div className="traffic-stats-stat-card">
                     <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficstatsAverageResponseTime} />}
+                        title={<I18n id={MessageKey.FrontendTrafficStatsAverageResponseTime} />}
                         value={formatMs(this.getAvgResponseTime(zone))}
                     />
                 </div>
@@ -136,13 +136,13 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
         const data = buildStatusDistributionData(zone.responses)
 
         if (data.length === 0) {
-            return <Empty description={<I18n id={MessageKey.FrontendTrafficstatsNoData} />} />
+            return <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
         }
 
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsStatusDistribution} />
+                    <I18n id={MessageKey.FrontendTrafficStatsStatusDistribution} />
                 </p>
                 <Pie
                     data={data}
@@ -181,12 +181,12 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
 
         const columns = [
             {
-                title: <I18n id={MessageKey.FrontendTrafficstatsResponseStatus} />,
+                title: <I18n id={MessageKey.FrontendTrafficStatsResponseStatus} />,
                 dataIndex: "status",
                 key: "status",
             },
             {
-                title: <I18n id={MessageKey.FrontendTrafficstatsConnectionsRequests} />,
+                title: <I18n id={MessageKey.FrontendTrafficStatsConnectionsRequests} />,
                 dataIndex: "count",
                 key: "count",
                 render: (count: number) => formatNumber(count),
@@ -196,7 +196,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
         return (
             <div className="traffic-stats-table-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsStatusDistribution} />
+                    <I18n id={MessageKey.FrontendTrafficStatsStatusDistribution} />
                 </p>
                 <Table dataSource={data} columns={columns} pagination={false} rowKey="status" size="small" />
             </div>
@@ -213,7 +213,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsResponseTime} />
+                    <I18n id={MessageKey.FrontendTrafficStatsResponseTime} />
                 </p>
                 <Area data={data} xField="time" yField="value" height={300} axis={{ x: { labelAutoHide: true } }} />
             </div>
@@ -237,7 +237,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficstatsUserAgents} />
+                    <I18n id={MessageKey.FrontendTrafficStatsUserAgents} />
                 </p>
                 <Pie
                     data={data}
@@ -279,7 +279,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
                         </Flex>
                     </>
                 ) : (
-                    <Empty description={<I18n id={MessageKey.FrontendTrafficstatsSelectHost} />} />
+                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsSelectHost} />} />
                 )}
             </div>
         )

@@ -60,14 +60,14 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
 
         AppShellContext.get().updateConfig({
             title: MessageKey.CommonTrafficStats,
-            subtitle: MessageKey.FrontendTrafficstatsSubtitle,
+            subtitle: MessageKey.FrontendTrafficStatsSubtitle,
             actions: [
                 {
                     description: MessageKey.CommonRefresh,
                     onClick: () => this.fetchStats(),
                     disabled: autoRefreshEnabled,
                     disabledReason: autoRefreshEnabled
-                        ? MessageKey.FrontendTrafficstatsAutoRefreshDisabledReason
+                        ? MessageKey.FrontendTrafficStatsAutoRefreshDisabledReason
                         : undefined,
                 },
             ],
@@ -135,22 +135,22 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
         const items = [
             {
                 key: "global",
-                label: <I18n id={MessageKey.FrontendTrafficstatsGlobalTab} />,
+                label: <I18n id={MessageKey.FrontendTrafficStatsGlobalTab} />,
                 children: <GlobalTab stats={stats} />,
             },
             {
                 key: "byHost",
-                label: <I18n id={MessageKey.FrontendTrafficstatsByHostTab} />,
+                label: <I18n id={MessageKey.FrontendTrafficStatsByHostTab} />,
                 children: <ByHostTab stats={stats} />,
             },
             {
                 key: "byDomain",
-                label: <I18n id={MessageKey.FrontendTrafficstatsByDomainTab} />,
+                label: <I18n id={MessageKey.FrontendTrafficStatsByDomainTab} />,
                 children: <ByDomainTab stats={stats} />,
             },
             {
                 key: "byUpstream",
-                label: <I18n id={MessageKey.FrontendTrafficstatsByUpstreamTab} />,
+                label: <I18n id={MessageKey.FrontendTrafficStatsByUpstreamTab} />,
                 children: <ByUpstreamTab stats={stats} />,
             },
         ]

@@ -86,8 +86,10 @@ func (p *hostConfigurationFileProvider) buildHost(
 			set $stats_host_id "%s";
 			vhost_traffic_status %s;
 			vhost_traffic_status_filter_by_set_key $stats_host_id hosts;
-			vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@$stats_host_id;
-			vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@$stats_host_id;
+			vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@host:$stats_host_id;
+			vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@host:$stats_host_id;
+			vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@domain:$domain_name;
+			vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@domain:$domain_name;
 			`,
 			h.ID,
 			statusFlag(statsCfg.AllHosts || h.FeatureSet.StatsEnabled),
