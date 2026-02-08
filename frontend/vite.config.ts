@@ -13,7 +13,7 @@ export default defineConfig({
         port: 8080,
         proxy: {
             "/api": {
-                target: "http://192.168.0.3:8090",
+                target: "http://localhost:8090",
             },
         },
     },
@@ -53,6 +53,9 @@ export default defineConfig({
                         "@ant-design/pro-skeleton",
                         "@ant-design/pro-table",
                         "@ant-design/pro-form",
+                    ],
+                    "vendor.antd-charts": [
+                        "@ant-design/charts",
                     ],
                     "vendor.utils": ["qs", "debounce", "typescript"],
                 },
