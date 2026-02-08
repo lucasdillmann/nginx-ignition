@@ -253,12 +253,23 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 		&output,
 		`
 		geoip_country %s;
+		real_ip_header X-Forwarded-For;
+		real_ip_recursive on;
+		
 		map $http_user_agent $stats_user_agent {
-			default 'unknown';
-			~iPhone ios;
-			~Android android;
+			default "Unknown";
+			
+			"~(?i)bot|crawler|spider|slurp|google|bing|yandex|baidu|duckduckbot|twitterbot|facebookexternalhit|linkedinbot|slackbot|wget|curl" "Bots";
+			"~(?i)iphone|ipod" "iOS";			
+			"~(?i)ipad" "iPadOS";
+			"~(?i)android" "Android";
+			"~(?i)windows" "Windows";
+			"~(?i)macintosh|mac\sos\sx" "macOS";
+			"~(?i)linux" "Linux";
+			"~(?i)playstation|nintendo|xbox" "Console";
+			"~(?i)smart-tv|smarttv|googletv|appletv|hbbtv|tizen|samsungview|crkey" "Smart TV";
 		}
-
+		
 		vhost_traffic_status_zone shared:nginx-ignition-traffic-stats:%dm;
 		vhost_traffic_status_filter_by_host on;
 		vhost_traffic_status_stats_by_upstream on;

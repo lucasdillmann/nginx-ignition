@@ -62,6 +62,12 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
             <Flex className="traffic-stats-cards-row">
                 <div className="traffic-stats-stat-card">
                     <Statistic
+                        title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsRequests} />}
+                        value={formatNumber(stats.connections.requests)}
+                    />
+                </div>
+                <div className="traffic-stats-stat-card">
+                    <Statistic
                         title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsAccepted} />}
                         value={formatNumber(stats.connections.accepted)}
                     />
@@ -70,12 +76,6 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
                     <Statistic
                         title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsHandled} />}
                         value={formatNumber(stats.connections.handled)}
-                    />
-                </div>
-                <div className="traffic-stats-stat-card">
-                    <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsRequests} />}
-                        value={formatNumber(stats.connections.requests)}
                     />
                 </div>
             </Flex>
@@ -191,8 +191,8 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
     render() {
         return (
             <div className="traffic-stats-tab-content">
-                {this.renderConnectionCards()}
                 {this.renderTotalCards()}
+                {this.renderConnectionCards()}
 
                 <Flex className="traffic-stats-charts-row">
                     {this.renderTrafficByDomainChart()}
