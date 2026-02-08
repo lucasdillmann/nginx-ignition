@@ -16,7 +16,6 @@ import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { i18n, I18n } from "../../core/i18n/I18n"
 import ThemeContext from "../../core/components/context/ThemeContext"
 import "./TrafficStatsPage.css"
-import { Theme } from "@antv/g2/lib/spec/theme"
 
 interface TrafficStatsPageState {
     loading: boolean
@@ -24,7 +23,7 @@ interface TrafficStatsPageState {
     error?: Error
     autoRefreshSeconds?: number
     activeTab: string
-    theme: Theme
+    theme: "light" | "dark"
 }
 
 const AUTO_REFRESH_OPTIONS = [

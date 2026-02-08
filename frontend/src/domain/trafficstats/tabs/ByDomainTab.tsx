@@ -12,11 +12,10 @@ import {
 } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
-import { Theme } from "@antv/g2/lib/spec/theme"
 
 interface ByDomainTabProps {
     stats: TrafficStatsResponse
-    theme: Theme
+    theme: "light" | "dark"
 }
 
 interface ByDomainTabState {
