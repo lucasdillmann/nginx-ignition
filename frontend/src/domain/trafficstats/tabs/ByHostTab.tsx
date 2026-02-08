@@ -1,5 +1,5 @@
 import React from "react"
-import { Flex, Select, Empty } from "antd"
+import { Flex, Empty } from "antd"
 import TrafficStatsResponse, { ZoneData } from "../model/TrafficStatsResponse"
 import HostService from "../../host/HostService"
 import HostResponse from "../../host/model/HostResponse"
@@ -17,6 +17,8 @@ import ResponseTimeChart from "../components/ResponseTimeChart"
 import StatusDistributionChart from "../components/StatusDistributionChart"
 import ResponsesTable from "../components/ResponsesTable"
 import ZoneStatCards from "../components/ZoneStatCards"
+import TagGroup from "../../../core/components/taggroup/TagGroup"
+import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
 
 interface ByHostTabProps {
     stats: TrafficStatsResponse
@@ -25,7 +27,7 @@ interface ByHostTabProps {
 
 interface ByHostTabState {
     hosts: HostResponse[]
-    selectedHostId?: string
+    selectedHost?: HostResponse
     loading: boolean
 }
 
@@ -65,9 +67,9 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
 
     private getSelectedZoneData(): ZoneData | undefined {
         const { filterZones } = this.props.stats
-        const { selectedHostId } = this.state
-        if (!selectedHostId || !filterZones.hosts) return undefined
-        return filterZones.hosts[selectedHostId]
+        const { selectedHost } = this.state
+        if (!selectedHost || !filterZones.hosts) return undefined
+        return filterZones.hosts[selectedHost.id]
     }
 
     private getAvgResponseTime(zone: ZoneData): number {
@@ -75,32 +77,38 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
         return zone.requestMsecCounter / zone.requestCounter
     }
 
-    private renderHostSelector() {
-        const { filterZones } = this.props.stats
-        const { selectedHostId, loading } = this.state
-        const hostIds = filterZones.hosts ? Object.keys(filterZones.hosts) : []
+    private handleDomainNames(domainNames?: string[]): string[] {
+        if (Array.isArray(domainNames) && domainNames.length > 0) return domainNames
 
-        const options = hostIds.map(id => ({
-            value: id,
-            label: this.getHostLabel(id),
-        }))
+        return []
+    }
+
+    private renderHostSelector() {
+        const { selectedHost } = this.state
 
         return (
             <Flex className="traffic-stats-settings-option">
                 <p>
                     <I18n id={MessageKey.CommonHost} />
                 </p>
-                <Select
-                    className="traffic-stats-selector"
-                    placeholder={<I18n id={MessageKey.FrontendTrafficStatsSelectHost} />}
-                    options={options}
-                    value={selectedHostId}
-                    onChange={value => this.setState({ selectedHostId: value })}
-                    loading={loading}
-                    showSearch
-                    filterOption={(input, option) =>
-                        (option?.label?.toString() ?? "").toLowerCase().includes(input.toLowerCase())
+                <PaginatedSelect<HostResponse>
+                    placeholder={MessageKey.CommonSelectOne}
+                    onChange={host => this.setState({ selectedHost: host })}
+                    pageProvider={(pageSize, pageNumber, searchTerms) =>
+                        this.hostService.list(pageSize, pageNumber, searchTerms)
                     }
+                    value={selectedHost}
+                    itemDescription={item =>
+                        item.defaultServer ? (
+                            <span style={{ fontStyle: "italic", color: "grey" }}>
+                                <I18n id={MessageKey.CommonDefaultServerLabel} />
+                            </span>
+                        ) : (
+                            <TagGroup values={this.handleDomainNames(item.domainNames)} />
+                        )
+                    }
+                    itemKey={item => item.id}
+                    autoFocus
                 />
             </Flex>
         )
@@ -133,20 +141,20 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
 
     private renderUserAgentChart() {
         const { filterZones } = this.props.stats
-        const { selectedHostId } = this.state
-        if (!selectedHostId) return null
+        const { selectedHost } = this.state
+        if (!selectedHost) return null
 
-        const userAgentZone = filterZones[`userAgent@host:${selectedHostId}`]
+        const userAgentZone = filterZones[`userAgent@host:${selectedHost}`]
         const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
         return <UserAgentChart data={data} theme={this.props.theme} />
     }
 
     private renderCountryCodeChart() {
         const { filterZones } = this.props.stats
-        const { selectedHostId } = this.state
-        if (!selectedHostId) return null
+        const { selectedHost } = this.state
+        if (!selectedHost) return null
 
-        const countryCodeZone = filterZones[`countryCode@host:${selectedHostId}`]
+        const countryCodeZone = filterZones[`countryCode@host:${selectedHost}`]
         const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
         return <CountryCodeChart data={data} theme={this.props.theme} />
     }

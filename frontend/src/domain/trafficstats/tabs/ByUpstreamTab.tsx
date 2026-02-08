@@ -1,6 +1,6 @@
 import React from "react"
 import { Flex, Select, Statistic, Empty, Table, Tag } from "antd"
-import { Pie, Line } from "@ant-design/charts"
+import { Pie, Area } from "@ant-design/charts"
 import TrafficStatsResponse, { UpstreamZoneData } from "../model/TrafficStatsResponse"
 import { formatBytes, formatNumber, formatMs } from "../utils/StatsFormatters"
 import { STATUS_COLORS, StatusDataItem } from "../utils/StatsChartUtils"
@@ -208,7 +208,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
                 <p className="traffic-stats-chart-title">
                     <I18n id={MessageKey.FrontendTrafficStatsResponseTime} />
                 </p>
-                <Line
+                <Area
                     data={data}
                     xField="time"
                     yField="value"
