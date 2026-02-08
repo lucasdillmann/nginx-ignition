@@ -1,19 +1,22 @@
 import React from "react"
-import { Flex, Select, Statistic, Empty, Table } from "antd"
-import { Pie, Area } from "@ant-design/charts"
+import { Flex, Select, Empty } from "antd"
 import TrafficStatsResponse, { ZoneData } from "../model/TrafficStatsResponse"
 import HostService from "../../host/HostService"
 import HostResponse from "../../host/model/HostResponse"
-import { formatBytes, formatNumber, formatMs } from "../utils/StatsFormatters"
 import {
     buildStatusDistributionData,
-    STATUS_COLORS,
     buildResponseTimeData,
     buildUserAgentData,
     buildCountryCodeData,
 } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n } from "../../../core/i18n/I18n"
+import UserAgentChart from "../components/UserAgentChart"
+import CountryCodeChart from "../components/CountryCodeChart"
+import ResponseTimeChart from "../components/ResponseTimeChart"
+import StatusDistributionChart from "../components/StatusDistributionChart"
+import ResponsesTable from "../components/ResponsesTable"
+import ZoneStatCards from "../components/ZoneStatCards"
 
 interface ByHostTabProps {
     stats: TrafficStatsResponse
@@ -105,129 +108,27 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
 
     private renderStatCards(zone: ZoneData) {
         return (
-            <Flex className="traffic-stats-cards-row">
-                <div className="traffic-stats-stat-card">
-                    <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficStatsConnectionsRequests} />}
-                        value={formatNumber(zone.requestCounter)}
-                    />
-                </div>
-                <div className="traffic-stats-stat-card">
-                    <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficStatsBytesReceived} />}
-                        value={formatBytes(zone.inBytes)}
-                    />
-                </div>
-                <div className="traffic-stats-stat-card">
-                    <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficStatsBytesSent} />}
-                        value={formatBytes(zone.outBytes)}
-                    />
-                </div>
-                <div className="traffic-stats-stat-card">
-                    <Statistic
-                        title={<I18n id={MessageKey.FrontendTrafficStatsAverageResponseTime} />}
-                        value={formatMs(this.getAvgResponseTime(zone))}
-                    />
-                </div>
-            </Flex>
+            <ZoneStatCards
+                requests={zone.requestCounter}
+                inBytes={zone.inBytes}
+                outBytes={zone.outBytes}
+                avgResponseTime={this.getAvgResponseTime(zone)}
+            />
         )
     }
 
     private renderStatusPieChart(zone: ZoneData) {
         const data = buildStatusDistributionData(zone.responses)
-
-        if (data.length === 0) {
-            return <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
-        }
-
-        return (
-            <div className="traffic-stats-chart-container">
-                <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficStatsStatusDistribution} />
-                </p>
-                <Pie
-                    data={data}
-                    angleField="count"
-                    colorField="status"
-                    radius={0.8}
-                    innerRadius={0.6}
-                    label={{
-                        text: "status",
-                        position: "outside",
-                    }}
-                    legend={{
-                        color: {
-                            position: "bottom",
-                        },
-                    }}
-                    scale={{
-                        color: {
-                            range: Object.values(STATUS_COLORS),
-                        },
-                    }}
-                    height={300}
-                    theme={this.props.theme}
-                />
-            </div>
-        )
+        return <StatusDistributionChart data={data} theme={this.props.theme} />
     }
 
     private renderResponsesTable(zone: ZoneData) {
-        const data = [
-            { status: "1xx", count: zone.responses["1xx"] },
-            { status: "2xx", count: zone.responses["2xx"] },
-            { status: "3xx", count: zone.responses["3xx"] },
-            { status: "4xx", count: zone.responses["4xx"] },
-            { status: "5xx", count: zone.responses["5xx"] },
-        ]
-
-        const columns = [
-            {
-                title: <I18n id={MessageKey.FrontendTrafficStatsResponseStatus} />,
-                dataIndex: "status",
-                key: "status",
-            },
-            {
-                title: <I18n id={MessageKey.FrontendTrafficStatsConnectionsRequests} />,
-                dataIndex: "count",
-                key: "count",
-                render: (count: number) => formatNumber(count),
-            },
-        ]
-
-        return (
-            <div className="traffic-stats-table-container">
-                <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficStatsStatusDistribution} />
-                </p>
-                <Table dataSource={data} columns={columns} pagination={false} rowKey="status" size="small" />
-            </div>
-        )
+        return <ResponsesTable responses={zone.responses} />
     }
 
     private renderResponseTimeChart(zone: ZoneData) {
         const data = buildResponseTimeData(zone.requestMsecs)
-
-        return (
-            <div className="traffic-stats-chart-container">
-                <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficStatsResponseTime} />
-                </p>
-                {data.length === 0 ? (
-                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
-                ) : (
-                    <Area
-                        data={data}
-                        xField="time"
-                        yField="value"
-                        height={300}
-                        axis={{ x: { labelAutoHide: true } }}
-                        theme={this.props.theme}
-                    />
-                )}
-            </div>
-        )
+        return <ResponseTimeChart data={data} theme={this.props.theme} />
     }
 
     private renderUserAgentChart() {
@@ -237,36 +138,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
 
         const userAgentZone = filterZones[`userAgent@host:${selectedHostId}`]
         const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
-
-        return (
-            <div className="traffic-stats-chart-container">
-                <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficStatsUserAgents} />
-                </p>
-                {data.length === 0 ? (
-                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
-                ) : (
-                    <Pie
-                        data={data}
-                        angleField="value"
-                        colorField="type"
-                        radius={0.8}
-                        innerRadius={0.6}
-                        label={{
-                            text: "type",
-                            position: "outside",
-                        }}
-                        legend={{
-                            color: {
-                                position: "bottom",
-                            },
-                        }}
-                        height={300}
-                        theme={this.props.theme}
-                    />
-                )}
-            </div>
-        )
+        return <UserAgentChart data={data} theme={this.props.theme} />
     }
 
     private renderCountryCodeChart() {
@@ -276,36 +148,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
 
         const countryCodeZone = filterZones[`countryCode@host:${selectedHostId}`]
         const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
-
-        return (
-            <div className="traffic-stats-chart-container">
-                <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficStatsCountryCode} />
-                </p>
-                {data.length === 0 ? (
-                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
-                ) : (
-                    <Pie
-                        data={data}
-                        angleField="value"
-                        colorField="country"
-                        radius={0.8}
-                        innerRadius={0.6}
-                        label={{
-                            text: "country",
-                            position: "outside",
-                        }}
-                        legend={{
-                            color: {
-                                position: "bottom",
-                            },
-                        }}
-                        height={300}
-                        theme={this.props.theme}
-                    />
-                )}
-            </div>
-        )
+        return <CountryCodeChart data={data} theme={this.props.theme} />
     }
 
     render() {

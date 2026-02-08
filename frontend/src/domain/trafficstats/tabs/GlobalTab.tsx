@@ -1,19 +1,22 @@
 import React from "react"
 import { Flex, Statistic, Empty } from "antd"
-import { Pie, Column, Area } from "@ant-design/charts"
+import { Column } from "@ant-design/charts"
 import TrafficStatsResponse from "../model/TrafficStatsResponse"
 import { formatBytes, formatNumber } from "../utils/StatsFormatters"
 import {
     buildStatusDistributionData,
     buildTrafficByDomainData,
     aggregateResponses,
-    STATUS_COLORS,
     buildResponseTimeData,
     buildUserAgentData,
     buildCountryCodeData,
 } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
+import UserAgentChart from "../components/UserAgentChart"
+import CountryCodeChart from "../components/CountryCodeChart"
+import ResponseTimeChart from "../components/ResponseTimeChart"
+import StatusDistributionChart from "../components/StatusDistributionChart"
 
 interface GlobalTabProps {
     stats: TrafficStatsResponse
@@ -83,41 +86,7 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
         const { serverZones } = this.props.stats
         const aggregated = aggregateResponses(serverZones)
         const data = buildStatusDistributionData(aggregated)
-
-        if (data.length === 0) {
-            return <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
-        }
-
-        return (
-            <div className="traffic-stats-chart-container">
-                <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficStatsStatusDistribution} />
-                </p>
-                <Pie
-                    data={data}
-                    angleField="count"
-                    colorField="status"
-                    radius={0.8}
-                    innerRadius={0.6}
-                    label={{
-                        text: "status",
-                        position: "outside",
-                    }}
-                    legend={{
-                        color: {
-                            position: "bottom",
-                        },
-                    }}
-                    scale={{
-                        color: {
-                            range: Object.values(STATUS_COLORS),
-                        },
-                    }}
-                    height={300}
-                    theme={this.props.theme}
-                />
-            </div>
-        )
+        return <StatusDistributionChart data={data} theme={this.props.theme} />
     }
 
     private renderTrafficByDomainChart() {
@@ -158,98 +127,21 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
         // Use global zone '*' for global response times
         const globalZone = serverZones["*"]
         const data = globalZone ? buildResponseTimeData(globalZone.requestMsecs) : []
-
-        return (
-            <div className="traffic-stats-chart-container">
-                <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficStatsResponseTime} />
-                </p>
-                {data.length === 0 ? (
-                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
-                ) : (
-                    <Area
-                        data={data}
-                        xField="time"
-                        yField="value"
-                        height={300}
-                        axis={{ x: { labelAutoHide: true } }}
-                        theme={this.props.theme}
-                    />
-                )}
-            </div>
-        )
+        return <ResponseTimeChart data={data} theme={this.props.theme} />
     }
 
     private renderUserAgentChart() {
         const { filterZones } = this.props.stats
         const userAgentZone = filterZones["userAgent@global"]
         const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
-
-        return (
-            <div className="traffic-stats-chart-container">
-                <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficStatsUserAgents} />
-                </p>
-                {data.length === 0 ? (
-                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
-                ) : (
-                    <Pie
-                        data={data}
-                        angleField="value"
-                        colorField="type"
-                        radius={0.8}
-                        innerRadius={0.6}
-                        label={{
-                            text: "type",
-                            position: "outside",
-                        }}
-                        legend={{
-                            color: {
-                                position: "bottom",
-                            },
-                        }}
-                        height={300}
-                        theme={this.props.theme}
-                    />
-                )}
-            </div>
-        )
+        return <UserAgentChart data={data} theme={this.props.theme} />
     }
 
     private renderCountryCodeChart() {
         const { filterZones } = this.props.stats
         const countryCodeZone = filterZones["countryCode@global"]
         const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
-
-        return (
-            <div className="traffic-stats-chart-container">
-                <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficStatsCountryCode} />
-                </p>
-                {data.length === 0 ? (
-                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
-                ) : (
-                    <Pie
-                        data={data}
-                        angleField="value"
-                        colorField="country"
-                        radius={0.8}
-                        innerRadius={0.6}
-                        label={{
-                            text: "country",
-                            position: "outside",
-                        }}
-                        legend={{
-                            color: {
-                                position: "bottom",
-                            },
-                        }}
-                        height={300}
-                        theme={this.props.theme}
-                    />
-                )}
-            </div>
-        )
+        return <CountryCodeChart data={data} theme={this.props.theme} />
     }
 
     private renderBytesTable() {

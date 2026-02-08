@@ -3,10 +3,11 @@ import { Flex, Select, Statistic, Empty, Table, Tag } from "antd"
 import { Pie, Line } from "@ant-design/charts"
 import TrafficStatsResponse, { UpstreamZoneData } from "../model/TrafficStatsResponse"
 import { formatBytes, formatNumber, formatMs } from "../utils/StatsFormatters"
-import { STATUS_COLORS } from "../utils/StatsChartUtils"
+import { STATUS_COLORS, StatusDataItem } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
 import { CheckCircleOutlined, CloseCircleOutlined, WarningOutlined } from "@ant-design/icons"
+import StatusDistributionChart from "../components/StatusDistributionChart"
 
 interface ByUpstreamTabProps {
     stats: TrafficStatsResponse
@@ -272,7 +273,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
             { "1xx": 0, "2xx": 0, "3xx": 0, "4xx": 0, "5xx": 0 },
         )
 
-        const data = [
+        const data: StatusDataItem[] = [
             { status: "1xx", count: aggregated["1xx"], color: STATUS_COLORS["1xx"] },
             { status: "2xx", count: aggregated["2xx"], color: STATUS_COLORS["2xx"] },
             { status: "3xx", count: aggregated["3xx"], color: STATUS_COLORS["3xx"] },
@@ -284,36 +285,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
             return null
         }
 
-        return (
-            <div className="traffic-stats-chart-container">
-                <p className="traffic-stats-chart-title">
-                    <I18n id={MessageKey.FrontendTrafficStatsStatusDistribution} />
-                </p>
-                <Pie
-                    data={data}
-                    angleField="count"
-                    colorField="status"
-                    radius={0.8}
-                    innerRadius={0.6}
-                    label={{
-                        text: "status",
-                        position: "outside",
-                    }}
-                    legend={{
-                        color: {
-                            position: "bottom",
-                        },
-                    }}
-                    scale={{
-                        color: {
-                            range: Object.values(STATUS_COLORS),
-                        },
-                    }}
-                    height={300}
-                    theme={this.props.theme}
-                />
-            </div>
-        )
+        return <StatusDistributionChart data={data} theme={this.props.theme} />
     }
 
     render() {
