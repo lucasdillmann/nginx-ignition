@@ -81,7 +81,7 @@ export function aggregateResponses(zones: Record<string, ZoneData>): ZoneData["r
 }
 
 export function buildResponseTimeData(timeSeries: { times: number[]; msecs: number[] }) {
-    if (!timeSeries || !timeSeries.times || timeSeries.times.length === 0) {
+    if (!timeSeries?.times || timeSeries.times.length === 0) {
         return []
     }
 

@@ -183,7 +183,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
         const data: { time: string; timestamp: number; value: number; server: string }[] = []
 
         servers.forEach(server => {
-            if (!server.requestMsecs || !server.requestMsecs.times) return
+            if (!server?.requestMsecs?.times) return
 
             server.requestMsecs.times.forEach((t, i) => {
                 if (server.requestMsecs.msecs[i] > 0) {
