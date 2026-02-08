@@ -106,3 +106,15 @@ export function buildUserAgentData(userAgents: Record<string, ZoneData>) {
         .filter(item => item.value > 0)
         .sort((a, b) => b.value - a.value)
 }
+
+export function buildCountryCodeData(countryCodes: Record<string, ZoneData>) {
+    if (!countryCodes) return []
+
+    return Object.entries(countryCodes)
+        .map(([country, data]) => ({
+            country,
+            value: data.requestCounter,
+        }))
+        .filter(item => item.value > 0)
+        .sort((a, b) => b.value - a.value)
+}

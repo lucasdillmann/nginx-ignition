@@ -10,12 +10,15 @@ import {
     STATUS_COLORS,
     buildResponseTimeData,
     buildUserAgentData,
+    buildCountryCodeData,
 } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
+import { Theme } from "@antv/g2/lib/spec/theme"
 
 interface GlobalTabProps {
     stats: TrafficStatsResponse
+    theme: Theme
 }
 
 export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
@@ -112,6 +115,7 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
                         },
                     }}
                     height={300}
+                    theme={this.props.theme}
                 />
             </div>
         )
@@ -144,6 +148,7 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
                             labelAutoRotate: true,
                         },
                     }}
+                    theme={this.props.theme}
                 />
             </div>
         )
@@ -153,20 +158,25 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
         const { serverZones } = this.props.stats
         // Use global zone '*' for global response times
         const globalZone = serverZones["*"]
-        if (!globalZone) return null
-
-        const data = buildResponseTimeData(globalZone.requestMsecs)
-
-        if (data.length === 0) {
-            return null
-        }
+        const data = globalZone ? buildResponseTimeData(globalZone.requestMsecs) : []
 
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
                     <I18n id={MessageKey.FrontendTrafficStatsResponseTime} />
                 </p>
-                <Area data={data} xField="time" yField="value" height={300} axis={{ x: { labelAutoHide: true } }} />
+                {data.length === 0 ? (
+                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
+                ) : (
+                    <Area
+                        data={data}
+                        xField="time"
+                        yField="value"
+                        height={300}
+                        axis={{ x: { labelAutoHide: true } }}
+                        theme={this.props.theme}
+                    />
+                )}
             </div>
         )
     }
@@ -174,36 +184,71 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
     private renderUserAgentChart() {
         const { filterZones } = this.props.stats
         const userAgentZone = filterZones["userAgent@global"]
-        if (!userAgentZone) return null
-
-        const data = buildUserAgentData(userAgentZone)
-
-        if (data.length === 0) {
-            return null
-        }
+        const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
 
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
                     <I18n id={MessageKey.FrontendTrafficStatsUserAgents} />
                 </p>
-                <Pie
-                    data={data}
-                    angleField="value"
-                    colorField="type"
-                    radius={0.8}
-                    innerRadius={0.6}
-                    label={{
-                        text: "type",
-                        position: "outside",
-                    }}
-                    legend={{
-                        color: {
-                            position: "bottom",
-                        },
-                    }}
-                    height={300}
-                />
+                {data.length === 0 ? (
+                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
+                ) : (
+                    <Pie
+                        data={data}
+                        angleField="value"
+                        colorField="type"
+                        radius={0.8}
+                        innerRadius={0.6}
+                        label={{
+                            text: "type",
+                            position: "outside",
+                        }}
+                        legend={{
+                            color: {
+                                position: "bottom",
+                            },
+                        }}
+                        height={300}
+                        theme={this.props.theme}
+                    />
+                )}
+            </div>
+        )
+    }
+
+    private renderCountryCodeChart() {
+        const { filterZones } = this.props.stats
+        const countryCodeZone = filterZones["countryCode@global"]
+        const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
+
+        return (
+            <div className="traffic-stats-chart-container">
+                <p className="traffic-stats-chart-title">
+                    <I18n id={MessageKey.FrontendTrafficStatsCountryCode} />
+                </p>
+                {data.length === 0 ? (
+                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
+                ) : (
+                    <Pie
+                        data={data}
+                        angleField="value"
+                        colorField="country"
+                        radius={0.8}
+                        innerRadius={0.6}
+                        label={{
+                            text: "country",
+                            position: "outside",
+                        }}
+                        legend={{
+                            color: {
+                                position: "bottom",
+                            },
+                        }}
+                        height={300}
+                        theme={this.props.theme}
+                    />
+                )}
             </div>
         )
     }
@@ -259,16 +304,17 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
                 {this.renderTotalCards()}
 
                 <Flex className="traffic-stats-charts-row">
-                    {this.renderStatusPieChart()}
                     {this.renderTrafficByDomainChart()}
+                    {this.renderBytesTable()}
                 </Flex>
+
+                <Flex className="traffic-stats-charts-row">{this.renderResponseTimeChart()}</Flex>
 
                 <Flex className="traffic-stats-charts-row">
-                    {this.renderResponseTimeChart()}
+                    {this.renderStatusPieChart()}
                     {this.renderUserAgentChart()}
+                    {this.renderCountryCodeChart()}
                 </Flex>
-
-                {this.renderBytesTable()}
             </div>
         )
     }

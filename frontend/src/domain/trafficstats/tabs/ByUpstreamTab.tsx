@@ -7,9 +7,11 @@ import { STATUS_COLORS } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
 import { CheckCircleOutlined, CloseCircleOutlined, WarningOutlined } from "@ant-design/icons"
+import { Theme } from "@antv/g2/lib/spec/theme"
 
 interface ByUpstreamTabProps {
     stats: TrafficStatsResponse
+    theme: Theme
 }
 
 interface ByUpstreamTabState {
@@ -214,6 +216,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
                     height={300}
                     axis={{ x: { labelAutoHide: true } }}
                     legend={{ position: "bottom" }}
+                    theme={this.props.theme}
                 />
             </div>
         )
@@ -252,6 +255,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
                         },
                     }}
                     height={300}
+                    theme={this.props.theme}
                 />
             </div>
         )
@@ -307,6 +311,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
                         },
                     }}
                     height={300}
+                    theme={this.props.theme}
                 />
             </div>
         )

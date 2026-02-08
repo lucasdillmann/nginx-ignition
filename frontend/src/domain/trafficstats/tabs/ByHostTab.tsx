@@ -10,12 +10,15 @@ import {
     STATUS_COLORS,
     buildResponseTimeData,
     buildUserAgentData,
+    buildCountryCodeData,
 } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n } from "../../../core/i18n/I18n"
+import { Theme } from "@antv/g2/lib/spec/theme"
 
 interface ByHostTabProps {
     stats: TrafficStatsResponse
+    theme: Theme
 }
 
 interface ByHostTabState {
@@ -165,6 +168,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
                         },
                     }}
                     height={300}
+                    theme={this.props.theme}
                 />
             </div>
         )
@@ -206,16 +210,23 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
     private renderResponseTimeChart(zone: ZoneData) {
         const data = buildResponseTimeData(zone.requestMsecs)
 
-        if (data.length === 0) {
-            return null
-        }
-
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
                     <I18n id={MessageKey.FrontendTrafficStatsResponseTime} />
                 </p>
-                <Area data={data} xField="time" yField="value" height={300} axis={{ x: { labelAutoHide: true } }} />
+                {data.length === 0 ? (
+                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
+                ) : (
+                    <Area
+                        data={data}
+                        xField="time"
+                        yField="value"
+                        height={300}
+                        axis={{ x: { labelAutoHide: true } }}
+                        theme={this.props.theme}
+                    />
+                )}
             </div>
         )
     }
@@ -225,37 +236,75 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
         const { selectedHostId } = this.state
         if (!selectedHostId) return null
 
-        const userAgentZone = filterZones[`userAgent@${selectedHostId}`]
-        if (!userAgentZone) return null
-
-        const data = buildUserAgentData(userAgentZone)
-
-        if (data.length === 0) {
-            return null
-        }
+        const userAgentZone = filterZones[`userAgent@host:${selectedHostId}`]
+        const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
 
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
                     <I18n id={MessageKey.FrontendTrafficStatsUserAgents} />
                 </p>
-                <Pie
-                    data={data}
-                    angleField="value"
-                    colorField="type"
-                    radius={0.8}
-                    innerRadius={0.6}
-                    label={{
-                        text: "type",
-                        position: "outside",
-                    }}
-                    legend={{
-                        color: {
-                            position: "bottom",
-                        },
-                    }}
-                    height={300}
-                />
+                {data.length === 0 ? (
+                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
+                ) : (
+                    <Pie
+                        data={data}
+                        angleField="value"
+                        colorField="type"
+                        radius={0.8}
+                        innerRadius={0.6}
+                        label={{
+                            text: "type",
+                            position: "outside",
+                        }}
+                        legend={{
+                            color: {
+                                position: "bottom",
+                            },
+                        }}
+                        height={300}
+                        theme={this.props.theme}
+                    />
+                )}
+            </div>
+        )
+    }
+
+    private renderCountryCodeChart() {
+        const { filterZones } = this.props.stats
+        const { selectedHostId } = this.state
+        if (!selectedHostId) return null
+
+        const countryCodeZone = filterZones[`countryCode@host:${selectedHostId}`]
+        const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
+
+        return (
+            <div className="traffic-stats-chart-container">
+                <p className="traffic-stats-chart-title">
+                    <I18n id={MessageKey.FrontendTrafficStatsCountryCode} />
+                </p>
+                {data.length === 0 ? (
+                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
+                ) : (
+                    <Pie
+                        data={data}
+                        angleField="value"
+                        colorField="country"
+                        radius={0.8}
+                        innerRadius={0.6}
+                        label={{
+                            text: "country",
+                            position: "outside",
+                        }}
+                        legend={{
+                            color: {
+                                position: "bottom",
+                            },
+                        }}
+                        height={300}
+                        theme={this.props.theme}
+                    />
+                )}
             </div>
         )
     }
@@ -273,9 +322,10 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
                             {this.renderStatusPieChart(zone)}
                             {this.renderResponsesTable(zone)}
                         </Flex>
+                        <Flex className="traffic-stats-charts-row">{this.renderResponseTimeChart(zone)}</Flex>
                         <Flex className="traffic-stats-charts-row">
-                            {this.renderResponseTimeChart(zone)}
                             {this.renderUserAgentChart()}
+                            {this.renderCountryCodeChart()}
                         </Flex>
                     </>
                 ) : (

@@ -14,7 +14,9 @@ import ByDomainTab from "./tabs/ByDomainTab"
 import ByUpstreamTab from "./tabs/ByUpstreamTab"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { i18n, I18n } from "../../core/i18n/I18n"
+import ThemeContext from "../../core/components/context/ThemeContext"
 import "./TrafficStatsPage.css"
+import { Theme } from "@antv/g2/lib/spec/theme"
 
 interface TrafficStatsPageState {
     loading: boolean
@@ -22,6 +24,7 @@ interface TrafficStatsPageState {
     error?: Error
     autoRefreshSeconds?: number
     activeTab: string
+    theme: Theme
 }
 
 const AUTO_REFRESH_OPTIONS = [
@@ -42,16 +45,23 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
         this.state = {
             loading: true,
             activeTab: "global",
+            theme: ThemeContext.isDarkMode() ? "dark" : "light",
         }
     }
 
     componentDidMount() {
         this.configureShell()
         this.fetchStats()
+        ThemeContext.register(this.handleThemeChange.bind(this))
     }
 
     componentWillUnmount() {
         this.stopAutoRefresh()
+        ThemeContext.deregister(this.handleThemeChange.bind(this))
+    }
+
+    private handleThemeChange(darkMode: boolean) {
+        this.setState({ theme: darkMode ? "dark" : "light" })
     }
 
     private configureShell() {
@@ -128,7 +138,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
     }
 
     private renderTabs() {
-        const { stats, activeTab } = this.state
+        const { stats, activeTab, theme } = this.state
 
         if (!stats) return null
 
@@ -136,22 +146,22 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
             {
                 key: "global",
                 label: <I18n id={MessageKey.FrontendTrafficStatsGlobalTab} />,
-                children: <GlobalTab stats={stats} />,
+                children: <GlobalTab stats={stats} theme={theme} />,
             },
             {
                 key: "byHost",
                 label: <I18n id={MessageKey.FrontendTrafficStatsByHostTab} />,
-                children: <ByHostTab stats={stats} />,
+                children: <ByHostTab stats={stats} theme={theme} />,
             },
             {
                 key: "byDomain",
                 label: <I18n id={MessageKey.FrontendTrafficStatsByDomainTab} />,
-                children: <ByDomainTab stats={stats} />,
+                children: <ByDomainTab stats={stats} theme={theme} />,
             },
             {
                 key: "byUpstream",
                 label: <I18n id={MessageKey.FrontendTrafficStatsByUpstreamTab} />,
-                children: <ByUpstreamTab stats={stats} />,
+                children: <ByUpstreamTab stats={stats} theme={theme} />,
             },
         ]
 

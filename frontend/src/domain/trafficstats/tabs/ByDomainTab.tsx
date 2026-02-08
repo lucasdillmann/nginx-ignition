@@ -3,12 +3,20 @@ import { Flex, Select, Statistic, Empty, Table } from "antd"
 import { Pie, Area } from "@ant-design/charts"
 import TrafficStatsResponse, { ZoneData } from "../model/TrafficStatsResponse"
 import { formatBytes, formatNumber, formatMs } from "../utils/StatsFormatters"
-import { buildStatusDistributionData, STATUS_COLORS, buildResponseTimeData } from "../utils/StatsChartUtils"
+import {
+    buildStatusDistributionData,
+    STATUS_COLORS,
+    buildResponseTimeData,
+    buildUserAgentData,
+    buildCountryCodeData,
+} from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
+import { Theme } from "@antv/g2/lib/spec/theme"
 
 interface ByDomainTabProps {
     stats: TrafficStatsResponse
+    theme: Theme
 }
 
 interface ByDomainTabState {
@@ -127,6 +135,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps, ByDom
                         },
                     }}
                     height={300}
+                    theme={this.props.theme}
                 />
             </div>
         )
@@ -168,16 +177,101 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps, ByDom
     private renderResponseTimeChart(zone: ZoneData) {
         const data = buildResponseTimeData(zone.requestMsecs)
 
-        if (data.length === 0) {
-            return null
-        }
-
         return (
             <div className="traffic-stats-chart-container">
                 <p className="traffic-stats-chart-title">
                     <I18n id={MessageKey.FrontendTrafficStatsResponseTime} />
                 </p>
-                <Area data={data} xField="time" yField="value" height={300} axis={{ x: { labelAutoHide: true } }} />
+                {data.length === 0 ? (
+                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
+                ) : (
+                    <Area
+                        data={data}
+                        xField="time"
+                        yField="value"
+                        height={300}
+                        axis={{ x: { labelAutoHide: true } }}
+                        theme={this.props.theme}
+                    />
+                )}
+            </div>
+        )
+    }
+
+    private renderUserAgentChart() {
+        const { filterZones } = this.props.stats
+        const { selectedDomain } = this.state
+        if (!selectedDomain) return null
+
+        const userAgentZone = filterZones[`userAgent@domain:${selectedDomain}`]
+        const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
+
+        return (
+            <div className="traffic-stats-chart-container">
+                <p className="traffic-stats-chart-title">
+                    <I18n id={MessageKey.FrontendTrafficStatsUserAgents} />
+                </p>
+                {data.length === 0 ? (
+                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
+                ) : (
+                    <Pie
+                        data={data}
+                        angleField="value"
+                        colorField="type"
+                        radius={0.8}
+                        innerRadius={0.6}
+                        label={{
+                            text: "type",
+                            position: "outside",
+                        }}
+                        legend={{
+                            color: {
+                                position: "bottom",
+                            },
+                        }}
+                        height={300}
+                        theme={this.props.theme}
+                    />
+                )}
+            </div>
+        )
+    }
+
+    private renderCountryCodeChart() {
+        const { filterZones } = this.props.stats
+        const { selectedDomain } = this.state
+        if (!selectedDomain) return null
+
+        const countryCodeZone = filterZones[`countryCode@domain:${selectedDomain}`]
+        const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
+
+        return (
+            <div className="traffic-stats-chart-container">
+                <p className="traffic-stats-chart-title">
+                    <I18n id={MessageKey.FrontendTrafficStatsCountryCode} />
+                </p>
+                {data.length === 0 ? (
+                    <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
+                ) : (
+                    <Pie
+                        data={data}
+                        angleField="value"
+                        colorField="country"
+                        radius={0.8}
+                        innerRadius={0.6}
+                        label={{
+                            text: "country",
+                            position: "outside",
+                        }}
+                        legend={{
+                            color: {
+                                position: "bottom",
+                            },
+                        }}
+                        height={300}
+                        theme={this.props.theme}
+                    />
+                )}
             </div>
         )
     }
@@ -196,6 +290,10 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps, ByDom
                             {this.renderResponsesTable(zone)}
                         </Flex>
                         <Flex className="traffic-stats-charts-row">{this.renderResponseTimeChart(zone)}</Flex>
+                        <Flex className="traffic-stats-charts-row">
+                            {this.renderUserAgentChart()}
+                            {this.renderCountryCodeChart()}
+                        </Flex>
                     </>
                 ) : (
                     <Empty description={<I18n id={MessageKey.FrontendTrafficStatsSelectDomain} />} />
