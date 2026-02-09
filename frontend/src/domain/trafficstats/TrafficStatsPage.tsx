@@ -31,14 +31,6 @@ interface TrafficStatsPageState {
     nginxRunning?: boolean
 }
 
-const AUTO_REFRESH_OPTIONS = [
-    { label: "1s", value: 1 },
-    { label: "5s", value: 5 },
-    { label: "10s", value: 10 },
-    { label: "30s", value: 30 },
-    { label: "60s", value: 60 },
-]
-
 export default class TrafficStatsPage extends React.Component<object, TrafficStatsPageState> {
     private readonly service: TrafficStatsService
     private readonly nginxService: NginxService
@@ -142,6 +134,13 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
         })
     }
 
+    private buildAutoRefreshOptions() {
+        return [1, 5, 10, 30, 60].map(item => ({
+            label: <I18n id={MessageKey.FrontendLogsAutoRefreshOption} params={{ seconds: item }} />,
+            value: item,
+        }))
+    }
+
     private renderSettings() {
         const { autoRefreshSeconds } = this.state
 
@@ -154,7 +153,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
                     <Select
                         className="traffic-stats-auto-refresh"
                         placeholder={i18n(MessageKey.CommonDisabled)}
-                        options={AUTO_REFRESH_OPTIONS}
+                        options={this.buildAutoRefreshOptions()}
                         value={autoRefreshSeconds}
                         onSelect={value => this.applyAutoRefresh(value)}
                         onClear={() => this.stopAutoRefresh()}

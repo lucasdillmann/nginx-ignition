@@ -61,9 +61,13 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
         const { validationResult } = this.props
         return (
             <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
-                <h3 className="settings-form-subsection-name">
+                <h2 className="settings-form-section-name">
                     <I18n id={MessageKey.CommonTrafficStats} />
-                </h3>
+                </h2>
+                <p className="settings-form-section-help-text">
+                    <I18n id={MessageKey.FrontendSettingsTabsNginxStatsHelp} />
+                </p>
+
                 <Form.Item
                     name={["nginx", "stats", "enabled"]}
                     validateStatus={validationResult.getStatus("nginx.stats.enabled")}
@@ -122,10 +126,10 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
         )
     }
 
-    private renderLogsFormPortion() {
+    private renderLogsColumn() {
         const { validationResult } = this.props
         return (
-            <>
+            <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
                 <h2 className="settings-form-section-name">
                     <I18n id={MessageKey.CommonLogs} />
                 </h2>
@@ -133,30 +137,24 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     <I18n id={MessageKey.FrontendSettingsTabsNginxLogsHelp} />
                 </p>
 
-                <Flex className="settings-form-inner-flex-container">
-                    <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
-                        <h3 className="settings-form-subsection-name">
-                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogsVirtualHosts} />
-                        </h3>
-                        <Form.Item
-                            name={["nginx", "logs", "accessLogsEnabled"]}
-                            validateStatus={validationResult.getStatus("nginx.logs.accessLogsEnabled")}
-                            help={validationResult.getMessage("nginx.logs.accessLogsEnabled")}
-                            label={<I18n id={MessageKey.FrontendSettingsTabsNginxAccessLogsEnabled} />}
-                            required
-                        >
-                            <Switch />
-                        </Form.Item>
-                        {this.renderErrorLogFieldset("errorLogsEnabled", "errorLogsLevel")}
-                        <h3 className="settings-form-subsection-name">
-                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogsServer} />
-                        </h3>
-                        {this.renderErrorLogFieldset("serverLogsEnabled", "serverLogsLevel")}
-                    </Flex>
-
-                    {this.renderStatsColumn()}
-                </Flex>
-            </>
+                <h3 className="settings-form-subsection-name">
+                    <I18n id={MessageKey.FrontendSettingsTabsNginxLogsVirtualHosts} />
+                </h3>
+                <Form.Item
+                    name={["nginx", "logs", "accessLogsEnabled"]}
+                    validateStatus={validationResult.getStatus("nginx.logs.accessLogsEnabled")}
+                    help={validationResult.getMessage("nginx.logs.accessLogsEnabled")}
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxAccessLogsEnabled} />}
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                {this.renderErrorLogFieldset("errorLogsEnabled", "errorLogsLevel")}
+                <h3 className="settings-form-subsection-name">
+                    <I18n id={MessageKey.FrontendSettingsTabsNginxLogsServer} />
+                </h3>
+                {this.renderErrorLogFieldset("serverLogsEnabled", "serverLogsLevel")}
+            </Flex>
         )
     }
 
@@ -379,7 +377,10 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
         return (
             <>
                 {this.renderGeneralFormPortion()}
-                {this.renderLogsFormPortion()}
+                <Flex className="settings-form-inner-flex-container">
+                    {this.renderLogsColumn()}
+                    {this.renderStatsColumn()}
+                </Flex>
                 {this.renderBindingsFormPortion()}
             </>
         )
