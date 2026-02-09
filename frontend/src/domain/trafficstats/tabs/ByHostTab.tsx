@@ -26,42 +26,21 @@ import { ExclamationCircleOutlined } from "@ant-design/icons"
 interface ByHostTabProps {
     stats: TrafficStatsResponse
     theme: "light" | "dark"
-}
-
-interface ByHostTabState {
-    hosts: HostResponse[]
     selectedHost?: HostResponse
-    loading: boolean
+    onSelectHost: (host: HostResponse) => void
 }
 
-export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTabState> {
+export default class ByHostTab extends React.Component<ByHostTabProps> {
     private readonly hostService: HostService
 
     constructor(props: ByHostTabProps) {
         super(props)
         this.hostService = new HostService()
-        this.state = {
-            hosts: [],
-            loading: true,
-        }
-    }
-
-    componentDidMount() {
-        this.loadHosts()
-    }
-
-    private async loadHosts() {
-        try {
-            const page = await this.hostService.list(100, 0)
-            this.setState({ hosts: page.contents, loading: false })
-        } catch {
-            this.setState({ loading: false })
-        }
     }
 
     private getSelectedZoneData(): ZoneData | undefined {
         const { filterZones } = this.props.stats
-        const { selectedHost } = this.state
+        const { selectedHost } = this.props
         if (!selectedHost || !filterZones.hosts) return undefined
         return filterZones.hosts[selectedHost.id]
     }
@@ -78,7 +57,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
     }
 
     private renderHostSelector() {
-        const { selectedHost } = this.state
+        const { selectedHost, onSelectHost } = this.props
 
         return (
             <Flex className="traffic-stats-settings-option">
@@ -87,7 +66,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
                 </p>
                 <PaginatedSelect<HostResponse>
                     placeholder={MessageKey.CommonSelectOne}
-                    onChange={host => this.setState({ selectedHost: host })}
+                    onChange={host => onSelectHost(host)}
                     pageProvider={(pageSize, pageNumber, searchTerms) =>
                         this.hostService.list(pageSize, pageNumber, searchTerms)
                     }
@@ -135,7 +114,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
 
     private renderUserAgentChart() {
         const { filterZones } = this.props.stats
-        const { selectedHost } = this.state
+        const { selectedHost } = this.props
         if (!selectedHost) return null
 
         const userAgentZone = filterZones[`userAgent@host:${selectedHost.id}`]
@@ -145,7 +124,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
 
     private renderCountryCodeChart() {
         const { filterZones } = this.props.stats
-        const { selectedHost } = this.state
+        const { selectedHost } = this.props
         if (!selectedHost) return null
 
         const countryCodeZone = filterZones[`countryCode@host:${selectedHost.id}`]
@@ -155,7 +134,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
 
     private renderCityChart() {
         const { filterZones } = this.props.stats
-        const { selectedHost } = this.state
+        const { selectedHost } = this.props
         if (!selectedHost) return null
 
         const cityZone = filterZones[`city@host:${selectedHost.id}`]
@@ -164,7 +143,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps, ByHostTab
     }
 
     private renderMainContents() {
-        const { selectedHost } = this.state
+        const { selectedHost } = this.props
         if (!selectedHost) {
             const icon = (
                 <ExclamationCircleOutlined style={{ fontSize: 70, color: "var(--nginxIgnition-colorTextDisabled)" }} />

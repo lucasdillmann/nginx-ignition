@@ -18,6 +18,7 @@ import ThemeContext from "../../core/components/context/ThemeContext"
 import NginxService from "../nginx/NginxService"
 import NginxMetadata, { NginxSupportType } from "../nginx/model/NginxMetadata"
 import { navigateTo } from "../../core/components/router/AppRouter"
+import HostResponse from "../host/model/HostResponse"
 import "./TrafficStatsPage.css"
 
 interface TrafficStatsPageState {
@@ -29,6 +30,9 @@ interface TrafficStatsPageState {
     theme: "light" | "dark"
     metadata?: NginxMetadata
     nginxRunning?: boolean
+    selectedHost?: HostResponse
+    selectedDomain?: string
+    selectedUpstream?: string
 }
 
 export default class TrafficStatsPage extends React.Component<object, TrafficStatsPageState> {
@@ -105,7 +109,29 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
         this.setState({ loading: true })
         try {
             const stats = await this.service.getStats()
-            this.setState({ stats, loading: false, error: undefined })
+            this.setState(prevState => {
+                const newState: Partial<TrafficStatsPageState> = {
+                    stats,
+                    loading: false,
+                    error: undefined,
+                }
+
+                if (!prevState.selectedDomain) {
+                    const domains = Object.keys(stats.serverZones).filter(d => d !== "*")
+                    if (domains.length > 0) {
+                        newState.selectedDomain = domains[0]
+                    }
+                }
+
+                if (!prevState.selectedUpstream) {
+                    const upstreams = Object.keys(stats.upstreamZones)
+                    if (upstreams.length > 0) {
+                        newState.selectedUpstream = upstreams[0]
+                    }
+                }
+
+                return newState
+            })
         } catch (error) {
             this.setState({ loading: false, error: error as Error })
         }
@@ -165,7 +191,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
     }
 
     private renderTabs() {
-        const { stats, activeTab, theme } = this.state
+        const { stats, activeTab, theme, selectedHost, selectedDomain, selectedUpstream } = this.state
 
         if (!stats) return null
 
@@ -178,17 +204,38 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
             {
                 key: "byHost",
                 label: <I18n id={MessageKey.FrontendTrafficStatsByHostTab} />,
-                children: <ByHostTab stats={stats} theme={theme} />,
+                children: (
+                    <ByHostTab
+                        stats={stats}
+                        theme={theme}
+                        selectedHost={selectedHost}
+                        onSelectHost={host => this.setState({ selectedHost: host })}
+                    />
+                ),
             },
             {
                 key: "byDomain",
                 label: <I18n id={MessageKey.FrontendTrafficStatsByDomainTab} />,
-                children: <ByDomainTab stats={stats} theme={theme} />,
+                children: (
+                    <ByDomainTab
+                        stats={stats}
+                        theme={theme}
+                        selectedDomain={selectedDomain}
+                        onSelectDomain={domain => this.setState({ selectedDomain: domain })}
+                    />
+                ),
             },
             {
                 key: "byUpstream",
                 label: <I18n id={MessageKey.FrontendTrafficStatsByUpstreamTab} />,
-                children: <ByUpstreamTab stats={stats} theme={theme} />,
+                children: (
+                    <ByUpstreamTab
+                        stats={stats}
+                        theme={theme}
+                        selectedUpstream={selectedUpstream}
+                        onSelectUpstream={upstream => this.setState({ selectedUpstream: upstream })}
+                    />
+                ),
             },
         ]
 
@@ -199,6 +246,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
                     items={items}
                     onChange={key => this.setState({ activeTab: key })}
                     tabBarExtraContent={{ right: this.renderSettings() }}
+                    destroyInactiveTabPane
                 />
             </div>
         )

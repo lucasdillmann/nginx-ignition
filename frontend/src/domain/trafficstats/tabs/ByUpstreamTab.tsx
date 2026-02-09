@@ -1,7 +1,8 @@
 import React from "react"
 import { Flex, Select, Statistic, Empty, Table, Tag } from "antd"
 import { Pie, Area } from "@ant-design/charts"
-import TrafficStatsResponse, { UpstreamZoneData } from "../model/TrafficStatsResponse"
+import { UpstreamZoneData } from "../model/TrafficStatsResponse"
+import TrafficStatsResponse from "../model/TrafficStatsResponse"
 import { formatBytes, formatNumber, formatMs } from "../utils/StatsFormatters"
 import { STATUS_COLORS, StatusDataItem } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
@@ -12,31 +13,14 @@ import StatusDistributionChart from "../components/StatusDistributionChart"
 interface ByUpstreamTabProps {
     stats: TrafficStatsResponse
     theme: "light" | "dark"
-}
-
-interface ByUpstreamTabState {
     selectedUpstream?: string
+    onSelectUpstream: (upstream: string) => void
 }
 
-export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, ByUpstreamTabState> {
-    constructor(props: ByUpstreamTabProps) {
-        super(props)
-        this.state = {}
-    }
-
-    componentDidMount() {
-        const { upstreamZones } = this.props.stats
-        const { selectedUpstream } = this.state
-        const upstreams = Object.keys(upstreamZones)
-
-        if (!selectedUpstream && upstreams.length > 0) {
-            this.setState({ selectedUpstream: upstreams[0] })
-        }
-    }
-
+export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
     private getSelectedUpstreamData(): UpstreamZoneData[] | undefined {
         const { upstreamZones } = this.props.stats
-        const { selectedUpstream } = this.state
+        const { selectedUpstream } = this.props
         if (!selectedUpstream) return undefined
         return upstreamZones[selectedUpstream]
     }
@@ -61,7 +45,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
 
     private renderUpstreamSelector() {
         const { upstreamZones } = this.props.stats
-        const { selectedUpstream } = this.state
+        const { selectedUpstream, onSelectUpstream } = this.props
         const upstreams = Object.keys(upstreamZones)
 
         const options = upstreams.map(name => ({
@@ -79,7 +63,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps, B
                     placeholder={<I18n id={MessageKey.FrontendTrafficStatsSelectUpstream} />}
                     options={options}
                     value={selectedUpstream}
-                    onChange={value => this.setState({ selectedUpstream: value })}
+                    onChange={value => onSelectUpstream(value)}
                     showSearch
                     filterOption={(input, option) =>
                         (option?.label?.toString() ?? "").toLowerCase().includes(input.toLowerCase())

@@ -21,31 +21,14 @@ import ZoneStatCards from "../components/ZoneStatCards"
 interface ByDomainTabProps {
     stats: TrafficStatsResponse
     theme: "light" | "dark"
-}
-
-interface ByDomainTabState {
     selectedDomain?: string
+    onSelectDomain: (domain: string) => void
 }
 
-export default class ByDomainTab extends React.Component<ByDomainTabProps, ByDomainTabState> {
-    constructor(props: ByDomainTabProps) {
-        super(props)
-        this.state = {}
-    }
-
-    componentDidMount() {
-        const { serverZones } = this.props.stats
-        const { selectedDomain } = this.state
-        const domains = Object.keys(serverZones).filter(d => d !== "*")
-
-        if (!selectedDomain && domains.length > 0) {
-            this.setState({ selectedDomain: domains[0] })
-        }
-    }
-
+export default class ByDomainTab extends React.Component<ByDomainTabProps> {
     private getSelectedZoneData(): ZoneData | undefined {
         const { serverZones } = this.props.stats
-        const { selectedDomain } = this.state
+        const { selectedDomain } = this.props
         if (!selectedDomain) return undefined
         return serverZones[selectedDomain]
     }
@@ -57,7 +40,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps, ByDom
 
     private renderDomainSelector() {
         const { serverZones } = this.props.stats
-        const { selectedDomain } = this.state
+        const { selectedDomain, onSelectDomain } = this.props
         const domains = Object.keys(serverZones).filter(d => d !== "*")
 
         const options = domains.map(domain => ({
@@ -75,7 +58,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps, ByDom
                     placeholder={<I18n id={MessageKey.FrontendTrafficStatsSelectDomain} />}
                     options={options}
                     value={selectedDomain}
-                    onChange={value => this.setState({ selectedDomain: value })}
+                    onChange={value => onSelectDomain(value)}
                     showSearch
                     filterOption={(input, option) =>
                         (option?.label?.toString() ?? "").toLowerCase().includes(input.toLowerCase())
@@ -112,7 +95,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps, ByDom
 
     private renderUserAgentChart() {
         const { filterZones } = this.props.stats
-        const { selectedDomain } = this.state
+        const { selectedDomain } = this.props
         if (!selectedDomain) return null
 
         const userAgentZone = filterZones[`userAgent@domain:${selectedDomain}`]
@@ -122,7 +105,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps, ByDom
 
     private renderCountryCodeChart() {
         const { filterZones } = this.props.stats
-        const { selectedDomain } = this.state
+        const { selectedDomain } = this.props
         if (!selectedDomain) return null
 
         const countryCodeZone = filterZones[`countryCode@domain:${selectedDomain}`]
@@ -132,7 +115,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps, ByDom
 
     private renderCityChart() {
         const { filterZones } = this.props.stats
-        const { selectedDomain } = this.state
+        const { selectedDomain } = this.props
         if (!selectedDomain) return null
 
         const cityZone = filterZones[`city@domain:${selectedDomain}`]
