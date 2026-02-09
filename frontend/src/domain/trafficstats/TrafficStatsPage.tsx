@@ -246,7 +246,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
                     items={items}
                     onChange={key => this.setState({ activeTab: key })}
                     tabBarExtraContent={{ right: this.renderSettings() }}
-                    destroyInactiveTabPane
+                    destroyOnHidden
                 />
             </div>
         )
