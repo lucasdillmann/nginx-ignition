@@ -90,6 +90,9 @@ func newSettings() *settings.Settings {
 				ServerLogsEnabled: true,
 				ServerLogsLevel:   settings.WarnLogLevel,
 			},
+			Stats: &settings.NginxStatsSettings{
+				Enabled: false,
+			},
 		},
 	}
 }

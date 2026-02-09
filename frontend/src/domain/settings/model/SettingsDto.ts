@@ -55,10 +55,19 @@ export interface NginxBuffersSettingsDto {
     output: NginxBufferSizeDto
 }
 
+export interface NginxStatsSettingsDto {
+    enabled: boolean
+    persistent: boolean
+    allHosts: boolean
+    maximumSizeMb: number
+    databaseLocation?: string
+}
+
 export interface NginxSettingsDto {
     logs: NginxLogsSettingsDto
     timeouts: NginxTimeoutsSettingsDto
     buffers: NginxBuffersSettingsDto
+    stats: NginxStatsSettingsDto
     workerProcesses: number
     workerConnections: number
     serverTokensEnabled: boolean

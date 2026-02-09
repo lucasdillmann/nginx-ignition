@@ -42,6 +42,7 @@ type FeatureSet struct {
 	WebsocketSupport    bool
 	HTTP2Support        bool
 	RedirectHTTPToHTTPS bool
+	StatsEnabled        bool
 }
 
 type Route struct {

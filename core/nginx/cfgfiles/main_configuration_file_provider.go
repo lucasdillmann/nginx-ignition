@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/common/runtime"
 	"dillmann.com.br/nginx-ignition/core/host"
@@ -14,21 +15,19 @@ import (
 )
 
 type mainConfigurationFileProvider struct {
-	settingsCommands settings.Commands
+	config *configuration.Configuration
 }
 
 func newMainConfigurationFileProvider(
-	settingsCommands settings.Commands,
+	config *configuration.Configuration,
 ) *mainConfigurationFileProvider {
-	return &mainConfigurationFileProvider{settingsCommands: settingsCommands}
+	return &mainConfigurationFileProvider{
+		config: config,
+	}
 }
 
 func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, error) {
-	cfg, err := p.settingsCommands.Get(ctx.context)
-	if err != nil {
-		return nil, err
-	}
-
+	cfg := ctx.cfg
 	logs := cfg.Nginx.Logs
 	moduleLines := strings.Builder{}
 	streamLines := strings.Builder{}
@@ -49,6 +48,13 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		_, _ = moduleLines.WriteString("load_module modules/ngx_http_lua_module.so;\n")
 	}
 
+	if ctx.supportedFeatures.StatsType == DynamicSupportType {
+		_, _ = moduleLines.WriteString("load_module modules/ngx_http_geoip2_module.so;\n")
+		_, _ = moduleLines.WriteString(
+			"load_module modules/ngx_http_vhost_traffic_status_module.so;\n",
+		)
+	}
+
 	var customCfg string
 	if cfg.Nginx.Custom != nil {
 		customCfg = fmt.Sprintf("\n%s\n", *cfg.Nginx.Custom)
@@ -57,6 +63,11 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 	userStatement := fmt.Sprintf("user %s %s;", cfg.Nginx.RuntimeUser, cfg.Nginx.RuntimeUser)
 	if runtime.IsWindows() {
 		userStatement = ""
+	}
+
+	statsDefinitions, err := p.getStatsDefinitions(ctx.paths, cfg.Nginx.Stats)
+	if err != nil {
+		return nil, err
 	}
 
 	contents := fmt.Sprintf(
@@ -99,6 +110,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				%s
 				%s
 				%s
+				%s
 			}
 			
 			%s
@@ -134,6 +146,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		ctx.paths.Config,
 		customCfg,
 		p.getCacheDefinitions(ctx.paths, ctx.caches),
+		statsDefinitions,
 		p.getHostIncludes(ctx.paths, ctx.hosts),
 		streamLines.String(),
 	)
@@ -223,4 +236,87 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(
 	}
 
 	return strings.Join(results, "\n")
+}
+
+func (p *mainConfigurationFileProvider) getStatsDefinitions(
+	paths *Paths,
+	cfg *settings.NginxStatsSettings,
+) (string, error) {
+	if cfg == nil || !cfg.Enabled {
+		return "", nil
+	}
+
+	geoIPCountryFilePath := filepath.Join(paths.Config, "geoip-country.mmdb")
+	geoIPCityFilePath := filepath.Join(paths.Config, "geoip-city.mmdb")
+	output := strings.Builder{}
+
+	_, _ = fmt.Fprintf(
+		&output,
+		`
+		geoip2 %s {
+			$geoip_country_code default=Unknown source=$remote_addr country iso_code;
+		}
+
+		geoip2 %s {
+			$geoip_city_name default=Unknown source=$remote_addr city names en;
+		}
+		
+		map $http_user_agent $stats_user_agent {
+			default "Unknown";
+			
+			"~(?i)bot|crawler|spider|slurp|google|bing|yandex|baidu|duckduckbot|twitterbot|facebookexternalhit|linkedinbot|slackbot|wget|curl" "Bots";
+			"~(?i)iphone|ipod" "iOS";			
+			"~(?i)ipad" "iPadOS";
+			"~(?i)android" "Android";
+			"~(?i)windows" "Windows";
+			"~(?i)macintosh|mac\sos\sx" "macOS";
+			"~(?i)linux" "Linux";
+			"~(?i)playstation|nintendo|xbox" "Console";
+			"~(?i)smart-tv|smarttv|googletv|appletv|hbbtv|tizen|samsungview|crkey" "Smart TV";
+		}
+		
+		vhost_traffic_status_zone shared:nginx-ignition-traffic-stats:%dm;
+		vhost_traffic_status_filter_by_host on;
+		vhost_traffic_status_stats_by_upstream on;
+		vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@global;
+		vhost_traffic_status_filter_by_set_key $geoip_city_name city@global;
+		vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@global;
+		`,
+		geoIPCountryFilePath,
+		geoIPCityFilePath,
+		cfg.MaximumSizeMB,
+	)
+
+	if cfg.Persistent {
+		dbLocation := cfg.DatabaseLocation
+		if dbLocation == nil {
+			dataPath, err := p.config.Get("nginx-ignition.database.data-path")
+			if err != nil {
+				return "", err
+			}
+
+			dbLocation = ptr.Of(filepath.Join(dataPath, "traffic-stats.db"))
+		}
+
+		_, _ = fmt.Fprintf(&output, "vhost_traffic_status_dump \"%s\" 5s;\n", *dbLocation)
+	}
+
+	_, _ = fmt.Fprintf(&output,
+		`
+		server { 
+			root /dev/null;
+            listen unix:%s;
+			access_log off;
+			vhost_traffic_status off;
+			
+			location / {
+				vhost_traffic_status_display;
+				vhost_traffic_status_display_format json;
+			}
+        }
+		`,
+		filepath.Join(paths.Base, "traffic-stats.socket"),
+	)
+
+	return output.String(), nil
 }

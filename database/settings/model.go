@@ -61,7 +61,7 @@ type bindingModel struct {
 }
 
 type buffersModel struct {
-	bun.BaseModel `bun:"nginx_settings_buffers"`
+	bun.BaseModel `bun:"settings_nginx_buffers"`
 
 	ID                      uuid.UUID `bun:"id,pk"`
 	ClientBodyKb            int       `bun:"client_body_kb"`
@@ -70,4 +70,15 @@ type buffersModel struct {
 	LargeClientHeaderAmount int       `bun:"large_client_header_amount"`
 	OutputSizeKb            int       `bun:"output_size_kb"`
 	OutputAmount            int       `bun:"output_amount"`
+}
+
+type statsModel struct {
+	bun.BaseModel `bun:"settings_nginx_stats"`
+
+	DatabaseLocation *string   `bun:"database_location"`
+	MaximumSizeMB    int       `bun:"maximum_size_mb"`
+	ID               uuid.UUID `bun:"id,pk"`
+	Enabled          bool      `bun:"enabled"`
+	Persistent       bool      `bun:"persistent"`
+	AllHosts         bool      `bun:"all_hosts"`
 }

@@ -14,6 +14,11 @@ func newSettings() *Settings {
 			WorkerProcesses:   1,
 			WorkerConnections: 1024,
 			MaximumBodySizeMb: 1,
+			Stats: &NginxStatsSettings{
+				Enabled:       false,
+				Persistent:    false,
+				MaximumSizeMB: 16,
+			},
 		},
 		LogRotation: &LogRotationSettings{
 			IntervalUnitCount: 1,

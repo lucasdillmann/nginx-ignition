@@ -35,6 +35,8 @@ RUN apk update && \
       nginx \
       nginx-mod-http-js \
       nginx-mod-http-lua \
+      nginx-mod-http-vts \
+      nginx-mod-http-geoip2 \
       nginx-mod-stream \
       ca-certificates \
       curl && \

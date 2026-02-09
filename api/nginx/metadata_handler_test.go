@@ -11,6 +11,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/nginx"
+	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 func init() {
@@ -29,8 +30,15 @@ func Test_metadataHandler(t *testing.T) {
 				GetMetadata(gomock.Any()).
 				Return(metadataData, nil)
 
+			settingsData := newSettings()
+			settingsCommands := settings.NewMockedCommands(controller)
+			settingsCommands.EXPECT().
+				Get(gomock.Any()).
+				Return(settingsData, nil)
+
 			handler := metadataHandler{
-				commands: commands,
+				nginxCommands:    commands,
+				settingsCommands: settingsCommands,
 			}
 			engine := gin.New()
 			engine.GET("/api/nginx/metadata", handler.handle)
@@ -43,6 +51,10 @@ func Test_metadataHandler(t *testing.T) {
 			var response map[string]any
 			json.Unmarshal(recorder.Body.Bytes(), &response)
 			assert.Equal(t, metadataData.Version, response["version"])
+
+			statsResponse := response["stats"].(map[string]any)
+			assert.Equal(t, settingsData.Nginx.Stats.Enabled, statsResponse["enabled"])
+			assert.Equal(t, settingsData.Nginx.Stats.AllHosts, statsResponse["allHosts"])
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
@@ -56,7 +68,7 @@ func Test_metadataHandler(t *testing.T) {
 				Return(nil, expectedErr)
 
 			handler := metadataHandler{
-				commands: commands,
+				nginxCommands: commands,
 			}
 			engine := gin.New()
 			engine.GET("/api/nginx/metadata", func(ginContext *gin.Context) {

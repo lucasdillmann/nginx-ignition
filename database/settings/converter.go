@@ -11,6 +11,7 @@ func toDomain(
 	certificate *certificateModel,
 	bindings []bindingModel,
 	buffers *buffersModel,
+	stats *statsModel,
 ) *settings.Settings {
 	return &settings.Settings{
 		Nginx: &settings.NginxSettings{
@@ -39,6 +40,13 @@ func toDomain(
 					SizeKb: buffers.OutputSizeKb,
 					Amount: buffers.OutputAmount,
 				},
+			},
+			Stats: &settings.NginxStatsSettings{
+				Enabled:          stats.Enabled,
+				Persistent:       stats.Persistent,
+				AllHosts:         stats.AllHosts,
+				MaximumSizeMB:    stats.MaximumSizeMB,
+				DatabaseLocation: stats.DatabaseLocation,
 			},
 			WorkerProcesses:     nginx.WorkerProcesses,
 			WorkerConnections:   nginx.WorkerConnections,
@@ -88,6 +96,7 @@ func toModel(set *settings.Settings) (
 	*certificateModel,
 	[]bindingModel,
 	*buffersModel,
+	*statsModel,
 ) {
 	nginx := &nginxModel{
 		ServerLogsEnabled:   set.Nginx.Logs.ServerLogsEnabled,
@@ -136,7 +145,15 @@ func toModel(set *settings.Settings) (
 		OutputAmount:            set.Nginx.Buffers.Output.Amount,
 	}
 
-	return nginx, logRotation, certificate, bindings, buffers
+	stats := &statsModel{
+		Enabled:          set.Nginx.Stats.Enabled,
+		Persistent:       set.Nginx.Stats.Persistent,
+		AllHosts:         set.Nginx.Stats.AllHosts,
+		MaximumSizeMB:    set.Nginx.Stats.MaximumSizeMB,
+		DatabaseLocation: set.Nginx.Stats.DatabaseLocation,
+	}
+
+	return nginx, logRotation, certificate, bindings, buffers, stats
 }
 
 func toBindingModel(bindings []binding.Binding) []bindingModel {

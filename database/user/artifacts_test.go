@@ -26,6 +26,7 @@ func newUser() *user.User {
 			ExportData:   user.ReadOnlyAccessLevel,
 			VPNs:         user.ReadWriteAccessLevel,
 			Caches:       user.ReadWriteAccessLevel,
+			TrafficStats: user.ReadOnlyAccessLevel,
 		},
 		Enabled: true,
 	}

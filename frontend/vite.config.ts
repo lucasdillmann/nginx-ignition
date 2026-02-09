@@ -54,6 +54,7 @@ export default defineConfig({
                         "@ant-design/pro-table",
                         "@ant-design/pro-form",
                     ],
+                    "vendor.antd-charts": ["@ant-design/charts"],
                     "vendor.utils": ["qs", "debounce", "typescript"],
                 },
             },

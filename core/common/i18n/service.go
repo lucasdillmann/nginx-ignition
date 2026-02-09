@@ -14,11 +14,12 @@ type service struct {
 func newCommands() Commands {
 	dictionaries := []i18n.Dictionary{
 		i18n.Bn(),
+		i18n.De(),
 		i18n.En(),
 		i18n.Es(),
+		i18n.Fr(),
 		i18n.Hi(),
 		i18n.Ja(),
-		i18n.Pa(),
 		i18n.Pt(),
 		i18n.Ru(),
 		i18n.Vi(),

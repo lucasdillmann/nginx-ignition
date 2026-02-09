@@ -15,6 +15,7 @@ type NginxSettings struct {
 	Timeouts            *NginxTimeoutsSettings
 	Buffers             *NginxBuffersSettings
 	Logs                *NginxLogsSettings
+	Stats               *NginxStatsSettings
 	Custom              *string
 	RuntimeUser         string
 	DefaultContentType  string
@@ -25,6 +26,14 @@ type NginxSettings struct {
 	TCPNoDelayEnabled   bool
 	GzipEnabled         bool
 	SendfileEnabled     bool
+}
+
+type NginxStatsSettings struct {
+	DatabaseLocation *string
+	MaximumSizeMB    int
+	Enabled          bool
+	Persistent       bool
+	AllHosts         bool
 }
 
 type LogRotationSettings struct {

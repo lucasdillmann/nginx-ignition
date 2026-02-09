@@ -1,0 +1,94 @@
+.traffic-stats-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+}
+
+.traffic-stats-settings-wrapper {
+    margin-left: 24px;
+    margin-bottom: 10px;
+}
+
+.traffic-stats-settings-option {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.traffic-stats-settings-option p {
+    margin: 0;
+    font-weight: 500;
+    color: var(--nginxIgnition-colorTextSecondary);
+}
+
+.traffic-stats-auto-refresh {
+    min-width: 180px;
+}
+
+.traffic-stats-tabs-container {
+    flex: 1;
+    background: var(--nginxIgnition-colorBgContainer);
+    overflow: auto;
+}
+
+.traffic-stats-tab-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.traffic-stats-cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.traffic-stats-stat-card {
+    flex: 1;
+    min-width: 180px;
+    padding: 16px;
+    background: var(--nginxIgnition-colorBgLayout);
+    border-radius: 8px;
+}
+
+.traffic-stats-chart-container {
+    background: var(--nginxIgnition-colorBgLayout);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.traffic-stats-chart-title {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--nginxIgnition-colorTextSecondary);
+}
+
+.traffic-stats-charts-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 16px;
+}
+
+.traffic-stats-selector {
+    min-width: 300px;
+}
+
+.traffic-stats-table-container {
+    background: var(--nginxIgnition-colorBgLayout);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.traffic-stats-upstream-status-up {
+    color: var(--nginxIgnition-colorSuccess);
+}
+
+.traffic-stats-upstream-status-down {
+    color: var(--nginxIgnition-colorError);
+}
+
+.traffic-stats-upstream-backup {
+    color: var(--nginxIgnition-colorWarning);
+}

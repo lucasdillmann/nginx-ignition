@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
+	"net/http"
 
 	"github.com/google/uuid"
 
@@ -26,6 +27,8 @@ type service struct {
 	logReader          *logReader
 	logRotator         *logRotator
 	vpnManager         *vpnManager
+	settingsCommands   settings.Commands
+	statsClient        *http.Client
 }
 
 func newService(
@@ -46,9 +49,11 @@ func newService(
 		configFilesManager: configFilesManager,
 		processManager:     pManager,
 		vpnManager:         vManager,
+		settingsCommands:   settingsCommands,
 		semaphore:          newSemaphore(),
 		logReader:          newLogReader(cfg),
 		logRotator:         newLogRotator(cfg, settingsCommands, hostCommands, pManager),
+		statsClient:        buildStatsClient(pManager.configPath),
 	}, nil
 }
 
@@ -249,5 +254,6 @@ func (s *service) resolveSupportedFeatures(
 		TLSSNI:      cfgfiles.SupportType(metadata.SNISupportType()),
 		RunCodeType: cfgfiles.SupportType(metadata.RunCodeSupportType()),
 		StreamType:  cfgfiles.SupportType(metadata.StreamSupportType()),
+		StatsType:   cfgfiles.SupportType(metadata.StatsSupportType()),
 	}, nil
 }

@@ -6,9 +6,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -17,21 +17,17 @@ import (
 
 func Test_mainConfigurationFileProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{}
+		provider := &mainConfigurationFileProvider{
+			config: configuration.New(),
+		}
+
 		paths := newPaths()
-
 		mockSettings := newSettings()
-
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		settingsCmds := settings.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(gomock.Any()).AnyTimes().Return(mockSettings, nil)
-		provider.settingsCommands = settingsCmds
 
 		t.Run("successfully generates basic config", func(t *testing.T) {
 			ctx := newProviderContext(t)
 			ctx.paths = paths
+			ctx.cfg = mockSettings
 			ctx.supportedFeatures.StreamType = NoneSupportType
 			ctx.supportedFeatures.RunCodeType = NoneSupportType
 
@@ -46,6 +42,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 		t.Run("includes dynamic modules and stream block when enabled", func(t *testing.T) {
 			ctx := newProviderContext(t)
 			ctx.paths = paths
+			ctx.cfg = mockSettings
 			ctx.supportedFeatures.StreamType = DynamicSupportType
 			ctx.supportedFeatures.RunCodeType = DynamicSupportType
 			ctx.streams = []stream.Stream{{ID: uuid.New()}}
@@ -62,6 +59,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			mockSettings.Nginx.Custom = ptr.Of("custom_directive on;")
 			ctx := newProviderContext(t)
 			ctx.paths = paths
+			ctx.cfg = mockSettings
 			ctx.supportedFeatures.StreamType = NoneSupportType
 			ctx.supportedFeatures.RunCodeType = NoneSupportType
 
@@ -69,19 +67,12 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			assert.NoError(t, err)
 			assert.Contains(t, files[0].Contents, "custom_directive on;")
 		})
-
-		t.Run("returns error when settingsCommands fails", func(t *testing.T) {
-			settingsCmds := settings.NewMockedCommands(ctrl)
-			settingsCmds.EXPECT().Get(gomock.Any()).Return(nil, assert.AnError)
-			provider.settingsCommands = settingsCmds
-			ctx := newProviderContext(t)
-			_, err := provider.provide(ctx)
-			assert.ErrorIs(t, err, assert.AnError)
-		})
 	})
 
 	t.Run("getErrorLogPath", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{}
+		provider := &mainConfigurationFileProvider{
+			config: configuration.New(),
+		}
 		paths := &Paths{
 			Logs: "/var/log/nginx/",
 		}
@@ -107,7 +98,9 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("getHostIncludes", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{}
+		provider := &mainConfigurationFileProvider{
+			config: configuration.New(),
+		}
 		paths := &Paths{
 			Config: "/etc/nginx/",
 		}
@@ -134,7 +127,9 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("getStreamIncludes", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{}
+		provider := &mainConfigurationFileProvider{
+			config: configuration.New(),
+		}
 		paths := &Paths{
 			Config: "/etc/nginx/",
 		}
@@ -152,7 +147,9 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("getCacheDefinitions", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{}
+		provider := &mainConfigurationFileProvider{
+			config: configuration.New(),
+		}
 		paths := &Paths{
 			Cache: "/var/cache/nginx/",
 		}
@@ -195,6 +192,81 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			assert.Contains(t, result, "proxy_cache_path \"/var/cache/nginx/")
 			assert.NotContains(t, result, "inactive=")
 			assert.NotContains(t, result, "max_size=")
+		})
+	})
+
+	t.Run("getStatsDefinitions", func(t *testing.T) {
+		provider := &mainConfigurationFileProvider{
+			config: configuration.New(),
+		}
+		paths := &Paths{
+			Base: "/etc/nginx/",
+		}
+
+		t.Run("returns empty string when disabled", func(t *testing.T) {
+			cfg := &settings.NginxStatsSettings{
+				Enabled: false,
+			}
+			result, err := provider.getStatsDefinitions(paths, cfg)
+			assert.NoError(t, err)
+			assert.Equal(t, "", result)
+		})
+
+		t.Run("returns empty string when nil", func(t *testing.T) {
+			result, err := provider.getStatsDefinitions(paths, nil)
+			assert.NoError(t, err)
+			assert.Equal(t, "", result)
+		})
+
+		t.Run("generates base config when enabled", func(t *testing.T) {
+			cfg := &settings.NginxStatsSettings{
+				Enabled:       true,
+				MaximumSizeMB: 10,
+				Persistent:    false,
+			}
+			result, err := provider.getStatsDefinitions(paths, cfg)
+			assert.NoError(t, err)
+			assert.Contains(
+				t,
+				result,
+				"vhost_traffic_status_zone shared:nginx-ignition-traffic-stats:10m;",
+			)
+			assert.Contains(t, result, "vhost_traffic_status_filter_by_host on;")
+			assert.Contains(t, result, "vhost_traffic_status_stats_by_upstream on;")
+			assert.Contains(t, result, "server {")
+			assert.Contains(t, result, "listen unix:/etc/nginx/traffic-stats.socket;")
+			assert.NotContains(t, result, "vhost_traffic_status_dump")
+		})
+
+		t.Run("includes persistent dump with default path", func(t *testing.T) {
+			cfg := &settings.NginxStatsSettings{
+				Enabled:       true,
+				MaximumSizeMB: 10,
+				Persistent:    true,
+			}
+			result, err := provider.getStatsDefinitions(paths, cfg)
+			assert.NoError(t, err)
+			assert.Contains(
+				t,
+				result,
+				"vhost_traffic_status_dump \"/tmp/nginx-ignition/data/traffic-stats.db\" 5s;",
+			)
+		})
+
+		t.Run("includes persistent dump with custom path", func(t *testing.T) {
+			cfg := &settings.NginxStatsSettings{
+				Enabled:          true,
+				MaximumSizeMB:    10,
+				Persistent:       true,
+				DatabaseLocation: ptr.Of("/var/lib/nginx/traffic-stats.db"),
+			}
+			result, err := provider.getStatsDefinitions(paths, cfg)
+			assert.NoError(t, err)
+			assert.Contains(
+				t,
+				result,
+				"vhost_traffic_status_dump \"/var/lib/nginx/traffic-stats.db\" 5s;",
+			)
 		})
 	})
 }

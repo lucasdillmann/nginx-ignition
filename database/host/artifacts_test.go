@@ -75,6 +75,7 @@ func newHost() *host.Host {
 			WebsocketSupport:    true,
 			HTTP2Support:        true,
 			RedirectHTTPToHTTPS: false,
+			StatsEnabled:        true,
 		},
 		VPNs: []host.VPN{},
 	}

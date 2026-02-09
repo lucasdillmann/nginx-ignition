@@ -32,4 +32,24 @@ func Test_processManager(t *testing.T) {
 			assert.Equal(t, int64(0), pid)
 		})
 	})
+
+	t.Run("deleteTrafficStatsSocket", func(t *testing.T) {
+		t.Run("deletes file if it exists", func(t *testing.T) {
+			socketFile := filepath.Join(tmpDir, "traffic-stats.socket")
+			_ = os.WriteFile(socketFile, []byte("test"), 0o644)
+
+			manager.deleteTrafficStatsSocket()
+
+			assert.NoFileExists(t, socketFile)
+		})
+
+		t.Run("does nothing if file does not exist", func(t *testing.T) {
+			socketFile := filepath.Join(tmpDir, "traffic-stats.socket")
+			assert.NoFileExists(t, socketFile)
+
+			manager.deleteTrafficStatsSocket()
+
+			assert.NoFileExists(t, socketFile)
+		})
+	})
 }

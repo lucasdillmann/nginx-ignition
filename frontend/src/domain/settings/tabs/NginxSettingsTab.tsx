@@ -7,6 +7,7 @@ import { LogLevel } from "../model/SettingsDto"
 import { INTEGER_MAX } from "../SettingsConstants"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { QuestionCircleFilled } from "@ant-design/icons"
 
 export interface NginxSettingsTabProps {
     formValues: SettingsFormValues
@@ -56,10 +57,79 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
         )
     }
 
-    private renderLogsFormPortion() {
+    private renderStatsColumn() {
         const { validationResult } = this.props
         return (
-            <>
+            <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
+                <h2 className="settings-form-section-name">
+                    <I18n id={MessageKey.CommonTrafficStats} />
+                </h2>
+                <p className="settings-form-section-help-text">
+                    <I18n id={MessageKey.FrontendSettingsTabsNginxStatsHelp} />
+                </p>
+
+                <Form.Item
+                    name={["nginx", "stats", "enabled"]}
+                    validateStatus={validationResult.getStatus("nginx.stats.enabled")}
+                    help={validationResult.getMessage("nginx.stats.enabled")}
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsEnabled} />}
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                <Form.Item
+                    name={["nginx", "stats", "persistent"]}
+                    validateStatus={validationResult.getStatus("nginx.stats.persistent")}
+                    help={validationResult.getMessage("nginx.stats.persistent")}
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsPersistent} />}
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                <Form.Item
+                    name={["nginx", "stats", "allHosts"]}
+                    validateStatus={validationResult.getStatus("nginx.stats.allHosts")}
+                    help={validationResult.getMessage("nginx.stats.allHosts")}
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsAllHosts} />}
+                    tooltip={{
+                        title: <I18n id={MessageKey.FrontendSettingsTabsNginxStatsAllHostsHelp} />,
+                        icon: <QuestionCircleFilled />,
+                    }}
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                <Form.Item label={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsMaximumSize} />} required>
+                    <Space.Compact className="settings-form-input-wide">
+                        <Form.Item
+                            name={["nginx", "stats", "maximumSizeMb"]}
+                            validateStatus={validationResult.getStatus("nginx.stats.maximumSizeMb")}
+                            help={validationResult.getMessage("nginx.stats.maximumSizeMb")}
+                            noStyle
+                        >
+                            <InputNumber min={1} max={512} className="settings-form-input-wide" />
+                        </Form.Item>
+                        <Space.Addon>
+                            <I18n id={MessageKey.CommonUnitMb} />
+                        </Space.Addon>
+                    </Space.Compact>
+                </Form.Item>
+                <Form.Item
+                    name={["nginx", "stats", "databaseLocation"]}
+                    validateStatus={validationResult.getStatus("nginx.stats.databaseLocation")}
+                    help={validationResult.getMessage("nginx.stats.databaseLocation")}
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxStatsDatabaseLocation} />}
+                >
+                    <Input maxLength={256} />
+                </Form.Item>
+            </Flex>
+        )
+    }
+
+    private renderLogsColumn() {
+        const { validationResult } = this.props
+        return (
+            <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
                 <h2 className="settings-form-section-name">
                     <I18n id={MessageKey.CommonLogs} />
                 </h2>
@@ -67,31 +137,24 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     <I18n id={MessageKey.FrontendSettingsTabsNginxLogsHelp} />
                 </p>
 
-                <Flex className="settings-form-inner-flex-container">
-                    <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
-                        <h3 className="settings-form-subsection-name">
-                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogsVirtualHosts} />
-                        </h3>
-                        <Form.Item
-                            name={["nginx", "logs", "accessLogsEnabled"]}
-                            validateStatus={validationResult.getStatus("nginx.logs.accessLogsEnabled")}
-                            help={validationResult.getMessage("nginx.logs.accessLogsEnabled")}
-                            label={<I18n id={MessageKey.FrontendSettingsTabsNginxAccessLogsEnabled} />}
-                            required
-                        >
-                            <Switch />
-                        </Form.Item>
-                        {this.renderErrorLogFieldset("errorLogsEnabled", "errorLogsLevel")}
-                    </Flex>
-
-                    <Flex className="settings-form-inner-flex-container-column settings-form-expanded-label-size">
-                        <h3 className="settings-form-subsection-name">
-                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogsServer} />
-                        </h3>
-                        {this.renderErrorLogFieldset("serverLogsEnabled", "serverLogsLevel")}
-                    </Flex>
-                </Flex>
-            </>
+                <h3 className="settings-form-subsection-name">
+                    <I18n id={MessageKey.FrontendSettingsTabsNginxLogsVirtualHosts} />
+                </h3>
+                <Form.Item
+                    name={["nginx", "logs", "accessLogsEnabled"]}
+                    validateStatus={validationResult.getStatus("nginx.logs.accessLogsEnabled")}
+                    help={validationResult.getMessage("nginx.logs.accessLogsEnabled")}
+                    label={<I18n id={MessageKey.FrontendSettingsTabsNginxAccessLogsEnabled} />}
+                    required
+                >
+                    <Switch />
+                </Form.Item>
+                {this.renderErrorLogFieldset("errorLogsEnabled", "errorLogsLevel")}
+                <h3 className="settings-form-subsection-name">
+                    <I18n id={MessageKey.FrontendSettingsTabsNginxLogsServer} />
+                </h3>
+                {this.renderErrorLogFieldset("serverLogsEnabled", "serverLogsLevel")}
+            </Flex>
         )
     }
 
@@ -314,7 +377,10 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
         return (
             <>
                 {this.renderGeneralFormPortion()}
-                {this.renderLogsFormPortion()}
+                <Flex className="settings-form-inner-flex-container">
+                    {this.renderLogsColumn()}
+                    {this.renderStatsColumn()}
+                </Flex>
                 {this.renderBindingsFormPortion()}
             </>
         )

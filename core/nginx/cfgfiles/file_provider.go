@@ -6,6 +6,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/host"
+	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
@@ -21,12 +22,14 @@ type SupportedFeatures struct {
 	TLSSNI      SupportType //nolint:misspell
 	StreamType  SupportType
 	RunCodeType SupportType
+	StatsType   SupportType
 }
 
 type providerContext struct {
 	context           context.Context
 	paths             *Paths
 	supportedFeatures *SupportedFeatures
+	cfg               *settings.Settings
 	hosts             []host.Host
 	streams           []stream.Stream
 	caches            []cache.Cache

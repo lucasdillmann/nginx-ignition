@@ -2,6 +2,8 @@ package settings
 
 import (
 	"context"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
@@ -13,6 +15,7 @@ import (
 const (
 	maximumDefaultContentTypeLength = 128
 	maximumRuntimeUserLength        = 32
+	maximumDatabaseLocationLength   = 128
 	defaultContentTypePath          = "nginx.defaultContentType"
 )
 
@@ -23,6 +26,7 @@ var (
 	workerProcessesRange   = valuerange.New(1, 100)
 	workerConnectionsRange = valuerange.New(32, 4096)
 	maximumBodySizeRange   = valuerange.New(1, int(^uint(0)>>1))
+	statsMaximumSizeRange  = valuerange.New(1, 512)
 )
 
 type validator struct {
@@ -57,6 +61,7 @@ func (v *validator) validateNginx(ctx context.Context, settings *NginxSettings) 
 	v.checkRange(ctx, settings.WorkerProcesses, workerProcessesRange, "nginx.workerProcesses")
 	v.checkRange(ctx, settings.WorkerConnections, workerConnectionsRange, "nginx.workerConnections")
 	v.checkRange(ctx, settings.MaximumBodySizeMb, maximumBodySizeRange, "nginx.maximumBodySizeMb")
+	v.validateStats(ctx, settings.Stats)
 
 	if settings.DefaultContentType == "" {
 		v.delegate.Add(defaultContentTypePath, i18n.M(ctx, i18n.K.CommonValueMissing))
@@ -65,7 +70,7 @@ func (v *validator) validateNginx(ctx context.Context, settings *NginxSettings) 
 	if len(settings.DefaultContentType) > maximumDefaultContentTypeLength {
 		v.delegate.Add(
 			defaultContentTypePath,
-			i18n.M(ctx, i18n.K.CoreSettingsTooLong).V("max", maximumDefaultContentTypeLength),
+			i18n.M(ctx, i18n.K.CommonValueTooLong).V("max", maximumDefaultContentTypeLength),
 		)
 	}
 
@@ -76,8 +81,38 @@ func (v *validator) validateNginx(ctx context.Context, settings *NginxSettings) 
 	if len(settings.RuntimeUser) > maximumRuntimeUserLength {
 		v.delegate.Add(
 			"nginx.runtimeUser",
-			i18n.M(ctx, i18n.K.CoreSettingsTooLong).V("max", maximumRuntimeUserLength),
+			i18n.M(ctx, i18n.K.CommonValueTooLong).V("max", maximumRuntimeUserLength),
 		)
+	}
+}
+
+func (v *validator) validateStats(ctx context.Context, settings *NginxStatsSettings) {
+	v.checkRange(ctx, settings.MaximumSizeMB, statsMaximumSizeRange, "nginx.stats.maximumSizeMb")
+
+	dbPathField := "nginx.stats.databaseLocation"
+	if settings.DatabaseLocation != nil && *settings.DatabaseLocation != "" {
+		location := *settings.DatabaseLocation
+		if !strings.HasSuffix(strings.ToLower(location), ".db") {
+			v.delegate.Add(
+				dbPathField,
+				i18n.M(ctx, i18n.K.CoreSettingsInvalidExtension).V("extension", ".db"),
+			)
+		}
+
+		dir := filepath.Dir(location)
+		if info, err := os.Stat(dir); err != nil || !info.IsDir() {
+			v.delegate.Add(
+				dbPathField,
+				i18n.M(ctx, i18n.K.CoreSettingsInvalidFolder),
+			)
+		}
+
+		if len(location) > maximumDatabaseLocationLength {
+			v.delegate.Add(
+				dbPathField,
+				i18n.M(ctx, i18n.K.CommonValueTooLong).V("max", maximumDatabaseLocationLength),
+			)
+		}
 	}
 }
 

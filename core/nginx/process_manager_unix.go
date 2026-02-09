@@ -19,6 +19,7 @@ func (m *processManager) isPidAlive(pid int64) bool {
 }
 
 func (m *processManager) start() error {
+	m.deleteTrafficStatsSocket()
 	if err := m.runCommand(); err != nil {
 		return err
 	}

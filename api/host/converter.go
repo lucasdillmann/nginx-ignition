@@ -122,6 +122,7 @@ func toFeatureSetDTO(featureSet *host.FeatureSet) *featureSetDTO {
 		WebsocketsSupport:   &featureSet.WebsocketSupport,
 		HTTP2Support:        &featureSet.HTTP2Support,
 		RedirectHTTPToHTTPS: &featureSet.RedirectHTTPToHTTPS,
+		StatsEnabled:        &featureSet.StatsEnabled,
 	}
 }
 
@@ -286,6 +287,7 @@ func toFeatureSet(input *featureSetDTO) *host.FeatureSet {
 		WebsocketSupport:    getBoolValue(input.WebsocketsSupport),
 		HTTP2Support:        getBoolValue(input.HTTP2Support),
 		RedirectHTTPToHTTPS: getBoolValue(input.RedirectHTTPToHTTPS),
+		StatsEnabled:        getBoolValue(input.StatsEnabled),
 	}
 }
 

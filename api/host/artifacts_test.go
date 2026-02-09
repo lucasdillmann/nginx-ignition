@@ -18,6 +18,7 @@ func newHostRequestDTO() hostRequestDTO {
 			WebsocketsSupport:   ptr.Of(true),
 			HTTP2Support:        ptr.Of(true),
 			RedirectHTTPToHTTPS: ptr.Of(true),
+			StatsEnabled:        ptr.Of(true),
 		},
 		Routes: []routeDTO{
 			{
@@ -48,6 +49,7 @@ func newHost() *host.Host {
 			WebsocketSupport:    true,
 			HTTP2Support:        true,
 			RedirectHTTPToHTTPS: true,
+			StatsEnabled:        true,
 		},
 		Routes: []host.Route{
 			{

@@ -124,37 +124,54 @@ func (s *service) extractDynamicModules(configureArgs string) []string {
 	modules := make([]string, 0)
 	modulesSet := make(map[string]bool)
 
+	s.extractDynamicSuffixModules(configureArgs, modulesSet, &modules)
+	s.extractDynamicPrefixModules(configureArgs, modulesSet, &modules)
+
+	return modules
+}
+
+func (s *service) extractDynamicSuffixModules(
+	configureArgs string,
+	modulesSet map[string]bool,
+	modules *[]string,
+) {
 	suffixRegex := regexp.MustCompile(`--with-([a-zA-Z0-9_]+_module)=dynamic`)
 	suffixMatches := suffixRegex.FindAllStringSubmatch(configureArgs, -1)
 
 	for _, match := range suffixMatches {
 		if len(match) > 1 {
-			moduleName := match[1]
-
-			if !modulesSet[moduleName] {
-				modulesSet[moduleName] = true
-				modules = append(modules, moduleName)
-			}
+			s.addModuleIfNew(match[1], modulesSet, modules)
 		}
 	}
+}
 
+func (s *service) extractDynamicPrefixModules(
+	configureArgs string,
+	modulesSet map[string]bool,
+	modules *[]string,
+) {
 	prefixRegex := regexp.MustCompile(`--add-dynamic-module=([^\s]+)`)
 	prefixMatches := prefixRegex.FindAllStringSubmatch(configureArgs, -1)
+	versionRegex := regexp.MustCompile(`-v?\d+\.[\d.]+[a-z0-9]*$`)
 
 	for _, match := range prefixMatches {
 		if len(match) > 1 {
-			path := match[1]
-			moduleName := filepath.Base(path)
-			moduleName = strings.TrimSuffix(moduleName, "/")
+			originalName := strings.TrimSuffix(filepath.Base(match[1]), "/")
+			s.addModuleIfNew(originalName, modulesSet, modules)
 
-			if !modulesSet[moduleName] {
-				modulesSet[moduleName] = true
-				modules = append(modules, moduleName)
+			cleanedName := versionRegex.ReplaceAllString(originalName, "")
+			if cleanedName != originalName {
+				s.addModuleIfNew(cleanedName, modulesSet, modules)
 			}
 		}
 	}
+}
 
-	return modules
+func (s *service) addModuleIfNew(name string, modulesSet map[string]bool, modules *[]string) {
+	if !modulesSet[name] {
+		modulesSet[name] = true
+		*modules = append(*modules, name)
+	}
 }
 
 func (s *service) extractModulesPath(configureArgs string) string {

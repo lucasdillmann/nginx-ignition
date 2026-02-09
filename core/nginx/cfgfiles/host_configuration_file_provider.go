@@ -14,21 +14,17 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
-	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
 type hostConfigurationFileProvider struct {
 	integrationCommands integration.Commands
-	settingsCommands    settings.Commands
 }
 
 func newHostConfigurationFileProvider(
-	settingsCommands settings.Commands,
 	integrationCommands integration.Commands,
 ) *hostConfigurationFileProvider {
 	return &hostConfigurationFileProvider{
 		integrationCommands: integrationCommands,
-		settingsCommands:    settingsCommands,
 	}
 }
 
@@ -78,17 +74,33 @@ func (p *hostConfigurationFileProvider) buildHost(
 
 	bindings := h.Bindings
 	if h.UseGlobalBindings {
-		cfg, err := p.settingsCommands.Get(ctx.context)
-		if err != nil {
-			return nil, err
-		}
+		bindings = ctx.cfg.GlobalBindings
+	}
 
-		bindings = cfg.GlobalBindings
+	stats := ""
+	statsCfg := ctx.cfg.Nginx.Stats
+
+	if statsCfg.Enabled {
+		stats = fmt.Sprintf(
+			`
+			set $stats_host_id "%s";
+			vhost_traffic_status %s;
+			vhost_traffic_status_filter_by_set_key $stats_host_id hosts;
+			vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@host:$stats_host_id;
+			vhost_traffic_status_filter_by_set_key $geoip_city_name city@host:$stats_host_id;
+			vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@host:$stats_host_id;
+			vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@domain:$server_name;
+			vhost_traffic_status_filter_by_set_key $geoip_city_name city@domain:$server_name;
+			vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@domain:$server_name;
+			`,
+			h.ID,
+			statusFlag(statsCfg.AllHosts || h.FeatureSet.StatsEnabled),
+		)
 	}
 
 	contents := make([]string, 0)
 	for _, b := range bindings {
-		b, err := p.buildBinding(ctx, h, &b, routes, serverNames, httpsRedirect, http2)
+		b, err := p.buildBinding(ctx, h, &b, routes, serverNames, httpsRedirect, http2, stats)
 		if err != nil {
 			return nil, err
 		}
@@ -114,7 +126,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 	h *host.Host,
 	b *binding.Binding,
 	routes []string,
-	serverNames, httpsRedirect, http2 string,
+	serverNames, httpsRedirect, http2, stats string,
 ) (string, error) {
 	listen := ""
 	switch b.Type {
@@ -146,12 +158,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		conditionalHTTPSRedirect = httpsRedirect
 	}
 
-	cfg, err := p.settingsCommands.Get(ctx.context)
-	if err != nil {
-		return "", err
-	}
-
-	logs := cfg.Nginx.Logs
+	logs := ctx.cfg.Nginx.Logs
 
 	return fmt.Sprintf(
 		`server {
@@ -160,6 +167,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			error_log %s;
 			gzip %s;
 			client_max_body_size %dM;
+			%s
 			%s
 			%s
 			%s
@@ -183,8 +191,8 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			),
 			"off",
 		),
-		statusFlag(cfg.Nginx.GzipEnabled),
-		cfg.Nginx.MaximumBodySizeMb,
+		statusFlag(ctx.cfg.Nginx.GzipEnabled),
+		ctx.cfg.Nginx.MaximumBodySizeMb,
 		flag(
 			h.AccessListID != nil,
 			fmt.Sprintf("include \"%saccess-list-%s.conf\";", ctx.paths.Config, h.AccessListID),
@@ -193,6 +201,7 @@ func (p *hostConfigurationFileProvider) buildBinding(
 		p.buildCacheConfig(ctx.caches, h.CacheID),
 		conditionalHTTPSRedirect,
 		http2,
+		stats,
 		listen,
 		serverNames,
 		strings.Join(routes, "\n"),

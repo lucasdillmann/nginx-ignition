@@ -18,6 +18,7 @@ type nginxSettingsDTO struct {
 	Logs                *nginxLogsSettingsDTO     `json:"logs"`
 	Timeouts            *nginxTimeoutsSettingsDTO `json:"timeouts"`
 	Buffers             *nginxBuffersSettingsDTO  `json:"buffers"`
+	Stats               *nginxStatsSettingsDTO    `json:"stats"`
 	WorkerProcesses     *int                      `json:"workerProcesses"`
 	WorkerConnections   *int                      `json:"workerConnections"`
 	DefaultContentType  *string                   `json:"defaultContentType"`
@@ -69,6 +70,14 @@ type nginxLogsSettingsDTO struct {
 	AccessLogsEnabled *bool              `json:"accessLogsEnabled"`
 	ErrorLogsEnabled  *bool              `json:"errorLogsEnabled"`
 	ErrorLogsLevel    *settings.LogLevel `json:"errorLogsLevel"`
+}
+
+type nginxStatsSettingsDTO struct {
+	Enabled          *bool   `json:"enabled"`
+	Persistent       *bool   `json:"persistent"`
+	AllHosts         *bool   `json:"allHosts"`
+	MaximumSizeMB    *int    `json:"maximumSizeMb"`
+	DatabaseLocation *string `json:"databaseLocation"`
 }
 
 type bindingDTO struct {

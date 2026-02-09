@@ -1,6 +1,8 @@
 package settings
 
 import (
+	"strings"
+
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
@@ -38,6 +40,13 @@ func toDTO(set *settings.Settings) *settingsDTO {
 				SizeKb: &set.Nginx.Buffers.Output.SizeKb,
 				Amount: &set.Nginx.Buffers.Output.Amount,
 			},
+		},
+		Stats: &nginxStatsSettingsDTO{
+			Enabled:          &set.Nginx.Stats.Enabled,
+			Persistent:       &set.Nginx.Stats.Persistent,
+			AllHosts:         &set.Nginx.Stats.AllHosts,
+			MaximumSizeMB:    &set.Nginx.Stats.MaximumSizeMB,
+			DatabaseLocation: set.Nginx.Stats.DatabaseLocation,
 		},
 		WorkerProcesses:     &set.Nginx.WorkerProcesses,
 		WorkerConnections:   &set.Nginx.WorkerConnections,
@@ -92,6 +101,11 @@ func toDomain(input *settingsDTO) *settings.Settings {
 		return nil
 	}
 
+	databaseLocation := nginx.Stats.DatabaseLocation
+	if databaseLocation != nil && strings.TrimSpace(*databaseLocation) == "" {
+		databaseLocation = nil
+	}
+
 	nginxSettings := &settings.NginxSettings{
 		Logs: &settings.NginxLogsSettings{
 			ServerLogsEnabled: *nginx.Logs.ServerLogsEnabled,
@@ -118,6 +132,13 @@ func toDomain(input *settingsDTO) *settings.Settings {
 				SizeKb: *nginx.Buffers.Output.SizeKb,
 				Amount: *nginx.Buffers.Output.Amount,
 			},
+		},
+		Stats: &settings.NginxStatsSettings{
+			Enabled:          *nginx.Stats.Enabled,
+			Persistent:       *nginx.Stats.Persistent,
+			AllHosts:         *nginx.Stats.AllHosts,
+			MaximumSizeMB:    *nginx.Stats.MaximumSizeMB,
+			DatabaseLocation: databaseLocation,
 		},
 		WorkerProcesses:     *nginx.WorkerProcesses,
 		WorkerConnections:   *nginx.WorkerConnections,

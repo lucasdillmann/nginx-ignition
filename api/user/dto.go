@@ -51,4 +51,5 @@ type userPermissionsDTO struct {
 	ExportData   string `json:"exportData"`
 	VPNs         string `json:"vpns"`
 	Caches       string `json:"caches"`
+	TrafficStats string `json:"trafficStats"`
 }

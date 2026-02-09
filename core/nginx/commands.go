@@ -31,6 +31,7 @@ type Commands interface {
 	) ([]logline.LogLine, error)
 	GetMainLogs(ctx context.Context, lines int, search *LogSearch) ([]logline.LogLine, error)
 	GetStatus(ctx context.Context) bool
+	GetTrafficStats(ctx context.Context) (*Stats, error)
 	GetConfigFiles(ctx context.Context, input GetConfigFilesInput) ([]byte, error)
 	GetMetadata(ctx context.Context) (*Metadata, error)
 	Reload(ctx context.Context, failIfNotRunning bool) error

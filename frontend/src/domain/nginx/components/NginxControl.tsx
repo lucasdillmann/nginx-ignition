@@ -170,6 +170,7 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
             availableSupport.runCode != NginxSupportType.NONE
                 ? i18n(MessageKey.FrontendNginxControlFeatureRunCode)
                 : null,
+            availableSupport.stats != NginxSupportType.NONE ? i18n(MessageKey.FrontendNginxControlFeatureStats) : null,
         ].filter(feature => feature != null) as string[]
 
         const featuresList = supportedFeatures.join(", ")

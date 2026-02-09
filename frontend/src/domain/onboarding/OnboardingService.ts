@@ -30,6 +30,7 @@ export default class OnboardingService {
                 exportData: UserAccessLevel.READ_ONLY,
                 vpns: UserAccessLevel.READ_WRITE,
                 caches: UserAccessLevel.READ_WRITE,
+                trafficStats: UserAccessLevel.READ_ONLY,
             },
         }
 

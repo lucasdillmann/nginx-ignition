@@ -61,6 +61,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     exportData: UserAccessLevel.READ_ONLY,
                     vpns: UserAccessLevel.READ_WRITE,
                     caches: UserAccessLevel.READ_WRITE,
+                    trafficStats: UserAccessLevel.READ_ONLY,
                 },
             },
             validationResult: new ValidationResult(),
@@ -170,6 +171,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                     <UserPermissionToggle id="settings" label={MessageKey.CommonSettings} />
                     <UserPermissionToggle id="users" label={MessageKey.CommonUsers} />
                     <UserPermissionToggle id="logs" label={MessageKey.CommonLogs} disableReadWrite />
+                    <UserPermissionToggle id="trafficStats" label={MessageKey.CommonTrafficStats} disableReadWrite />
                     <UserPermissionToggle id="exportData" label={MessageKey.CommonExportAndBackup} disableReadWrite />
                     <UserPermissionToggle
                         id="nginxServer"

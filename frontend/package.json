@@ -4,6 +4,7 @@
     "version": "0.0.0",
     "private": true,
     "dependencies": {
+        "@ant-design/charts": "^2.6.7",
         "@ant-design/pro-components": "^2.8.10",
         "@babel/runtime": "^7.28.4",
         "@codeium/react-code-editor": "^1.0.12",
