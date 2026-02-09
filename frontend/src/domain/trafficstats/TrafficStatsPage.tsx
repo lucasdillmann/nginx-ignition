@@ -191,7 +191,9 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
     }
 
     private renderTabs() {
-        const { stats, activeTab, theme, selectedHost, selectedDomain, selectedUpstream } = this.state
+        const { stats, activeTab, theme, selectedHost, selectedDomain, selectedUpstream, autoRefreshSeconds } =
+            this.state
+        const disableAnimation = autoRefreshSeconds !== undefined && autoRefreshSeconds > 0
 
         if (!stats) return null
 
@@ -199,7 +201,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
             {
                 key: "global",
                 label: <I18n id={MessageKey.FrontendTrafficStatsGlobalTab} />,
-                children: <GlobalTab stats={stats} theme={theme} />,
+                children: <GlobalTab stats={stats} theme={theme} disableAnimation={disableAnimation} />,
             },
             {
                 key: "byHost",
@@ -210,6 +212,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
                         theme={theme}
                         selectedHost={selectedHost}
                         onSelectHost={host => this.setState({ selectedHost: host })}
+                        disableAnimation={disableAnimation}
                     />
                 ),
             },
@@ -222,6 +225,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
                         theme={theme}
                         selectedDomain={selectedDomain}
                         onSelectDomain={domain => this.setState({ selectedDomain: domain })}
+                        disableAnimation={disableAnimation}
                     />
                 ),
             },
@@ -234,6 +238,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
                         theme={theme}
                         selectedUpstream={selectedUpstream}
                         onSelectUpstream={upstream => this.setState({ selectedUpstream: upstream })}
+                        disableAnimation={disableAnimation}
                     />
                 ),
             },

@@ -28,6 +28,7 @@ interface ByHostTabProps {
     theme: "light" | "dark"
     selectedHost?: HostResponse
     onSelectHost: (host: HostResponse | undefined) => void
+    disableAnimation?: boolean
 }
 
 export default class ByHostTab extends React.Component<ByHostTabProps> {
@@ -66,7 +67,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps> {
                 </p>
                 <PaginatedSelect<HostResponse>
                     placeholder={MessageKey.CommonSelectOne}
-                    onChange={host => onSelectHost(host)}
+                    onChange={onSelectHost}
                     pageProvider={(pageSize, pageNumber, searchTerms) =>
                         this.hostService.list(pageSize, pageNumber, searchTerms)
                     }
@@ -99,8 +100,9 @@ export default class ByHostTab extends React.Component<ByHostTabProps> {
     }
 
     private renderStatusPieChart(zone: ZoneData) {
+        const { theme, disableAnimation } = this.props
         const data = buildStatusDistributionData(zone.responses)
-        return <StatusDistributionChart data={data} theme={this.props.theme} />
+        return <StatusDistributionChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderResponsesTable(zone: ZoneData) {
@@ -108,38 +110,39 @@ export default class ByHostTab extends React.Component<ByHostTabProps> {
     }
 
     private renderResponseTimeChart(zone: ZoneData) {
+        const { theme, disableAnimation } = this.props
         const data = buildResponseTimeData(zone.requestMsecs)
-        return <ResponseTimeChart data={data} theme={this.props.theme} />
+        return <ResponseTimeChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderUserAgentChart() {
         const { filterZones } = this.props.stats
-        const { selectedHost } = this.props
+        const { selectedHost, theme, disableAnimation } = this.props
         if (!selectedHost) return null
 
         const userAgentZone = filterZones[`userAgent@host:${selectedHost.id}`]
         const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
-        return <UserAgentChart data={data} theme={this.props.theme} />
+        return <UserAgentChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderCountryCodeChart() {
         const { filterZones } = this.props.stats
-        const { selectedHost } = this.props
+        const { selectedHost, theme, disableAnimation } = this.props
         if (!selectedHost) return null
 
         const countryCodeZone = filterZones[`countryCode@host:${selectedHost.id}`]
         const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
-        return <CountryCodeChart data={data} theme={this.props.theme} />
+        return <CountryCodeChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderCityChart() {
         const { filterZones } = this.props.stats
-        const { selectedHost } = this.props
+        const { selectedHost, theme, disableAnimation } = this.props
         if (!selectedHost) return null
 
         const cityZone = filterZones[`city@host:${selectedHost.id}`]
         const data = cityZone ? buildCityData(cityZone) : []
-        return <CityChart data={data} theme={this.props.theme} />
+        return <CityChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderMainContents() {

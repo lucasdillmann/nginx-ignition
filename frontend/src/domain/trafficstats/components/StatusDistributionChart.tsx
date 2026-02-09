@@ -8,11 +8,12 @@ import { STATUS_COLORS, StatusDataItem } from "../utils/StatsChartUtils"
 export interface StatusDistributionChartProps {
     data: StatusDataItem[]
     theme: "light" | "dark"
+    disableAnimation?: boolean
 }
 
 export default class StatusDistributionChart extends React.PureComponent<StatusDistributionChartProps> {
     render() {
-        const { data, theme } = this.props
+        const { data, theme, disableAnimation } = this.props
 
         if (data.length === 0) {
             return <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
@@ -45,6 +46,7 @@ export default class StatusDistributionChart extends React.PureComponent<StatusD
                     }}
                     height={300}
                     theme={theme}
+                    animation={!disableAnimation}
                 />
             </div>
         )

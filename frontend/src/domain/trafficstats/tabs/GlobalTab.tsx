@@ -23,6 +23,7 @@ import StatusDistributionChart from "../components/StatusDistributionChart"
 interface GlobalTabProps {
     stats: TrafficStatsResponse
     theme: "light" | "dark"
+    disableAnimation?: boolean
 }
 
 export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
@@ -85,14 +86,16 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
     }
 
     private renderStatusPieChart() {
-        const { serverZones } = this.props.stats
+        const { stats, disableAnimation, theme } = this.props
+        const { serverZones } = stats
         const aggregated = aggregateResponses(serverZones)
         const data = buildStatusDistributionData(aggregated)
-        return <StatusDistributionChart data={data} theme={this.props.theme} />
+        return <StatusDistributionChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderTrafficByDomainChart() {
         const { serverZones } = this.props.stats
+        const { theme, disableAnimation } = this.props
         const data = buildTrafficByDomainData(serverZones)
 
         if (data.length === 0) {
@@ -118,7 +121,8 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
                             labelAutoRotate: true,
                         },
                     }}
-                    theme={this.props.theme}
+                    theme={theme}
+                    animation={!disableAnimation}
                 />
             </div>
         )
@@ -126,31 +130,35 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
 
     private renderResponseTimeChart() {
         const { serverZones } = this.props.stats
+        const { theme, disableAnimation } = this.props
         // Use global zone '*' for global response times
         const globalZone = serverZones["*"]
         const data = globalZone ? buildResponseTimeData(globalZone.requestMsecs) : []
-        return <ResponseTimeChart data={data} theme={this.props.theme} />
+        return <ResponseTimeChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderUserAgentChart() {
         const { filterZones } = this.props.stats
+        const { theme, disableAnimation } = this.props
         const userAgentZone = filterZones["userAgent@global"]
         const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
-        return <UserAgentChart data={data} theme={this.props.theme} />
+        return <UserAgentChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderCountryCodeChart() {
         const { filterZones } = this.props.stats
+        const { theme, disableAnimation } = this.props
         const countryCodeZone = filterZones["countryCode@global"]
         const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
-        return <CountryCodeChart data={data} theme={this.props.theme} />
+        return <CountryCodeChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderCityChart() {
         const { filterZones } = this.props.stats
+        const { theme, disableAnimation } = this.props
         const cityZone = filterZones["city@global"]
         const data = cityZone ? buildCityData(cityZone) : []
-        return <CityChart data={data} theme={this.props.theme} />
+        return <CityChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderBytesTable() {

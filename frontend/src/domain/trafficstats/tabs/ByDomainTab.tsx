@@ -23,6 +23,7 @@ interface ByDomainTabProps {
     theme: "light" | "dark"
     selectedDomain?: string
     onSelectDomain: (domain: string) => void
+    disableAnimation?: boolean
 }
 
 export default class ByDomainTab extends React.Component<ByDomainTabProps> {
@@ -80,8 +81,9 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps> {
     }
 
     private renderStatusPieChart(zone: ZoneData) {
+        const { theme, disableAnimation } = this.props
         const data = buildStatusDistributionData(zone.responses)
-        return <StatusDistributionChart data={data} theme={this.props.theme} />
+        return <StatusDistributionChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderResponsesTable(zone: ZoneData) {
@@ -89,38 +91,39 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps> {
     }
 
     private renderResponseTimeChart(zone: ZoneData) {
+        const { theme, disableAnimation } = this.props
         const data = buildResponseTimeData(zone.requestMsecs)
-        return <ResponseTimeChart data={data} theme={this.props.theme} />
+        return <ResponseTimeChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderUserAgentChart() {
         const { filterZones } = this.props.stats
-        const { selectedDomain } = this.props
+        const { selectedDomain, theme, disableAnimation } = this.props
         if (!selectedDomain) return null
 
         const userAgentZone = filterZones[`userAgent@domain:${selectedDomain}`]
         const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
-        return <UserAgentChart data={data} theme={this.props.theme} />
+        return <UserAgentChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderCountryCodeChart() {
         const { filterZones } = this.props.stats
-        const { selectedDomain } = this.props
+        const { selectedDomain, theme, disableAnimation } = this.props
         if (!selectedDomain) return null
 
         const countryCodeZone = filterZones[`countryCode@domain:${selectedDomain}`]
         const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
-        return <CountryCodeChart data={data} theme={this.props.theme} />
+        return <CountryCodeChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     private renderCityChart() {
         const { filterZones } = this.props.stats
-        const { selectedDomain } = this.props
+        const { selectedDomain, theme, disableAnimation } = this.props
         if (!selectedDomain) return null
 
         const cityZone = filterZones[`city@domain:${selectedDomain}`]
         const data = cityZone ? buildCityData(cityZone) : []
-        return <CityChart data={data} theme={this.props.theme} />
+        return <CityChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
 
     render() {

@@ -12,11 +12,12 @@ interface CountryCodeData {
 export interface CountryCodeChartProps {
     data: CountryCodeData[]
     theme: "light" | "dark"
+    disableAnimation?: boolean
 }
 
 export default class CountryCodeChart extends React.PureComponent<CountryCodeChartProps> {
     render() {
-        const { data, theme } = this.props
+        const { data, theme, disableAnimation } = this.props
 
         return (
             <div className="traffic-stats-chart-container">
@@ -43,6 +44,7 @@ export default class CountryCodeChart extends React.PureComponent<CountryCodeCha
                         }}
                         height={300}
                         theme={theme}
+                        animation={!disableAnimation}
                     />
                 )}
             </div>

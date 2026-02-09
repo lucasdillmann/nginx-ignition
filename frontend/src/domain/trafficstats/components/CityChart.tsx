@@ -12,11 +12,12 @@ interface CityData {
 export interface CityChartProps {
     data: CityData[]
     theme: "light" | "dark"
+    disableAnimation?: boolean
 }
 
 export default class CityChart extends React.PureComponent<CityChartProps> {
     render() {
-        const { data, theme } = this.props
+        const { data, theme, disableAnimation } = this.props
 
         return (
             <div className="traffic-stats-chart-container">
@@ -43,6 +44,7 @@ export default class CityChart extends React.PureComponent<CityChartProps> {
                         }}
                         height={300}
                         theme={theme}
+                        animation={!disableAnimation}
                     />
                 )}
             </div>

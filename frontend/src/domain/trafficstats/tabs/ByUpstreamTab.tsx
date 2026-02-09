@@ -14,6 +14,7 @@ interface ByUpstreamTabProps {
     theme: "light" | "dark"
     selectedUpstream?: string
     onSelectUpstream: (upstream: string) => void
+    disableAnimation?: boolean
 }
 
 export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
@@ -175,6 +176,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
     }
 
     private renderResponseTimeChart(servers: UpstreamZoneData[]) {
+        const { theme, disableAnimation } = this.props
         const data: { time: string; timestamp: number; value: number; server: string }[] = []
 
         servers.forEach(server => {
@@ -209,7 +211,9 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
                     height={300}
                     axis={{ x: { labelAutoHide: true } }}
                     legend={{ position: "bottom" }}
-                    theme={this.props.theme}
+                    theme={theme}
+                    // @ts-expect-error attribute not mapped in the TS contract
+                    animation={!disableAnimation}
                 />
             </div>
         )
@@ -226,6 +230,8 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
         if (data.length === 0) {
             return null
         }
+
+        const { theme, disableAnimation } = this.props
 
         return (
             <div className="traffic-stats-chart-container">
@@ -248,7 +254,8 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
                         },
                     }}
                     height={300}
-                    theme={this.props.theme}
+                    theme={theme}
+                    animation={!disableAnimation}
                 />
             </div>
         )
@@ -278,7 +285,13 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
             return null
         }
 
-        return <StatusDistributionChart data={data} theme={this.props.theme} />
+        return (
+            <StatusDistributionChart
+                data={data}
+                theme={this.props.theme}
+                disableAnimation={this.props.disableAnimation}
+            />
+        )
     }
 
     render() {

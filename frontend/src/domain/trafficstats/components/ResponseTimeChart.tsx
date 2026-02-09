@@ -13,11 +13,12 @@ interface ResponseTimeData {
 export interface ResponseTimeChartProps {
     data: ResponseTimeData[]
     theme: "light" | "dark"
+    disableAnimation?: boolean
 }
 
 export default class ResponseTimeChart extends React.PureComponent<ResponseTimeChartProps> {
     render() {
-        const { data, theme } = this.props
+        const { data, theme, disableAnimation } = this.props
 
         return (
             <div className="traffic-stats-chart-container">
@@ -34,6 +35,8 @@ export default class ResponseTimeChart extends React.PureComponent<ResponseTimeC
                         height={300}
                         axis={{ x: { labelAutoHide: true } }}
                         theme={theme}
+                        // @ts-expect-error attribute not mapped in the TS contract
+                        animation={!disableAnimation}
                     />
                 )}
             </div>

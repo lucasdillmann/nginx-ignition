@@ -12,11 +12,12 @@ interface UserAgentData {
 export interface UserAgentChartProps {
     data: UserAgentData[]
     theme: "light" | "dark"
+    disableAnimation?: boolean
 }
 
 export default class UserAgentChart extends React.PureComponent<UserAgentChartProps> {
     render() {
-        const { data, theme } = this.props
+        const { data, theme, disableAnimation } = this.props
 
         return (
             <div className="traffic-stats-chart-container">
@@ -43,6 +44,7 @@ export default class UserAgentChart extends React.PureComponent<UserAgentChartPr
                         }}
                         height={300}
                         theme={theme}
+                        animation={!disableAnimation}
                     />
                 )}
             </div>
