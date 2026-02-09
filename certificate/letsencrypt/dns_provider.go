@@ -43,6 +43,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cpanel"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/derak"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/desec"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/designate"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/digitalocean"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/directadmin"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dnshomede"
@@ -155,6 +156,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/sonic"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/spaceship"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/stackpath"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/syse"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/technitium"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/tencentcloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/timewebcloud"
@@ -224,6 +226,7 @@ var providers = []dns.Provider{
 	&cpanel.Provider{},
 	&derak.Provider{},
 	&desec.Provider{},
+	&designate.Provider{},
 	&digitalocean.Provider{},
 	&directadmin.Provider{},
 	&dnshomede.Provider{},
@@ -335,6 +338,7 @@ var providers = []dns.Provider{
 	&simply.Provider{},
 	&sonic.Provider{},
 	&spaceship.Provider{},
+	&syse.Provider{},
 	&stackpath.Provider{},
 	&technitium.Provider{},
 	&tencentcloud.Provider{},
