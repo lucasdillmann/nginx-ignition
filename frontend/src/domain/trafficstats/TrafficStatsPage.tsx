@@ -1,5 +1,5 @@
 import React from "react"
-import { Tabs, Flex, Select, Button, Empty } from "antd"
+import { Button, Empty, Flex, Select, Tabs } from "antd"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
@@ -130,7 +130,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
                     }
                 }
 
-                return newState
+                return { ...prevState, ...newState }
             })
         } catch (error) {
             this.setState({ loading: false, error: error as Error })

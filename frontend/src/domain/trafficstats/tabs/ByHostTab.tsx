@@ -27,7 +27,7 @@ interface ByHostTabProps {
     stats: TrafficStatsResponse
     theme: "light" | "dark"
     selectedHost?: HostResponse
-    onSelectHost: (host: HostResponse) => void
+    onSelectHost: (host: HostResponse | undefined) => void
 }
 
 export default class ByHostTab extends React.Component<ByHostTabProps> {
