@@ -34,11 +34,12 @@ func (s startup) Run(ctx context.Context) error {
 		log.Warnf("Unable to detect nginx binary details: %v", err)
 	} else {
 		log.Infof(
-			"nginx detected with version %s, %s stream support, %s TLS SNI support, and %s code execution support",
+			"nginx detected with version %s, %s stream, %s TLS SNI, %s code execution, and %s stats support",
 			metadata.Version,
 			metadata.StreamSupportType(),
 			metadata.SNISupportType(),
 			metadata.RunCodeSupportType(),
+			metadata.StatsSupportType(),
 		)
 	}
 
