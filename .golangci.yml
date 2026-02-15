@@ -105,6 +105,9 @@ linters:
           - forbidigo
         path: _test\.go
       - linters:
+          - govet
+        path: "pqsql"
+      - linters:
           - revive
         text: "avoid package names that conflict with Go standard library package names"
     paths:
