@@ -25,5 +25,5 @@ type Commands interface {
 	GetTOTPStatus(ctx context.Context, id uuid.UUID) (bool, error)
 	DisableTOTP(ctx context.Context, id uuid.UUID) error
 	EnableTOTP(ctx context.Context, id uuid.UUID) (string, error)
-	ActivateTOTP(ctx context.Context, id uuid.UUID, code string) error
+	ActivateTOTP(ctx context.Context, id uuid.UUID, code string) (bool, error)
 }

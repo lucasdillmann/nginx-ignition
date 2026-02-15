@@ -2,8 +2,10 @@ package user
 
 import (
 	"context"
+	"strings"
 
 	"github.com/google/uuid"
+	"github.com/pquerna/otp/totp"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
@@ -176,6 +178,87 @@ func (s *service) List(
 	searchTerms *string,
 ) (*pagination.Page[User], error) {
 	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms)
+}
+
+func (s *service) GetTOTPStatus(ctx context.Context, id uuid.UUID) (bool, error) {
+	usr, err := s.repository.FindByID(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
+	if usr == nil {
+		return false, coreerror.New(i18n.M(ctx, i18n.K.CoreUserNotFoundById), true)
+	}
+
+	return usr.TOTP.Validated && usr.TOTP.Secret != nil && *usr.TOTP.Secret != "", nil
+}
+
+func (s *service) DisableTOTP(ctx context.Context, id uuid.UUID) error {
+	usr, err := s.repository.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if usr == nil {
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreUserNotFoundById), true)
+	}
+
+	usr.TOTP.Secret = nil
+	usr.TOTP.Validated = false
+	return s.repository.Save(ctx, usr)
+}
+
+func (s *service) EnableTOTP(ctx context.Context, id uuid.UUID) (string, error) {
+	usr, err := s.repository.FindByID(ctx, id)
+	if err != nil {
+		return "", err
+	}
+
+	if usr == nil {
+		return "", coreerror.New(i18n.M(ctx, i18n.K.CoreUserNotFoundById), true)
+	}
+
+	key, err := totp.Generate(totp.GenerateOpts{
+		Issuer:      "nginx-ignition",
+		AccountName: usr.Username,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	secret := key.Secret()
+	usr.TOTP.Secret = &secret
+	usr.TOTP.Validated = false
+
+	err = s.repository.Save(ctx, usr)
+	if err != nil {
+		return "", err
+	}
+
+	return key.URL(), nil
+}
+
+func (s *service) ActivateTOTP(ctx context.Context, id uuid.UUID, code string) (bool, error) {
+	usr, err := s.repository.FindByID(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
+	if usr == nil {
+		return false, coreerror.New(i18n.M(ctx, i18n.K.CoreUserNotFoundById), true)
+	}
+
+	if usr.TOTP.Secret == nil || strings.TrimSpace(*usr.TOTP.Secret) == "" {
+		return false, coreerror.New(i18n.M(ctx, i18n.K.CoreUserTotpNotEnabled), true)
+	}
+
+	valid := totp.Validate(code, *usr.TOTP.Secret)
+	if !valid {
+		return false, nil
+	}
+
+	usr.TOTP.Validated = true
+	return true, s.repository.Save(ctx, usr)
 }
 
 func (s *service) resetPassword(ctx context.Context, username string) (string, error) {

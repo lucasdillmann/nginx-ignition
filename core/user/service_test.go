@@ -3,8 +3,10 @@ package user
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -179,6 +181,161 @@ func Test_service(t *testing.T) {
 
 			assert.NoError(t, err)
 			assert.True(t, enabled)
+		})
+	})
+
+	t.Run("GetTOTPStatus", func(t *testing.T) {
+		t.Run("returns true when validated and secret exists", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			secret := "JBSWY3DPEHPK3PXP"
+			usr := newUser()
+			usr.TOTP = TOTP{Secret: &secret, Validated: true}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			status, err := svc.GetTOTPStatus(t.Context(), usr.ID)
+
+			assert.NoError(t, err)
+			assert.True(t, status)
+		})
+
+		t.Run("returns false when not validated", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			secret := "JBSWY3DPEHPK3PXP"
+			usr := newUser()
+			usr.TOTP = TOTP{Secret: &secret, Validated: false}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			status, err := svc.GetTOTPStatus(t.Context(), usr.ID)
+
+			assert.NoError(t, err)
+			assert.False(t, status)
+		})
+
+		t.Run("returns false when secret is missing", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			usr.TOTP = TOTP{Secret: nil, Validated: true}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			status, err := svc.GetTOTPStatus(t.Context(), usr.ID)
+
+			assert.NoError(t, err)
+			assert.False(t, status)
+		})
+	})
+
+	t.Run("DisableTOTP", func(t *testing.T) {
+		t.Run("disables successfully", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			secret := "JBSWY3DPEHPK3PXP"
+			usr := newUser()
+			usr.TOTP = TOTP{Secret: &secret, Validated: true}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().Save(t.Context(), gomock.Any()).DoAndReturn(func(_ any, u *User) error {
+				assert.Nil(t, u.TOTP.Secret)
+				assert.False(t, u.TOTP.Validated)
+				return nil
+			})
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.DisableTOTP(t.Context(), usr.ID)
+
+			assert.NoError(t, err)
+		})
+	})
+
+	t.Run("EnableTOTP", func(t *testing.T) {
+		t.Run("enables and returns provisioning URL", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().Save(t.Context(), gomock.Any()).DoAndReturn(func(_ any, u *User) error {
+				assert.NotNil(t, u.TOTP.Secret)
+				assert.False(t, u.TOTP.Validated)
+				return nil
+			})
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			url, err := svc.EnableTOTP(t.Context(), usr.ID)
+
+			assert.NoError(t, err)
+			assert.Contains(t, url, "otpauth://totp/nginx-ignition")
+			assert.Contains(t, url, usr.Username)
+		})
+	})
+
+	t.Run("ActivateTOTP", func(t *testing.T) {
+		t.Run("activates with valid code", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			// Use a fixed secret and generate a valid code for it
+			secret := "JBSWY3DPEHPK3PXP"
+			code, _ := totp.GenerateCode(secret, time.Now())
+
+			usr := newUser()
+			usr.TOTP = TOTP{Secret: &secret, Validated: false}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().Save(t.Context(), gomock.Any()).DoAndReturn(func(_ any, u *User) error {
+				assert.True(t, u.TOTP.Validated)
+				return nil
+			})
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			ok, err := svc.ActivateTOTP(t.Context(), usr.ID, code)
+
+			assert.NoError(t, err)
+			assert.True(t, ok)
+		})
+
+		t.Run("returns false with invalid code", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			secret := "JBSWY3DPEHPK3PXP"
+			usr := newUser()
+			usr.TOTP = TOTP{Secret: &secret, Validated: false}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			ok, err := svc.ActivateTOTP(t.Context(), usr.ID, "000000")
+
+			assert.NoError(t, err)
+			assert.False(t, ok)
 		})
 	})
 }
