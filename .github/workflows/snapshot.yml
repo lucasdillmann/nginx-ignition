@@ -38,7 +38,7 @@ jobs:
           node-version: 24
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.25.7
+          go-version: 1.26
       - name: Unit tests
         env:
           TEST_POSTGRES_HOST: runner.local
@@ -64,7 +64,7 @@ jobs:
           node-version: 24
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.25.7
+          go-version: 1.26
       - name: Install nfpm
         run: |
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
