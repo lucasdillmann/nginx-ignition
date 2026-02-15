@@ -31,12 +31,25 @@ func Install(
 
 	basePath.POST("/logout", logoutHandler{authorizer}.handle)
 	basePath.POST("/login", loginHandler{commands, authorizer}.handle)
-	basePath.GET("/current", currentHandler{}.handle)
-	basePath.POST("/current/update-password", updatePasswordHandler{commands}.handle)
+
+	currentPath := basePath.Group("/current")
+	currentPath.GET("", currentHandler{}.handle)
+	currentPath.POST("/update-password", updatePasswordHandler{commands}.handle)
+
+	totpPath := currentPath.Group("/totp")
+	totpPath.GET("/status", totpStatusHandler{commands}.handle)
+	totpPath.POST("/enable", totpEnableHandler{commands}.handle)
+	totpPath.POST("/activate", totpActivateHandler{commands}.handle)
+	totpPath.POST("/disable", totpDisableHandler{commands}.handle)
 
 	authorizer.AllowAnonymous("GET", "/api/users/onboarding/status")
 	authorizer.AllowAnonymous("POST", "/api/users/onboarding/finish")
 	authorizer.AllowAnonymous("POST", "/api/users/login")
 	authorizer.AllowAllUsers("POST", "/api/users/logout")
 	authorizer.AllowAllUsers("GET", "/api/users/current")
+	authorizer.AllowAllUsers("POST", "/api/users/current/update-password")
+	authorizer.AllowAllUsers("GET", "/api/users/current/totp/status")
+	authorizer.AllowAllUsers("POST", "/api/users/current/totp/enable")
+	authorizer.AllowAllUsers("POST", "/api/users/current/totp/activate")
+	authorizer.AllowAllUsers("POST", "/api/users/current/totp/disable")
 }

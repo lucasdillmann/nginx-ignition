@@ -56,3 +56,15 @@ type userPermissionsDTO struct {
 	Caches       string `json:"caches"`
 	TrafficStats string `json:"trafficStats"`
 }
+
+type totpStatusResponseDTO struct {
+	Enabled bool `json:"enabled"`
+}
+
+type totpEnableResponseDTO struct {
+	Secret string `json:"secret"`
+}
+
+type totpActivateRequestDTO struct {
+	Code *string `json:"code"`
+}
