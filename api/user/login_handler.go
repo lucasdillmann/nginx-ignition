@@ -20,17 +20,26 @@ func (h loginHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	usr, err := h.commands.Authenticate(
+	totp := requestPayload.TOTP
+	if totp == nil {
+		totp = new("")
+	}
+
+	outcome, usr, err := h.commands.Authenticate(
 		ctx.Request.Context(),
 		*requestPayload.Username,
 		*requestPayload.Password,
+		*totp,
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	if usr == nil {
-		ctx.Status(http.StatusUnauthorized)
+	if outcome != user.AuthenticationSuccessful || usr == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"reason": outcome,
+		})
+
 		return
 	}
 

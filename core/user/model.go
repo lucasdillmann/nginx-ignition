@@ -50,3 +50,11 @@ type Permissions struct {
 	Caches       AccessLevel
 	TrafficStats AccessLevel
 }
+
+type AuthenticationOutcome string
+
+const (
+	AuthenticationSuccessful  AuthenticationOutcome = "SUCCESS"
+	AuthenticationFailed      AuthenticationOutcome = "FAILURE"
+	AuthenticationMissingTOTP AuthenticationOutcome = "MISSING_TOTP"
+)

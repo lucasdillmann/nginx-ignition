@@ -9,7 +9,10 @@ import (
 )
 
 type Commands interface {
-	Authenticate(ctx context.Context, username, password string) (*User, error)
+	Authenticate(
+		ctx context.Context,
+		username, password, code string,
+	) (AuthenticationOutcome, *User, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 	Get(ctx context.Context, id uuid.UUID) (*User, error)
 	GetCount(ctx context.Context) (int, error)

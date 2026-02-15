@@ -7,6 +7,7 @@ import (
 type userLoginRequestDTO struct {
 	Username *string `json:"username"`
 	Password *string `json:"password"`
+	TOTP     *string `json:"totp"`
 }
 
 type userLoginResponseDTO struct {

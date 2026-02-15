@@ -36,7 +36,7 @@ func Test_loginHandler(t *testing.T) {
 			subject.Username = "johndoe"
 			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
-				Authenticate(gomock.Any(), *payload.Username, *payload.Password).
+				Authenticate(gomock.Any(), *payload.Username, *payload.Password, gomock.Any()).
 				Return(subject, nil)
 
 			cfg := configuration.NewWithOverrides(map[string]string{
@@ -72,7 +72,7 @@ func Test_loginHandler(t *testing.T) {
 
 			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
-				Authenticate(gomock.Any(), *payload.Username, *payload.Password).
+				Authenticate(gomock.Any(), *payload.Username, *payload.Password, gomock.Any()).
 				Return(nil, nil)
 
 			cfg := configuration.NewWithOverrides(map[string]string{

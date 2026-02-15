@@ -155,10 +155,12 @@ func Test_service(t *testing.T) {
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			result, err := svc.Authenticate(t.Context(), "nonexistent", "password")
+			outcome, result, err := svc.Authenticate(t.Context(), "nonexistent", "password", "")
 
 			require.Error(t, err)
 			assert.Nil(t, result)
+			assert.Equal(t, outcome, AuthenticationFailed)
+
 			var coreErr *coreerror.CoreError
 			require.ErrorAs(t, err, &coreErr)
 			assert.Equal(t, i18n.K.CoreUserInvalidCredentials, coreErr.Message.Key)

@@ -27,33 +27,48 @@ func newService(repository Repository, cfg *configuration.Configuration) *servic
 	}
 }
 
-func (s *service) Authenticate(ctx context.Context, username, password string) (*User, error) {
+func (s *service) Authenticate(
+	ctx context.Context,
+	username, password, code string,
+) (AuthenticationOutcome, *User, error) {
 	usr, err := s.repository.FindByUsername(ctx, username)
 	if err != nil {
-		return nil, err
+		return AuthenticationFailed, nil, err
 	}
 
 	if usr == nil {
-		return nil, coreerror.New(
+		return AuthenticationFailed, nil, coreerror.New(
 			i18n.M(ctx, i18n.K.CoreUserInvalidCredentials),
 			true,
 		)
 	}
 
-	passwordMatches, err := passwordhash.New(s.configuration).
+	passwordMatches, err := passwordhash.
+		New(s.configuration).
 		Verify(password, usr.PasswordHash, usr.PasswordSalt)
 	if err != nil {
-		return nil, err
+		return AuthenticationFailed, nil, err
 	}
 
 	if !passwordMatches {
-		return nil, coreerror.New(
+		return AuthenticationFailed, nil, coreerror.New(
 			i18n.M(ctx, i18n.K.CoreUserInvalidCredentials),
 			true,
 		)
 	}
 
-	return usr, nil
+	totpData := usr.TOTP
+	if totpData.Validated && totpData.Secret != nil && strings.TrimSpace(*totpData.Secret) != "" {
+		if strings.TrimSpace(code) == "" {
+			return AuthenticationMissingTOTP, nil, nil
+		}
+
+		if !totp.Validate(code, *totpData.Secret) {
+			return AuthenticationFailed, nil, nil
+		}
+	}
+
+	return AuthenticationSuccessful, usr, nil
 }
 
 func (s *service) UpdatePassword(
