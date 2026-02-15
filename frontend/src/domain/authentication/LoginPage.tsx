@@ -1,7 +1,7 @@
 import React, { createRef } from "react"
 import { ArrowLeftOutlined, LockOutlined, SafetyOutlined, UserOutlined } from "@ant-design/icons"
 import { Navigate } from "react-router-dom"
-import { Input, Typography } from "antd"
+import { Button, Input, Typography } from "antd"
 import type { OTPRef } from "antd/es/input/OTP"
 import AppContext from "../../core/components/context/AppContext"
 import Preloader from "../../core/components/preloader/Preloader"
@@ -172,10 +172,10 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                     formatter={str => str.replace(/\D/g, "")}
                     onChange={this.handleTotpChange.bind(this)}
                 />
-                <a className="totp-back-link" onClick={this.handleTotpBack.bind(this)}>
+                <Button type="link" className="totp-back-link" onClick={this.handleTotpBack.bind(this)}>
                     <ArrowLeftOutlined style={{ marginRight: 6 }} />
                     <I18n id={MessageKey.FrontendAuthenticationTotpBack} />
-                </a>
+                </Button>
             </div>
         )
     }
