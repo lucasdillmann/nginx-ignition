@@ -107,8 +107,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			other.Name = "Other" + uuid.New().String()
 			require.NoError(t, repo.Save(t.Context(), other))
 
-			search := prefix
-			page, err := repo.FindPage(t.Context(), 10, 0, &search, false)
+			page, err := repo.FindPage(t.Context(), 10, 0, new(prefix), false)
 			require.NoError(t, err)
 
 			assert.GreaterOrEqual(t, page.TotalItems, 3)
@@ -131,8 +130,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			disabled.Name = uuid.New().String() + "Disabled"
 			require.NoError(t, repo.Save(t.Context(), disabled))
 
-			search := enabled.Name
-			page, err := repo.FindPage(t.Context(), 10, 0, &search, true)
+			page, err := repo.FindPage(t.Context(), 10, 0, new(enabled.Name), true)
 			require.NoError(t, err)
 			assert.Equal(t, 1, len(page.Contents))
 			assert.Equal(t, enabled.ID, page.Contents[0].ID)

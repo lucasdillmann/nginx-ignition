@@ -11,7 +11,6 @@ import (
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
@@ -356,7 +355,7 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	}
 
 	if r.TargetURI != nil && strings.TrimSpace(*r.TargetURI) != "" {
-		proxyURL = ptr.Of(*proxyURL + *r.TargetURI)
+		proxyURL = new(*proxyURL + *r.TargetURI)
 	}
 
 	dnsConfig := ""

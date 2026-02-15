@@ -225,6 +225,5 @@ func formatHeaders(headers map[string]string) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	strResult := string(result)
-	return &strResult, nil
+	return new(string(result)), nil
 }

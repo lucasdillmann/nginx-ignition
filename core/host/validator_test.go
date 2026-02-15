@@ -13,7 +13,6 @@ import (
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/vpn"
@@ -123,13 +122,13 @@ func Test_validator(t *testing.T) {
 						Priority:   10,
 						SourcePath: "/a",
 						Type:       StaticResponseRouteType,
-						Response:   &RouteStaticResponse{StatusCode: 200, Payload: ptr.Of("ok")},
+						Response:   &RouteStaticResponse{StatusCode: 200, Payload: new("ok")},
 					},
 					{
 						Priority:   10,
 						SourcePath: "/b",
 						Type:       StaticResponseRouteType,
-						Response:   &RouteStaticResponse{StatusCode: 200, Payload: ptr.Of("ok")},
+						Response:   &RouteStaticResponse{StatusCode: 200, Payload: new("ok")},
 					},
 				}
 
@@ -149,13 +148,13 @@ func Test_validator(t *testing.T) {
 						Priority:   10,
 						SourcePath: "/a",
 						Type:       StaticResponseRouteType,
-						Response:   &RouteStaticResponse{StatusCode: 200, Payload: ptr.Of("ok")},
+						Response:   &RouteStaticResponse{StatusCode: 200, Payload: new("ok")},
 					},
 					{
 						Priority:   20,
 						SourcePath: "/a",
 						Type:       StaticResponseRouteType,
-						Response:   &RouteStaticResponse{StatusCode: 200, Payload: ptr.Of("ok")},
+						Response:   &RouteStaticResponse{StatusCode: 200, Payload: new("ok")},
 					},
 				}
 
@@ -183,7 +182,7 @@ func Test_validator(t *testing.T) {
 					err := hostValidator.validate(t.Context(), h)
 					assertViolations(t, err, i18n.K.CoreHostTargetUriRequired)
 
-					h.Routes[0].TargetURI = ptr.Of("http://invalid\nurl")
+					h.Routes[0].TargetURI = new("http://invalid\nurl")
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
 					err = hostValidator.validate(t.Context(), h)
 					assertViolations(t, err, i18n.K.CommonInvalidUrl)
@@ -205,8 +204,8 @@ func Test_validator(t *testing.T) {
 					err := hostValidator.validate(t.Context(), h)
 					assertViolations(t, err, i18n.K.CoreHostTargetUriRequired)
 
-					h.Routes[0].TargetURI = ptr.Of("http://example.com")
-					h.Routes[0].RedirectCode = ptr.Of(200)
+					h.Routes[0].TargetURI = new("http://example.com")
+					h.Routes[0].RedirectCode = new(200)
 					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
 					err = hostValidator.validate(t.Context(), h)
 					assertViolations(t, err, i18n.K.CommonBetweenValues)
@@ -269,7 +268,7 @@ func Test_validator(t *testing.T) {
 							AnyTimes()
 						integrationCmds.EXPECT().
 							Exists(t.Context(), integrationID).
-							Return(ptr.Of(false), nil)
+							Return(new(false), nil)
 
 						err := hostValidator.validate(t.Context(), h)
 						assertViolations(t, err, i18n.K.CoreHostIntegrationRequired)
@@ -285,7 +284,7 @@ func Test_validator(t *testing.T) {
 							IntegrationID: uuid.New(),
 							OptionID:      "opt-1",
 						}
-						h.Routes[0].TargetURI = ptr.Of("invalid uri")
+						h.Routes[0].TargetURI = new("invalid uri")
 
 						repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
 						bindingCmds.EXPECT().
@@ -294,7 +293,7 @@ func Test_validator(t *testing.T) {
 							AnyTimes()
 						integrationCmds.EXPECT().
 							Exists(t.Context(), h.Routes[0].Integration.IntegrationID).
-							Return(ptr.Of(true), nil)
+							Return(new(true), nil)
 
 						err := hostValidator.validate(t.Context(), h)
 						assertViolations(t, err, i18n.K.CoreHostInvalidUri)
@@ -310,7 +309,7 @@ func Test_validator(t *testing.T) {
 							IntegrationID: uuid.New(),
 							OptionID:      "opt-1",
 						}
-						h.Routes[0].TargetURI = ptr.Of("/api/v1")
+						h.Routes[0].TargetURI = new("/api/v1")
 
 						repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
 						bindingCmds.EXPECT().
@@ -319,7 +318,7 @@ func Test_validator(t *testing.T) {
 							AnyTimes()
 						integrationCmds.EXPECT().
 							Exists(t.Context(), h.Routes[0].Integration.IntegrationID).
-							Return(ptr.Of(true), nil)
+							Return(new(true), nil)
 
 						err := hostValidator.validate(t.Context(), h)
 						assert.NoError(t, err)
@@ -371,7 +370,7 @@ func Test_validator(t *testing.T) {
 					err := hostValidator.validate(t.Context(), h)
 					assertViolations(t, err, i18n.K.CoreHostTargetUriRequired)
 
-					h.Routes[0].TargetURI = ptr.Of("invalid/path")
+					h.Routes[0].TargetURI = new("invalid/path")
 					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
 					bindingCmds.EXPECT().
 						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).

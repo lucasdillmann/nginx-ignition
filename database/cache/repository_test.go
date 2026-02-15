@@ -95,8 +95,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			other.Name = "Other" + uuid.New().String()
 			require.NoError(t, repo.Save(t.Context(), other))
 
-			search := prefix
-			page, err := repo.FindPage(t.Context(), 0, 10, &search)
+			page, err := repo.FindPage(t.Context(), 0, 10, new(prefix))
 			require.NoError(t, err)
 
 			assert.GreaterOrEqual(t, page.TotalItems, 3)

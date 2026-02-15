@@ -38,10 +38,8 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			id := uuid.New()
-			inUse := false
-
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(t.Context(), id).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), id).Return(new(false), nil)
 			repository.EXPECT().DeleteByID(t.Context(), id).Return(nil)
 
 			integrationService := newService(repository, func() []Driver { return nil })
@@ -55,10 +53,8 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			id := uuid.New()
-			inUse := true
-
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(t.Context(), id).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), id).Return(new(true), nil)
 
 			integrationService := newService(repository, func() []Driver { return nil })
 			err := integrationService.Delete(t.Context(), id)
@@ -97,10 +93,8 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			id := uuid.New()
-			exists := true
-
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().ExistsByID(t.Context(), id).Return(&exists, nil)
+			repository.EXPECT().ExistsByID(t.Context(), id).Return(new(true), nil)
 
 			integrationService := newService(repository, func() []Driver { return nil })
 			result, err := integrationService.Exists(t.Context(), id)
@@ -117,10 +111,8 @@ func Test_service(t *testing.T) {
 
 			integration := newIntegration()
 			integration.Name = ""
-			inUse := false
-
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(new(false), nil)
 
 			integrationService := newService(repository, func() []Driver { return nil })
 			err := integrationService.Save(t.Context(), integration)

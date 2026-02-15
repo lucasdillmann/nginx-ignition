@@ -94,8 +94,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			other.DomainNames = []string{"other.com"}
 			require.NoError(t, repo.Save(t.Context(), other))
 
-			search := prefix
-			page, err := repo.FindPage(t.Context(), 10, 0, &search)
+			page, err := repo.FindPage(t.Context(), 10, 0, new(prefix))
 			require.NoError(t, err)
 
 			assert.GreaterOrEqual(t, page.TotalItems, 3)

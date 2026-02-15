@@ -11,8 +11,7 @@ func Test_wrap(t *testing.T) {
 		convertFunc := func(_ *int) string {
 			return "value"
 		}
-		input := 1
-		result := Wrap(t.Context(), convertFunc, &input)
+		result := Wrap(t.Context(), convertFunc, new(1))
 		assert.Equal(t, "value", result)
 	})
 

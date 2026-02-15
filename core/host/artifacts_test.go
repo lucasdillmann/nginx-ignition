@@ -4,7 +4,6 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 func newHost() *Host {
@@ -28,7 +27,7 @@ func newHost() *Host {
 				Type:       StaticResponseRouteType,
 				Response: &RouteStaticResponse{
 					StatusCode: 200,
-					Payload:    ptr.Of("OK"),
+					Payload:    new("OK"),
 				},
 			},
 		},

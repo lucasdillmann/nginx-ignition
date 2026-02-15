@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/database
 
-go 1.25.4
+go 1.26
 
 require (
 	github.com/JCoupalK/go-pgdump v1.1.1-0.20251117080142-ba155b05e5d3

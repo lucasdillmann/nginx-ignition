@@ -40,10 +40,8 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			id := uuid.New()
-			inUse := false
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(t.Context(), id).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), id).Return(new(false), nil)
 			repo.EXPECT().DeleteByID(t.Context(), id).Return(nil)
 
 			cfg := &configuration.Configuration{}
@@ -58,10 +56,8 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			id := uuid.New()
-			inUse := true
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(t.Context(), id).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), id).Return(new(true), nil)
 
 			cfg := &configuration.Configuration{}
 			vpnService := newService(cfg, repo, func() []Driver { return nil })
@@ -102,10 +98,8 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			id := uuid.New()
-			exists := true
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().ExistsByID(t.Context(), id).Return(&exists, nil)
+			repo.EXPECT().ExistsByID(t.Context(), id).Return(new(true), nil)
 
 			cfg := &configuration.Configuration{}
 			vpnService := newService(cfg, repo, func() []Driver { return nil })
@@ -123,10 +117,8 @@ func Test_service(t *testing.T) {
 
 			vpn := newVPN()
 			vpn.Name = ""
-			inUse := false
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(new(false), nil)
 
 			cfg := &configuration.Configuration{}
 			vpnService := newService(cfg, repo, func() []Driver { return nil })

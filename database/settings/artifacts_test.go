@@ -2,7 +2,6 @@ package settings
 
 import (
 	"dillmann.com.br/nginx-ignition/core/binding"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
@@ -35,7 +34,7 @@ func newSettings() *settings.Settings {
 				AccessLogsEnabled: true,
 				ErrorLogsEnabled:  true,
 			},
-			Custom:             ptr.Of("# Custom Nginx Config"),
+			Custom:             new("# Custom Nginx Config"),
 			RuntimeUser:        "nginx",
 			DefaultContentType: "text/html",
 			WorkerProcesses:    1,

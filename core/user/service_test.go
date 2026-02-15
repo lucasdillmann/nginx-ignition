@@ -169,8 +169,7 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			usr := newUser()
-			secret := "secret"
-			usr.TOTP = TOTP{Secret: &secret, Validated: true}
+			usr.TOTP = TOTP{Secret: new("secret"), Validated: true}
 
 			request := newSaveRequest()
 			request.ID = usr.ID
@@ -266,11 +265,10 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			secret := "JBSWY3DPEHPK3PXP"
 			usr := newUser()
 			usr.PasswordHash = hash
 			usr.PasswordSalt = salt
-			usr.TOTP = TOTP{Secret: &secret, Validated: true}
+			usr.TOTP = TOTP{Secret: new("JBSWY3DPEHPK3PXP"), Validated: true}
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
@@ -287,11 +285,10 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			secret := "JBSWY3DPEHPK3PXP"
 			usr := newUser()
 			usr.PasswordHash = hash
 			usr.PasswordSalt = salt
-			usr.TOTP = TOTP{Secret: &secret, Validated: true}
+			usr.TOTP = TOTP{Secret: new("JBSWY3DPEHPK3PXP"), Validated: true}
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
@@ -352,9 +349,8 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			secret := "JBSWY3DPEHPK3PXP"
 			usr := newUser()
-			usr.TOTP = TOTP{Secret: &secret, Validated: true}
+			usr.TOTP = TOTP{Secret: new("JBSWY3DPEHPK3PXP"), Validated: true}
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
@@ -371,9 +367,8 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			secret := "JBSWY3DPEHPK3PXP"
 			usr := newUser()
-			usr.TOTP = TOTP{Secret: &secret, Validated: false}
+			usr.TOTP = TOTP{Secret: new("JBSWY3DPEHPK3PXP"), Validated: false}
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
@@ -410,9 +405,8 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			secret := "JBSWY3DPEHPK3PXP"
 			usr := newUser()
-			usr.TOTP = TOTP{Secret: &secret, Validated: true}
+			usr.TOTP = TOTP{Secret: new("JBSWY3DPEHPK3PXP"), Validated: true}
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
@@ -486,9 +480,8 @@ func Test_service(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			secret := "JBSWY3DPEHPK3PXP"
 			usr := newUser()
-			usr.TOTP = TOTP{Secret: &secret, Validated: false}
+			usr.TOTP = TOTP{Secret: new("JBSWY3DPEHPK3PXP"), Validated: false}
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)

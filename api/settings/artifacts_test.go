@@ -1,7 +1,6 @@
 package settings
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/settings"
 )
 
@@ -67,58 +66,58 @@ func newSettings() *settings.Settings {
 func newSettingsDTO() *settingsDTO {
 	return &settingsDTO{
 		Nginx: &nginxSettingsDTO{
-			WorkerProcesses:    ptr.Of(1),
-			WorkerConnections:  ptr.Of(1024),
-			DefaultContentType: ptr.Of("text/plain"),
+			WorkerProcesses:    new(1),
+			WorkerConnections:  new(1024),
+			DefaultContentType: new("text/plain"),
 			Stats: &nginxStatsSettingsDTO{
-				Enabled:       ptr.Of(true),
-				Persistent:    ptr.Of(true),
-				AllHosts:      ptr.Of(true),
-				MaximumSizeMB: ptr.Of(16),
+				Enabled:       new(true),
+				Persistent:    new(true),
+				AllHosts:      new(true),
+				MaximumSizeMB: new(16),
 			},
-			ServerTokensEnabled: ptr.Of(true),
-			MaximumBodySizeMb:   ptr.Of(10),
-			SendfileEnabled:     ptr.Of(true),
-			GzipEnabled:         ptr.Of(true),
-			TCPNoDelayEnabled:   ptr.Of(true),
-			RuntimeUser:         ptr.Of("nginx"),
+			ServerTokensEnabled: new(true),
+			MaximumBodySizeMb:   new(10),
+			SendfileEnabled:     new(true),
+			GzipEnabled:         new(true),
+			TCPNoDelayEnabled:   new(true),
+			RuntimeUser:         new("nginx"),
 			Logs: &nginxLogsSettingsDTO{
-				ServerLogsEnabled: ptr.Of(true),
-				ServerLogsLevel:   ptr.Of(settings.WarnLogLevel),
-				AccessLogsEnabled: ptr.Of(true),
-				ErrorLogsEnabled:  ptr.Of(true),
-				ErrorLogsLevel:    ptr.Of(settings.ErrorLogLevel),
+				ServerLogsEnabled: new(true),
+				ServerLogsLevel:   new(settings.WarnLogLevel),
+				AccessLogsEnabled: new(true),
+				ErrorLogsEnabled:  new(true),
+				ErrorLogsLevel:    new(settings.ErrorLogLevel),
 			},
 			Timeouts: &nginxTimeoutsSettingsDTO{
-				Read:       ptr.Of(60),
-				Connect:    ptr.Of(60),
-				Send:       ptr.Of(60),
-				Keepalive:  ptr.Of(60),
-				ClientBody: ptr.Of(60),
+				Read:       new(60),
+				Connect:    new(60),
+				Send:       new(60),
+				Keepalive:  new(60),
+				ClientBody: new(60),
 			},
 			Buffers: &nginxBuffersSettingsDTO{
-				ClientBodyKb:   ptr.Of(8),
-				ClientHeaderKb: ptr.Of(1),
+				ClientBodyKb:   new(8),
+				ClientHeaderKb: new(1),
 				LargeClientHeader: &nginxBufferSizeDTO{
-					SizeKb: ptr.Of(8),
-					Amount: ptr.Of(4),
+					SizeKb: new(8),
+					Amount: new(4),
 				},
 				Output: &nginxBufferSizeDTO{
-					SizeKb: ptr.Of(32),
-					Amount: ptr.Of(1),
+					SizeKb: new(32),
+					Amount: new(1),
 				},
 			},
 		},
 		LogRotation: &logRotationSettingsDTO{
-			Enabled:           ptr.Of(true),
-			MaximumLines:      ptr.Of(1000),
-			IntervalUnit:      ptr.Of(settings.DaysTimeUnit),
-			IntervalUnitCount: ptr.Of(1),
+			Enabled:           new(true),
+			MaximumLines:      new(1000),
+			IntervalUnit:      new(settings.DaysTimeUnit),
+			IntervalUnitCount: new(1),
 		},
 		CertificateAutoRenew: &certificateAutoRenewSettingsDTO{
-			Enabled:           ptr.Of(true),
-			IntervalUnit:      ptr.Of(settings.DaysTimeUnit),
-			IntervalUnitCount: ptr.Of(30),
+			Enabled:           new(true),
+			IntervalUnit:      new(settings.DaysTimeUnit),
+			IntervalUnitCount: new(30),
 		},
 	}
 }

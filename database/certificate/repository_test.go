@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 	"dillmann.com.br/nginx-ignition/database/common/testutils"
 )
@@ -49,8 +48,8 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			cmd.ID = id
 			require.NoError(t, repo.Save(t.Context(), cmd))
 
-			cmd.Metadata = ptr.Of("Updated Metadata")
-			cmd.RenewAfter = ptr.Of(time.Now().Add(48 * time.Hour))
+			cmd.Metadata = new("Updated Metadata")
+			cmd.RenewAfter = new(time.Now().Add(48 * time.Hour))
 			err := repo.Save(t.Context(), cmd)
 			require.NoError(t, err)
 
@@ -82,8 +81,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			other.DomainNames = []string{"other.com"}
 			require.NoError(t, repo.Save(t.Context(), other))
 
-			search := prefix
-			page, err := repo.FindPage(t.Context(), 0, 10, &search)
+			page, err := repo.FindPage(t.Context(), 0, 10, new(prefix))
 			require.NoError(t, err)
 
 			assert.GreaterOrEqual(t, page.TotalItems, 3)
@@ -118,7 +116,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	t.Run("FindAllDueToRenew", func(t *testing.T) {
 		t.Run("returns certificates eligible for rotation", func(t *testing.T) {
 			cmd := newCertificate()
-			cmd.RenewAfter = ptr.Of(time.Now().Add(-1 * time.Hour))
+			cmd.RenewAfter = new(time.Now().Add(-1 * time.Hour))
 			require.NoError(t, repo.Save(t.Context(), cmd))
 
 			candidates, err := repo.FindAllDueToRenew(t.Context())
@@ -136,7 +134,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 
 		t.Run("does not return certificates not yet eligible", func(t *testing.T) {
 			cmd := newCertificate()
-			cmd.RenewAfter = ptr.Of(time.Now().Add(1 * time.Hour))
+			cmd.RenewAfter = new(time.Now().Add(1 * time.Hour))
 			require.NoError(t, repo.Save(t.Context(), cmd))
 
 			candidates, err := repo.FindAllDueToRenew(t.Context())

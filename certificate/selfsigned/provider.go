@@ -49,7 +49,6 @@ func (p *Provider) Issue(
 		return nil, err
 	}
 
-	renewAfter := time.Now().Add(335 * 24 * time.Hour)
 	cert := &certificate.Certificate{
 		ID:                 uuid.New(),
 		DomainNames:        request.DomainNames,
@@ -57,7 +56,7 @@ func (p *Provider) Issue(
 		IssuedAt:           time.Now(),
 		ValidFrom:          time.Now().Add(-1 * time.Hour),
 		ValidUntil:         time.Now().Add(365 * 24 * time.Hour),
-		RenewAfter:         &renewAfter,
+		RenewAfter:         new(time.Now().Add(335 * 24 * time.Hour)),
 		PrivateKey:         *keyPEM,
 		PublicKey:          *certPEM,
 		CertificationChain: []string{},
@@ -77,7 +76,6 @@ func (p *Provider) Renew(
 		return nil, err
 	}
 
-	renewAfter := time.Now().Add(335 * 24 * time.Hour)
 	cert := &certificate.Certificate{
 		ID:                 current.ID,
 		DomainNames:        current.DomainNames,
@@ -85,7 +83,7 @@ func (p *Provider) Renew(
 		IssuedAt:           time.Now(),
 		ValidFrom:          time.Now().Add(-1 * time.Hour),
 		ValidUntil:         time.Now().Add(365 * 24 * time.Hour),
-		RenewAfter:         &renewAfter,
+		RenewAfter:         new(time.Now().Add(335 * 24 * time.Hour)),
 		PrivateKey:         *keyPEM,
 		PublicKey:          *certPEM,
 		CertificationChain: []string{},

@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
 )
 
@@ -108,7 +107,7 @@ func Test_validator(t *testing.T) {
 			t.Run("port range validation", func(t *testing.T) {
 				s := newStream()
 				s.Binding.Protocol = TCPProtocol
-				s.Binding.Port = ptr.Of(70000)
+				s.Binding.Port = new(70000)
 				err := validate(s)
 				assertViolations(t, err, i18n.K.CommonBetweenValues)
 			})
@@ -117,7 +116,7 @@ func Test_validator(t *testing.T) {
 				s := newStream()
 				s.Binding.Protocol = SocketProtocol
 				s.Binding.Address = "invalid" // Missing /
-				s.Binding.Port = ptr.Of(80)   // Should be nil
+				s.Binding.Port = new(80)      // Should be nil
 				err := validate(s)
 				assertViolations(
 					t,
@@ -203,7 +202,7 @@ func Test_validator(t *testing.T) {
 								Address: Address{
 									Protocol: TCPProtocol,
 									Address:  "127.0.0.1",
-									Port:     ptr.Of(80),
+									Port:     new(80),
 								},
 							},
 						},

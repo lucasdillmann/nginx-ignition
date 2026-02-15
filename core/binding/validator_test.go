@@ -106,8 +106,7 @@ func Test_validator(t *testing.T) {
 			defer ctrl.Finish()
 
 			binding := newHTTPBinding()
-			certID := uuid.New()
-			binding.CertificateID = &certID
+			binding.CertificateID = new(uuid.New())
 			certificateCommands := certificate.NewMockedCommands(ctrl)
 			delegate := validation.NewValidator()
 			bindingValidator := newValidator(delegate, certificateCommands)

@@ -6,14 +6,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
 func Test_Converter(t *testing.T) {
 	t.Run("toDomain", func(t *testing.T) {
 		t.Run("successfully converts a complete model to domain", func(t *testing.T) {
-			secret := "secret"
 			model := &userModel{
 				ID:                      uuid.New(),
 				Enabled:                 true,
@@ -34,7 +32,7 @@ func Test_Converter(t *testing.T) {
 				VPNsAccessLevel:         "READ_WRITE",
 				CachesAccessLevel:       "READ_WRITE",
 				TrafficStatsAccessLevel: "READ_ONLY",
-				TotpSecret:              &secret,
+				TotpSecret:              new("secret"),
 				TotpValidated:           true,
 			}
 
@@ -109,7 +107,6 @@ func Test_Converter(t *testing.T) {
 		})
 
 		t.Run("successfully converts a complete domain to model", func(t *testing.T) {
-			secret := "secret"
 			domain := &user.User{
 				ID:           uuid.New(),
 				Enabled:      true,
@@ -133,7 +130,7 @@ func Test_Converter(t *testing.T) {
 					TrafficStats: user.ReadOnlyAccessLevel,
 				},
 				TOTP: user.TOTP{
-					Secret:    &secret,
+					Secret:    new("secret"),
 					Validated: true,
 				},
 			}
@@ -164,10 +161,9 @@ func Test_Converter(t *testing.T) {
 		})
 
 		t.Run("converts domain to model with empty secret mapping to nil", func(t *testing.T) {
-			secret := ""
 			domain := &user.User{
 				TOTP: user.TOTP{
-					Secret:    &secret,
+					Secret:    new(""),
 					Validated: false,
 				},
 			}
@@ -193,7 +189,7 @@ func Test_Converter(t *testing.T) {
 		t.Run("converts domain to model with blank secret mapping to nil", func(t *testing.T) {
 			domain := &user.User{
 				TOTP: user.TOTP{
-					Secret:    ptr.Of("   "),
+					Secret:    new("   "),
 					Validated: false,
 				},
 			}

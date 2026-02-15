@@ -13,7 +13,6 @@ import (
 
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
@@ -47,8 +46,8 @@ func Test_loginHandler(t *testing.T) {
 	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 200 OK with token on success", func(t *testing.T) {
 			payload := userLoginRequestDTO{
-				Username: ptr.Of("johndoe"),
-				Password: ptr.Of("password"),
+				Username: new("johndoe"),
+				Password: new("password"),
 			}
 
 			subject := newUser()
@@ -68,8 +67,8 @@ func Test_loginHandler(t *testing.T) {
 
 		t.Run("returns 401 Unauthorized on authentication failure", func(t *testing.T) {
 			payload := userLoginRequestDTO{
-				Username: ptr.Of("johndoe"),
-				Password: ptr.Of("password"),
+				Username: new("johndoe"),
+				Password: new("password"),
 			}
 
 			commands, engine := setup(t)
@@ -84,9 +83,9 @@ func Test_loginHandler(t *testing.T) {
 
 		t.Run("returns 200 OK when TOTP code is provided", func(t *testing.T) {
 			payload := userLoginRequestDTO{
-				Username: ptr.Of("johndoe"),
-				Password: ptr.Of("password"),
-				TOTP:     ptr.Of("123456"),
+				Username: new("johndoe"),
+				Password: new("password"),
+				TOTP:     new("123456"),
 			}
 
 			subject := newUser()
@@ -106,8 +105,8 @@ func Test_loginHandler(t *testing.T) {
 
 		t.Run("returns 401 Unauthorized with MISSING_TOTP reason", func(t *testing.T) {
 			payload := userLoginRequestDTO{
-				Username: ptr.Of("johndoe"),
-				Password: ptr.Of("password"),
+				Username: new("johndoe"),
+				Password: new("password"),
 			}
 
 			commands, engine := setup(t)

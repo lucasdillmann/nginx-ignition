@@ -49,8 +49,7 @@ func Test_validator(t *testing.T) {
 
 		t.Run("inactive seconds less than 1 fails", func(t *testing.T) {
 			cache := newCache()
-			zero := 0
-			cache.InactiveSeconds = &zero
+			cache.InactiveSeconds = new(0)
 			cacheValidator := newValidator()
 
 			err := cacheValidator.validate(t.Context(), cache)
@@ -60,8 +59,7 @@ func Test_validator(t *testing.T) {
 
 		t.Run("maximum size MB less than 1 fails", func(t *testing.T) {
 			cache := newCache()
-			zero := 0
-			cache.MaximumSizeMB = &zero
+			cache.MaximumSizeMB = new(0)
 			cacheValidator := newValidator()
 
 			err := cacheValidator.validate(t.Context(), cache)
@@ -71,8 +69,7 @@ func Test_validator(t *testing.T) {
 
 		t.Run("relative storage path fails", func(t *testing.T) {
 			cache := newCache()
-			relativePath := "relative/path"
-			cache.StoragePath = &relativePath
+			cache.StoragePath = new("relative/path")
 			cacheValidator := newValidator()
 
 			err := cacheValidator.validate(t.Context(), cache)
@@ -82,8 +79,7 @@ func Test_validator(t *testing.T) {
 
 		t.Run("absolute storage path passes", func(t *testing.T) {
 			cache := newCache()
-			absolutePath := "/absolute/path"
-			cache.StoragePath = &absolutePath
+			cache.StoragePath = new("/absolute/path")
 			cacheValidator := newValidator()
 
 			err := cacheValidator.validate(t.Context(), cache)
@@ -105,10 +101,9 @@ func Test_validator(t *testing.T) {
 
 		t.Run("concurrency lock enabled without age fails", func(t *testing.T) {
 			cache := newCache()
-			timeout := 10
 			cache.ConcurrencyLock = ConcurrencyLock{
 				Enabled:        true,
-				TimeoutSeconds: &timeout,
+				TimeoutSeconds: new(10),
 			}
 			cacheValidator := newValidator()
 
@@ -119,12 +114,10 @@ func Test_validator(t *testing.T) {
 
 		t.Run("concurrency lock timeout less than 1 fails", func(t *testing.T) {
 			cache := newCache()
-			timeout := 0
-			age := 5
 			cache.ConcurrencyLock = ConcurrencyLock{
 				Enabled:        true,
-				TimeoutSeconds: &timeout,
-				AgeSeconds:     &age,
+				TimeoutSeconds: new(0),
+				AgeSeconds:     new(5),
 			}
 			cacheValidator := newValidator()
 
@@ -135,12 +128,10 @@ func Test_validator(t *testing.T) {
 
 		t.Run("concurrency lock age less than 1 fails", func(t *testing.T) {
 			cache := newCache()
-			timeout := 10
-			age := 0
 			cache.ConcurrencyLock = ConcurrencyLock{
 				Enabled:        true,
-				TimeoutSeconds: &timeout,
-				AgeSeconds:     &age,
+				TimeoutSeconds: new(10),
+				AgeSeconds:     new(0),
 			}
 			cacheValidator := newValidator()
 
@@ -151,12 +142,10 @@ func Test_validator(t *testing.T) {
 
 		t.Run("concurrency lock enabled with valid values passes", func(t *testing.T) {
 			cache := newCache()
-			timeout := 10
-			age := 5
 			cache.ConcurrencyLock = ConcurrencyLock{
 				Enabled:        true,
-				TimeoutSeconds: &timeout,
-				AgeSeconds:     &age,
+				TimeoutSeconds: new(10),
+				AgeSeconds:     new(5),
 			}
 			cacheValidator := newValidator()
 

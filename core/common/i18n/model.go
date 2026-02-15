@@ -7,7 +7,6 @@ import (
 	"golang.org/x/text/language"
 
 	"dillmann.com.br/nginx-ignition/core/common/container"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 type Message struct {
@@ -31,7 +30,7 @@ func (m Message) String() string {
 	if ctxLang, casted := m.ctx.Value(ContextKey).(language.Tag); casted {
 		lang = &ctxLang
 	} else {
-		lang = ptr.Of(commands.DefaultLanguage())
+		lang = new(commands.DefaultLanguage())
 	}
 
 	return commands.Translate(*lang, m.Key, m.Variables)

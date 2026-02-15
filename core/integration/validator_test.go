@@ -16,9 +16,8 @@ func Test_validator(t *testing.T) {
 			defer ctrl.Finish()
 
 			integration := newIntegration()
-			inUse := false
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(new(false), nil)
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().
 				ConfigurationFields(t.Context()).
@@ -36,9 +35,8 @@ func Test_validator(t *testing.T) {
 
 			integration := newIntegration()
 			integration.Name = ""
-			inUse := false
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(new(false), nil)
 			integrationValidator := newValidator(repository, nil)
 
 			err := integrationValidator.validate(t.Context(), integration)
@@ -52,9 +50,8 @@ func Test_validator(t *testing.T) {
 
 			integration := newIntegration()
 			integration.Name = "   "
-			inUse := false
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(new(false), nil)
 			integrationValidator := newValidator(repository, nil)
 
 			err := integrationValidator.validate(t.Context(), integration)
@@ -68,9 +65,8 @@ func Test_validator(t *testing.T) {
 
 			integration := newIntegration()
 			integration.Driver = ""
-			inUse := false
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(new(false), nil)
 			integrationValidator := newValidator(repository, nil)
 
 			err := integrationValidator.validate(t.Context(), integration)
@@ -84,9 +80,8 @@ func Test_validator(t *testing.T) {
 
 			integration := newIntegration()
 			integration.Driver = "   "
-			inUse := false
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(new(false), nil)
 			integrationValidator := newValidator(repository, nil)
 
 			err := integrationValidator.validate(t.Context(), integration)
@@ -100,9 +95,8 @@ func Test_validator(t *testing.T) {
 
 			integration := newIntegration()
 			integration.Driver = "nonexistent"
-			inUse := false
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(new(false), nil)
 			integrationValidator := newValidator(repository, nil)
 
 			err := integrationValidator.validate(t.Context(), integration)
@@ -116,9 +110,8 @@ func Test_validator(t *testing.T) {
 
 			integration := newIntegration()
 			integration.Enabled = false
-			inUse := true
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(new(true), nil)
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().
 				ConfigurationFields(t.Context()).
@@ -136,9 +129,8 @@ func Test_validator(t *testing.T) {
 
 			integration := newIntegration()
 			integration.Enabled = false
-			inUse := false
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(new(false), nil)
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().
 				ConfigurationFields(t.Context()).
@@ -158,9 +150,8 @@ func Test_validator(t *testing.T) {
 			integration.Parameters = map[string]any{
 				"requiredField": "",
 			}
-			inUse := false
 			repository := NewMockedRepository(ctrl)
-			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(&inUse, nil)
+			repository.EXPECT().InUseByID(t.Context(), integration.ID).Return(new(false), nil)
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().
 				ConfigurationFields(t.Context()).

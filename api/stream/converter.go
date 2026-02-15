@@ -1,7 +1,6 @@
 package stream
 
 import (
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
@@ -14,7 +13,7 @@ func toDTO(input *stream.Stream) *streamResponseDTO {
 		ID:             &input.ID,
 		Enabled:        &input.Enabled,
 		Name:           &input.Name,
-		Type:           ptr.Of(string(input.Type)),
+		Type:           new(string(input.Type)),
 		FeatureSet:     toFeatureSetDTO(&input.FeatureSet),
 		DefaultBackend: toBackendDTO(&input.DefaultBackend),
 		Binding:        toAddressDTO(&input.Binding),

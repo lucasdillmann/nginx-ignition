@@ -9,7 +9,6 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/stream"
@@ -56,7 +55,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 		})
 
 		t.Run("includes custom configuration", func(t *testing.T) {
-			mockSettings.Nginx.Custom = ptr.Of("custom_directive on;")
+			mockSettings.Nginx.Custom = new("custom_directive on;")
 			ctx := newProviderContext(t)
 			ctx.paths = paths
 			ctx.cfg = mockSettings
@@ -159,8 +158,8 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			caches := []cache.Cache{
 				{
 					ID:              id1,
-					InactiveSeconds: ptr.Of(3600),
-					MaximumSizeMB:   ptr.Of(1024),
+					InactiveSeconds: new(3600),
+					MaximumSizeMB:   new(1024),
 				},
 			}
 			result := provider.getCacheDefinitions(paths, caches)
@@ -171,11 +170,10 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 		})
 
 		t.Run("uses custom storage path if provided", func(t *testing.T) {
-			customPath := "/mnt/ssd/cache"
 			caches := []cache.Cache{
 				{
 					ID:          id1,
-					StoragePath: &customPath,
+					StoragePath: new("/mnt/ssd/cache"),
 				},
 			}
 			result := provider.getCacheDefinitions(paths, caches)
@@ -258,7 +256,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 				Enabled:          true,
 				MaximumSizeMB:    10,
 				Persistent:       true,
-				DatabaseLocation: ptr.Of("/var/lib/nginx/traffic-stats.db"),
+				DatabaseLocation: new("/var/lib/nginx/traffic-stats.db"),
 			}
 			result, err := provider.getStatsDefinitions(paths, cfg)
 			assert.NoError(t, err)

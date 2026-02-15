@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
@@ -54,12 +53,12 @@ func newHost() *host.Host {
 					ProxySSLServerName:      false,
 					KeepOriginalDomainName:  true,
 					DirectoryListingEnabled: false,
-					IndexFile:               ptr.Of("index.html"),
-					Custom:                  ptr.Of("# Custom config"),
+					IndexFile:               new("index.html"),
+					Custom:                  new("# Custom config"),
 				},
 				Response: &host.RouteStaticResponse{
 					StatusCode: 200,
-					Payload:    ptr.Of("OK"),
+					Payload:    new("OK"),
 				},
 			},
 		},

@@ -4,34 +4,33 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
 func newHostRequestDTO() hostRequestDTO {
 	return hostRequestDTO{
-		Enabled:           ptr.Of(true),
-		DefaultServer:     ptr.Of(false),
-		UseGlobalBindings: ptr.Of(true),
+		Enabled:           new(true),
+		DefaultServer:     new(false),
+		UseGlobalBindings: new(true),
 		DomainNames:       []string{"example.com"},
 		FeatureSet: &featureSetDTO{
-			WebsocketsSupport:   ptr.Of(true),
-			HTTP2Support:        ptr.Of(true),
-			RedirectHTTPToHTTPS: ptr.Of(true),
-			StatsEnabled:        ptr.Of(true),
+			WebsocketsSupport:   new(true),
+			HTTP2Support:        new(true),
+			RedirectHTTPToHTTPS: new(true),
+			StatsEnabled:        new(true),
 		},
 		Routes: []routeDTO{
 			{
-				Priority:   ptr.Of(1),
-				Enabled:    ptr.Of(true),
-				Type:       ptr.Of(host.ProxyRouteType),
-				SourcePath: ptr.Of("/"),
-				TargetURI:  ptr.Of("http://backend"),
+				Priority:   new(1),
+				Enabled:    new(true),
+				Type:       new(host.ProxyRouteType),
+				SourcePath: new("/"),
+				TargetURI:  new("http://backend"),
 				Settings: &routeSettingsDTO{
-					IncludeForwardHeaders:  ptr.Of(true),
-					ProxySslServerName:     ptr.Of(true),
-					KeepOriginalDomainName: ptr.Of(true),
-					IndexFile:              ptr.Of("index.html"),
+					IncludeForwardHeaders:  new(true),
+					ProxySslServerName:     new(true),
+					KeepOriginalDomainName: new(true),
+					IndexFile:              new("index.html"),
 				},
 			},
 		},
@@ -58,12 +57,12 @@ func newHost() *host.Host {
 				Enabled:    true,
 				Type:       host.ProxyRouteType,
 				SourcePath: "/",
-				TargetURI:  ptr.Of("http://backend"),
+				TargetURI:  new("http://backend"),
 				Settings: host.RouteSettings{
 					IncludeForwardHeaders:  true,
 					ProxySSLServerName:     true,
 					KeepOriginalDomainName: true,
-					IndexFile:              ptr.Of("index.html"),
+					IndexFile:              new("index.html"),
 				},
 			},
 		},

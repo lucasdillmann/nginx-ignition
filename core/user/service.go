@@ -249,8 +249,7 @@ func (s *service) EnableTOTP(ctx context.Context, id uuid.UUID) (string, error) 
 		return "", err
 	}
 
-	secret := key.Secret()
-	usr.TOTP.Secret = &secret
+	usr.TOTP.Secret = new(key.Secret())
 	usr.TOTP.Validated = false
 
 	err = s.repository.Save(ctx, usr)

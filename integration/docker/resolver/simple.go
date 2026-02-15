@@ -11,7 +11,6 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
@@ -140,7 +139,7 @@ func (s *simpleAdapter) buildOption(
 			ID:        fmt.Sprintf("%s:%d:%s", itemID, portNumber, qualifierType),
 			Name:      itemName,
 			Port:      int(portNumber),
-			Qualifier: ptr.Of(qualifierType),
+			Qualifier: new(qualifierType),
 			Protocol:  integration.Protocol(port.Type),
 		},
 		urlResolver: func(_ context.Context, option *Option) (*string, []string, error) {
@@ -178,8 +177,7 @@ func (s *simpleAdapter) buildOptionURL(
 		}
 	}
 
-	result := fmt.Sprintf(httpURLTemplate, targetHost, option.Port)
-	return &result, nil, nil
+	return new(fmt.Sprintf(httpURLTemplate, targetHost, option.Port)), nil, nil
 }
 
 func normalizeContainerName(name, containerID string) string {

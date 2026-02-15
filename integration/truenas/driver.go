@@ -149,8 +149,7 @@ func (a *Driver) GetOptionProxyURL(
 		endpoint = hostIP
 	}
 
-	output := fmt.Sprintf("http://%s:%d", endpoint, hostPort)
-	return &output, nil, nil
+	return new(fmt.Sprintf("http://%s:%d", endpoint, hostPort)), nil, nil
 }
 
 func (a *Driver) getWorkloadPort(

@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/tools
 
-go 1.25.4
+go 1.26
 
 tool (
 	github.com/golangci/golangci-lint/v2/cmd/golangci-lint

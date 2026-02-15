@@ -7,7 +7,6 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/common/runtime"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -213,7 +212,7 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(
 		storagePath := c.StoragePath
 
 		if storagePath == nil || strings.TrimSpace(*storagePath) == "" {
-			storagePath = ptr.Of(paths.Cache + cacheIDNoDashes)
+			storagePath = new(paths.Cache + cacheIDNoDashes)
 		}
 
 		inactive := ""
@@ -295,7 +294,7 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 				return "", err
 			}
 
-			dbLocation = ptr.Of(filepath.Join(dataPath, "traffic-stats.db"))
+			dbLocation = new(filepath.Join(dataPath, "traffic-stats.db"))
 		}
 
 		_, _ = fmt.Fprintf(&output, "vhost_traffic_status_dump \"%s\" 5s;\n", *dbLocation)

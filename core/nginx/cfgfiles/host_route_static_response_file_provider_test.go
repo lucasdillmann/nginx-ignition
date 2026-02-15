@@ -7,7 +7,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 )
 
@@ -25,7 +24,7 @@ func Test_hostRouteStaticResponseFileProvider(t *testing.T) {
 						Priority: 10,
 						Type:     host.StaticResponseRouteType,
 						Response: &host.RouteStaticResponse{
-							Payload: ptr.Of("hello world"),
+							Payload: new("hello world"),
 						},
 					},
 				},
@@ -51,7 +50,7 @@ func Test_hostRouteStaticResponseFileProvider(t *testing.T) {
 						Priority: 10,
 						Type:     host.StaticResponseRouteType,
 						Response: &host.RouteStaticResponse{
-							Payload: ptr.Of("hello world"),
+							Payload: new("hello world"),
 						},
 					},
 					{

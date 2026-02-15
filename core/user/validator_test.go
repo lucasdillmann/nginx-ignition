@@ -6,8 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
-
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 func Test_validator(t *testing.T) {
@@ -37,13 +35,11 @@ func Test_validator(t *testing.T) {
 			request := newSaveRequest()
 			request.Enabled = false
 			currentUser := &User{ID: usr.ID}
-			currentUserID := usr.ID
-
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
 			userValidator := newValidator(repo)
 
-			err := userValidator.validate(t.Context(), usr, currentUser, request, &currentUserID)
+			err := userValidator.validate(t.Context(), usr, currentUser, request, new(usr.ID))
 
 			assert.Error(t, err)
 		})
@@ -142,7 +138,7 @@ func Test_validator(t *testing.T) {
 
 			usr := newUser()
 			request := newSaveRequest()
-			request.Password = ptr.Of("short")
+			request.Password = new("short")
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)

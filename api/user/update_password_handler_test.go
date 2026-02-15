@@ -13,7 +13,6 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
@@ -29,8 +28,8 @@ func Test_updatePasswordHandler(t *testing.T) {
 
 			id := uuid.New()
 			payload := userPasswordUpdateRequestDTO{
-				CurrentPassword: ptr.Of("oldpassword"),
-				NewPassword:     ptr.Of("newpassword"),
+				CurrentPassword: new("oldpassword"),
+				NewPassword:     new("newpassword"),
 			}
 
 			commands := user.NewMockedCommands(controller)

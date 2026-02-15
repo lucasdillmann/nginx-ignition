@@ -248,8 +248,7 @@ func Test_validator(t *testing.T) {
 
 		t.Run("stats database location invalid extension fails", func(t *testing.T) {
 			s := newSettings()
-			path := "/tmp/test.txt"
-			s.Nginx.Stats.DatabaseLocation = &path
+			s.Nginx.Stats.DatabaseLocation = new("/tmp/test.txt")
 			settingsValidator := newValidator(bindingCommands)
 
 			err := settingsValidator.validate(t.Context(), s)
@@ -259,8 +258,7 @@ func Test_validator(t *testing.T) {
 
 		t.Run("stats database location invalid folder fails", func(t *testing.T) {
 			s := newSettings()
-			path := "/non-existing-folder/test.db"
-			s.Nginx.Stats.DatabaseLocation = &path
+			s.Nginx.Stats.DatabaseLocation = new("/non-existing-folder/test.db")
 			settingsValidator := newValidator(bindingCommands)
 
 			err := settingsValidator.validate(t.Context(), s)
@@ -270,8 +268,7 @@ func Test_validator(t *testing.T) {
 
 		t.Run("stats database location too long fails", func(t *testing.T) {
 			s := newSettings()
-			path := "/tmp/" + strings.Repeat("a", 122) + ".db"
-			s.Nginx.Stats.DatabaseLocation = &path
+			s.Nginx.Stats.DatabaseLocation = new("/tmp/" + strings.Repeat("a", 122) + ".db")
 			settingsValidator := newValidator(bindingCommands)
 
 			err := settingsValidator.validate(t.Context(), s)

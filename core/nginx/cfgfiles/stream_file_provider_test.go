@@ -9,7 +9,6 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
 
@@ -55,7 +54,7 @@ func Test_streamFileProvider(t *testing.T) {
 				Binding: stream.Address{
 					Protocol: stream.TCPProtocol,
 					Address:  "0.0.0.0",
-					Port:     ptr.Of(80),
+					Port:     new(80),
 				},
 				FeatureSet: stream.FeatureSet{
 					UseProxyProtocol: true,
@@ -79,7 +78,7 @@ func Test_streamFileProvider(t *testing.T) {
 				Binding: stream.Address{
 					Protocol: stream.UDPProtocol,
 					Address:  "127.0.0.1",
-					Port:     ptr.Of(53),
+					Port:     new(53),
 				},
 			}
 
@@ -122,9 +121,9 @@ func Test_streamFileProvider(t *testing.T) {
 					Address: stream.Address{
 						Protocol: stream.TCPProtocol,
 						Address:  "10.0.0.1",
-						Port:     ptr.Of(8080),
+						Port:     new(8080),
 					},
-					Weight: ptr.Of(5),
+					Weight: new(5),
 					CircuitBreaker: &stream.CircuitBreaker{
 						MaxFailures: 3,
 						OpenSeconds: 30,
@@ -175,13 +174,13 @@ func Test_streamFileProvider(t *testing.T) {
 				Binding: stream.Address{
 					Protocol: stream.TCPProtocol,
 					Address:  "0.0.0.0",
-					Port:     ptr.Of(443),
+					Port:     new(443),
 				},
 				DefaultBackend: stream.Backend{
 					Address: stream.Address{
 						Protocol: stream.TCPProtocol,
 						Address:  "127.0.0.1",
-						Port:     ptr.Of(8443),
+						Port:     new(8443),
 					},
 				},
 				Routes: []stream.Route{
@@ -192,7 +191,7 @@ func Test_streamFileProvider(t *testing.T) {
 								Address: stream.Address{
 									Protocol: stream.TCPProtocol,
 									Address:  "10.0.0.1",
-									Port:     ptr.Of(443),
+									Port:     new(443),
 								},
 							},
 						},
