@@ -16,10 +16,8 @@ func Test_validator(t *testing.T) {
 			defer ctrl.Finish()
 
 			vpn := newVPN()
-			inUse := false
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(new(false), nil)
 
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().
@@ -38,10 +36,8 @@ func Test_validator(t *testing.T) {
 
 			vpn := newVPN()
 			vpn.Name = ""
-			inUse := false
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(new(false), nil)
 
 			vpnValidator := newValidator(repo, nil)
 			err := vpnValidator.validate(t.Context(), vpn)
@@ -55,10 +51,8 @@ func Test_validator(t *testing.T) {
 
 			vpn := newVPN()
 			vpn.Name = "   "
-			inUse := false
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(new(false), nil)
 
 			vpnValidator := newValidator(repo, nil)
 			err := vpnValidator.validate(t.Context(), vpn)
@@ -72,10 +66,8 @@ func Test_validator(t *testing.T) {
 
 			vpn := newVPN()
 			vpn.Driver = ""
-			inUse := false
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(new(false), nil)
 
 			vpnValidator := newValidator(repo, nil)
 			err := vpnValidator.validate(t.Context(), vpn)
@@ -89,10 +81,8 @@ func Test_validator(t *testing.T) {
 
 			vpn := newVPN()
 			vpn.Driver = "   "
-			inUse := false
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(new(false), nil)
 
 			vpnValidator := newValidator(repo, nil)
 			err := vpnValidator.validate(t.Context(), vpn)
@@ -106,10 +96,8 @@ func Test_validator(t *testing.T) {
 
 			vpn := newVPN()
 			vpn.Driver = "nonexistent"
-			inUse := false
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(new(false), nil)
 
 			vpnValidator := newValidator(repo, nil)
 			err := vpnValidator.validate(t.Context(), vpn)
@@ -123,10 +111,8 @@ func Test_validator(t *testing.T) {
 
 			vpn := newVPN()
 			vpn.Enabled = false
-			inUse := true
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(new(true), nil)
 
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().
@@ -145,10 +131,8 @@ func Test_validator(t *testing.T) {
 
 			vpn := newVPN()
 			vpn.Enabled = false
-			inUse := false
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(new(false), nil)
 
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().
@@ -169,10 +153,8 @@ func Test_validator(t *testing.T) {
 			vpn.Parameters = map[string]any{
 				"requiredField": "",
 			}
-			inUse := false
-
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(&inUse, nil)
+			repo.EXPECT().InUseByID(t.Context(), vpn.ID).Return(new(false), nil)
 
 			driverMock := NewMockedDriver(ctrl)
 			driverMock.EXPECT().

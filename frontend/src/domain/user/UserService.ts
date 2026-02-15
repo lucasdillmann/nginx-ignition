@@ -4,6 +4,7 @@ import UserOnboardingStatusResponse from "./model/UserOnboardingStatusResponse"
 import { requireNullablePayload, requireSuccessPayload, requireSuccessResponse } from "../../core/apiclient/ApiResponse"
 import PageResponse from "../../core/pagination/PageResponse"
 import UserRequest from "./model/UserRequest"
+import LoginOutcome from "./model/LoginOutcome"
 import UserLoginRequest from "./model/UserLoginRequest"
 import AuthenticationService from "../../core/authentication/AuthenticationService"
 import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest"
@@ -16,14 +17,16 @@ export default class UserService {
         this.gateway = new UserGateway()
     }
 
-    async login(username: string, password: string): Promise<void> {
-        const request: UserLoginRequest = { username, password }
-        return this.gateway
-            .login(request)
-            .then(requireSuccessPayload)
-            .then(response => {
-                AuthenticationService.setToken(response.token)
-            })
+    async login(username: string, password: string, totp?: string): Promise<LoginOutcome> {
+        const request: UserLoginRequest = { username, password, totp }
+        const response = await this.gateway.login(request)
+
+        if (response.statusCode >= 200 && response.statusCode <= 299 && response.body?.token) {
+            AuthenticationService.setToken(response.body.token)
+            return LoginOutcome.SUCCESS
+        }
+
+        return (response.body as any)?.reason ?? LoginOutcome.FAILURE
     }
 
     async logout(): Promise<void> {

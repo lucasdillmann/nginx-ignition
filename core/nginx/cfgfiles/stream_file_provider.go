@@ -6,7 +6,6 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/common/runtime"
 	"dillmann.com.br/nginx-ignition/core/stream"
 )
@@ -102,7 +101,7 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 		_, _ = instruction.WriteString(" reuseport;")
 	}
 
-	return ptr.Of(instruction.String()), nil
+	return new(instruction.String()), nil
 }
 
 func (p *streamFileProvider) buildUpstream(
@@ -142,7 +141,7 @@ func (p *streamFileProvider) buildUpstream(
 	}
 
 	_, _ = instructions.WriteString("}\n")
-	return ptr.Of(instructions.String()), nil
+	return new(instructions.String()), nil
 }
 
 func (p *streamFileProvider) buildRoutedStream(
@@ -212,7 +211,7 @@ func (p *streamFileProvider) buildStream(
 		socketKeepAlive = "proxy_socket_keepalive on;"
 	}
 
-	contents := fmt.Sprintf(
+	return new(fmt.Sprintf(
 		`
 		%s 
 
@@ -228,9 +227,7 @@ func (p *streamFileProvider) buildStream(
 		tcpNoDelay,
 		socketKeepAlive,
 		instructions,
-	)
-
-	return &contents, nil
+	)), nil
 }
 
 func nginxID(s *stream.Stream) string {

@@ -7,6 +7,7 @@ import (
 type userLoginRequestDTO struct {
 	Username *string `json:"username"`
 	Password *string `json:"password"`
+	TOTP     *string `json:"totp"`
 }
 
 type userLoginResponseDTO struct {
@@ -24,6 +25,7 @@ type userPasswordUpdateRequestDTO struct {
 
 type userRequestDTO struct {
 	Enabled     *bool              `json:"enabled"`
+	RemoveTOTP  *bool              `json:"removeTotp"`
 	Name        *string            `json:"name"`
 	Username    *string            `json:"username"`
 	Password    *string            `json:"password,omitempty"`
@@ -36,6 +38,7 @@ type userResponseDTO struct {
 	Username    string             `json:"username"`
 	ID          uuid.UUID          `json:"id"`
 	Enabled     bool               `json:"enabled"`
+	TOTPEnabled bool               `json:"totpEnabled"`
 }
 
 type userPermissionsDTO struct {
@@ -52,4 +55,16 @@ type userPermissionsDTO struct {
 	VPNs         string `json:"vpns"`
 	Caches       string `json:"caches"`
 	TrafficStats string `json:"trafficStats"`
+}
+
+type totpStatusResponseDTO struct {
+	Enabled bool `json:"enabled"`
+}
+
+type totpEnableResponseDTO struct {
+	URL string `json:"url"`
+}
+
+type totpActivateRequestDTO struct {
+	Code *string `json:"code"`
 }

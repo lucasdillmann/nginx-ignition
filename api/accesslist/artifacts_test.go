@@ -8,33 +8,23 @@ import (
 )
 
 func newAccessListRequestDTO() accessListRequestDTO {
-	name := "Test List"
-	realm := "Test Realm"
-	satisfyAll := true
-	defaultOutcome := accesslist.AllowOutcome
-	forwardAuth := true
-	priority := 1
-	outcome := accesslist.AllowOutcome
-	username := "user1"
-	password := "pass1"
-
 	return accessListRequestDTO{
-		Name:                        &name,
-		Realm:                       &realm,
-		SatisfyAll:                  &satisfyAll,
-		DefaultOutcome:              &defaultOutcome,
-		ForwardAuthenticationHeader: &forwardAuth,
+		Name:                        new("Test List"),
+		Realm:                       new("Test Realm"),
+		SatisfyAll:                  new(true),
+		DefaultOutcome:              new(accesslist.AllowOutcome),
+		ForwardAuthenticationHeader: new(true),
 		Entries: []entrySetDTO{
 			{
-				Priority:        &priority,
-				Outcome:         &outcome,
+				Priority:        new(1),
+				Outcome:         new(accesslist.AllowOutcome),
 				SourceAddresses: []string{"192.168.1.1"},
 			},
 		},
 		Credentials: []credentialsDTO{
 			{
-				Username: &username,
-				Password: &password,
+				Username: new("user1"),
+				Password: new("pass1"),
 			},
 		},
 	}

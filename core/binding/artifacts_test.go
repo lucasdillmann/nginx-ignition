@@ -5,7 +5,6 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 func newHTTPBinding() *Binding {
@@ -21,7 +20,7 @@ func newHTTPSBinding() *Binding {
 		Type:          HTTPSBindingType,
 		IP:            "192.168.1.1",
 		Port:          443,
-		CertificateID: ptr.Of(uuid.New()),
+		CertificateID: new(uuid.New()),
 	}
 }
 

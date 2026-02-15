@@ -35,6 +35,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			assert.Equal(t, cmd.PasswordSalt, saved.PasswordSalt)
 			assert.Equal(t, cmd.Permissions, saved.Permissions)
 			assert.Equal(t, cmd.Enabled, saved.Enabled)
+			assert.Equal(t, cmd.TOTP, saved.TOTP)
 		})
 
 		t.Run("successfully updates an existing user", func(t *testing.T) {
@@ -102,8 +103,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			other.Username = "Other" + uuid.New().String()
 			require.NoError(t, repo.Save(t.Context(), other))
 
-			search := prefix
-			page, err := repo.FindPage(t.Context(), 10, 0, &search)
+			page, err := repo.FindPage(t.Context(), 10, 0, new(prefix))
 			require.NoError(t, err)
 
 			assert.GreaterOrEqual(t, page.TotalItems, 4)

@@ -9,7 +9,6 @@ import (
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/stream"
@@ -100,8 +99,8 @@ func newSettings() *settings.Settings {
 func newCache() cache.Cache {
 	return cache.Cache{
 		ID:              uuid.New(),
-		InactiveSeconds: ptr.Of(3600),
-		MaximumSizeMB:   ptr.Of(1024),
+		InactiveSeconds: new(3600),
+		MaximumSizeMB:   new(1024),
 	}
 }
 
@@ -127,14 +126,14 @@ func newStream() stream.Stream {
 		Binding: stream.Address{
 			Protocol: stream.TCPProtocol,
 			Address:  "0.0.0.0",
-			Port:     ptr.Of(80),
+			Port:     new(80),
 		},
 		Type: stream.SimpleType,
 		DefaultBackend: stream.Backend{
 			Address: stream.Address{
 				Protocol: stream.TCPProtocol,
 				Address:  "127.0.0.1",
-				Port:     ptr.Of(8080),
+				Port:     new(8080),
 			},
 		},
 	}

@@ -119,9 +119,11 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./integration/truenas/... \
 		./vpn/tailscale/...
 
+clean:
+	@find api application certificate core database i18n integration vpn -type f -name "*.mock.go" -delete
+
 .backend-test-mocks: .backend-prerequisites
 	@echo "Generating mock files..."
-	@find api application certificate core database i18n integration vpn -type f -name "*.mock.go" -delete;
 	@find api application certificate core database i18n integration vpn -type f -name "*.go" \
 		-not -name "*_test.go" \
 		-exec sh -c 'grep -q "^type [a-zA-Z0-9_]* interface" "$$1" && echo "$$1"' _ {} \; | \
@@ -129,6 +131,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		dir=$$(dirname "$$file"); \
 		base=$$(basename "$$file" .go); \
 		mock_file="$$dir/$${base}.mock.go"; \
+		if [ -f "$$mock_file" ]; then continue; fi; \
 		package_name=$$(basename "$$dir"); \
 		interfaces=$$(grep -oE "^type [a-zA-Z0-9_]+ interface" "$$file" | awk '{print $$2}'); \
 		mock_names_flag=""; \

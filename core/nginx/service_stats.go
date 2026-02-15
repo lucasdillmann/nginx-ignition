@@ -118,6 +118,7 @@ func (s *service) fetchStatsFromSocket(ctx context.Context) (*statsResponse, err
 		return nil, err
 	}
 
+	//nolint:gosec // G704: req is constructed with a hardcoded localhost URL
 	resp, err := s.statsClient.Do(req)
 	if err != nil {
 		return nil, err

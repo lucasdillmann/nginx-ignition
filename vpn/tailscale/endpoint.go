@@ -91,17 +91,17 @@ func (e *tailnetEndpoint) startListener(target vpn.EndpointTarget) error {
 		}
 	}
 
-	proxy.Director = func(req *http.Request) {
+	proxy.Rewrite = func(pr *httputil.ProxyRequest) {
 		ipAddr := target.IP
 		if ipAddr == "0.0.0.0" {
 			ipAddr = "127.0.0.1"
 		}
 
-		req.URL.Host = fmt.Sprintf("%s:%d", ipAddr, target.Port)
-		req.URL.Scheme = scheme
-		req.Header.Del("Host")
-		req.Header.Set("Host", target.Host)
-		req.Host = target.Host
+		pr.Out.URL.Host = fmt.Sprintf("%s:%d", ipAddr, target.Port)
+		pr.Out.URL.Scheme = scheme
+		pr.Out.Header.Del("Host")
+		pr.Out.Header.Set("Host", target.Host)
+		pr.Out.Host = target.Host
 	}
 
 	startListener := e.server.Listen

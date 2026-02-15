@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/user"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
@@ -37,7 +36,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*user.User, er
 		return nil, err
 	}
 
-	return ptr.Of(toDomain(&model)), nil
+	return new(toDomain(&model)), nil
 }
 
 func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
@@ -76,7 +75,7 @@ func (r *repository) FindByUsername(ctx context.Context, username string) (*user
 		return nil, err
 	}
 
-	return ptr.Of(toDomain(&model)), nil
+	return new(toDomain(&model)), nil
 }
 
 func (r *repository) FindPage(

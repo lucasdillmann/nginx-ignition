@@ -13,7 +13,6 @@ import (
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
@@ -28,7 +27,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				Enabled:    true,
 				Type:       host.ProxyRouteType,
 				SourcePath: "/",
-				TargetURI:  ptr.Of("http://backend:8080"),
+				TargetURI:  new("http://backend:8080"),
 			},
 		}
 
@@ -61,7 +60,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				Enabled:    true,
 				Type:       host.ProxyRouteType,
 				SourcePath: "/",
-				TargetURI:  ptr.Of("http://backend:8080"),
+				TargetURI:  new("http://backend:8080"),
 			},
 		}
 
@@ -99,7 +98,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				Enabled:    true,
 				Type:       host.ProxyRouteType,
 				SourcePath: "/",
-				TargetURI:  ptr.Of("http://backend:8080"),
+				TargetURI:  new("http://backend:8080"),
 			},
 		}
 
@@ -152,14 +151,14 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 		t.Run("returns simple proxy_pass", func(t *testing.T) {
 			r := &host.Route{
-				TargetURI: ptr.Of("http://backend:8080"),
+				TargetURI: new("http://backend:8080"),
 			}
 			assert.Equal(t, "proxy_pass http://backend:8080;", provider.buildProxyPass(r))
 		})
 
 		t.Run("sets Host header when KeepOriginalDomainName is true", func(t *testing.T) {
 			r := &host.Route{
-				TargetURI: ptr.Of("http://backend:8080"),
+				TargetURI: new("http://backend:8080"),
 				Settings: host.RouteSettings{
 					KeepOriginalDomainName: true,
 				},
@@ -171,7 +170,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 		t.Run("handles custom target URI override", func(t *testing.T) {
 			r := &host.Route{
-				TargetURI: ptr.Of("http://default:8080"),
+				TargetURI: new("http://default:8080"),
 			}
 			result := provider.buildProxyPass(r, "http://override:9090")
 			assert.Equal(t, "proxy_pass http://override:9090;", result)
@@ -185,8 +184,8 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		t.Run("generates redirect route config", func(t *testing.T) {
 			r := &host.Route{
 				SourcePath:   "/old",
-				RedirectCode: ptr.Of(301),
-				TargetURI:    ptr.Of("http://new.example.com"),
+				RedirectCode: new(301),
+				TargetURI:    new("http://new.example.com"),
 			}
 			result := provider.buildRedirectRoute(ctx, r, host.FeatureSet{})
 			assert.Contains(t, result, "location /old {")
@@ -214,7 +213,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			integrationCmds := integration.NewMockedCommands(ctrl)
 			integrationCmds.EXPECT().
 				GetOptionURL(gomock.Any(), integrationID, "opt-1").
-				Return(ptr.Of("http://1.2.3.4:80"), []string{"8.8.8.8", "8.8.4.4"}, nil)
+				Return(new("http://1.2.3.4:80"), []string{"8.8.8.8", "8.8.4.4"}, nil)
 			provider.integrationCommands = integrationCmds
 
 			result, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
@@ -228,7 +227,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			integrationID := uuid.New()
 			r := &host.Route{
 				SourcePath: "/api",
-				TargetURI:  ptr.Of("/v1/resource"),
+				TargetURI:  new("/v1/resource"),
 				Integration: &host.RouteIntegrationConfig{
 					IntegrationID: integrationID,
 					OptionID:      "opt-1",
@@ -241,7 +240,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			integrationCmds := integration.NewMockedCommands(ctrl)
 			integrationCmds.EXPECT().
 				GetOptionURL(gomock.Any(), integrationID, "opt-1").
-				Return(ptr.Of("http://1.2.3.4:80"), nil, nil)
+				Return(new("http://1.2.3.4:80"), nil, nil)
 			provider.integrationCommands = integrationCmds
 
 			result, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
@@ -280,7 +279,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				SourcePath: "/js",
 				SourceCode: &host.RouteSourceCode{
 					Language:     host.JavascriptCodeLanguage,
-					MainFunction: ptr.Of("handler"),
+					MainFunction: new("handler"),
 				},
 			}
 			result, err := provider.buildExecuteCodeRoute(ctx, h, r)
@@ -389,7 +388,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		t.Run("includes custom configuration", func(t *testing.T) {
 			r := &host.Route{
 				Settings: host.RouteSettings{
-					Custom: ptr.Of("proxy_buffer_size 16k;"),
+					Custom: new("proxy_buffer_size 16k;"),
 				},
 			}
 			result := provider.buildRouteSettings(ctx, r)
@@ -474,10 +473,9 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		})
 
 		t.Run("includes HTTP2 in HTTPS binding", func(t *testing.T) {
-			certID := uuid.New()
 			b := &binding.Binding{
 				Type:          binding.HTTPSBindingType,
-				CertificateID: &certID,
+				CertificateID: new(uuid.New()),
 			}
 			result, err := provider.buildBinding(ctx, h, b, []string{}, "", "", "http2 on;", "")
 			assert.NoError(t, err)
@@ -531,8 +529,8 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		}
 		c.ConcurrencyLock = cache.ConcurrencyLock{
 			Enabled:        true,
-			TimeoutSeconds: ptr.Of(5),
-			AgeSeconds:     ptr.Of(10),
+			TimeoutSeconds: new(5),
+			AgeSeconds:     new(10),
 		}
 		c.BypassRules = []string{"$cookie_nocache"}
 		c.NoCacheRules = []string{"$arg_nocache"}
@@ -561,8 +559,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		})
 
 		t.Run("returns empty string when cache not found", func(t *testing.T) {
-			unknownID := uuid.New()
-			result := provider.buildCacheConfig(caches, &unknownID)
+			result := provider.buildCacheConfig(caches, new(uuid.New()))
 			assert.Equal(t, "", result)
 		})
 
@@ -579,7 +576,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		t.Run("generates static files config", func(t *testing.T) {
 			r := &host.Route{
 				SourcePath: "/static",
-				TargetURI:  ptr.Of("/var/www/static"),
+				TargetURI:  new("/var/www/static"),
 				Settings: host.RouteSettings{
 					DirectoryListingEnabled: true,
 				},
@@ -593,9 +590,9 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		t.Run("generates static files config with index file", func(t *testing.T) {
 			r := &host.Route{
 				SourcePath: "/static",
-				TargetURI:  ptr.Of("/var/www/static"),
+				TargetURI:  new("/var/www/static"),
 				Settings: host.RouteSettings{
-					IndexFile: ptr.Of("home.html"),
+					IndexFile: new("home.html"),
 				},
 			}
 			result := provider.buildStaticFilesRoute(ctx, r)

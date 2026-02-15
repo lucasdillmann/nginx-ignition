@@ -1,6 +1,8 @@
 package user
 
 import (
+	"strings"
+
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
@@ -27,10 +29,19 @@ func toDomain(model *userModel) user.User {
 			Caches:       user.AccessLevel(model.CachesAccessLevel),
 			TrafficStats: user.AccessLevel(model.TrafficStatsAccessLevel),
 		},
+		TOTP: user.TOTP{
+			Secret:    model.TotpSecret,
+			Validated: model.TotpValidated,
+		},
 	}
 }
 
 func toModel(domain *user.User) userModel {
+	var totpSecret *string
+	if domain.TOTP.Secret != nil && strings.TrimSpace(*domain.TOTP.Secret) != "" {
+		totpSecret = domain.TOTP.Secret
+	}
+
 	return userModel{
 		ID:                      domain.ID,
 		Enabled:                 domain.Enabled,
@@ -51,5 +62,7 @@ func toModel(domain *user.User) userModel {
 		VPNsAccessLevel:         string(domain.Permissions.VPNs),
 		CachesAccessLevel:       string(domain.Permissions.Caches),
 		TrafficStatsAccessLevel: string(domain.Permissions.TrafficStats),
+		TotpSecret:              totpSecret,
+		TotpValidated:           domain.TOTP.Validated,
 	}
 }

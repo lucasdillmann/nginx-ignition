@@ -12,7 +12,6 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/integration"
 )
 
@@ -106,7 +105,7 @@ func (s *swarmAdapter) buildServiceOption(port *swarm.PortConfig, service *swarm
 			ID:           fmt.Sprintf("%s:%d:%s", service.ID, portNumber, qualifierType),
 			Name:         service.Spec.Name,
 			Port:         int(portNumber),
-			Qualifier:    ptr.Of(qualifierType),
+			Qualifier:    new(qualifierType),
 			Protocol:     integration.Protocol(port.Protocol),
 			DNSResolvers: s.dnsResolvers,
 		},

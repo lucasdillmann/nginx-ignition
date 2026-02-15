@@ -7,7 +7,6 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/common/runtime"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
@@ -213,7 +212,7 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(
 		storagePath := c.StoragePath
 
 		if storagePath == nil || strings.TrimSpace(*storagePath) == "" {
-			storagePath = ptr.Of(paths.Cache + cacheIDNoDashes)
+			storagePath = new(paths.Cache + cacheIDNoDashes)
 		}
 
 		inactive := ""
@@ -265,14 +264,14 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 			default "Unknown";
 			
 			"~(?i)bot|crawler|spider|slurp|google|bing|yandex|baidu|duckduckbot|twitterbot|facebookexternalhit|linkedinbot|slackbot|wget|curl" "Bots";
-			"~(?i)iphone|ipod" "iOS";			
-			"~(?i)ipad" "iPadOS";
-			"~(?i)android" "Android";
-			"~(?i)windows" "Windows";
-			"~(?i)macintosh|mac\sos\sx" "macOS";
-			"~(?i)linux" "Linux";
 			"~(?i)playstation|nintendo|xbox" "Console";
 			"~(?i)smart-tv|smarttv|googletv|appletv|hbbtv|tizen|samsungview|crkey" "Smart TV";
+			"~(?i)macintosh|mac\sos\sx" "macOS";
+			"~(?i)ipad" "iPadOS";
+			"~(?i)iphone|ipod" "iOS";
+			"~(?i)android" "Android";
+			"~(?i)windows" "Windows";
+			"~(?i)linux" "Linux";
 		}
 		
 		vhost_traffic_status_zone shared:nginx-ignition-traffic-stats:%dm;
@@ -295,7 +294,7 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 				return "", err
 			}
 
-			dbLocation = ptr.Of(filepath.Join(dataPath, "traffic-stats.db"))
+			dbLocation = new(filepath.Join(dataPath, "traffic-stats.db"))
 		}
 
 		_, _ = fmt.Fprintf(&output, "vhost_traffic_status_dump \"%s\" 5s;\n", *dbLocation)

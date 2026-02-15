@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/certificate"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 func newCertificate() *certificate.Certificate {
@@ -15,11 +14,11 @@ func newCertificate() *certificate.Certificate {
 		IssuedAt:   time.Now(),
 		ValidUntil: time.Now().Add(24 * time.Hour),
 		ValidFrom:  time.Now(),
-		RenewAfter: ptr.Of(time.Now().Add(12 * time.Hour)),
+		RenewAfter: new(time.Now().Add(12 * time.Hour)),
 		Parameters: map[string]any{
 			"foo": "bar",
 		},
-		Metadata:   ptr.Of("Test Metadata"),
+		Metadata:   new("Test Metadata"),
 		ProviderID: "test-provider",
 		PrivateKey: "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----",
 		PublicKey:  "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----",

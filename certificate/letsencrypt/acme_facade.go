@@ -180,8 +180,7 @@ func encodeIssuerCertificate(ctx context.Context, issuer []byte) (*string, error
 		)
 	}
 
-	encodedValue := base64.StdEncoding.EncodeToString(pemBlock.Bytes)
-	return &encodedValue, nil
+	return new(base64.StdEncoding.EncodeToString(pemBlock.Bytes)), nil
 }
 
 func fetchCertDates(pemBlock pem.Block, client *lego.Client) (

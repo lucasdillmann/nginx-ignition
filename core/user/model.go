@@ -9,6 +9,7 @@ type SaveRequest struct {
 	Username    string
 	ID          uuid.UUID
 	Enabled     bool
+	RemoveTOTP  bool
 }
 
 type AccessLevel string
@@ -25,8 +26,14 @@ type User struct {
 	Username     string
 	PasswordHash string
 	PasswordSalt string
+	TOTP         TOTP
 	ID           uuid.UUID
 	Enabled      bool
+}
+
+type TOTP struct {
+	Secret    *string
+	Validated bool
 }
 
 type Permissions struct {
@@ -44,3 +51,11 @@ type Permissions struct {
 	Caches       AccessLevel
 	TrafficStats AccessLevel
 }
+
+type AuthenticationOutcome string
+
+const (
+	AuthenticationSuccessful  AuthenticationOutcome = "SUCCESS"
+	AuthenticationFailed      AuthenticationOutcome = "FAILURE"
+	AuthenticationMissingTOTP AuthenticationOutcome = "MISSING_TOTP"
+)

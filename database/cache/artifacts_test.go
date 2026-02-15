@@ -4,18 +4,17 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/cache"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 func newCache() *cache.Cache {
 	return &cache.Cache{
 		ID:          uuid.New(),
 		Name:        "Test Cache",
-		StoragePath: ptr.Of("/tmp/tests"),
+		StoragePath: new("/tmp/tests"),
 		ConcurrencyLock: cache.ConcurrencyLock{
 			Enabled:        true,
-			TimeoutSeconds: ptr.Of(5),
-			AgeSeconds:     ptr.Of(10),
+			TimeoutSeconds: new(5),
+			AgeSeconds:     new(10),
 		},
 		AllowedMethods: []cache.Method{
 			cache.GetMethod,
@@ -42,7 +41,7 @@ func newCache() *cache.Cache {
 		BypassRules:              []string{},
 		NoCacheRules:             []string{},
 		MinimumUsesBeforeCaching: 1,
-		InactiveSeconds:          ptr.Of(300),
-		MaximumSizeMB:            ptr.Of(1024),
+		InactiveSeconds:          new(300),
+		MaximumSizeMB:            new(1024),
 	}
 }

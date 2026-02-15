@@ -2,8 +2,6 @@ package stream
 
 import (
 	"github.com/google/uuid"
-
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 func newStream() *Stream {
@@ -14,13 +12,13 @@ func newStream() *Stream {
 		Binding: Address{
 			Protocol: TCPProtocol,
 			Address:  "127.0.0.1",
-			Port:     ptr.Of(8080),
+			Port:     new(8080),
 		},
 		DefaultBackend: Backend{
 			Address: Address{
 				Protocol: TCPProtocol,
 				Address:  "127.0.0.1",
-				Port:     ptr.Of(8081),
+				Port:     new(8081),
 			},
 		},
 	}

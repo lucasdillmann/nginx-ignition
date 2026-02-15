@@ -10,7 +10,6 @@ import (
 
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/database/common/constants"
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
@@ -46,7 +45,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*cache.Cache, 
 		return nil, err
 	}
 
-	return ptr.Of(toDomain(&model)), nil
+	return new(toDomain(&model)), nil
 }
 
 func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) {

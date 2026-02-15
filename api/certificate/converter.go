@@ -32,8 +32,7 @@ func toIssueCertificateResponse(
 ) *issueCertificateResponse {
 	var errorReason *string
 	if err != nil {
-		errorStr := err.Error()
-		errorReason = &errorStr
+		errorReason = new(err.Error())
 	}
 
 	var certificateID *uuid.UUID
@@ -51,8 +50,7 @@ func toIssueCertificateResponse(
 func toRenewCertificateResponse(err error) *renewCertificateResponse {
 	var errorReason *string
 	if err != nil {
-		errorStr := err.Error()
-		errorReason = &errorStr
+		errorReason = new(err.Error())
 	}
 
 	return &renewCertificateResponse{

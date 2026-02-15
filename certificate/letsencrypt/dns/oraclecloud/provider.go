@@ -10,7 +10,6 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 //nolint:gosec
@@ -114,7 +113,7 @@ func (p *Provider) ChallengeProvider(
 		region,
 		finger,
 		privateKey,
-		ptr.Of(privateKeyPassword),
+		new(privateKeyPassword),
 	)
 	cfg.PropagationTimeout = dns.PropagationTimeout
 	cfg.PollingInterval = dns.PollingInterval

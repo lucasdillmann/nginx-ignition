@@ -11,7 +11,6 @@ import (
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
@@ -107,7 +106,7 @@ func Test_service(t *testing.T) {
 			hostService := newCommands(repo, nil, nil, nil, nil, nil)
 			pageSize := 10
 			pageNumber := 1
-			search := ptr.Of("term")
+			search := new("term")
 
 			expectedPage := &pagination.Page[Host]{}
 			repo.EXPECT().

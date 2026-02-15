@@ -4,7 +4,6 @@ import (
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
@@ -33,10 +32,11 @@ func newUser() *user.User {
 
 func newUserRequest() userRequestDTO {
 	return userRequestDTO{
-		Name:     ptr.Of("Test User"),
-		Username: ptr.Of("testuser"),
-		Password: ptr.Of("password123"),
-		Enabled:  ptr.Of(true),
+		Name:       new("Test User"),
+		Username:   new("testuser"),
+		Password:   new("password123"),
+		Enabled:    new(true),
+		RemoveTOTP: new(false),
 		Permissions: userPermissionsDTO{
 			Hosts:        string(user.ReadWriteAccessLevel),
 			Streams:      string(user.ReadWriteAccessLevel),

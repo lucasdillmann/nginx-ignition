@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 func Test_toDTO(t *testing.T) {
@@ -18,14 +17,14 @@ func Test_toDTO(t *testing.T) {
 
 	t.Run("converts domain object to DTO", func(t *testing.T) {
 		subject := newSettings()
-		subject.Nginx.Custom = ptr.Of("custom-config")
-		subject.Nginx.Stats.DatabaseLocation = ptr.Of("/var/lib/nginx/traffic-stats.db")
+		subject.Nginx.Custom = new("custom-config")
+		subject.Nginx.Stats.DatabaseLocation = new("/var/lib/nginx/traffic-stats.db")
 		subject.GlobalBindings = []binding.Binding{
 			{
 				Type:          binding.HTTPBindingType,
 				IP:            "127.0.0.1",
 				Port:          8080,
-				CertificateID: ptr.Of(uuid.New()),
+				CertificateID: new(uuid.New()),
 			},
 		}
 
@@ -138,14 +137,14 @@ func Test_toDomain(t *testing.T) {
 
 	t.Run("converts DTO to domain object", func(t *testing.T) {
 		payload := newSettingsDTO()
-		payload.Nginx.Custom = ptr.Of("custom-config")
-		payload.Nginx.Stats.DatabaseLocation = ptr.Of("/var/lib/nginx/traffic-stats.db")
+		payload.Nginx.Custom = new("custom-config")
+		payload.Nginx.Stats.DatabaseLocation = new("/var/lib/nginx/traffic-stats.db")
 		payload.GlobalBindings = []bindingDTO{
 			{
-				Type:          ptr.Of(binding.HTTPSBindingType),
-				IP:            ptr.Of("0.0.0.0"),
-				Port:          ptr.Of(443),
-				CertificateID: ptr.Of(uuid.New()),
+				Type:          new(binding.HTTPSBindingType),
+				IP:            new("0.0.0.0"),
+				Port:          new(443),
+				CertificateID: new(uuid.New()),
 			},
 		}
 
@@ -247,7 +246,7 @@ func Test_toDomain(t *testing.T) {
 
 	t.Run("converts empty database location to nil", func(t *testing.T) {
 		payload := newSettingsDTO()
-		payload.Nginx.Stats.DatabaseLocation = ptr.Of("   ")
+		payload.Nginx.Stats.DatabaseLocation = new("   ")
 		result := toDomain(payload)
 
 		assert.NotNil(t, result)

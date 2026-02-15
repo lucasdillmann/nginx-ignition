@@ -98,6 +98,8 @@ func (r *logRotator) rotateFile(
 	}
 
 	trimmedContent := strings.Join(lines, "\n") + "\n"
+
+	//nolint:gosec // G703: filePath is safe as it is constructed from a configured base path and known log filenames
 	return os.WriteFile(filePath, []byte(trimmedContent), 0o644)
 }
 

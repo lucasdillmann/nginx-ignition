@@ -68,6 +68,7 @@ func (c *Client) executeGetRequest(endpoint string, result any) ([]byte, error) 
 
 	req.SetBasicAuth(c.username, c.password)
 
+	//nolint:gosec // G704: req is constructed with a configured base URL and hardcoded endpoints
 	resp, err := c.delegate.Do(req)
 	if err != nil {
 		return nil, err

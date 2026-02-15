@@ -55,16 +55,17 @@ func (h onboardingFinishHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	usr, err := h.commands.Authenticate(
+	outcome, usr, err := h.commands.Authenticate(
 		ctx.Request.Context(),
 		domainModel.Username,
 		*domainModel.Password,
+		"",
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	if usr == nil {
+	if outcome != user.AuthenticationSuccessful || usr == nil {
 		ctx.Status(http.StatusUnauthorized)
 		return
 	}
