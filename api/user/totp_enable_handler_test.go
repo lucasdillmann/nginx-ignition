@@ -49,7 +49,7 @@ func Test_totpEnableHandler(t *testing.T) {
 			assert.Equal(t, http.StatusOK, recorder.Code)
 			var response totpEnableResponseDTO
 			json.Unmarshal(recorder.Body.Bytes(), &response)
-			assert.Equal(t, "otpauth://totp/test?secret=ABC123", response.Secret)
+			assert.Equal(t, "otpauth://totp/test?secret=ABC123", response.URL)
 		})
 
 		t.Run("returns 400 Bad Request when TOTP is already activated", func(t *testing.T) {

@@ -62,7 +62,7 @@ type totpStatusResponseDTO struct {
 }
 
 type totpEnableResponseDTO struct {
-	Secret string `json:"secret"`
+	URL string `json:"url"`
 }
 
 type totpActivateRequestDTO struct {

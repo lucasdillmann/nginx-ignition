@@ -26,7 +26,7 @@ export default class SessionExpiredApiClientEventListener implements ApiClientEv
 
     handleResponse(_: RequestInit, response: ApiResponse<any>): void {
         const currentUser = AppContext.get().user
-        if (currentUser === undefined || response.statusCode !== 401 || this.alreadyShown) return
+        if (currentUser?.id === undefined || response.statusCode !== 401 || this.alreadyShown) return
 
         this.alreadyShown = true
 

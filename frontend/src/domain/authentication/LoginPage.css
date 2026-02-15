@@ -33,3 +33,45 @@
 #nginx-ignition-login-form .ant-form-item:first-of-type {
     margin-bottom: 12px;
 }
+
+.totp-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 0 4px;
+    margin-left: 20px;
+}
+
+.totp-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.totp-icon {
+    font-size: 28px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.totp-prompt {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+}
+
+.totp-container .ant-otp {
+    width: 100%;
+}
+
+.totp-container .ant-otp .ant-input {
+    width: 100%;
+}
+
+.totp-back-link {
+    display: block;
+    text-align: center;
+    margin-top: 8px;
+    font-size: 13px;
+    cursor: pointer;
+}
