@@ -6,12 +6,12 @@ require (
 	github.com/JCoupalK/go-pgdump v1.1.1-0.20251117080142-ba155b05e5d3
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/google/uuid v1.6.0
-	github.com/lib/pq v1.11.1
+	github.com/lib/pq v1.11.2
 	github.com/stretchr/testify v1.11.1
 	github.com/uptrace/bun v1.2.16
 	github.com/uptrace/bun/dialect/pgdialect v1.2.16
 	github.com/uptrace/bun/dialect/sqlitedialect v1.2.16
-	modernc.org/sqlite v1.44.3
+	modernc.org/sqlite v1.45.0
 )
 
 require (
@@ -19,11 +19,11 @@ require (
 	github.com/docker/docker v28.5.2+incompatible // indirect
 	github.com/docker/go-connections v0.6.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/google/pprof v0.0.0-20251213031049-b05bdaca462f // indirect
+	github.com/google/pprof v0.0.0-20260115054156-294ebfa9ad83 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mattn/go-sqlite3 v1.14.33 // indirect
+	github.com/mattn/go-sqlite3 v1.14.34 // indirect
 	github.com/moby/term v0.5.2 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.1 // indirect
@@ -36,7 +36,7 @@ require (
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.65.0 // indirect
 	go.opentelemetry.io/otel/trace v1.40.0 // indirect
-	golang.org/x/exp v0.0.0-20260112195511-716be5621a96 // indirect
+	golang.org/x/exp v0.0.0-20260212183809-81e46e3db34a // indirect
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect

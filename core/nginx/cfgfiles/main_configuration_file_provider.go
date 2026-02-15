@@ -265,14 +265,14 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 			default "Unknown";
 			
 			"~(?i)bot|crawler|spider|slurp|google|bing|yandex|baidu|duckduckbot|twitterbot|facebookexternalhit|linkedinbot|slackbot|wget|curl" "Bots";
-			"~(?i)iphone|ipod" "iOS";			
-			"~(?i)ipad" "iPadOS";
-			"~(?i)android" "Android";
-			"~(?i)windows" "Windows";
-			"~(?i)macintosh|mac\sos\sx" "macOS";
-			"~(?i)linux" "Linux";
 			"~(?i)playstation|nintendo|xbox" "Console";
 			"~(?i)smart-tv|smarttv|googletv|appletv|hbbtv|tizen|samsungview|crkey" "Smart TV";
+			"~(?i)macintosh|mac\sos\sx" "macOS";
+			"~(?i)ipad" "iPadOS";
+			"~(?i)iphone|ipod" "iOS";
+			"~(?i)android" "Android";
+			"~(?i)windows" "Windows";
+			"~(?i)linux" "Linux";
 		}
 		
 		vhost_traffic_status_zone shared:nginx-ignition-traffic-stats:%dm;
