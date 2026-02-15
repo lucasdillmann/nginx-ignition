@@ -1,6 +1,8 @@
 package user
 
 import (
+	"strings"
+
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/user"
@@ -12,11 +14,12 @@ func toDomain(dto *userRequestDTO) *user.SaveRequest {
 	}
 
 	return &user.SaveRequest{
-		ID:       uuid.New(),
-		Enabled:  getBoolValue(dto.Enabled),
-		Name:     getStringValue(dto.Name),
-		Username: getStringValue(dto.Username),
-		Password: dto.Password,
+		ID:         uuid.New(),
+		Enabled:    getBoolValue(dto.Enabled),
+		RemoveTOTP: getBoolValue(dto.RemoveTOTP),
+		Name:       getStringValue(dto.Name),
+		Username:   getStringValue(dto.Username),
+		Password:   dto.Password,
 		Permissions: user.Permissions{
 			Hosts:        user.AccessLevel(dto.Permissions.Hosts),
 			Streams:      user.AccessLevel(dto.Permissions.Streams),
@@ -40,11 +43,19 @@ func toDTO(domain *user.User) *userResponseDTO {
 		return nil
 	}
 
+	totpEnabled := false
+	totpData := domain.TOTP
+
+	if totpData.Validated && totpData.Secret != nil && strings.TrimSpace(*totpData.Secret) != "" {
+		totpEnabled = true
+	}
+
 	return &userResponseDTO{
-		ID:       domain.ID,
-		Enabled:  domain.Enabled,
-		Name:     domain.Name,
-		Username: domain.Username,
+		ID:          domain.ID,
+		Enabled:     domain.Enabled,
+		TOTPEnabled: totpEnabled,
+		Name:        domain.Name,
+		Username:    domain.Username,
 		Permissions: userPermissionsDTO{
 			Hosts:        string(domain.Permissions.Hosts),
 			Streams:      string(domain.Permissions.Streams),

@@ -150,14 +150,21 @@ func (s *service) Save(ctx context.Context, request *SaveRequest, currentUserID 
 		return err
 	}
 
+	var totpValue TOTP
 	if request.Password == nil && databaseState != nil {
 		passwordHash = databaseState.PasswordHash
 		passwordSalt = databaseState.PasswordSalt
+		totpValue = databaseState.TOTP
 	} else if request.Password != nil {
 		passwordHash, passwordSalt, err = passwordhash.New(s.configuration).Hash(*request.Password)
 		if err != nil {
 			return err
 		}
+	}
+
+	if request.RemoveTOTP {
+		totpValue.Secret = nil
+		totpValue.Validated = false
 	}
 
 	updatedState := &User{
@@ -168,6 +175,7 @@ func (s *service) Save(ctx context.Context, request *SaveRequest, currentUserID 
 		PasswordHash: passwordHash,
 		PasswordSalt: passwordSalt,
 		Permissions:  request.Permissions,
+		TOTP:         totpValue,
 	}
 
 	if err := newValidator(s.repository).validate(

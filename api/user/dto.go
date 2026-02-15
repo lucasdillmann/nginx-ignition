@@ -25,6 +25,7 @@ type userPasswordUpdateRequestDTO struct {
 
 type userRequestDTO struct {
 	Enabled     *bool              `json:"enabled"`
+	RemoveTOTP  *bool              `json:"removeTotp"`
 	Name        *string            `json:"name"`
 	Username    *string            `json:"username"`
 	Password    *string            `json:"password,omitempty"`
@@ -37,6 +38,7 @@ type userResponseDTO struct {
 	Username    string             `json:"username"`
 	ID          uuid.UUID          `json:"id"`
 	Enabled     bool               `json:"enabled"`
+	TOTPEnabled bool               `json:"totpEnabled"`
 }
 
 type userPermissionsDTO struct {

@@ -2,8 +2,6 @@ package user
 
 import (
 	"github.com/google/uuid"
-
-	"dillmann.com.br/nginx-ignition/core/common/ptr"
 )
 
 func newUser() *User {
@@ -32,11 +30,12 @@ func newUser() *User {
 
 func newSaveRequest() *SaveRequest {
 	return &SaveRequest{
-		ID:       uuid.New(),
-		Username: "testuser",
-		Name:     "Test User",
-		Enabled:  true,
-		Password: ptr.Of("password123"),
+		ID:         uuid.New(),
+		Username:   "testuser",
+		Name:       "Test User",
+		Enabled:    true,
+		Password:   new("password123"),
+		RemoveTOTP: false,
 		Permissions: Permissions{
 			Hosts:        NoAccessAccessLevel,
 			Streams:      NoAccessAccessLevel,

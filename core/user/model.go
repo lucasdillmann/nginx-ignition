@@ -9,6 +9,7 @@ type SaveRequest struct {
 	Username    string
 	ID          uuid.UUID
 	Enabled     bool
+	RemoveTOTP  bool
 }
 
 type AccessLevel string

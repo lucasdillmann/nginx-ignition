@@ -146,6 +146,54 @@ func Test_service(t *testing.T) {
 		})
 	})
 
+	t.Run("Save", func(t *testing.T) {
+		t.Run("saves user successfully", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			request := newSaveRequest()
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), request.ID).Return(nil, nil)
+			repo.EXPECT().FindByUsername(t.Context(), request.Username).Return(nil, nil)
+			repo.EXPECT().Save(t.Context(), gomock.Any()).Return(nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.Save(t.Context(), request, nil)
+
+			assert.NoError(t, err)
+		})
+
+		t.Run("removes TOTP when requested", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			secret := "secret"
+			usr.TOTP = TOTP{Secret: &secret, Validated: true}
+
+			request := newSaveRequest()
+			request.ID = usr.ID
+			request.Password = nil
+			request.RemoveTOTP = true
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), request.ID).Return(usr, nil)
+			repo.EXPECT().FindByUsername(t.Context(), request.Username).Return(usr, nil)
+			repo.EXPECT().Save(t.Context(), gomock.Any()).DoAndReturn(func(_ any, u *User) error {
+				assert.Nil(t, u.TOTP.Secret)
+				assert.False(t, u.TOTP.Validated)
+				return nil
+			})
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.Save(t.Context(), request, nil)
+
+			assert.NoError(t, err)
+		})
+	})
+
 	t.Run("Authenticate", func(t *testing.T) {
 		cfg := &configuration.Configuration{}
 		ph := passwordhash.New(cfg)
