@@ -29,5 +29,9 @@ func newUser() *user.User {
 			TrafficStats: user.ReadOnlyAccessLevel,
 		},
 		Enabled: true,
+		TOTP: user.TOTP{
+			Secret:    nil,
+			Validated: false,
+		},
 	}
 }

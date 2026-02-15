@@ -25,8 +25,14 @@ type User struct {
 	Username     string
 	PasswordHash string
 	PasswordSalt string
+	TOTP         TOTP
 	ID           uuid.UUID
 	Enabled      bool
+}
+
+type TOTP struct {
+	Secret    *string
+	Validated bool
 }
 
 type Permissions struct {

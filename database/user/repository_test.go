@@ -35,6 +35,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			assert.Equal(t, cmd.PasswordSalt, saved.PasswordSalt)
 			assert.Equal(t, cmd.Permissions, saved.Permissions)
 			assert.Equal(t, cmd.Enabled, saved.Enabled)
+			assert.Equal(t, cmd.TOTP, saved.TOTP)
 		})
 
 		t.Run("successfully updates an existing user", func(t *testing.T) {
