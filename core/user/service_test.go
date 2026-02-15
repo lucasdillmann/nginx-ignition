@@ -15,6 +15,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
+	"dillmann.com.br/nginx-ignition/core/user/passwordhash"
 )
 
 func Test_service(t *testing.T) {
@@ -146,6 +147,11 @@ func Test_service(t *testing.T) {
 	})
 
 	t.Run("Authenticate", func(t *testing.T) {
+		cfg := &configuration.Configuration{}
+		ph := passwordhash.New(cfg)
+		password := "password"
+		hash, salt, _ := ph.Hash(password)
+
 		t.Run("returns error when user not found", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
@@ -153,7 +159,6 @@ func Test_service(t *testing.T) {
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "nonexistent").Return(nil, nil)
 
-			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
 			outcome, result, err := svc.Authenticate(t.Context(), "nonexistent", "password", "")
 
@@ -164,6 +169,114 @@ func Test_service(t *testing.T) {
 			var coreErr *coreerror.CoreError
 			require.ErrorAs(t, err, &coreErr)
 			assert.Equal(t, i18n.K.CoreUserInvalidCredentials, coreErr.Message.Key)
+		})
+
+		t.Run("returns success when password matches and TOTP disabled", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			usr.PasswordHash = hash
+			usr.PasswordSalt = salt
+			usr.TOTP.Validated = false
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+
+			svc, _ := newCommands(repo, cfg)
+			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, "")
+
+			assert.NoError(t, err)
+			assert.Equal(t, usr, result)
+			assert.Equal(t, AuthenticationSuccessful, outcome)
+		})
+
+		t.Run("returns failure when password does not match", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			usr.PasswordHash = hash
+			usr.PasswordSalt = salt
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+
+			svc, _ := newCommands(repo, cfg)
+			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, "wrongpassword", "")
+
+			require.Error(t, err)
+			assert.Nil(t, result)
+			assert.Equal(t, outcome, AuthenticationFailed)
+
+			var coreErr *coreerror.CoreError
+			require.ErrorAs(t, err, &coreErr)
+			assert.Equal(t, i18n.K.CoreUserInvalidCredentials, coreErr.Message.Key)
+		})
+
+		t.Run("returns missing TOTP when enabled but code empty", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			secret := "JBSWY3DPEHPK3PXP"
+			usr := newUser()
+			usr.PasswordHash = hash
+			usr.PasswordSalt = salt
+			usr.TOTP = TOTP{Secret: &secret, Validated: true}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+
+			svc, _ := newCommands(repo, cfg)
+			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, "")
+
+			assert.NoError(t, err)
+			assert.Nil(t, result)
+			assert.Equal(t, AuthenticationMissingTOTP, outcome)
+		})
+
+		t.Run("returns failure when TOTP enabled but code invalid", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			secret := "JBSWY3DPEHPK3PXP"
+			usr := newUser()
+			usr.PasswordHash = hash
+			usr.PasswordSalt = salt
+			usr.TOTP = TOTP{Secret: &secret, Validated: true}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+
+			svc, _ := newCommands(repo, cfg)
+			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, "000000")
+
+			assert.NoError(t, err)
+			assert.Nil(t, result)
+			assert.Equal(t, AuthenticationFailed, outcome)
+		})
+
+		t.Run("returns success when TOTP enabled and code valid", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			secret := "JBSWY3DPEHPK3PXP"
+			code, _ := totp.GenerateCode(secret, time.Now())
+
+			usr := newUser()
+			usr.PasswordHash = hash
+			usr.PasswordSalt = salt
+			usr.TOTP = TOTP{Secret: &secret, Validated: true}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+
+			svc, _ := newCommands(repo, cfg)
+			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, code)
+
+			assert.NoError(t, err)
+			assert.Equal(t, usr, result)
+			assert.Equal(t, AuthenticationSuccessful, outcome)
 		})
 	})
 

@@ -37,7 +37,7 @@ func Test_onboardingFinishHandler(t *testing.T) {
 				Return(nil)
 			commands.EXPECT().
 				Authenticate(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
-				Return(&user.User{
+				Return(user.AuthenticationSuccessful, &user.User{
 					ID:       uuid.New(),
 					Username: "admin",
 				}, nil)

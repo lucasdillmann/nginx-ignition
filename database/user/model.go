@@ -6,7 +6,8 @@ import (
 )
 
 type userModel struct {
-	bun.BaseModel           `bun:"user"`
+	bun.BaseModel `bun:"user"`
+
 	TotpSecret              *string   `bun:"totp_secret"`
 	CertificatesAccessLevel string    `bun:"certificates_access_level,notnull"`
 	LogsAccessLevel         string    `bun:"logs_access_level,notnull"`
