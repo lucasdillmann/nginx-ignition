@@ -1,0 +1,81 @@
+.totp-setup-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 0;
+    width: 100%;
+}
+
+.totp-setup-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.totp-setup-icon {
+    font-size: 26px;
+    color: var(--ant-color-text);
+}
+
+.totp-setup-title {
+    margin: 0 !important;
+}
+
+.totp-setup-subtitle {
+    text-align: center;
+    max-width: 360px;
+    font-size: 13px;
+    opacity: 0.75;
+}
+
+.totp-setup-qr-container {
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.totp-setup-secret {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: var(--ant-color-fill-tertiary);
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: all;
+}
+
+.totp-setup-secret:hover {
+    background: var(--ant-color-fill-secondary);
+}
+
+.totp-setup-secret-value {
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+}
+
+.totp-setup-secret-copy-icon {
+    font-size: 14px;
+    opacity: 0.5;
+}
+
+.totp-setup-verify-prompt {
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.totp-setup-container .ant-otp {
+    width: auto;
+}
+
+.totp-setup-container .ant-otp .ant-input {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+}

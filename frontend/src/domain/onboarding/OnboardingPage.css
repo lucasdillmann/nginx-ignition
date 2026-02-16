@@ -1,27 +1,79 @@
-.onboarding-container {
-    margin: 0 auto;
-    width: 380px;
+.onboarding-steps {
+    margin: 0 20px 20px;
 }
 
-.onboarding-section {
-    align-items: center;
+.onboarding-steps .ant-steps-item-title {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-size: 13px;
+}
+
+.onboarding-steps .ant-steps-item-wait .ant-steps-item-icon {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.onboarding-steps .ant-steps-item-wait .ant-steps-item-icon .ant-steps-icon {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.onboarding-steps .ant-steps-item-wait .ant-steps-item-title {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.onboarding-steps .ant-steps-item-tail::after {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.onboarding-totp-step {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 20px;
 }
 
-.onboarding-title {
-    margin-top: 0;
-    font-size: 24px;
+.onboarding-totp-step .totp-setup-icon,
+.onboarding-totp-step .totp-setup-title,
+.onboarding-totp-step .totp-setup-subtitle,
+.onboarding-totp-step .totp-setup-verify-prompt {
+    color: rgba(255, 255, 255, 0.85) !important;
 }
 
-.onboarding-header {
-    margin-top: 40px;
-    margin-bottom: 30px;
+.onboarding-totp-step .totp-setup-secret {
+    background: rgba(255, 255, 255, 0.1);
 }
 
-.onboarding-text {
-    font-size: 14px;
+.onboarding-totp-step .totp-setup-secret:hover {
+    background: rgba(255, 255, 255, 0.18);
 }
 
-.onboarding-form-input {
-    margin-bottom: 10px;
+.onboarding-totp-step .totp-setup-secret-value {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.onboarding-totp-step .totp-setup-secret-copy-icon {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.onboarding-skip-button {
+    margin-top: 12px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.onboarding-skip-button:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.onboarding-text-description {
+    padding-right: 25px;
+    max-width: 300px;
+}
+
+#nginx-ignition-onboarding-form .ant-form-item {
+    margin-bottom: 10px !important;
+}
+
+.ant-pro-form-login-page-left:has(#nginx-ignition-onboarding-form) {
+    min-width: 750px !important;
+    max-width: 750px !important;
 }

@@ -242,7 +242,7 @@ func (s *service) EnableTOTP(ctx context.Context, id uuid.UUID) (string, error) 
 	}
 
 	key, err := totp.Generate(totp.GenerateOpts{
-		Issuer:      "nginx-ignition",
+		Issuer:      "nginx ignition",
 		AccountName: usr.Username,
 	})
 	if err != nil {
