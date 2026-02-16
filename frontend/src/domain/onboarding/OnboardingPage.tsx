@@ -177,7 +177,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
     }
 
     private renderContent() {
-        const { currentStep, backgroundImageUrl } = this.state
+        const { currentStep, backgroundImageUrl, loading } = this.state
 
         if (currentStep === 1) {
             return (
@@ -191,7 +191,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                         display: "flex",
                         justifyContent: "center",
                         backgroundColor: "rgba(0, 0, 0, 0.65)",
-                        padding: "60px 40px",
+                        padding: "60px 40px 40px",
                     }}
                     otherStyle={{ width: 10 }}
                 >
@@ -212,6 +212,13 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                     searchConfig: {
                         submitText: <I18n id={MessageKey.CommonContinue} />,
                     },
+                    submitButtonProps: {
+                        style: {
+                            width: "auto",
+                            float: "right",
+                        },
+                        loading,
+                    },
                 }}
                 containerStyle={{
                     display: "flex",
@@ -219,7 +226,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                     backgroundColor: "rgba(0, 0, 0, 0.65)",
                     backdropFilter: "blur(4px)",
                     color: "white",
-                    padding: "60px 40px",
+                    padding: "60px 40px 40px",
                 }}
                 otherStyle={{ width: 10 }}
             >

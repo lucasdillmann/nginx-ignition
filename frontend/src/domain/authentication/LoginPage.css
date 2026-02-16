@@ -22,16 +22,22 @@
 }
 
 .ant-pro-form-login-page-left {
-    max-width: 650px;
+    max-width: 700px;
     margin: 10% auto 0;
 }
 
 .ant-pro-form-login-page-top {
     margin-right: 10px;
+    max-width: 280px;
 }
 
 #nginx-ignition-login-form .ant-form-item:first-of-type {
     margin-bottom: 12px;
+}
+
+#nginx-ignition-login-form .ant-form-item,
+#nginx-ignition-login-form .ant-btn {
+    margin-left: 20px;
 }
 
 .totp-container {
@@ -39,7 +45,7 @@
     flex-direction: column;
     align-items: center;
     gap: 16px;
-    padding: 8px 0 4px;
+    padding: 0 0 4px;
     margin-left: 20px;
 }
 
@@ -50,14 +56,21 @@
     gap: 12px;
 }
 
+.totp-title {
+    margin: 0 !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
 .totp-icon {
-    font-size: 28px;
-    color: rgba(255, 255, 255, 0.85);
+    font-size: 26px;
+    color: var(--ant-color-text);
 }
 
 .totp-prompt {
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 14px;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 13px;
+    text-align: center;
+    max-width: 360px;
 }
 
 .totp-container .ant-otp {
@@ -71,7 +84,7 @@
 .totp-back-link {
     display: block;
     text-align: center;
-    margin-top: 8px;
+    margin-top: 0;
     font-size: 13px;
     cursor: pointer;
 }

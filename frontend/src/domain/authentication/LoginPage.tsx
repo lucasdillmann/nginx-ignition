@@ -159,10 +159,13 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
             <div className="totp-container">
                 <div className="totp-header">
                     <SafetyOutlined className="totp-icon" />
-                    <Typography.Text className="totp-prompt">
-                        <I18n id={MessageKey.FrontendAuthenticationTotpPrompt} />
-                    </Typography.Text>
+                    <Typography.Title level={4} className="totp-title">
+                        <I18n id={MessageKey.FrontendUserTotpTitle} />
+                    </Typography.Title>
                 </div>
+                <Typography.Text className="totp-prompt">
+                    <I18n id={MessageKey.FrontendAuthenticationTotpPrompt} />
+                </Typography.Text>
                 <Input.OTP
                     ref={this.otpRef}
                     length={6}
@@ -210,7 +213,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
     }
 
     private renderForm() {
-        const { backgroundImageUrl, totp } = this.state
+        const { backgroundImageUrl, totp, loading } = this.state
 
         return (
             <LoginFormPage
@@ -227,6 +230,13 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                               searchConfig: {
                                   submitText: <I18n id={MessageKey.FrontendAuthenticationLoginButton} />,
                               },
+                              submitButtonProps: {
+                                  style: {
+                                      width: "auto",
+                                      float: "right",
+                                  },
+                                  loading,
+                              },
                           }
                 }
                 containerStyle={{
@@ -235,7 +245,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                     backgroundColor: "rgba(0, 0, 0, 0.65)",
                     backdropFilter: "blur(4px)",
                     color: "white",
-                    padding: "60px 40px",
+                    padding: "60px 40px 40px",
                 }}
                 otherStyle={{
                     width: 10,

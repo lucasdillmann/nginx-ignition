@@ -1,5 +1,5 @@
 import React, { createRef } from "react"
-import { Input, QRCode, Spin, Typography } from "antd"
+import { Button, Input, QRCode, Spin, Typography } from "antd"
 import { CopyOutlined, SafetyOutlined } from "@ant-design/icons"
 import type { OTPRef } from "antd/es/input/OTP"
 import Notification from "../../../core/components/notification/Notification"
@@ -144,14 +144,15 @@ export default class TotpSetup extends React.Component<TotpSetupProps, TotpSetup
                 )}
 
                 {totpSecret && (
-                    <div
+                    <Button
                         className="totp-setup-secret"
                         onClick={this.handleCopySecret.bind(this)}
                         title={i18n(MessageKey.CommonCopy)}
+                        style={{ height: "auto", border: "none" }}
                     >
                         <code className="totp-setup-secret-value">{totpSecret}</code>
                         <CopyOutlined className="totp-setup-secret-copy-icon" />
-                    </div>
+                    </Button>
                 )}
 
                 <Typography.Text className="totp-setup-verify-prompt">
