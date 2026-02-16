@@ -444,7 +444,7 @@ func Test_service(t *testing.T) {
 			url, err := svc.EnableTOTP(t.Context(), usr.ID)
 
 			assert.NoError(t, err)
-			assert.Contains(t, url, "otpauth://totp/nginx-ignition")
+			assert.Contains(t, url, "otpauth://totp/nginx%20ignition")
 			assert.Contains(t, url, usr.Username)
 		})
 	})
