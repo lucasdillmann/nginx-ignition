@@ -1,6 +1,8 @@
 package user
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
@@ -37,19 +39,19 @@ func Install(
 	currentPath.POST("/update-password", updatePasswordHandler{commands}.handle)
 
 	totpPath := currentPath.Group("/totp")
-	totpPath.GET("/status", totpStatusHandler{commands}.handle)
-	totpPath.POST("/enable", totpEnableHandler{commands}.handle)
+	totpPath.GET("", totpStatusHandler{commands}.handle)
+	totpPath.POST("", totpEnableHandler{commands}.handle)
 	totpPath.POST("/activate", totpActivateHandler{commands}.handle)
-	totpPath.POST("/disable", totpDisableHandler{commands}.handle)
+	totpPath.DELETE("", totpDisableHandler{commands}.handle)
 
-	authorizer.AllowAnonymous("GET", "/api/users/onboarding/status")
-	authorizer.AllowAnonymous("POST", "/api/users/onboarding/finish")
-	authorizer.AllowAnonymous("POST", "/api/users/login")
-	authorizer.AllowAllUsers("POST", "/api/users/logout")
-	authorizer.AllowAllUsers("GET", "/api/users/current")
-	authorizer.AllowAllUsers("POST", "/api/users/current/update-password")
-	authorizer.AllowAllUsers("GET", "/api/users/current/totp/status")
-	authorizer.AllowAllUsers("POST", "/api/users/current/totp/enable")
-	authorizer.AllowAllUsers("POST", "/api/users/current/totp/activate")
-	authorizer.AllowAllUsers("POST", "/api/users/current/totp/disable")
+	authorizer.AllowAnonymous(http.MethodGet, "/api/users/onboarding/status")
+	authorizer.AllowAnonymous(http.MethodPost, "/api/users/onboarding/finish")
+	authorizer.AllowAnonymous(http.MethodPost, "/api/users/login")
+	authorizer.AllowAllUsers(http.MethodPost, "/api/users/logout")
+	authorizer.AllowAllUsers(http.MethodGet, "/api/users/current")
+	authorizer.AllowAllUsers(http.MethodPost, "/api/users/current/update-password")
+	authorizer.AllowAllUsers(http.MethodGet, "/api/users/current/totp")
+	authorizer.AllowAllUsers(http.MethodPost, "/api/users/current/totp")
+	authorizer.AllowAllUsers(http.MethodPost, "/api/users/current/totp/activate")
+	authorizer.AllowAllUsers(http.MethodDelete, "/api/users/current/totp")
 }
