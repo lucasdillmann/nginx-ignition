@@ -181,7 +181,7 @@ export default class UserSecuritySettingsModal extends React.Component<
             )
         }
 
-        return <TotpSetup onActivated={() => this.setState({ totpEnabled: true })} />
+        return <TotpSetup onActivation={() => this.setState({ totpEnabled: true })} />
     }
 
     render() {

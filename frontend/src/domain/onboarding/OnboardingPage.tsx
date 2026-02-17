@@ -168,7 +168,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
     private renderTotpStep() {
         return (
             <div className="onboarding-totp-step">
-                <TotpSetup onActivated={this.handleTotpCompleted.bind(this)} />
+                <TotpSetup onActivation={this.handleTotpCompleted.bind(this)} />
                 <Button type="link" className="onboarding-skip-button" onClick={this.handleTotpCompleted.bind(this)}>
                     <I18n id={MessageKey.FrontendOnboardingSkipTotp} />
                 </Button>

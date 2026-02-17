@@ -10,13 +10,13 @@ import "./TotpSetup.css"
 import UserService from "../UserService"
 
 export interface TotpSetupProps {
-    onActivated: () => void
+    onActivation: () => void
 }
 
 interface TotpSetupState {
     loading: boolean
-    totpUrl?: string
-    totpSecret?: string
+    url?: string
+    secret?: string
     code: string
     failed: boolean
     secretCopied: boolean
@@ -48,8 +48,8 @@ export default class TotpSetup extends React.Component<TotpSetupProps, TotpSetup
             .then(response => {
                 const secret = this.extractSecret(response.url)
                 this.setState({
-                    totpUrl: response.url,
-                    totpSecret: secret,
+                    url: response.url,
+                    secret: secret,
                     loading: false,
                 })
             })
@@ -84,7 +84,7 @@ export default class TotpSetup extends React.Component<TotpSetupProps, TotpSetup
                     MessageKey.FrontendUserTotpActivatedTitle,
                     MessageKey.FrontendUserTotpActivatedSubtitle,
                 )
-                this.props.onActivated()
+                this.props.onActivation()
             })
             .catch(() => {
                 this.handleActivationFailure()
@@ -102,11 +102,11 @@ export default class TotpSetup extends React.Component<TotpSetupProps, TotpSetup
     }
 
     private async handleCopySecret() {
-        const { totpSecret } = this.state
-        if (!totpSecret) return
+        const { secret } = this.state
+        if (!secret) return
 
         try {
-            await navigator.clipboard.writeText(totpSecret)
+            await navigator.clipboard.writeText(secret)
             this.setState({ secretCopied: true })
             setTimeout(() => this.setState({ secretCopied: false }), 2000)
         } catch {
@@ -115,9 +115,9 @@ export default class TotpSetup extends React.Component<TotpSetupProps, TotpSetup
     }
 
     render() {
-        const { loading, totpUrl, totpSecret, code, failed } = this.state
+        const { loading, url, secret, code, failed } = this.state
 
-        if (loading && !totpUrl) {
+        if (loading && !url) {
             return (
                 <div className="totp-setup-container">
                     <Spin size="large" />
@@ -138,20 +138,20 @@ export default class TotpSetup extends React.Component<TotpSetupProps, TotpSetup
                     <I18n id={MessageKey.FrontendUserTotpSubtitle} />
                 </Typography.Text>
 
-                <If condition={!!totpUrl}>
+                <If condition={!!url}>
                     <div className="totp-setup-qr-container">
-                        <QRCode value={totpUrl!} size={200} color="#000000" />
+                        <QRCode value={url!} size={200} color="#000000" />
                     </div>
                 </If>
 
-                <If condition={!!totpSecret}>
+                <If condition={!!secret}>
                     <Button
                         className="totp-setup-secret"
                         onClick={this.handleCopySecret.bind(this)}
                         title={i18n(MessageKey.CommonCopy)}
                         style={{ height: "auto", border: "none" }}
                     >
-                        <code className="totp-setup-secret-value">{totpSecret}</code>
+                        <code className="totp-setup-secret-value">{secret}</code>
                         <CopyOutlined className="totp-setup-secret-copy-icon" />
                     </Button>
                 </If>
