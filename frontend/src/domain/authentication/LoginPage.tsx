@@ -179,7 +179,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                 <div className="totp-header">
                     <SafetyOutlined className="totp-icon" />
                     <Typography.Title level={4} className="totp-title">
-                        <I18n id={MessageKey.FrontendUserTotpTitle} />
+                        <I18n id={MessageKey.CommonTwoFactorAuthentication} />
                     </Typography.Title>
                 </div>
                 <Typography.Text className="totp-prompt">
@@ -246,17 +246,17 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                     totp
                         ? { render: () => [] }
                         : {
-                              searchConfig: {
-                                  submitText: <I18n id={MessageKey.FrontendAuthenticationLoginButton} />,
-                              },
-                              submitButtonProps: {
-                                  style: {
-                                      width: "auto",
-                                      float: "right",
-                                  },
-                                  loading,
-                              },
-                          }
+                            searchConfig: {
+                                submitText: <I18n id={MessageKey.FrontendAuthenticationLoginButton} />,
+                            },
+                            submitButtonProps: {
+                                style: {
+                                    width: "auto",
+                                    float: "right",
+                                },
+                                loading,
+                            },
+                        }
                 }
                 containerStyle={{
                     display: "flex",

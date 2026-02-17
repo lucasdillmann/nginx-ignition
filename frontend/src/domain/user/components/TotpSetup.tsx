@@ -5,6 +5,7 @@ import type { OTPRef } from "antd/es/input/OTP"
 import Notification from "../../../core/components/notification/Notification"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n } from "../../../core/i18n/I18n"
+import If from "../../../core/components/flowcontrol/If"
 import "./TotpSetup.css"
 import UserService from "../UserService"
 
@@ -129,7 +130,7 @@ export default class TotpSetup extends React.Component<TotpSetupProps, TotpSetup
                 <div className="totp-setup-header">
                     <SafetyOutlined className="totp-setup-icon" />
                     <Typography.Title level={4} className="totp-setup-title">
-                        <I18n id={MessageKey.FrontendUserTotpTitle} />
+                        <I18n id={MessageKey.CommonTwoFactorAuthentication} />
                     </Typography.Title>
                 </div>
 
@@ -137,13 +138,13 @@ export default class TotpSetup extends React.Component<TotpSetupProps, TotpSetup
                     <I18n id={MessageKey.FrontendUserTotpSubtitle} />
                 </Typography.Text>
 
-                {totpUrl && (
+                <If condition={!!totpUrl}>
                     <div className="totp-setup-qr-container">
-                        <QRCode value={totpUrl} size={200} color="#000000" />
+                        <QRCode value={totpUrl!} size={200} color="#000000" />
                     </div>
-                )}
+                </If>
 
-                {totpSecret && (
+                <If condition={!!totpSecret}>
                     <Button
                         className="totp-setup-secret"
                         onClick={this.handleCopySecret.bind(this)}
@@ -153,7 +154,7 @@ export default class TotpSetup extends React.Component<TotpSetupProps, TotpSetup
                         <code className="totp-setup-secret-value">{totpSecret}</code>
                         <CopyOutlined className="totp-setup-secret-copy-icon" />
                     </Button>
-                )}
+                </If>
 
                 <Typography.Text className="totp-setup-verify-prompt">
                     <I18n id={MessageKey.FrontendAuthenticationTotpPrompt} />

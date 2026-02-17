@@ -6,4 +6,5 @@ export default interface UserResponse {
     name: string
     username: string
     permissions: UserPermissions
+    totpEnabled: boolean
 }

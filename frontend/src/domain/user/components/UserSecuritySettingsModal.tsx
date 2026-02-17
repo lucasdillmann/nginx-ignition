@@ -209,7 +209,7 @@ export default class UserSecuritySettingsModal extends React.Component<
                             },
                             {
                                 key: "totp",
-                                label: <I18n id={MessageKey.FrontendUserTotpTitle} />,
+                                label: <I18n id={MessageKey.CommonTwoFactorAuthentication} />,
                                 children: this.renderTotpTab(),
                                 icon: <SafetyOutlined />,
                             },

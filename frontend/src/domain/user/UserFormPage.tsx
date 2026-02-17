@@ -2,7 +2,7 @@ import React from "react"
 import { navigateTo, routeParams } from "../../core/components/router/AppRouter"
 import UserRequest from "./model/UserRequest"
 import UserService from "./UserService"
-import { Form, Input, Switch } from "antd"
+import { Form, Input, Segmented, Switch } from "antd"
 import Preloader from "../../core/components/preloader/Preloader"
 import FormLayout from "../../core/components/form/FormLayout"
 import ValidationResult from "../../core/validation/ValidationResult"
@@ -23,6 +23,8 @@ import { UserAccessLevel } from "./model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import { I18n } from "../../core/i18n/I18n"
+import If from "../../core/components/flowcontrol/If"
+import UserConfirmation from "../../core/components/confirmation/UserConfirmation"
 
 interface UserFormState {
     formValues: UserRequest
@@ -151,6 +153,23 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                 >
                     <Input />
                 </Form.Item>
+                <If condition={formValues.totpEnabled!}>
+                    <Form.Item
+                        label={<I18n id={MessageKey.CommonTwoFactorAuthentication} />}
+                        validateStatus={validationResult.getStatus("removeTotp")}
+                        help={validationResult.getMessage("removeTotp")}
+                        required
+                    >
+                        <Segmented
+                            options={[
+                                { label: <I18n id={MessageKey.CommonKeepEnabled} />, value: "keep" },
+                                { label: <I18n id={MessageKey.CommonRemove} />, value: "disable" },
+                            ]}
+                            value={formValues.removeTotp ? "disable" : "keep"}
+                            onChange={value => this.handleTotpChange(value as string)}
+                        />
+                    </Form.Item>
+                </If>
                 <Form.Item
                     name="password"
                     validateStatus={validationResult.getStatus("password")}
@@ -184,8 +203,16 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
     }
 
     private convertToUserRequest(response: UserResponse): UserRequest {
-        const { enabled, name, username, permissions } = response
-        return { enabled, name, username, permissions }
+        const { enabled, name, username, permissions, totpEnabled } = response
+        return { enabled, name, username, permissions, totpEnabled, removeTotp: false }
+    }
+
+    private handleTotpChange(value: string) {
+        const { formValues } = this.state
+        const apply = () => this.setState({ formValues: { ...formValues, removeTotp: value === "disable" } })
+
+        if (value !== "disable") apply()
+        else UserConfirmation.ask(MessageKey.FrontendUserDisableTotpConfirmation).then(apply)
     }
 
     private async delete() {

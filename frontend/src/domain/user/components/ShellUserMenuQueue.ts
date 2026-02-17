@@ -3,8 +3,8 @@ export enum QueueAction {
 }
 
 class ShellUserMenuQueue {
+    private readonly queue: QueueAction[] = []
     private listener: ((action: QueueAction) => void) | null = null
-    private queue: QueueAction[] = []
 
     attach(listener: (action: QueueAction) => void) {
         this.listener = listener

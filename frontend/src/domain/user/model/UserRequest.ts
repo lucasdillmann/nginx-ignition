@@ -5,5 +5,7 @@ export default interface UserRequest {
     name: string
     username: string
     password?: string
+    removeTotp?: boolean
+    totpEnabled?: boolean
     permissions: UserPermissions
 }
