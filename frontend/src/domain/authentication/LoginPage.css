@@ -73,10 +73,6 @@
     max-width: 360px;
 }
 
-.totp-container .ant-otp {
-    width: 100%;
-}
-
 .totp-container .ant-otp .ant-input {
     width: 100%;
 }

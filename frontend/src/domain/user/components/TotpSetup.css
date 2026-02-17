@@ -68,10 +68,7 @@
 .totp-setup-verify-prompt {
     font-size: 13px;
     margin-top: 4px;
-}
-
-.totp-setup-container .ant-otp {
-    width: auto;
+    text-align: center;
 }
 
 .totp-setup-container .ant-otp .ant-input {
