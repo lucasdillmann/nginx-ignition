@@ -102,14 +102,13 @@ export default class UserSecuritySettingsModal extends React.Component<
         UserConfirmation.ask(MessageKey.FrontendUserMenuTotpDisableConfirmation)
             .then(() => this.setState({ totpLoading: true }))
             .then(() => this.service.disableTotp())
-            .then(() => {
+            .then(() =>
                 Notification.success(
                     MessageKey.FrontendUserMenuTotpDisabledTitle,
                     MessageKey.FrontendUserMenuTotpDisabledSuccessDescription,
-                )
-                this.setState({ totpEnabled: false })
-            })
-            .catch(() => { }) // NO-OP
+                ),
+            )
+            .catch(() => Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonTryAgainLater))
             .then(() => this.setState({ totpLoading: false }))
     }
 
@@ -196,7 +195,7 @@ export default class UserSecuritySettingsModal extends React.Component<
                 onCancel={onCancel}
                 footer={null}
                 open={open}
-                destroyOnClose
+                destroyOnHidden
             >
                 <Preloader loading={loading}>
                     <Tabs

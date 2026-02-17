@@ -18,6 +18,7 @@ import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n } from "../../core/i18n/I18n"
 import ThemeToggle from "../../core/components/theme/ThemeToggle"
 import I18nLanguagePicker from "../../core/i18n/I18nLanguagePicker"
+import ShellUserMenuQueue from "../user/components/ShellUserMenuQueue"
 
 interface TotpState {
     failed: boolean
@@ -99,11 +100,29 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
     }
 
     private async handleSuccessfulLogin() {
+        const { totp } = this.state
         const returnTo = queryParams().returnTo as string | undefined
+
         return AppContext.get()
             .container!!.reload()
             .then(() => {
                 if (returnTo) navigateTo(returnTo, true)
+                if (!totp)
+                    Notification.warning(
+                        MessageKey.FrontendUserMenuTotpDisabledTitle,
+                        MessageKey.FrontendUserMenuTotpDisabledWarningDescription,
+                        {
+                            actions: [
+                                <Button
+                                    key="show-details"
+                                    type="default"
+                                    onClick={() => ShellUserMenuQueue.openTotpConfig()}
+                                >
+                                    <I18n id={MessageKey.FrontendUserMenuTotpDisabledWarningButton} />
+                                </Button>,
+                            ],
+                        },
+                    )
             })
     }
 
