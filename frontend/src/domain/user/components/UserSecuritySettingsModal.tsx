@@ -104,8 +104,8 @@ export default class UserSecuritySettingsModal extends React.Component<
             .then(() => this.service.disableTotp())
             .then(() => {
                 Notification.success(
-                    MessageKey.FrontendUserMenuTotpDisabledSuccess,
-                    MessageKey.CommonSuccessMessage
+                    MessageKey.FrontendUserMenuTotpDisabledTitle,
+                    MessageKey.FrontendUserMenuTotpDisabledSuccessDescription,
                 )
                 this.setState({ totpEnabled: false })
             })
