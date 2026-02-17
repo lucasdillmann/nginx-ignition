@@ -1,0 +1,23 @@
+.user-security-settings-form {
+    padding-top: 10px;
+}
+
+.totp-enabled-container {
+    padding: 40px 0;
+    text-align: center;
+}
+
+.totp-enabled-icon {
+    font-size: 48px;
+    color: #52c41a;
+    margin-bottom: 16px;
+}
+
+.totp-enabled-description {
+    margin-bottom: 24px;
+    display: block;
+}
+
+.totp-disable-button {
+    margin-top: 16px;
+}

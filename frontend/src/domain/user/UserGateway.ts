@@ -9,6 +9,7 @@ import PageResponse from "../../core/pagination/PageResponse"
 import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest"
 import GenericCreateResponse from "../../core/common/GenericCreateResponse"
 import UserTotpEnableResponse from "./model/UserTotpEnableResponse"
+import TotpStatusResponse from "./model/TotpStatusResponse"
 
 export default class UserGateway {
     private readonly client: ApiClient
@@ -71,5 +72,13 @@ export default class UserGateway {
 
     async activateTotp(code: string): Promise<ApiResponse<void>> {
         return this.client.post("/current/totp/activate", { code })
+    }
+
+    async getTotpStatus(): Promise<ApiResponse<TotpStatusResponse>> {
+        return this.client.get("/current/totp")
+    }
+
+    async disableTotp(): Promise<ApiResponse<void>> {
+        return this.client.delete("/current/totp")
     }
 }

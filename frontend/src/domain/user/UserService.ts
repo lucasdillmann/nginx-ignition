@@ -79,4 +79,12 @@ export default class UserService {
     async activateTotp(code: string): Promise<void> {
         return this.gateway.activateTotp(code).then(requireSuccessResponse)
     }
+
+    async getTotpStatus(): Promise<boolean> {
+        return this.gateway.getTotpStatus().then(response => response.body?.enabled ?? false)
+    }
+
+    async disableTotp(): Promise<void> {
+        return this.gateway.disableTotp().then(requireSuccessResponse)
+    }
 }
