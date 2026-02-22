@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/broadcast"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
@@ -37,13 +38,14 @@ func newService(
 	configFilesManager *cfgfiles.Facade,
 	vpnCommands vpn.Commands,
 	settingsCommands settings.Commands,
+	certificateCommands certificate.Commands,
 ) (*service, error) {
 	pManager, err := newProcessManager(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	vManager := newVpnManager(vpnCommands, settingsCommands)
+	vManager := newVpnManager(vpnCommands, settingsCommands, certificateCommands)
 
 	return &service{
 		configFilesManager: configFilesManager,

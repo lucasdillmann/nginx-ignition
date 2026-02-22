@@ -6,6 +6,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 
 .backend-prerequisites:
 	go work sync
+	go run ./tools/patches/netbird/
 
 .frontend-prerequisites:
 	cd frontend/ && pnpm install
@@ -25,6 +26,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./database/... \
 		./integration/docker/... \
 		./integration/truenas/... \
+		./vpn/netbird/... \
 		./vpn/tailscale/...
 
 .frontend-build: .frontend-prerequisites .generate-i18n-files
@@ -105,6 +107,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./database/... \
 		./integration/docker/... \
 		./integration/truenas/... \
+		./vpn/netbird/... \
 		./vpn/tailscale/...
 	go tool golangci-lint run --fix \
 		./api/... \
@@ -117,6 +120,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./database/... \
 		./integration/docker/... \
 		./integration/truenas/... \
+		./vpn/netbird/... \
 		./vpn/tailscale/...
 
 clean:
@@ -158,6 +162,7 @@ clean:
 		./database/... \
 		./integration/docker/... \
 		./integration/truenas/... \
+		./vpn/netbird/... \
 		./vpn/tailscale/...
 
 update-dependencies: .backend-prerequisites .frontend-prerequisites

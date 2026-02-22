@@ -1,4 +1,4 @@
-package tailscale
+package netbird
 
 import (
 	"context"
@@ -17,11 +17,11 @@ func newDriver() *Driver {
 }
 
 func (d Driver) ID() string {
-	return "TAILSCALE"
+	return "NETBIRD"
 }
 
 func (d Driver) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.VpnTailscaleName)
+	return i18n.M(ctx, i18n.K.VpnNetbirdName)
 }
 
 func (d Driver) ImportantInstructions(ctx context.Context) []*i18n.Message {
@@ -29,7 +29,7 @@ func (d Driver) ImportantInstructions(ctx context.Context) []*i18n.Message {
 }
 
 func (d Driver) EndpointSSLSupport(_ context.Context) vpn.EndpointSSLSupport {
-	return vpn.ProviderManagedEndpointSSLSupport
+	return vpn.DriverManagedEndpointSSLSupport
 }
 
 func (d Driver) ConfigurationFields(ctx context.Context) []dynamicfields.DynamicField {
@@ -68,12 +68,12 @@ func (d Driver) Stop(ctx context.Context, endpoint vpn.Endpoint) error {
 		return nil
 	}
 
-	tEndpoint, ok := value.(*tailnetEndpoint)
+	nbEndpoint, ok := value.(*netbirdEndpoint)
 	if !ok {
 		return errors.New("invalid endpoint type in state")
 	}
 
-	tEndpoint.stop(ctx)
+	nbEndpoint.stop(ctx)
 
 	return nil
 }
@@ -84,28 +84,28 @@ func (d Driver) doStart(
 	endpoint vpn.Endpoint,
 	parameters map[string]any,
 ) error {
-	authKey, ok := parameters[authKeyFieldName].(string)
-	if !ok || authKey == "" {
-		return coreerror.New(i18n.M(ctx, i18n.K.VpnTailscaleAuthKeyRequired), true)
+	setupKey, ok := parameters[setupKeyFieldName].(string)
+	if !ok || setupKey == "" {
+		return coreerror.New(i18n.M(ctx, i18n.K.VpnNetbirdSetupKeyRequired), true)
 	}
 
-	var serverURL string
-	if value, casted := parameters[coordinatorURLFieldName].(string); casted {
-		serverURL = value
+	var managementURL string
+	if value, casted := parameters[managementURLFieldName].(string); casted {
+		managementURL = value
 	}
 
-	tEndpoint := &tailnetEndpoint{
-		authKey:   authKey,
-		configDir: configDir,
-		endpoint:  endpoint,
-		serverURL: serverURL,
+	nbEndpoint := &netbirdEndpoint{
+		setupKey:      setupKey,
+		configDir:     configDir,
+		endpoint:      endpoint,
+		managementURL: managementURL,
 	}
 
-	if err := tEndpoint.start(ctx); err != nil {
+	if err := nbEndpoint.start(ctx); err != nil {
 		return err
 	}
 
-	state.Store(endpoint.Hash(), tEndpoint)
+	state.Store(endpoint.Hash(), nbEndpoint)
 
 	return nil
 }

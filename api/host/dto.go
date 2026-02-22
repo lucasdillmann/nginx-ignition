@@ -76,9 +76,11 @@ type bindingDTO struct {
 }
 
 type vpnDTO struct {
-	VPNID *uuid.UUID `json:"vpnId"`
-	Name  *string    `json:"name"`
-	Host  *string    `json:"host"`
+	VPNID         *uuid.UUID `json:"vpnId"`
+	Name          *string    `json:"name"`
+	Host          *string    `json:"host"`
+	EnableHTTPS   *bool      `json:"enableHttps"`
+	CertificateID *uuid.UUID `json:"certificateId"`
 }
 
 type hostResponseDTO struct {

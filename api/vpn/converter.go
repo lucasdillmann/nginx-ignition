@@ -47,5 +47,6 @@ func toAvailableDriverDTO(data *vpn.AvailableDriver) vpnDriverResponse {
 		Name:                  data.Name,
 		ImportantInstructions: data.ImportantInstructions,
 		ConfigurationFields:   dynamicfield.ToResponse(data.ConfigurationFields),
+		EndpointSSLSupport:    data.EndpointSSLSupport,
 	}
 }

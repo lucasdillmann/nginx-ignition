@@ -8,6 +8,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
+	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/vpn"
@@ -20,6 +21,7 @@ type service struct {
 	accessListCommands  accesslist.Commands
 	cacheCommands       cache.Commands
 	bindingCommands     binding.Commands
+	certificateCommands certificate.Commands
 }
 
 func newCommands(
@@ -29,6 +31,7 @@ func newCommands(
 	accessListCommands accesslist.Commands,
 	cacheCommands cache.Commands,
 	bindingCommands binding.Commands,
+	certificateCommands certificate.Commands,
 ) Commands {
 	return &service{
 		repository:          repository,
@@ -37,6 +40,7 @@ func newCommands(
 		accessListCommands:  accessListCommands,
 		cacheCommands:       cacheCommands,
 		bindingCommands:     bindingCommands,
+		certificateCommands: certificateCommands,
 	}
 }
 
@@ -48,6 +52,7 @@ func (s *service) Save(ctx context.Context, input *Host) error {
 		s.accessListCommands,
 		s.cacheCommands,
 		s.bindingCommands,
+		s.certificateCommands,
 	)
 
 	if err := validatorInstance.validate(ctx, input); err != nil {

@@ -13,5 +13,6 @@ use (
 	integration/docker
 	integration/truenas
 	tools
+	vpn/netbird
 	vpn/tailscale
 )

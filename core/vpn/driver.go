@@ -11,6 +11,7 @@ type Driver interface {
 	ID() string
 	Name(ctx context.Context) *i18n.Message
 	ImportantInstructions(ctx context.Context) []*i18n.Message
+	EndpointSSLSupport(ctx context.Context) EndpointSSLSupport
 	ConfigurationFields(ctx context.Context) []dynamicfields.DynamicField
 	Reload(
 		ctx context.Context,

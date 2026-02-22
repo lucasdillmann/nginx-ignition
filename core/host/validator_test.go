@@ -1,30 +1,25 @@
 package host
 
 import (
-	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/binding"
-	"dillmann.com.br/nginx-ignition/core/cache"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
-	"dillmann.com.br/nginx-ignition/core/common/validation"
-	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
 func Test_validator(t *testing.T) {
 	t.Run("validate", func(t *testing.T) {
 		t.Run("valid host passes", func(t *testing.T) {
-			hostValidator, _, _, _, _, _, bindingCmds := setupValidator(t)
+			hostValidator, mocks := setupValidator(t)
 			h := newHost()
 
-			bindingCmds.EXPECT().
+			mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+			mocks.binding.EXPECT().
 				Validate(t.Context(), "bindings", 0, &h.Bindings[0], gomock.Any()).
 				Return(nil)
 
@@ -33,12 +28,13 @@ func Test_validator(t *testing.T) {
 
 		t.Run("validates simple host fields", func(t *testing.T) {
 			t.Run("invalid domain names", func(t *testing.T) {
-				hostValidator, repo, _, _, _, _, bindingCmds := setupValidator(t)
+				hostValidator, mocks := setupValidator(t)
 				h := newHost()
 				h.DomainNames = []string{"invalid_domain"}
 
-				repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-				bindingCmds.EXPECT().
+				mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+				mocks.repository.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+				mocks.binding.EXPECT().
 					Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 					Return(nil)
 
@@ -48,7 +44,7 @@ func Test_validator(t *testing.T) {
 
 			t.Run("default server logic", func(t *testing.T) {
 				t.Run("error if another default exists", func(t *testing.T) {
-					hostValidator, repo, _, _, _, _, _ := setupValidator(t)
+					hostValidator, mocks := setupValidator(t)
 					h := newHost()
 					h.DefaultServer = true
 					h.DomainNames = nil
@@ -56,20 +52,22 @@ func Test_validator(t *testing.T) {
 
 					otherDefault := newHost()
 					otherDefault.ID = uuid.New()
-					repo.EXPECT().FindDefault(t.Context()).Return(otherDefault, nil)
+					mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.repository.EXPECT().FindDefault(t.Context()).Return(otherDefault, nil)
 
 					err := hostValidator.validate(t.Context(), h)
 					assertViolations(t, err, i18n.K.CoreHostDefaultAlreadyExists)
 				})
 
 				t.Run("error if domains provided for default", func(t *testing.T) {
-					hostValidator, repo, _, _, _, _, _ := setupValidator(t)
+					hostValidator, mocks := setupValidator(t)
 					h := newHost()
 					h.DefaultServer = true
 					h.DomainNames = []string{"example.com"}
 					h.Bindings = nil
 
-					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil)
+					mocks.repository.EXPECT().FindDefault(t.Context()).Return(nil, nil)
+					mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
 
 					err := hostValidator.validate(t.Context(), h)
 					assertViolations(t, err, i18n.K.CoreHostDomainMustBeEmptyForDefault)
@@ -79,20 +77,24 @@ func Test_validator(t *testing.T) {
 
 		t.Run("validates bindings", func(t *testing.T) {
 			t.Run("global bindings logic", func(t *testing.T) {
-				hostValidator, _, _, _, _, _, _ := setupValidator(t)
+				hostValidator, mocks := setupValidator(t)
 				h := newHost()
 				h.UseGlobalBindings = true
 				h.Bindings = []binding.Binding{{}}
+
+				mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
 
 				err := hostValidator.validate(t.Context(), h)
 				assertViolations(t, err, i18n.K.CoreHostBindingsMustBeEmptyForGlobal)
 			})
 
 			t.Run("custom bindings required", func(t *testing.T) {
-				hostValidator, _, _, _, _, _, _ := setupValidator(t)
+				hostValidator, mocks := setupValidator(t)
 				h := newHost()
 				h.UseGlobalBindings = false
 				h.Bindings = nil
+
+				mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
 
 				err := hostValidator.validate(t.Context(), h)
 				assertViolations(t, err, i18n.K.CommonAtLeastOneRequired)
@@ -101,12 +103,13 @@ func Test_validator(t *testing.T) {
 
 		t.Run("validates routes", func(t *testing.T) {
 			t.Run("requires at least one route", func(t *testing.T) {
-				hostValidator, repo, _, _, _, _, bindingCmds := setupValidator(t)
+				hostValidator, mocks := setupValidator(t)
 				h := newHost()
 				h.Routes = nil
 
-				repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-				bindingCmds.EXPECT().
+				mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+				mocks.repository.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+				mocks.binding.EXPECT().
 					Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 					Return(nil)
 
@@ -115,7 +118,7 @@ func Test_validator(t *testing.T) {
 			})
 
 			t.Run("duplicates priority", func(t *testing.T) {
-				hostValidator, _, _, _, _, _, bindingCmds := setupValidator(t)
+				hostValidator, mocks := setupValidator(t)
 				h := newHost()
 				h.Routes = []Route{
 					{
@@ -132,7 +135,8 @@ func Test_validator(t *testing.T) {
 					},
 				}
 
-				bindingCmds.EXPECT().
+				mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+				mocks.binding.EXPECT().
 					Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 					Return(nil)
 
@@ -141,7 +145,7 @@ func Test_validator(t *testing.T) {
 			})
 
 			t.Run("duplicates source path", func(t *testing.T) {
-				hostValidator, _, _, _, _, _, bindingCmds := setupValidator(t)
+				hostValidator, mocks := setupValidator(t)
 				h := newHost()
 				h.Routes = []Route{
 					{
@@ -158,7 +162,8 @@ func Test_validator(t *testing.T) {
 					},
 				}
 
-				bindingCmds.EXPECT().
+				mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+				mocks.binding.EXPECT().
 					Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 					Return(nil)
 
@@ -168,13 +173,14 @@ func Test_validator(t *testing.T) {
 
 			t.Run("validates route types", func(t *testing.T) {
 				t.Run("Proxy", func(t *testing.T) {
-					hostValidator, repo, _, _, _, _, bindingCmds := setupValidator(t)
+					hostValidator, mocks := setupValidator(t)
 					h := newHost()
 					h.Routes[0].Type = ProxyRouteType
 					h.Routes[0].TargetURI = nil
 
-					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-					bindingCmds.EXPECT().
+					mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.repository.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.binding.EXPECT().
 						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
@@ -183,20 +189,21 @@ func Test_validator(t *testing.T) {
 					assertViolations(t, err, i18n.K.CoreHostTargetUriRequired)
 
 					h.Routes[0].TargetURI = new("http://invalid\nurl")
-					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
+					hostValidator = mocks.newValidator()
 					err = hostValidator.validate(t.Context(), h)
 					assertViolations(t, err, i18n.K.CommonInvalidUrl)
 				})
 
 				t.Run("Redirect", func(t *testing.T) {
-					hostValidator, repo, _, _, _, _, bindingCmds := setupValidator(t)
+					hostValidator, mocks := setupValidator(t)
 					h := newHost()
 					h.Routes[0].Type = RedirectRouteType
 					h.Routes[0].TargetURI = nil
 					h.Routes[0].RedirectCode = nil
 
-					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-					bindingCmds.EXPECT().
+					mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.repository.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.binding.EXPECT().
 						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
@@ -206,19 +213,20 @@ func Test_validator(t *testing.T) {
 
 					h.Routes[0].TargetURI = new("http://example.com")
 					h.Routes[0].RedirectCode = new(200)
-					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
+					hostValidator = mocks.newValidator()
 					err = hostValidator.validate(t.Context(), h)
 					assertViolations(t, err, i18n.K.CommonBetweenValues)
 				})
 
 				t.Run("StaticResponse", func(t *testing.T) {
-					hostValidator, repo, _, _, _, _, bindingCmds := setupValidator(t)
+					hostValidator, mocks := setupValidator(t)
 					h := newHost()
 					h.Routes[0].Type = StaticResponseRouteType
 					h.Routes[0].Response = nil
 
-					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-					bindingCmds.EXPECT().
+					mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.repository.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.binding.EXPECT().
 						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
@@ -227,20 +235,27 @@ func Test_validator(t *testing.T) {
 					assertViolations(t, err, i18n.K.CoreHostStaticResponseRequired)
 
 					h.Routes[0].Response = &RouteStaticResponse{StatusCode: 999}
-					hostValidator = newValidator(repo, nil, nil, nil, nil, bindingCmds)
+					hostValidator = mocks.newValidator()
 					err = hostValidator.validate(t.Context(), h)
 					assertViolations(t, err, i18n.K.CommonBetweenValues)
 				})
 
 				t.Run("Integration", func(t *testing.T) {
 					t.Run("missing integration data", func(t *testing.T) {
-						hostValidator, repo, _, _, _, _, bindingCmds := setupValidator(t)
+						hostValidator, mocks := setupValidator(t)
 						h := newHost()
 						h.Routes[0].Type = IntegrationRouteType
 						h.Routes[0].Integration = nil
 
-						repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-						bindingCmds.EXPECT().
+						mocks.vpn.EXPECT().
+							GetAvailableDrivers(t.Context()).
+							Return(nil, nil).
+							AnyTimes()
+						mocks.repository.EXPECT().
+							FindDefault(t.Context()).
+							Return(nil, nil).
+							AnyTimes()
+						mocks.binding.EXPECT().
 							Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 							Return(nil).
 							AnyTimes()
@@ -250,9 +265,7 @@ func Test_validator(t *testing.T) {
 					})
 
 					t.Run("missing integration option", func(t *testing.T) {
-						hostValidator, repo, integrationCmds, _, _, _, bindingCmds := setupValidator(
-							t,
-						)
+						hostValidator, mocks := setupValidator(t)
 						h := newHost()
 						h.Routes[0].Type = IntegrationRouteType
 						integrationID := uuid.New()
@@ -261,12 +274,19 @@ func Test_validator(t *testing.T) {
 							OptionID:      "",
 						}
 
-						repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-						bindingCmds.EXPECT().
+						mocks.vpn.EXPECT().
+							GetAvailableDrivers(t.Context()).
+							Return(nil, nil).
+							AnyTimes()
+						mocks.repository.EXPECT().
+							FindDefault(t.Context()).
+							Return(nil, nil).
+							AnyTimes()
+						mocks.binding.EXPECT().
 							Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 							Return(nil).
 							AnyTimes()
-						integrationCmds.EXPECT().
+						mocks.integration.EXPECT().
 							Exists(t.Context(), integrationID).
 							Return(new(false), nil)
 
@@ -275,9 +295,7 @@ func Test_validator(t *testing.T) {
 					})
 
 					t.Run("invalid TargetURI", func(t *testing.T) {
-						hostValidator, repo, integrationCmds, _, _, _, bindingCmds := setupValidator(
-							t,
-						)
+						hostValidator, mocks := setupValidator(t)
 						h := newHost()
 						h.Routes[0].Type = IntegrationRouteType
 						h.Routes[0].Integration = &RouteIntegrationConfig{
@@ -286,12 +304,19 @@ func Test_validator(t *testing.T) {
 						}
 						h.Routes[0].TargetURI = new("invalid uri")
 
-						repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-						bindingCmds.EXPECT().
+						mocks.vpn.EXPECT().
+							GetAvailableDrivers(t.Context()).
+							Return(nil, nil).
+							AnyTimes()
+						mocks.repository.EXPECT().
+							FindDefault(t.Context()).
+							Return(nil, nil).
+							AnyTimes()
+						mocks.binding.EXPECT().
 							Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 							Return(nil).
 							AnyTimes()
-						integrationCmds.EXPECT().
+						mocks.integration.EXPECT().
 							Exists(t.Context(), h.Routes[0].Integration.IntegrationID).
 							Return(new(true), nil)
 
@@ -300,9 +325,7 @@ func Test_validator(t *testing.T) {
 					})
 
 					t.Run("valid TargetURI", func(t *testing.T) {
-						hostValidator, repo, integrationCmds, _, _, _, bindingCmds := setupValidator(
-							t,
-						)
+						hostValidator, mocks := setupValidator(t)
 						h := newHost()
 						h.Routes[0].Type = IntegrationRouteType
 						h.Routes[0].Integration = &RouteIntegrationConfig{
@@ -311,12 +334,19 @@ func Test_validator(t *testing.T) {
 						}
 						h.Routes[0].TargetURI = new("/api/v1")
 
-						repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-						bindingCmds.EXPECT().
+						mocks.vpn.EXPECT().
+							GetAvailableDrivers(t.Context()).
+							Return(nil, nil).
+							AnyTimes()
+						mocks.repository.EXPECT().
+							FindDefault(t.Context()).
+							Return(nil, nil).
+							AnyTimes()
+						mocks.binding.EXPECT().
 							Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 							Return(nil).
 							AnyTimes()
-						integrationCmds.EXPECT().
+						mocks.integration.EXPECT().
 							Exists(t.Context(), h.Routes[0].Integration.IntegrationID).
 							Return(new(true), nil)
 
@@ -326,13 +356,14 @@ func Test_validator(t *testing.T) {
 				})
 
 				t.Run("ExecuteCode", func(t *testing.T) {
-					hostValidator, repo, _, _, _, _, bindingCmds := setupValidator(t)
+					hostValidator, mocks := setupValidator(t)
 					h := newHost()
 					h.Routes[0].Type = ExecuteCodeRouteType
 					h.Routes[0].SourceCode = nil
 
-					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-					bindingCmds.EXPECT().
+					mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.repository.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.binding.EXPECT().
 						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
@@ -341,8 +372,8 @@ func Test_validator(t *testing.T) {
 					assertViolations(t, err, i18n.K.CoreHostSourceCodeRequired)
 
 					h.Routes[0].SourceCode = &RouteSourceCode{Language: "INVALID", Contents: ""}
-					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-					bindingCmds.EXPECT().
+					mocks.repository.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.binding.EXPECT().
 						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
@@ -356,13 +387,14 @@ func Test_validator(t *testing.T) {
 				})
 
 				t.Run("StaticFiles", func(t *testing.T) {
-					hostValidator, repo, _, _, _, _, bindingCmds := setupValidator(t)
+					hostValidator, mocks := setupValidator(t)
 					h := newHost()
 					h.Routes[0].Type = StaticFilesRouteType
 					h.Routes[0].TargetURI = nil
 
-					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-					bindingCmds.EXPECT().
+					mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.repository.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.binding.EXPECT().
 						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
@@ -371,8 +403,8 @@ func Test_validator(t *testing.T) {
 					assertViolations(t, err, i18n.K.CoreHostTargetUriRequired)
 
 					h.Routes[0].TargetURI = new("invalid/path")
-					repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
-					bindingCmds.EXPECT().
+					mocks.repository.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.binding.EXPECT().
 						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 						Return(nil).
 						AnyTimes()
@@ -383,109 +415,144 @@ func Test_validator(t *testing.T) {
 		})
 
 		t.Run("validates VPNs", func(t *testing.T) {
-			hostValidator, _, _, vpnCmds, _, _, bindingCmds := setupValidator(t)
-			h := newHost()
-			vpnID := uuid.New()
-			h.VPNs = []VPN{{VPNID: vpnID, Name: "vpn1"}}
+			t.Run("vpn not found", func(t *testing.T) {
+				hostValidator, mocks := setupValidator(t)
+				h := newHost()
+				vpnID := uuid.New()
+				h.VPNs = []VPN{{VPNID: vpnID, Name: "vpn1"}}
 
-			bindingCmds.EXPECT().
-				Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
-				Return(nil)
-			vpnCmds.EXPECT().Get(t.Context(), vpnID).Return(nil, nil)
+				mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+				mocks.binding.EXPECT().
+					Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+					Return(nil)
+				mocks.vpn.EXPECT().
+					GetAvailableDrivers(t.Context()).
+					Return(nil, nil).
+					AnyTimes().
+					AnyTimes()
+				mocks.vpn.EXPECT().Get(t.Context(), vpnID).Return(nil, nil)
 
-			err := hostValidator.validate(t.Context(), h)
-			assertViolations(t, err, i18n.K.CoreHostVpnNotFound)
+				err := hostValidator.validate(t.Context(), h)
+				assertViolations(t, err, i18n.K.CoreHostVpnNotFound)
+			})
+
+			t.Run("vpn certificate validation", func(t *testing.T) {
+				t.Run("driver managed - certificate required", func(t *testing.T) {
+					hostValidator, mocks := setupValidator(t)
+					h := newHost()
+					vpnID := uuid.New()
+					h.VPNs = []VPN{
+						{VPNID: vpnID, Name: "vpn1", EnableHTTPS: true, CertificateID: nil},
+					}
+
+					mocks.binding.EXPECT().
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Return(nil).AnyTimes()
+					mocks.vpn.EXPECT().
+						Get(t.Context(), vpnID).
+						Return(&vpn.VPN{Enabled: true, Driver: "driver1"}, nil)
+					mocks.vpn.EXPECT().
+						GetAvailableDrivers(t.Context()).
+						Return([]vpn.AvailableDriver{
+							{
+								ID:                 "driver1",
+								EndpointSSLSupport: vpn.DriverManagedEndpointSSLSupport,
+							},
+						}, nil)
+
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, i18n.K.CoreHostVpnCertificateRequired)
+				})
+
+				t.Run("driver managed - certificate not found", func(t *testing.T) {
+					hostValidator, mocks := setupValidator(t)
+					h := newHost()
+					vpnID := uuid.New()
+					certID := uuid.New()
+					h.VPNs = []VPN{
+						{VPNID: vpnID, Name: "vpn1", EnableHTTPS: true, CertificateID: &certID},
+					}
+
+					mocks.binding.EXPECT().
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Return(nil).AnyTimes()
+					mocks.vpn.EXPECT().
+						Get(t.Context(), vpnID).
+						Return(&vpn.VPN{Enabled: true, Driver: "driver1"}, nil)
+					mocks.vpn.EXPECT().
+						GetAvailableDrivers(t.Context()).
+						Return([]vpn.AvailableDriver{
+							{
+								ID:                 "driver1",
+								EndpointSSLSupport: vpn.DriverManagedEndpointSSLSupport,
+							},
+						}, nil)
+					mocks.certificate.EXPECT().Exists(t.Context(), certID).Return(false, nil)
+
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, i18n.K.CoreHostVpnCertificateNotFound)
+				})
+
+				t.Run("provider managed - certificate prohibited", func(t *testing.T) {
+					hostValidator, mocks := setupValidator(t)
+					h := newHost()
+					vpnID := uuid.New()
+					certID := uuid.New()
+					h.VPNs = []VPN{
+						{VPNID: vpnID, Name: "vpn1", EnableHTTPS: true, CertificateID: &certID},
+					}
+
+					mocks.binding.EXPECT().
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Return(nil).AnyTimes()
+					mocks.vpn.EXPECT().
+						Get(t.Context(), vpnID).
+						Return(&vpn.VPN{Enabled: true, Driver: "driver1"}, nil)
+					mocks.vpn.EXPECT().
+						GetAvailableDrivers(t.Context()).
+						Return([]vpn.AvailableDriver{
+							{
+								ID:                 "driver1",
+								EndpointSSLSupport: vpn.ProviderManagedEndpointSSLSupport,
+							},
+						}, nil)
+
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, i18n.K.CoreHostVpnCertificateProhibited)
+				})
+			})
 		})
 
 		t.Run("validates ACLs", func(t *testing.T) {
-			hostValidator, _, _, _, aclCmds, _, bindingCmds := setupValidator(t)
+			hostValidator, mocks := setupValidator(t)
 			h := newHost()
 			aclID := uuid.New()
 			h.AccessListID = &aclID
 
-			bindingCmds.EXPECT().
+			mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+			mocks.binding.EXPECT().
 				Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil)
-			aclCmds.EXPECT().Exists(t.Context(), aclID).Return(false, nil)
+			mocks.accessList.EXPECT().Exists(t.Context(), aclID).Return(false, nil)
 
 			err := hostValidator.validate(t.Context(), h)
 			assertViolations(t, err, i18n.K.CoreHostAccessListNotFound)
 		})
 
 		t.Run("validates Cache", func(t *testing.T) {
-			hostValidator, _, _, _, _, cacheCmds, bindingCmds := setupValidator(t)
+			hostValidator, mocks := setupValidator(t)
 			h := newHost()
 			cacheID := uuid.New()
 			h.CacheID = &cacheID
 
-			bindingCmds.EXPECT().
+			mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+			mocks.binding.EXPECT().
 				Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil)
-			cacheCmds.EXPECT().Exists(t.Context(), cacheID).Return(false, nil)
+			mocks.cache.EXPECT().Exists(t.Context(), cacheID).Return(false, nil)
 
 			err := hostValidator.validate(t.Context(), h)
 			assertViolations(t, err, i18n.K.CoreHostCacheNotFound)
 		})
 	})
-}
-
-func setupValidator(t *testing.T) (
-	*validator,
-	*MockedRepository,
-	*integration.MockedCommands,
-	*vpn.MockedCommands,
-	*accesslist.MockedCommands,
-	*cache.MockedCommands,
-	*binding.MockedCommands,
-) {
-	ctrl := gomock.NewController(t)
-	repo := NewMockedRepository(ctrl)
-	integrationCmds := integration.NewMockedCommands(ctrl)
-	vpnCmds := vpn.NewMockedCommands(ctrl)
-	aclCmds := accesslist.NewMockedCommands(ctrl)
-	cacheCmds := cache.NewMockedCommands(ctrl)
-	bindingCmds := binding.NewMockedCommands(ctrl)
-	hostValidator := newValidator(repo, integrationCmds, vpnCmds, aclCmds, cacheCmds, bindingCmds)
-
-	return hostValidator, repo, integrationCmds, vpnCmds, aclCmds, cacheCmds, bindingCmds
-}
-
-func assertViolations(t *testing.T, err error, msgs ...string) {
-	t.Helper()
-
-	if assert.Error(t, err) {
-		var consistencyErr *validation.ConsistencyError
-		if assert.ErrorAs(t, err, &consistencyErr) {
-			for _, msg := range msgs {
-				found := false
-				for _, v := range consistencyErr.Violations {
-					if strings.Contains(v.Message.Key, msg) {
-						found = true
-						break
-					}
-				}
-				if !found {
-					allMsgs := make([]string, 0, len(consistencyErr.Violations))
-					for _, v := range consistencyErr.Violations {
-						allMsgs = append(allMsgs, fmt.Sprintf("'%s'", v.Message.String()))
-					}
-					assert.Failf(
-						t,
-						"Violation not found",
-						"Expected violation containing '%s', got: [%s]",
-						msg,
-						strings.Join(allMsgs, ", "),
-					)
-				}
-			}
-		} else {
-			assert.Failf(
-				t,
-				"Unexpected error type",
-				"Expected ConsistencyError, got %T: %v",
-				err,
-				err,
-			)
-		}
-	}
 }

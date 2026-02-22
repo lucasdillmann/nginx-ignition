@@ -33,6 +33,7 @@ func Test_toDTO(t *testing.T) {
 		assert.True(t, *result.FeatureSet.WebsocketsSupport)
 		assert.True(t, *result.FeatureSet.StatsEnabled)
 		assert.Equal(t, "index.html", *result.Routes[0].Settings.IndexFile)
+		assert.True(t, *result.VPNs[0].EnableHTTPS)
 	})
 
 	t.Run("returns nil when input is nil", func(t *testing.T) {
@@ -54,6 +55,7 @@ func Test_toDomain(t *testing.T) {
 		assert.True(t, result.FeatureSet.WebsocketSupport)
 		assert.True(t, result.FeatureSet.StatsEnabled)
 		assert.Equal(t, "index.html", *result.Routes[0].Settings.IndexFile)
+		assert.True(t, result.VPNs[0].EnableHTTPS)
 	})
 
 	t.Run("returns nil when input is nil", func(t *testing.T) {

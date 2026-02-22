@@ -11,8 +11,9 @@ import (
 )
 
 type AvailableDriver struct {
-	ID                    string
 	Name                  *i18n.Message
+	ID                    string
+	EndpointSSLSupport    EndpointSSLSupport
 	ImportantInstructions []*i18n.Message
 	ConfigurationFields   []dynamicfields.DynamicField
 }
