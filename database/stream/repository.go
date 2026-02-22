@@ -221,7 +221,7 @@ func (r *repository) cleanupLinkedModels(
 		_, err = transaction.
 			NewDelete().
 			Table("stream_backend").
-			Where(byStreamRouteIDArrayFilter, bun.In(routeIDs)).
+			Where(byStreamRouteIDArrayFilter, bun.List(routeIDs)).
 			Exec(ctx)
 		if err != nil {
 			return err
@@ -230,7 +230,7 @@ func (r *repository) cleanupLinkedModels(
 		_, err = transaction.
 			NewDelete().
 			Table("stream_route").
-			Where(byIDArrayFilter, bun.In(routeIDs)).
+			Where(byIDArrayFilter, bun.List(routeIDs)).
 			Exec(ctx)
 	}
 

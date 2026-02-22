@@ -13,12 +13,15 @@ jobs:
       GOPATH: /data/cache/go
       GOMODCACHE: /data/cache/go/pkg/mod
       GOTOOLCHAIN: ""
-      npm_config_cache: /data/cache/npm
+      PNPM_HOME: /data/cache/pnpm
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-go@v5
         with:
           go-version: 1.26

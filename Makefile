@@ -8,10 +8,10 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	go work sync
 
 .frontend-prerequisites:
-	cd frontend/ && npm ci
+	cd frontend/ && pnpm install
 
 .frontend-lint: .frontend-prerequisites
-	cd frontend/ && npm run check
+	cd frontend/ && pnpm run check
 
 .backend-lint: .backend-prerequisites .backend-test-mocks
 	go tool golangci-lint run \
@@ -28,7 +28,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./vpn/tailscale/...
 
 .frontend-build: .frontend-prerequisites .generate-i18n-files
-	cd frontend/ && npm run build
+	cd frontend/ && pnpm run build
 
 .backend-build: .backend-prerequisites .generate-i18n-files
 	$(MAKE) .backend-build-file OS=linux ARCH=amd64 DIR=linux
@@ -91,7 +91,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	rm -Rf build/nfpm.yaml
 
 .frontend-format: .frontend-prerequisites
-	cd frontend/ && npx prettier --write .
+	cd frontend/ && pnpm exec prettier --write .
 
 .backend-format: .backend-prerequisites .backend-test-mocks
 	go tool fieldalignment -fix \
@@ -174,7 +174,7 @@ update-dependencies: .backend-prerequisites .frontend-prerequisites
 	cd tools && go get -u all
 	cd vpn/tailscale && go get -u all
 	go work sync
-	cd frontend && npm update
+	cd frontend && pnpm update
 
 lint: .frontend-lint .backend-lint
 
