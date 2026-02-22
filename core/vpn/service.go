@@ -80,12 +80,28 @@ func (s *service) GetAvailableDrivers(ctx context.Context) ([]AvailableDriver, e
 		output[index] = AvailableDriver{
 			ID:                    driver.ID(),
 			Name:                  driver.Name(ctx),
+			EndpointSSLSupport:    driver.EndpointSSLSupport(ctx),
 			ImportantInstructions: driver.ImportantInstructions(ctx),
 			ConfigurationFields:   driver.ConfigurationFields(ctx),
 		}
 	}
 
 	return output, nil
+}
+
+func (s *service) GetAvailableDriverByID(ctx context.Context, id string) (*AvailableDriver, error) {
+	drivers, err := s.GetAvailableDrivers(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, driver := range drivers {
+		if driver.ID == id {
+			return &driver, nil
+		}
+	}
+
+	return nil, coreerror.New(i18n.M(ctx, i18n.K.CoreVpnDriverNotFound), false)
 }
 
 func (s *service) Start(ctx context.Context, endpoint Endpoint) error {

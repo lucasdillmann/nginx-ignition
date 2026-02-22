@@ -12,7 +12,8 @@ import (
 func Test_toDTO(t *testing.T) {
 	t.Run("converts domain object to DTO", func(t *testing.T) {
 		subject := newVPN()
-		result := toDTO(subject)
+		driver := newVPNAvailableDriver()
+		result := toDTO(subject, driver)
 
 		assert.NotNil(t, result)
 		assert.Equal(t, subject.ID, result.ID)

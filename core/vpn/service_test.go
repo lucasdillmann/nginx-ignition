@@ -127,4 +127,86 @@ func Test_service(t *testing.T) {
 			assert.Error(t, err)
 		})
 	})
+
+	t.Run("GetAvailableDrivers", func(t *testing.T) {
+		t.Run("returns all drivers sorted by name", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			driver1 := NewMockedDriver(ctrl)
+			driver1.EXPECT().ID().Return("b_driver").AnyTimes()
+			driver1.EXPECT().Name(gomock.Any()).Return(i18n.Static("B Driver")).AnyTimes()
+			driver1.EXPECT().ImportantInstructions(gomock.Any()).Return(nil).AnyTimes()
+			driver1.EXPECT().ConfigurationFields(gomock.Any()).Return(nil).AnyTimes()
+			driver1.EXPECT().
+				EndpointSSLSupport(gomock.Any()).
+				Return(DriverManagedEndpointSSLSupport).
+				AnyTimes()
+
+			driver2 := NewMockedDriver(ctrl)
+			driver2.EXPECT().ID().Return("a_driver").AnyTimes()
+			driver2.EXPECT().Name(gomock.Any()).Return(i18n.Static("A Driver")).AnyTimes()
+			driver2.EXPECT().ImportantInstructions(gomock.Any()).Return(nil).AnyTimes()
+			driver2.EXPECT().ConfigurationFields(gomock.Any()).Return(nil).AnyTimes()
+			driver2.EXPECT().
+				EndpointSSLSupport(gomock.Any()).
+				Return(ProviderManagedEndpointSSLSupport).
+				AnyTimes()
+
+			cfg := configuration.New()
+			vpnService := newService(
+				cfg,
+				nil,
+				func() []Driver { return []Driver{driver1, driver2} },
+			)
+			result, err := vpnService.GetAvailableDrivers(t.Context())
+
+			assert.NoError(t, err)
+			assert.Len(t, result, 2)
+
+			assert.Equal(t, "a_driver", result[0].ID)
+			assert.Equal(t, ProviderManagedEndpointSSLSupport, result[0].EndpointSSLSupport)
+
+			assert.Equal(t, "b_driver", result[1].ID)
+			assert.Equal(t, DriverManagedEndpointSSLSupport, result[1].EndpointSSLSupport)
+		})
+	})
+
+	t.Run("GetAvailableDriverByID", func(t *testing.T) {
+		t.Run("returns driver when found", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			driver1 := NewMockedDriver(ctrl)
+			driver1.EXPECT().ID().Return("a_driver").AnyTimes()
+			driver1.EXPECT().Name(gomock.Any()).Return(i18n.Static("A Driver")).AnyTimes()
+			driver1.EXPECT().ImportantInstructions(gomock.Any()).Return(nil).AnyTimes()
+			driver1.EXPECT().ConfigurationFields(gomock.Any()).Return(nil).AnyTimes()
+			driver1.EXPECT().
+				EndpointSSLSupport(gomock.Any()).
+				Return(ProviderManagedEndpointSSLSupport).
+				AnyTimes()
+
+			cfg := configuration.New()
+			vpnService := newService(cfg, nil, func() []Driver { return []Driver{driver1} })
+			result, err := vpnService.GetAvailableDriverByID(t.Context(), "a_driver")
+
+			assert.NoError(t, err)
+			assert.NotNil(t, result)
+			assert.Equal(t, "a_driver", result.ID)
+		})
+
+		t.Run("returns error when driver not found", func(t *testing.T) {
+			cfg := configuration.New()
+			vpnService := newService(cfg, nil, func() []Driver { return nil })
+			result, err := vpnService.GetAvailableDriverByID(t.Context(), "non_existent")
+
+			assert.Nil(t, result)
+			require.Error(t, err)
+
+			var coreErr *coreerror.CoreError
+			require.ErrorAs(t, err, &coreErr)
+			assert.Equal(t, i18n.K.CoreVpnDriverNotFound, coreErr.Message.Key)
+		})
+	})
 }

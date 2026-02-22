@@ -29,6 +29,10 @@ func Test_listHandler(t *testing.T) {
 			commands.EXPECT().
 				List(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(page, nil)
+			commands.EXPECT().
+				GetAvailableDriverByID(gomock.Any(), gomock.Any()).
+				Return(newVPNAvailableDriver(), nil).
+				AnyTimes()
 
 			handler := listHandler{
 				commands: commands,

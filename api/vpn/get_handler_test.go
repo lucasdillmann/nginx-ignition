@@ -29,6 +29,10 @@ func Test_getHandler(t *testing.T) {
 			commands.EXPECT().
 				Get(gomock.Any(), subject.ID).
 				Return(subject, nil)
+			commands.EXPECT().
+				GetAvailableDriverByID(gomock.Any(), gomock.Any()).
+				Return(newVPNAvailableDriver(), nil).
+				AnyTimes()
 
 			handler := getHandler{
 				commands: commands,

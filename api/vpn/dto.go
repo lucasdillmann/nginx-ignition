@@ -16,11 +16,12 @@ type vpnRequest struct {
 }
 
 type vpnResponse struct {
-	Parameters map[string]any `json:"parameters"`
-	Name       string         `json:"name"`
-	Driver     string         `json:"driver"`
-	ID         uuid.UUID      `json:"id"`
-	Enabled    bool           `json:"enabled"`
+	Parameters               map[string]any         `json:"parameters"`
+	Name                     string                 `json:"name"`
+	Driver                   string                 `json:"driver"`
+	DriverEndpointSSLSupport vpn.EndpointSSLSupport `json:"driverEndpointSslSupport"`
+	ID                       uuid.UUID              `json:"id"`
+	Enabled                  bool                   `json:"enabled"`
 }
 
 type vpnDriverResponse struct {

@@ -36,5 +36,10 @@ func (h getHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, toDTO(data))
+	driver, err := h.commands.GetAvailableDriverByID(ctx, data.Driver)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx.JSON(http.StatusOK, toDTO(data, driver))
 }

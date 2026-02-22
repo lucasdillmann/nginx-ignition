@@ -3,6 +3,7 @@ package vpn
 import (
 	"github.com/google/uuid"
 
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
@@ -16,6 +17,14 @@ func newVPN() *vpn.VPN {
 		Parameters: map[string]any{
 			"key": "value",
 		},
+	}
+}
+
+func newVPNAvailableDriver() *vpn.AvailableDriver {
+	return &vpn.AvailableDriver{
+		ID:                 "test-driver",
+		Name:               i18n.Static("Test Driver"),
+		EndpointSSLSupport: vpn.DriverManagedEndpointSSLSupport,
 	}
 }
 
