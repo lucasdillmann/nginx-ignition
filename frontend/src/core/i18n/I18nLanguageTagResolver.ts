@@ -6,28 +6,22 @@ export default function resolveLanguageTag(
     const targetLanguages = (currentLanguage ?? defaultLanguage).split(",")
 
     for (const targetLanguage of targetLanguages) {
-        for (const language of availableLanguages) {
-            if (language === targetLanguage) {
-                return language
-            }
+        if (availableLanguages.includes(targetLanguage)) {
+            return targetLanguage
         }
 
         if (targetLanguage.includes("-")) {
             const baseLanguage = targetLanguage.split("-")[0]
-            for (const language of availableLanguages) {
-                if (language === baseLanguage) {
-                    return language
-                }
+            if (availableLanguages.includes(baseLanguage)) {
+                return baseLanguage
             }
         }
     }
 
     const defaultBaseLanguage = defaultLanguage.split("-")[0]
-    for (const language of availableLanguages) {
-        if (language === defaultLanguage || language === defaultBaseLanguage) {
-            return language
-        }
-    }
+    const fallback = availableLanguages.find(
+        language => language === defaultLanguage || language === defaultBaseLanguage,
+    )
 
-    return defaultLanguage
+    return fallback ?? defaultLanguage
 }
