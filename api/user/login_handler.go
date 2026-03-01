@@ -25,6 +25,11 @@ func (h loginHandler) handle(ctx *gin.Context) {
 		totp = new("")
 	}
 
+	if requestPayload.Username == nil || requestPayload.Password == nil {
+		ctx.Status(http.StatusBadRequest)
+		return
+	}
+
 	outcome, usr, err := h.commands.Authenticate(
 		ctx.Request.Context(),
 		*requestPayload.Username,

@@ -207,7 +207,7 @@ func (p *geoIPFileProvider) fetchLatestRelease() (*gitHubRelease, error) {
 }
 
 func (p *geoIPFileProvider) download(url, dbType string) ([]byte, error) {
-	log.Infof("Downloading GeoIP %s database from [%s] ...", dbType, url)
+	log.Infof("Downloading GeoIP %s database from [%s]...", dbType, url)
 
 	resp, err := p.executeRequest(url, 30*time.Minute)
 	if err != nil {
