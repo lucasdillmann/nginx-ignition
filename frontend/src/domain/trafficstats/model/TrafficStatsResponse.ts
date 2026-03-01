@@ -1,5 +1,5 @@
 export default interface TrafficStatsResponse {
-    serverZones: Record<string, ZoneData>
+    serverZones: Record<string, ZoneData> | null
     filterZones: Record<string, Record<string, ZoneData>> | null
     upstreamZones: Record<string, UpstreamZoneData[]> | null
     hostName: string

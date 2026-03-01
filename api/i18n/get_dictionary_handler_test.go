@@ -25,8 +25,6 @@ func Test_getDictionaryHandler(t *testing.T) {
 			defer ctrl.Finish()
 
 			commands := corei18n.NewMockedCommands(ctrl)
-			commands.EXPECT().GetDictionaries().Return([]i18n.Dictionary{})
-
 			recorder := httptest.NewRecorder()
 			_, engine := gin.CreateTestContext(recorder)
 

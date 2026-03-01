@@ -131,8 +131,7 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
     private renderResponseTimeChart() {
         const { serverZones } = this.props.stats
         const { theme, disableAnimation } = this.props
-        // Use global zone '*' for global response times
-        const globalZone = serverZones["*"]
+        const globalZone = serverZones?.["*"]
         const data = globalZone ? buildResponseTimeData(globalZone.requestMsecs) : []
         return <ResponseTimeChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }

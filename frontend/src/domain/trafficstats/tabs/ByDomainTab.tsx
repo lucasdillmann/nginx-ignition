@@ -31,7 +31,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps> {
         const { serverZones } = this.props.stats
         const { selectedDomain } = this.props
         if (!selectedDomain) return undefined
-        return serverZones[selectedDomain]
+        return serverZones?.[selectedDomain]
     }
 
     private getAvgResponseTime(zone: ZoneData): number {

@@ -15,9 +15,7 @@ type getDictionaryHandler struct {
 }
 
 func (h getDictionaryHandler) handle(ctx *gin.Context) {
-	dictionaries := h.commands.GetDictionaries()
 	targetLanguageRaw := ctx.Param("language")
-
 	targetLanguage, err := language.Parse(targetLanguageRaw)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
@@ -25,7 +23,7 @@ func (h getDictionaryHandler) handle(ctx *gin.Context) {
 	}
 
 	var dict *i18n.Dictionary
-	for _, dictionary := range dictionaries {
+	for _, dictionary := range h.commands.GetDictionaries() {
 		if dictionary.Language() == targetLanguage {
 			dict = &dictionary
 			break
