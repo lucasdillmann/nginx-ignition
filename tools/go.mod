@@ -14,6 +14,7 @@ tool (
 replace (
 	github.com/denis-tingaikin/go-header => github.com/denis-tingaikin/go-header v0.5.0
 	github.com/golangci/gofmt => github.com/golangci/gofmt v0.0.0-20251215231059-d92a36942569
+	github.com/alexkohler/prealloc => github.com/alexkohler/prealloc v1.0.2
 )
 
 require golang.org/x/text v0.34.0
