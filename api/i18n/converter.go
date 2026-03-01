@@ -6,21 +6,25 @@ import (
 	"dillmann.com.br/nginx-ignition/i18n"
 )
 
-func toDTO(
-	defaultLanguage language.Tag,
+func toDictionaryDTO(dictionary i18n.Dictionary) dictionaryResponseDTO {
+	return dictionaryResponseDTO{
+		Messages: dictionary.Raw(),
+		Language: dictionary.Language().String(),
+	}
+}
+
+func toAvailableLanguagesDTO(
 	dictionaries []i18n.Dictionary,
-) dictionariesDTO {
-	output := make([]dictionaryDTO, len(dictionaries))
+	defaultLanguage language.Tag,
+) availableLanguagesResponseDTO {
+	languages := make([]string, len(dictionaries))
 
 	for index := range dictionaries {
-		output[index] = dictionaryDTO{
-			Language: dictionaries[index].Language().String(),
-			Messages: dictionaries[index].Raw(),
-		}
+		languages[index] = dictionaries[index].Language().String()
 	}
 
-	return dictionariesDTO{
+	return availableLanguagesResponseDTO{
+		Available:       languages,
 		DefaultLanguage: defaultLanguage.String(),
-		Dictionaries:    output,
 	}
 }

@@ -8,9 +8,9 @@ func newDictionary() i18n.Dictionary {
 	return i18n.En()
 }
 
-func newDictionaryDTO() dictionaryDTO {
+func newDictionaryDTO() dictionaryResponseDTO {
 	baseDict := i18n.En()
-	return dictionaryDTO{
+	return dictionaryResponseDTO{
 		Language: baseDict.Language().String(),
 		Messages: baseDict.Raw(),
 	}
