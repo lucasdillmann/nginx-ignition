@@ -241,7 +241,7 @@ func (a *endpointAdapter) Targets() []vpn.EndpointTarget {
 		targetHost = *a.domainName
 	}
 
-	output := make([]vpn.EndpointTarget, len(a.bindings))
+	output := make([]vpn.EndpointTarget, 0, len(a.bindings))
 	for index, b := range a.bindings {
 		https := vpn.EndpointHTTPS{}
 
