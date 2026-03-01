@@ -3,6 +3,7 @@ module dillmann.com.br/nginx-ignition/tools
 go 1.26
 
 tool (
+	covdata
 	github.com/golangci/golangci-lint/v2/cmd/golangci-lint
 	github.com/golangci/golines
 	go.uber.org/mock/mockgen

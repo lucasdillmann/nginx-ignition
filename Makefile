@@ -151,7 +151,7 @@ clean:
 	done
 
 .backend-test: .backend-test-mocks .generate-i18n-files
-	go test \
+	go test -coverprofile=coverage.out -covermode=atomic \
 		./api/... \
 		./application/... \
 		./certificate/commons/... \
