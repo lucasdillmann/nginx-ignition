@@ -24,9 +24,11 @@ func toDomain(model *hostModel) (*host.Host, error) {
 	vpns := make([]host.VPN, len(model.VPNs))
 	for index, vpn := range model.VPNs {
 		vpns[index] = host.VPN{
-			VPNID: vpn.VPNID,
-			Name:  vpn.Name,
-			Host:  vpn.Host,
+			VPNID:         vpn.VPNID,
+			Name:          vpn.Name,
+			Host:          vpn.Host,
+			CertificateID: vpn.CertificateID,
+			EnableHTTPS:   vpn.EnableHTTPS,
 		}
 	}
 
@@ -123,10 +125,12 @@ func toModel(domain *host.Host) (*hostModel, error) {
 	vpns := make([]hostVpnModel, len(domain.VPNs))
 	for index, vpn := range domain.VPNs {
 		vpns[index] = hostVpnModel{
-			HostID: domain.ID,
-			VPNID:  vpn.VPNID,
-			Name:   vpn.Name,
-			Host:   vpn.Host,
+			HostID:        domain.ID,
+			VPNID:         vpn.VPNID,
+			Name:          vpn.Name,
+			Host:          vpn.Host,
+			CertificateID: vpn.CertificateID,
+			EnableHTTPS:   vpn.EnableHTTPS,
 		}
 	}
 

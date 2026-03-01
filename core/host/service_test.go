@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
+	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/core/vpn"
@@ -27,6 +28,7 @@ func Test_service(t *testing.T) {
 			aclCmds := accesslist.NewMockedCommands(ctrl)
 			cacheCmds := cache.NewMockedCommands(ctrl)
 			bindingCmds := binding.NewMockedCommands(ctrl)
+			certCmds := certificate.NewMockedCommands(ctrl)
 			hostService := newCommands(
 				repo,
 				integrationCmds,
@@ -34,12 +36,14 @@ func Test_service(t *testing.T) {
 				aclCmds,
 				cacheCmds,
 				bindingCmds,
+				certCmds,
 			)
 
 			input := newHost()
 			input.Routes = nil
 
 			repo.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+			vpnCmds.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
 			bindingCmds.EXPECT().
 				Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil)
@@ -58,6 +62,7 @@ func Test_service(t *testing.T) {
 			aclCmds := accesslist.NewMockedCommands(ctrl)
 			cacheCmds := cache.NewMockedCommands(ctrl)
 			bindingCmds := binding.NewMockedCommands(ctrl)
+			certCmds := certificate.NewMockedCommands(ctrl)
 			hostService := newCommands(
 				repo,
 				integrationCmds,
@@ -65,6 +70,7 @@ func Test_service(t *testing.T) {
 				aclCmds,
 				cacheCmds,
 				bindingCmds,
+				certCmds,
 			)
 
 			input := newHost()
@@ -73,7 +79,7 @@ func Test_service(t *testing.T) {
 			bindingCmds.EXPECT().
 				Validate(t.Context(), "bindings", 0, &input.Bindings[0], gomock.Any()).
 				Return(nil)
-
+			vpnCmds.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
 			repo.EXPECT().Save(t.Context(), input).Return(nil)
 
 			err := hostService.Save(t.Context(), input)
@@ -87,7 +93,7 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			repo := NewMockedRepository(ctrl)
-			hostService := newCommands(repo, nil, nil, nil, nil, nil)
+			hostService := newCommands(repo, nil, nil, nil, nil, nil, nil)
 			id := uuid.New()
 
 			repo.EXPECT().DeleteByID(t.Context(), id).Return(nil)
@@ -103,7 +109,7 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			repo := NewMockedRepository(ctrl)
-			hostService := newCommands(repo, nil, nil, nil, nil, nil)
+			hostService := newCommands(repo, nil, nil, nil, nil, nil, nil)
 			pageSize := 10
 			pageNumber := 1
 			search := new("term")
@@ -125,7 +131,7 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			repo := NewMockedRepository(ctrl)
-			hostService := newCommands(repo, nil, nil, nil, nil, nil)
+			hostService := newCommands(repo, nil, nil, nil, nil, nil, nil)
 			id := uuid.New()
 
 			expectedHost := newHost()
@@ -143,7 +149,7 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			repo := NewMockedRepository(ctrl)
-			hostService := newCommands(repo, nil, nil, nil, nil, nil)
+			hostService := newCommands(repo, nil, nil, nil, nil, nil, nil)
 
 			expectedHosts := []Host{*newHost()}
 			repo.EXPECT().FindAllEnabled(t.Context()).Return(expectedHosts, nil)
@@ -160,7 +166,7 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			repo := NewMockedRepository(ctrl)
-			hostService := newCommands(repo, nil, nil, nil, nil, nil)
+			hostService := newCommands(repo, nil, nil, nil, nil, nil, nil)
 			id := uuid.New()
 
 			repo.EXPECT().ExistsByID(t.Context(), id).Return(true, nil)

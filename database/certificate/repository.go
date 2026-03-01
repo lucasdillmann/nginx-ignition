@@ -14,6 +14,10 @@ import (
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
 
+const (
+	byCertificateIDFilter = "certificate_id = ?"
+)
+
 type repository struct {
 	database *database.Database
 }
@@ -56,20 +60,34 @@ func (r *repository) ExistsByID(ctx context.Context, id uuid.UUID) (bool, error)
 }
 
 func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) {
-	exists, err := r.database.
-		Select().
+	linkedToBindings, err := r.database.Select().
 		Table("host_binding").
-		Where("certificate_id = ?", id).
+		Where(byCertificateIDFilter, id).
 		Exists(ctx)
+	if err != nil {
+		return false, err
+	}
 
-	if err != nil || exists {
-		return exists, err
+	if linkedToBindings {
+		return true, nil
+	}
+
+	linkedToVPNs, err := r.database.Select().
+		Table("host_vpn").
+		Where(byCertificateIDFilter, id).
+		Exists(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	if linkedToVPNs {
+		return true, nil
 	}
 
 	return r.database.
 		Select().
 		Table("settings_global_binding").
-		Where("certificate_id = ?", id).
+		Where(byCertificateIDFilter, id).
 		Exists(ctx)
 }
 

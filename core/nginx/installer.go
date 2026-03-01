@@ -1,6 +1,7 @@
 package nginx
 
 import (
+	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
 	"dillmann.com.br/nginx-ignition/core/common/container"
 	"dillmann.com.br/nginx-ignition/core/host"
@@ -27,6 +28,7 @@ func newCommands(
 	configFilesManager *cfgfiles.Facade,
 	vpnCommands vpn.Commands,
 	settingsCommands settings.Commands,
+	certificateCommands certificate.Commands,
 ) (*service, Commands, error) {
 	serviceInstance, err := newService(
 		cfg,
@@ -34,6 +36,7 @@ func newCommands(
 		configFilesManager,
 		vpnCommands,
 		settingsCommands,
+		certificateCommands,
 	)
 	if err != nil {
 		return nil, nil, err

@@ -38,10 +38,12 @@ type hostBindingModel struct {
 type hostVpnModel struct {
 	bun.BaseModel `bun:"host_vpn"`
 
-	Host   *string   `bun:"host"`
-	Name   string    `bun:"name,notnull"`
-	HostID uuid.UUID `bun:"host_id,notnull"`
-	VPNID  uuid.UUID `bun:"vpn_id,notnull"`
+	Host          *string    `bun:"host"`
+	CertificateID *uuid.UUID `bun:"certificate_id"`
+	Name          string     `bun:"name,notnull"`
+	HostID        uuid.UUID  `bun:"host_id,notnull"`
+	VPNID         uuid.UUID  `bun:"vpn_id,notnull"`
+	EnableHTTPS   bool       `bun:"enable_https,notnull"`
 }
 
 type hostRouteModel struct {

@@ -8,6 +8,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
+	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/vpn"
@@ -55,8 +56,9 @@ func Test_endpointAdapter(t *testing.T) {
 
 		t.Run("maps bindings to targets correctly", func(t *testing.T) {
 			adapter := &endpointAdapter{
-				domainName: &domain,
-				bindings:   bindings,
+				domainName:  &domain,
+				bindings:    bindings,
+				enableHTTPS: true,
 			}
 			targets := adapter.Targets()
 
@@ -65,13 +67,15 @@ func Test_endpointAdapter(t *testing.T) {
 				Host:  domain,
 				IP:    "127.0.0.1",
 				Port:  80,
-				HTTPS: false,
+				HTTPS: vpn.EndpointHTTPS{},
 			}, targets[0])
 			assert.Equal(t, vpn.EndpointTarget{
-				Host:  domain,
-				IP:    "127.0.0.1",
-				Port:  443,
-				HTTPS: true,
+				Host: domain,
+				IP:   "127.0.0.1",
+				Port: 443,
+				HTTPS: vpn.EndpointHTTPS{
+					Enabled: true,
+				},
 			}, targets[1])
 		})
 	})
@@ -101,7 +105,9 @@ func Test_vpnManager(t *testing.T) {
 			GlobalBindings: globalBindings,
 		}, nil)
 
-		manager := newVpnManager(nil, settingsCmds)
+		certCommands := certificate.NewMockedCommands(ctrl)
+
+		manager := newVpnManager(nil, settingsCmds, certCommands)
 
 		t.Run("uses host bindings when UseGlobalBindings is false", func(t *testing.T) {
 			hosts := []host.Host{

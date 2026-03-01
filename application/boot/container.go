@@ -19,6 +19,7 @@ import (
 	"dillmann.com.br/nginx-ignition/database"
 	"dillmann.com.br/nginx-ignition/integration/docker"
 	"dillmann.com.br/nginx-ignition/integration/truenas"
+	"dillmann.com.br/nginx-ignition/vpn/netbird"
 	"dillmann.com.br/nginx-ignition/vpn/tailscale"
 )
 
@@ -44,6 +45,7 @@ func startContainer(ctx context.Context) error {
 		docker.Install,
 		truenas.Install,
 		tailscale.Install,
+		netbird.Install,
 		installCertificateDriverAggregation,
 		installIntegrationDriverAggregation,
 		installVpnDriverAggregation,
@@ -74,8 +76,10 @@ func installIntegrationDriverAggregation(
 
 func installVpnDriverAggregation(
 	ts *tailscale.Driver,
+	nb *netbird.Driver,
 ) error {
 	return container.Singleton([]vpn.Driver{
 		ts,
+		nb,
 	})
 }

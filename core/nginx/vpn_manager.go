@@ -2,33 +2,43 @@ package nginx
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 
 	"dillmann.com.br/nginx-ignition/core/binding"
+	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/host"
 	"dillmann.com.br/nginx-ignition/core/settings"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
 type endpointAdapter struct {
-	domainName *string
-	name       string
-	bindings   []binding.Binding
-	vpnID      uuid.UUID
+	domainName  *string
+	certDetails *certificate.Certificate
+	name        string
+	bindings    []binding.Binding
+	vpnID       uuid.UUID
+	enableHTTPS bool
 }
 
 type vpnManager struct {
-	vpnCommands      vpn.Commands
-	settingsCommands settings.Commands
-	currentEndpoints []vpn.Endpoint
+	vpnCommands         vpn.Commands
+	settingsCommands    settings.Commands
+	certificateCommands certificate.Commands
+	currentEndpoints    []vpn.Endpoint
 }
 
-func newVpnManager(vpnCommands vpn.Commands, settingsCommands settings.Commands) *vpnManager {
+func newVpnManager(
+	vpnCommands vpn.Commands,
+	settingsCommands settings.Commands,
+	certificateCommands certificate.Commands,
+) *vpnManager {
 	return &vpnManager{
-		vpnCommands:      vpnCommands,
-		settingsCommands: settingsCommands,
-		currentEndpoints: make([]vpn.Endpoint, 0),
+		vpnCommands:         vpnCommands,
+		settingsCommands:    settingsCommands,
+		certificateCommands: certificateCommands,
+		currentEndpoints:    make([]vpn.Endpoint, 0),
 	}
 }
 
@@ -114,31 +124,88 @@ func (m *vpnManager) buildEndpoints(
 		return nil, err
 	}
 
-	globalBindings := setts.GlobalBindings
 	endpoints := make([]vpn.Endpoint, 0)
-
 	for _, h := range hosts {
-		for _, vpnEntry := range h.VPNs {
-			bindings := h.Bindings
-			if h.UseGlobalBindings {
-				bindings = globalBindings
-			}
-
-			domainName := vpnEntry.Host
-			if (domainName == nil || *domainName == "") && len(h.DomainNames) > 0 {
-				domainName = &h.DomainNames[0]
-			}
-
-			endpoints = append(endpoints, &endpointAdapter{
-				vpnID:      vpnEntry.VPNID,
-				name:       vpnEntry.Name,
-				domainName: domainName,
-				bindings:   bindings,
-			})
+		hostEndpoints, err := m.buildHostEndpoints(ctx, &h, setts.GlobalBindings)
+		if err != nil {
+			return nil, err
 		}
+
+		endpoints = append(endpoints, hostEndpoints...)
 	}
 
 	return endpoints, nil
+}
+
+func (m *vpnManager) buildHostEndpoints(
+	ctx context.Context,
+	h *host.Host,
+	globalBindings []binding.Binding,
+) ([]vpn.Endpoint, error) {
+	endpoints := make([]vpn.Endpoint, 0)
+	for _, vpnEntry := range h.VPNs {
+		endpoint, err := m.mapVPNEntryToEndpoint(ctx, h, &vpnEntry, globalBindings)
+		if err != nil {
+			return nil, err
+		}
+
+		endpoints = append(endpoints, endpoint)
+	}
+	return endpoints, nil
+}
+
+func (m *vpnManager) mapVPNEntryToEndpoint(
+	ctx context.Context,
+	h *host.Host,
+	vpnEntry *host.VPN,
+	globalBindings []binding.Binding,
+) (vpn.Endpoint, error) {
+	bindings := h.Bindings
+	if h.UseGlobalBindings {
+		bindings = globalBindings
+	}
+
+	domainName := vpnEntry.Host
+	if (domainName == nil || *domainName == "") && len(h.DomainNames) > 0 {
+		domainName = &h.DomainNames[0]
+	}
+
+	certDetails, err := m.getVPNCertificateDetails(ctx, vpnEntry)
+	if err != nil {
+		return nil, err
+	}
+
+	return &endpointAdapter{
+		vpnID:       vpnEntry.VPNID,
+		name:        vpnEntry.Name,
+		domainName:  domainName,
+		bindings:    bindings,
+		enableHTTPS: vpnEntry.EnableHTTPS,
+		certDetails: certDetails,
+	}, nil
+}
+
+func (m *vpnManager) getVPNCertificateDetails(
+	ctx context.Context,
+	vpnEntry *host.VPN,
+) (*certificate.Certificate, error) {
+	if !vpnEntry.EnableHTTPS || vpnEntry.CertificateID == nil {
+		return nil, nil
+	}
+
+	certDetails, err := m.certificateCommands.Get(ctx, *vpnEntry.CertificateID)
+	if err != nil {
+		return nil, err
+	}
+
+	if certDetails == nil {
+		return nil, fmt.Errorf(
+			"no certificate found with ID %s",
+			*vpnEntry.CertificateID,
+		)
+	}
+
+	return certDetails, nil
 }
 
 func (m *vpnManager) stop(ctx context.Context) error {
@@ -174,12 +241,29 @@ func (a *endpointAdapter) Targets() []vpn.EndpointTarget {
 		targetHost = *a.domainName
 	}
 
-	output := make([]vpn.EndpointTarget, len(a.bindings))
-	for index, b := range a.bindings {
-		output[index].Host = targetHost
-		output[index].IP = b.IP
-		output[index].Port = b.Port
-		output[index].HTTPS = b.Type == binding.HTTPSBindingType
+	output := make([]vpn.EndpointTarget, 0, len(a.bindings))
+	for _, b := range a.bindings {
+		https := vpn.EndpointHTTPS{}
+
+		if b.Type == binding.HTTPSBindingType {
+			if !a.enableHTTPS {
+				continue
+			}
+
+			https.Enabled = true
+			if a.certDetails != nil {
+				https.CertificationChain = a.certDetails.CertificationChain
+				https.PrivateKey = a.certDetails.PrivateKey
+				https.PublicKey = a.certDetails.PublicKey
+			}
+		}
+
+		output = append(output, vpn.EndpointTarget{
+			Host:  targetHost,
+			IP:    b.IP,
+			Port:  b.Port,
+			HTTPS: https,
+		})
 	}
 
 	return output

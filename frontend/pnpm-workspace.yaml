@@ -3,4 +3,4 @@ onlyBuiltDependencies:
     - esbuild
 
 overrides:
-    "minimatch": "^10.2.2"
+    "minimatch": "^10.2.3"

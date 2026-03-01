@@ -34,6 +34,15 @@ func newHostRequestDTO() hostRequestDTO {
 				},
 			},
 		},
+		VPNs: []vpnDTO{
+			{
+				VPNID:         new(uuid.New()),
+				Name:          new("test"),
+				Host:          new("test"),
+				EnableHTTPS:   new(true),
+				CertificateID: new(uuid.New()),
+			},
+		},
 	}
 }
 
@@ -64,6 +73,15 @@ func newHost() *host.Host {
 					KeepOriginalDomainName: true,
 					IndexFile:              new("index.html"),
 				},
+			},
+		},
+		VPNs: []host.VPN{
+			{
+				Host:          new("test"),
+				CertificateID: new(uuid.New()),
+				Name:          "test",
+				VPNID:         uuid.New(),
+				EnableHTTPS:   true,
 			},
 		},
 	}

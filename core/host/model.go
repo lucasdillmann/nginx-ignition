@@ -88,7 +88,9 @@ type RouteIntegrationConfig struct {
 }
 
 type VPN struct {
-	Host  *string
-	Name  string
-	VPNID uuid.UUID
+	Host          *string
+	CertificateID *uuid.UUID
+	Name          string
+	VPNID         uuid.UUID
+	EnableHTTPS   bool
 }

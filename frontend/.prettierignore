@@ -1,6 +1,5 @@
 build
-.gradle
-.node
 node_modules
-build.gradle.kts
 **/*.generated.ts
+pnpm-lock.yaml
+pnpm-workspace.yaml

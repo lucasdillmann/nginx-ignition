@@ -22,6 +22,20 @@ type Endpoint interface {
 type EndpointTarget struct {
 	Host  string
 	IP    string
+	HTTPS EndpointHTTPS
 	Port  int
-	HTTPS bool
 }
+
+type EndpointHTTPS struct {
+	PrivateKey         string
+	PublicKey          string
+	CertificationChain []string
+	Enabled            bool
+}
+
+type EndpointSSLSupport string
+
+const (
+	DriverManagedEndpointSSLSupport   EndpointSSLSupport = "DRIVER_MANAGED"
+	ProviderManagedEndpointSSLSupport EndpointSSLSupport = "PROVIDER_MANAGED"
+)

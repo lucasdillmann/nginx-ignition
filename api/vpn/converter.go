@@ -7,17 +7,18 @@ import (
 	"dillmann.com.br/nginx-ignition/core/vpn"
 )
 
-func toDTO(data *vpn.VPN) *vpnResponse {
+func toDTO(data *vpn.VPN, driver *vpn.AvailableDriver) *vpnResponse {
 	if data == nil {
 		return nil
 	}
 
 	return &vpnResponse{
-		ID:         data.ID,
-		Driver:     data.Driver,
-		Name:       data.Name,
-		Enabled:    data.Enabled,
-		Parameters: data.Parameters,
+		ID:                       data.ID,
+		Driver:                   data.Driver,
+		DriverEndpointSSLSupport: driver.EndpointSSLSupport,
+		Name:                     data.Name,
+		Enabled:                  data.Enabled,
+		Parameters:               data.Parameters,
 	}
 }
 
@@ -47,5 +48,6 @@ func toAvailableDriverDTO(data *vpn.AvailableDriver) vpnDriverResponse {
 		Name:                  data.Name,
 		ImportantInstructions: data.ImportantInstructions,
 		ConfigurationFields:   dynamicfield.ToResponse(data.ConfigurationFields),
+		EndpointSSLSupport:    data.EndpointSSLSupport,
 	}
 }

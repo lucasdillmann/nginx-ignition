@@ -11,6 +11,7 @@ import (
 	"dillmann.com.br/nginx-ignition/core/accesslist"
 	"dillmann.com.br/nginx-ignition/core/binding"
 	"dillmann.com.br/nginx-ignition/core/cache"
+	"dillmann.com.br/nginx-ignition/core/certificate"
 	"dillmann.com.br/nginx-ignition/core/common/constants"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
@@ -26,6 +27,7 @@ type validator struct {
 	accessListCommands  accesslist.Commands
 	cacheCommands       cache.Commands
 	bindingCommands     binding.Commands
+	certificateCommands certificate.Commands
 	delegate            *validation.ConsistencyValidator
 }
 
@@ -36,6 +38,7 @@ func newValidator(
 	accessListCommands accesslist.Commands,
 	cacheCommands cache.Commands,
 	bindingCommands binding.Commands,
+	certificateCommands certificate.Commands,
 ) *validator {
 	return &validator{
 		hostRepository:      hostRepository,
@@ -44,6 +47,7 @@ func newValidator(
 		accessListCommands:  accessListCommands,
 		cacheCommands:       cacheCommands,
 		bindingCommands:     bindingCommands,
+		certificateCommands: certificateCommands,
 		delegate:            validation.NewValidator(),
 	}
 }
@@ -369,48 +373,146 @@ func (v *validator) validateExecuteCodeRoute(ctx context.Context, route *Route, 
 }
 
 func (v *validator) validateVPNs(ctx context.Context, host *Host) error {
+	vpnDrivers, err := v.vpnCommands.GetAvailableDrivers(ctx)
+	if err != nil {
+		return err
+	}
+
 	vpnNameUsage := make(map[uuid.UUID]map[string]int)
-
 	for index, value := range host.VPNs {
-		basePath := fmt.Sprintf("vpns[%d]", index)
-		vpnIDPath := basePath + ".vpnId"
-		namePath := basePath + ".name"
-
-		if strings.TrimSpace(value.Name) == "" {
-			v.delegate.Add(namePath, i18n.M(ctx, i18n.K.CommonValueMissing))
-		}
-
-		if value.VPNID == uuid.Nil {
-			v.delegate.Add(vpnIDPath, i18n.M(ctx, i18n.K.CommonValueMissing))
-			continue
-		}
-
-		if vpnNameUsage[value.VPNID] == nil {
-			vpnNameUsage[value.VPNID] = make(map[string]int)
-		}
-
-		if vpnNameUsage[value.VPNID][value.Name] > 0 {
-			v.delegate.Add(namePath, i18n.M(ctx, i18n.K.CoreHostDuplicatedVpnName))
-		}
-
-		vpnNameUsage[value.VPNID][value.Name]++
-
-		vpnData, err := v.vpnCommands.Get(ctx, value.VPNID)
-		if err != nil {
+		if err := v.validateVPNEntry(ctx, &value, index, vpnDrivers, vpnNameUsage); err != nil {
 			return err
-		}
-
-		if vpnData == nil {
-			v.delegate.Add(vpnIDPath, i18n.M(ctx, i18n.K.CoreHostVpnNotFound))
-			continue
-		}
-
-		if !vpnData.Enabled {
-			v.delegate.Add(vpnIDPath, i18n.M(ctx, i18n.K.CoreHostVpnDisabled))
 		}
 	}
 
 	return nil
+}
+
+func (v *validator) validateVPNEntry(
+	ctx context.Context,
+	value *VPN,
+	index int,
+	vpnDrivers []vpn.AvailableDriver,
+	vpnNameUsage map[uuid.UUID]map[string]int,
+) error {
+	basePath := fmt.Sprintf("vpns[%d]", index)
+	vpnIDPath := basePath + ".vpnId"
+	namePath := basePath + ".name"
+
+	if strings.TrimSpace(value.Name) == "" {
+		v.delegate.Add(namePath, i18n.M(ctx, i18n.K.CommonValueMissing))
+	}
+
+	if value.VPNID == uuid.Nil {
+		v.delegate.Add(vpnIDPath, i18n.M(ctx, i18n.K.CommonValueMissing))
+		return nil
+	}
+
+	if vpnNameUsage[value.VPNID] == nil {
+		vpnNameUsage[value.VPNID] = make(map[string]int)
+	}
+
+	if vpnNameUsage[value.VPNID][value.Name] > 0 {
+		v.delegate.Add(namePath, i18n.M(ctx, i18n.K.CoreHostDuplicatedVpnName))
+	}
+
+	vpnNameUsage[value.VPNID][value.Name]++
+
+	vpnData, err := v.vpnCommands.Get(ctx, value.VPNID)
+	if err != nil {
+		return err
+	}
+
+	if vpnData == nil {
+		v.delegate.Add(vpnIDPath, i18n.M(ctx, i18n.K.CoreHostVpnNotFound))
+		return nil
+	}
+
+	if !vpnData.Enabled {
+		v.delegate.Add(vpnIDPath, i18n.M(ctx, i18n.K.CoreHostVpnDisabled))
+	}
+
+	return v.validateVPNCertificate(ctx, vpnData, value, index, vpnDrivers)
+}
+
+func (v *validator) validateVPNCertificate(
+	ctx context.Context,
+	vpnData *vpn.VPN,
+	hostVpn *VPN,
+	index int,
+	vpnDrivers []vpn.AvailableDriver,
+) error {
+	if !hostVpn.EnableHTTPS {
+		return nil
+	}
+
+	driver := v.findVPNDriver(vpnData.Driver, vpnDrivers)
+	if driver == nil {
+		return nil
+	}
+
+	fieldPath := fmt.Sprintf("vpns[%d].certificateId", index)
+	if err := v.validateManagedSSLCertificate(ctx, driver, hostVpn, fieldPath); err != nil {
+		return err
+	}
+
+	v.validateProviderSSLCertificate(ctx, driver, hostVpn, fieldPath)
+	return nil
+}
+
+func (v *validator) findVPNDriver(
+	driverID string,
+	vpnDrivers []vpn.AvailableDriver,
+) *vpn.AvailableDriver {
+	for _, d := range vpnDrivers {
+		if d.ID == driverID {
+			return &d
+		}
+	}
+
+	return nil
+}
+
+func (v *validator) validateManagedSSLCertificate(
+	ctx context.Context,
+	driver *vpn.AvailableDriver,
+	hostVpn *VPN,
+	fieldPath string,
+) error {
+	if driver.EndpointSSLSupport != vpn.DriverManagedEndpointSSLSupport {
+		return nil
+	}
+
+	if hostVpn.CertificateID == nil || *hostVpn.CertificateID == uuid.Nil {
+		v.delegate.Add(fieldPath, i18n.M(ctx, i18n.K.CoreHostVpnCertificateRequired))
+		return nil
+	}
+
+	exists, err := v.certificateCommands.Exists(ctx, *hostVpn.CertificateID)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		v.delegate.Add(fieldPath, i18n.M(ctx, i18n.K.CoreHostVpnCertificateNotFound))
+	}
+
+	return nil
+}
+
+func (v *validator) validateProviderSSLCertificate(
+	ctx context.Context,
+	driver *vpn.AvailableDriver,
+	hostVpn *VPN,
+	fieldPath string,
+) {
+	if driver.EndpointSSLSupport != vpn.ProviderManagedEndpointSSLSupport {
+		return
+	}
+
+	if hostVpn.CertificateID != nil && *hostVpn.CertificateID != uuid.Nil {
+		v.delegate.Add(fieldPath, i18n.M(ctx, i18n.K.CoreHostVpnCertificateProhibited))
+	}
 }
 
 func buildIndexedRoutePath(index int, childPath string) string {

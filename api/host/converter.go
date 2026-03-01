@@ -104,9 +104,11 @@ func toVpnDTOSlice(vpns []host.VPN) []vpnDTO {
 	result := make([]vpnDTO, len(vpns))
 	for index, vpn := range vpns {
 		result[index] = vpnDTO{
-			VPNID: &vpn.VPNID,
-			Name:  &vpn.Name,
-			Host:  vpn.Host,
+			VPNID:         &vpn.VPNID,
+			Name:          &vpn.Name,
+			Host:          vpn.Host,
+			EnableHTTPS:   &vpn.EnableHTTPS,
+			CertificateID: vpn.CertificateID,
 		}
 	}
 
@@ -223,9 +225,11 @@ func toVPNsSlice(vpns []vpnDTO) []host.VPN {
 	result := make([]host.VPN, len(vpns))
 	for index, vpn := range vpns {
 		result[index] = host.VPN{
-			VPNID: getUUIDValue(vpn.VPNID),
-			Name:  getStringValue(vpn.Name),
-			Host:  vpn.Host,
+			VPNID:         getUUIDValue(vpn.VPNID),
+			Name:          getStringValue(vpn.Name),
+			Host:          vpn.Host,
+			EnableHTTPS:   getBoolValue(vpn.EnableHTTPS),
+			CertificateID: vpn.CertificateID,
 		}
 	}
 

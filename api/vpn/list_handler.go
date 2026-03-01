@@ -32,5 +32,14 @@ func (h listHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	ctx.JSON(http.StatusOK, pagination.Convert(page, toDTO))
+	pageData := pagination.Convert(page, func(vpn *vpn.VPN) *vpnResponse {
+		driver, err := h.commands.GetAvailableDriverByID(ctx, vpn.Driver)
+		if err != nil {
+			panic(err)
+		}
+
+		return toDTO(vpn, driver)
+	})
+
+	ctx.JSON(http.StatusOK, pageData)
 }

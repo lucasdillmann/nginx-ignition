@@ -19,53 +19,59 @@ import (
 
 type tailnetEndpoint struct {
 	client    *local.Client
-	server    *tsnet.Server
+	tsServer  *tsnet.Server
 	endpoint  vpn.Endpoint
 	serverURL string
 	authKey   string
 	configDir string
 	listeners []net.Listener
+	hServers  []*http.Server
 }
 
 func (e *tailnetEndpoint) stop(ctx context.Context) {
 	log.Infof("Stopping Tailscale endpoint %s...", e.endpoint.SourceName())
+
+	for _, server := range e.hServers {
+		_ = server.Shutdown(ctx)
+	}
 
 	for _, listener := range e.listeners {
 		_ = listener.Close()
 	}
 
 	_ = e.client.Logout(ctx)
-	_ = e.server.Close()
+	_ = e.tsServer.Close()
 }
 
 func (e *tailnetEndpoint) start(ctx context.Context) error {
 	log.Infof("Starting tailscale %s endpoint...", e.endpoint.SourceName())
 
-	e.server = new(tsnet.Server)
-	e.server.AuthKey = e.authKey
-	e.server.ControlURL = e.serverURL
-	e.server.Hostname = e.endpoint.SourceName()
-	e.server.Ephemeral = true
-	e.server.UserLogf = noOpLogger
-	e.server.Logf = noOpLogger
-	e.server.Dir = filepath.Join(e.configDir, "tsnet", e.endpoint.SourceName())
+	e.tsServer = new(tsnet.Server)
+	e.tsServer.AuthKey = e.authKey
+	e.tsServer.ControlURL = e.serverURL
+	e.tsServer.Hostname = e.endpoint.SourceName()
+	e.tsServer.Ephemeral = true
+	e.tsServer.UserLogf = noOpLogger
+	e.tsServer.Logf = noOpLogger
+	e.tsServer.Dir = filepath.Join(e.configDir, "tsnet", e.endpoint.SourceName())
 
-	if _, err := e.server.Up(ctx); err != nil {
+	if _, err := e.tsServer.Up(ctx); err != nil {
 		return err
 	}
 
 	var err error
-	if e.client, err = e.server.LocalClient(); err != nil {
+	if e.client, err = e.tsServer.LocalClient(); err != nil {
 		return err
 	}
 
 	for _, target := range e.endpoint.Targets() {
 		if err := e.startListener(target); err != nil {
+			e.stop(ctx)
 			return err
 		}
 	}
 
-	ipv4, ipv6 := e.server.TailscaleIPs()
+	ipv4, ipv6 := e.tsServer.TailscaleIPs()
 	log.Infof(
 		"Tailscale endpoint %s started (IPv4 %v; IPv6 %v)",
 		e.endpoint.SourceName(),
@@ -81,14 +87,16 @@ func (e *tailnetEndpoint) startListener(target vpn.EndpointTarget) error {
 	proxy.ErrorLog = log.Std()
 
 	scheme := "http"
-	if target.HTTPS {
+	if target.HTTPS.Enabled {
 		scheme = "https"
-		proxy.Transport = &http.Transport{
-			TLSClientConfig: &tls.Config{
-				ServerName: target.Host,
-				MinVersion: tls.VersionTLS12,
-			},
+
+		transport := http.DefaultTransport.(*http.Transport).Clone()
+		transport.TLSClientConfig = &tls.Config{
+			ServerName: target.Host,
+			MinVersion: tls.VersionTLS12,
 		}
+
+		proxy.Transport = transport
 	}
 
 	proxy.Rewrite = func(pr *httputil.ProxyRequest) {
@@ -97,6 +105,7 @@ func (e *tailnetEndpoint) startListener(target vpn.EndpointTarget) error {
 			ipAddr = "127.0.0.1"
 		}
 
+		pr.SetXForwarded()
 		pr.Out.URL.Host = fmt.Sprintf("%s:%d", ipAddr, target.Port)
 		pr.Out.URL.Scheme = scheme
 		pr.Out.Header.Del("Host")
@@ -104,9 +113,9 @@ func (e *tailnetEndpoint) startListener(target vpn.EndpointTarget) error {
 		pr.Out.Host = target.Host
 	}
 
-	startListener := e.server.Listen
-	if target.HTTPS {
-		startListener = e.server.ListenTLS
+	startListener := e.tsServer.Listen
+	if target.HTTPS.Enabled {
+		startListener = e.tsServer.ListenTLS
 	}
 
 	var listener net.Listener
@@ -116,14 +125,15 @@ func (e *tailnetEndpoint) startListener(target vpn.EndpointTarget) error {
 		return err
 	}
 
+	svr := &http.Server{
+		ReadHeaderTimeout: 10 * time.Second,
+		Handler:           http.HandlerFunc(proxy.ServeHTTP),
+	}
+
 	e.listeners = append(e.listeners, listener)
+	e.hServers = append(e.hServers, svr)
 
 	go func() {
-		svr := &http.Server{
-			ReadHeaderTimeout: 10 * time.Second,
-			Handler:           http.HandlerFunc(proxy.ServeHTTP),
-		}
-
 		_ = svr.Serve(listener)
 	}()
 

@@ -11,8 +11,9 @@ import (
 )
 
 type AvailableDriver struct {
-	ID                    string
 	Name                  *i18n.Message
+	ID                    string
+	EndpointSSLSupport    EndpointSSLSupport
 	ImportantInstructions []*i18n.Message
 	ConfigurationFields   []dynamicfields.DynamicField
 }
@@ -23,6 +24,7 @@ type Commands interface {
 	Save(ctx context.Context, data *VPN) error
 	Exists(ctx context.Context, id uuid.UUID) (*bool, error)
 	GetAvailableDrivers(ctx context.Context) ([]AvailableDriver, error)
+	GetAvailableDriverByID(ctx context.Context, id string) (*AvailableDriver, error)
 	Start(ctx context.Context, endpoint Endpoint) error
 	Reload(ctx context.Context, endpoint Endpoint) error
 	Stop(ctx context.Context, endpoint Endpoint) error

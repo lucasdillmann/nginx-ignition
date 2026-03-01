@@ -18,12 +18,9 @@
     min-width: 250px;
 }
 
-.host-form-vpn-name {
-    flex: 1 1 0;
-    min-width: 250px;
-}
-
-.host-form-vpn-host {
+.host-form-vpn-name,
+.host-form-vpn-enable-https,
+.host-form-vpn-certificate {
     flex: 1 1 0;
     min-width: 250px;
 }
