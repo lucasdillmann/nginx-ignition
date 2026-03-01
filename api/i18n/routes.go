@@ -11,7 +11,9 @@ import (
 
 func Install(router *gin.Engine, commands i18n.Commands, authorizer *authorization.ABAC) {
 	basePath := router.Group("/api/i18n")
-	basePath.GET("", getDictionaryHandler{commands}.handle)
+	basePath.GET("", getAvailableLanguagesHandler{commands}.handle)
+	basePath.GET("/:language", getDictionaryHandler{commands}.handle)
 
 	authorizer.AllowAnonymous(http.MethodGet, "/api/i18n")
+	authorizer.AllowAnonymous(http.MethodGet, "/api/i18n/:language")
 }

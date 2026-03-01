@@ -1,10 +1,11 @@
 package i18n
 
-type dictionariesDTO struct {
-	DefaultLanguage string          `json:"defaultLanguage"`
-	Dictionaries    []dictionaryDTO `json:"dictionaries"`
-}
-type dictionaryDTO struct {
+type dictionaryResponseDTO struct {
 	Messages map[string]string `json:"messages"`
 	Language string            `json:"languageTag"`
+}
+
+type availableLanguagesResponseDTO struct {
+	DefaultLanguage string   `json:"default"`
+	Available       []string `json:"available"`
 }

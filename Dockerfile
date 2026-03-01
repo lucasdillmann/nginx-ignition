@@ -28,6 +28,7 @@ ENV NGINX_IGNITION_NGINX_BINARY_PATH="/usr/sbin/nginx" \
 
 ENTRYPOINT ["/opt/nginx-ignition/nginx-ignition"]
 WORKDIR /opt/nginx-ignition
+VOLUME /opt/nginx-ignition/data
 
 RUN apk update && \
     apk upgrade && \

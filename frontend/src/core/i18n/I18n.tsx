@@ -2,6 +2,7 @@ import MessageKey from "./model/MessageKey.generated"
 import React from "react"
 import I18nDictionary from "./model/I18nDictionary"
 import I18nContext from "./I18nContext"
+import resolveLanguageTag from "./I18nLanguageTagResolver"
 
 interface I18nState {
     value: string
@@ -84,31 +85,8 @@ export function i18n(input: I18nMessage, fallback?: string): string {
 }
 
 function resolveDictionary(): I18nDictionary {
-    const { currentLanguage, defaultLanguage, dictionaries } = I18nContext.get()
-    const targetLanguage = currentLanguage ?? defaultLanguage
+    const { currentLanguage, defaultLanguage, availableLanguages, loadedDictionaries } = I18nContext.get()
+    const targetLanguage = resolveLanguageTag(availableLanguages, currentLanguage, defaultLanguage)
 
-    for (const dictionary of dictionaries) {
-        if (dictionary.languageTag === targetLanguage) {
-            return dictionary
-        }
-    }
-
-    if (targetLanguage.includes("-")) {
-        const baseLanguage = targetLanguage.split("-")[0]
-        for (const dictionary of dictionaries) {
-            if (dictionary.languageTag === baseLanguage) {
-                return dictionary
-            }
-        }
-    }
-
-    for (const dictionary of dictionaries) {
-        const baseLanguage = defaultLanguage.split("-")[0]
-        if (dictionary.languageTag === defaultLanguage || dictionary.languageTag === baseLanguage) {
-            return dictionary
-        }
-    }
-
-    // @ts-expect-error fallback dictionary
-    return { languageTag: targetLanguage, messages: {} }
+    return loadedDictionaries[targetLanguage] ?? { languageTag: targetLanguage, messages: {} as any }
 }

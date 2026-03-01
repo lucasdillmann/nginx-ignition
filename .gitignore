@@ -7,12 +7,7 @@
 *.test
 *.out
 
-# Dependency directories and files
-vendor/
-**/go.sum
-**/go.work.sum
-
-# others
+# Others
 .env
 .env.*
 *.iml
@@ -26,3 +21,4 @@ build/
 **/*.generated.go
 **/*.generated.ts
 i18n/*.md
+coverage.out

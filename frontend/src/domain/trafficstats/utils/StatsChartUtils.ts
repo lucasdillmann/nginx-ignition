@@ -31,7 +31,12 @@ export interface TrafficDataItem {
     outBytes: number
 }
 
-export function buildTrafficByDomainData(serverZones: Record<string, ZoneData>, topN: number = 10): TrafficDataItem[] {
+export function buildTrafficByDomainData(
+    serverZones: Record<string, ZoneData> | null,
+    topN: number = 10,
+): TrafficDataItem[] {
+    if (!serverZones) return []
+
     return Object.entries(serverZones)
         .filter(([name]) => name !== "*")
         .map(([name, data]) => ({
@@ -44,7 +49,7 @@ export function buildTrafficByDomainData(serverZones: Record<string, ZoneData>, 
         .slice(0, topN)
 }
 
-export function aggregateResponses(zones: Record<string, ZoneData>): ZoneData["responses"] {
+export function aggregateResponses(zones: Record<string, ZoneData> | null): ZoneData["responses"] {
     const result = {
         "1xx": 0,
         "2xx": 0,
@@ -60,6 +65,8 @@ export function aggregateResponses(zones: Record<string, ZoneData>): ZoneData["r
         hit: 0,
         scarce: 0,
     }
+
+    if (!zones) return result
 
     Object.values(zones).forEach(zone => {
         result["1xx"] += zone.responses["1xx"]

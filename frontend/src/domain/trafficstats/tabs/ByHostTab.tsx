@@ -42,7 +42,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps> {
     private getSelectedZoneData(): ZoneData | undefined {
         const { filterZones } = this.props.stats
         const { selectedHost } = this.props
-        if (!selectedHost || !filterZones.hosts) return undefined
+        if (!selectedHost || !filterZones?.hosts) return undefined
         return filterZones.hosts[selectedHost.id]
     }
 
@@ -120,7 +120,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps> {
         const { selectedHost, theme, disableAnimation } = this.props
         if (!selectedHost) return null
 
-        const userAgentZone = filterZones[`userAgent@host:${selectedHost.id}`]
+        const userAgentZone = filterZones?.[`userAgent@host:${selectedHost.id}`]
         const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
         return <UserAgentChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
@@ -130,7 +130,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps> {
         const { selectedHost, theme, disableAnimation } = this.props
         if (!selectedHost) return null
 
-        const countryCodeZone = filterZones[`countryCode@host:${selectedHost.id}`]
+        const countryCodeZone = filterZones?.[`countryCode@host:${selectedHost.id}`]
         const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
         return <CountryCodeChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
@@ -140,7 +140,7 @@ export default class ByHostTab extends React.Component<ByHostTabProps> {
         const { selectedHost, theme, disableAnimation } = this.props
         if (!selectedHost) return null
 
-        const cityZone = filterZones[`city@host:${selectedHost.id}`]
+        const cityZone = filterZones?.[`city@host:${selectedHost.id}`]
         const data = cityZone ? buildCityData(cityZone) : []
         return <CityChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }

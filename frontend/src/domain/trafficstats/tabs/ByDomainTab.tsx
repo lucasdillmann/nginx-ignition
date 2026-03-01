@@ -31,7 +31,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps> {
         const { serverZones } = this.props.stats
         const { selectedDomain } = this.props
         if (!selectedDomain) return undefined
-        return serverZones[selectedDomain]
+        return serverZones?.[selectedDomain]
     }
 
     private getAvgResponseTime(zone: ZoneData): number {
@@ -42,7 +42,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps> {
     private renderDomainSelector() {
         const { serverZones } = this.props.stats
         const { selectedDomain, onSelectDomain } = this.props
-        const domains = Object.keys(serverZones).filter(d => d !== "*")
+        const domains = serverZones ? Object.keys(serverZones).filter(d => d !== "*") : []
 
         const options = domains.map(domain => ({
             value: domain,
@@ -101,7 +101,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps> {
         const { selectedDomain, theme, disableAnimation } = this.props
         if (!selectedDomain) return null
 
-        const userAgentZone = filterZones[`userAgent@domain:${selectedDomain}`]
+        const userAgentZone = filterZones?.[`userAgent@domain:${selectedDomain}`]
         const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
         return <UserAgentChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
@@ -111,7 +111,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps> {
         const { selectedDomain, theme, disableAnimation } = this.props
         if (!selectedDomain) return null
 
-        const countryCodeZone = filterZones[`countryCode@domain:${selectedDomain}`]
+        const countryCodeZone = filterZones?.[`countryCode@domain:${selectedDomain}`]
         const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
         return <CountryCodeChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
@@ -121,7 +121,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps> {
         const { selectedDomain, theme, disableAnimation } = this.props
         if (!selectedDomain) return null
 
-        const cityZone = filterZones[`city@domain:${selectedDomain}`]
+        const cityZone = filterZones?.[`city@domain:${selectedDomain}`]
         const data = cityZone ? buildCityData(cityZone) : []
         return <CityChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }

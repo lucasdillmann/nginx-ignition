@@ -131,8 +131,7 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
     private renderResponseTimeChart() {
         const { serverZones } = this.props.stats
         const { theme, disableAnimation } = this.props
-        // Use global zone '*' for global response times
-        const globalZone = serverZones["*"]
+        const globalZone = serverZones?.["*"]
         const data = globalZone ? buildResponseTimeData(globalZone.requestMsecs) : []
         return <ResponseTimeChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
@@ -140,7 +139,7 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
     private renderUserAgentChart() {
         const { filterZones } = this.props.stats
         const { theme, disableAnimation } = this.props
-        const userAgentZone = filterZones["userAgent@global"]
+        const userAgentZone = filterZones?.["userAgent@global"]
         const data = userAgentZone ? buildUserAgentData(userAgentZone) : []
         return <UserAgentChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
@@ -148,7 +147,7 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
     private renderCountryCodeChart() {
         const { filterZones } = this.props.stats
         const { theme, disableAnimation } = this.props
-        const countryCodeZone = filterZones["countryCode@global"]
+        const countryCodeZone = filterZones?.["countryCode@global"]
         const data = countryCodeZone ? buildCountryCodeData(countryCodeZone) : []
         return <CountryCodeChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }
@@ -156,7 +155,7 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
     private renderCityChart() {
         const { filterZones } = this.props.stats
         const { theme, disableAnimation } = this.props
-        const cityZone = filterZones["city@global"]
+        const cityZone = filterZones?.["city@global"]
         const data = cityZone ? buildCityData(cityZone) : []
         return <CityChart data={data} theme={theme} disableAnimation={disableAnimation} />
     }

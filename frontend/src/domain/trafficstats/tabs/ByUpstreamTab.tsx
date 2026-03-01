@@ -21,7 +21,8 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
     private getSelectedUpstreamData(): UpstreamZoneData[] | undefined {
         const { upstreamZones } = this.props.stats
         const { selectedUpstream } = this.props
-        if (!selectedUpstream) return undefined
+
+        if (!selectedUpstream || !upstreamZones) return undefined
         return upstreamZones[selectedUpstream]
     }
 
@@ -46,7 +47,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
     private renderUpstreamSelector() {
         const { upstreamZones } = this.props.stats
         const { selectedUpstream, onSelectUpstream } = this.props
-        const upstreams = Object.keys(upstreamZones)
+        const upstreams = upstreamZones ? Object.keys(upstreamZones) : []
 
         const options = upstreams.map(name => ({
             value: name,
