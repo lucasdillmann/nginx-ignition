@@ -46,8 +46,8 @@ export default class I18nLanguagePicker extends React.Component<I18nLanguagePick
         }
     }
 
-    private handleLanguageChange(languageTag: string | null) {
-        this.service.setCustomLanguage(languageTag)
+    private async handleLanguageChange(languageTag: string | null) {
+        await this.service.setCustomLanguage(languageTag)
         this.setState({ current: languageTag })
     }
 
