@@ -242,7 +242,7 @@ func (a *endpointAdapter) Targets() []vpn.EndpointTarget {
 	}
 
 	output := make([]vpn.EndpointTarget, 0, len(a.bindings))
-	for index, b := range a.bindings {
+	for _, b := range a.bindings {
 		https := vpn.EndpointHTTPS{}
 
 		if b.Type == binding.HTTPSBindingType {
@@ -258,10 +258,12 @@ func (a *endpointAdapter) Targets() []vpn.EndpointTarget {
 			}
 		}
 
-		output[index].Host = targetHost
-		output[index].IP = b.IP
-		output[index].Port = b.Port
-		output[index].HTTPS = https
+		output = append(output, vpn.EndpointTarget{
+			Host:  targetHost,
+			IP:    b.IP,
+			Port:  b.Port,
+			HTTPS: https,
+		})
 	}
 
 	return output
