@@ -229,35 +229,15 @@ func (p *geoIPFileProvider) executeRequest(
 ) (*http.Response, error) {
 	client := http.Client{Timeout: timeout}
 
-	var resp *http.Response
-	var err error
-
-	for attempt := range 2 {
-		req, reqErr := http.NewRequest(http.MethodGet, url, nil)
-		if reqErr != nil {
-			return nil, reqErr
-		}
-
-		req.Header.Set("User-Agent", "Nginx-Ignition")
-		req.Header.Set("Accept", "*/*")
-
-		resp, err = client.Do(req)
-		if err == nil {
-			return resp, nil
-		}
-
-		if attempt < 3 {
-			log.Warnf(
-				"Failed to fetch %s (attempt %d of 3): %v. Retrying in 250ms...",
-				url,
-				attempt+1,
-				err,
-			)
-			time.Sleep(250 * time.Millisecond)
-		}
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
 	}
 
-	return resp, err
+	req.Header.Set("User-Agent", "Nginx-Ignition")
+	req.Header.Set("Accept", "*/*")
+
+	return client.Do(req)
 }
 
 func (p *geoIPFileProvider) findAssetURL(release *gitHubRelease, assetName string) string {
