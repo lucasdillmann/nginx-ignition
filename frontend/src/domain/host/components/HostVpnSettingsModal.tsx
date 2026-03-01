@@ -16,7 +16,7 @@ const ItemProps: FormItemProps = {
 export interface HostVpnSettingsProps {
     open: boolean
     index: number
-    fieldPath: string | string[]
+    fieldPath: string | string[] | number
     onClose: () => void
     validationResult: ValidationResult
 }
