@@ -258,7 +258,7 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
     }
 
     private renderEmptyState() {
-        const { metadata, nginxRunning } = this.state
+        const { metadata, nginxRunning, stats } = this.state
 
         if (metadata?.availableSupport?.stats === NginxSupportType.NONE)
             return (
@@ -312,6 +312,22 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
                 />
             )
 
+        if (stats?.serverZones?.["*"]?.requestCounter === 0)
+            return (
+                <Empty
+                    description={
+                        <>
+                            <h3>
+                                <I18n id={MessageKey.FrontendTrafficStatsNoDataYetTitle} />
+                            </h3>
+                            <p>
+                                <I18n id={MessageKey.FrontendTrafficStatsNoDataYetDescription} />
+                            </p>
+                        </>
+                    }
+                />
+            )
+
         return null
     }
 
@@ -325,7 +341,8 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
         const statsUnsupported = metadata?.availableSupport?.stats === NginxSupportType.NONE
         const statsDisabled = metadata?.stats?.enabled === false
         const nginxOffline = nginxRunning === false
-        const showEmptyState = statsUnsupported || statsDisabled || nginxOffline
+        const noDataYet = stats?.serverZones?.["*"]?.requestCounter === 0
+        const showEmptyState = statsUnsupported || statsDisabled || nginxOffline || noDataYet
 
         return (
             <Flex className="traffic-stats-container" vertical>
