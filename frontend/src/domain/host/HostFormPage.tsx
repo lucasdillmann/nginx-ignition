@@ -421,7 +421,11 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                 <p className="hosts-form-section-help-text">
                     <I18n id={MessageKey.FrontendHostFormSectionVpnBindingsHelp} />
                 </p>
-                <HostVpns vpns={formValues.vpns} validationResult={validationResult} />
+                <HostVpns
+                    vpns={formValues.vpns}
+                    validationResult={validationResult}
+                    onChange={() => this.formRef.current?.setFieldsValue({ vpns: formValues.vpns })}
+                />
             </Form>
         )
     }

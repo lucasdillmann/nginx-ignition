@@ -43,6 +43,8 @@ export interface HostFormVpn {
     vpn: VpnResponse
     name: string
     host?: string
+    enableHttps?: boolean
+    certificate?: CertificateResponse
 }
 
 export default interface HostFormValues {

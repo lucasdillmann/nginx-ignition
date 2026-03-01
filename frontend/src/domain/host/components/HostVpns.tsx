@@ -1,7 +1,7 @@
 import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
-import { Button, Flex, Form, FormListFieldData, FormListOperation, Input } from "antd"
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons"
+import { Button, Flex, Form, FormListFieldData, FormListOperation, Input, Switch } from "antd"
+import { DeleteOutlined, PlusOutlined, SettingOutlined } from "@ant-design/icons"
 import { HostFormVpn } from "../model/HostFormValues"
 import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
 import FormLayout from "../../../core/components/form/FormLayout"
@@ -11,24 +11,67 @@ import { vpnRequestDefaults } from "../../vpn/model/VpnRequestDefaults"
 import "./HostVpns.css"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import EndpointSSLSupport from "../../vpn/model/EndpointSSLSupport"
+import { CertificateResponse } from "../../certificate/model/CertificateResponse"
+import CertificateService from "../../certificate/CertificateService"
+import HostVpnSettingsModal from "./HostVpnSettingsModal"
+import If from "../../../core/components/flowcontrol/If"
+import TagGroup from "../../../core/components/taggroup/TagGroup"
 
 export interface HostVpnsProps {
     vpns: HostFormVpn[]
     validationResult: ValidationResult
     className?: string
+    onChange: () => void
 }
 
-export default class HostVpns extends React.Component<HostVpnsProps> {
+interface HostVpnsState {
+    vpnSettingsOpenModalIndex?: number
+}
+
+export default class HostVpns extends React.Component<HostVpnsProps, HostVpnsState> {
     private readonly service: VpnService
+    private readonly certificateService: CertificateService
 
     constructor(props: HostVpnsProps) {
         super(props)
         this.service = new VpnService()
+        this.certificateService = new CertificateService()
+        this.state = {}
+    }
+
+    private handleVpnChange(index: number, vpn?: VpnResponse) {
+        const { vpns, onChange } = this.props
+        if (vpn) {
+            vpns[index].vpn = vpn
+            vpns[index].enableHttps = vpn.driverEndpointSslSupport === EndpointSSLSupport.PROVIDER_MANAGED
+            vpns[index].certificate = undefined
+            onChange()
+        }
+    }
+
+    private handleCertificateChange(index: number, certificate?: CertificateResponse) {
+        const { vpns, onChange } = this.props
+        vpns[index].certificate = certificate
+        vpns[index].enableHttps = certificate !== undefined
+        onChange()
+    }
+
+    private openVpnSettingsModal(index: number) {
+        this.setState({ vpnSettingsOpenModalIndex: index })
+    }
+
+    private closeVpnSettingsModal() {
+        this.setState({ vpnSettingsOpenModalIndex: undefined })
     }
 
     private renderVpn(field: FormListFieldData, operations: FormListOperation, index: number) {
-        const { validationResult } = this.props
+        const { validationResult, vpns } = this.props
+        const { vpnSettingsOpenModalIndex } = this.state
         const { name } = field
+
+        const vpn = vpns[index]?.vpn
+        const sslSupport = vpn?.driverEndpointSslSupport
 
         return (
             <Flex className="host-form-vpn-container">
@@ -39,15 +82,16 @@ export default class HostVpns extends React.Component<HostVpnsProps> {
                     name={[name, "vpn"]}
                     validateStatus={validationResult.getStatus(`vpns[${index}].vpnId`)}
                     help={validationResult.getMessage(`vpns[${index}].vpnId`)}
-                    label={index === 0 ? <I18n id={MessageKey.CommonVpnConnection} /> : undefined}
+                    label={<I18n id={MessageKey.CommonVpnConnection} />}
                     required
                 >
                     <PaginatedSelect<VpnResponse>
-                        itemDescription={item => item.name}
-                        itemKey={item => item.id}
+                        itemDescription={item => item?.name}
+                        itemKey={item => item?.id}
                         pageProvider={(pageSize, pageNumber, searchTerms) =>
                             this.service.list(pageSize, pageNumber, searchTerms, true)
                         }
+                        onChange={value => this.handleVpnChange(index, value)}
                     />
                 </Form.Item>
                 <Form.Item
@@ -58,38 +102,88 @@ export default class HostVpns extends React.Component<HostVpnsProps> {
                     validateStatus={validationResult.getStatus(`vpns[${index}].name`)}
                     help={
                         validationResult.getMessage(`vpns[${index}].name`) ?? (
-                            <I18n id={MessageKey.FrontendHostComponentsHostvpnsSourceNameHelp} />
+                            <I18n id={MessageKey.FrontendHostComponentsHostvpnsPeerNameHelp} />
                         )
                     }
-                    label={index === 0 ? <I18n id={MessageKey.FrontendHostComponentsHostvpnsSourceName} /> : undefined}
-                    required
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    {...FormLayout.ExpandedLabeledItem}
-                    className="host-form-vpn-host"
-                    layout="vertical"
-                    name={[name, "host"]}
-                    validateStatus={validationResult.getStatus(`vpns[${index}].host`)}
-                    help={
-                        validationResult.getMessage(`vpns[${index}].host`) ?? (
-                            <I18n id={MessageKey.FrontendHostComponentsHostvpnsTargetHostHelp} />
-                        )
-                    }
-                    label={index === 0 ? <I18n id={MessageKey.FrontendHostComponentsHostvpnsTargetHost} /> : undefined}
+                    label={<I18n id={MessageKey.FrontendHostComponentsHostvpnsPeerName} />}
                     required
                 >
                     <Input />
                 </Form.Item>
 
+                <If condition={sslSupport === EndpointSSLSupport.PROVIDER_MANAGED}>
+                    <Form.Item
+                        {...FormLayout.ExpandedLabeledItem}
+                        className="host-form-vpn-enable-https"
+                        layout="vertical"
+                        name={[name, "enableHttps"]}
+                        valuePropName="checked"
+                        validateStatus={validationResult.getStatus(`vpns[${index}].enableHttps`)}
+                        help={
+                            validationResult.getMessage(`vpns[${index}].enableHttps`) ?? (
+                                <I18n id={MessageKey.FrontendHostComponentsEnableHttpsHelp} />
+                            )
+                        }
+                        label={<I18n id={MessageKey.FrontendHostComponentsEnableHttps} />}
+                        required
+                    >
+                        <Switch />
+                    </Form.Item>
+                </If>
+
+                <If condition={sslSupport === EndpointSSLSupport.DRIVER_MANAGED}>
+                    <Form.Item
+                        {...FormLayout.ExpandedLabeledItem}
+                        className="host-form-vpn-certificate"
+                        layout="vertical"
+                        name={[name, "certificate"]}
+                        validateStatus={validationResult.getStatus(`vpns[${index}].certificateId`)}
+                        help={
+                            validationResult.getMessage(`vpns[${index}].certificateId`) ?? (
+                                <I18n id={MessageKey.FrontendHostComponentsSslCertificateHelp} />
+                            )
+                        }
+                        label={<I18n id={MessageKey.FrontendHostComponentsSslCertificate} />}
+                    >
+                        <PaginatedSelect<CertificateResponse>
+                            itemDescription={certificate => (
+                                <TagGroup values={certificate.domainNames} maximumSize={1} />
+                            )}
+                            itemKey={item => item?.id}
+                            pageProvider={(pageSize, pageNumber, searchTerms) =>
+                                this.certificateService.list(pageSize, pageNumber, searchTerms)
+                            }
+                            onChange={value => this.handleCertificateChange(index, value)}
+                            allowEmpty
+                        />
+                    </Form.Item>
+                </If>
+
+                <SettingOutlined
+                    style={{
+                        marginLeft: 15,
+                        alignItems: "start",
+                        marginTop: 37,
+                        color: "var(--nginxIgnition-colorText)",
+                    }}
+                    onClick={() => this.openVpnSettingsModal(index)}
+                />
+
                 <DeleteOutlined
                     style={{
                         marginLeft: 15,
                         alignItems: "start",
-                        marginTop: index === 0 ? 37 : 7,
+                        marginTop: 37,
                     }}
                     onClick={() => operations.remove(field.name)}
+                />
+
+                <HostVpnSettingsModal
+                    open={index === vpnSettingsOpenModalIndex}
+                    index={index}
+                    fieldPath={name}
+                    onClose={() => this.closeVpnSettingsModal()}
+                    validationResult={validationResult}
                 />
             </Flex>
         )
