@@ -29,9 +29,9 @@ export default class I18nLanguagePicker extends React.Component<I18nLanguagePick
         super(props)
         this.service = new I18nService()
 
-        const available: AvailableLanguage[] = I18nContext.get().dictionaries.map(d => ({
-            label: <I18n id={`frontend/i18n/lang-name-${d.languageTag}` as MessageKey} />,
-            value: d.languageTag,
+        const available: AvailableLanguage[] = I18nContext.get().availableLanguages.map(language => ({
+            label: <I18n id={`frontend/i18n/lang-name-${language}` as MessageKey} />,
+            value: language,
         }))
 
         available.unshift({

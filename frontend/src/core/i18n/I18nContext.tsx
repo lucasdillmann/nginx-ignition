@@ -4,11 +4,13 @@ import I18nDictionary from "./model/I18nDictionary"
 export interface I18nContext {
     defaultLanguage: string
     currentLanguage: string | null
-    dictionaries: I18nDictionary[]
+    availableLanguages: string[]
+    loadedDictionaries: Record<string, I18nDictionary>
 }
 
 export default new ContextHolder<I18nContext>({
     defaultLanguage: window.navigator.language,
     currentLanguage: window.navigator.languages.join(","),
-    dictionaries: [],
+    availableLanguages: [],
+    loadedDictionaries: {},
 })
