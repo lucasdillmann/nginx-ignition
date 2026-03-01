@@ -117,14 +117,14 @@ export default class TrafficStatsPage extends React.Component<object, TrafficSta
                 }
 
                 if (!prevState.selectedDomain) {
-                    const domains = Object.keys(stats.serverZones).filter(d => d !== "*")
+                    const domains = stats.serverZones ? Object.keys(stats.serverZones).filter(d => d !== "*") : []
                     if (domains.length > 0) {
                         newState.selectedDomain = domains[0]
                     }
                 }
 
                 if (!prevState.selectedUpstream) {
-                    const upstreams = Object.keys(stats.upstreamZones)
+                    const upstreams = stats.upstreamZones ? Object.keys(stats.upstreamZones) : []
                     if (upstreams.length > 0) {
                         newState.selectedUpstream = upstreams[0]
                     }

@@ -32,6 +32,8 @@ export interface TrafficDataItem {
 }
 
 export function buildTrafficByDomainData(serverZones: Record<string, ZoneData>, topN: number = 10): TrafficDataItem[] {
+    if (!serverZones) return []
+
     return Object.entries(serverZones)
         .filter(([name]) => name !== "*")
         .map(([name, data]) => ({
@@ -60,6 +62,8 @@ export function aggregateResponses(zones: Record<string, ZoneData>): ZoneData["r
         hit: 0,
         scarce: 0,
     }
+
+    if (!zones) return result
 
     Object.values(zones).forEach(zone => {
         result["1xx"] += zone.responses["1xx"]

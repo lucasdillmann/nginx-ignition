@@ -42,7 +42,7 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps> {
     private renderDomainSelector() {
         const { serverZones } = this.props.stats
         const { selectedDomain, onSelectDomain } = this.props
-        const domains = Object.keys(serverZones).filter(d => d !== "*")
+        const domains = serverZones ? Object.keys(serverZones).filter(d => d !== "*") : []
 
         const options = domains.map(domain => ({
             value: domain,
