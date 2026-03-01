@@ -227,32 +227,37 @@ func (p *geoIPFileProvider) executeRequest(
 	url string,
 	timeout time.Duration,
 ) (*http.Response, error) {
-	client := http.Client{
-		Timeout: timeout,
+	client := http.Client{Timeout: timeout}
+
+	var resp *http.Response
+	var err error
+
+	for attempt := range 2 {
+		req, reqErr := http.NewRequest(http.MethodGet, url, nil)
+		if reqErr != nil {
+			return nil, reqErr
+		}
+
+		req.Header.Set("User-Agent", "Nginx-Ignition")
+		req.Header.Set("Accept", "*/*")
+
+		resp, err = client.Do(req)
+		if err == nil {
+			return resp, nil
+		}
+
+		if attempt < 3 {
+			log.Warnf(
+				"Failed to fetch %s (attempt %d of 3): %v. Retrying in 250ms...",
+				url,
+				attempt+1,
+				err,
+			)
+			time.Sleep(250 * time.Millisecond)
+		}
 	}
 
-	transport, ok := http.DefaultTransport.(*http.Transport)
-	if ok {
-		transport = transport.Clone()
-		transport.DisableKeepAlives = true
-		transport.ForceAttemptHTTP2 = false
-		client.Transport = transport
-	} else {
-		log.Warn(
-			"Failed to configure HTTP transport (not an *http.Transport). Trying to proceed with GeoIP configuration anyway.",
-		)
-	}
-
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("User-Agent", "Nginx-Ignition")
-	req.Header.Set("Accept", "*/*")
-	req.Close = true
-
-	return client.Do(req)
+	return resp, err
 }
 
 func (p *geoIPFileProvider) findAssetURL(release *gitHubRelease, assetName string) string {
