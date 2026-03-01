@@ -182,9 +182,8 @@ func (p *geoIPFileProvider) fetchLatestRelease() (*gitHubRelease, error) {
 	log.Info(
 		"Checking for GeoIP database updates (courtesy of https://github.com/P3TERX/GeoLite.mmdb)...",
 	)
-	client := http.Client{Timeout: 2 * time.Second}
 
-	resp, err := client.Get(geoIPReleasesURL)
+	resp, err := p.executeRequest(geoIPReleasesURL, 10*time.Second)
 	if err != nil {
 		return nil, err
 	}
@@ -209,9 +208,8 @@ func (p *geoIPFileProvider) fetchLatestRelease() (*gitHubRelease, error) {
 
 func (p *geoIPFileProvider) download(url, dbType string) ([]byte, error) {
 	log.Infof("Downloading GeoIP %s database from [%s] ...", dbType, url)
-	client := http.Client{Timeout: 60 * time.Second}
 
-	resp, err := client.Get(url)
+	resp, err := p.executeRequest(url, 30*time.Minute)
 	if err != nil {
 		return nil, err
 	}
@@ -223,6 +221,23 @@ func (p *geoIPFileProvider) download(url, dbType string) ([]byte, error) {
 	}
 
 	return io.ReadAll(resp.Body)
+}
+
+func (p *geoIPFileProvider) executeRequest(
+	url string,
+	timeout time.Duration,
+) (*http.Response, error) {
+	client := http.Client{Timeout: timeout}
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("User-Agent", "Nginx-Ignition")
+	req.Header.Set("Accept", "*/*")
+
+	return client.Do(req)
 }
 
 func (p *geoIPFileProvider) findAssetURL(release *gitHubRelease, assetName string) string {
