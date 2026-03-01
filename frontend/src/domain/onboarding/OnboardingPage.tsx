@@ -1,8 +1,8 @@
 import React from "react"
-import { Button, Steps } from "antd"
+import { Button, Form, Input, Steps } from "antd"
 import { IdcardOutlined, LockOutlined, SafetyOutlined, UserOutlined } from "@ant-design/icons"
 import { Navigate } from "react-router-dom"
-import { LoginFormPage, ProFormText } from "@ant-design/pro-components"
+import { LoginFormPage } from "@ant-design/pro-components"
 import AppContext from "../../core/components/context/AppContext"
 import Preloader from "../../core/components/preloader/Preloader"
 import Notification from "../../core/components/notification/Notification"
@@ -125,48 +125,37 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
 
         return (
             <>
-                <ProFormText
+                <Form.Item
                     name="name"
-                    placeholder={i18n(MessageKey.CommonName)}
                     initialValue={values.name}
-                    fieldProps={{
-                        size: "large",
-                        prefix: <IdcardOutlined />,
-                    }}
-                    formItemProps={{
-                        validateStatus: validationResult.getStatus("name"),
-                        help: validationResult.getMessage("name"),
-                    }}
+                    validateStatus={validationResult.getStatus("name")}
+                    help={validationResult.getMessage("name")}
                     style={{ marginLeft: 20 }}
-                />
-                <ProFormText
+                >
+                    <Input placeholder={i18n(MessageKey.CommonName)} size="large" prefix={<IdcardOutlined />} />
+                </Form.Item>
+                <Form.Item
                     name="username"
-                    placeholder={i18n(MessageKey.CommonUsername)}
                     initialValue={values.username}
-                    fieldProps={{
-                        size: "large",
-                        prefix: <UserOutlined />,
-                    }}
-                    formItemProps={{
-                        validateStatus: validationResult.getStatus("username"),
-                        help: validationResult.getMessage("username"),
-                    }}
+                    validateStatus={validationResult.getStatus("username")}
+                    help={validationResult.getMessage("username")}
                     style={{ marginLeft: 20 }}
-                />
-                <ProFormText.Password
+                >
+                    <Input placeholder={i18n(MessageKey.CommonUsername)} size="large" prefix={<UserOutlined />} />
+                </Form.Item>
+                <Form.Item
                     name="password"
-                    placeholder={i18n(MessageKey.CommonPassword)}
                     initialValue={values.password}
-                    fieldProps={{
-                        size: "large",
-                        prefix: <LockOutlined />,
-                    }}
-                    formItemProps={{
-                        validateStatus: validationResult.getStatus("password"),
-                        help: validationResult.getMessage("password"),
-                    }}
+                    validateStatus={validationResult.getStatus("password")}
+                    help={validationResult.getMessage("password")}
                     style={{ marginLeft: 20 }}
-                />
+                >
+                    <Input.Password
+                        placeholder={i18n(MessageKey.CommonPassword)}
+                        size="large"
+                        prefix={<LockOutlined />}
+                    />
+                </Form.Item>
             </>
         )
     }

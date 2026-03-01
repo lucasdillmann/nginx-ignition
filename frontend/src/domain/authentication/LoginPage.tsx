@@ -1,7 +1,7 @@
 import React, { createRef } from "react"
 import { ArrowLeftOutlined, LockOutlined, SafetyOutlined, UserOutlined } from "@ant-design/icons"
 import { Navigate } from "react-router-dom"
-import { Button, Input, Typography } from "antd"
+import { Button, Form, Input, Typography } from "antd"
 import type { OTPRef } from "antd/es/input/OTP"
 import AppContext from "../../core/components/context/AppContext"
 import Preloader from "../../core/components/preloader/Preloader"
@@ -10,7 +10,7 @@ import "./LoginPage.css"
 import UserService from "../user/UserService"
 import LoginOutcome from "../user/model/LoginOutcome"
 import { navigateTo, queryParams } from "../../core/components/router/AppRouter"
-import { LoginFormPage, ProFormText } from "@ant-design/pro-components"
+import { LoginFormPage } from "@ant-design/pro-components"
 import ThemeContext from "../../core/components/context/ThemeContext"
 import LightBackground from "./background/light.jpg"
 import DarkBackground from "./background/dark.jpg"
@@ -205,28 +205,24 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
     private renderCredentialFields() {
         return (
             <>
-                <ProFormText
+                <Form.Item
                     name="username"
-                    placeholder={i18n(MessageKey.CommonUsername)}
-                    fieldProps={{
-                        size: "large",
-                        prefix: <UserOutlined />,
-                    }}
-                    style={{
-                        marginLeft: 20,
-                    }}
-                />
-                <ProFormText.Password
+                    validateStatus={this.state.attemptFailed ? "error" : undefined}
+                    style={{ marginLeft: 20 }}
+                >
+                    <Input placeholder={i18n(MessageKey.CommonUsername)} size="large" prefix={<UserOutlined />} />
+                </Form.Item>
+                <Form.Item
                     name="password"
-                    placeholder={i18n(MessageKey.CommonPassword)}
-                    fieldProps={{
-                        size: "large",
-                        prefix: <LockOutlined />,
-                    }}
-                    style={{
-                        marginLeft: 20,
-                    }}
-                />
+                    validateStatus={this.state.attemptFailed ? "error" : undefined}
+                    style={{ marginLeft: 20 }}
+                >
+                    <Input.Password
+                        placeholder={i18n(MessageKey.CommonPassword)}
+                        size="large"
+                        prefix={<LockOutlined />}
+                    />
+                </Form.Item>
             </>
         )
     }
