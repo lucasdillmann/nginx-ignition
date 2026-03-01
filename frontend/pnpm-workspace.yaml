@@ -1,6 +1,7 @@
 onlyBuiltDependencies:
     - "@bufbuild/buf"
-    - esbuild
+    - "esbuild"
 
 overrides:
-    "minimatch": "^10.2.3"
+    minimatch: "^10.2.3"
+    serialize-javascript: "^7.0.3"

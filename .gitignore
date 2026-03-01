@@ -7,11 +7,6 @@
 *.test
 *.out
 
-# Dependency directories and files
-vendor/
-**/go.sum
-**/go.work.sum
-
 # Others
 .env
 .env.*
