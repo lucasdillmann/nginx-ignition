@@ -133,8 +133,10 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                         size: "large",
                         prefix: <IdcardOutlined />,
                     }}
-                    validateStatus={validationResult.getStatus("name")}
-                    help={validationResult.getMessage("name")}
+                    formItemProps={{
+                        validateStatus: validationResult.getStatus("name"),
+                        help: validationResult.getMessage("name"),
+                    }}
                     style={{ marginLeft: 20 }}
                 />
                 <ProFormText
@@ -145,8 +147,10 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                         size: "large",
                         prefix: <UserOutlined />,
                     }}
-                    validateStatus={validationResult.getStatus("username")}
-                    help={validationResult.getMessage("username")}
+                    formItemProps={{
+                        validateStatus: validationResult.getStatus("username"),
+                        help: validationResult.getMessage("username"),
+                    }}
                     style={{ marginLeft: 20 }}
                 />
                 <ProFormText.Password
@@ -157,8 +161,10 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                         size: "large",
                         prefix: <LockOutlined />,
                     }}
-                    validateStatus={validationResult.getStatus("password")}
-                    help={validationResult.getMessage("password")}
+                    formItemProps={{
+                        validateStatus: validationResult.getStatus("password"),
+                        help: validationResult.getMessage("password"),
+                    }}
                     style={{ marginLeft: 20 }}
                 />
             </>
