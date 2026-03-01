@@ -132,8 +132,8 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                     fieldProps={{
                         size: "large",
                         prefix: <IdcardOutlined />,
-                        status: validationResult.getStatus("name") as any,
                     }}
+                    validateStatus={validationResult.getStatus("name")}
                     help={validationResult.getMessage("name")}
                     style={{ marginLeft: 20 }}
                 />
@@ -144,8 +144,8 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                     fieldProps={{
                         size: "large",
                         prefix: <UserOutlined />,
-                        status: validationResult.getStatus("username") as any,
                     }}
+                    validateStatus={validationResult.getStatus("username")}
                     help={validationResult.getMessage("username")}
                     style={{ marginLeft: 20 }}
                 />
@@ -156,8 +156,8 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                     fieldProps={{
                         size: "large",
                         prefix: <LockOutlined />,
-                        status: validationResult.getStatus("password") as any,
                     }}
+                    validateStatus={validationResult.getStatus("password")}
                     help={validationResult.getMessage("password")}
                     style={{ marginLeft: 20 }}
                 />
