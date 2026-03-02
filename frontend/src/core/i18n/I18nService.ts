@@ -36,12 +36,12 @@ export default class I18nService {
         if (!languageTag) this.repository.clear()
         else this.repository.set(languageTag)
 
-        await this.loadDictionary(languageTag)
-
         I18nContext.replace({
             ...I18nContext.get(),
             currentLanguage: languageTag,
         })
+
+        await this.loadDictionary(languageTag)
     }
 
     private async loadDictionary(targetLanguage: string | null) {

@@ -1,95 +1,36 @@
 package client
 
 import (
-	"encoding/json"
-	"io"
-	"net/http"
-	"time"
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
+	"dillmann.com.br/nginx-ignition/integration/truenas/fields"
 )
 
-type Client struct {
-	delegate *http.Client
-	cache    *apiCache[[]byte]
-	baseURL  string
-	username string
-	password string
+type Client interface {
+	GetAvailableApps() ([]AvailableAppDTO, error)
 }
 
-func New(baseURL, username, password string, cacheTimeoutSeconds int) *Client {
-	return &Client{
-		baseURL:  baseURL,
-		username: username,
-		password: password,
-		delegate: &http.Client{
-			Timeout: 30 * time.Second,
-		},
-		cache: newCache[[]byte](cacheTimeoutSeconds),
+func For(cfg *configuration.Configuration, parameters map[string]any) (Client, error) {
+	if err := initCache(cfg); err != nil {
+		return nil, err
 	}
+
+	baseURL := parameters[fields.URLFieldID].(string)
+	username := parameters[fields.UsernameFieldID].(string)
+	password := parameters[fields.PasswordFieldID].(string)
+
+	if useLegacyAPI(parameters) {
+		return newRestClient(baseURL, username, password), nil
+	}
+
+	return newWebSocketClient(baseURL, username, password), nil
 }
 
-func (c *Client) UpdateCredentials(baseURL, username, password string) {
-	c.baseURL = baseURL
-	c.username = username
-	c.password = password
-}
-
-func (c *Client) GetAvailableApps() ([]AvailableAppDTO, error) {
-	apps := make([]AvailableAppDTO, 0)
-	err := c.get("app", &apps)
-	if err != nil {
-		return nil, err
+func useLegacyAPI(parameters map[string]any) bool {
+	rawValue, found := parameters[fields.LegacyAPIFieldID]
+	if !found {
+		return false
 	}
 
-	return apps, nil
-}
-
-func (c *Client) get(endpoint string, result any) error {
-	response := c.cache.get(endpoint, func() []byte {
-		output, err := c.executeGetRequest(endpoint, result)
-		if err != nil {
-			panic(err)
-		}
-
-		return output
-	})
-
-	if response != nil {
-		return json.Unmarshal(response, result)
-	}
-
-	return nil
-}
-
-func (c *Client) executeGetRequest(endpoint string, result any) ([]byte, error) {
-	req, err := http.NewRequest("GET", c.baseURL+"/api/v2.0/"+endpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	req.SetBasicAuth(c.username, c.password)
-
-	//nolint:gosec // G704: req is constructed with a configured base URL and hardcoded endpoints
-	resp, err := c.delegate.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	//nolint:errcheck
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, err
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(body, result)
-	if err != nil {
-		return nil, err
-	}
-
-	return body, nil
+	parsedValue, parsed := rawValue.(bool)
+	return parsed && parsedValue
 }

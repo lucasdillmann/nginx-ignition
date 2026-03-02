@@ -1,4 +1,4 @@
-package truenas
+package fields
 
 import (
 	"context"
@@ -8,16 +8,17 @@ import (
 )
 
 const (
-	urlFieldID      = "url"
-	proxyURLFieldID = "proxyUrl"
-	usernameFieldID = "username"
-	passwordFieldID = "password"
+	URLFieldID       = "url"
+	ProxyURLFieldID  = "proxyUrl"
+	UsernameFieldID  = "username"
+	PasswordFieldID  = "password"
+	LegacyAPIFieldID = "legacyApi"
 )
 
-func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+func DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return []dynamicfields.DynamicField{
 		{
-			ID:          urlFieldID,
+			ID:          URLFieldID,
 			Description: i18n.M(ctx, i18n.K.IntegrationTruenasUrl),
 			Priority:    1,
 			Required:    true,
@@ -25,25 +26,34 @@ func dynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 			Type:        dynamicfields.URLType,
 		},
 		{
-			ID:          proxyURLFieldID,
+			ID:           LegacyAPIFieldID,
+			Description:  i18n.M(ctx, i18n.K.IntegrationTruenasLegacyApi),
+			HelpText:     i18n.M(ctx, i18n.K.IntegrationTruenasLegacyApiHelp),
+			Priority:     2,
+			Required:     true,
+			Type:         dynamicfields.BooleanType,
+			DefaultValue: false,
+		},
+		{
+			ID:          ProxyURLFieldID,
 			Description: i18n.M(ctx, i18n.K.IntegrationTruenasProxyUrl),
-			Priority:    2,
+			Priority:    3,
 			Required:    false,
 			HelpText:    i18n.M(ctx, i18n.K.IntegrationTruenasProxyUrlHelp),
 			Type:        dynamicfields.URLType,
 		},
 		{
-			ID:          usernameFieldID,
+			ID:          UsernameFieldID,
 			Description: i18n.M(ctx, i18n.K.CommonUsername),
-			Priority:    3,
+			Priority:    4,
 			Required:    true,
 			Sensitive:   false,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
-			ID:          passwordFieldID,
+			ID:          PasswordFieldID,
 			Description: i18n.M(ctx, i18n.K.CommonPassword),
-			Priority:    4,
+			Priority:    5,
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
