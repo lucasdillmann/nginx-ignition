@@ -186,7 +186,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                         }
                     />
                 </Form.Item>
-                {this.renderTargetUriField(field, index, MessageKey.FrontendHostComponentsHostroutesDestinationUrl)}
+                {this.renderTargetUriField(field, index, MessageKey.FrontendHostComponentsHostroutesDestinationPath)}
             </>
         )
     }

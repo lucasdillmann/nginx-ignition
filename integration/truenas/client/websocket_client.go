@@ -115,12 +115,16 @@ func (c *webSocketClient) fetchApps() ([]AvailableAppDTO, error) {
 		return nil, fmt.Errorf("truenas websocket: handshake failed: %w", err)
 	}
 
-	authPayload, _ := json.Marshal(ddpMsg{
+	authPayload, err := json.Marshal(ddpMsg{
 		ID:     "1",
 		Msg:    "method",
 		Method: "auth.login",
 		Params: []any{c.username, c.password},
 	})
+	if err != nil {
+		return nil, fmt.Errorf("truenas websocket: marshal auth payload: %w", err)
+	}
+
 	if err = conn.WriteMessage(websocket.TextMessage, authPayload); err != nil {
 		return nil, fmt.Errorf("truenas websocket: send auth.login: %w", err)
 	}
@@ -250,5 +254,7 @@ func buildWSURL(baseURL string) (string, error) {
 
 	parsed.User = nil
 	parsed.Path = wsEndpoint
+	parsed.RawQuery = ""
+	parsed.Fragment = ""
 	return parsed.String(), nil
 }
