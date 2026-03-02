@@ -3,6 +3,7 @@ package nginx
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/google/uuid"
 
@@ -224,7 +225,12 @@ func (a *endpointAdapter) Hash() string {
 		domainNameStr = *a.domainName
 	}
 
-	return a.vpnID.String() + a.name + domainNameStr
+	var certIDStr string
+	if a.certDetails != nil {
+		certIDStr = a.certDetails.ID.String()
+	}
+
+	return a.vpnID.String() + a.name + domainNameStr + strconv.FormatBool(a.enableHTTPS) + certIDStr
 }
 
 func (a *endpointAdapter) VPNID() uuid.UUID {

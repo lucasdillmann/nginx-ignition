@@ -437,6 +437,33 @@ func Test_validator(t *testing.T) {
 			})
 
 			t.Run("vpn certificate validation", func(t *testing.T) {
+				t.Run("certificate informed but https disabled", func(t *testing.T) {
+					hostValidator, mocks := setupValidator(t)
+					h := newHost()
+					vpnID := uuid.New()
+					certID := uuid.New()
+					h.VPNs = []VPN{
+						{VPNID: vpnID, Name: "vpn1", EnableHTTPS: false, CertificateID: &certID},
+					}
+
+					mocks.binding.EXPECT().
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Return(nil).AnyTimes()
+					mocks.vpn.EXPECT().
+						Get(t.Context(), vpnID).
+						Return(&vpn.VPN{Enabled: true, Driver: "driver1"}, nil)
+					mocks.vpn.EXPECT().
+						GetAvailableDrivers(t.Context()).
+						Return(nil, nil).AnyTimes()
+
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(
+						t,
+						err,
+						i18n.K.CoreHostVpnCertificateCannotBeInformedIfDisabled,
+					)
+				})
+
 				t.Run("driver managed - certificate required", func(t *testing.T) {
 					hostValidator, mocks := setupValidator(t)
 					h := newHost()
