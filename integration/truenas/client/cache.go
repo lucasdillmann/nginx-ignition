@@ -10,40 +10,41 @@ import (
 )
 
 var (
-	cacheDelegate *cache.Cache
-	cacheInitOnce = &sync.Once{}
-	cacheInitLock = &sync.Mutex{}
+	cacheDelegate    *cache.Cache
+	cacheInitLock    = &sync.Mutex{}
+	cacheInitialized = false
 )
 
 func initCache(cfg *configuration.Configuration) error {
 	cacheInitLock.Lock()
 	defer cacheInitLock.Unlock()
 
-	var err error
-	cacheInitOnce.Do(func() {
-		cacheDuration, innerErr := cfg.GetInt(
-			"nginx-ignition.integration.truenas.api-cache-timeout-seconds",
-		)
-		if innerErr != nil {
-			err = innerErr
-			return
-		}
-
-		cacheDelegate = cache.New(
-			time.Duration(cacheDuration)*time.Second,
-			time.Duration(cacheDuration)*time.Second,
-		)
-	})
-
-	if err != nil {
-		cacheInitOnce = &sync.Once{}
+	if cacheInitialized {
+		return nil
 	}
 
-	return err
+	cacheDuration, err := cfg.GetInt(
+		"nginx-ignition.integration.truenas.api-cache-timeout-seconds",
+	)
+	if err != nil {
+		return err
+	}
+
+	cacheDelegate = cache.New(
+		time.Duration(cacheDuration)*time.Second,
+		time.Duration(cacheDuration)*time.Second,
+	)
+
+	cacheInitialized = true
+	return nil
 }
 
 func getFromCache[T any](key string, missProvider func() (*T, error)) (*T, error) {
 	if value, found := cacheDelegate.Get(key); found {
+		if value == nil {
+			return nil, nil
+		}
+
 		return value.(*T), nil
 	}
 

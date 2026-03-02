@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	ddpConnectMsg = `{"msg":"connect","version":"1","support":["1"]}`
-	wsEndpoint    = "/websocket"
-	wsTimeout     = 30 * time.Second
+	ddpConnectMsg               = `{"msg":"connect","version":"1","support":["1"]}`
+	wsEndpoint                  = "/websocket"
+	wsTimeout                   = 30 * time.Second
+	maximumIntermediaryMessages = 500
 )
 
 type webSocketClient struct {
@@ -186,7 +187,7 @@ func convertWSApps(raw []wsAppDTO) []AvailableAppDTO {
 }
 
 func (c *webSocketClient) waitForMsg(conn *websocket.Conn, msgType string) error {
-	remainingAttempts := 100
+	remainingAttempts := maximumIntermediaryMessages
 	for remainingAttempts > 0 {
 		remainingAttempts--
 
@@ -209,7 +210,7 @@ func (c *webSocketClient) waitForMsg(conn *websocket.Conn, msgType string) error
 }
 
 func (c *webSocketClient) waitForResult(conn *websocket.Conn, id string) (json.RawMessage, error) {
-	remainingAttempts := 100
+	remainingAttempts := maximumIntermediaryMessages
 	for remainingAttempts > 0 {
 		remainingAttempts--
 
