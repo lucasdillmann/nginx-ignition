@@ -139,12 +139,16 @@ func (c *webSocketClient) fetchApps() ([]AvailableAppDTO, error) {
 		return nil, errors.New("truenas websocket: authentication rejected")
 	}
 
-	queryPayload, _ := json.Marshal(ddpMsg{
+	queryPayload, err := json.Marshal(ddpMsg{
 		ID:     "2",
 		Msg:    "method",
 		Method: "app.query",
 		Params: []any{},
 	})
+	if err != nil {
+		return nil, fmt.Errorf("truenas websocket: marshal app.query payload: %w", err)
+	}
+
 	if err = conn.WriteMessage(websocket.TextMessage, queryPayload); err != nil {
 		return nil, fmt.Errorf("truenas websocket: send app.query: %w", err)
 	}
