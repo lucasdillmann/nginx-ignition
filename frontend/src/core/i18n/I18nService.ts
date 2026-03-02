@@ -46,11 +46,7 @@ export default class I18nService {
 
     private async loadDictionary(targetLanguage: string | null) {
         const context = I18nContext.get()
-        const resolvedLanguage = resolveLanguageTag(
-            context.availableLanguages,
-            targetLanguage ?? context.currentLanguage,
-            context.defaultLanguage,
-        )
+        const resolvedLanguage = resolveLanguageTag(context.availableLanguages, targetLanguage, context.defaultLanguage)
 
         if (context.loadedDictionaries[resolvedLanguage]) return
 

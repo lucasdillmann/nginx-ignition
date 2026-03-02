@@ -14,20 +14,15 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/integration"
 	"dillmann.com.br/nginx-ignition/integration/truenas/client"
+	"dillmann.com.br/nginx-ignition/integration/truenas/fields"
 )
 
 type Driver struct {
-	client        *client.Client
-	cacheDuration int
+	configuration *configuration.Configuration
 }
 
 func newDriver(cfg *configuration.Configuration) (*Driver, error) {
-	cacheDuration, err := cfg.GetInt("nginx-ignition.integration.truenas.api-cache-timeout-seconds")
-	if err != nil {
-		return nil, err
-	}
-
-	return &Driver{cacheDuration: cacheDuration}, nil
+	return &Driver{cfg}, nil
 }
 
 func (a *Driver) ID() string {
@@ -43,7 +38,7 @@ func (a *Driver) Description(ctx context.Context) *i18n.Message {
 }
 
 func (a *Driver) ConfigurationFields(ctx context.Context) []dynamicfields.DynamicField {
-	return dynamicFields(ctx)
+	return fields.DynamicFields(ctx)
 }
 
 func (a *Driver) GetAvailableOptions(
@@ -106,8 +101,8 @@ func (a *Driver) GetOptionProxyURL(
 	parameters map[string]any,
 	id string,
 ) (*string, []string, error) {
-	baseURL := parameters[urlFieldID].(string)
-	proxyURL := parameters[proxyURLFieldID].(string)
+	baseURL := parameters[fields.URLFieldID].(string)
+	proxyURL := parameters[fields.ProxyURLFieldID].(string)
 	parts := strings.Split(id, ":")
 	appID := parts[0]
 	containerPort := parts[1]
@@ -206,15 +201,10 @@ func (a *Driver) buildOptions(
 }
 
 func (a *Driver) getAvailableApps(parameters map[string]any) ([]client.AvailableAppDTO, error) {
-	baseURL := parameters[urlFieldID].(string)
-	username := parameters[usernameFieldID].(string)
-	password := parameters[passwordFieldID].(string)
-
-	if a.client == nil {
-		a.client = client.New(baseURL, username, password, a.cacheDuration)
-	} else {
-		a.client.UpdateCredentials(baseURL, username, password)
+	c, err := client.For(a.configuration, parameters)
+	if err != nil {
+		return nil, err
 	}
 
-	return a.client.GetAvailableApps()
+	return c.GetAvailableApps()
 }

@@ -5,32 +5,54 @@ import (
 	"time"
 
 	"github.com/patrickmn/go-cache"
+
+	"dillmann.com.br/nginx-ignition/core/common/configuration"
 )
 
-type apiCache[T any] struct {
-	delegate *cache.Cache
-	lock     sync.Mutex
-}
+var (
+	cacheDelegate    *cache.Cache
+	cacheInitLock    = &sync.Mutex{}
+	cacheInitialized = false
+)
 
-func newCache[T any](timeoutSeconds int) *apiCache[T] {
-	return &apiCache[T]{
-		delegate: cache.New(
-			time.Duration(timeoutSeconds)*time.Second,
-			time.Duration(timeoutSeconds)*time.Second,
-		),
-	}
-}
+func initCache(cfg *configuration.Configuration) error {
+	cacheInitLock.Lock()
+	defer cacheInitLock.Unlock()
 
-func (c *apiCache[T]) get(key string, missProvider func() T) T {
-	c.lock.Lock()
-	defer c.lock.Unlock()
-
-	if value, found := c.delegate.Get(key); found {
-		return value.(T)
+	if cacheInitialized {
+		return nil
 	}
 
-	value := missProvider()
-	c.delegate.Set(key, value, cache.DefaultExpiration)
+	cacheDuration, err := cfg.GetInt(
+		"nginx-ignition.integration.truenas.api-cache-timeout-seconds",
+	)
+	if err != nil {
+		return err
+	}
 
-	return value
+	cacheDelegate = cache.New(
+		time.Duration(cacheDuration)*time.Second,
+		time.Duration(cacheDuration)*time.Second,
+	)
+
+	cacheInitialized = true
+	return nil
+}
+
+func getFromCache[T any](key string, missProvider func() (*T, error)) (*T, error) {
+	if value, found := cacheDelegate.Get(key); found {
+		if value == nil {
+			return nil, nil
+		}
+
+		return value.(*T), nil
+	}
+
+	value, err := missProvider()
+	if err != nil {
+		return nil, err
+	}
+
+	cacheDelegate.Set(key, value, cache.DefaultExpiration)
+	return value, nil
 }
