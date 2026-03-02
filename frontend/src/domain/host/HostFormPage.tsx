@@ -16,7 +16,7 @@ import HostRoutes from "./components/HostRoutes"
 import HostBindings from "./components/HostBindings"
 import "./HostFormPage.css"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
-import HostFormValues from "./model/HostFormValues"
+import HostFormValues, { HostFormVpn } from "./model/HostFormValues"
 import HostConverter from "./HostConverter"
 import If from "../../core/components/flowcontrol/If"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
@@ -199,6 +199,16 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                 routes: updatedValues,
             },
         })
+    }
+
+    private handleVpnsChange(vpns: HostFormVpn[]) {
+        const { formValues } = this.state
+        this.setState(
+            {
+                formValues: { ...formValues, vpns },
+            },
+            () => this.formRef.current?.setFieldsValue({ vpns }),
+        )
     }
 
     private fetchAccessLists(
@@ -424,7 +434,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                 <HostVpns
                     vpns={formValues.vpns}
                     validationResult={validationResult}
-                    onChange={() => this.formRef.current?.setFieldsValue({ vpns: formValues.vpns })}
+                    onChange={vpns => this.handleVpnsChange(vpns)}
                 />
             </Form>
         )

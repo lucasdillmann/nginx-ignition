@@ -3,11 +3,14 @@ package netbird
 import (
 	"context"
 	"crypto/tls"
+	"encoding/base64"
+	"encoding/pem"
 	"fmt"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"path/filepath"
+	"strings"
 	"time"
 
 	netbird "github.com/netbirdio/netbird/client/embed"
@@ -50,6 +53,7 @@ func (e *netbirdEndpoint) start(ctx context.Context) error {
 		ManagementURL: e.managementURL,
 		StatePath:     filepath.Join(basePath, "state.json"),
 		ConfigPath:    filepath.Join(basePath, "config.json"),
+		LogOutput:     &noOpLogger{},
 	}
 
 	var err error
@@ -119,14 +123,14 @@ func (e *netbirdEndpoint) startListener(target vpn.EndpointTarget) error {
 	}
 
 	if target.HTTPS.Enabled {
-		tlsCert, err := buildTLSCertificate(target.HTTPS)
+		tlsCerts, err := buildTLSCertificate(target.HTTPS)
 		if err != nil {
 			_ = listener.Close()
 			return err
 		}
 
 		listener = tls.NewListener(listener, &tls.Config{
-			Certificates: []tls.Certificate{tlsCert},
+			Certificates: tlsCerts,
 			MinVersion:   tls.VersionTLS12,
 		})
 	}
@@ -146,11 +150,57 @@ func (e *netbirdEndpoint) startListener(target vpn.EndpointTarget) error {
 	return nil
 }
 
-func buildTLSCertificate(cert vpn.EndpointHTTPS) (tls.Certificate, error) {
-	fullChain := cert.PublicKey
-	for _, chain := range cert.CertificationChain {
-		fullChain += "\n" + chain
+func buildTLSCertificate(cert vpn.EndpointHTTPS) ([]tls.Certificate, error) {
+	publicKeyBytes, err := base64.StdEncoding.DecodeString(cert.PublicKey)
+	if err != nil {
+		return nil, err
 	}
 
-	return tls.X509KeyPair([]byte(fullChain), []byte(cert.PrivateKey))
+	fullChainPem := convertToPemEncodedCertificateString(publicKeyBytes)
+	for _, chain := range cert.CertificationChain {
+		//nolint:govet
+		decodedChain, err := base64.StdEncoding.DecodeString(chain)
+		if err != nil {
+			return nil, err
+		}
+
+		fullChainPem += "\n" + convertToPemEncodedCertificateString(decodedChain)
+	}
+
+	privateKeyBytes, err := base64.StdEncoding.DecodeString(cert.PrivateKey)
+	if err != nil {
+		return nil, err
+	}
+
+	privateKeyPem := convertToPemEncodedPrivateKeyString(privateKeyBytes)
+	keyPair, err := tls.X509KeyPair([]byte(fullChainPem), []byte(privateKeyPem))
+	if err != nil {
+		return nil, err
+	}
+
+	return []tls.Certificate{keyPair}, nil
+}
+
+func convertToPemEncodedCertificateString(bytes []byte) string {
+	if strings.Contains(string(bytes), "CERTIFICATE") {
+		return string(bytes)
+	}
+
+	certPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "CERTIFICATE",
+		Bytes: bytes,
+	})
+	return string(certPEM)
+}
+
+func convertToPemEncodedPrivateKeyString(bytes []byte) string {
+	if strings.Contains(string(bytes), "PRIVATE KEY") {
+		return string(bytes)
+	}
+
+	keyPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "PRIVATE KEY",
+		Bytes: bytes,
+	})
+	return string(keyPEM)
 }

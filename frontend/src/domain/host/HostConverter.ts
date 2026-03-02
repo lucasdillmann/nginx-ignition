@@ -107,10 +107,14 @@ class HostConverter {
 
     private async vpnToFormValues(data: HostVpn): Promise<HostFormVpn> {
         const vpn = await this.vpnService.getById(data.vpnId!!)
+        const certificate = this.notNull(data.certificateId)
+            ? await this.certificateService.getById(data.certificateId!!)
+            : undefined
 
         return {
             ...data,
             vpn: vpn!!,
+            certificate,
         }
     }
 
@@ -195,6 +199,8 @@ class HostConverter {
             vpnId: vpn.vpn?.id,
             name: vpn.name,
             host: vpn.host,
+            enableHttps: vpn.enableHttps ?? false,
+            certificateId: vpn.certificate?.id,
         }
 
         if (!vpn.host || vpn.host.trim() === "") {

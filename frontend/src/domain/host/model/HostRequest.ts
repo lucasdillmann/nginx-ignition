@@ -76,6 +76,8 @@ export interface HostVpn {
     vpnId: string
     name: string
     host?: string
+    enableHttps: boolean
+    certificateId?: string
 }
 
 export default interface HostRequest {

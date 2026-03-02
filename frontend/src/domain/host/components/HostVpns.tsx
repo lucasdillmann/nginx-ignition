@@ -22,7 +22,7 @@ export interface HostVpnsProps {
     vpns: HostFormVpn[]
     validationResult: ValidationResult
     className?: string
-    onChange: () => void
+    onChange: (vpns: HostFormVpn[]) => void
 }
 
 interface HostVpnsState {
@@ -41,20 +41,32 @@ export default class HostVpns extends React.Component<HostVpnsProps, HostVpnsSta
     }
 
     private handleVpnChange(index: number, vpn?: VpnResponse) {
+        if (!vpn) return
+
         const { vpns, onChange } = this.props
-        if (vpn) {
-            vpns[index].vpn = vpn
-            vpns[index].enableHttps = vpn.driverEndpointSslSupport === EndpointSSLSupport.PROVIDER_MANAGED
-            vpns[index].certificate = undefined
-            onChange()
+        const updatedVpns = [...vpns]
+
+        updatedVpns[index] = {
+            ...vpns[index],
+            vpn,
+            enableHttps: vpn.driverEndpointSslSupport === EndpointSSLSupport.PROVIDER_MANAGED,
+            certificate: undefined,
         }
+
+        onChange(updatedVpns)
     }
 
     private handleCertificateChange(index: number, certificate?: CertificateResponse) {
         const { vpns, onChange } = this.props
-        vpns[index].certificate = certificate
-        vpns[index].enableHttps = certificate !== undefined
-        onChange()
+        const updatedVpns = [...vpns]
+
+        updatedVpns[index] = {
+            ...vpns[index],
+            certificate,
+            enableHttps: certificate !== undefined,
+        }
+
+        onChange(updatedVpns)
     }
 
     private openVpnSettingsModal(index: number) {

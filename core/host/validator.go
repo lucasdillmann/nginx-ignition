@@ -442,6 +442,15 @@ func (v *validator) validateVPNCertificate(
 	index int,
 	vpnDrivers []vpn.AvailableDriver,
 ) error {
+	fieldPath := fmt.Sprintf("vpns[%d].certificateId", index)
+	if hostVpn.CertificateID != nil && !hostVpn.EnableHTTPS {
+		v.delegate.Add(
+			fieldPath,
+			i18n.M(ctx, i18n.K.CoreHostVpnCertificateCannotBeInformedIfDisabled),
+		)
+		return nil
+	}
+
 	if !hostVpn.EnableHTTPS {
 		return nil
 	}
@@ -451,7 +460,6 @@ func (v *validator) validateVPNCertificate(
 		return nil
 	}
 
-	fieldPath := fmt.Sprintf("vpns[%d].certificateId", index)
 	if err := v.validateManagedSSLCertificate(ctx, driver, hostVpn, fieldPath); err != nil {
 		return err
 	}

@@ -22,20 +22,77 @@ func Test_endpointAdapter(t *testing.T) {
 
 		t.Run("generates consistent hash", func(t *testing.T) {
 			adapter := &endpointAdapter{
-				vpnID:      id,
-				name:       name,
-				domainName: &domain,
+				vpnID:       id,
+				name:        name,
+				domainName:  &domain,
+				enableHTTPS: false,
 			}
-			assert.Equal(t, id.String()+name+domain, adapter.Hash())
+			assert.Equal(t, id.String()+name+domain+"false", adapter.Hash())
 		})
 
 		t.Run("handles nil domain", func(t *testing.T) {
 			adapter := &endpointAdapter{
-				vpnID:      id,
-				name:       name,
-				domainName: nil,
+				vpnID:       id,
+				name:        name,
+				domainName:  nil,
+				enableHTTPS: false,
 			}
-			assert.Equal(t, id.String()+name, adapter.Hash())
+			assert.Equal(t, id.String()+name+"false", adapter.Hash())
+		})
+
+		t.Run("generates different hash when enableHTTPS changes", func(t *testing.T) {
+			adapterHTTPSOn := &endpointAdapter{
+				vpnID:       id,
+				name:        name,
+				domainName:  &domain,
+				enableHTTPS: true,
+			}
+			adapterHTTPSOff := &endpointAdapter{
+				vpnID:       id,
+				name:        name,
+				domainName:  &domain,
+				enableHTTPS: false,
+			}
+			assert.NotEqual(t, adapterHTTPSOn.Hash(), adapterHTTPSOff.Hash())
+		})
+
+		t.Run("generates different hash when certificate changes", func(t *testing.T) {
+			certID1 := uuid.New()
+			certID2 := uuid.New()
+			adapterCert1 := &endpointAdapter{
+				vpnID:       id,
+				name:        name,
+				domainName:  &domain,
+				enableHTTPS: true,
+				certDetails: &certificate.Certificate{ID: certID1},
+			}
+			adapterCert2 := &endpointAdapter{
+				vpnID:       id,
+				name:        name,
+				domainName:  &domain,
+				enableHTTPS: true,
+				certDetails: &certificate.Certificate{ID: certID2},
+			}
+			assert.NotEqual(t, adapterCert1.Hash(), adapterCert2.Hash())
+		})
+
+		t.Run("generates same hash when nothing changes", func(t *testing.T) {
+			certID := uuid.New()
+			adapter1 := &endpointAdapter{
+				vpnID:       id,
+				name:        name,
+				domainName:  &domain,
+				enableHTTPS: true,
+				certDetails: &certificate.Certificate{ID: certID},
+			}
+			adapter2 := &endpointAdapter{
+				vpnID:       id,
+				name:        name,
+				domainName:  &domain,
+				enableHTTPS: true,
+				certDetails: &certificate.Certificate{ID: certID},
+			}
+			assert.Equal(t, adapter1.Hash(), adapter2.Hash())
 		})
 	})
 
