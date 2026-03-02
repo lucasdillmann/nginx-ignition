@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"dillmann.com.br/nginx-ignition/core/common/configuration"
@@ -158,7 +159,7 @@ func (a *Driver) getWorkloadPort(
 	for _, app := range apps {
 		if app.ID == appID {
 			for _, port := range app.ActiveWorkloads.UsedPorts {
-				if fmt.Sprintf("%d", port.ContainerPort) == containerPort {
+				if strconv.Itoa(port.ContainerPort) == containerPort {
 					return &app, &port, nil
 				}
 			}

@@ -11,14 +11,16 @@ import (
 
 var (
 	cacheDelegate *cache.Cache
-	cacheInitLock = &sync.Once{}
-	cacheMainLock = &sync.Mutex{}
+	cacheInitOnce = &sync.Once{}
+	cacheInitLock = &sync.Mutex{}
 )
 
 func initCache(cfg *configuration.Configuration) error {
-	var err error
+	cacheInitLock.Lock()
+	defer cacheInitLock.Unlock()
 
-	cacheInitLock.Do(func() {
+	var err error
+	cacheInitOnce.Do(func() {
 		cacheDuration, innerErr := cfg.GetInt(
 			"nginx-ignition.integration.truenas.api-cache-timeout-seconds",
 		)
@@ -34,22 +36,22 @@ func initCache(cfg *configuration.Configuration) error {
 	})
 
 	if err != nil {
-		cacheInitLock = &sync.Once{}
+		cacheInitOnce = &sync.Once{}
 	}
 
 	return err
 }
 
-func getFromCache[T any](key string, missProvider func() T) T {
-	cacheMainLock.Lock()
-	defer cacheMainLock.Unlock()
-
+func getFromCache[T any](key string, missProvider func() (*T, error)) (*T, error) {
 	if value, found := cacheDelegate.Get(key); found {
-		return value.(T)
+		return value.(*T), nil
 	}
 
-	value := missProvider()
-	cacheDelegate.Set(key, value, cache.DefaultExpiration)
+	value, err := missProvider()
+	if err != nil {
+		return nil, err
+	}
 
-	return value
+	cacheDelegate.Set(key, value, cache.DefaultExpiration)
+	return value, nil
 }

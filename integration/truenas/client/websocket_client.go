@@ -66,30 +66,21 @@ func newWebSocketClient(baseURL, username, password string) *webSocketClient {
 }
 
 func (c *webSocketClient) GetAvailableApps() ([]AvailableAppDTO, error) {
-	var apps []AvailableAppDTO
-
 	cacheKey := fmt.Sprintf("%s:%s:ws:app.query", c.baseURL, c.username)
-	rawBytes := getFromCache(cacheKey, func() []byte {
-		result, err := c.fetchApps()
+	res, err := getFromCache(cacheKey, func() (*[]AvailableAppDTO, error) {
+		res, err := c.fetchApps()
 		if err != nil {
-			panic(err)
-		}
-
-		b, err := json.Marshal(result)
-		if err != nil {
-			panic(err)
-		}
-
-		return b
-	})
-
-	if rawBytes != nil {
-		if err := json.Unmarshal(rawBytes, &apps); err != nil {
 			return nil, err
 		}
+
+		return &res, nil
+	})
+
+	if err != nil || res == nil {
+		return nil, err
 	}
 
-	return apps, nil
+	return *res, nil
 }
 
 func (c *webSocketClient) fetchApps() ([]AvailableAppDTO, error) {
@@ -106,8 +97,13 @@ func (c *webSocketClient) fetchApps() ([]AvailableAppDTO, error) {
 	//nolint:errcheck
 	defer conn.Close()
 
-	if err = conn.SetReadDeadline(time.Now().Add(wsTimeout)); err != nil {
-		return nil, fmt.Errorf("truenas websocket: set deadline: %w", err)
+	deadline := time.Now().Add(wsTimeout)
+	if err = conn.SetReadDeadline(deadline); err != nil {
+		return nil, fmt.Errorf("truenas websocket: set read deadline: %w", err)
+	}
+
+	if err = conn.SetWriteDeadline(deadline); err != nil {
+		return nil, fmt.Errorf("truenas websocket: set write deadline: %w", err)
 	}
 
 	if err = conn.WriteMessage(websocket.TextMessage, []byte(ddpConnectMsg)); err != nil {
@@ -190,7 +186,10 @@ func convertWSApps(raw []wsAppDTO) []AvailableAppDTO {
 }
 
 func (c *webSocketClient) waitForMsg(conn *websocket.Conn, msgType string) error {
-	for {
+	remainingAttempts := 100
+	for remainingAttempts > 0 {
+		remainingAttempts--
+
 		_, raw, err := conn.ReadMessage()
 		if err != nil {
 			return err
@@ -205,10 +204,15 @@ func (c *webSocketClient) waitForMsg(conn *websocket.Conn, msgType string) error
 			return nil
 		}
 	}
+
+	return errors.New("truenas websocket: timeout")
 }
 
 func (c *webSocketClient) waitForResult(conn *websocket.Conn, id string) (json.RawMessage, error) {
-	for {
+	remainingAttempts := 100
+	for remainingAttempts > 0 {
+		remainingAttempts--
+
 		_, raw, err := conn.ReadMessage()
 		if err != nil {
 			return nil, err
@@ -227,6 +231,8 @@ func (c *webSocketClient) waitForResult(conn *websocket.Conn, id string) (json.R
 			return msg.Result, nil
 		}
 	}
+
+	return nil, errors.New("truenas websocket: timeout")
 }
 
 func buildWSURL(baseURL string) (string, error) {

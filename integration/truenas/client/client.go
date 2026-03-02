@@ -28,7 +28,7 @@ func For(cfg *configuration.Configuration, parameters map[string]any) (Client, e
 func useLegacyAPI(parameters map[string]any) bool {
 	rawValue, found := parameters[fields.LegacyAPIFieldID]
 	if !found {
-		return false
+		return true
 	}
 
 	parsedValue, parsed := rawValue.(bool)

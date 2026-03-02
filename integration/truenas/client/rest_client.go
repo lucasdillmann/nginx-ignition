@@ -35,23 +35,26 @@ func (c *restClient) GetAvailableApps() ([]AvailableAppDTO, error) {
 
 func (c *restClient) get(endpoint string, result any) error {
 	cacheKey := fmt.Sprintf("%s:%s:rest:%s", c.baseURL, c.username, endpoint)
-	response := getFromCache(cacheKey, func() []byte {
-		output, err := c.executeGetRequest(endpoint, result)
+	response, err := getFromCache(cacheKey, func() (*[]byte, error) {
+		res, err := c.executeGetRequest(endpoint)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
-		return output
+		return &res, nil
 	})
+	if err != nil {
+		return err
+	}
 
 	if response != nil {
-		return json.Unmarshal(response, result)
+		return json.Unmarshal(*response, result)
 	}
 
 	return nil
 }
 
-func (c *restClient) executeGetRequest(endpoint string, result any) ([]byte, error) {
+func (c *restClient) executeGetRequest(endpoint string) ([]byte, error) {
 	req, err := http.NewRequest("GET", c.baseURL+"/api/v2.0/"+endpoint, nil)
 	if err != nil {
 		return nil, err
@@ -72,14 +75,5 @@ func (c *restClient) executeGetRequest(endpoint string, result any) ([]byte, err
 		return nil, fmt.Errorf("unexpected HTTP status %d from TrueNAS REST API", resp.StatusCode)
 	}
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = json.Unmarshal(body, result); err != nil {
-		return nil, err
-	}
-
-	return body, nil
+	return io.ReadAll(resp.Body)
 }
