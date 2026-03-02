@@ -44,23 +44,29 @@ export default class HostVpns extends React.Component<HostVpnsProps, HostVpnsSta
         if (!vpn) return
 
         const { vpns, onChange } = this.props
-        const updated = [...vpns]
+        const updatedVpns = [...vpns]
 
-        updated[index].vpn = vpn
-        updated[index].enableHttps = vpn.driverEndpointSslSupport === EndpointSSLSupport.PROVIDER_MANAGED
-        updated[index].certificate = undefined
+        updatedVpns[index] = {
+            ...vpns[index],
+            vpn,
+            enableHttps: vpn.driverEndpointSslSupport === EndpointSSLSupport.PROVIDER_MANAGED,
+            certificate: undefined,
+        }
 
-        onChange(updated)
+        onChange(updatedVpns)
     }
 
     private handleCertificateChange(index: number, certificate?: CertificateResponse) {
         const { vpns, onChange } = this.props
-        const updated = [...vpns]
+        const updatedVpns = [...vpns]
 
-        updated[index].certificate = certificate
-        updated[index].enableHttps = certificate !== undefined
+        updatedVpns[index] = {
+            ...vpns[index],
+            certificate,
+            enableHttps: certificate !== undefined,
+        }
 
-        onChange(updated)
+        onChange(updatedVpns)
     }
 
     private openVpnSettingsModal(index: number) {
