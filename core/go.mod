@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/core
 
-go 1.26
+go 1.26.1
 
 require (
 	github.com/google/uuid v1.6.0
@@ -10,7 +10,7 @@ require (
 	go.uber.org/dig v1.19.0
 	go.uber.org/mock v0.6.0
 	go.uber.org/zap v1.27.1
-	golang.org/x/text v0.34.0
+	golang.org/x/text v0.35.0
 )
 
 require (
