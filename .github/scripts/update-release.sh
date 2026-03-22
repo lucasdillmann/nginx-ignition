@@ -51,13 +51,21 @@ fi
 
 echo "Docker image: [$DOCKER_IMAGE_NAME:$TAG](https://hub.docker.com/layers/$DOCKER_IMAGE_NAME/$TAG/images/$DOCKER_IMAGE_HASH)" >> "$BODY_FILE"
 
-if gh release view "$VERSION" >/dev/null 2>&1; then
-  echo "Release $VERSION already exists. Updating..."
-  gh release edit "$VERSION" --notes-file "$BODY_FILE" --prerelease="$PRERELEASE"
+if gh release view "$TAG" >/dev/null 2>&1; then
+  echo "Release $TAG already exists. Updating..."
+  gh release edit "$TAG" --notes-file "$BODY_FILE" --prerelease="$PRERELEASE"
 else
-  echo "Creating new release $VERSION..."
-  gh release create "$VERSION" --notes-file "$BODY_FILE" --prerelease="$PRERELEASE" --title "$VERSION"
+  echo "Creating new release $TAG..."
+  gh release create "$TAG" --notes-file "$BODY_FILE" --prerelease="$PRERELEASE" --title "$VERSION"
+fi
+
+if [[ "$PRERELEASE" == "false" ]]; then
+  SNAPSHOT_TAG="$VERSION-snapshot"
+  if gh release view "$SNAPSHOT_TAG" >/dev/null 2>&1; then
+    echo "Promoting release. Deleting snapshot release $SNAPSHOT_TAG..."
+    gh release delete "$SNAPSHOT_TAG" --yes --cleanup-tag
+  fi
 fi
 
 rm "$BODY_FILE"
-echo "Release $VERSION created/updated successfully."
+echo "Release for $TAG created/updated successfully."

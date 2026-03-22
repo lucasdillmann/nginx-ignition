@@ -49,7 +49,7 @@ func resolveLatestAvailableVersion() *string {
 	}
 
 	resp, err := client.Get(
-		"https://api.github.com/repos/lucasdillmann/nginx-ignition/releases?per_page=1&page=0",
+		"https://api.github.com/repos/lucasdillmann/nginx-ignition/releases/latest",
 	)
 	if err != nil {
 		log.Warnf("Failed to fetch latest available version: %s", err)
@@ -65,16 +65,14 @@ func resolveLatestAvailableVersion() *string {
 		return nil
 	}
 
-	releases := make([]map[string]any, 0)
-	if err := json.Unmarshal(body, &releases); err != nil {
+	release := make(map[string]any)
+	if err := json.Unmarshal(body, &release); err != nil {
 		log.Warnf("Failed to parse latest available version: %s", err)
 		return nil
 	}
 
-	if len(releases) > 0 {
-		if name, ok := releases[0]["name"].(string); ok {
-			return &name
-		}
+	if name, ok := release["name"].(string); ok {
+		return &name
 	}
 
 	return nil
