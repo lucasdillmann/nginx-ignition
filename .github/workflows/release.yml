@@ -47,11 +47,16 @@ jobs:
         run: echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
       - name: Build and release
         run: make build-release VERSION=${{ steps.tag.outputs.VERSION }}
-      - name: Create GitHub Release
+      - name: Update GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RAW_DIGEST=$(docker buildx imagetools inspect dillmann/nginx-ignition:${{ steps.tag.outputs.VERSION }} --format '{{.manifest.digest}}')
+          DOCKER_IMAGE_HASH=$(echo $RAW_DIGEST | sed 's/:/-/g')
+          ./.github/scripts/update-release.sh "$DOCKER_IMAGE_HASH" "false"
+      - name: Upload distribution files
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ steps.tag.outputs.VERSION }}
-          body: "Docker image: dillmann/nginx-ignition:${{ steps.tag.outputs.VERSION }}"
           files: |
             build/nginx-ignition*.zip
             build/nginx-ignition*.deb
