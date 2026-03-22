@@ -116,4 +116,4 @@ jobs:
         run: |
           RAW_DIGEST=$(docker buildx imagetools inspect dillmann/nginx-ignition:${{ steps.version.outputs.VERSION }}-snapshot --format '{{json .}}' | jq -r '.manifest.digest')
           DOCKER_IMAGE_HASH=$(echo $RAW_DIGEST | sed 's/:/-/g')
-          ./.github/scripts/update-release.sh "$DOCKER_IMAGE_HASH" "true"
+          ./.github/scripts/update-release.sh "$DOCKER_IMAGE_HASH" "true" "${{ steps.version.outputs.VERSION }}"

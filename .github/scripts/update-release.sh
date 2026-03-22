@@ -5,6 +5,7 @@ CHANGELOG_FILE="CHANGELOG.md"
 DOCKER_IMAGE_NAME="dillmann/nginx-ignition"
 DOCKER_IMAGE_HASH=$1
 PRERELEASE=$2
+VERSION=$3
 
 if ! command -v gh &> /dev/null; then
   echo "Error: gh CLI is not installed" >&2
@@ -25,15 +26,18 @@ if [[ -z "$PRERELEASE" ]]; then
   PRERELEASE="true"
 fi
 
-VERSION=$(grep -m 1 "^## " "$CHANGELOG_FILE" | sed 's/## //')
 if [[ -z "$VERSION" ]]; then
-  echo "Error: Could not find version in $CHANGELOG_FILE" >&2
+  echo "Error: Version argument is required." >&2
   exit 1
 fi
 
 VERSION_LINE=$(grep -n -m 1 "^## $VERSION" "$CHANGELOG_FILE" | cut -d: -f1)
-NEXT_VERSION_LINE=$(grep -n "^## " "$CHANGELOG_FILE" | sed -n '2p' | cut -d: -f1)
+if [[ -z "$VERSION_LINE" ]]; then
+  echo "Error: Could not find version $VERSION in $CHANGELOG_FILE" >&2
+  exit 1
+fi
 
+NEXT_VERSION_LINE=$(grep -n "^## " "$CHANGELOG_FILE" | sed -n '2p' | cut -d: -f1)
 if [[ -z "$NEXT_VERSION_LINE" ]]; then
   DESCRIPTION=$(sed -n "$((VERSION_LINE + 1)),\$p" "$CHANGELOG_FILE")
 else

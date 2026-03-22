@@ -53,7 +53,7 @@ jobs:
         run: |
           RAW_DIGEST=$(docker buildx imagetools inspect dillmann/nginx-ignition:${{ steps.tag.outputs.VERSION }} --format '{{json .}}' | jq -r '.manifest.digest')
           DOCKER_IMAGE_HASH=$(echo $RAW_DIGEST | sed 's/:/-/g')
-          ./.github/scripts/update-release.sh "$DOCKER_IMAGE_HASH" "false"
+          ./.github/scripts/update-release.sh "$DOCKER_IMAGE_HASH" "false" "${{ steps.tag.outputs.VERSION }}"
       - name: Upload distribution files
         uses: softprops/action-gh-release@v2
         with:
