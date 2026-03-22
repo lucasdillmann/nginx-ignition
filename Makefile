@@ -1,7 +1,7 @@
 DOCKER_IMAGE ?= dillmann/nginx-ignition
 VERSION ?= 0.0.0
 PR_ID ?= 0
-SNAPSHOT_TAG_SUFFIX := $(if $(filter-out ,$(PR_ID)),$(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,snapshot),snapshot)
+SNAPSHOT_TAG_SUFFIX := $(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,$(VERSION)-snapshot)
 LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSION)'
 
 .backend-prerequisites:

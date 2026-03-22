@@ -70,6 +70,8 @@ jobs:
 
   build:
     runs-on: self-hosted
+    permissions:
+      contents: write
     env:
       GOPATH: /data/cache/go
       GOMODCACHE: /data/cache/go/pkg/mod
@@ -103,12 +105,15 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and release
-        run: make build-snapshot PR_ID=${{ github.event.pull_request.number }}
+        run: |
+          VERSION=$(grep -m 1 "^## " CHANGELOG.md | sed 's/## //')
+          make build-snapshot PR_ID=${{ github.event.pull_request.number }} VERSION=$VERSION
       - name: Update GitHub Pre-release
         if: github.ref == 'refs/heads/main'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          RAW_DIGEST=$(docker buildx imagetools inspect dillmann/nginx-ignition:snapshot --format '{{.manifest.digest}}')
+          VERSION=$(grep -m 1 "^## " CHANGELOG.md | sed 's/## //')
+          RAW_DIGEST=$(docker buildx imagetools inspect dillmann/nginx-ignition:$VERSION-snapshot --format '{{json .}}' | jq -r '.manifest.digest')
           DOCKER_IMAGE_HASH=$(echo $RAW_DIGEST | sed 's/:/-/g')
           ./.github/scripts/update-release.sh "$DOCKER_IMAGE_HASH" "true"

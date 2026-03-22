@@ -33,7 +33,13 @@ fi
 BODY_FILE=$(mktemp)
 echo "$DESCRIPTION" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' > "$BODY_FILE"
 echo "" >> "$BODY_FILE"
-echo "Docker image: [$DOCKER_IMAGE_NAME:$VERSION](https://hub.docker.com/layers/$DOCKER_IMAGE_NAME/$VERSION/images/sha256-$DOCKER_IMAGE_HASH)" >> "$BODY_FILE"
+
+TAG="$VERSION"
+if [ "$PRERELEASE" == "true" ]; then
+  TAG="$VERSION-snapshot"
+fi
+
+echo "Docker image: [$DOCKER_IMAGE_NAME:$TAG](https://hub.docker.com/layers/$DOCKER_IMAGE_NAME/$TAG/images/$DOCKER_IMAGE_HASH)" >> "$BODY_FILE"
 
 if gh release view "$VERSION" >/dev/null 2>&1; then
   echo "Release $VERSION already exists. Updating..."
