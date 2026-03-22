@@ -41,7 +41,7 @@ else
 fi
 
 BODY_FILE=$(mktemp)
-echo "$DESCRIPTION" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' > "$BODY_FILE"
+echo "$DESCRIPTION" | sed -e :a -e '/^$/N;/\n$/ba' > "$BODY_FILE"
 echo "" >> "$BODY_FILE"
 
 TAG="$VERSION"

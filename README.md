@@ -121,13 +121,21 @@ Need to tune your setup? Explore our detailed guides:
 
 <br />
 
+## 💖 Sponsors
+
+We are grateful to our sponsors for supporting the development of nginx ignition:
+
+- [**Greptile**](https://www.greptile.com/): AI-powered code review agent that understands ignition's codebase, 
+  providing deep, context-aware insights to help us catch bugs and accelerate development.
+
+<br />
+
 ## 🤝 Contributing and feedback
 
 We love to hear and receive feedback from you. Whether it's a bug report, a feature request, or a pull request:
 
 - 🛠️ **[Open an issue](https://github.com/lucasdillmann/nginx-ignition/issues)** if you have a problem or bug to report
-- 💬 **[Start a discussion](https://github.com/lucasdillmann/nginx-ignition/discussions)** if you have a question or 
-  feature request
+- 💬 **[Start a discussion](https://github.com/lucasdillmann/nginx-ignition/discussions)** if you have a question or feature request
 - 👋 **[Say hello on LinkedIn](https://linkedin.com/in/lucasdillmann)** if you want to share some feedback
 
 <br />
