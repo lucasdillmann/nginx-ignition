@@ -41,6 +41,8 @@ else
 fi
 
 BODY_FILE=$(mktemp)
+trap 'rm -f "$BODY_FILE"' EXIT
+
 echo "$DESCRIPTION" | sed -e :a -e '/^$/N;/\n$/ba' > "$BODY_FILE"
 echo "" >> "$BODY_FILE"
 
@@ -67,5 +69,4 @@ if [[ "$PRERELEASE" == "false" ]]; then
   fi
 fi
 
-rm "$BODY_FILE"
 echo "Release for $TAG created/updated successfully."
