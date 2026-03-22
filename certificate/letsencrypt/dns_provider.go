@@ -200,8 +200,8 @@ import (
 
 var providers = []dns.Provider{
 	&acmedns.Provider{},
-	&artfiles.Provider{},
 	&active24.Provider{},
+	&artfiles.Provider{},
 	&alibaba.Provider{},
 	&aliesa.Provider{},
 	&allinkl.Provider{},
