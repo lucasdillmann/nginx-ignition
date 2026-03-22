@@ -2,6 +2,8 @@
 
 ## 2.35.0
 - Integration routes now support HTTPS upstream servers (with the option to ignore certificate errors)
+- Added support for 10 new DNS providers for Let's Encrypt challenges: Artfiles, BlueCat v2, Czechia, DDNSS, DNS Exit, 
+  EuroDNS, Excedo, LeaseWeb, NameSurfer, and Todaynic
 - Development pipeline and workflow improvements
 - Security and other minor fixes and improvements
 
