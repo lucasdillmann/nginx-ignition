@@ -433,19 +433,31 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			)
 		})
 
-		t.Run("includes proxy_ssl_server_name", func(t *testing.T) {
-			r := &host.Route{
-				Settings: host.RouteSettings{
-					ProxySSLServerName: true,
-				},
-			}
-			result := provider.buildRouteSettings(ctx, r)
-			assert.Contains(t, result, "proxy_ssl_server_name on;")
+		t.Run(
+			"includes proxy_ssl_server_name on when ProxySSLServerName is true",
+			func(t *testing.T) {
+				r := &host.Route{
+					Settings: host.RouteSettings{
+						ProxySSLServerName: true,
+					},
+				}
+				result := provider.buildRouteSettings(ctx, r)
+				assert.Contains(t, result, "proxy_ssl_server_name on;")
+			},
+		)
 
-			r.Settings.ProxySSLServerName = false
-			result = provider.buildRouteSettings(ctx, r)
-			assert.Contains(t, result, "proxy_ssl_server_name off;")
-		})
+		t.Run(
+			"doesn't includes proxy_ssl_server_name when ProxySSLServerName is false",
+			func(t *testing.T) {
+				r := &host.Route{
+					Settings: host.RouteSettings{
+						ProxySSLServerName: false,
+					},
+				}
+				result := provider.buildRouteSettings(ctx, r)
+				assert.NotContains(t, result, "proxy_ssl_server_name")
+			},
+		)
 
 		t.Run("includes proxy_ssl_verify off when IgnoreSSLErrors is true", func(t *testing.T) {
 			r := &host.Route{

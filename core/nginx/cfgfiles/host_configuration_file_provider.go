@@ -483,11 +483,9 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(
 ) string {
 	builder := strings.Builder{}
 
-	_, _ = fmt.Fprintf(
-		&builder,
-		"proxy_ssl_server_name %s;\n",
-		statusFlag(r.Settings.ProxySSLServerName),
-	)
+	if r.Settings.ProxySSLServerName {
+		_, _ = builder.WriteString("proxy_ssl_server_name on;\n")
+	}
 
 	if r.Settings.IgnoreSSLErrors {
 		_, _ = builder.WriteString("proxy_ssl_verify off;\n")
