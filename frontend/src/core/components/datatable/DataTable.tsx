@@ -114,8 +114,10 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
 
     private handleSearchTerms(searchTerms?: string) {
         const { id } = this.props
+        const { data } = this.state
 
         this.service.searchTermsChanged(id, searchTerms)
+        this.service.paginationChanged(id, data.pageSize as DataTablePageSize, 0)
         this.setState(
             ({ data }) => ({
                 loading: true,

@@ -72,7 +72,9 @@ export default class TagGroup extends React.Component<TagGroupProps> {
             <>
                 {tags}
                 <Tooltip title={tooltipContents}>
-                    <I18n id={additionalMessage} />
+                    <span>
+                        <I18n id={additionalMessage} />
+                    </span>
                 </Tooltip>
             </>
         )

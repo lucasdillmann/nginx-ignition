@@ -73,6 +73,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
 
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
+                    layout="vertical"
                     className="host-form-route-custom-settings"
                     name={[fieldPath, "settings", "custom"]}
                     validateStatus={validationResult.getStatus(`routes[${index}].settings.custom`)}

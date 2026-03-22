@@ -2,7 +2,7 @@
 
 ## 2.35.0
 - Development pipeline and workflow improvements
-- Security fixes and updates
+- Security and other minor fixes and improvements
 
 ## 2.34.0
 

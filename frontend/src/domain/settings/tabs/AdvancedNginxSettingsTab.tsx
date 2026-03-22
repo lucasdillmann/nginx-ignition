@@ -37,6 +37,7 @@ export default class AdvancedNginxSettingsTab extends React.Component<AdvancedSe
 
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
+                    layout="vertical"
                     className="host-form-route-custom-settings"
                     name={["nginx", "custom"]}
                     validateStatus={validationResult.getStatus("nginx.custom")}
