@@ -78,6 +78,9 @@ jobs:
       PNPM_HOME: /data/cache/pnpm
     steps:
       - uses: actions/checkout@v5
+      - name: Extract version from CHANGELOG.md
+        id: version
+        run: echo "VERSION=$(grep -m 1 "^## " CHANGELOG.md | sed 's/## //')" >> $GITHUB_OUTPUT
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -105,15 +108,12 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and release
-        run: |
-          VERSION=$(grep -m 1 "^## " CHANGELOG.md | sed 's/## //')
-          make build-snapshot PR_ID=${{ github.event.pull_request.number }} VERSION=$VERSION
+        run: make build-snapshot PR_ID=${{ github.event.pull_request.number }} VERSION=${{ steps.version.outputs.VERSION }}
       - name: Update GitHub Pre-release
         if: github.ref == 'refs/heads/main'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION=$(grep -m 1 "^## " CHANGELOG.md | sed 's/## //')
-          RAW_DIGEST=$(docker buildx imagetools inspect dillmann/nginx-ignition:$VERSION-snapshot --format '{{json .}}' | jq -r '.manifest.digest')
+          RAW_DIGEST=$(docker buildx imagetools inspect dillmann/nginx-ignition:${{ steps.version.outputs.VERSION }}-snapshot --format '{{json .}}' | jq -r '.manifest.digest')
           DOCKER_IMAGE_HASH=$(echo $RAW_DIGEST | sed 's/:/-/g')
           ./.github/scripts/update-release.sh "$DOCKER_IMAGE_HASH" "true"

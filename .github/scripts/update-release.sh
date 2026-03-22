@@ -6,8 +6,18 @@ DOCKER_IMAGE_NAME="dillmann/nginx-ignition"
 DOCKER_IMAGE_HASH=$1
 PRERELEASE=$2
 
+if ! command -v gh &> /dev/null; then
+  echo "Error: gh CLI is not installed" >&2
+  exit 1
+fi
+
 if [[ -z "$DOCKER_IMAGE_HASH" ]]; then
   echo "Error: Docker image hash is required." >&2
+  exit 1
+fi
+
+if [[ ! "$DOCKER_IMAGE_HASH" =~ ^sha256- ]]; then
+  echo "Error: Docker image hash must start with 'sha256-'" >&2
   exit 1
 fi
 
