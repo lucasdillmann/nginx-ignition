@@ -136,6 +136,7 @@ func toRouteSettingsDTO(set *host.RouteSettings) *routeSettingsDTO {
 	return &routeSettingsDTO{
 		IncludeForwardHeaders:   &set.IncludeForwardHeaders,
 		ProxySslServerName:      &set.ProxySSLServerName,
+		IgnoreSSLErrors:         &set.IgnoreSSLErrors,
 		KeepOriginalDomainName:  &set.KeepOriginalDomainName,
 		DirectoryListingEnabled: &set.DirectoryListingEnabled,
 		IndexFile:               dropBlankValues(set.IndexFile),
@@ -163,6 +164,7 @@ func toIntegrationConfigDTO(config *host.RouteIntegrationConfig) *integrationCon
 	return &integrationConfigDTO{
 		IntegrationID: &config.IntegrationID,
 		OptionID:      &config.OptionID,
+		UseHTTPS:      &config.UseHTTPS,
 	}
 }
 
@@ -240,6 +242,7 @@ func toRouteSettings(input *routeSettingsDTO) host.RouteSettings {
 	return host.RouteSettings{
 		IncludeForwardHeaders:   getBoolValue(input.IncludeForwardHeaders),
 		ProxySSLServerName:      getBoolValue(input.ProxySslServerName),
+		IgnoreSSLErrors:         getBoolValue(input.IgnoreSSLErrors),
 		KeepOriginalDomainName:  getBoolValue(input.KeepOriginalDomainName),
 		DirectoryListingEnabled: getBoolValue(input.DirectoryListingEnabled),
 		IndexFile:               dropBlankValues(input.IndexFile),
@@ -267,6 +270,7 @@ func toRouteIntegrationConfig(input *integrationConfigDTO) *host.RouteIntegratio
 	return &host.RouteIntegrationConfig{
 		IntegrationID: getUUIDValue(input.IntegrationID),
 		OptionID:      getStringValue(input.OptionID),
+		UseHTTPS:      getBoolValue(input.UseHTTPS),
 	}
 }
 

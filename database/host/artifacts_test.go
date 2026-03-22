@@ -50,6 +50,7 @@ func newHost() *host.Host {
 				SourcePath: "/",
 				Settings: host.RouteSettings{
 					IncludeForwardHeaders:   true,
+					IgnoreSSLErrors:         true,
 					ProxySSLServerName:      false,
 					KeepOriginalDomainName:  true,
 					DirectoryListingEnabled: false,

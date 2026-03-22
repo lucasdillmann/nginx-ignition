@@ -44,6 +44,7 @@ type routeSourceCodeDTO struct {
 type routeSettingsDTO struct {
 	IncludeForwardHeaders   *bool   `json:"includeForwardHeaders"`
 	ProxySslServerName      *bool   `json:"proxySslServerName"`
+	IgnoreSSLErrors         *bool   `json:"ignoreSslErrors"`
 	KeepOriginalDomainName  *bool   `json:"keepOriginalDomainName"`
 	DirectoryListingEnabled *bool   `json:"directoryListingEnabled"`
 	IndexFile               *string `json:"indexFile"`
@@ -53,6 +54,7 @@ type routeSettingsDTO struct {
 type integrationConfigDTO struct {
 	IntegrationID *uuid.UUID `json:"integrationId"`
 	OptionID      *string    `json:"optionId"`
+	UseHTTPS      *bool      `json:"useHttps"`
 }
 
 type staticResponseDTO struct {

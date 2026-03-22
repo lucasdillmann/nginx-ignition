@@ -53,6 +53,7 @@ func toDomain(model *hostModel) (*host.Host, error) {
 			integration = &host.RouteIntegrationConfig{
 				IntegrationID: *route.IntegrationID,
 				OptionID:      *route.IntegrationOptionID,
+				UseHTTPS:      route.IntegrationUseHTTPS,
 			}
 		}
 
@@ -78,6 +79,7 @@ func toDomain(model *hostModel) (*host.Host, error) {
 			Settings: host.RouteSettings{
 				IncludeForwardHeaders:   route.IncludeForwardHeaders,
 				ProxySSLServerName:      route.ProxySSLServerName,
+				IgnoreSSLErrors:         route.IgnoreSSLErrors,
 				KeepOriginalDomainName:  route.KeepOriginalDomainName,
 				DirectoryListingEnabled: route.DirectoryListingEnabled,
 				IndexFile:               route.IndexFile,
@@ -152,9 +154,11 @@ func toModel(domain *host.Host) (*hostModel, error) {
 
 		var integrationID *uuid.UUID
 		var integrationOptionID *string
+		var integrationUseHTTPS bool
 		if route.Integration != nil {
 			integrationID = &route.Integration.IntegrationID
 			integrationOptionID = &route.Integration.OptionID
+			integrationUseHTTPS = route.Integration.UseHTTPS
 		}
 
 		var codeLanguage, codeContents, codeMainFunction *string
@@ -180,9 +184,11 @@ func toModel(domain *host.Host) (*hostModel, error) {
 			IntegrationOptionID:     integrationOptionID,
 			IncludeForwardHeaders:   route.Settings.IncludeForwardHeaders,
 			ProxySSLServerName:      route.Settings.ProxySSLServerName,
+			IgnoreSSLErrors:         route.Settings.IgnoreSSLErrors,
 			KeepOriginalDomainName:  route.Settings.KeepOriginalDomainName,
 			DirectoryListingEnabled: route.Settings.DirectoryListingEnabled,
 			IndexFile:               route.Settings.IndexFile,
+			IntegrationUseHTTPS:     integrationUseHTTPS,
 			AccessListID:            route.AccessListID,
 			CacheID:                 route.CacheID,
 			CodeLanguage:            codeLanguage,

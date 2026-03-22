@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 2.35.0
+- Integration routes now support HTTPS upstream servers (with the option to ignore certificate errors)
 - Development pipeline and workflow improvements
 - Security and other minor fixes and improvements
 

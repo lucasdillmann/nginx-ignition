@@ -72,6 +72,7 @@ type RouteSettings struct {
 	IndexFile               *string
 	IncludeForwardHeaders   bool
 	ProxySSLServerName      bool
+	IgnoreSSLErrors         bool
 	KeepOriginalDomainName  bool
 	DirectoryListingEnabled bool
 }
@@ -85,6 +86,7 @@ type RouteStaticResponse struct {
 type RouteIntegrationConfig struct {
 	OptionID      string
 	IntegrationID uuid.UUID
+	UseHTTPS      bool
 }
 
 type VPN struct {

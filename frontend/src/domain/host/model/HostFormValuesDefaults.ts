@@ -25,6 +25,7 @@ export function hostFormValuesDefaults(): HostFormValues {
                 settings: {
                     keepOriginalDomainName: true,
                     proxySslServerName: true,
+                    ignoreSslErrors: false,
                     includeForwardHeaders: true,
                     directoryListingEnabled: false,
                 },

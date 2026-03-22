@@ -350,8 +350,12 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 		return "", coreerror.New(
 			i18n.M(ctx.context, i18n.K.CoreNginxCfgfilesOptionNotFound).
 				V("optionID", r.Integration.OptionID),
-			false,
+			true,
 		)
+	}
+
+	if r.Integration.UseHTTPS {
+		proxyURL = new(strings.Replace(*proxyURL, "http://", "https://", 1))
 	}
 
 	if r.TargetURI != nil && strings.TrimSpace(*r.TargetURI) != "" {
@@ -478,8 +482,13 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(
 	r *host.Route,
 ) string {
 	builder := strings.Builder{}
+
 	if r.Settings.ProxySSLServerName {
-		_, _ = builder.WriteString("proxy_ssl_server_name on;")
+		_, _ = builder.WriteString("proxy_ssl_server_name on;\n")
+	}
+
+	if r.Settings.IgnoreSSLErrors {
+		_, _ = builder.WriteString("proxy_ssl_verify off;\n")
 	}
 
 	if r.Settings.IncludeForwardHeaders {

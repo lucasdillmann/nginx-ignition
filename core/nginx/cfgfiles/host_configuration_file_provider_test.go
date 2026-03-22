@@ -266,6 +266,31 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			assert.ErrorAs(t, err, &coreErr)
 			assert.Equal(t, i18n.K.CoreNginxCfgfilesOptionNotFound, coreErr.Message.Key)
 		})
+
+		t.Run("replaces http with https when UseHTTPS is true", func(t *testing.T) {
+			integrationID := uuid.New()
+			r := &host.Route{
+				SourcePath: "/api",
+				Integration: &host.RouteIntegrationConfig{
+					IntegrationID: integrationID,
+					OptionID:      "opt-1",
+					UseHTTPS:      true,
+				},
+			}
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			integrationCmds := integration.NewMockedCommands(ctrl)
+			integrationCmds.EXPECT().
+				GetOptionURL(gomock.Any(), integrationID, "opt-1").
+				Return(new("http://1.2.3.4:80"), nil, nil)
+			provider.integrationCommands = integrationCmds
+
+			result, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
+			assert.NoError(t, err)
+			assert.Contains(t, result, "proxy_pass https://1.2.3.4:80;")
+		})
 	})
 
 	t.Run("BuildExecuteCodeRoute", func(t *testing.T) {
@@ -406,6 +431,52 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				result,
 				fmt.Sprintf("include \"/etc/nginx/access-list-%s.conf\";", id),
 			)
+		})
+
+		t.Run(
+			"includes proxy_ssl_server_name on when ProxySSLServerName is true",
+			func(t *testing.T) {
+				r := &host.Route{
+					Settings: host.RouteSettings{
+						ProxySSLServerName: true,
+					},
+				}
+				result := provider.buildRouteSettings(ctx, r)
+				assert.Contains(t, result, "proxy_ssl_server_name on;")
+			},
+		)
+
+		t.Run(
+			"doesn't includes proxy_ssl_server_name when ProxySSLServerName is false",
+			func(t *testing.T) {
+				r := &host.Route{
+					Settings: host.RouteSettings{
+						ProxySSLServerName: false,
+					},
+				}
+				result := provider.buildRouteSettings(ctx, r)
+				assert.NotContains(t, result, "proxy_ssl_server_name")
+			},
+		)
+
+		t.Run("includes proxy_ssl_verify off when IgnoreSSLErrors is true", func(t *testing.T) {
+			r := &host.Route{
+				Settings: host.RouteSettings{
+					IgnoreSSLErrors: true,
+				},
+			}
+			result := provider.buildRouteSettings(ctx, r)
+			assert.Contains(t, result, "proxy_ssl_verify off;")
+		})
+
+		t.Run("does not include proxy_ssl_verify by default", func(t *testing.T) {
+			r := &host.Route{
+				Settings: host.RouteSettings{
+					IgnoreSSLErrors: false,
+				},
+			}
+			result := provider.buildRouteSettings(ctx, r)
+			assert.NotContains(t, result, "proxy_ssl_verify")
 		})
 	})
 

@@ -212,6 +212,38 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                 <HostRouteConditionalConfig route={route} types={PROXY_ROUTE_TYPES}>
                     <Form.Item
                         {...ItemProps}
+                        name={[fieldPath, "settings", "ignoreSslErrors"]}
+                        label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIgnoreSslErrors} />}
+                        validateStatus={validationResult.getStatus(`routes[${index}].settings.ignoreSslErrors`)}
+                        help={
+                            validationResult.getMessage(`routes[${index}].settings.ignoreSslErrors`) ?? (
+                                <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIgnoreSslErrorsHelp} />
+                            )
+                        }
+                        required
+                    >
+                        <Switch />
+                    </Form.Item>
+                </HostRouteConditionalConfig>
+                <HostRouteConditionalConfig route={route} types={[HostRouteType.INTEGRATION]}>
+                    <Form.Item
+                        {...ItemProps}
+                        name={[fieldPath, "integration", "useHttps"]}
+                        label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIntegrationUseHttps} />}
+                        validateStatus={validationResult.getStatus(`routes[${index}].integration.useHttps`)}
+                        help={
+                            validationResult.getMessage(`routes[${index}].integration.useHttps`) ?? (
+                                <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIntegrationUseHttpsHelp} />
+                            )
+                        }
+                        required
+                    >
+                        <Switch />
+                    </Form.Item>
+                </HostRouteConditionalConfig>
+                <HostRouteConditionalConfig route={route} types={PROXY_ROUTE_TYPES}>
+                    <Form.Item
+                        {...ItemProps}
                         name={[fieldPath, "settings", "includeForwardHeaders"]}
                         label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsIncludeForwardHeaders} />}
                         validateStatus={validationResult.getStatus(`routes[${index}].settings.includeForwardHeaders`)}
