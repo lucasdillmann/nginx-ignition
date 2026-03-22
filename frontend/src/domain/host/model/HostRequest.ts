@@ -40,6 +40,7 @@ export interface HostRouteStaticResponse {
 export interface HostRouteSettings {
     includeForwardHeaders: boolean
     proxySslServerName: boolean
+    ignoreSslErrors: boolean
     keepOriginalDomainName: boolean
     directoryListingEnabled: boolean
     indexFile?: string
@@ -70,6 +71,7 @@ export interface HostRoute {
 export interface HostRouteIntegration {
     integrationId: string
     optionId: string
+    useHttps: boolean
 }
 
 export interface HostVpn {

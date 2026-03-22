@@ -37,6 +37,7 @@ export interface HostFormRoute {
 export interface HostFormRouteIntegration {
     integration: IntegrationResponse
     option: IntegrationOptionResponse
+    useHttps: boolean
 }
 
 export interface HostFormVpn {

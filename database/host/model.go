@@ -70,7 +70,9 @@ type hostRouteModel struct {
 	HostID                  uuid.UUID  `bun:"host_id,notnull"`
 	IncludeForwardHeaders   bool       `bun:"include_forward_headers,notnull"`
 	ProxySSLServerName      bool       `bun:"proxy_ssl_server_name,notnull"`
+	IgnoreSSLErrors         bool       `bun:"ignore_ssl_errors,notnull"`
 	KeepOriginalDomainName  bool       `bun:"keep_original_domain_name,notnull"`
 	DirectoryListingEnabled bool       `bun:"directory_listing_enabled,notnull"`
+	IntegrationUseHTTPS     bool       `bun:"integration_use_https,notnull"`
 	Enabled                 bool       `bun:"enabled,notnull"`
 }

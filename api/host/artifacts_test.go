@@ -28,6 +28,7 @@ func newHostRequestDTO() hostRequestDTO {
 				TargetURI:  new("http://backend"),
 				Settings: &routeSettingsDTO{
 					IncludeForwardHeaders:  new(true),
+					IgnoreSSLErrors:        new(true),
 					ProxySslServerName:     new(true),
 					KeepOriginalDomainName: new(true),
 					IndexFile:              new("index.html"),
@@ -69,6 +70,7 @@ func newHost() *host.Host {
 				TargetURI:  new("http://backend"),
 				Settings: host.RouteSettings{
 					IncludeForwardHeaders:  true,
+					IgnoreSSLErrors:        true,
 					ProxySSLServerName:     true,
 					KeepOriginalDomainName: true,
 					IndexFile:              new("index.html"),
