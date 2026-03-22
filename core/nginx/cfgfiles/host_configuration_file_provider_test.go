@@ -433,6 +433,20 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			)
 		})
 
+		t.Run("includes proxy_ssl_server_name", func(t *testing.T) {
+			r := &host.Route{
+				Settings: host.RouteSettings{
+					ProxySSLServerName: true,
+				},
+			}
+			result := provider.buildRouteSettings(ctx, r)
+			assert.Contains(t, result, "proxy_ssl_server_name on;")
+
+			r.Settings.ProxySSLServerName = false
+			result = provider.buildRouteSettings(ctx, r)
+			assert.Contains(t, result, "proxy_ssl_server_name off;")
+		})
+
 		t.Run("includes proxy_ssl_verify off when IgnoreSSLErrors is true", func(t *testing.T) {
 			r := &host.Route{
 				Settings: host.RouteSettings{
@@ -443,14 +457,14 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			assert.Contains(t, result, "proxy_ssl_verify off;")
 		})
 
-		t.Run("includes proxy_ssl_verify on by default", func(t *testing.T) {
+		t.Run("does not include proxy_ssl_verify by default", func(t *testing.T) {
 			r := &host.Route{
 				Settings: host.RouteSettings{
 					IgnoreSSLErrors: false,
 				},
 			}
 			result := provider.buildRouteSettings(ctx, r)
-			assert.Contains(t, result, "proxy_ssl_verify on;")
+			assert.NotContains(t, result, "proxy_ssl_verify")
 		})
 	})
 

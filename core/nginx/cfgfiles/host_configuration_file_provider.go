@@ -485,13 +485,13 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(
 
 	_, _ = fmt.Fprintf(
 		&builder,
-		`
-			proxy_ssl_server_name %s;
-			proxy_ssl_verify %s;
-		`,
+		"proxy_ssl_server_name %s;\n",
 		statusFlag(r.Settings.ProxySSLServerName),
-		statusFlag(!r.Settings.IgnoreSSLErrors),
 	)
+
+	if r.Settings.IgnoreSSLErrors {
+		_, _ = builder.WriteString("proxy_ssl_verify off;\n")
+	}
 
 	if r.Settings.IncludeForwardHeaders {
 		_, _ = builder.WriteString(`
