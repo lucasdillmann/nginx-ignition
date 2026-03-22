@@ -190,5 +190,5 @@ test: .backend-prerequisites .backend-test
 build-release: .frontend-build .backend-build .build-release-docker-image .build-distribution-files
 
 build-snapshot:
-	$(make) .frontend-build .backend-build VERSION=0.0.0
-	$(make) .build-snapshot-docker-image VERSION=$(VERSION)
+	$(MAKE) .frontend-build .backend-build VERSION=0.0.0
+	$(MAKE) .build-snapshot-docker-image VERSION=$(VERSION)
