@@ -25,7 +25,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.17 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.9 // indirect
 	github.com/aws/smithy-go v1.24.2 // indirect
+	github.com/cilium/ebpf v0.21.0 // indirect
 	github.com/coder/websocket v1.8.14 // indirect
+	github.com/coreos/go-iptables v0.8.0 // indirect
 	github.com/creachadair/msync v0.8.3 // indirect
 	github.com/dblohm7/wingoes v0.0.0-20250822163801-6d8e6105c62d // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
@@ -46,7 +48,7 @@ require (
 	github.com/miekg/dns v1.1.72 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/pires/go-proxyproto v0.11.0 // indirect
-	github.com/pkg/sftp v1.13.9 // indirect
+	github.com/pkg/sftp v1.13.10 // indirect
 	github.com/prometheus-community/pro-bing v0.8.0 // indirect
 	github.com/prometheus/common v0.67.5 // indirect
 	github.com/safchain/ethtool v0.7.0 // indirect
