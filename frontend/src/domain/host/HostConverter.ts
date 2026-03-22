@@ -56,11 +56,12 @@ class HostConverter {
     }
 
     private async integrationToFormValues(data: HostRouteIntegration): Promise<HostFormRouteIntegration> {
-        const { integrationId, optionId } = data
+        const { integrationId, optionId, useHttps } = data
         const integration = await this.integrationService.getById(integrationId)
         const option = await this.integrationService.getOptionById(integrationId, optionId)
 
         return {
+            useHttps,
             integration: integration!!,
             option: option!!,
         }
@@ -145,6 +146,7 @@ class HostConverter {
 
     private formValuesToIntegration(integration: HostFormRouteIntegration): HostRouteIntegration {
         return {
+            useHttps: integration.useHttps,
             integrationId: integration.integration.id,
             optionId: integration.option.id,
         }
