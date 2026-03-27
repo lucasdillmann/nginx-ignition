@@ -315,6 +315,10 @@ func Test_service(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+			repo.EXPECT().Save(t.Context(), gomock.Any()).DoAndReturn(func(_ any, u *User) error {
+				assert.Equal(t, code, *u.TOTP.LastUsedCode)
+				return nil
+			})
 
 			svc, _ := newCommands(repo, cfg)
 			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, code)
@@ -322,6 +326,29 @@ func Test_service(t *testing.T) {
 			assert.NoError(t, err)
 			assert.Equal(t, usr, result)
 			assert.Equal(t, AuthenticationSuccessful, outcome)
+		})
+
+		t.Run("returns failure when TOTP code is reused", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			secret := "JBSWY3DPEHPK3PXP"
+			code, _ := totp.GenerateCode(secret, time.Now())
+
+			usr := newUser()
+			usr.PasswordHash = hash
+			usr.PasswordSalt = salt
+			usr.TOTP = TOTP{Secret: &secret, Validated: true, LastUsedCode: &code}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+
+			svc, _ := newCommands(repo, cfg)
+			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, code)
+
+			assert.NoError(t, err)
+			assert.Nil(t, result)
+			assert.Equal(t, AuthenticationFailed, outcome)
 		})
 	})
 

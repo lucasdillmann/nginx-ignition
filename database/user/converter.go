@@ -30,8 +30,9 @@ func toDomain(model *userModel) user.User {
 			TrafficStats: user.AccessLevel(model.TrafficStatsAccessLevel),
 		},
 		TOTP: user.TOTP{
-			Secret:    model.TotpSecret,
-			Validated: model.TotpValidated,
+			Secret:       model.TotpSecret,
+			Validated:    model.TotpValidated,
+			LastUsedCode: model.TotpLastUsedCode,
 		},
 	}
 }
@@ -64,5 +65,6 @@ func toModel(domain *user.User) userModel {
 		TrafficStatsAccessLevel: string(domain.Permissions.TrafficStats),
 		TotpSecret:              totpSecret,
 		TotpValidated:           domain.TOTP.Validated,
+		TotpLastUsedCode:        domain.TOTP.LastUsedCode,
 	}
 }

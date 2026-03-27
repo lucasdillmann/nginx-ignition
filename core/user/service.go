@@ -63,8 +63,17 @@ func (s *service) Authenticate(
 			return AuthenticationMissingTOTP, nil, nil
 		}
 
+		if totpData.LastUsedCode != nil && *totpData.LastUsedCode == code {
+			return AuthenticationFailed, nil, nil
+		}
+
 		if !totp.Validate(code, *totpData.Secret) {
 			return AuthenticationFailed, nil, nil
+		}
+
+		usr.TOTP.LastUsedCode = &code
+		if err := s.repository.Save(ctx, usr); err != nil {
+			return AuthenticationFailed, nil, err
 		}
 	}
 
@@ -280,6 +289,7 @@ func (s *service) ActivateTOTP(ctx context.Context, id uuid.UUID, code string) (
 	}
 
 	usr.TOTP.Validated = true
+	usr.TOTP.LastUsedCode = &code
 	return true, s.repository.Save(ctx, usr)
 }
 
