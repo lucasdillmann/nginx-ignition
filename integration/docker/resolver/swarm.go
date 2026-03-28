@@ -6,9 +6,9 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/api/types/swarm"
-	"github.com/docker/docker/client"
+	"github.com/moby/moby/api/types/network"
+	"github.com/moby/moby/api/types/swarm"
+	"github.com/moby/moby/client"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
@@ -42,7 +42,7 @@ func (s *swarmAdapter) ResolveOptions(
 	tcpOnly bool,
 	searchTerms *string,
 ) ([]Option, error) {
-	services, err := s.client.ServiceList(ctx, swarm.ServiceListOptions{})
+	services, err := s.client.ServiceList(ctx, client.ServiceListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -51,16 +51,16 @@ func (s *swarmAdapter) ResolveOptions(
 		normalizedTerms := strings.ToLower(strings.TrimSpace(*searchTerms))
 		filteredResults := make([]swarm.Service, 0)
 
-		for _, service := range services {
+		for _, service := range services.Items {
 			if strings.Contains(strings.ToLower(service.Spec.Name), normalizedTerms) {
 				filteredResults = append(filteredResults, service)
 			}
 		}
 
-		services = filteredResults
+		services.Items = filteredResults
 	}
 
-	return s.buildServiceOptions(services, tcpOnly), nil
+	return s.buildServiceOptions(services.Items, tcpOnly), nil
 }
 
 func (s *swarmAdapter) buildServiceOptions(services []swarm.Service, tcpOnly bool) []Option {
@@ -73,7 +73,7 @@ func (s *swarmAdapter) buildServiceOptions(services []swarm.Service, tcpOnly boo
 		}
 
 		for _, port := range service.Spec.EndpointSpec.Ports {
-			if tcpOnly && port.Protocol != swarm.PortConfigProtocolTCP {
+			if tcpOnly && port.Protocol != network.TCP {
 				continue
 			}
 
@@ -154,31 +154,34 @@ func (s *swarmAdapter) findNodeAddress(
 	ctx context.Context,
 	service *swarm.Service,
 ) (*string, error) {
-	tasks, err := s.client.TaskList(ctx, swarm.TaskListOptions{
-		Filters: filters.NewArgs(filters.Arg("service", service.ID)),
+	filters := client.Filters{}
+	filters.Add("service", service.ID)
+
+	tasks, err := s.client.TaskList(ctx, client.TaskListOptions{
+		Filters: filters,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	if len(tasks) == 0 {
+	if len(tasks.Items) == 0 {
 		return nil, coreerror.New(
 			i18n.M(ctx, i18n.K.IntegrationDockerResolverNoRunningTasks).V("id", service.ID),
 			false,
 		)
 	}
 
-	nodes, err := s.client.NodeList(ctx, swarm.NodeListOptions{})
+	nodes, err := s.client.NodeList(ctx, client.NodeListOptions{})
 	if err != nil {
 		return nil, err
 	}
 
-	if len(nodes) == 0 {
+	if len(nodes.Items) == 0 {
 		return nil, coreerror.New(i18n.M(ctx, i18n.K.IntegrationDockerResolverNoNodesFound), false)
 	}
 
-	for _, task := range tasks {
-		for _, node := range nodes {
+	for _, task := range tasks.Items {
+		for _, node := range nodes.Items {
 			if node.ID == task.NodeID && task.Status.State == swarm.TaskStateRunning {
 				return &node.Status.Addr, nil
 			}

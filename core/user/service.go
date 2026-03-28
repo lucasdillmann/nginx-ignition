@@ -66,6 +66,16 @@ func (s *service) Authenticate(
 		if !totp.Validate(code, *totpData.Secret) {
 			return AuthenticationFailed, nil, nil
 		}
+
+		updated, err := s.repository.TryUpdateLastUsedTOTPCode(ctx, usr.ID, code)
+		if err != nil || !updated {
+			return AuthenticationFailed, nil, err
+		}
+
+		usr.TOTP.LastUsedCodes = append([]string{code}, usr.TOTP.LastUsedCodes...)
+		if len(usr.TOTP.LastUsedCodes) > 3 {
+			usr.TOTP.LastUsedCodes = usr.TOTP.LastUsedCodes[:3]
+		}
 	}
 
 	return AuthenticationSuccessful, usr, nil
@@ -280,7 +290,12 @@ func (s *service) ActivateTOTP(ctx context.Context, id uuid.UUID, code string) (
 	}
 
 	usr.TOTP.Validated = true
-	return true, s.repository.Save(ctx, usr)
+	if err := s.repository.Save(ctx, usr); err != nil {
+		return false, err
+	}
+
+	_, _ = s.repository.TryUpdateLastUsedTOTPCode(ctx, usr.ID, code)
+	return true, nil
 }
 
 func (s *service) resetPassword(ctx context.Context, username string) (string, error) {

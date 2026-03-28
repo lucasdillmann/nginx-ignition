@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/docker/docker/client"
+	"github.com/moby/moby/client"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
@@ -40,9 +40,8 @@ func For(ctx context.Context, parameters map[string]any) (Resolver, error) {
 		)
 	}
 
-	dockerClient, err := client.NewClientWithOpts(
+	dockerClient, err := client.New(
 		client.WithHost(connectionURL),
-		client.WithAPIVersionNegotiation(),
 	)
 	if err != nil {
 		return nil, err

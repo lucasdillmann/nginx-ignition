@@ -183,3 +183,25 @@ func (r *repository) Save(ctx context.Context, u *user.User) error {
 
 	return transaction.Commit()
 }
+
+func (r *repository) TryUpdateLastUsedTOTPCode(
+	ctx context.Context,
+	id uuid.UUID,
+	code string,
+) (bool, error) {
+	result, err := r.database.Update().
+		Model((*userModel)(nil)).
+		Set("totp_last_used_codes = SUBSTR(? || COALESCE(',' || totp_last_used_codes, ''), 1, 20)", code).
+		Where("id = ? AND (totp_last_used_codes IS NULL OR (',' || totp_last_used_codes || ',') NOT LIKE ?)", id, "%,"+code+",%").
+		Exec(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return affected > 0, nil
+}
