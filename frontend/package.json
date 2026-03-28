@@ -9,7 +9,7 @@
         "@ant-design/cssinjs": "^2.1.2",
         "@ant-design/cssinjs-utils": "^2.1.2",
         "@ant-design/fast-color": "^3.0.1",
-        "@ant-design/icons": "^6.1.0",
+        "@ant-design/icons": "^6.1.1",
         "@ant-design/icons-svg": "^4.4.2",
         "@ant-design/pro-card": "^2.10.0",
         "@ant-design/pro-components": "^2.8.10",
@@ -35,7 +35,7 @@
         "rc-table": "^7.55.1",
         "react": "^19.2.4",
         "react-dom": "^19.2.4",
-        "react-router-dom": "^7.13.1",
+        "react-router-dom": "^7.13.2",
         "typescript": "^5.9.3",
         "vite": "^7.3.1",
         "vite-plugin-svgr": "^4.5.0",
@@ -51,7 +51,7 @@
         "eslint-plugin-react": "^7.37.5",
         "globals": "^16.5.0",
         "prettier": "^3.8.1",
-        "typescript-eslint": "^8.57.1"
+        "typescript-eslint": "^8.57.2"
     },
     "scripts": {
         "start": "vite",
