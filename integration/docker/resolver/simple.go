@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/client"
+	"github.com/moby/moby/api/types/container"
+	"github.com/moby/moby/client"
 
 	"dillmann.com.br/nginx-ignition/core/common/coreerror"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
@@ -40,7 +40,7 @@ func (s *simpleAdapter) ResolveOptions(
 	tcpOnly bool,
 	searchTerms *string,
 ) ([]Option, error) {
-	containers, err := s.client.ContainerList(ctx, container.ListOptions{})
+	containers, err := s.client.ContainerList(ctx, client.ContainerListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (s *simpleAdapter) ResolveOptions(
 		normalizedTerms := strings.ToLower(strings.TrimSpace(*searchTerms))
 		filteredResults := make([]container.Summary, 0)
 
-		for _, item := range containers {
+		for _, item := range containers.Items {
 			matches := false
 
 			for _, name := range item.Names {
@@ -64,10 +64,10 @@ func (s *simpleAdapter) ResolveOptions(
 			}
 		}
 
-		containers = filteredResults
+		containers.Items = filteredResults
 	}
 
-	return s.buildOptions(ctx, containers, tcpOnly), nil
+	return s.buildOptions(ctx, containers.Items, tcpOnly), nil
 }
 
 func (s *simpleAdapter) buildOptions(
@@ -111,7 +111,7 @@ func (s *simpleAdapter) buildOptions(
 
 func (s *simpleAdapter) buildOption(
 	ctx context.Context,
-	port *container.Port,
+	port *container.PortSummary,
 	item *container.Summary,
 	usePublicPort bool,
 ) *Option {
@@ -164,7 +164,7 @@ func (s *simpleAdapter) buildOptionURL(
 	} else {
 		if len(summary.NetworkSettings.Networks) > 0 {
 			for _, network := range summary.NetworkSettings.Networks {
-				targetHost = network.IPAddress
+				targetHost = network.IPAddress.String()
 				break
 			}
 		}
