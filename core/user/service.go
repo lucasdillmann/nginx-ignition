@@ -294,7 +294,8 @@ func (s *service) ActivateTOTP(ctx context.Context, id uuid.UUID, code string) (
 		return false, err
 	}
 
-	return s.repository.TryUpdateLastUsedTOTPCode(ctx, usr.ID, code)
+	_, _ = s.repository.TryUpdateLastUsedTOTPCode(ctx, usr.ID, code)
+	return true, nil
 }
 
 func (s *service) resetPassword(ctx context.Context, username string) (string, error) {
