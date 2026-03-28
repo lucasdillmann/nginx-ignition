@@ -20,4 +20,5 @@ type Repository interface {
 	) (*pagination.Page[User], error)
 	IsEnabledByID(ctx context.Context, id uuid.UUID) (bool, error)
 	Count(ctx context.Context) (int, error)
+	TryUpdateLastUsedTOTPCode(ctx context.Context, id uuid.UUID, code string) (bool, error)
 }

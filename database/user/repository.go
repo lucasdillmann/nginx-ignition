@@ -183,3 +183,25 @@ func (r *repository) Save(ctx context.Context, u *user.User) error {
 
 	return transaction.Commit()
 }
+
+func (r *repository) TryUpdateLastUsedTOTPCode(
+	ctx context.Context,
+	id uuid.UUID,
+	code string,
+) (bool, error) {
+	result, err := r.database.Update().
+		Model((*userModel)(nil)).
+		Set("totp_last_used_code = ?", code).
+		Where("id = ? and (totp_last_used_code is null or totp_last_used_code != ?)", id, code).
+		Exec(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return affected > 0, nil
+}

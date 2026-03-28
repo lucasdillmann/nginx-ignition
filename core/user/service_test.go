@@ -315,10 +315,7 @@ func Test_service(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
-			repo.EXPECT().Save(t.Context(), gomock.Any()).DoAndReturn(func(_ any, u *User) error {
-				assert.Equal(t, code, *u.TOTP.LastUsedCode)
-				return nil
-			})
+			repo.EXPECT().TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, code).Return(true, nil)
 
 			svc, _ := newCommands(repo, cfg)
 			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, code)
@@ -338,10 +335,11 @@ func Test_service(t *testing.T) {
 			usr := newUser()
 			usr.PasswordHash = hash
 			usr.PasswordSalt = salt
-			usr.TOTP = TOTP{Secret: &secret, Validated: true, LastUsedCode: &code}
+			usr.TOTP = TOTP{Secret: &secret, Validated: true}
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+			repo.EXPECT().TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, code).Return(false, nil)
 
 			svc, _ := newCommands(repo, cfg)
 			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, code)
@@ -494,6 +492,7 @@ func Test_service(t *testing.T) {
 				assert.True(t, u.TOTP.Validated)
 				return nil
 			})
+			repo.EXPECT().TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, code).Return(true, nil)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
