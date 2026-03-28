@@ -5,3 +5,4 @@ onlyBuiltDependencies:
 overrides:
     minimatch: "^10.2.3"
     serialize-javascript: "^7.0.3"
+    path-to-regexp: "^8.4.0"
