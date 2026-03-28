@@ -9,7 +9,7 @@ type userModel struct {
 	bun.BaseModel `bun:"user"`
 
 	TotpSecret              *string   `bun:"totp_secret"`
-	TotpLastUsedCode        *string   `bun:"totp_last_used_code"`
+	TotpLastUsedCodes       *string   `bun:"totp_last_used_codes"`
 	IntegrationsAccessLevel string    `bun:"integrations_access_level,notnull"`
 	AccessListsAccessLevel  string    `bun:"access_lists_access_level,notnull"`
 	PasswordHash            string    `bun:"password_hash,notnull"`

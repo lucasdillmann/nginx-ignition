@@ -191,8 +191,8 @@ func (r *repository) TryUpdateLastUsedTOTPCode(
 ) (bool, error) {
 	result, err := r.database.Update().
 		Model((*userModel)(nil)).
-		Set("totp_last_used_code = ?", code).
-		Where("id = ? and (totp_last_used_code is null or totp_last_used_code != ?)", id, code).
+		Set("totp_last_used_codes = SUBSTR(? || COALESCE(',' || totp_last_used_codes, ''), 1, 20)", code).
+		Where("id = ? AND (totp_last_used_codes IS NULL OR (',' || totp_last_used_codes || ',') NOT LIKE ?)", id, "%,"+code+",%").
 		Exec(ctx)
 	if err != nil {
 		return false, err

@@ -71,6 +71,11 @@ func (s *service) Authenticate(
 		if err != nil || !updated {
 			return AuthenticationFailed, nil, err
 		}
+
+		usr.TOTP.LastUsedCodes = append([]string{code}, usr.TOTP.LastUsedCodes...)
+		if len(usr.TOTP.LastUsedCodes) > 3 {
+			usr.TOTP.LastUsedCodes = usr.TOTP.LastUsedCodes[:3]
+		}
 	}
 
 	return AuthenticationSuccessful, usr, nil

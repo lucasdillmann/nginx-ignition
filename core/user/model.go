@@ -32,9 +32,9 @@ type User struct {
 }
 
 type TOTP struct {
-	Secret       *string
-	LastUsedCode *string
-	Validated    bool
+	Secret        *string
+	LastUsedCodes []string
+	Validated     bool
 }
 
 type Permissions struct {

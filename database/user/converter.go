@@ -30,9 +30,9 @@ func toDomain(model *userModel) user.User {
 			TrafficStats: user.AccessLevel(model.TrafficStatsAccessLevel),
 		},
 		TOTP: user.TOTP{
-			Secret:       model.TotpSecret,
-			Validated:    model.TotpValidated,
-			LastUsedCode: model.TotpLastUsedCode,
+			Secret:        model.TotpSecret,
+			Validated:     model.TotpValidated,
+			LastUsedCodes: mapCodes(model.TotpLastUsedCodes),
 		},
 	}
 }
@@ -65,6 +65,23 @@ func toModel(domain *user.User) userModel {
 		TrafficStatsAccessLevel: string(domain.Permissions.TrafficStats),
 		TotpSecret:              totpSecret,
 		TotpValidated:           domain.TOTP.Validated,
-		TotpLastUsedCode:        domain.TOTP.LastUsedCode,
+		TotpLastUsedCodes:       mapCodesToString(domain.TOTP.LastUsedCodes),
 	}
+}
+
+func mapCodes(codes *string) []string {
+	if codes == nil || strings.TrimSpace(*codes) == "" {
+		return nil
+	}
+
+	return strings.Split(*codes, ",")
+}
+
+func mapCodesToString(codes []string) *string {
+	if len(codes) == 0 {
+		return nil
+	}
+
+	result := strings.Join(codes, ",")
+	return &result
 }

@@ -185,4 +185,72 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			assert.Nil(t, saved)
 		})
 	})
+
+	t.Run("TryUpdateLastUsedTOTPCode", func(t *testing.T) {
+		t.Run("successfully updates on first code", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+
+			ok, err := repo.TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, "123456")
+			require.NoError(t, err)
+			assert.True(t, ok)
+
+			saved, _ := repo.FindByID(t.Context(), usr.ID)
+			assert.Equal(t, []string{"123456"}, saved.TOTP.LastUsedCodes)
+		})
+
+		t.Run("fails on exact replay", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+
+			ok, err := repo.TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, "111111")
+			require.NoError(t, err)
+			assert.True(t, ok)
+
+			ok, err = repo.TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, "111111")
+			require.NoError(t, err)
+			assert.False(t, ok)
+		})
+
+		t.Run("successfully prepends new unique codes", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+
+			_, _ = repo.TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, "100001")
+			_, _ = repo.TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, "100002")
+
+			saved, _ := repo.FindByID(t.Context(), usr.ID)
+			assert.Equal(t, []string{"100002", "100001"}, saved.TOTP.LastUsedCodes)
+		})
+
+		t.Run("fails on replay of older code in history", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+
+			_, _ = repo.TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, "200001")
+			_, _ = repo.TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, "200002")
+			_, _ = repo.TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, "200003")
+
+			ok, err := repo.TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, "200001")
+			require.NoError(t, err)
+			assert.False(t, ok)
+		})
+
+		t.Run("maintains only the last few codes based on limit", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+
+			codes := []string{"300001", "300002", "300003", "300004", "300005"}
+			for _, code := range codes {
+				_, _ = repo.TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, code)
+			}
+
+			saved, err := repo.FindByID(t.Context(), usr.ID)
+			require.NoError(t, err)
+			assert.Equal(t, 3, len(saved.TOTP.LastUsedCodes))
+			assert.Equal(t, "300005", saved.TOTP.LastUsedCodes[0])
+			assert.Equal(t, "300004", saved.TOTP.LastUsedCodes[1])
+			assert.Equal(t, "300003", saved.TOTP.LastUsedCodes[2])
+		})
+	})
 }
