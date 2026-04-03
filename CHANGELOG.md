@@ -1,9 +1,15 @@
 # CHANGELOG
 
+## 2.35.2
+
+- Security fixes and updates
+
 ## 2.35.1
+
 - Security fixes and updates (thanks @alp1n3-dev for the report!)
 
 ## 2.35.0
+
 - Integration routes now support HTTPS upstream servers (with the option to ignore certificate errors)
 - Added support for 10 new DNS providers for Let's Encrypt challenges: Artfiles, BlueCat v2, Czechia, DDNSS, DNS Exit, 
   EuroDNS, Excedo, LeaseWeb, NameSurfer, and Todaynic
