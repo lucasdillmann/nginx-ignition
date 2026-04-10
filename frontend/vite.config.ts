@@ -51,7 +51,7 @@ export default defineConfig({
                         },
                         {
                             name: "vendor.antd-core",
-                            test: /node_modules[\\/](antd\/|@ant-design\/(v5-patch-for-react-19|icons-svg|icons|colors|fast-color|cssinjs-utils|cssinjs|react-slick))\//,
+                            test: /node_modules[\\/](antd|@ant-design\/(v5-patch-for-react-19|icons-svg|icons|colors|fast-color|cssinjs-utils|cssinjs|react-slick))\//,
                             priority: 26,
                         },
                         {
