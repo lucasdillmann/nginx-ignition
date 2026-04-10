@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/application
 
-go 1.26.1
+go 1.26.2
 
 require (
 	go.uber.org/dig v1.19.0 // indirect

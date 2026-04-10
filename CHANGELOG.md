@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.35.3
+
+- Security fixes and updates
+
 ## 2.35.2
 
 - Security fixes and updates
