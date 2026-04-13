@@ -1,6 +1,6 @@
 import React from "react"
 import Editor from "@monaco-editor/react"
-import { editor } from "monaco-editor"
+import type { editor } from "monaco-editor"
 
 export enum CodeEditorLanguage {
     JAVASCRIPT = "javascript",

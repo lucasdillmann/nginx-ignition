@@ -1,4 +1,4 @@
-import "./monacoEnvironment"
+import "./core/components/codeeditor/environment"
 import React from "react"
 import ReactDOM from "react-dom/client"
 import NginxIgnition from "./domain/NginxIgnition"
