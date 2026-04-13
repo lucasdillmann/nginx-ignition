@@ -117,7 +117,8 @@ export default class UserSecuritySettingsModal extends React.Component<
         return (
             <Form<UserUpdatePasswordRequest>
                 {...FormLayout.FormDefaults}
-                {...FormLayout.ExpandedLabeledItem}
+                labelCol={FormLayout.ExpandedLabeledItem.labelCol}
+                wrapperCol={FormLayout.ExpandedLabeledItem.wrapperCol}
                 ref={this.formRef}
                 layout="vertical"
                 onValuesChange={(_, passwordFormValues) => this.setState({ passwordFormValues })}

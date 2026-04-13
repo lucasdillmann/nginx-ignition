@@ -10,7 +10,7 @@ import "./LoginPage.css"
 import UserService from "../user/UserService"
 import LoginOutcome from "../user/model/LoginOutcome"
 import { navigateTo, queryParams } from "../../core/components/router/AppRouter"
-import { LoginFormPage } from "@ant-design/pro-components"
+import { LoginFormPage, type ProFormInstance } from "@ant-design/pro-components"
 import ThemeContext from "../../core/components/context/ThemeContext"
 import LightBackground from "./background/light.jpg"
 import DarkBackground from "./background/dark.jpg"
@@ -41,7 +41,7 @@ interface LoginPageState {
 export default class LoginPage extends React.Component<any, LoginPageState> {
     private readonly service: UserService
     private readonly otpRef = createRef<OTPRef>()
-    private readonly formRef = createRef<HTMLFormElement>()
+    private readonly formRef = createRef<ProFormInstance>() as React.RefObject<ProFormInstance | undefined>
 
     constructor(props: any) {
         super(props)
