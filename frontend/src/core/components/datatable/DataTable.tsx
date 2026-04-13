@@ -1,7 +1,6 @@
 import PageResponse from "../../pagination/PageResponse"
 import React from "react"
 import { ColumnType, TablePaginationConfig } from "antd/es/table"
-import { AlignType } from "rc-table/lib/interface"
 import Preloader from "../preloader/Preloader"
 import { Pagination, Table } from "antd"
 import "./DataTable.css"
@@ -13,6 +12,7 @@ import MessageKey from "../../i18n/model/MessageKey.generated"
 import DataTableService from "./DataTableService"
 import { DataTableInitialState } from "./model/DataTableInitialState"
 import { DATA_TABLE_PAGE_SIZES, DataTablePageSize } from "./model/DataTablePageSize"
+type AlignType = NonNullable<ColumnType<unknown>["align"]>
 
 export interface DataTableColumn<T> {
     id: string
