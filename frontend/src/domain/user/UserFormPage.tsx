@@ -126,6 +126,7 @@ export default class UserFormPage extends React.Component<unknown, UserFormState
                 onValuesChange={(_, formValues) =>
                     this.setState(({ formValues: prev }) => ({
                         formValues: {
+                            ...prev,
                             ...formValues,
                             permissions: { ...prev.permissions, ...formValues.permissions },
                         },
