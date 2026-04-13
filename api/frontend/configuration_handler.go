@@ -18,13 +18,6 @@ type configurationHandler struct {
 }
 
 func (h *configurationHandler) handle(ctx *gin.Context) {
-	codeEditorAPIKey, _ := h.configuration.Get("nginx-ignition.frontend.code-editor-api-key")
-
-	var apiKey *string
-	if codeEditorAPIKey != "" {
-		apiKey = &codeEditorAPIKey
-	}
-
 	var versionString *string
 	if version.Number != "" && version.Number != "0.0.0" {
 		versionString = &version.Number
@@ -34,9 +27,6 @@ func (h *configurationHandler) handle(ctx *gin.Context) {
 		Version: versionDTO{
 			Current: versionString,
 			Latest:  resolveLatestAvailableVersion(),
-		},
-		CodeEditor: codeEditorDTO{
-			APIKey: apiKey,
 		},
 	}
 

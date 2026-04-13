@@ -34,8 +34,5 @@ export default new ContextHolder<AppContextData>({
     },
     configuration: {
         version: {},
-        codeEditor: {
-            apiKey: undefined,
-        },
     },
 })

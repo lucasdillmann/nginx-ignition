@@ -99,8 +99,18 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
                 onClose={onClose}
                 extra={this.renderLanguageSelector()}
                 open
+                styles={{
+                    body: {
+                        display: "flex",
+                        flexDirection: "column",
+                        flex: 1,
+                        minHeight: 0,
+                    },
+                }}
             >
-                <CodeEditor value={value} onChange={onChange} language={language} />
+                <div style={{ flex: 1, minHeight: 0, minWidth: 0 }}>
+                    <CodeEditor value={value} onChange={onChange} language={language} />
+                </div>
             </Drawer>
         )
     }

@@ -1,6 +1,14 @@
 import React from "react"
-import { CodeiumEditor } from "@codeium/react-code-editor"
-import AppContext from "../context/AppContext"
+import CodeMirror from "@uiw/react-codemirror"
+import type { Extension } from "@codemirror/state"
+import { StreamLanguage, syntaxHighlighting, defaultHighlightStyle } from "@codemirror/language"
+import { javascript } from "@codemirror/lang-javascript"
+import { json } from "@codemirror/lang-json"
+import { html } from "@codemirror/lang-html"
+import { css } from "@codemirror/lang-css"
+import { xml } from "@codemirror/lang-xml"
+import { yaml } from "@codemirror/lang-yaml"
+import { lua } from "@codemirror/legacy-modes/mode/lua"
 
 export enum CodeEditorLanguage {
     JAVASCRIPT = "javascript",
@@ -19,28 +27,45 @@ export interface CodeEditorProps {
     language: CodeEditorLanguage
 }
 
-export default class CodeEditor extends React.Component<CodeEditorProps, any> {
-    private handleOnChange(value: string | undefined) {
-        const { onChange } = this.props
+function languageExtensions(language: CodeEditorLanguage): Extension[] {
+    switch (language) {
+        case CodeEditorLanguage.JAVASCRIPT:
+            return [javascript()]
+        case CodeEditorLanguage.JSON:
+            return [json()]
+        case CodeEditorLanguage.HTML:
+            return [html()]
+        case CodeEditorLanguage.LUA:
+            return [StreamLanguage.define(lua), syntaxHighlighting(defaultHighlightStyle)]
+        case CodeEditorLanguage.CSS:
+            return [css()]
+        case CodeEditorLanguage.YAML:
+            return [yaml()]
+        case CodeEditorLanguage.XML:
+            return [xml()]
+        case CodeEditorLanguage.PLAIN_TEXT:
+            return []
+    }
+}
 
-        const newValue = value ?? ""
-        onChange(newValue)
+export default class CodeEditor extends React.Component<CodeEditorProps> {
+    private handleOnChange(value: string) {
+        const { onChange } = this.props
+        onChange(value)
     }
 
     render() {
         const { language, value } = this.props
-        const { configuration } = AppContext.get()
 
         return (
-            <CodeiumEditor
-                language={language}
-                theme="vs-dark"
-                onChange={value => this.handleOnChange(value)}
+            <CodeMirror
+                key={language}
                 value={value}
-                apiKey={configuration.codeEditor.apiKey}
-                onMount={editor => editor.focus()}
                 height="100%"
-                width="100%"
+                theme="dark"
+                extensions={languageExtensions(language)}
+                onChange={value => this.handleOnChange(value)}
+                onCreateEditor={view => view.focus()}
             />
         )
     }

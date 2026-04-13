@@ -35,8 +35,8 @@ export default defineConfig({
                             priority: 30,
                         },
                         {
-                            name: "vendor.codeium",
-                            test: /node_modules[\\/]@codeium\/react-code-editor\//,
+                            name: "vendor.codemirror",
+                            test: /@codemirror[\\/]|@uiw[\\/]|node_modules[\\/]codemirror[\\/]/,
                             priority: 29,
                         },
                         {
