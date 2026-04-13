@@ -35,8 +35,8 @@ export default defineConfig({
                             priority: 30,
                         },
                         {
-                            name: "vendor.monaco",
-                            test: /node_modules[\\/](monaco-editor|@monaco-editor\/react)(\/|$)/,
+                            name: "vendor.codemirror",
+                            test: /@codemirror[\\/]|@uiw[\\/]|node_modules[\\/]codemirror[\\/]/,
                             priority: 29,
                         },
                         {
