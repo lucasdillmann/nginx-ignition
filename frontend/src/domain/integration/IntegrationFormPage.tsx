@@ -157,7 +157,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
     }
 
     private renderForm() {
-        const { validationResult, formValues } = this.state
+        const { validationResult, formValues, availableDrivers } = this.state
 
         return (
             <Form<IntegrationRequest>
@@ -166,7 +166,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
                 initialValues={formValues}
                 onValuesChange={(changedValues, formValues) => {
                     if (changedValues.driver !== undefined) {
-                        const next = this.fillDynamicFieldsDefaultValues(formValues, this.state.availableDrivers)
+                        const next = this.fillDynamicFieldsDefaultValues(formValues, availableDrivers)
                         this.formRef.current?.setFieldsValue(next)
                         this.setState({ formValues: next })
                         return

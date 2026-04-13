@@ -28,6 +28,29 @@ import { hostFormValuesDefaults } from "../model/HostFormValuesDefaults"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
+const HOST_ROUTE_SOURCE_LANGUAGE_OPTIONS_DATA = [
+    {
+        value: HostRouteSourceCodeLanguage.JAVASCRIPT,
+        messageKey: MessageKey.FrontendComponentsCodeeditorLanguageJavascript,
+    },
+    { value: HostRouteSourceCodeLanguage.LUA, messageKey: MessageKey.FrontendComponentsCodeeditorLanguageLua },
+]
+
+const HOST_ROUTE_TYPE_OPTIONS_DATA = [
+    { value: HostRouteType.INTEGRATION, messageKey: MessageKey.CommonIntegration },
+    { value: HostRouteType.PROXY, messageKey: MessageKey.FrontendHostComponentsHostroutesTypeProxy },
+    { value: HostRouteType.REDIRECT, messageKey: MessageKey.FrontendHostComponentsHostroutesTypeRedirect },
+    {
+        value: HostRouteType.STATIC_RESPONSE,
+        messageKey: MessageKey.FrontendHostComponentsHostroutesTypeStaticResponse,
+    },
+    { value: HostRouteType.STATIC_FILES, messageKey: MessageKey.FrontendHostComponentsHostroutesTypeStaticFiles },
+    {
+        value: HostRouteType.EXECUTE_CODE,
+        messageKey: MessageKey.FrontendHostComponentsHostroutesTypeExecuteCode,
+    },
+]
+
 const ACTION_ICON_STYLE = {
     marginLeft: 15,
     alignItems: "start",
@@ -320,14 +343,12 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     label={<I18n id={MessageKey.CommonLanguage} />}
                     required
                 >
-                    <Select>
-                        <Select.Option value={HostRouteSourceCodeLanguage.JAVASCRIPT}>
-                            <I18n id={MessageKey.FrontendComponentsCodeeditorLanguageJavascript} />
-                        </Select.Option>
-                        <Select.Option value={HostRouteSourceCodeLanguage.LUA}>
-                            <I18n id={MessageKey.FrontendComponentsCodeeditorLanguageLua} />
-                        </Select.Option>
-                    </Select>
+                    <Select
+                        options={HOST_ROUTE_SOURCE_LANGUAGE_OPTIONS_DATA.map(item => ({
+                            value: item.value,
+                            label: <I18n id={item.messageKey} />,
+                        }))}
+                    />
                 </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
@@ -467,26 +488,12 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     }}
                     required
                 >
-                    <Select>
-                        <Select.Option value={HostRouteType.INTEGRATION}>
-                            <I18n id={MessageKey.CommonIntegration} />
-                        </Select.Option>
-                        <Select.Option value={HostRouteType.PROXY}>
-                            <I18n id={MessageKey.FrontendHostComponentsHostroutesTypeProxy} />
-                        </Select.Option>
-                        <Select.Option value={HostRouteType.REDIRECT}>
-                            <I18n id={MessageKey.FrontendHostComponentsHostroutesTypeRedirect} />
-                        </Select.Option>
-                        <Select.Option value={HostRouteType.STATIC_RESPONSE}>
-                            <I18n id={MessageKey.FrontendHostComponentsHostroutesTypeStaticResponse} />
-                        </Select.Option>
-                        <Select.Option value={HostRouteType.STATIC_FILES}>
-                            <I18n id={MessageKey.FrontendHostComponentsHostroutesTypeStaticFiles} />
-                        </Select.Option>
-                        <Select.Option value={HostRouteType.EXECUTE_CODE}>
-                            <I18n id={MessageKey.FrontendHostComponentsHostroutesTypeExecuteCode} />
-                        </Select.Option>
-                    </Select>
+                    <Select
+                        options={HOST_ROUTE_TYPE_OPTIONS_DATA.map(item => ({
+                            value: item.value,
+                            label: <I18n id={item.messageKey} />,
+                        }))}
+                    />
                 </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}

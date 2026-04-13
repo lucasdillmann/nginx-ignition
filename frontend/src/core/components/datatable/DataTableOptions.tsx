@@ -14,6 +14,20 @@ const FormStyle = {
     wrapperCol: { span: 16 },
 }
 
+const PAGINATION_MODE_OPTIONS_DATA = [
+    { value: DataTablePersistentStateMode.GLOBAL, messageKey: MessageKey.FrontendComponentsDatatableOptionsModeGlobal },
+    {
+        value: DataTablePersistentStateMode.BY_TABLE,
+        messageKey: MessageKey.FrontendComponentsDatatableOptionsModeByTable,
+    },
+    { value: DataTablePersistentStateMode.FIXED, messageKey: MessageKey.FrontendComponentsDatatableOptionsModeFixed },
+]
+
+const PAGE_SIZE_OPTIONS = DATA_TABLE_PAGE_SIZES.map(size => ({
+    value: size,
+    label: size,
+}))
+
 export interface DataTableOptionsProps {
     id: string
     open: boolean
@@ -115,30 +129,19 @@ export default class DataTableOptions extends React.Component<DataTableOptionsPr
                         name="paginationMode"
                         required
                     >
-                        <Select>
-                            <Select.Option value={DataTablePersistentStateMode.GLOBAL}>
-                                <I18n id={MessageKey.FrontendComponentsDatatableOptionsModeGlobal} />
-                            </Select.Option>
-                            <Select.Option value={DataTablePersistentStateMode.BY_TABLE}>
-                                <I18n id={MessageKey.FrontendComponentsDatatableOptionsModeByTable} />
-                            </Select.Option>
-                            <Select.Option value={DataTablePersistentStateMode.FIXED}>
-                                <I18n id={MessageKey.FrontendComponentsDatatableOptionsModeFixed} />
-                            </Select.Option>
-                        </Select>
+                        <Select
+                            options={PAGINATION_MODE_OPTIONS_DATA.map(item => ({
+                                value: item.value,
+                                label: <I18n id={item.messageKey} />,
+                            }))}
+                        />
                     </Form.Item>
                     <Form.Item
                         label={<I18n id={MessageKey.FrontendComponentsDatatableOptionsPageSize} />}
                         name="defaultPageSize"
                         required
                     >
-                        <Select>
-                            {DATA_TABLE_PAGE_SIZES.map(size => (
-                                <Select.Option key={size} value={size}>
-                                    {size}
-                                </Select.Option>
-                            ))}
-                        </Select>
+                        <Select options={PAGE_SIZE_OPTIONS} />
                     </Form.Item>
                     <Form.Item
                         label={<I18n id={MessageKey.FrontendComponentsDatatableOptionsPersistPageNumber} />}

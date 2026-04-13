@@ -9,6 +9,14 @@ import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { QuestionCircleFilled } from "@ant-design/icons"
 
+const NGINX_LOG_LEVEL_OPTIONS_DATA = [
+    { value: LogLevel.WARN, messageKey: MessageKey.FrontendSettingsTabsNginxLogLevelWarn },
+    { value: LogLevel.ALERT, messageKey: MessageKey.FrontendSettingsTabsNginxLogLevelAlert },
+    { value: LogLevel.ERROR, messageKey: MessageKey.FrontendSettingsTabsNginxLogLevelError },
+    { value: LogLevel.CRIT, messageKey: MessageKey.FrontendSettingsTabsNginxLogLevelCrit },
+    { value: LogLevel.EMERG, messageKey: MessageKey.FrontendSettingsTabsNginxLogLevelEmerg },
+]
+
 export interface NginxSettingsTabProps {
     formValues: SettingsFormValues
     validationResult: ValidationResult
@@ -35,23 +43,12 @@ export default class NginxSettingsTab extends React.Component<NginxSettingsTabPr
                     label={<I18n id={MessageKey.FrontendSettingsTabsNginxErrorLogsLevel} />}
                     required
                 >
-                    <Select>
-                        <Select.Option value={LogLevel.WARN}>
-                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogLevelWarn} />
-                        </Select.Option>
-                        <Select.Option value={LogLevel.ALERT}>
-                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogLevelAlert} />
-                        </Select.Option>
-                        <Select.Option value={LogLevel.ERROR}>
-                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogLevelError} />
-                        </Select.Option>
-                        <Select.Option value={LogLevel.CRIT}>
-                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogLevelCrit} />
-                        </Select.Option>
-                        <Select.Option value={LogLevel.EMERG}>
-                            <I18n id={MessageKey.FrontendSettingsTabsNginxLogLevelEmerg} />
-                        </Select.Option>
-                    </Select>
+                    <Select
+                        options={NGINX_LOG_LEVEL_OPTIONS_DATA.map(item => ({
+                            value: item.value,
+                            label: <I18n id={item.messageKey} />,
+                        }))}
+                    />
                 </Form.Item>
             </>
         )

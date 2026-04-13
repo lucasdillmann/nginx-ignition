@@ -3,43 +3,33 @@ import { Flex, Form, Input, InputNumber, Select, Space, Switch } from "antd"
 import { HttpMethod, UseStale } from "../model/CacheRequest"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import CacheDurations from "../components/CacheDurations"
-import { I18n, I18nMessage, raw } from "../../../core/i18n/I18n"
+import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+
+const CACHE_ALLOWED_METHOD_OPTIONS = Object.values(HttpMethod).map(method => ({
+    value: method,
+    label: method,
+}))
+
+const USE_STALE_OPTIONS_DATA = [
+    { value: UseStale.ERROR, messageKey: MessageKey.FrontendCacheTabsGeneralStaleError },
+    { value: UseStale.TIMEOUT, messageKey: MessageKey.FrontendCacheTabsGeneralStaleTimeout },
+    { value: UseStale.INVALID_HEADER, messageKey: MessageKey.FrontendCacheTabsGeneralStaleInvalidHeader },
+    { value: UseStale.UPDATING, messageKey: MessageKey.FrontendCacheTabsGeneralStaleUpdating },
+    { value: UseStale.HTTP_500, messageKey: MessageKey.FrontendCacheTabsGeneralStaleHttp500 },
+    { value: UseStale.HTTP_502, messageKey: MessageKey.FrontendCacheTabsGeneralStaleHttp502 },
+    { value: UseStale.HTTP_503, messageKey: MessageKey.FrontendCacheTabsGeneralStaleHttp503 },
+    { value: UseStale.HTTP_504, messageKey: MessageKey.FrontendCacheTabsGeneralStaleHttp504 },
+    { value: UseStale.HTTP_403, messageKey: MessageKey.FrontendCacheTabsGeneralStaleHttp403 },
+    { value: UseStale.HTTP_404, messageKey: MessageKey.FrontendCacheTabsGeneralStaleHttp404 },
+    { value: UseStale.HTTP_429, messageKey: MessageKey.FrontendCacheTabsGeneralStaleHttp429 },
+]
 
 export interface GeneralTabProps {
     validationResult: ValidationResult
 }
 
 export default class GeneralTab extends React.Component<GeneralTabProps> {
-    private formatStaleLabel(stale: UseStale): I18nMessage {
-        switch (stale) {
-            case UseStale.ERROR:
-                return MessageKey.FrontendCacheTabsGeneralStaleError
-            case UseStale.TIMEOUT:
-                return MessageKey.FrontendCacheTabsGeneralStaleTimeout
-            case UseStale.INVALID_HEADER:
-                return MessageKey.FrontendCacheTabsGeneralStaleInvalidHeader
-            case UseStale.UPDATING:
-                return MessageKey.FrontendCacheTabsGeneralStaleUpdating
-            case UseStale.HTTP_500:
-                return MessageKey.FrontendCacheTabsGeneralStaleHttp500
-            case UseStale.HTTP_502:
-                return MessageKey.FrontendCacheTabsGeneralStaleHttp502
-            case UseStale.HTTP_503:
-                return MessageKey.FrontendCacheTabsGeneralStaleHttp503
-            case UseStale.HTTP_504:
-                return MessageKey.FrontendCacheTabsGeneralStaleHttp504
-            case UseStale.HTTP_403:
-                return MessageKey.FrontendCacheTabsGeneralStaleHttp403
-            case UseStale.HTTP_404:
-                return MessageKey.FrontendCacheTabsGeneralStaleHttp404
-            case UseStale.HTTP_429:
-                return MessageKey.FrontendCacheTabsGeneralStaleHttp429
-            default:
-                return raw(stale)
-        }
-    }
-
     render() {
         const { validationResult } = this.props
 
@@ -126,13 +116,7 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                             help={validationResult.getMessage("allowedMethods")}
                             label={<I18n id={MessageKey.FrontendCacheTabsGeneralAllowedMethods} />}
                         >
-                            <Select mode="multiple">
-                                {Object.values(HttpMethod).map(method => (
-                                    <Select.Option key={method} value={method}>
-                                        {method}
-                                    </Select.Option>
-                                ))}
-                            </Select>
+                            <Select mode="multiple" options={CACHE_ALLOWED_METHOD_OPTIONS} />
                         </Form.Item>
                         <Form.Item
                             name="minimumUsesBeforeCaching"
@@ -218,13 +202,13 @@ export default class GeneralTab extends React.Component<GeneralTabProps> {
                     label={<I18n id={MessageKey.FrontendCacheTabsGeneralUseStaleContents} />}
                     style={{ marginTop: 40 }}
                 >
-                    <Select mode="multiple">
-                        {Object.values(UseStale).map(stale => (
-                            <Select.Option key={stale} value={stale}>
-                                <I18n id={this.formatStaleLabel(stale)} />
-                            </Select.Option>
-                        ))}
-                    </Select>
+                    <Select
+                        mode="multiple"
+                        options={USE_STALE_OPTIONS_DATA.map(item => ({
+                            value: item.value,
+                            label: <I18n id={item.messageKey} />,
+                        }))}
+                    />
                 </Form.Item>
 
                 <h2 className="cache-form-section-name">

@@ -27,6 +27,16 @@ import { accessListFormDefaults } from "./AccessListFormDefaults"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../core/i18n/I18n"
 
+const ACCESS_LIST_SATISFY_MODE_OPTIONS_DATA = [
+    { value: true, messageKey: MessageKey.FrontendAccesslistModeSatisfyAll },
+    { value: false, messageKey: MessageKey.FrontendAccesslistModeSatisfyAny },
+]
+
+const ACCESS_LIST_DEFAULT_OUTCOME_OPTIONS_DATA = [
+    { value: AccessListOutcome.ALLOW, messageKey: MessageKey.FrontendAccesslistOutcomeAllow },
+    { value: AccessListOutcome.DENY, messageKey: MessageKey.FrontendAccesslistOutcomeDeny },
+]
+
 interface AccessListFormState {
     formValues: AccessListFormValues
     validationResult: ValidationResult
@@ -173,14 +183,12 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
                     label={<I18n id={MessageKey.CommonMode} />}
                     required
                 >
-                    <Select>
-                        <Select.Option value={true}>
-                            <I18n id={MessageKey.FrontendAccesslistModeSatisfyAll} />
-                        </Select.Option>
-                        <Select.Option value={false}>
-                            <I18n id={MessageKey.FrontendAccesslistModeSatisfyAny} />
-                        </Select.Option>
-                    </Select>
+                    <Select
+                        options={ACCESS_LIST_SATISFY_MODE_OPTIONS_DATA.map(item => ({
+                            value: item.value,
+                            label: <I18n id={item.messageKey} />,
+                        }))}
+                    />
                 </Form.Item>
                 <Form.Item
                     className="access-lists-form-default-outcome"
@@ -190,14 +198,12 @@ export default class AccessListFormPage extends React.Component<unknown, AccessL
                     label={<I18n id={MessageKey.FrontendAccesslistDefaultOutcome} />}
                     required
                 >
-                    <Select>
-                        <Select.Option value={AccessListOutcome.ALLOW}>
-                            <I18n id={MessageKey.FrontendAccesslistOutcomeAllow} />
-                        </Select.Option>
-                        <Select.Option value={AccessListOutcome.DENY}>
-                            <I18n id={MessageKey.FrontendAccesslistOutcomeDeny} />
-                        </Select.Option>
-                    </Select>
+                    <Select
+                        options={ACCESS_LIST_DEFAULT_OUTCOME_OPTIONS_DATA.map(item => ({
+                            value: item.value,
+                            label: <I18n id={item.messageKey} />,
+                        }))}
+                    />
                 </Form.Item>
                 <Form.Item
                     className="access-lists-form-forward-headers"

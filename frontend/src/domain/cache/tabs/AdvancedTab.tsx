@@ -17,7 +17,7 @@ export default class AdvancedTab extends React.Component<AdvancedTabProps> {
         return (
             <>
                 <Alert
-                    message={<I18n id={MessageKey.CommonWarningProceedWithCaution} />}
+                    title={<I18n id={MessageKey.CommonWarningProceedWithCaution} />}
                     description={<I18n id={MessageKey.CommonWarningProceedWithCautionDescription} />}
                     type="warning"
                     style={{ marginBottom: 20 }}

@@ -6,6 +6,12 @@ import { TimeUnit } from "../model/SettingsDto"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
+const IGNITION_TIME_UNIT_OPTIONS_DATA = [
+    { value: TimeUnit.DAYS, messageKey: MessageKey.FrontendSettingsTabsIgnitionTimeUnitDays },
+    { value: TimeUnit.HOURS, messageKey: MessageKey.FrontendSettingsTabsIgnitionTimeUnitHours },
+    { value: TimeUnit.MINUTES, messageKey: MessageKey.FrontendSettingsTabsIgnitionTimeUnitMinutes },
+]
+
 export interface NginxIgnitionSettingsTabProps {
     validationResult: ValidationResult
 }
@@ -30,17 +36,12 @@ export default class NginxIgnitionSettingsTab extends React.Component<NginxIgnit
                         help={validationResult.getMessage(`${pathPrefix}.intervalUnit`)}
                         noStyle
                     >
-                        <Select>
-                            <Select.Option value={TimeUnit.DAYS}>
-                                <I18n id={MessageKey.FrontendSettingsTabsIgnitionTimeUnitDays} />
-                            </Select.Option>
-                            <Select.Option value={TimeUnit.HOURS}>
-                                <I18n id={MessageKey.FrontendSettingsTabsIgnitionTimeUnitHours} />
-                            </Select.Option>
-                            <Select.Option value={TimeUnit.MINUTES}>
-                                <I18n id={MessageKey.FrontendSettingsTabsIgnitionTimeUnitMinutes} />
-                            </Select.Option>
-                        </Select>
+                        <Select
+                            options={IGNITION_TIME_UNIT_OPTIONS_DATA.map(item => ({
+                                value: item.value,
+                                label: <I18n id={item.messageKey} />,
+                            }))}
+                        />
                     </Form.Item>
                 </Space.Compact>
             </Form.Item>

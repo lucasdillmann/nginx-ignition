@@ -5,6 +5,8 @@ import MessageKey from "../../i18n/model/MessageKey.generated"
 
 const DEFAULT_MAXIMUM_SIZE = 3
 
+const TAG_STYLE: React.CSSProperties = { marginRight: 5 }
+
 export interface TagGroupItem {
     name: string
     url: string
@@ -27,7 +29,7 @@ export default class TagGroup extends React.Component<TagGroupProps> {
     private renderTag(value: string | TagGroupItem) {
         if (this.isTagGroupItem(value)) {
             return (
-                <Tag key={value.name}>
+                <Tag key={value.name} style={TAG_STYLE}>
                     <a href={value.url} target="_blank" rel="noopener noreferrer">
                         {value.name}
                     </a>
@@ -35,7 +37,11 @@ export default class TagGroup extends React.Component<TagGroupProps> {
             )
         }
 
-        return <Tag key={value}>{value}</Tag>
+        return (
+            <Tag key={value} style={TAG_STYLE}>
+                {value}
+            </Tag>
+        )
     }
 
     private renderTooltipItem(value: string | TagGroupItem) {

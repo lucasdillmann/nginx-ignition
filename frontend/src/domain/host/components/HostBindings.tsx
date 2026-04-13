@@ -21,6 +21,11 @@ const DEFAULT_VALUES: HostFormBinding = {
     port: 8080,
 }
 
+const BINDING_PROTOCOL_OPTIONS_DATA = [
+    { value: HostBindingType.HTTP, messageKey: MessageKey.CommonHttp },
+    { value: HostBindingType.HTTPS, messageKey: MessageKey.CommonHttps },
+]
+
 export interface HostBindingsProps {
     pathPrefix: string
     bindings: HostFormBinding[]
@@ -62,14 +67,12 @@ export default class HostBindings extends React.Component<HostBindingsProps> {
                     }
                     required
                 >
-                    <Select>
-                        <Select.Option value={HostBindingType.HTTP}>
-                            <I18n id={MessageKey.CommonHttp} />
-                        </Select.Option>
-                        <Select.Option value={HostBindingType.HTTPS}>
-                            <I18n id={MessageKey.CommonHttps} />
-                        </Select.Option>
-                    </Select>
+                    <Select
+                        options={BINDING_PROTOCOL_OPTIONS_DATA.map(item => ({
+                            value: item.value,
+                            label: <I18n id={item.messageKey} />,
+                        }))}
+                    />
                 </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}

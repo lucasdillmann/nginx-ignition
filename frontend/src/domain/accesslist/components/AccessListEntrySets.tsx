@@ -27,6 +27,11 @@ const ENABLED_ACTION_ICON_STYLE = {
     color: "var(--nginxIgnition-colorText)",
 }
 
+const ENTRY_OUTCOME_OPTIONS_DATA = [
+    { value: AccessListOutcome.DENY, messageKey: MessageKey.FrontendAccesslistOutcomeDeny },
+    { value: AccessListOutcome.ALLOW, messageKey: MessageKey.FrontendAccesslistOutcomeAllow },
+]
+
 export interface AccessListEntrySetsProps {
     entrySets: AccessListEntrySetFormValues[]
     validationResult: ValidationResult
@@ -77,14 +82,12 @@ export default class AccessListEntrySets extends React.Component<AccessListEntry
                     label={<I18n id={MessageKey.FrontendAccesslistEntryOutcome} />}
                     required
                 >
-                    <Select>
-                        <Select.Option value={AccessListOutcome.DENY}>
-                            <I18n id={MessageKey.FrontendAccesslistOutcomeDeny} />
-                        </Select.Option>
-                        <Select.Option value={AccessListOutcome.ALLOW}>
-                            <I18n id={MessageKey.FrontendAccesslistOutcomeAllow} />
-                        </Select.Option>
-                    </Select>
+                    <Select
+                        options={ENTRY_OUTCOME_OPTIONS_DATA.map(item => ({
+                            value: item.value,
+                            label: <I18n id={item.messageKey} />,
+                        }))}
+                    />
                 </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}

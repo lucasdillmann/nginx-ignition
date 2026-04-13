@@ -16,6 +16,7 @@ import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
 import StreamRequest, {
     StreamAddress,
     StreamBackend,
+    StreamCircuitBreaker,
     StreamProtocol,
     StreamRoute,
     StreamType,
@@ -162,6 +163,19 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
         }
     }
 
+    private mergeStreamCircuitBreaker(
+        prev: StreamCircuitBreaker | undefined,
+        next: StreamCircuitBreaker | null | undefined,
+    ): StreamCircuitBreaker | undefined {
+        if (next === undefined) {
+            return prev
+        }
+        if (next === null) {
+            return undefined
+        }
+        return { ...(prev ?? {}), ...next }
+    }
+
     private mergeStreamBackends(prev: StreamBackend[] | undefined, next: StreamBackend[] | undefined): StreamBackend[] {
         if (next === undefined) return prev ?? []
         if (prev === undefined) return next
@@ -172,12 +186,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                 ...p,
                 ...b,
                 target: { ...p.target, ...b.target },
-                circuitBreaker:
-                    b.circuitBreaker === undefined
-                        ? p.circuitBreaker
-                        : b.circuitBreaker === null
-                          ? undefined
-                          : { ...(p.circuitBreaker ?? {}), ...b.circuitBreaker },
+                circuitBreaker: this.mergeStreamCircuitBreaker(p.circuitBreaker, b.circuitBreaker),
             }
         })
     }
@@ -201,12 +210,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
             ...prev,
             ...next,
             target: { ...prev.target, ...next.target },
-            circuitBreaker:
-                next.circuitBreaker === undefined
-                    ? prev.circuitBreaker
-                    : next.circuitBreaker === null
-                      ? undefined
-                      : { ...(prev.circuitBreaker ?? {}), ...next.circuitBreaker },
+            circuitBreaker: this.mergeStreamCircuitBreaker(prev.circuitBreaker, next.circuitBreaker),
         }
     }
 

@@ -150,7 +150,7 @@ export default class AdvancedNginxSettingsTab extends React.Component<AdvancedSe
         return (
             <>
                 <Alert
-                    message={<I18n id={MessageKey.CommonWarningProceedWithCaution} />}
+                    title={<I18n id={MessageKey.CommonWarningProceedWithCaution} />}
                     description={<I18n id={MessageKey.CommonWarningProceedWithCautionDescription} />}
                     type="warning"
                     style={{ marginBottom: 20 }}

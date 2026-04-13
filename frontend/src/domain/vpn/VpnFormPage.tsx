@@ -168,7 +168,7 @@ export default class VpnFormPage extends React.Component<any, VpnFormPageState> 
                 initialValues={formValues}
                 onValuesChange={(changedValues, formValues) => {
                     if (changedValues.driver !== undefined) {
-                        const next = this.fillDynamicFieldsDefaultValues(formValues, this.state.availableDrivers)
+                        const next = this.fillDynamicFieldsDefaultValues(formValues, availableDrivers)
                         this.formRef.current?.setFieldsValue(next)
                         this.setState({ formValues: next })
                         return

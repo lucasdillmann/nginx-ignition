@@ -71,13 +71,11 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
                         onChange={value => this.handleLanguageChange(value)}
                         value={currentLanguage}
                         style={{ width: 150, textAlign: "left", float: "right" }}
-                    >
-                        {availableLanguages.map(language => (
-                            <Select.Option key={language} value={language}>
-                                <I18n id={this.languageName(language)} />
-                            </Select.Option>
-                        ))}
-                    </Select>
+                        options={availableLanguages.map(item => ({
+                            value: item,
+                            label: <I18n id={this.languageName(item)} />,
+                        }))}
+                    />
                 </Form.Item>
             </Flex>
         )

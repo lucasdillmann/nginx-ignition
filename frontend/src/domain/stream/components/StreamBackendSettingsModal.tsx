@@ -50,7 +50,9 @@ export default class StreamBackendSettingsModal extends React.Component<StreamBa
                 cancelButtonProps={HIDDEN_BUTTON_PROPS}
                 okButtonProps={HIDDEN_BUTTON_PROPS}
                 closable
-                maskClosable
+                mask={{
+                    closable: true,
+                }}
             >
                 <Form.Item
                     label={<I18n id={MessageKey.FrontendStreamComponentsBackendsettingsCircuitBreaker} />}
