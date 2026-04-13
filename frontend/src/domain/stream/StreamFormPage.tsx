@@ -13,7 +13,13 @@ import CommonNotifications from "../../core/components/notification/CommonNotifi
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import DeleteStreamAction from "./actions/DeleteStreamAction"
 import ReloadNginxAction from "../nginx/actions/ReloadNginxAction"
-import StreamRequest, { StreamAddress, StreamProtocol, StreamType } from "./model/StreamRequest"
+import StreamRequest, {
+    StreamAddress,
+    StreamBackend,
+    StreamProtocol,
+    StreamRoute,
+    StreamType,
+} from "./model/StreamRequest"
 import "./StreamFormPage.css"
 import StreamAddressInput from "./components/StreamAddressInput"
 import CompatibleStreamProtocolResolver from "./utils/CompatibleStreamProtocolResolver"
@@ -156,15 +162,69 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
         }
     }
 
-    private handleUpdate(newValues: StreamRequest) {
-        const { formValues } = this.state
-
-        this.setState({
-            formValues: {
-                ...formValues,
-                ...newValues,
-            },
+    private mergeStreamBackends(prev: StreamBackend[] | undefined, next: StreamBackend[] | undefined): StreamBackend[] {
+        if (next === undefined) return prev ?? []
+        if (prev === undefined) return next
+        return next.map((b, i) => {
+            const p = prev[i]
+            if (p === undefined) return b
+            return {
+                ...p,
+                ...b,
+                target: { ...p.target, ...b.target },
+                circuitBreaker:
+                    b.circuitBreaker === undefined
+                        ? p.circuitBreaker
+                        : b.circuitBreaker === null
+                          ? undefined
+                          : { ...(p.circuitBreaker ?? {}), ...b.circuitBreaker },
+            }
         })
+    }
+
+    private mergeStreamRoutes(prev: StreamRoute[] | undefined, next: StreamRoute[]): StreamRoute[] {
+        return next.map((route, i) => {
+            const p = prev?.[i]
+            if (p === undefined) return route
+            return {
+                ...p,
+                ...route,
+                domainNames: route.domainNames ?? p.domainNames,
+                backends: this.mergeStreamBackends(p.backends, route.backends),
+            }
+        })
+    }
+
+    private mergeStreamBackendValue(prev: StreamBackend, next: StreamBackend | undefined): StreamBackend {
+        if (next === undefined) return prev
+        return {
+            ...prev,
+            ...next,
+            target: { ...prev.target, ...next.target },
+            circuitBreaker:
+                next.circuitBreaker === undefined
+                    ? prev.circuitBreaker
+                    : next.circuitBreaker === null
+                      ? undefined
+                      : { ...(prev.circuitBreaker ?? {}), ...next.circuitBreaker },
+        }
+    }
+
+    private mergeStreamFormValues(prev: StreamRequest, incoming: StreamRequest): StreamRequest {
+        return {
+            ...prev,
+            ...incoming,
+            featureSet: { ...prev.featureSet, ...incoming.featureSet },
+            defaultBackend: this.mergeStreamBackendValue(prev.defaultBackend, incoming.defaultBackend),
+            binding: incoming.binding !== undefined ? { ...prev.binding, ...incoming.binding } : prev.binding,
+            routes: incoming.routes !== undefined ? this.mergeStreamRoutes(prev.routes, incoming.routes) : prev.routes,
+        }
+    }
+
+    private handleUpdate(newValues: StreamRequest) {
+        this.setState(({ formValues }) => ({
+            formValues: this.mergeStreamFormValues(formValues, newValues),
+        }))
     }
 
     private buildTypeTooltipContents() {

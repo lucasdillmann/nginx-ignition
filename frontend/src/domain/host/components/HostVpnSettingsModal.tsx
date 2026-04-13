@@ -32,6 +32,7 @@ export default class HostVpnSettingsModal extends React.Component<HostVpnSetting
                 onCancel={onClose}
                 footer={null}
                 width={750}
+                forceRender
             >
                 <div style={{ height: 40 }} />
                 <Form.Item

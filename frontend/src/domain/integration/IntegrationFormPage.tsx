@@ -166,10 +166,17 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
                 initialValues={formValues}
                 onValuesChange={(changedValues, formValues) => {
                     if (changedValues.driver !== undefined) {
-                        formValues = this.fillDynamicFieldsDefaultValues(formValues, this.state.availableDrivers)
-                        this.formRef.current?.setFieldsValue(formValues)
+                        const next = this.fillDynamicFieldsDefaultValues(formValues, this.state.availableDrivers)
+                        this.formRef.current?.setFieldsValue(next)
+                        this.setState({ formValues: next })
+                        return
                     }
-                    this.setState({ formValues })
+                    this.setState(({ formValues: prev }) => ({
+                        formValues: {
+                            ...formValues,
+                            parameters: { ...(prev.parameters ?? {}), ...(formValues.parameters ?? {}) },
+                        },
+                    }))
                 }}
             >
                 <Form.Item

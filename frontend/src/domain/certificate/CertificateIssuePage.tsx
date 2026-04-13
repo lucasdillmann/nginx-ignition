@@ -174,10 +174,17 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
                 ref={this.formRef}
                 onValuesChange={(changedValues, formValues) => {
                     if (changedValues.providerId !== undefined) {
-                        formValues = this.fillDynamicFieldsDefaultValues(this.state.availableProviders, formValues)
-                        this.formRef.current?.setFieldsValue(formValues)
+                        const next = this.fillDynamicFieldsDefaultValues(this.state.availableProviders, formValues)
+                        this.formRef.current?.setFieldsValue(next)
+                        this.setState({ formValues: next })
+                        return
                     }
-                    this.setState({ formValues })
+                    this.setState(({ formValues: prev }) => ({
+                        formValues: {
+                            ...formValues,
+                            parameters: { ...(prev.parameters ?? {}), ...(formValues.parameters ?? {}) },
+                        },
+                    }))
                 }}
                 initialValues={formValues}
             >

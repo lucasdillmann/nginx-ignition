@@ -98,6 +98,7 @@ export default class DataTableOptions extends React.Component<DataTableOptionsPr
                 onCancel={() => this.cancel()}
                 onOk={() => this.save()}
                 width={700}
+                forceRender
             >
                 <Form
                     {...FormStyle}

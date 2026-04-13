@@ -450,6 +450,9 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
 
         return (
             <Flex className="host-form-route-container">
+                <Form.Item name={[name, "priority"]} hidden>
+                    <InputNumber />
+                </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
                     className="host-form-route-field host-form-route-type"

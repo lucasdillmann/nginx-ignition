@@ -1,6 +1,6 @@
 import React from "react"
 import ValidationResult from "../../../core/validation/ValidationResult"
-import { Button, Flex, Form, FormListFieldData, FormListOperation, Select } from "antd"
+import { Button, Flex, Form, FormListFieldData, FormListOperation, InputNumber, Select } from "antd"
 import { ArrowDownOutlined, ArrowUpOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons"
 import FormLayout from "../../../core/components/form/FormLayout"
 import TextArea from "antd/es/input/TextArea"
@@ -64,6 +64,9 @@ export default class AccessListEntrySets extends React.Component<AccessListEntry
 
         return (
             <Flex className="access-list-entry-container">
+                <Form.Item name={[name, "priority"]} hidden>
+                    <InputNumber />
+                </Form.Item>
                 <Form.Item
                     {...FormLayout.ExpandedLabeledItem}
                     className="access-list-entry-outcome"

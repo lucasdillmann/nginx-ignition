@@ -288,6 +288,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                 onCancel={onCancel}
                 footer={null}
                 width={750}
+                forceRender
             >
                 <Tabs defaultActiveKey="1" items={this.tabsDefinitions()} />
             </Modal>
