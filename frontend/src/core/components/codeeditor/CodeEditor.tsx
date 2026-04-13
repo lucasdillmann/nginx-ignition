@@ -1,6 +1,6 @@
 import React from "react"
-import { CodeiumEditor } from "@codeium/react-code-editor"
-import AppContext from "../context/AppContext"
+import Editor from "@monaco-editor/react"
+import { editor } from "monaco-editor"
 
 export enum CodeEditorLanguage {
     JAVASCRIPT = "javascript",
@@ -19,28 +19,29 @@ export interface CodeEditorProps {
     language: CodeEditorLanguage
 }
 
-export default class CodeEditor extends React.Component<CodeEditorProps, any> {
+export default class CodeEditor extends React.Component<CodeEditorProps> {
     private handleOnChange(value: string | undefined) {
         const { onChange } = this.props
+        onChange(value ?? "")
+    }
 
-        const newValue = value ?? ""
-        onChange(newValue)
+    private handleMount(editor: editor.IStandaloneCodeEditor) {
+        editor.focus()
     }
 
     render() {
         const { language, value } = this.props
-        const { configuration } = AppContext.get()
 
         return (
-            <CodeiumEditor
+            <Editor
                 language={language}
                 theme="vs-dark"
                 onChange={value => this.handleOnChange(value)}
                 value={value}
-                apiKey={configuration.codeEditor.apiKey}
-                onMount={editor => editor.focus()}
+                onMount={editor => this.handleMount(editor)}
                 height="100%"
                 width="100%"
+                options={{ automaticLayout: true }}
             />
         )
     }

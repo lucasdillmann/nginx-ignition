@@ -35,8 +35,8 @@ export default defineConfig({
                             priority: 30,
                         },
                         {
-                            name: "vendor.codeium",
-                            test: /node_modules[\\/]@codeium\/react-code-editor\//,
+                            name: "vendor.monaco",
+                            test: /node_modules[\\/](monaco-editor|@monaco-editor\/react)(\/|$)/,
                             priority: 29,
                         },
                         {

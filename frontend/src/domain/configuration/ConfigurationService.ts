@@ -3,9 +3,6 @@ import { requireSuccessPayload } from "../../core/apiclient/ApiResponse"
 import Configuration from "./Configuration"
 
 const FALLBACK_RESPONSE: Configuration = {
-    codeEditor: {
-        apiKey: undefined,
-    },
     version: {},
 }
 
