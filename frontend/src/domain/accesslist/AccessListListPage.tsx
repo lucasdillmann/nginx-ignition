@@ -31,12 +31,14 @@ export default class AccessListListPage extends React.PureComponent {
                 id: "name",
                 description: MessageKey.CommonName,
                 renderer: item => item.name,
+                minWidth: 200,
             },
             {
                 id: "realm",
                 description: MessageKey.FrontendAccesslistRealm,
                 renderer: item => item.realm,
-                width: 250,
+                width: 200,
+                minWidth: 120,
             },
             {
                 id: "defaultOutcome",
@@ -49,7 +51,8 @@ export default class AccessListListPage extends React.PureComponent {
                             return <I18n id={MessageKey.FrontendAccesslistOutcomeDeny} />
                     }
                 },
-                width: 200,
+                width: 160,
+                minWidth: 130,
             },
             {
                 id: "satisfyAll",
@@ -63,7 +66,8 @@ export default class AccessListListPage extends React.PureComponent {
                         }
                     />
                 ),
-                width: 150,
+                width: 420,
+                minWidth: 280,
             },
             {
                 id: "actions",
@@ -79,7 +83,8 @@ export default class AccessListListPage extends React.PureComponent {
                         </Link>
                     </>
                 ),
-                width: 120,
+                width: 112,
+                minWidth: 100,
             },
         ]
     }
