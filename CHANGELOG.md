@@ -1,5 +1,9 @@
 # CHANGELOG
 
+# 2.36.1
+
+- Minor fixes and improvements
+
 ## 2.36.0
 
 - Improved the Code Editor for static response routes by replacing the outdated Codeium Editor with CodeMirror 6.
