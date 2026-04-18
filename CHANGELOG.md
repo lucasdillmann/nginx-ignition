@@ -3,8 +3,7 @@
 ## 2.36.0
 
 - Improved the Code Editor for static response routes by replacing the outdated Codeium Editor with CodeMirror 6.
-- Removed Codeium API Key configuration because the previous API Key option for Codeium (now Windsurf) is no longer
-  used.
+- Removed Codeium API Key configuration because the previous API Key option for Codeium (now Windsurf) is no longer used.
 - General UI improvements and tweaks.
 - Other minor improvements and bug fixes.
 

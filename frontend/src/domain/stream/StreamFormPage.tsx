@@ -215,7 +215,7 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
     }
 
     private mergeStreamFormValues(prev: StreamRequest, incoming: StreamRequest): StreamRequest {
-        return {
+        const merged: StreamRequest = {
             ...prev,
             ...incoming,
             featureSet: { ...prev.featureSet, ...incoming.featureSet },
@@ -223,12 +223,34 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
             binding: incoming.binding !== undefined ? { ...prev.binding, ...incoming.binding } : prev.binding,
             routes: incoming.routes !== undefined ? this.mergeStreamRoutes(prev.routes, incoming.routes) : prev.routes,
         }
+
+        if (merged.type === StreamType.SNI_ROUTER && !Array.isArray(merged.routes)) {
+            merged.routes = [streamRouteDefaults()]
+        }
+
+        return merged
     }
 
     private handleUpdate(newValues: StreamRequest) {
         this.setState(({ formValues }) => ({
             formValues: this.mergeStreamFormValues(formValues, newValues),
         }))
+    }
+
+    private syncFormRoutesAfterStreamTypeChange(prevState: StreamFormPageState) {
+        const { formValues } = this.state
+        const previousType = prevState.formValues.type
+        const previousRoutes = prevState.formValues.routes
+
+        if (formValues.type !== StreamType.SNI_ROUTER || !Array.isArray(formValues.routes)) {
+            return
+        }
+
+        if (previousType === StreamType.SNI_ROUTER && Array.isArray(previousRoutes)) {
+            return
+        }
+
+        this.formRef.current?.setFieldsValue({ routes: formValues.routes })
     }
 
     private buildTypeTooltipContents() {
@@ -302,16 +324,13 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
 
     private renderSniRouterForm(): React.ReactNode {
         const { formValues, validationResult } = this.state
-        if (!Array.isArray(formValues.routes)) {
-            this.handleChange("routes", [streamRouteDefaults()])
-            return <></>
-        }
+        const routes = Array.isArray(formValues.routes) ? formValues.routes : []
 
         return (
             <StreamRoutesForm
-                routes={formValues.routes}
+                routes={routes}
                 validationResult={validationResult}
-                onChange={routes => this.handleChange("routes", routes)}
+                onChange={updatedRoutes => this.handleChange("routes", updatedRoutes)}
             />
         )
     }
@@ -472,7 +491,10 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
                 {...FormLayout.FormDefaults}
                 ref={this.formRef}
                 initialValues={formValues}
-                onValuesChange={(_, values) => this.handleUpdate(values)}
+                onValuesChange={() => {
+                    const snapshot = this.formRef.current?.getFieldsValue(true) as StreamRequest
+                    this.handleUpdate(snapshot)
+                }}
             >
                 <StreamSupportWarning />
 
@@ -559,6 +581,14 @@ export default class StreamFormPage extends React.Component<unknown, StreamFormP
             })
 
         this.updateShellConfig(false)
+    }
+
+    componentDidUpdate(_previousProps: unknown, previousState: StreamFormPageState) {
+        if (this.state.loading) {
+            return
+        }
+
+        this.syncFormRoutesAfterStreamTypeChange(previousState)
     }
 
     render() {
