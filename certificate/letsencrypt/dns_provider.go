@@ -133,6 +133,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/neodigit"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/netcup"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/netlify"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/netnod"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nicmanager"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nicru"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nifcloud"
@@ -140,6 +141,8 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nodion"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ns1"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/octenium"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/onecloudru"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/onlinenet"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/oraclecloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/otc"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ovh"
@@ -171,6 +174,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/timewebcloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/todaynic"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/transip"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ucloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ultradns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/uniteddomains"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/variomedia"
@@ -326,6 +330,7 @@ var providers = []dns.Provider{
 	&neodigit.Provider{},
 	&netcup.Provider{},
 	&netlify.Provider{},
+	&netnod.Provider{},
 	&nicmanager.Provider{},
 	&nicru.Provider{},
 	&nifcloud.Provider{},
@@ -333,6 +338,8 @@ var providers = []dns.Provider{
 	&nodion.Provider{},
 	&ns1.Provider{},
 	&octenium.Provider{},
+	&onecloudru.Provider{},
+	&onlinenet.Provider{},
 	&oraclecloud.Provider{},
 	&otc.Provider{},
 	&ovh.Provider{},
@@ -364,6 +371,7 @@ var providers = []dns.Provider{
 	&timewebcloud.Provider{},
 	&todaynic.Provider{},
 	&transip.Provider{},
+	&ucloud.Provider{},
 	&ultradns.Provider{},
 	&uniteddomains.Provider{},
 	&variomedia.Provider{},

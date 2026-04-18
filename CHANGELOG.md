@@ -4,6 +4,7 @@
 
 - Improved the Code Editor for static response routes by replacing the outdated Codeium Editor with CodeMirror 6.
 - Removed Codeium API Key configuration because the previous API Key option for Codeium (now Windsurf) is no longer used.
+- Added support for 4 new DNS providers for Let's Encrypt challenges: Netnod, 1cloud.ru, Online.net, and UCloud.
 - General UI improvements and tweaks.
 - Other minor improvements and bug fixes.
 
