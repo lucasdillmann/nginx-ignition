@@ -55,10 +55,13 @@ class HostConverter {
         }
     }
 
-    private async integrationToFormValues(data: HostRouteIntegration): Promise<HostFormRouteIntegration> {
+    private async integrationToFormValues(data: HostRouteIntegration): Promise<HostFormRouteIntegration | undefined> {
         const { integrationId, optionId, useHttps } = data
         const integration = await this.integrationService.getById(integrationId)
         const option = await this.integrationService.getOptionById(integrationId, optionId)
+        if (!this.notNull(integration) || !this.notNull(option)) {
+            return undefined
+        }
 
         return {
             useHttps,
@@ -106,8 +109,16 @@ class HostConverter {
         }
     }
 
-    private async vpnToFormValues(data: HostVpn): Promise<HostFormVpn> {
-        const vpn = await this.vpnService.getById(data.vpnId!!)
+    private async vpnToFormValues(data: HostVpn): Promise<HostFormVpn | undefined> {
+        if (!this.notNull(data.vpnId)) {
+            return undefined
+        }
+
+        const vpn = await this.vpnService.getById(data.vpnId)
+        if (!this.notNull(vpn)) {
+            return undefined
+        }
+
         const certificate = this.notNull(data.certificateId)
             ? await this.certificateService.getById(data.certificateId!!)
             : undefined
@@ -165,23 +176,44 @@ class HostConverter {
             sourceCode,
             cache,
         } = route
-        const response = this.notNull(route.response) ? this.formValuesToStaticResponse(route.response!!) : undefined
-        const integration = this.notNull(route.integration)
-            ? this.formValuesToIntegration(route.integration!!)
-            : undefined
+        const response =
+            type === HostRouteType.STATIC_RESPONSE && this.notNull(route.response)
+                ? this.formValuesToStaticResponse(route.response!!)
+                : undefined
+        const formIntegration = route.integration
+        const integration =
+            type === HostRouteType.INTEGRATION &&
+            this.notNull(formIntegration) &&
+            this.notNull(formIntegration!.integration) &&
+            this.notNull(formIntegration!.option)
+                ? this.formValuesToIntegration(formIntegration!)
+                : undefined
+        const targetUriForType =
+            type === HostRouteType.INTEGRATION ||
+            type === HostRouteType.PROXY ||
+            type === HostRouteType.REDIRECT ||
+            type === HostRouteType.STATIC_FILES
+                ? targetUri
+                : undefined
+        const sourceCodeForType = type === HostRouteType.EXECUTE_CODE ? sourceCode : undefined
+        const redirectCodeForType = type === HostRouteType.REDIRECT ? redirectCode : undefined
+        const accessListIdForType =
+            type === HostRouteType.INTEGRATION || type === HostRouteType.PROXY || type === HostRouteType.STATIC_FILES
+                ? accessList?.id
+                : undefined
 
         return {
             priority,
             enabled,
             type,
             settings,
-            targetUri,
+            targetUri: targetUriForType,
             sourcePath,
             response,
             integration,
-            redirectCode,
-            sourceCode,
-            accessListId: accessList?.id,
+            redirectCode: redirectCodeForType,
+            sourceCode: sourceCodeForType,
+            accessListId: accessListIdForType,
             cacheId: cache?.id,
         }
     }
@@ -224,12 +256,13 @@ class HostConverter {
             : Promise.resolve(undefined)
         const cachePromise = this.notNull(cacheId) ? this.cacheService.getById(cacheId!!) : Promise.resolve(undefined)
 
-        const [bindings, vpns, accessList, cache] = await Promise.all([
+        const [bindings, vpnsResolved, accessList, cache] = await Promise.all([
             bindingsPromise,
             vpnsPromise,
             accessListPromise,
             cachePromise,
         ])
+        const vpns = vpnsResolved.filter((entry): entry is HostFormVpn => this.notNull(entry))
 
         return {
             enabled,
