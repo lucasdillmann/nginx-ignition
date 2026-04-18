@@ -2,7 +2,6 @@ package ucloud
 
 import (
 	"context"
-	"time"
 
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/providers/dns/ucloud"
@@ -78,7 +77,6 @@ func (p *Provider) ChallengeProvider(
 	cfg.TTL = dns.TTL
 	cfg.PropagationTimeout = dns.PropagationTimeout
 	cfg.PollingInterval = dns.PollingInterval
-	cfg.HTTPTimeout = 30 * time.Second
 
 	return ucloud.NewDNSProviderConfig(cfg)
 }
