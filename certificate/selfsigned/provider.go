@@ -94,6 +94,17 @@ func (p *Provider) Renew(
 	return cert, nil
 }
 
+func (p *Provider) IsDueToRenew(
+	_ context.Context,
+	existing *certificate.Certificate,
+) (bool, error) {
+	if existing.RenewAfter == nil {
+		return false, nil
+	}
+
+	return !time.Now().Before(*existing.RenewAfter), nil
+}
+
 func buildPEMs(domainNames []string) (
 	cert *string,
 	key *string,

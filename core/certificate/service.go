@@ -111,19 +111,55 @@ func (s *service) renewAllDue(ctx context.Context) error {
 		return nil
 	}
 
+	providers, err := s.AvailableProviders(ctx)
+	if err != nil {
+		return err
+	}
+
+	renewedCount := 0
+
 	for _, certificate := range certificates {
+		provider := providerByID(providers, certificate.ProviderID)
+		if provider == nil {
+			log.Warnf("Certificate %s: provider not found", certificate.ID)
+			continue
+		}
+
+		if certificate.RenewAfter == nil {
+			due, dueErr := provider.IsDueToRenew(ctx, &certificate)
+			if dueErr != nil {
+				log.Warnf(
+					"Error checking if certificate %s is due to renew: %s",
+					certificate.ID,
+					dueErr,
+				)
+				continue
+			}
+
+			if !due {
+				continue
+			}
+		}
+
 		err = s.Renew(ctx, certificate.ID)
 		if err != nil {
 			log.Warnf("Error renewing certificate %s: %s", certificate.ID, err)
 			continue
 		}
 
+		renewedCount++
 		log.Infof("Certificate %s renewed successfully", certificate.ID)
+	}
+
+	if renewedCount == 0 {
+		log.Infof("Certificates auto-renew triggered, but no certificates were renewed")
+		return nil
 	}
 
 	broadcast.SendSignal(ctx, "core:nginx:reload")
 
-	log.Infof("Certificates auto-renew complemeted, %d were renewed", len(certificates))
+	log.Infof("Certificates auto-renew completed, %d were renewed", renewedCount)
+
 	return nil
 }
 

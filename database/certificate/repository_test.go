@@ -149,6 +149,24 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			}
 			assert.False(t, found)
 		})
+
+		t.Run("returns certificates with null renew_after", func(t *testing.T) {
+			cmd := newCertificate()
+			cmd.RenewAfter = nil
+			require.NoError(t, repo.Save(t.Context(), cmd))
+
+			candidates, err := repo.FindAllDueToRenew(t.Context())
+			require.NoError(t, err)
+
+			found := false
+			for _, candidate := range candidates {
+				if candidate.ID == cmd.ID {
+					found = true
+					break
+				}
+			}
+			assert.True(t, found)
+		})
 	})
 
 	t.Run("InUseByID", func(t *testing.T) {

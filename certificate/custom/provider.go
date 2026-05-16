@@ -107,6 +107,10 @@ func (p *Provider) Renew(
 	return cert, nil
 }
 
+func (p *Provider) IsDueToRenew(_ context.Context, _ *certificate.Certificate) (bool, error) {
+	return false, nil
+}
+
 func parsePrivateKey(ctx context.Context, key string, base64Encoded bool) ([]byte, error) {
 	decodedKey, err := stringToByteArray(key, base64Encoded)
 	if err != nil {

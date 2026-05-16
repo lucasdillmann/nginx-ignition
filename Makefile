@@ -19,6 +19,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./application/... \
 		./certificate/commons/... \
 		./certificate/custom/... \
+		./certificate/external/... \
 		./certificate/letsencrypt/... \
 		./certificate/selfsigned/... \
 		./core/... \
@@ -100,6 +101,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./application/... \
 		./certificate/commons/... \
 		./certificate/custom/... \
+		./certificate/external/... \
 		./certificate/letsencrypt/... \
 		./certificate/selfsigned/... \
 		./core/... \
@@ -113,6 +115,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./application/... \
 		./certificate/commons/... \
 		./certificate/custom/... \
+		./certificate/external/... \
 		./certificate/letsencrypt/... \
 		./certificate/selfsigned/... \
 		./core/... \
@@ -155,6 +158,7 @@ clean:
 		./application/... \
 		./certificate/commons/... \
 		./certificate/custom/... \
+		./certificate/external/... \
 		./certificate/letsencrypt/... \
 		./certificate/selfsigned/... \
 		./core/... \
@@ -169,6 +173,7 @@ update-dependencies: .backend-prerequisites .frontend-prerequisites
 	cd application && go get -u ./...
 	cd certificate/commons && go get -u ./...
 	cd certificate/custom && go get -u ./...
+	cd certificate/external && go get -u ./...
 	cd certificate/letsencrypt && go get -u ./...
 	cd certificate/selfsigned && go get -u ./...
 	cd core && go get -u ./...

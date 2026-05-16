@@ -14,4 +14,5 @@ type Provider interface {
 	Priority() int
 	Issue(ctx context.Context, request *IssueRequest) (*Certificate, error)
 	Renew(ctx context.Context, certificate *Certificate) (*Certificate, error)
+	IsDueToRenew(ctx context.Context, certificate *Certificate) (bool, error)
 }

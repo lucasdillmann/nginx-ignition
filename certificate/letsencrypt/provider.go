@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"log/slog"
+	"time"
 
 	acmelog "github.com/go-acme/lego/v5/log"
 
@@ -122,6 +123,17 @@ func (p *Provider) Renew(
 		cert.Parameters,
 		metadata.ProductionEnvironment,
 	)
+}
+
+func (p *Provider) IsDueToRenew(
+	_ context.Context,
+	existing *certificate.Certificate,
+) (bool, error) {
+	if existing.RenewAfter == nil {
+		return false, nil
+	}
+
+	return !time.Now().Before(*existing.RenewAfter), nil
 }
 
 func (p *Provider) isProductionEnvironment() (bool, error) {

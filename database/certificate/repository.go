@@ -228,7 +228,7 @@ func (r *repository) FindAllDueToRenew(ctx context.Context) ([]certificate.Certi
 
 	err := r.database.Select().
 		Model(&certificates).
-		Where("renew_after IS NOT NULL AND renew_after <= ?", time.Now()).
+		Where("renew_after IS NULL OR renew_after <= ?", time.Now()).
 		Scan(ctx)
 	if err != nil {
 		return nil, err

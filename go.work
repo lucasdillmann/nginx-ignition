@@ -5,6 +5,7 @@ use (
 	application
 	certificate/commons
 	certificate/custom
+	certificate/external
 	certificate/letsencrypt
 	certificate/selfsigned
 	core

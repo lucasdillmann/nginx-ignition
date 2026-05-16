@@ -5,6 +5,7 @@ import (
 
 	"dillmann.com.br/nginx-ignition/api"
 	"dillmann.com.br/nginx-ignition/certificate/custom"
+	"dillmann.com.br/nginx-ignition/certificate/external"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt"
 	"dillmann.com.br/nginx-ignition/certificate/selfsigned"
 	"dillmann.com.br/nginx-ignition/core"
@@ -42,6 +43,7 @@ func startContainer(ctx context.Context) error {
 		letsencrypt.Install,
 		selfsigned.Install,
 		custom.Install,
+		external.Install,
 		docker.Install,
 		truenas.Install,
 		tailscale.Install,
@@ -56,11 +58,13 @@ func installCertificateDriverAggregation(
 	acmeCertificateProvider *letsencrypt.Provider,
 	customCertificateProvider *custom.Provider,
 	selfSignedCertificateProvider *selfsigned.Provider,
+	externalCertificateProvider *external.Provider,
 ) error {
 	return container.Singleton([]certificate.Provider{
 		acmeCertificateProvider,
 		customCertificateProvider,
 		selfSignedCertificateProvider,
+		externalCertificateProvider,
 	})
 }
 
