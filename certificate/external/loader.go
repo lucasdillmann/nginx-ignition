@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -113,33 +112,38 @@ func readCertificateChain(ctx context.Context, path string) ([]x509.Certificate,
 	}
 
 	certificates := make([]x509.Certificate, 0)
-	for _, segment := range strings.Split(string(raw), "-----END CERTIFICATE-----") {
-		if !strings.Contains(segment, "BEGIN CERTIFICATE") {
+	remaining := raw
+
+	for {
+		block, rest := pem.Decode(remaining)
+		if block == nil {
+			break
+		}
+
+		remaining = rest
+		if block.Type != "CERTIFICATE" {
 			continue
 		}
 
-		segment += "-----END CERTIFICATE-----"
-		parsed, err := parseCertificateText(ctx, segment)
-		if err != nil {
-			return nil, err
+		parsed, parseErr := x509.ParseCertificate(block.Bytes)
+		if parseErr != nil {
+			return nil, coreerror.New(
+				i18n.M(ctx, i18n.K.CertificateExternalInvalidCertificationChain),
+				true,
+			)
 		}
 
 		certificates = append(certificates, *parsed)
 	}
 
-	return certificates, nil
-}
-
-func parseCertificateText(ctx context.Context, pemText string) (*x509.Certificate, error) {
-	block, _ := pem.Decode([]byte(pemText))
-	if block == nil {
+	if len(certificates) == 0 {
 		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "certificate"),
+			i18n.M(ctx, i18n.K.CertificateExternalInvalidCertificationChain),
 			true,
 		)
 	}
 
-	return x509.ParseCertificate(block.Bytes)
+	return certificates, nil
 }
 
 func encodeChain(chain []x509.Certificate) []string {

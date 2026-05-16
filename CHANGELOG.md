@@ -2,6 +2,8 @@
 
 ## 2.37.0
 
+- Added support for SSL certificates managed by external tools (like Certbot) by reading the certificate, key, and 
+  chain files from the filesystem.
 - Updated Go to 1.26.3 and other internal dependencies.
 - Updated the Let's Encrypt integration from Lego v4 to v5.0.4.
 - Added support for 26 new DNS providers for Let's Encrypt challenges: Abion, Curanet, DanDomain, Dinahosting, 51DNS,
