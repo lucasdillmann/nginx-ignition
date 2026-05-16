@@ -41,11 +41,13 @@ func (l *logAdapter) Handle(_ context.Context, record slog.Record) error {
 
 	switch record.Level {
 	case slog.LevelWarn:
-		applog.Warnf("%s", message)
+		applog.Warn(message)
 	case slog.LevelError:
-		applog.Errorf("%s", message)
+		applog.Error(message)
+	case slog.LevelDebug:
+		applog.Debug(message)
 	default:
-		applog.Infof("%s", message)
+		applog.Info(message)
 	}
 
 	return nil

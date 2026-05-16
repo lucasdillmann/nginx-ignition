@@ -34,6 +34,14 @@ func EnableStackTrace(enabled bool) {
 	delegate = delegate.WithOptions(zap.AddStacktrace(enabler))
 }
 
+func Debug(message string) {
+	delegate.Debug(message)
+}
+
+func Debugf(message string, values ...any) {
+	delegate.Debug(fmt.Sprintf(message, values...))
+}
+
 func Info(message string) {
 	delegate.Info(message)
 }
