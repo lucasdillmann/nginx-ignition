@@ -1,43 +1,44 @@
-package brandit
+package gname
 
 import (
 	"context"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/providers/dns/brandit"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/gname"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
-//nolint:gosec
 const (
-	apiKeyFieldID      = "branditAPIKey"
-	apiUsernameFieldID = "branditAPIUsername"
+	appIDFieldID  = "gnameAppId"
+	appKeyFieldID = "gnameAppKey"
 )
 
 type Provider struct{}
 
-func (p *Provider) ID() string { return "BRANDIT" }
+func (p *Provider) ID() string {
+	return "GNAME"
+}
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBranditName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGnameName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
-			ID:          apiKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBranditApiKey),
+			ID:          appIDFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGnameAppId),
 			Required:    true,
-			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 		{
-			ID:          apiUsernameFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsBranditApiUsername),
+			ID:          appKeyFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGnameAppKey),
 			Required:    true,
+			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
 	})
@@ -48,15 +49,15 @@ func (p *Provider) ChallengeProvider(
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
-	apiKey, _ := parameters[apiKeyFieldID].(string)
-	apiUsername, _ := parameters[apiUsernameFieldID].(string)
+	appID, _ := parameters[appIDFieldID].(string)
+	appKey, _ := parameters[appKeyFieldID].(string)
 
-	cfg := brandit.NewDefaultConfig()
-	cfg.APIKey = apiKey
-	cfg.APIUsername = apiUsername
+	cfg := gname.NewDefaultConfig()
+	cfg.AppID = appID
+	cfg.AppKey = appKey
 	cfg.TTL = dns.TTL
 	cfg.PropagationTimeout = dns.PropagationTimeout
 	cfg.PollingInterval = dns.PollingInterval
 
-	return brandit.NewDNSProviderConfig(cfg)
+	return gname.NewDNSProviderConfig(cfg)
 }

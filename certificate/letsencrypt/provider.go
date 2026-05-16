@@ -7,8 +7,9 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
+	"log/slog"
 
-	acmelog "github.com/go-acme/lego/v4/log"
+	acmelog "github.com/go-acme/lego/v5/log"
 
 	"dillmann.com.br/nginx-ignition/certificate/commons"
 	"dillmann.com.br/nginx-ignition/core/certificate"
@@ -28,7 +29,7 @@ type Provider struct {
 }
 
 func New(cfg *configuration.Configuration) *Provider {
-	acmelog.Logger = logAdapterInstance
+	acmelog.SetDefault(slog.New(&logAdapter{}))
 
 	return &Provider{
 		configuration: cfg,

@@ -3,9 +3,10 @@ package letsencrypt
 import (
 	"context"
 
-	"github.com/go-acme/lego/v4/challenge"
+	"github.com/go-acme/lego/v5/challenge"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/abion"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/acmedns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/active24"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/alibaba"
@@ -28,7 +29,6 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/bluecat"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/bluecatv2"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/bookmyname"
-	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/brandit"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/bunny"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/checkdomain"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/civo"
@@ -36,25 +36,30 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudflare"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudru"
-	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudxns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/com35"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/conohav2"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/conohav3"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/constellix"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/corenetworks"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cpanel"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/curanet"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/czechia"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dandomain"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ddnss"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/derak"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/desec"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/designate"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/digitalocean"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dinahosting"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/directadmin"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dns51"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dnscale"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dnsexit"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dnshomede"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dnsimple"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dnsla"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dnsmadeeasy"
-	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dnspod"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dnsservices"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dode"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/domeneshop"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dreamhost"
@@ -69,17 +74,21 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/efficientip"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/epik"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/eurodns"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/euserv"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/excedo"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/exec"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/exoscale"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/f5xc"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/fornex"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/freemyip"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/gandi"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/gandiv5"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/gcore"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/gcp"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/gehirn"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/gigahostno"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/glesys"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/gname"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/godaddy"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/gravity"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/hetzner"
@@ -87,13 +96,13 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/hostinger"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/hostingnl"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/hosttech"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/hostup"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/httpnet"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/httpreq"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/huaweicloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/hurricane"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/hyperone"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ibmcloud"
-	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/iij"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/iijdpf"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/infoblox"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/infomaniak"
@@ -104,9 +113,9 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ipv64"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ispconfig"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ispconfigddns"
-	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/iwantmyname"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/jdcloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/joker"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/katapult"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/keyhelp"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/leaseweb"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/liara"
@@ -130,10 +139,12 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/namesilo"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/namesurfer"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nearlyfreespeech"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nederhost"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/neodigit"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/netcup"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/netlify"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/netnod"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ngenix"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nicmanager"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nicru"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nifcloud"
@@ -141,6 +152,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nodion"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ns1"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/octenium"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/omglol"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/onecloudru"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/onlinenet"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/oraclecloud"
@@ -148,8 +160,10 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ovh"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/pdns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/plesk"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/pointdns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/porkbun"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/rackspace"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/rage4"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/rainyun"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/rcodezero"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/regfish"
@@ -159,6 +173,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/safedns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/sakuracloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/scaleway"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/scannet"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/selectel"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/selectelv2"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/selfhostde"
@@ -170,6 +185,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/stackpath"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/syse"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/technitium"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/tele3"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/tencentcloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/timewebcloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/todaynic"
@@ -178,6 +194,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ultradns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/uniteddomains"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/variomedia"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/veesp"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/vegadns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/vercel"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/versio"
@@ -187,14 +204,17 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/volcengine"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/vscale"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/vultr"
-	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/webnames"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/wannafind"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/webnamesca"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/webnamesru"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/websupport"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/wedos"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/westcn"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/xinnet"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/yandex"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/yandex360"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/yandexcloud"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zilore"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zoneedit"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zoneee"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/zonomi"
@@ -204,6 +224,7 @@ import (
 
 var providers = []dns.Provider{
 	&acmedns.Provider{},
+	&abion.Provider{},
 	&active24.Provider{},
 	&alibaba.Provider{},
 	&aliesa.Provider{},
@@ -225,7 +246,6 @@ var providers = []dns.Provider{
 	&bluecat.Provider{},
 	&bluecatv2.Provider{},
 	&bookmyname.Provider{},
-	&brandit.Provider{},
 	&bunny.Provider{},
 	&checkdomain.Provider{},
 	&civo.Provider{},
@@ -233,25 +253,30 @@ var providers = []dns.Provider{
 	&cloudflare.Provider{},
 	&cloudns.Provider{},
 	&cloudru.Provider{},
-	&cloudxns.Provider{},
 	&com35.Provider{},
 	&conohav2.Provider{},
 	&conohav3.Provider{},
 	&constellix.Provider{},
 	&corenetworks.Provider{},
 	&cpanel.Provider{},
+	&curanet.Provider{},
 	&czechia.Provider{},
+	&dandomain.Provider{},
 	&ddnss.Provider{},
 	&derak.Provider{},
 	&desec.Provider{},
 	&designate.Provider{},
 	&digitalocean.Provider{},
+	&dinahosting.Provider{},
 	&directadmin.Provider{},
 	&dnsexit.Provider{},
 	&dnshomede.Provider{},
+	&dns51.Provider{},
 	&dnsimple.Provider{},
+	&dnsla.Provider{},
 	&dnsmadeeasy.Provider{},
-	&dnspod.Provider{},
+	&dnscale.Provider{},
+	&dnsservices.Provider{},
 	&dode.Provider{},
 	&domeneshop.Provider{},
 	&dreamhost.Provider{},
@@ -266,17 +291,21 @@ var providers = []dns.Provider{
 	&efficientip.Provider{},
 	&epik.Provider{},
 	&eurodns.Provider{},
+	&euserv.Provider{},
 	&excedo.Provider{},
 	&exec.Provider{},
 	&exoscale.Provider{},
 	&f5xc.Provider{},
+	&fornex.Provider{},
 	&freemyip.Provider{},
 	&gandi.Provider{},
 	&gandiv5.Provider{},
 	&gcore.Provider{},
 	&gcp.Provider{},
+	&gehirn.Provider{},
 	&gigahostno.Provider{},
 	&glesys.Provider{},
+	&gname.Provider{},
 	&godaddy.Provider{},
 	&gravity.Provider{},
 	&hetzner.Provider{},
@@ -284,13 +313,13 @@ var providers = []dns.Provider{
 	&hostinger.Provider{},
 	&hostingnl.Provider{},
 	&hosttech.Provider{},
+	&hostup.Provider{},
 	&httpnet.Provider{},
 	&httpreq.Provider{},
 	&huaweicloud.Provider{},
 	&hurricane.Provider{},
 	&hyperone.Provider{},
 	&ibmcloud.Provider{},
-	&iij.Provider{},
 	&iijdpf.Provider{},
 	&infoblox.Provider{},
 	&infomaniak.Provider{},
@@ -301,9 +330,9 @@ var providers = []dns.Provider{
 	&ipv64.Provider{},
 	&ispconfig.Provider{},
 	&ispconfigddns.Provider{},
-	&iwantmyname.Provider{},
 	&jdcloud.Provider{},
 	&joker.Provider{},
+	&katapult.Provider{},
 	&keyhelp.Provider{},
 	&leaseweb.Provider{},
 	&liara.Provider{},
@@ -327,10 +356,12 @@ var providers = []dns.Provider{
 	&namesilo.Provider{},
 	&namesurfer.Provider{},
 	&nearlyfreespeech.Provider{},
+	&nederhost.Provider{},
 	&neodigit.Provider{},
 	&netcup.Provider{},
 	&netlify.Provider{},
 	&netnod.Provider{},
+	&ngenix.Provider{},
 	&nicmanager.Provider{},
 	&nicru.Provider{},
 	&nifcloud.Provider{},
@@ -338,15 +369,18 @@ var providers = []dns.Provider{
 	&nodion.Provider{},
 	&ns1.Provider{},
 	&octenium.Provider{},
+	&omglol.Provider{},
 	&onecloudru.Provider{},
 	&onlinenet.Provider{},
 	&oraclecloud.Provider{},
 	&otc.Provider{},
 	&ovh.Provider{},
 	&pdns.Provider{},
+	&pointdns.Provider{},
 	&plesk.Provider{},
 	&porkbun.Provider{},
 	&rackspace.Provider{},
+	&rage4.Provider{},
 	&rainyun.Provider{},
 	&rcodezero.Provider{},
 	&regfish.Provider{},
@@ -356,6 +390,7 @@ var providers = []dns.Provider{
 	&safedns.Provider{},
 	&sakuracloud.Provider{},
 	&scaleway.Provider{},
+	&scannet.Provider{},
 	&selectel.Provider{},
 	&selectelv2.Provider{},
 	&selfhostde.Provider{},
@@ -367,6 +402,7 @@ var providers = []dns.Provider{
 	&stackpath.Provider{},
 	&syse.Provider{},
 	&technitium.Provider{},
+	&tele3.Provider{},
 	&tencentcloud.Provider{},
 	&timewebcloud.Provider{},
 	&todaynic.Provider{},
@@ -375,6 +411,7 @@ var providers = []dns.Provider{
 	&ultradns.Provider{},
 	&uniteddomains.Provider{},
 	&variomedia.Provider{},
+	&veesp.Provider{},
 	&vegadns.Provider{},
 	&vercel.Provider{},
 	&versio.Provider{},
@@ -384,14 +421,17 @@ var providers = []dns.Provider{
 	&volcengine.Provider{},
 	&vscale.Provider{},
 	&vultr.Provider{},
-	&webnames.Provider{},
+	&wannafind.Provider{},
 	&webnamesca.Provider{},
+	&webnamesru.Provider{},
 	&websupport.Provider{},
 	&wedos.Provider{},
 	&westcn.Provider{},
+	&xinnet.Provider{},
 	&yandex.Provider{},
 	&yandex360.Provider{},
 	&yandexcloud.Provider{},
+	&zilore.Provider{},
 	&zoneedit.Provider{},
 	&zoneee.Provider{},
 	&zonomi.Provider{},

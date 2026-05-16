@@ -1,36 +1,35 @@
-package webnames
+package wannafind
 
 import (
 	"context"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/providers/dns/webnames"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/wannafind"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
-//nolint:gosec
 const (
-	apiKeyFieldID = "webnamesApiKey"
+	apiKeyFieldID = "wannafindApiKey"
 )
 
 type Provider struct{}
 
 func (p *Provider) ID() string {
-	return "WEBNAMES"
+	return "WANNAFIND"
 }
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsWebnamesName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsWannafindName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          apiKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsWebnamesApiKey),
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsWannafindApiKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
@@ -45,10 +44,11 @@ func (p *Provider) ChallengeProvider(
 ) (challenge.Provider, error) {
 	apiKey, _ := parameters[apiKeyFieldID].(string)
 
-	cfg := webnames.NewDefaultConfig()
+	cfg := wannafind.NewDefaultConfig()
 	cfg.APIKey = apiKey
+	cfg.TTL = dns.TTL
 	cfg.PropagationTimeout = dns.PropagationTimeout
 	cfg.PollingInterval = dns.PollingInterval
 
-	return webnames.NewDNSProviderConfig(cfg)
+	return wannafind.NewDNSProviderConfig(cfg)
 }

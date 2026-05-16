@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
-	"github.com/go-acme/lego/v4/challenge"
-	legoacmedns "github.com/go-acme/lego/v4/providers/dns/acmedns"
+	"github.com/go-acme/lego/v5/challenge"
+	legoacmedns "github.com/go-acme/lego/v5/providers/dns/acmedns"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"

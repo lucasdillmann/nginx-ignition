@@ -3,8 +3,8 @@ package rfc2136
 import (
 	"context"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/providers/dns/rfc2136"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/dnsupdate"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
@@ -80,7 +80,7 @@ func (p *Provider) ChallengeProvider(
 	tsigSecret, _ := parameters[tsigSecretFieldID].(string)
 	tsigAlgorithm, _ := parameters[tsigAlgorithmFieldID].(string)
 
-	cfg := rfc2136.NewDefaultConfig()
+	cfg := dnsupdate.NewDefaultConfig()
 	cfg.Nameserver = nameserver
 	cfg.TSIGKey = tsigKey
 	cfg.TSIGSecret = tsigSecret
@@ -89,5 +89,5 @@ func (p *Provider) ChallengeProvider(
 	cfg.PollingInterval = dns.PollingInterval
 	cfg.TTL = dns.TTL
 
-	return rfc2136.NewDNSProviderConfig(cfg)
+	return dnsupdate.NewDNSProviderConfig(cfg)
 }

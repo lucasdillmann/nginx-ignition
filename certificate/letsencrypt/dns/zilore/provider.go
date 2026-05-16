@@ -1,34 +1,35 @@
-package dnspod
+package zilore
 
 import (
 	"context"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/providers/dns/dnspod"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/zilore"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
-//nolint:gosec
 const (
-	apiKeyFieldID = "dnspodApiKey"
+	accessKeyFieldID = "ziloreAccessKey"
 )
 
 type Provider struct{}
 
-func (p *Provider) ID() string { return "DNSPOD" }
+func (p *Provider) ID() string {
+	return "ZILORE"
+}
 
 func (p *Provider) Name(ctx context.Context) *i18n.Message {
-	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsDnspodName)
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsZiloreName)
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
 	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
-			ID:          apiKeyFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsDnspodApiKey),
+			ID:          accessKeyFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsZiloreAccessKey),
 			Required:    true,
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
@@ -41,13 +42,13 @@ func (p *Provider) ChallengeProvider(
 	_ []string,
 	parameters map[string]any,
 ) (challenge.Provider, error) {
-	apiKey, _ := parameters[apiKeyFieldID].(string)
+	accessKey, _ := parameters[accessKeyFieldID].(string)
 
-	cfg := dnspod.NewDefaultConfig()
-	cfg.LoginToken = apiKey
+	cfg := zilore.NewDefaultConfig()
+	cfg.AccessKey = accessKey
+	cfg.TTL = dns.TTL
 	cfg.PropagationTimeout = dns.PropagationTimeout
 	cfg.PollingInterval = dns.PollingInterval
-	cfg.TTL = dns.TTL
 
-	return dnspod.NewDNSProviderConfig(cfg)
+	return zilore.NewDNSProviderConfig(cfg)
 }

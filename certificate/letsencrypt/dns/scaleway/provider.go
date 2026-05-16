@@ -3,8 +3,8 @@ package scaleway
 import (
 	"context"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/providers/dns/scaleway"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/scaleway"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
@@ -61,7 +61,7 @@ func (p *Provider) ChallengeProvider(
 
 	cfg := scaleway.NewDefaultConfig()
 	cfg.AccessKey = accessKey
-	cfg.Token = secretKey
+	cfg.SecretKey = secretKey
 	cfg.ProjectID = projectID
 	cfg.PropagationTimeout = dns.PropagationTimeout
 	cfg.PollingInterval = dns.PollingInterval

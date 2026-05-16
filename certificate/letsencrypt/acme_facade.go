@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-acme/lego/v4/certcrypto"
-	acmecertificate "github.com/go-acme/lego/v4/certificate"
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/lego"
-	"github.com/go-acme/lego/v4/registration"
+	"github.com/go-acme/lego/v5/certcrypto"
+	acmecertificate "github.com/go-acme/lego/v5/certificate"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/lego"
+	"github.com/go-acme/lego/v5/registration"
 	"github.com/google/uuid"
 	jsoniter "github.com/json-iterator/go"
 
@@ -28,14 +28,13 @@ func issueCertificate(
 	parameters map[string]any,
 	productionEnvironment bool,
 ) (*certificate.Certificate, error) {
-	caURL := lego.LEDirectoryProduction
+	caURL := lego.DirectoryURLLetsEncrypt
 	if !productionEnvironment {
-		caURL = lego.LEDirectoryStaging
+		caURL = lego.DirectoryURLLetsEncryptStaging
 	}
 
 	config := lego.NewConfig(&user)
 	config.CADirURL = caURL
-	config.Certificate.KeyType = certcrypto.RSA2048
 
 	client, err := lego.NewClient(config)
 	if err != nil {
@@ -56,11 +55,11 @@ func issueCertificate(
 
 	registerOptions := registration.RegisterOptions{TermsOfServiceAgreed: true}
 	if user.newAccount {
-		user.registration, err = client.Registration.Register(registerOptions)
+		user.registration, err = client.Registration.Register(ctx, registerOptions)
 	} else {
-		user.registration, err = client.Registration.ResolveAccountByKey()
+		user.registration, err = client.Registration.ResolveAccountByKey(ctx)
 		if err != nil {
-			user.registration, err = client.Registration.Register(registerOptions)
+			user.registration, err = client.Registration.Register(ctx, registerOptions)
 		}
 	}
 
@@ -71,9 +70,10 @@ func issueCertificate(
 	request := acmecertificate.ObtainRequest{
 		Domains: domainNames,
 		Bundle:  true,
+		KeyType: certcrypto.RSA2048,
 	}
 
-	cert, err := client.Certificate.Obtain(request)
+	cert, err := client.Certificate.Obtain(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func parseResult(
 		return nil, err
 	}
 
-	notAfter, notBefore, renewAt, err := fetchCertDates(*pemBlock, client)
+	notAfter, notBefore, renewAt, err := fetchCertDates(ctx, *pemBlock, client)
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +183,11 @@ func encodeIssuerCertificate(ctx context.Context, issuer []byte) (*string, error
 	return new(base64.StdEncoding.EncodeToString(pemBlock.Bytes)), nil
 }
 
-func fetchCertDates(pemBlock pem.Block, client *lego.Client) (
+func fetchCertDates(
+	ctx context.Context,
+	pemBlock pem.Block,
+	client *lego.Client,
+) (
 	notAfter *time.Time,
 	notBefore *time.Time,
 	renewAt *time.Time,
@@ -194,8 +198,7 @@ func fetchCertDates(pemBlock pem.Block, client *lego.Client) (
 		return nil, nil, nil, err
 	}
 
-	infoRequest := acmecertificate.RenewalInfoRequest{Cert: certDetails}
-	renewalInfo, err := client.Certificate.GetRenewalInfo(infoRequest)
+	renewalInfo, err := client.Certificate.GetRenewalInfo(ctx, certDetails)
 	if err != nil {
 		return nil, nil, nil, err
 	}

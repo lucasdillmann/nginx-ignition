@@ -3,18 +3,15 @@ package selectel
 import (
 	"context"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/providers/dns/selectel"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/selectel"
 
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns"
 	"dillmann.com.br/nginx-ignition/core/common/dynamicfields"
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
-const (
-	baseURLFieldID = "selectelBaseUrl"
-	tokenFieldID   = "selectelToken"
-)
+const tokenFieldID = "selectelToken"
 
 type Provider struct{}
 
@@ -35,11 +32,6 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 			Sensitive:   true,
 			Type:        dynamicfields.SingleLineTextType,
 		},
-		{
-			ID:          baseURLFieldID,
-			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsSelectelBaseUrl),
-			Type:        dynamicfields.SingleLineTextType,
-		},
 	})
 }
 
@@ -49,11 +41,9 @@ func (p *Provider) ChallengeProvider(
 	parameters map[string]any,
 ) (challenge.Provider, error) {
 	token, _ := parameters[tokenFieldID].(string)
-	baseURL, _ := parameters[baseURLFieldID].(string)
 
 	cfg := selectel.NewDefaultConfig()
 	cfg.Token = token
-	cfg.BaseURL = baseURL
 	cfg.TTL = dns.TTL
 	cfg.PropagationTimeout = dns.PropagationTimeout
 	cfg.PollingInterval = dns.PollingInterval
