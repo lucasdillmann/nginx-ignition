@@ -1,4 +1,4 @@
-:root {
+* {
     --nginxIgnition-colorBgLayout: #f5f5f5;
     --nginxIgnition-colorBgContainer: #fff;
     --nginxIgnition-colorText: #000;
@@ -10,11 +10,20 @@
     --nginxIgnition-colorError: #af1f1f;
     --nginxIgnition-colorTextDisabled: #b8b8b8;
     --nginxIgnition-colorTextTertiary: #606060;
-    --nginxIgnition-colorPrimary: #032c53;
+    --nginxIgnition-colorPrimary: #232a31;
+    --nginxIgnition-colorPrimary-hover: #26303a;
+    --nginxIgnition-colorPrimary-active: #32414e;
+    --ant-layout-sider-bg: #383e4a !important;
+
+    --ant-color-primary: var(--nginxIgnition-colorPrimary) !important;
+    --ant-color-primary-hover: var(--nginxIgnition-colorPrimary-hover) !important;
+    --ant-color-primary-active: var(--nginxIgnition-colorPrimary-active) !important;
+    --ant-menu-dark-item-bg: var(--ant-layout-sider-bg) !important;
+    --ant-menu-dark-item-selected-bg: var(--nginxIgnition-colorPrimary) !important;
 }
 
-html[data-theme="dark"] {
-    --nginxIgnition-colorBgLayout: #1f1f1f;
+html[data-theme="dark"] * {
+    --nginxIgnition-colorBgLayout: #181818;
     --nginxIgnition-colorBgContainer: #141414;
     --nginxIgnition-colorText: #fff;
     --nginxIgnition-colorTextSecondary: #8c8c8c;
@@ -25,7 +34,10 @@ html[data-theme="dark"] {
     --nginxIgnition-colorError: #d32029;
     --nginxIgnition-colorTextDisabled: #5a5a5a;
     --nginxIgnition-colorTextTertiary: #a6a6a6;
-    --nginxIgnition-colorPrimary: #032c53;
+    --nginxIgnition-colorPrimary: #323d47;
+    --nginxIgnition-colorPrimary-hover: #3e4d5a;
+    --nginxIgnition-colorPrimary-active: #45596a;
+    --ant-layout-sider-bg: #17191e !important;
 }
 
 body {

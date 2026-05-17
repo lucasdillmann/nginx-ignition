@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.38.0
+
+- UI improvements and bug fixes
+
 ## 2.37.0
 
 - Added support for SSL certificates managed by external tools (like Certbot) by reading the certificate, key, and 

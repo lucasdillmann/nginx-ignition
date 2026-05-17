@@ -26,3 +26,52 @@
 .nginx-reload-button {
     margin-left: 5px;
 }
+
+.nginx-control-container-collapsed {
+    margin: 0;
+    padding: 6px 6px;
+    border-radius: 6px;
+    align-items: center;
+}
+
+.nginx-control-container-collapsed-online {
+    background: var(--nginxIgnition-colorSuccess);
+}
+
+.nginx-control-container-collapsed-offline {
+    background: var(--nginxIgnition-colorError);
+}
+
+.nginx-control-container-collapsed-unknown {
+    background: var(--nginxIgnition-colorWarning);
+}
+
+.nginx-control-collapsed-actions {
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+
+.nginx-control-collapsed-actions .ant-btn {
+    margin: 0 !important;
+    padding-inline: 0 !important;
+    min-width: 16px !important;
+}
+
+.nginx-control-collapsed-action {
+    color: white !important;
+    font-size: 14px;
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.nginx-control-collapsed-action .anticon {
+    margin: 0;
+}
+
+.nginx-control-collapsed-actions .nginx-control-collapsed-action + .nginx-control-collapsed-action {
+    margin-inline-start: 0 !important;
+}

@@ -1,6 +1,6 @@
 import React from "react"
 import { Badge, Button, ConfigProvider, Flex, Tooltip } from "antd"
-import { InfoCircleOutlined } from "@ant-design/icons"
+import { InfoCircleOutlined, PauseCircleOutlined, PlayCircleOutlined, ReloadOutlined } from "@ant-design/icons"
 import Preloader from "../../../core/components/preloader/Preloader"
 import NginxService from "../NginxService"
 import { NginxEventListener } from "../listener/NginxEventListener"
@@ -21,7 +21,11 @@ interface NginxStatusState {
     metadata?: NginxMetadata
 }
 
-export default class NginxControl extends React.Component<any, NginxStatusState> {
+export interface NginxControlProps {
+    collapsed?: boolean
+}
+
+export default class NginxControl extends React.Component<NginxControlProps, NginxStatusState> {
     private readonly service: NginxService
     private readonly listener: NginxEventListener
 
@@ -153,6 +157,64 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
         )
     }
 
+    private collapsedStatusMetadata() {
+        const { running } = this.state
+        let statusClassName = "nginx-control-container-collapsed-unknown"
+        let statusLabel = MessageKey.FrontendNginxControlStatusUnknown
+
+        if (running === true) {
+            statusClassName = "nginx-control-container-collapsed-online"
+            statusLabel = MessageKey.FrontendNginxControlStatusOnline
+        } else if (running === false) {
+            statusClassName = "nginx-control-container-collapsed-offline"
+            statusLabel = MessageKey.FrontendNginxControlStatusOffline
+        }
+
+        return { statusClassName, statusLabel }
+    }
+
+    private renderCollapsedActionButtons() {
+        const { running } = this.state
+        const readOnly = !isAccessGranted(UserAccessLevel.READ_WRITE, permissions => permissions.nginxServer)
+
+        if (!running) {
+            return (
+                <Tooltip title={<I18n id={MessageKey.FrontendNginxControlStartButton} />}>
+                    <Button
+                        className="nginx-control-collapsed-action"
+                        type="text"
+                        icon={<PlayCircleOutlined />}
+                        onClick={() => this.performNginxAction(ActionType.START)}
+                        disabled={readOnly}
+                    />
+                </Tooltip>
+            )
+        }
+
+        return (
+            <>
+                <Tooltip title={<I18n id={MessageKey.FrontendNginxControlStopButton} />}>
+                    <Button
+                        className="nginx-control-collapsed-action"
+                        type="text"
+                        icon={<PauseCircleOutlined />}
+                        onClick={() => this.confirmStop()}
+                        disabled={readOnly}
+                    />
+                </Tooltip>
+                <Tooltip title={<I18n id={MessageKey.FrontendNginxControlReloadButton} />}>
+                    <Button
+                        className="nginx-control-collapsed-action"
+                        type="text"
+                        icon={<ReloadOutlined />}
+                        onClick={() => this.performNginxAction(ActionType.RELOAD)}
+                        disabled={readOnly}
+                    />
+                </Tooltip>
+            </>
+        )
+    }
+
     private tooltipContents() {
         const { metadata } = this.state
         if (metadata === undefined) return null
@@ -186,7 +248,27 @@ export default class NginxControl extends React.Component<any, NginxStatusState>
 
     render() {
         const { loading } = this.state
+        const { collapsed } = this.props
         const tooltipContents = this.tooltipContents()
+
+        if (collapsed) {
+            const { statusClassName } = this.collapsedStatusMetadata()
+
+            return (
+                <Preloader loading={loading} size={32}>
+                    <Flex
+                        className={`nginx-control-container nginx-control-container-collapsed ${statusClassName}`}
+                        vertical
+                    >
+                        <ConfigProvider componentSize="small">
+                            <Flex className="nginx-control-collapsed-actions">
+                                {this.renderCollapsedActionButtons()}
+                            </Flex>
+                        </ConfigProvider>
+                    </Flex>
+                </Preloader>
+            )
+        }
 
         return (
             <Preloader loading={loading} size={32}>

@@ -29,15 +29,121 @@
     font-size: 26px;
 }
 
+.shell-sider-logo-collapsed {
+    padding: 32px 0 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.shell-sider-logo-link-collapsed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.shell-sider-logo-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shell-sider-logo-letter {
+    display: block;
+    color: var(--ant-layout-sider-bg);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+}
+
 .shell-sider-menu-container {
     flex-grow: 1;
 }
 
 .shell-sider-menu-item {
     margin: 5px 10px !important;
-    padding: 10px 10px 10px 15px !important;
+    padding: 10px 8px !important;
     width: 225px !important;
     border-radius: 4px !important;
+}
+
+.shell-sider-bottom-credits {
+    color: var(--nginxIgnition-colorTextSecondary);
+    padding: 10px;
+    align-content: center;
+    text-align: center;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.shell-sider-bottom-credits .anticon {
+    margin-left: 5px;
+    font-size: 16px;
+}
+
+.shell-sider-bottom-credits .anticon:first-of-type {
+    margin-left: 10px;
+}
+
+.shell-sider-bottom-credits-collapsed {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding-bottom: 20px;
+}
+
+.shell-sider-bottom-credits-collapsed .anticon {
+    margin-left: 0;
+}
+
+.shell-sider-server-control {
+    margin-bottom: 5px;
+}
+
+.shell-sider-container-collapsed .shell-sider-server-control {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.shell-sider-container-collapsed .shell-sider-menu-item {
+    width: 42px !important;
+    margin: 6px 0 !important;
+    margin-left: 19px !important;
+}
+
+.shell-sider-container-collapsed .shell-sider-menu-container .ant-menu-inline-collapsed {
+    width: 80px;
+    --shell-collapsed-menu-item-size: 42px;
+}
+
+.shell-sider-container-collapsed .shell-sider-menu-container .ant-menu-inline-collapsed > .shell-sider-menu-item {
+    width: var(--shell-collapsed-menu-item-size) !important;
+    min-width: var(--shell-collapsed-menu-item-size) !important;
+    max-width: var(--shell-collapsed-menu-item-size) !important;
+    height: var(--shell-collapsed-menu-item-size) !important;
+    margin: 6px 0 !important;
+    margin-left: 19px !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+    line-height: var(--shell-collapsed-menu-item-size) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shell-sider-container-collapsed
+    .shell-sider-menu-container
+    .ant-menu-inline-collapsed
+    > .shell-sider-menu-item
+    .ant-menu-item-icon {
+    margin-inline-end: 0 !important;
 }
 
 .shell-content-header-container {
@@ -96,7 +202,8 @@
 }
 
 .shell-content-inner-container {
-    border-radius: 20px 0 0 20px;
+    border-radius: 17px;
+    margin: 0 10px 10px 0;
     min-height: 0;
     overflow-y: auto;
     flex-direction: column;
@@ -106,8 +213,8 @@
 
 .shell-content-inner-container-top-bar {
     flex-shrink: 0;
-    height: 40px;
-    padding: 0 25px;
+    height: 50px;
+    padding: 0 25px 0 0;
     justify-content: space-between;
     align-items: center;
 }
@@ -115,32 +222,19 @@
 .shell-content-top-bar-left {
     flex: 1;
     min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.shell-content-top-bar-collapse-trigger {
+    color: white !important;
+    font-size: 18px;
+    padding: 0;
+    margin-left: 0 !important;
 }
 
 .shell-content-top-bar-right {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-}
-
-.shell-content-inner-container-bottom-bar {
-    flex-shrink: 0;
-    height: 32px;
-    padding: 0 25px;
-    justify-content: flex-end;
-    align-items: center;
-}
-
-.shell-content-bottom-credits {
-    color: var(--nginxIgnition-colorTextSecondary);
-    font-size: 13px;
-}
-
-.shell-content-bottom-credits .anticon {
-    margin-left: 5px;
-    font-size: 16px;
-}
-
-.shell-content-bottom-credits .anticon:first-of-type {
-    margin-left: 10px;
 }
