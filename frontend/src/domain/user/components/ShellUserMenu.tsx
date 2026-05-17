@@ -1,6 +1,6 @@
 import React from "react"
 import { Flex } from "antd"
-import { LockOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons"
+import { LockOutlined, LogoutOutlined } from "@ant-design/icons"
 import AppContext from "../../../core/components/context/AppContext"
 import ThemeToggle from "../../../core/components/theme/ThemeToggle"
 import "./ShellUserMenu.css"
