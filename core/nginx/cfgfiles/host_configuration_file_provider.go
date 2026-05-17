@@ -349,7 +349,7 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	if proxyURL == nil {
 		return "", coreerror.New(
 			i18n.M(ctx.context, i18n.K.CoreNginxCfgfilesOptionNotFound).
-				V("optionID", r.Integration.OptionID),
+				V("optionId", r.Integration.OptionID),
 			true,
 		)
 	}
