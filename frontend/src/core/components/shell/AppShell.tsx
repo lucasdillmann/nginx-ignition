@@ -97,6 +97,28 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         return <>{actions.map(action => this.renderActionButton(action))}</>
     }
 
+    private renderBottomCredits() {
+        const { version } = AppContext.get().configuration
+
+        return (
+            <div className="shell-content-bottom-credits">
+                <I18n
+                    id={
+                        version.current
+                            ? MessageKey.FrontendComponentsShellVersionFormat
+                            : MessageKey.FrontendComponentsShellVersionDev
+                    }
+                    params={{ version: version.current }}
+                />
+                <span className="shell-content-bottom-credits-separator">. </span>
+                <I18n id={MessageKey.FrontendComponentsShellCreditsMadeBy} />
+                <span className="shell-content-bottom-credits-separator">. </span>
+                <LinkedinFilled onClick={() => this.handleLinkedInClick()} />
+                <GithubFilled onClick={() => this.handleGithubClick()} />
+            </div>
+        )
+    }
+
     private handleLinkedInClick() {
         window.open("https://linkedin.com/in/lucasdillmann", "_blank", "noopener")
     }
@@ -121,7 +143,6 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
             updateConfig: config => this.setState({ config }),
         })
 
-        const { version } = AppContext.get().configuration
         const { activeRoute, children, userMenu, serverControl } = this.props
         const { config } = this.state
         const activeMenuItemPath = activeRoute.activeMenuItemPath ?? activeRoute.path
@@ -146,43 +167,33 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
                         selectedKeys={activeMenuItemPath ? [activeMenuItemPath] : undefined}
                         items={this.buildMenuItemsAdapters()}
                     />
-                    <div className="shell-sider-bottom">
-                        <div className="shell-sider-bottom-credits">
-                            <I18n
-                                id={
-                                    version.current
-                                        ? MessageKey.FrontendComponentsShellVersionFormat
-                                        : MessageKey.FrontendComponentsShellVersionDev
-                                }
-                                params={{ version: version.current }}
-                            />
-                            <br />
-                            <I18n id={MessageKey.FrontendComponentsShellCreditsMadeBy} />
-                            <LinkedinFilled onClick={() => this.handleLinkedInClick()} />
-                            <GithubFilled onClick={() => this.handleGithubClick()} />
-                        </div>
-                        <div className="shell-sider-bottom-menu">{userMenu}</div>
-                    </div>
                 </Sider>
                 <Layout className="shell-content-container">
-                    <If condition={title !== undefined}>
-                        <Flex className="shell-content-header-container">
-                            <Flex className="shell-content-header" vertical>
-                                <If condition={title !== undefined}>
-                                    <h1 className="shell-content-header-title">
-                                        <I18n id={title!} />
-                                    </h1>
-                                </If>
-                                <If condition={subtitle !== undefined}>
-                                    <h2 className="shell-content-header-subtitle">
-                                        <I18n id={subtitle!} />
-                                    </h2>
-                                </If>
+                    <Flex className="shell-content-inner-container-top-bar">
+                        <div className="shell-content-top-bar-left"></div>
+                        <div className="shell-content-top-bar-right">{userMenu}</div>
+                    </Flex>
+                    <Flex className="shell-content-inner-container">
+                        <If condition={title !== undefined}>
+                            <Flex className="shell-content-header-container">
+                                <Flex className="shell-content-header" vertical>
+                                    <If condition={title !== undefined}>
+                                        <h1 className="shell-content-header-title">
+                                            <I18n id={title!} />
+                                        </h1>
+                                    </If>
+                                    <If condition={subtitle !== undefined}>
+                                        <h2 className="shell-content-header-subtitle">
+                                            <I18n id={subtitle!} />
+                                        </h2>
+                                    </If>
+                                </Flex>
+                                <Flex className="shell-content-header-actions-container">{this.renderActions()}</Flex>
                             </Flex>
-                            <Flex className="shell-content-header-actions-container">{this.renderActions()}</Flex>
-                        </Flex>
-                    </If>
-                    <Content className={mainContentClassNames}>{children}</Content>
+                        </If>
+                        <Content className={mainContentClassNames}>{children}</Content>
+                    </Flex>
+                    <Flex className="shell-content-inner-container-bottom-bar">{this.renderBottomCredits()}</Flex>
                 </Layout>
             </Layout>
         )

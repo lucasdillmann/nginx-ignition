@@ -1,13 +1,10 @@
 .shell-user-menu-container {
     color: white;
-    padding: 20px;
-    background-color: var(--nginxIgnition-colorPrimary);
-    width: 100%;
     font-size: 16px;
 }
 
 .shell-user-menu-icon {
-    padding-right: 10px;
+    padding-left: 10px;
 }
 
 .shell-user-menu-actions span,
@@ -18,4 +15,5 @@
 .shell-user-menu-user-name {
     flex-grow: 1;
     font-size: 14px;
+    margin-left: 30px
 }
