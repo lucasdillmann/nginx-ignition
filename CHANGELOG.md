@@ -4,14 +4,15 @@
 
 - Added support for SSL certificates managed by external tools (like Certbot) by reading the certificate, key, and 
   chain files from the filesystem.
-- Updated Go to 1.26.3 and other internal dependencies.
-- Updated the Let's Encrypt integration from Lego v4 to v5.0.4.
-- Added support for 26 new DNS providers for Let's Encrypt challenges: Abion, Curanet, DanDomain, Dinahosting, 51DNS,
-  DNScale, dns.la, DNS.services, EUserv, Fornex, Gehirn, Gname, HostUp, Katapult, NederHost, Ngenix, omg.lol,
-  PointDNS, Rage4, ScanNet, Tele3, Veesp, Wannafind, Webnames.ru, Xinnet, and Zilore.
+- Updated the Let's Encrypt integration from Lego v4 to v5.0.4, adding support for 26 new DNS providers for Let's
+  Encrypt challenges: Abion, Curanet, DanDomain, Dinahosting, 51DNS, DNScale, dns.la, DNS.services, EUserv, Fornex, 
+  Gehirn, Gname, HostUp, Katapult, NederHost, Ngenix, omg.lol, PointDNS, Rage4, ScanNet, Tele3, Veesp, Wannafind, 
+  Webnames.ru, Xinnet, and Zilore.
 - Removed support for DNS challenge providers that Lego no longer ships: BrandIT, CloudXNS, DNSPod, classic IIJ DNS,
   IWantMyName, and Webnames. Certificates using these integrations must be switched to another DNS provider before they
   can renew. IIJ DNS Platform Service (IIJ DPF) remains supported.
+- Updated Go to 1.26.3 and other internal dependencies.
+- Other minor improvements and bug fixes.
 
 ## 2.36.1
 

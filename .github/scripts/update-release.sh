@@ -37,17 +37,63 @@ if [[ -z "$VERSION_LINE" ]]; then
   exit 1
 fi
 
-NEXT_VERSION_LINE=$(grep -n "^## " "$CHANGELOG_FILE" | sed -n '2p' | cut -d: -f1)
+NEXT_VERSION_LINE=$(grep -n "^## " "$CHANGELOG_FILE" | awk -F: -v version_line="$VERSION_LINE" '$1 > version_line { print $1; exit }')
 if [[ -z "$NEXT_VERSION_LINE" ]]; then
   DESCRIPTION=$(sed -n "$((VERSION_LINE + 1)),\$p" "$CHANGELOG_FILE")
 else
   DESCRIPTION=$(sed -n "$((VERSION_LINE + 1)),$((NEXT_VERSION_LINE - 1))p" "$CHANGELOG_FILE")
 fi
 
+DESCRIPTION=$(printf "%s\n" "$DESCRIPTION" | awk '
+function ltrim(value) {
+  sub(/^[[:space:]]+/, "", value)
+  return value
+}
+function rtrim(value) {
+  sub(/[[:space:]]+$/, "", value)
+  return value
+}
+function flush_current() {
+  if (current_line != "") {
+    print current_line
+    current_line = ""
+  }
+}
+{
+  line = rtrim($0)
+
+  if (line ~ /^[[:space:]]*$/) {
+    flush_current()
+    if (!printed_blank_line) {
+      print ""
+      printed_blank_line = 1
+    }
+    next
+  }
+
+  printed_blank_line = 0
+
+  if (line ~ /^[[:space:]]*-[[:space:]]+/) {
+    flush_current()
+    current_line = line
+    next
+  }
+
+  if (current_line != "") {
+    current_line = current_line " " ltrim(line)
+    next
+  }
+
+  print line
+}
+END {
+  flush_current()
+}')
+
 BODY_FILE=$(mktemp)
 trap 'rm -f "$BODY_FILE"' EXIT
 
-echo "$DESCRIPTION" | sed -e :a -e '/^$/N;/\n$/ba' > "$BODY_FILE"
+printf "%s\n" "$DESCRIPTION" | sed -e :a -e '/^$/N;/\n$/ba' > "$BODY_FILE"
 echo "" >> "$BODY_FILE"
 
 TAG="$VERSION"
