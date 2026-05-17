@@ -33,7 +33,7 @@ func (p *Provider) DynamicFields(_ context.Context) []dynamicfields.DynamicField
 }
 
 func (p *Provider) Priority() int {
-	return 3
+	return 4
 }
 
 func (p *Provider) Issue(

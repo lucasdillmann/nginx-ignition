@@ -32,7 +32,7 @@ func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicFie
 }
 
 func (p *Provider) Priority() int {
-	return 4
+	return 3
 }
 
 func (p *Provider) Issue(
