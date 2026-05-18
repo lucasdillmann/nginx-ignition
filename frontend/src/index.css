@@ -18,8 +18,6 @@
     --nginxIgnition-linkText: #006fce;
     --nginxIgnition-linkTextHover: #0059a6;
     --nginxIgnition-linkTextActive: #00447e;
-    --ant-control-outline: transparent !important;
-
     --nginxIgnition-buttonDefaultText: #3d4650;
     --nginxIgnition-buttonDefaultHoverText: var(--nginxIgnition-colorPrimary-hover);
     --nginxIgnition-buttonDefaultBorder: #b8c3ce;
@@ -36,6 +34,8 @@
     --nginxIgnition-tabsCardBg: #f1f3f5;
     --nginxIgnition-tabsCardBorder: #d9dee4;
     --nginxIgnition-tabsCardActiveBg: var(--ant-color-bg-container);
+
+    --ant-control-outline: transparent !important;
     --ant-color-primary: var(--nginxIgnition-colorPrimary) !important;
     --ant-color-primary-hover: var(--nginxIgnition-colorPrimary-hover) !important;
     --ant-color-primary-active: var(--nginxIgnition-colorPrimary-active) !important;
@@ -134,7 +134,7 @@ html[data-theme="dark"] * {
     --ant-color-error-bg: #322326 !important;
     --ant-color-error-text: #c08b93 !important;
     --ant-color-error-border: #7e4e56 !important;
-    --ant-layout-sider-bg: #17191e !important;
+    --ant-layout-sider-bg: #22252c !important;
 }
 
 html[data-theme="dark"] .ant-switch {
