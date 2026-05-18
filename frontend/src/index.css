@@ -13,12 +13,69 @@
     --nginxIgnition-colorPrimary: #232a31;
     --nginxIgnition-colorPrimary-hover: #26303a;
     --nginxIgnition-colorPrimary-active: #32414e;
-    --ant-layout-sider-bg: #383e4a !important;
+    --nginxIgnition-fieldBorderHover: #8d9baa;
+    --nginxIgnition-fieldBorderActive: #738293;
+    --nginxIgnition-linkText: #006fce;
+    --nginxIgnition-linkTextHover: #0059a6;
+    --nginxIgnition-linkTextActive: #00447e;
+    --ant-control-outline: transparent !important;
 
+    --nginxIgnition-buttonDefaultText: #3d4650;
+    --nginxIgnition-buttonDefaultHoverText: var(--nginxIgnition-colorPrimary-hover);
+    --nginxIgnition-buttonDefaultBorder: #b8c3ce;
+    --nginxIgnition-buttonDefaultBg: #f5f7f9;
+    --nginxIgnition-buttonDefaultBgHover: #edf1f4;
+    --nginxIgnition-buttonDefaultBgActive: #e6ebf0;
+    --nginxIgnition-paginationText: var(--ant-color-text);
+    --nginxIgnition-paginationTextHover: var(--ant-color-link-hover);
+    --nginxIgnition-paginationTextActive: var(--ant-color-primary);
+    --nginxIgnition-tabsText: #6f7780;
+    --nginxIgnition-tabsTextHover: var(--ant-color-link-hover);
+    --nginxIgnition-tabsTextActive: var(--ant-color-primary);
+    --nginxIgnition-tabsInkBar: var(--ant-color-primary);
+    --nginxIgnition-tabsCardBg: #f1f3f5;
+    --nginxIgnition-tabsCardBorder: #d9dee4;
+    --nginxIgnition-tabsCardActiveBg: var(--ant-color-bg-container);
     --ant-color-primary: var(--nginxIgnition-colorPrimary) !important;
     --ant-color-primary-hover: var(--nginxIgnition-colorPrimary-hover) !important;
     --ant-color-primary-active: var(--nginxIgnition-colorPrimary-active) !important;
+    --ant-color-primary-bg: #eef1f4 !important;
+    --ant-color-primary-bg-hover: #e2e7ec !important;
+    --ant-color-primary-border: var(--nginxIgnition-colorPrimary-active) !important;
+    --ant-color-link: var(--nginxIgnition-linkText) !important;
+    --ant-color-link-hover: var(--nginxIgnition-linkTextHover) !important;
+    --ant-color-link-active: var(--nginxIgnition-linkTextActive) !important;
+    --ant-color-bg-layout: var(--nginxIgnition-colorBgLayout) !important;
+    --ant-color-bg-container: var(--nginxIgnition-colorBgContainer) !important;
+    --ant-color-bg-elevated: var(--nginxIgnition-colorBgElevated) !important;
+    --ant-color-text: var(--nginxIgnition-colorText) !important;
+    --ant-color-text-secondary: var(--nginxIgnition-colorTextSecondary) !important;
+    --ant-color-text-tertiary: var(--nginxIgnition-colorTextTertiary) !important;
+    --ant-color-text-quaternary: var(--nginxIgnition-colorTextSecondary) !important;
+    --ant-color-text-disabled: var(--nginxIgnition-colorTextDisabled) !important;
+    --ant-color-border: var(--nginxIgnition-colorBorderSecondary) !important;
+    --ant-color-border-secondary: var(--nginxIgnition-colorBorderSecondary) !important;
+    --ant-color-fill: #f0f1f3 !important;
+    --ant-color-fill-secondary: #f6f7f9 !important;
+    --ant-color-fill-tertiary: #fafafb !important;
+    --ant-color-fill-quaternary: #fcfcfd !important;
+    --ant-color-warning: var(--nginxIgnition-colorWarning) !important;
+    --ant-color-warning-bg: #fff7e3 !important;
+    --ant-color-warning-text: #7a5d11 !important;
+    --ant-color-warning-border: #d9b96d !important;
+    --ant-color-success: var(--nginxIgnition-colorSuccess) !important;
+    --ant-color-success-bg: #edf7e8 !important;
+    --ant-color-success-text: #2f6214 !important;
+    --ant-color-success-border: #7db15b !important;
+    --ant-color-error: var(--nginxIgnition-colorError) !important;
+    --ant-color-error-hover: #b04141 !important;
+    --ant-color-error-bg: #fff1f0 !important;
+    --ant-color-error-text: #8d1f1f !important;
+    --ant-color-error-border: #d68d8d !important;
+    --ant-layout-sider-bg: #383e4a !important;
     --ant-menu-dark-item-bg: var(--ant-layout-sider-bg) !important;
+    --ant-menu-dark-sub-menu-item-bg: var(--ant-layout-sider-bg) !important;
+    --ant-menu-dark-item-hover-bg: var(--nginxIgnition-colorPrimary-hover) !important;
     --ant-menu-dark-item-selected-bg: var(--nginxIgnition-colorPrimary) !important;
 }
 
@@ -31,13 +88,69 @@ html[data-theme="dark"] * {
     --nginxIgnition-colorBorderSecondary: #303030;
     --nginxIgnition-colorWarning: #d8bd14;
     --nginxIgnition-colorSuccess: #49aa19;
-    --nginxIgnition-colorError: #d32029;
+    --nginxIgnition-colorError: #a04550;
     --nginxIgnition-colorTextDisabled: #5a5a5a;
     --nginxIgnition-colorTextTertiary: #a6a6a6;
     --nginxIgnition-colorPrimary: #323d47;
     --nginxIgnition-colorPrimary-hover: #3e4d5a;
     --nginxIgnition-colorPrimary-active: #45596a;
+    --nginxIgnition-fieldBorderHover: #6e7d8a;
+    --nginxIgnition-fieldBorderActive: #8797a6;
+    --nginxIgnition-linkText: #8aa4bc;
+    --nginxIgnition-linkTextHover: #a2b9cd;
+    --nginxIgnition-linkTextActive: #6f8aa2;
+    --nginxIgnition-buttonDefaultText: #adb8c3;
+    --nginxIgnition-buttonDefaultHoverText: #d1d9e0;
+    --nginxIgnition-buttonDefaultBorder: #4c5864;
+    --nginxIgnition-buttonDefaultBg: #2a3139;
+    --nginxIgnition-buttonDefaultBgHover: #333b44;
+    --nginxIgnition-buttonDefaultBgActive: #3b4550;
+    --nginxIgnition-paginationText: #8f99a4;
+    --nginxIgnition-paginationTextHover: #a9b4bf;
+    --nginxIgnition-paginationTextActive: #b7c7d6;
+    --nginxIgnition-tabsText: var(--ant-color-text-secondary);
+    --nginxIgnition-tabsTextHover: var(--ant-color-link-hover);
+    --nginxIgnition-tabsTextActive: #9fb3c6;
+    --nginxIgnition-tabsInkBar: #9fb3c6;
+    --nginxIgnition-tabsCardBg: var(--ant-color-bg-elevated);
+    --nginxIgnition-tabsCardBorder: var(--ant-color-border-secondary);
+    --nginxIgnition-tabsCardActiveBg: var(--ant-color-bg-container);
+    --ant-color-primary-bg: #1e252d !important;
+    --ant-color-primary-bg-hover: #26313b !important;
+    --ant-color-link: var(--nginxIgnition-linkText) !important;
+    --ant-color-link-hover: var(--nginxIgnition-linkTextHover) !important;
+    --ant-color-link-active: var(--nginxIgnition-linkTextActive) !important;
+    --ant-color-fill: #202020 !important;
+    --ant-color-fill-secondary: #242424 !important;
+    --ant-color-fill-tertiary: #272727 !important;
+    --ant-color-fill-quaternary: #2b2b2b !important;
+    --ant-color-warning-bg: #3f350f !important;
+    --ant-color-warning-text: #f0d763 !important;
+    --ant-color-warning-border: #8f7b1f !important;
+    --ant-color-success-bg: #1f3213 !important;
+    --ant-color-success-text: #8ecd63 !important;
+    --ant-color-success-border: #54892d !important;
+    --ant-color-error-hover: #a8535e !important;
+    --ant-color-error-bg: #322326 !important;
+    --ant-color-error-text: #c08b93 !important;
+    --ant-color-error-border: #7e4e56 !important;
     --ant-layout-sider-bg: #17191e !important;
+}
+
+html[data-theme="dark"] .ant-switch {
+    background: #2a3139;
+}
+
+html[data-theme="dark"] .ant-switch:hover:not(.ant-switch-disabled) {
+    background: #333b44;
+}
+
+html[data-theme="dark"] .ant-switch.ant-switch-checked {
+    background: #5f768a;
+}
+
+html[data-theme="dark"] .ant-switch.ant-switch-checked:hover:not(.ant-switch-disabled) {
+    background: #6f879b;
 }
 
 body {
@@ -50,9 +163,131 @@ body {
     background: var(--nginxIgnition-colorBgLayout);
 }
 
+html:not([data-theme="dark"]) a,
+html:not([data-theme="dark"]) .ant-typography a {
+    color: var(--nginxIgnition-linkText);
+}
+
+html:not([data-theme="dark"]) a:hover,
+html:not([data-theme="dark"]) a:focus,
+html:not([data-theme="dark"]) .ant-typography a:hover,
+html:not([data-theme="dark"]) .ant-typography a:focus {
+    color: var(--nginxIgnition-linkTextHover);
+}
+
+html:not([data-theme="dark"]) a:active,
+html:not([data-theme="dark"]) .ant-typography a:active {
+    color: var(--nginxIgnition-linkTextActive);
+}
+
 .ant-app,
 #nginx-ignition-root {
     height: 100vh;
+}
+
+.ant-input-outlined:hover,
+.ant-input-affix-wrapper:hover,
+.ant-input-number-outlined:hover,
+.ant-picker-outlined:hover {
+    border-color: var(--nginxIgnition-fieldBorderHover) !important;
+}
+
+.ant-input-outlined:focus,
+.ant-input-outlined:focus-within,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper:focus-within,
+.ant-input-number-outlined:focus,
+.ant-input-number-outlined:focus-within,
+.ant-picker-outlined:focus,
+.ant-picker-outlined:focus-within {
+    border-color: var(--nginxIgnition-fieldBorderActive) !important;
+}
+
+.ant-btn-color-default.ant-btn-variant-solid,
+.ant-btn-color-default.ant-btn-variant-filled {
+    color: var(--nginxIgnition-buttonDefaultText) !important;
+    background: var(--nginxIgnition-buttonDefaultBg) !important;
+    border-color: var(--nginxIgnition-buttonDefaultBorder) !important;
+}
+
+.ant-btn-color-default.ant-btn-variant-solid:hover:not(:disabled),
+.ant-btn-color-default.ant-btn-variant-filled:hover:not(:disabled) {
+    color: var(--nginxIgnition-buttonDefaultText) !important;
+    background: var(--nginxIgnition-buttonDefaultBgHover) !important;
+    border-color: var(--nginxIgnition-buttonDefaultBorder) !important;
+}
+
+.ant-btn-color-default.ant-btn-variant-solid:active:not(:disabled),
+.ant-btn-color-default.ant-btn-variant-filled:active:not(:disabled) {
+    background: var(--nginxIgnition-buttonDefaultBgActive) !important;
+}
+
+.ant-btn-color-default.ant-btn-variant-outlined,
+.ant-btn-color-default.ant-btn-variant-dashed {
+    color: var(--nginxIgnition-buttonDefaultText) !important;
+    border-color: var(--nginxIgnition-buttonDefaultBorder) !important;
+}
+
+.ant-btn-color-default.ant-btn-variant-outlined:hover:not(:disabled),
+.ant-btn-color-default.ant-btn-variant-dashed:hover:not(:disabled) {
+    color: var(--nginxIgnition-buttonDefaultHoverText) !important;
+    border-color: var(--nginxIgnition-fieldBorderHover) !important;
+    background: var(--nginxIgnition-buttonDefaultBgHover) !important;
+}
+
+.ant-btn-color-default.ant-btn-variant-text,
+.ant-btn-color-default.ant-btn-variant-link {
+    color: var(--nginxIgnition-buttonDefaultText) !important;
+}
+
+.ant-btn-color-default.ant-btn-variant-text:hover:not(:disabled),
+.ant-btn-color-default.ant-btn-variant-link:hover:not(:disabled) {
+    color: var(--nginxIgnition-buttonDefaultHoverText) !important;
+}
+
+.ant-tabs .ant-tabs-tab {
+    color: var(--nginxIgnition-tabsText);
+}
+
+.ant-tabs .ant-tabs-tab:hover {
+    color: var(--nginxIgnition-tabsTextHover);
+}
+
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: var(--nginxIgnition-tabsTextActive);
+}
+
+.ant-tabs .ant-tabs-ink-bar {
+    background: var(--nginxIgnition-tabsInkBar);
+}
+
+.ant-tabs .ant-tabs-nav::before {
+    border-color: var(--ant-color-border-secondary) !important;
+}
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+    background: var(--nginxIgnition-tabsCardBg);
+    border-color: var(--nginxIgnition-tabsCardBorder) !important;
+}
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active {
+    background: var(--nginxIgnition-tabsCardActiveBg);
+}
+
+.pagination-container.ant-pagination .ant-pagination-item a,
+.pagination-container .ant-pagination-item a {
+    color: var(--nginxIgnition-paginationText) !important;
+}
+
+.pagination-container.ant-pagination .ant-pagination-item:hover a,
+.pagination-container .ant-pagination-item:hover a {
+    color: var(--nginxIgnition-paginationTextHover) !important;
+}
+
+.pagination-container.ant-pagination .ant-pagination-item-active a,
+.pagination-container .ant-pagination-item-active a {
+    color: var(--nginxIgnition-paginationTextActive) !important;
+    font-weight: 600;
 }
 
 code {

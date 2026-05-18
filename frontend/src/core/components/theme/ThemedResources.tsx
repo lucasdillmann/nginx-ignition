@@ -34,7 +34,7 @@ export function themedColors(): ThemedColors {
     const darkMode = ThemeContext.isDarkMode()
 
     return {
-        DANGER: darkMode ? "#a81f39" : "#8C2B36",
-        SUCCESS: darkMode ? "#6a8737" : "#3d9f07",
+        DANGER: darkMode ? "#b49399" : "#8C2B36",
+        SUCCESS: darkMode ? "#8c9f72" : "#3d9f07",
     }
 }

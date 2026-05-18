@@ -20,6 +20,7 @@ import StreamSupportWarning from "./components/StreamSupportWarning"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n, raw } from "../../core/i18n/I18n"
 import { themedColors } from "../../core/components/theme/ThemedResources"
+import ThemeContext from "../../core/components/context/ThemeContext"
 
 export default class StreamListPage extends React.PureComponent {
     private readonly service: StreamService
@@ -96,7 +97,14 @@ export default class StreamListPage extends React.PureComponent {
                         </Link>
 
                         <Link to="" onClick={() => this.toggleStreamStatus(item)}>
-                            <PoweroffOutlined className="action-icon" />
+                            <PoweroffOutlined
+                                className="action-icon"
+                                style={
+                                    ThemeContext.isDarkMode()
+                                        ? { color: item.enabled ? themedColors().SUCCESS : themedColors().DANGER }
+                                        : undefined
+                                }
+                            />
                         </Link>
 
                         <Link to="" onClick={() => this.deleteStream(item)}>

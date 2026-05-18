@@ -55,11 +55,29 @@ export default class NginxIgnition extends React.Component<unknown, NginxIgnitio
     }
 
     render() {
-        const { locale } = this.state
+        const { darkMode, locale } = this.state
+        const selectTheme = darkMode
+            ? {
+                  hoverBorderColor: "#6e7d8a",
+                  activeBorderColor: "#8797a6",
+              }
+            : {
+                  hoverBorderColor: "#8d9baa",
+                  activeBorderColor: "#738293",
+              }
 
         return (
             <ErrorBoundary>
-                <ConfigProvider theme={{ algorithm: ThemeContext.algorithm(), cssVar: {} }} locale={locale}>
+                <ConfigProvider
+                    theme={{
+                        algorithm: ThemeContext.algorithm(),
+                        cssVar: {},
+                        components: {
+                            Select: selectTheme,
+                        },
+                    }}
+                    locale={locale}
+                >
                     <App>
                         <ThemedResources />
                         <AppContainer />

@@ -261,6 +261,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                     backdropFilter: "blur(4px)",
                     color: "white",
                     padding: "60px 40px 40px",
+                    borderRadius: "15px",
                 }}
                 otherStyle={{
                     width: 10,

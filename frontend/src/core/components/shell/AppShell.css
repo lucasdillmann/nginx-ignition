@@ -1,5 +1,16 @@
 .shell-container {
     min-height: 100vh;
+    --nginxIgnition-shellSiderForeground: #fff;
+    --nginxIgnition-shellSiderLogoCircleBg: #fff;
+    --nginxIgnition-shellSiderLogoLinkHover: #d7e1ea;
+    --nginxIgnition-shellTriggerColor: #c8d3dd;
+    --nginxIgnition-shellTriggerColorHover: #d7e0e8;
+}
+
+html[data-theme="dark"] .shell-container {
+    --nginxIgnition-shellSiderLogoLinkHover: #c2ced9;
+    --nginxIgnition-shellTriggerColor: #a5b3bf;
+    --nginxIgnition-shellTriggerColorHover: #b4c0cb;
 }
 
 .shell-sider-container {
@@ -19,14 +30,33 @@
 }
 
 .shell-sider-logo {
-    color: white;
+    color: var(--nginxIgnition-shellSiderForeground);
     font-size: 18px;
     padding: 58px 20px 20px;
 }
 
 .shell-sider-logo-link {
-    color: white;
+    color: var(--nginxIgnition-shellSiderForeground);
     font-size: 26px;
+}
+
+.shell-sider-logo-link:hover,
+.shell-sider-logo-link:focus,
+.shell-sider-logo-link-collapsed:hover,
+.shell-sider-logo-link-collapsed:focus {
+    color: var(--nginxIgnition-shellSiderLogoLinkHover);
+}
+
+html:not([data-theme="dark"]) .shell-sider-logo-link,
+html:not([data-theme="dark"]) .shell-sider-logo-link-collapsed {
+    color: var(--nginxIgnition-shellSiderForeground) !important;
+}
+
+html:not([data-theme="dark"]) .shell-sider-logo-link:hover,
+html:not([data-theme="dark"]) .shell-sider-logo-link:focus,
+html:not([data-theme="dark"]) .shell-sider-logo-link-collapsed:hover,
+html:not([data-theme="dark"]) .shell-sider-logo-link-collapsed:focus {
+    color: var(--nginxIgnition-shellSiderLogoLinkHover) !important;
 }
 
 .shell-sider-logo-collapsed {
@@ -39,14 +69,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--nginxIgnition-shellSiderForeground);
 }
 
 .shell-sider-logo-circle {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: white;
+    background: var(--nginxIgnition-shellSiderLogoCircleBg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -95,11 +125,11 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding-bottom: 20px;
+    padding: 0 0 20px;
 }
 
 .shell-sider-bottom-credits-collapsed .anticon {
-    margin-left: 0;
+    margin-left: 0 !important;
 }
 
 .shell-sider-server-control {
@@ -226,11 +256,19 @@
     align-items: center;
 }
 
-.shell-content-top-bar-collapse-trigger {
-    color: white !important;
+.shell-content-top-bar-collapse-trigger,
+.shell-content-top-bar-collapse-trigger.ant-btn-color-default.ant-btn-variant-text {
+    color: var(--nginxIgnition-shellTriggerColor) !important;
     font-size: 18px;
     padding: 0;
     margin-left: 0 !important;
+}
+
+.shell-content-top-bar-collapse-trigger:hover,
+.shell-content-top-bar-collapse-trigger:focus,
+.shell-content-top-bar-collapse-trigger.ant-btn-color-default.ant-btn-variant-text:hover,
+.shell-content-top-bar-collapse-trigger.ant-btn-color-default.ant-btn-variant-text:focus {
+    color: var(--nginxIgnition-shellTriggerColorHover) !important;
 }
 
 .shell-content-top-bar-right {

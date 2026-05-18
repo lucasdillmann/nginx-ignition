@@ -1,6 +1,6 @@
 import React from "react"
 import { Badge, Button, ConfigProvider, Flex, Tooltip } from "antd"
-import { InfoCircleOutlined, PauseCircleOutlined, PlayCircleOutlined, ReloadOutlined } from "@ant-design/icons"
+import { InfoCircleOutlined, PoweroffOutlined, ReloadOutlined } from "@ant-design/icons"
 import Preloader from "../../../core/components/preloader/Preloader"
 import NginxService from "../NginxService"
 import { NginxEventListener } from "../listener/NginxEventListener"
@@ -183,7 +183,7 @@ export default class NginxControl extends React.Component<NginxControlProps, Ngi
                     <Button
                         className="nginx-control-collapsed-action"
                         type="text"
-                        icon={<PlayCircleOutlined />}
+                        icon={<PoweroffOutlined />}
                         onClick={() => this.performNginxAction(ActionType.START)}
                         disabled={readOnly}
                     />
@@ -197,7 +197,7 @@ export default class NginxControl extends React.Component<NginxControlProps, Ngi
                     <Button
                         className="nginx-control-collapsed-action"
                         type="text"
-                        icon={<PauseCircleOutlined />}
+                        icon={<PoweroffOutlined />}
                         onClick={() => this.confirmStop()}
                         disabled={readOnly}
                     />
