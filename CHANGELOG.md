@@ -2,7 +2,7 @@
 
 ## 2.38.0
 
-- UI improvements and bug fixes
+- UI overhaul and general improvements, including support for a new compact mode
 - Other minor improvements and bug fixes
 
 ## 2.37.0
