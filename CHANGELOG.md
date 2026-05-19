@@ -3,6 +3,7 @@
 ## 2.38.0
 
 - UI improvements and bug fixes
+- Other minor improvements and bug fixes
 
 ## 2.37.0
 

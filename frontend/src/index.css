@@ -1,10 +1,12 @@
 * {
+    --nginxIgnition-scrollbarThumb: #a0a0a0;
+    --nginxIgnition-scrollbarTrack: transparent;
     --nginxIgnition-colorBgLayout: #f5f5f5;
     --nginxIgnition-colorBgContainer: #fff;
     --nginxIgnition-colorText: #000;
     --nginxIgnition-colorTextSecondary: #aeaeae;
     --nginxIgnition-colorBgElevated: #fafafa;
-    --nginxIgnition-colorBorderSecondary: #f0f0f0;
+    --nginxIgnition-colorBorderSecondary: #cdcdcd;
     --nginxIgnition-colorWarning: #a67a17;
     --nginxIgnition-colorSuccess: #3f831a;
     --nginxIgnition-colorError: #af1f1f;
@@ -80,6 +82,7 @@
 }
 
 html[data-theme="dark"] * {
+    --nginxIgnition-scrollbarThumb: #555e6a;
     --nginxIgnition-colorBgLayout: #181818;
     --nginxIgnition-colorBgContainer: #141414;
     --nginxIgnition-colorText: #fff;
@@ -109,17 +112,12 @@ html[data-theme="dark"] * {
     --nginxIgnition-paginationTextHover: #a9b4bf;
     --nginxIgnition-paginationTextActive: #b7c7d6;
     --nginxIgnition-tabsText: var(--ant-color-text-secondary);
-    --nginxIgnition-tabsTextHover: var(--ant-color-link-hover);
     --nginxIgnition-tabsTextActive: #9fb3c6;
     --nginxIgnition-tabsInkBar: #9fb3c6;
     --nginxIgnition-tabsCardBg: var(--ant-color-bg-elevated);
     --nginxIgnition-tabsCardBorder: var(--ant-color-border-secondary);
-    --nginxIgnition-tabsCardActiveBg: var(--ant-color-bg-container);
     --ant-color-primary-bg: #1e252d !important;
     --ant-color-primary-bg-hover: #26313b !important;
-    --ant-color-link: var(--nginxIgnition-linkText) !important;
-    --ant-color-link-hover: var(--nginxIgnition-linkTextHover) !important;
-    --ant-color-link-active: var(--nginxIgnition-linkTextActive) !important;
     --ant-color-fill: #202020 !important;
     --ant-color-fill-secondary: #242424 !important;
     --ant-color-fill-tertiary: #272727 !important;
@@ -161,6 +159,21 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background: var(--nginxIgnition-colorBgLayout);
+    scrollbar-color: var(--nginxIgnition-scrollbarThumb) var(--nginxIgnition-scrollbarTrack);
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--nginxIgnition-scrollbarTrack);
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--nginxIgnition-scrollbarThumb);
+    border-radius: 4px;
 }
 
 html:not([data-theme="dark"]) a,

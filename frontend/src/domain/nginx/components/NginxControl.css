@@ -166,13 +166,37 @@ html[data-theme="dark"] .nginx-control-container-collapsed-unknown {
 }
 
 .nginx-control-collapsed-action {
-    color: white !important;
+    color: rgba(255, 255, 255, 0.85) !important;
     font-size: 14px;
     width: 16px !important;
     height: 16px !important;
     min-width: 16px !important;
     margin: 0 !important;
     padding: 0 !important;
+}
+
+.nginx-control-container-collapsed-online .nginx-control-collapsed-action {
+    color: #d6eac8 !important;
+}
+
+.nginx-control-container-collapsed-offline .nginx-control-collapsed-action {
+    color: #f0d0d6 !important;
+}
+
+.nginx-control-container-collapsed-unknown .nginx-control-collapsed-action {
+    color: #ede0b8 !important;
+}
+
+html[data-theme="dark"] .nginx-control-container-collapsed-online .nginx-control-collapsed-action {
+    color: #c5ddb4 !important;
+}
+
+html[data-theme="dark"] .nginx-control-container-collapsed-offline .nginx-control-collapsed-action {
+    color: #e4c0c8 !important;
+}
+
+html[data-theme="dark"] .nginx-control-container-collapsed-unknown .nginx-control-collapsed-action {
+    color: #ddd3a5 !important;
 }
 
 .nginx-control-collapsed-action .anticon {
