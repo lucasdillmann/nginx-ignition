@@ -112,7 +112,9 @@ func (m *Metadata) StreamSupportType() SupportType {
 }
 
 func (m *Metadata) StatsSupportType() SupportType {
-	if m.hasModule("nginx-module-vts") || m.hasModule("ngx_http_vts_module") {
+	if m.hasModule("nginx-module-vts") ||
+		m.hasModule("ngx_http_vts_module") ||
+		m.hasModule("ngx_http_vhost_traffic_status_module") {
 		return DynamicSupportType
 	}
 

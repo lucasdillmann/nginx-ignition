@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.39.0
+
+- Optimization of the Docker image to use the latest nginx mainline version while reducing its size and layers.
+
 ## 2.38.0
 
 - General UI improvements, including a visual overhaul and a new compact menu mode
