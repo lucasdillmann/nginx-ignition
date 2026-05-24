@@ -1,0 +1,6 @@
+html:not([data-theme="dark"]) .tag-group-tag-link,
+html:not([data-theme="dark"]) .tag-group-tag-link:hover,
+html:not([data-theme="dark"]) .tag-group-tag-link:focus,
+html:not([data-theme="dark"]) .tag-group-tag-link:active {
+    color: inherit;
+}

@@ -11,6 +11,7 @@ html[data-theme="dark"] .shell-container {
     --nginxIgnition-shellSiderLogoLinkHover: #c2ced9;
     --nginxIgnition-shellTriggerColor: #a5b3bf;
     --nginxIgnition-shellTriggerColorHover: #b4c0cb;
+    --nginxIgnition-shellHeaderBg: #1a1a1a;
 }
 
 .shell-sider-container {
@@ -181,7 +182,7 @@ html:not([data-theme="dark"]) .shell-sider-logo-link-collapsed:focus {
     vertical-align: center;
     position: sticky;
     top: 0;
-    background: var(--nginxIgnition-colorBgLayout);
+    background: var(--nginxIgnition-shellHeaderBg, var(--nginxIgnition-colorBgLayout));
     z-index: 99;
 }
 

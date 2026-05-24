@@ -11,7 +11,7 @@
 }
 
 .home-guide-header-container {
-    background: var(--nginxIgnition-colorBgLayout);
+    background: var(--nginxIgnition-shellHeaderBg, var(--nginxIgnition-colorBgLayout));
     padding: 120px 40px;
     margin-bottom: 50px;
 }
@@ -70,7 +70,7 @@
 }
 
 .home-guide-footer-container {
-    background: var(--nginxIgnition-colorBgLayout);
+    background: var(--nginxIgnition-shellHeaderBg, var(--nginxIgnition-colorBgLayout));
     padding: 60px 40px;
 }
 

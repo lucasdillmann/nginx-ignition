@@ -2,6 +2,7 @@ import React from "react"
 import { Tag, Tooltip } from "antd"
 import { I18n, I18nMessage, raw } from "../../i18n/I18n"
 import MessageKey from "../../i18n/model/MessageKey.generated"
+import "./TagGroup.css"
 
 const DEFAULT_MAXIMUM_SIZE = 3
 
@@ -30,7 +31,7 @@ export default class TagGroup extends React.Component<TagGroupProps> {
         if (this.isTagGroupItem(value)) {
             return (
                 <Tag key={value.name} style={TAG_STYLE}>
-                    <a href={value.url} target="_blank" rel="noopener noreferrer">
+                    <a className="tag-group-tag-link" href={value.url} target="_blank" rel="noopener noreferrer">
                         {value.name}
                     </a>
                 </Tag>
@@ -49,7 +50,7 @@ export default class TagGroup extends React.Component<TagGroupProps> {
         if (this.isTagGroupItem(value)) {
             return (
                 <span key={key}>
-                    <a href={value.url} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>
+                    <a className="tag-group-tag-link" href={value.url} target="_blank" rel="noopener noreferrer">
                         {value.name}
                     </a>
                     <br />
