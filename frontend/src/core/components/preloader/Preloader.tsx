@@ -1,6 +1,7 @@
 import React, { PropsWithChildren } from "react"
 import { Spin } from "antd"
 import { LoadingOutlined } from "@ant-design/icons"
+import "./Preloader.css"
 
 interface PreloaderState {
     loading: boolean
@@ -42,6 +43,10 @@ export default class Preloader extends React.PureComponent<PreloaderProps, Prelo
 
         if (!loading) return children
 
-        return <Spin indicator={<LoadingOutlined style={{ fontSize: size ?? 48 }} spin />}>{children}</Spin>
+        return (
+            <Spin className="preloader" indicator={<LoadingOutlined style={{ fontSize: size ?? 48 }} spin />}>
+                <div className="preloader-content">{children}</div>
+            </Spin>
+        )
     }
 }

@@ -45,8 +45,6 @@ export default class NginxIgnition extends React.Component<unknown, NginxIgnitio
         ApiClientEventDispatcher.register(new SessionExpiredApiClientEventListener())
 
         document.documentElement.setAttribute("data-theme", ThemeContext.isDarkMode() ? "dark" : "light")
-        const preloader = document.getElementById("preloader") as HTMLElement
-        preloader?.remove()
     }
 
     componentWillUnmount() {

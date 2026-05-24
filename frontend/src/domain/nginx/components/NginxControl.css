@@ -1,7 +1,7 @@
 .nginx-control-container {
     padding: 15px;
     margin: 0 10px 10px 0;
-    background: var(--nginxIgnition-colorPrimary);
+    background: var(--nginxIgnition-shellAccentBg);
     color: white;
     border-radius: 0 10px 10px 0;
 }

@@ -3,6 +3,7 @@ import { Empty } from "antd"
 import { Pie } from "@ant-design/charts"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { getChartColorScale } from "../utils/StatsChartUtils"
 
 interface CountryCodeData {
     country: string
@@ -18,6 +19,7 @@ export interface CountryCodeChartProps {
 export default class CountryCodeChart extends React.PureComponent<CountryCodeChartProps> {
     render() {
         const { data, theme, disableAnimation } = this.props
+        const palette = getChartColorScale(data.map(item => item.country))
 
         return (
             <div className="traffic-stats-chart-container">
@@ -42,6 +44,7 @@ export default class CountryCodeChart extends React.PureComponent<CountryCodeCha
                                 position: "bottom",
                             },
                         }}
+                        scale={{ color: palette }}
                         height={300}
                         theme={theme}
                         animation={!disableAnimation}

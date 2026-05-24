@@ -3,6 +3,7 @@ import { Empty } from "antd"
 import { Area } from "@ant-design/charts"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { getChartPrimaryColor } from "../utils/StatsChartUtils"
 
 interface ResponseTimeData {
     time: string
@@ -19,6 +20,7 @@ export interface ResponseTimeChartProps {
 export default class ResponseTimeChart extends React.PureComponent<ResponseTimeChartProps> {
     render() {
         const { data, theme, disableAnimation } = this.props
+        const primaryColor = getChartPrimaryColor()
 
         return (
             <div className="traffic-stats-chart-container">
@@ -34,6 +36,8 @@ export default class ResponseTimeChart extends React.PureComponent<ResponseTimeC
                         yField="value"
                         height={300}
                         axis={{ x: { labelAutoHide: true } }}
+                        scale={{ color: { range: [primaryColor] } }}
+                        style={{ fill: primaryColor }}
                         theme={theme}
                         // @ts-expect-error attribute not mapped in the TS contract
                         animation={!disableAnimation}

@@ -11,6 +11,7 @@ import {
     buildUserAgentData,
     buildCountryCodeData,
     buildCityData,
+    getChartPrimaryColor,
 } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
@@ -97,6 +98,7 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
         const { serverZones } = this.props.stats
         const { theme, disableAnimation } = this.props
         const data = buildTrafficByDomainData(serverZones)
+        const primaryColor = getChartPrimaryColor()
 
         if (data.length === 0) {
             return <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
@@ -121,6 +123,8 @@ export default class GlobalTab extends React.PureComponent<GlobalTabProps> {
                             labelAutoRotate: true,
                         },
                     }}
+                    scale={{ color: { range: [primaryColor] } }}
+                    style={{ fill: primaryColor }}
                     theme={theme}
                     animation={!disableAnimation}
                 />

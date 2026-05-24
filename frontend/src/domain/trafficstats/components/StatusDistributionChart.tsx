@@ -3,7 +3,7 @@ import { Empty } from "antd"
 import { Pie } from "@ant-design/charts"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { STATUS_COLORS, StatusDataItem } from "../utils/StatsChartUtils"
+import { getStatusChartColors, StatusDataItem } from "../utils/StatsChartUtils"
 
 export interface StatusDistributionChartProps {
     data: StatusDataItem[]
@@ -18,6 +18,8 @@ export default class StatusDistributionChart extends React.PureComponent<StatusD
         if (data.length === 0) {
             return <Empty description={<I18n id={MessageKey.FrontendTrafficStatsNoData} />} />
         }
+
+        const { domain, range } = getStatusChartColors()
 
         return (
             <div className="traffic-stats-chart-container">
@@ -41,7 +43,8 @@ export default class StatusDistributionChart extends React.PureComponent<StatusD
                     }}
                     scale={{
                         color: {
-                            range: Object.values(STATUS_COLORS),
+                            domain,
+                            range,
                         },
                     }}
                     height={300}

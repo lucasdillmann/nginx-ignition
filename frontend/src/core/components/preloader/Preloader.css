@@ -1,0 +1,10 @@
+.shell-content-main .preloader {
+    flex: 1;
+    min-height: 100%;
+    width: 100%;
+}
+
+.preloader .ant-spin-container,
+.preloader-content {
+    min-height: 100%;
+}

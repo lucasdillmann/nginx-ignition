@@ -47,16 +47,21 @@ jobs:
         run: echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
       - name: Build and release
         run: make build-release VERSION=${{ steps.tag.outputs.VERSION }}
-      - name: Update GitHub Release
+      - name: Resolve Docker image hash
+        id: docker
+        run: |
+          RAW_DIGEST=$(docker buildx imagetools inspect dillmann/nginx-ignition:${{ steps.tag.outputs.VERSION }} --format '{{json .}}' | jq -r '.manifest.manifests[0].digest')
+          echo "DOCKER_IMAGE_HASH=$(echo $RAW_DIGEST | sed 's/:/-/g')" >> $GITHUB_OUTPUT
+      - name: Create draft release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          RAW_DIGEST=$(docker buildx imagetools inspect dillmann/nginx-ignition:${{ steps.tag.outputs.VERSION }} --format '{{json .}}' | jq -r '.manifest.manifests[0].digest')
-          DOCKER_IMAGE_HASH=$(echo $RAW_DIGEST | sed 's/:/-/g')
-          ./.github/scripts/update-release.sh "$DOCKER_IMAGE_HASH" "false" "${{ steps.tag.outputs.VERSION }}"
+          ./.github/scripts/update-release.sh "${{ steps.docker.outputs.DOCKER_IMAGE_HASH }}" "false" "${{ steps.tag.outputs.VERSION }}" "true"
       - name: Upload distribution files
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.tag.outputs.VERSION }}
+          draft: true
           files: |
             build/nginx-ignition*.zip
             build/nginx-ignition*.deb
@@ -66,3 +71,8 @@ jobs:
             build/nginx-ignition*.ipk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./.github/scripts/update-release.sh "${{ steps.docker.outputs.DOCKER_IMAGE_HASH }}" "false" "${{ steps.tag.outputs.VERSION }}" "false"

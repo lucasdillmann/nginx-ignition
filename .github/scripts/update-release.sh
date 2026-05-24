@@ -6,6 +6,7 @@ DOCKER_IMAGE_NAME="dillmann/nginx-ignition"
 DOCKER_IMAGE_HASH=$1
 PRERELEASE=$2
 VERSION=$3
+DRAFT=${4:-false}
 
 if ! command -v gh &> /dev/null; then
   echo "Error: gh CLI is not installed" >&2
@@ -105,10 +106,18 @@ echo "Docker image: [$DOCKER_IMAGE_NAME:$TAG](https://hub.docker.com/layers/$DOC
 
 if gh release view "$TAG" >/dev/null 2>&1; then
   echo "Release $TAG already exists. Updating..."
-  gh release edit "$TAG" --notes-file "$BODY_FILE" --prerelease="$PRERELEASE"
+  if [[ "$DRAFT" == "true" ]]; then
+    gh release edit "$TAG" --notes-file "$BODY_FILE" --prerelease="$PRERELEASE" --draft=true
+  else
+    gh release edit "$TAG" --notes-file "$BODY_FILE" --prerelease="$PRERELEASE" --draft=false
+  fi
 else
   echo "Creating new release $TAG..."
-  gh release create "$TAG" --notes-file "$BODY_FILE" --prerelease="$PRERELEASE" --title "$VERSION"
+  if [[ "$DRAFT" == "true" ]]; then
+    gh release create "$TAG" --notes-file "$BODY_FILE" --prerelease="$PRERELEASE" --title "$VERSION" --draft
+  else
+    gh release create "$TAG" --notes-file "$BODY_FILE" --prerelease="$PRERELEASE" --title "$VERSION"
+  fi
 fi
 
 if [[ "$PRERELEASE" == "false" ]]; then

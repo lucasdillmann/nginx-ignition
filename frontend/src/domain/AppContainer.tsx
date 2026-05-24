@@ -49,10 +49,19 @@ export default class AppContainer extends React.Component<unknown, AppContainerS
         this.reload()
     }
 
+    componentDidUpdate(_prevProps: unknown, prevState: AppContainerState) {
+        if (prevState.loading && !this.state.loading) {
+            document.getElementById("preloader")?.remove()
+        }
+    }
+
     render() {
         const { error, loading } = this.state
         if (error !== undefined) return <FullPageError error={error} />
-        if (loading) return <FullPagePreloader />
+        if (loading) {
+            if (document.getElementById("preloader")) return null
+            return <FullPagePreloader />
+        }
 
         return <AppRouter routes={Routes} userMenu={<ShellUserMenu />} serverControl={<NginxControl />} />
     }

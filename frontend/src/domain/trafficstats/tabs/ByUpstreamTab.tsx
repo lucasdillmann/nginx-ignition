@@ -3,7 +3,7 @@ import { Flex, Select, Statistic, Empty, Table, Tag } from "antd"
 import { Pie, Area } from "@ant-design/charts"
 import TrafficStatsResponse, { UpstreamZoneData } from "../model/TrafficStatsResponse"
 import { formatBytes, formatNumber, formatMs } from "../utils/StatsFormatters"
-import { STATUS_COLORS, StatusDataItem } from "../utils/StatsChartUtils"
+import { buildStatusDistributionData, getChartColorScale } from "../utils/StatsChartUtils"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
 import { CheckCircleOutlined, CloseCircleOutlined, WarningOutlined } from "@ant-design/icons"
@@ -183,12 +183,12 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
         servers.forEach(server => {
             if (!server?.requestMsecs?.times) return
 
-            server.requestMsecs.times.forEach((t, i) => {
-                if (server.requestMsecs.msecs[i] > 0) {
+            server.requestMsecs.times.forEach((time, index) => {
+                if (server.requestMsecs.msecs[index] > 0) {
                     data.push({
-                        time: new Date(t).toLocaleTimeString(),
-                        timestamp: t,
-                        value: server.requestMsecs.msecs[i],
+                        time: new Date(time).toLocaleTimeString(),
+                        timestamp: time,
+                        value: server.requestMsecs.msecs[index],
                         server: server.server,
                     })
                 }
@@ -197,7 +197,10 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
 
         if (data.length === 0) return null
 
-        data.sort((a, b) => a.timestamp - b.timestamp)
+        data.sort((first, second) => first.timestamp - second.timestamp)
+
+        const serverNames = [...new Set(data.map(item => item.server))]
+        const colorScale = getChartColorScale(serverNames)
 
         return (
             <div className="traffic-stats-chart-container">
@@ -209,9 +212,11 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
                     xField="time"
                     yField="value"
                     seriesField="server"
+                    colorField="server"
                     height={300}
                     axis={{ x: { labelAutoHide: true } }}
                     legend={{ position: "bottom" }}
+                    scale={{ color: colorScale }}
                     theme={theme}
                     // @ts-expect-error attribute not mapped in the TS contract
                     animation={!disableAnimation}
@@ -222,10 +227,10 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
 
     private renderDistributionPieChart(servers: UpstreamZoneData[]) {
         const data = servers
-            .filter(s => s.requestCounter > 0)
-            .map(s => ({
-                server: s.server,
-                requests: s.requestCounter,
+            .filter(server => server.requestCounter > 0)
+            .map(server => ({
+                server: server.server,
+                requests: server.requestCounter,
             }))
 
         if (data.length === 0) {
@@ -233,6 +238,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
         }
 
         const { theme, disableAnimation } = this.props
+        const colorScale = getChartColorScale(data.map(item => item.server))
 
         return (
             <div className="traffic-stats-chart-container">
@@ -254,6 +260,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
                             position: "bottom",
                         },
                     }}
+                    scale={{ color: colorScale }}
                     height={300}
                     theme={theme}
                     animation={!disableAnimation}
@@ -274,13 +281,7 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
             { "1xx": 0, "2xx": 0, "3xx": 0, "4xx": 0, "5xx": 0 },
         )
 
-        const data: StatusDataItem[] = [
-            { status: "1xx", count: aggregated["1xx"], color: STATUS_COLORS["1xx"] },
-            { status: "2xx", count: aggregated["2xx"], color: STATUS_COLORS["2xx"] },
-            { status: "3xx", count: aggregated["3xx"], color: STATUS_COLORS["3xx"] },
-            { status: "4xx", count: aggregated["4xx"], color: STATUS_COLORS["4xx"] },
-            { status: "5xx", count: aggregated["5xx"], color: STATUS_COLORS["5xx"] },
-        ].filter(item => item.count > 0)
+        const data = buildStatusDistributionData(aggregated)
 
         if (data.length === 0) {
             return null

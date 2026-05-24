@@ -3,6 +3,7 @@ import { Empty } from "antd"
 import { Pie } from "@ant-design/charts"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { getChartColorScale } from "../utils/StatsChartUtils"
 
 interface CityData {
     city: string
@@ -18,6 +19,7 @@ export interface CityChartProps {
 export default class CityChart extends React.PureComponent<CityChartProps> {
     render() {
         const { data, theme, disableAnimation } = this.props
+        const palette = getChartColorScale(data.map(item => item.city))
 
         return (
             <div className="traffic-stats-chart-container">
@@ -42,6 +44,7 @@ export default class CityChart extends React.PureComponent<CityChartProps> {
                                 position: "bottom",
                             },
                         }}
+                        scale={{ color: palette }}
                         height={300}
                         theme={theme}
                         animation={!disableAnimation}

@@ -12,9 +12,9 @@
     --nginxIgnition-colorError: #af1f1f;
     --nginxIgnition-colorTextDisabled: #b8b8b8;
     --nginxIgnition-colorTextTertiary: #606060;
-    --nginxIgnition-colorPrimary: #232a31;
-    --nginxIgnition-colorPrimary-hover: #26303a;
-    --nginxIgnition-colorPrimary-active: #32414e;
+    --nginxIgnition-colorPrimary: #3e4d5a;
+    --nginxIgnition-colorPrimary-hover: #45596a;
+    --nginxIgnition-colorPrimary-active: #526978;
     --nginxIgnition-fieldBorderHover: #8d9baa;
     --nginxIgnition-fieldBorderActive: #738293;
     --nginxIgnition-linkText: #006fce;
@@ -36,6 +36,24 @@
     --nginxIgnition-tabsCardBg: #f1f3f5;
     --nginxIgnition-tabsCardBorder: #d9dee4;
     --nginxIgnition-tabsCardActiveBg: var(--ant-color-bg-container);
+    --nginxIgnition-switchBg: #c5ced6;
+    --nginxIgnition-switchBgHover: #b8c3ce;
+    --nginxIgnition-switchCheckedBg: var(--nginxIgnition-colorPrimary);
+    --nginxIgnition-switchCheckedBgHover: var(--nginxIgnition-colorPrimary-hover);
+    --nginxIgnition-chartPrimary: var(--nginxIgnition-colorPrimary);
+    --nginxIgnition-chartStatus1xx: var(--nginxIgnition-linkText);
+    --nginxIgnition-chartStatus2xx: var(--nginxIgnition-colorSuccess);
+    --nginxIgnition-chartStatus3xx: var(--nginxIgnition-colorWarning);
+    --nginxIgnition-chartStatus4xx: #b85c2a;
+    --nginxIgnition-chartStatus5xx: var(--nginxIgnition-colorError);
+    --nginxIgnition-chartPalette-1: var(--nginxIgnition-colorPrimary);
+    --nginxIgnition-chartPalette-2: var(--nginxIgnition-colorPrimary-hover);
+    --nginxIgnition-chartPalette-3: var(--nginxIgnition-linkText);
+    --nginxIgnition-chartPalette-4: var(--nginxIgnition-colorSuccess);
+    --nginxIgnition-chartPalette-5: var(--nginxIgnition-colorWarning);
+    --nginxIgnition-chartPalette-6: var(--nginxIgnition-colorError);
+    --nginxIgnition-chartPalette-7: var(--nginxIgnition-fieldBorderActive);
+    --nginxIgnition-chartPalette-8: var(--nginxIgnition-colorPrimary-active);
 
     --ant-control-outline: transparent !important;
     --ant-color-primary: var(--nginxIgnition-colorPrimary) !important;
@@ -116,6 +134,24 @@ html[data-theme="dark"] * {
     --nginxIgnition-tabsInkBar: #9fb3c6;
     --nginxIgnition-tabsCardBg: var(--ant-color-bg-elevated);
     --nginxIgnition-tabsCardBorder: var(--ant-color-border-secondary);
+    --nginxIgnition-switchBg: #2a3139;
+    --nginxIgnition-switchBgHover: #333b44;
+    --nginxIgnition-switchCheckedBg: #526978;
+    --nginxIgnition-switchCheckedBgHover: #5f768a;
+    --nginxIgnition-chartPrimary: var(--nginxIgnition-colorPrimary);
+    --nginxIgnition-chartStatus1xx: var(--nginxIgnition-linkText);
+    --nginxIgnition-chartStatus2xx: var(--nginxIgnition-colorSuccess);
+    --nginxIgnition-chartStatus3xx: var(--nginxIgnition-colorWarning);
+    --nginxIgnition-chartStatus4xx: #c9956a;
+    --nginxIgnition-chartStatus5xx: var(--nginxIgnition-colorError);
+    --nginxIgnition-chartPalette-1: var(--nginxIgnition-colorPrimary);
+    --nginxIgnition-chartPalette-2: var(--nginxIgnition-colorPrimary-hover);
+    --nginxIgnition-chartPalette-3: var(--nginxIgnition-linkText);
+    --nginxIgnition-chartPalette-4: var(--nginxIgnition-colorSuccess);
+    --nginxIgnition-chartPalette-5: var(--nginxIgnition-colorWarning);
+    --nginxIgnition-chartPalette-6: var(--nginxIgnition-colorError);
+    --nginxIgnition-chartPalette-7: var(--nginxIgnition-fieldBorderActive);
+    --nginxIgnition-chartPalette-8: var(--nginxIgnition-colorPrimary-active);
     --ant-color-primary-bg: #1e252d !important;
     --ant-color-primary-bg-hover: #26313b !important;
     --ant-color-fill: #202020 !important;
@@ -135,20 +171,20 @@ html[data-theme="dark"] * {
     --ant-layout-sider-bg: #22252c !important;
 }
 
-html[data-theme="dark"] .ant-switch {
-    background: #2a3139;
+.ant-switch {
+    background: var(--nginxIgnition-switchBg);
 }
 
-html[data-theme="dark"] .ant-switch:hover:not(.ant-switch-disabled) {
-    background: #333b44;
+.ant-switch:hover:not(.ant-switch-disabled) {
+    background: var(--nginxIgnition-switchBgHover);
 }
 
-html[data-theme="dark"] .ant-switch.ant-switch-checked {
-    background: #5f768a;
+.ant-switch.ant-switch-checked {
+    background: var(--nginxIgnition-switchCheckedBg);
 }
 
-html[data-theme="dark"] .ant-switch.ant-switch-checked:hover:not(.ant-switch-disabled) {
-    background: #6f879b;
+.ant-switch.ant-switch-checked:hover:not(.ant-switch-disabled) {
+    background: var(--nginxIgnition-switchCheckedBgHover);
 }
 
 body {
@@ -316,6 +352,7 @@ code {
     position: fixed;
     top: 0;
     left: 0;
+    z-index: 9999;
     width: 100%;
     height: 100%;
     display: flex;
@@ -334,6 +371,7 @@ code {
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--nginxIgnition-switchCheckedBg);
 }
 
 .preloader-spinner svg {

@@ -5,6 +5,8 @@
     --nginxIgnition-shellSiderLogoLinkHover: #d7e1ea;
     --nginxIgnition-shellTriggerColor: #c8d3dd;
     --nginxIgnition-shellTriggerColorHover: #d7e0e8;
+    --nginxIgnition-shellAccentBg: #4a555f;
+    --nginxIgnition-shellAccentBgHover: #545f6a;
 }
 
 html[data-theme="dark"] .shell-container {
@@ -95,11 +97,32 @@ html:not([data-theme="dark"]) .shell-sider-logo-link-collapsed:focus {
     flex-grow: 1;
 }
 
+html:not([data-theme="dark"]) .shell-sider-menu-container a,
+html:not([data-theme="dark"]) .shell-sider-menu-container a:hover,
+html:not([data-theme="dark"]) .shell-sider-menu-container a:focus,
+html:not([data-theme="dark"]) .shell-sider-menu-container a:active,
+html:not([data-theme="dark"]) .shell-sider-menu-container a:visited {
+    color: inherit !important;
+}
+
 .shell-sider-menu-item {
     margin: 5px 10px !important;
     padding: 10px 8px !important;
     width: 225px !important;
     border-radius: 4px !important;
+}
+
+.shell-sider-menu-container.ant-menu-dark .ant-menu-item:not(.ant-menu-item-selected):hover,
+.shell-sider-menu-container.ant-menu-dark .ant-menu-item-active:not(.ant-menu-item-selected) {
+    background-color: var(--nginxIgnition-shellAccentBgHover) !important;
+}
+
+.shell-sider-menu-container.ant-menu-dark .ant-menu-item-selected {
+    background-color: var(--nginxIgnition-shellAccentBg) !important;
+}
+
+.shell-sider-menu-container.ant-menu-dark .ant-menu-item-selected:hover {
+    background-color: var(--nginxIgnition-shellAccentBgHover) !important;
 }
 
 .shell-sider-bottom-credits {

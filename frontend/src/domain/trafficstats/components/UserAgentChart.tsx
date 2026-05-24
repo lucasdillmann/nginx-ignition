@@ -3,6 +3,7 @@ import { Empty } from "antd"
 import { Pie } from "@ant-design/charts"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { getChartColorScale } from "../utils/StatsChartUtils"
 
 interface UserAgentData {
     type: string
@@ -18,6 +19,7 @@ export interface UserAgentChartProps {
 export default class UserAgentChart extends React.PureComponent<UserAgentChartProps> {
     render() {
         const { data, theme, disableAnimation } = this.props
+        const palette = getChartColorScale(data.map(item => item.type))
 
         return (
             <div className="traffic-stats-chart-container">
@@ -42,6 +44,7 @@ export default class UserAgentChart extends React.PureComponent<UserAgentChartPr
                                 position: "bottom",
                             },
                         }}
+                        scale={{ color: palette }}
                         height={300}
                         theme={theme}
                         animation={!disableAnimation}

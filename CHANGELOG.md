@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.40.0
+
+- Minor improvements, visual tweaks and bug fixes.
+
 ## 2.39.0
 
 - Optimization of the Docker image to use the latest nginx mainline version while reducing its size and layers.

@@ -8,12 +8,6 @@
     border-start-end-radius: 0;
     border-end-start-radius: 6px;
     border-end-end-radius: 6px;
-    border-inline-end-width: 1px;
-    border-inline-end-style: solid;
-    border-inline-end-color: var(--nginxIgnition-colorBorderSecondary);
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    border-bottom-color: var(--nginxIgnition-colorBorderSecondary);
     overflow: hidden;
 }
 
