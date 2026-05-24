@@ -37,6 +37,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/cloudru"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/com35"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/connbyte"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/conohav2"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/conohav3"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/constellix"
@@ -65,6 +66,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dreamhost"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/duckdns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dyn"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dynadot"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dyndnsfree"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/dynu"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/easydns"
@@ -182,7 +184,6 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/simply"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/sonic"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/spaceship"
-	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/stackpath"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/syse"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/technitium"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/tele3"
@@ -256,6 +257,7 @@ var providers = []dns.Provider{
 	&com35.Provider{},
 	&conohav2.Provider{},
 	&conohav3.Provider{},
+	&connbyte.Provider{},
 	&constellix.Provider{},
 	&corenetworks.Provider{},
 	&cpanel.Provider{},
@@ -282,6 +284,7 @@ var providers = []dns.Provider{
 	&dreamhost.Provider{},
 	&duckdns.Provider{},
 	&dyn.Provider{},
+	&dynadot.Provider{},
 	&dyndnsfree.Provider{},
 	&dynu.Provider{},
 	&easydns.Provider{},
@@ -399,7 +402,6 @@ var providers = []dns.Provider{
 	&simply.Provider{},
 	&sonic.Provider{},
 	&spaceship.Provider{},
-	&stackpath.Provider{},
 	&syse.Provider{},
 	&technitium.Provider{},
 	&tele3.Provider{},
