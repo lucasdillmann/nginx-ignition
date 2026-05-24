@@ -187,6 +187,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                         justifyContent: "center",
                         backgroundColor: "rgba(0, 0, 0, 0.65)",
                         padding: "60px 40px 40px",
+                        borderRadius: "15px",
                     }}
                     otherStyle={{ width: 10 }}
                 >
@@ -222,6 +223,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
                     backdropFilter: "blur(4px)",
                     color: "white",
                     padding: "60px 40px 40px",
+                    borderRadius: "15px",
                 }}
                 otherStyle={{ width: 10 }}
             >

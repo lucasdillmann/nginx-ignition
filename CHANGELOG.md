@@ -5,6 +5,7 @@
 - Optimization of the Docker image to use the latest nginx mainline version while reducing its size and layers.
 - Added support for 2 new DNS providers for Let's Encrypt challenges: Connbyte and Dynadot.
 - Removed the StackPath DNS provider as it shut down in 2024.
+- Other minor improvements and bug fixes.
 
 ## 2.38.0
 

@@ -74,6 +74,9 @@ export default class NginxIgnition extends React.Component<unknown, NginxIgnitio
                         cssVar: {},
                         components: {
                             Select: selectTheme,
+                            Button: {
+                                primaryShadow: "none",
+                            },
                         },
                     }}
                     locale={locale}
