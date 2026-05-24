@@ -4,7 +4,35 @@
 
 .data-table .ant-table-container {
     border-radius: 0 0 6px 6px;
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+    border-end-start-radius: 6px;
+    border-end-end-radius: 6px;
+    border-inline-end-width: 1px;
+    border-inline-end-style: solid;
+    border-inline-end-color: var(--nginxIgnition-colorBorderSecondary);
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: var(--nginxIgnition-colorBorderSecondary);
     overflow: hidden;
+}
+
+.data-table .ant-table-container::before,
+.data-table .ant-table-container > .ant-table-content {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+}
+
+.data-table .ant-table-container::after {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+    border-end-end-radius: 6px;
+}
+
+.data-table .ant-table-container table > thead > tr:first-child > *:first-child,
+.data-table .ant-table-container table > thead > tr:first-child > *:last-child {
+    border-start-start-radius: 0 !important;
+    border-start-end-radius: 0 !important;
 }
 
 .data-table .ant-table-content {

@@ -1,3 +1,10 @@
+.tag-group-tag-link,
+.tag-group-tag-link:hover,
+.tag-group-tag-link:focus,
+.tag-group-tag-link:active {
+    color: inherit;
+}
+
 html:not([data-theme="dark"]) .tag-group-tag-link,
 html:not([data-theme="dark"]) .tag-group-tag-link:hover,
 html:not([data-theme="dark"]) .tag-group-tag-link:focus,
