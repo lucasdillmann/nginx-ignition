@@ -2,6 +2,7 @@
 
 ## 2.40.0
 
+- Users can now update their own name and username from the account settings modal in the shell header.
 - Improved Docker image build times by caching nginx module compilation in CI (BuildKit layer cache + ccache).
 - Minor improvements, visual tweaks and bug fixes.
 

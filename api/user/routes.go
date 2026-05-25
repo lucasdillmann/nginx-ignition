@@ -36,6 +36,7 @@ func Install(
 
 	currentPath := basePath.Group("/current")
 	currentPath.GET("", currentHandler{}.handle)
+	currentPath.PUT("", updateProfileHandler{commands}.handle)
 	currentPath.POST("/update-password", updatePasswordHandler{commands}.handle)
 
 	totpPath := currentPath.Group("/totp")
@@ -49,6 +50,7 @@ func Install(
 	authorizer.AllowAnonymous(http.MethodPost, "/api/users/login")
 	authorizer.AllowAllUsers(http.MethodPost, "/api/users/logout")
 	authorizer.AllowAllUsers(http.MethodGet, "/api/users/current")
+	authorizer.AllowAllUsers(http.MethodPut, "/api/users/current")
 	authorizer.AllowAllUsers(http.MethodPost, "/api/users/current/update-password")
 	authorizer.AllowAllUsers(http.MethodGet, "/api/users/current/totp")
 	authorizer.AllowAllUsers(http.MethodPost, "/api/users/current/totp")

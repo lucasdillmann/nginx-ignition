@@ -350,6 +350,71 @@ func Test_service(t *testing.T) {
 		})
 	})
 
+	t.Run("UpdateProfile", func(t *testing.T) {
+		t.Run("updates profile successfully", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			newName := "Updated Name"
+			newUsername := "updateduser"
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().FindByUsername(t.Context(), newUsername).Return(usr, nil)
+			repo.EXPECT().
+				Save(t.Context(), gomock.Any()).
+				DoAndReturn(func(_ any, updated *User) error {
+					assert.Equal(t, newName, updated.Name)
+					assert.Equal(t, newUsername, updated.Username)
+					assert.Equal(t, usr.PasswordHash, updated.PasswordHash)
+					assert.Equal(t, usr.Permissions, updated.Permissions)
+					return nil
+				})
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.UpdateProfile(t.Context(), usr.ID, newName, newUsername)
+
+			assert.NoError(t, err)
+		})
+
+		t.Run("fails when username is taken", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			otherUser := newUser()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().FindByUsername(t.Context(), "takenuser").Return(otherUser, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.UpdateProfile(t.Context(), usr.ID, "Updated Name", "takenuser")
+
+			assert.Error(t, err)
+		})
+
+		t.Run("fails when name is too short", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.UpdateProfile(t.Context(), usr.ID, "ab", usr.Username)
+
+			assert.Error(t, err)
+		})
+	})
+
 	t.Run("GetStatus", func(t *testing.T) {
 		t.Run("returns true when enabled", func(t *testing.T) {
 			ctrl := gomock.NewController(t)

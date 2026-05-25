@@ -8,6 +8,7 @@ import LoginOutcome from "./model/LoginOutcome"
 import UserLoginRequest from "./model/UserLoginRequest"
 import AuthenticationService from "../../core/authentication/AuthenticationService"
 import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest"
+import UserUpdateProfileRequest from "./model/UserUpdateProfileRequest"
 import GenericCreateResponse from "../../core/common/GenericCreateResponse"
 import UserTotpEnableResponse from "./model/UserTotpEnableResponse"
 
@@ -70,6 +71,10 @@ export default class UserService {
 
     async changePassword(request: UserUpdatePasswordRequest): Promise<void> {
         return this.gateway.updatePassword(request).then(requireSuccessResponse)
+    }
+
+    async updateProfile(request: UserUpdateProfileRequest): Promise<void> {
+        return this.gateway.updateProfile(request).then(requireSuccessResponse)
     }
 
     async enableTotp(): Promise<UserTotpEnableResponse> {

@@ -23,6 +23,11 @@ type userPasswordUpdateRequestDTO struct {
 	NewPassword     *string `json:"newPassword"`
 }
 
+type userProfileUpdateRequestDTO struct {
+	Name     *string `json:"name"`
+	Username *string `json:"username"`
+}
+
 type userRequestDTO struct {
 	Enabled     *bool              `json:"enabled"`
 	RemoveTOTP  *bool              `json:"removeTotp"`

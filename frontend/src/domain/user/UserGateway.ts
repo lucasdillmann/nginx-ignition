@@ -7,6 +7,7 @@ import UserOnboardingStatusResponse from "./model/UserOnboardingStatusResponse"
 import UserRequest from "./model/UserRequest"
 import PageResponse from "../../core/pagination/PageResponse"
 import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest"
+import UserUpdateProfileRequest from "./model/UserUpdateProfileRequest"
 import GenericCreateResponse from "../../core/common/GenericCreateResponse"
 import UserTotpEnableResponse from "./model/UserTotpEnableResponse"
 import TotpStatusResponse from "./model/TotpStatusResponse"
@@ -64,6 +65,10 @@ export default class UserGateway {
 
     async updatePassword(request: UserUpdatePasswordRequest): Promise<ApiResponse<void>> {
         return this.client.post("/current/update-password", request)
+    }
+
+    async updateProfile(request: UserUpdateProfileRequest): Promise<ApiResponse<void>> {
+        return this.client.put("/current", request)
     }
 
     async enableTotp(): Promise<ApiResponse<UserTotpEnableResponse>> {

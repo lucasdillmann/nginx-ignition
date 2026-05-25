@@ -11,12 +11,12 @@ import Notification from "../../../core/components/notification/Notification"
 import { buildLoginUrl } from "../../../core/authentication/buildLoginUrl"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import I18nLanguagePicker from "../../../core/i18n/I18nLanguagePicker"
-import UserSecuritySettingsModal from "./UserSecuritySettingsModal"
+import UserSecuritySettingsModal, { UserSecuritySettingsTab } from "./UserSecuritySettingsModal"
 import ShellUserMenuQueue, { QueueAction } from "./ShellUserMenuQueue"
 
 interface ShellUserMenuState {
     modalOpen: boolean
-    modalTotpTab: boolean
+    modalInitialTab: UserSecuritySettingsTab
 }
 
 export default class ShellUserMenu extends React.Component<any, ShellUserMenuState> {
@@ -27,12 +27,12 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
         this.service = new UserService()
         this.state = {
             modalOpen: false,
-            modalTotpTab: false,
+            modalInitialTab: "password",
         }
     }
 
     private handleQueueAction(action: QueueAction) {
-        if (action == QueueAction.OPEN_TOTP_CONFIG) this.securitySettingsModal(true, true)
+        if (action == QueueAction.OPEN_TOTP_CONFIG) this.securitySettingsModal(true, "totp")
     }
 
     private async handleLogout() {
@@ -45,10 +45,10 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
             .then(() => navigateTo(buildLoginUrl()))
     }
 
-    private securitySettingsModal(modalOpen: boolean, modalTotpTab?: boolean) {
+    private securitySettingsModal(modalOpen: boolean, modalInitialTab: UserSecuritySettingsTab = "password") {
         this.setState({
             modalOpen,
-            modalTotpTab: modalTotpTab ?? false,
+            modalInitialTab,
         })
     }
 
@@ -62,23 +62,25 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
 
     render() {
         const { user } = AppContext.get()
-        const { modalOpen, modalTotpTab } = this.state
+        const { modalOpen, modalInitialTab } = this.state
 
         return (
             <Flex className="shell-user-menu-container">
                 <Flex className="shell-user-menu-actions">
                     <ThemeToggle />
                     <I18nLanguagePicker />
-                    <LockOutlined onClick={() => this.securitySettingsModal(true)} />
+                    <LockOutlined onClick={() => this.securitySettingsModal(true, "password")} />
                 </Flex>
-                <Flex className="shell-user-menu-user-name">{user?.name}</Flex>
+                <Flex className="shell-user-menu-user-name" onClick={() => this.securitySettingsModal(true, "profile")}>
+                    {user?.name}
+                </Flex>
                 <Flex className="shell-user-menu-icon">
                     <LogoutOutlined onClick={() => this.handleLogout()} />
                 </Flex>
 
                 <UserSecuritySettingsModal
                     open={modalOpen}
-                    startWithTotp={modalTotpTab}
+                    initialTab={modalInitialTab}
                     onCancel={() => this.securitySettingsModal(false)}
                 />
             </Flex>

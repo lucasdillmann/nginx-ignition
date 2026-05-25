@@ -1,11 +1,12 @@
 import React from "react"
-import { Button, Flex, Form, FormInstance, Modal, Tabs, Typography } from "antd"
-import { LockOutlined, SafetyOutlined } from "@ant-design/icons"
+import { Button, Flex, Form, FormInstance, Input, Modal, Tabs, Typography } from "antd"
+import { LockOutlined, SafetyOutlined, UserOutlined } from "@ant-design/icons"
 import UserService from "../UserService"
 import Notification from "../../../core/components/notification/Notification"
 import ValidationResult from "../../../core/validation/ValidationResult"
 import Preloader from "../../../core/components/preloader/Preloader"
 import UserUpdatePasswordRequest from "../model/UserUpdatePasswordRequest"
+import UserUpdateProfileRequest from "../model/UserUpdateProfileRequest"
 import FormLayout from "../../../core/components/form/FormLayout"
 import Password from "antd/es/input/Password"
 import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
@@ -14,18 +15,22 @@ import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
 import TotpSetup from "./TotpSetup"
 import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
+import AppContext from "../../../core/components/context/AppContext"
 import "./UserSecuritySettingsModal.css"
+
+export type UserSecuritySettingsTab = "profile" | "password" | "totp"
 
 interface UserSecuritySettingsModalProps {
     open: boolean
     onCancel: () => void
-    startWithTotp?: boolean
+    initialTab?: UserSecuritySettingsTab
 }
 
 interface UserSecuritySettingsModalState {
     loading: boolean
     validationResult: ValidationResult
     passwordFormValues: UserUpdatePasswordRequest
+    profileFormValues: UserUpdateProfileRequest
     totpEnabled?: boolean
     totpLoading: boolean
 }
@@ -35,21 +40,29 @@ const DEFAULT_PASSWORD_FORM_VALUES: UserUpdatePasswordRequest = {
     newPassword: "",
 }
 
+const DEFAULT_PROFILE_FORM_VALUES: UserUpdateProfileRequest = {
+    name: "",
+    username: "",
+}
+
 export default class UserSecuritySettingsModal extends React.Component<
     UserSecuritySettingsModalProps,
     UserSecuritySettingsModalState
 > {
-    private readonly formRef: React.RefObject<FormInstance | null>
+    private readonly passwordFormRef: React.RefObject<FormInstance | null>
+    private readonly profileFormRef: React.RefObject<FormInstance | null>
     private readonly service: UserService
 
     constructor(props: UserSecuritySettingsModalProps) {
         super(props)
         this.service = new UserService()
-        this.formRef = React.createRef()
+        this.passwordFormRef = React.createRef()
+        this.profileFormRef = React.createRef()
         this.state = {
             loading: false,
             validationResult: new ValidationResult(),
             passwordFormValues: DEFAULT_PASSWORD_FORM_VALUES,
+            profileFormValues: DEFAULT_PROFILE_FORM_VALUES,
             totpLoading: true,
         }
     }
@@ -57,7 +70,22 @@ export default class UserSecuritySettingsModal extends React.Component<
     componentDidUpdate(prevProps: Readonly<UserSecuritySettingsModalProps>) {
         if (this.props.open && !prevProps.open) {
             this.fetchTotpStatus()
+            this.loadProfileFormValues()
         }
+    }
+
+    private loadProfileFormValues() {
+        const user = AppContext.get().user
+        const profileFormValues = {
+            name: user?.name ?? "",
+            username: user?.username ?? "",
+        }
+
+        this.setState({
+            profileFormValues,
+            validationResult: new ValidationResult(),
+        })
+        this.profileFormRef.current?.setFieldsValue(profileFormValues)
     }
 
     private fetchTotpStatus() {
@@ -66,6 +94,24 @@ export default class UserSecuritySettingsModal extends React.Component<
             .getTotpStatus()
             .then(enabled => this.setState({ totpEnabled: enabled, totpLoading: false }))
             .catch(() => this.setState({ totpLoading: false }))
+    }
+
+    private async executeProfileUpdate() {
+        const { profileFormValues } = this.state
+        this.setState({ validationResult: new ValidationResult(), loading: true })
+
+        return this.service
+            .updateProfile(profileFormValues)
+            .then(() =>
+                Notification.success(
+                    { id: MessageKey.CommonTypeSaved, params: { type: MessageKey.CommonUser } },
+                    MessageKey.CommonSuccessMessage,
+                ),
+            )
+            .then(() => AppContext.get().container!!.reload())
+            .then(() => this.props.onCancel())
+            .catch(error => this.handleErrorResponse(error))
+            .then(() => this.setState({ loading: false }))
     }
 
     private async executePasswordChange() {
@@ -94,7 +140,7 @@ export default class UserSecuritySettingsModal extends React.Component<
             validationResult: new ValidationResult(),
             passwordFormValues: DEFAULT_PASSWORD_FORM_VALUES,
         })
-        this.formRef.current?.resetFields()
+        this.passwordFormRef.current?.resetFields()
         this.props.onCancel()
     }
 
@@ -112,6 +158,47 @@ export default class UserSecuritySettingsModal extends React.Component<
             .then(() => this.setState({ totpLoading: false }))
     }
 
+    private renderProfileTab() {
+        const { validationResult, profileFormValues } = this.state
+        return (
+            <Form<UserUpdateProfileRequest>
+                {...FormLayout.FormDefaults}
+                labelCol={FormLayout.ExpandedLabeledItem.labelCol}
+                wrapperCol={FormLayout.ExpandedLabeledItem.wrapperCol}
+                ref={this.profileFormRef}
+                layout="vertical"
+                onValuesChange={(_, profileFormValues) => this.setState({ profileFormValues })}
+                initialValues={profileFormValues}
+                className="user-security-settings-form"
+            >
+                <Form.Item
+                    name="name"
+                    validateStatus={validationResult.getStatus("name")}
+                    help={validationResult.getMessage("name")}
+                    label={<I18n id={MessageKey.CommonName} />}
+                    required
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    name="username"
+                    validateStatus={validationResult.getStatus("username")}
+                    help={validationResult.getMessage("username")}
+                    label={<I18n id={MessageKey.CommonUsername} />}
+                    required
+                >
+                    <Input />
+                </Form.Item>
+
+                <Flex justify="end" style={{ marginTop: 24 }}>
+                    <Button type="primary" onClick={() => this.executeProfileUpdate()}>
+                        <I18n id={MessageKey.CommonSave} />
+                    </Button>
+                </Flex>
+            </Form>
+        )
+    }
+
     private renderPasswordTab() {
         const { validationResult, passwordFormValues } = this.state
         return (
@@ -119,7 +206,7 @@ export default class UserSecuritySettingsModal extends React.Component<
                 {...FormLayout.FormDefaults}
                 labelCol={FormLayout.ExpandedLabeledItem.labelCol}
                 wrapperCol={FormLayout.ExpandedLabeledItem.wrapperCol}
-                ref={this.formRef}
+                ref={this.passwordFormRef}
                 layout="vertical"
                 onValuesChange={(_, passwordFormValues) => this.setState({ passwordFormValues })}
                 initialValues={passwordFormValues}
@@ -186,13 +273,12 @@ export default class UserSecuritySettingsModal extends React.Component<
     }
 
     render() {
-        const { open, onCancel, startWithTotp } = this.props
+        const { open, onCancel, initialTab = "password" } = this.props
         const { loading } = this.state
-        const initialTab = startWithTotp ? "totp" : "password"
 
         return (
             <Modal
-                title={<I18n id={MessageKey.FrontendUserMenuSecuritySettingsTitle} />}
+                title={<I18n id={MessageKey.FrontendUserMenuAccountSettingsTitle} />}
                 onCancel={onCancel}
                 footer={null}
                 open={open}
@@ -200,8 +286,16 @@ export default class UserSecuritySettingsModal extends React.Component<
             >
                 <Preloader loading={loading}>
                     <Tabs
+                        className="user-security-settings-tabs"
+                        key={initialTab}
                         defaultActiveKey={initialTab}
                         items={[
+                            {
+                                key: "profile",
+                                label: <I18n id={MessageKey.FrontendUserMenuProfileTab} />,
+                                children: this.renderProfileTab(),
+                                icon: <UserOutlined />,
+                            },
                             {
                                 key: "password",
                                 label: <I18n id={MessageKey.CommonPassword} />,

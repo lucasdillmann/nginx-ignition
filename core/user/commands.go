@@ -24,6 +24,7 @@ type Commands interface {
 	) (*pagination.Page[User], error)
 	Save(ctx context.Context, user *SaveRequest, currentUserID *uuid.UUID) error
 	UpdatePassword(ctx context.Context, id uuid.UUID, oldPassword, newPassword string) error
+	UpdateProfile(ctx context.Context, id uuid.UUID, name, username string) error
 	OnboardingCompleted(ctx context.Context) (bool, error)
 	GetTOTPStatus(ctx context.Context, id uuid.UUID) (bool, error)
 	DisableTOTP(ctx context.Context, id uuid.UUID) error

@@ -129,6 +129,52 @@ func (s *service) UpdatePassword(
 	return s.repository.Save(ctx, databaseState)
 }
 
+func (s *service) UpdateProfile(
+	ctx context.Context,
+	id uuid.UUID,
+	name, username string,
+) error {
+	databaseState, err := s.repository.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if databaseState == nil {
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreUserNotFoundById), true)
+	}
+
+	request := &SaveRequest{
+		ID:          id,
+		Name:        name,
+		Username:    username,
+		Enabled:     databaseState.Enabled,
+		Permissions: databaseState.Permissions,
+	}
+
+	updatedState := &User{
+		ID:           id,
+		Name:         name,
+		Username:     username,
+		Enabled:      databaseState.Enabled,
+		PasswordHash: databaseState.PasswordHash,
+		PasswordSalt: databaseState.PasswordSalt,
+		Permissions:  databaseState.Permissions,
+		TOTP:         databaseState.TOTP,
+	}
+
+	if err := newValidator(s.repository).validate(
+		ctx,
+		updatedState,
+		databaseState,
+		request,
+		&id,
+	); err != nil {
+		return err
+	}
+
+	return s.repository.Save(ctx, updatedState)
+}
+
 func (s *service) Get(ctx context.Context, id uuid.UUID) (*User, error) {
 	return s.repository.FindByID(ctx, id)
 }

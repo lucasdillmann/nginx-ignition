@@ -2,6 +2,10 @@
     padding-top: 10px;
 }
 
+.user-security-settings-tabs .ant-tabs-tab .ant-tabs-tab-icon {
+    margin-inline-end: 8px;
+}
+
 .totp-enabled-container {
     padding: 40px 0;
     text-align: center;
