@@ -2,6 +2,7 @@ FROM nginx:mainline-alpine AS builder
 
 RUN apk add --no-cache \
       gcc \
+      ccache \
       libc-dev \
       make \
       pcre2-dev \
@@ -27,9 +28,11 @@ RUN git clone --depth 1 https://github.com/vision5/ngx_devel_kit.git /ngx_devel_
     git clone --depth 1 https://github.com/openresty/lua-resty-lrucache.git /lua-resty-lrucache
 
 ENV LUAJIT_LIB=/usr/lib \
-    LUAJIT_INC=/usr/include/luajit-2.1
+    LUAJIT_INC=/usr/include/luajit-2.1 \
+    PATH="/usr/lib/ccache/bin:$PATH"
 
-RUN cd nginx-${NGINX_VERSION} && \
+RUN --mount=type=cache,target=/root/.ccache \
+    cd nginx-${NGINX_VERSION} && \
     ./configure \
       --with-compat \
       --with-http_ssl_module \

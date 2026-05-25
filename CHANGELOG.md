@@ -2,6 +2,7 @@
 
 ## 2.40.0
 
+- Improved Docker image build times by caching nginx module compilation in CI (BuildKit layer cache + ccache).
 - Minor improvements, visual tweaks and bug fixes.
 
 ## 2.39.0
