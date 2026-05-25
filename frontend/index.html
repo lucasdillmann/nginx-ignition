@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
     <head>
         <meta charset="utf-8" />
         <script>
-            let theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+            let theme = globalThis.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
             const stored = localStorage.getItem("nginxIgnition.theme")
             if (stored) theme = JSON.parse(stored)
-            document.documentElement.setAttribute("data-theme", theme)
+            document.documentElement.dataset["data-theme"] = theme
         </script>
         <link rel="stylesheet" href="src/index.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

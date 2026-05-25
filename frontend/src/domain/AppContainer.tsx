@@ -16,6 +16,8 @@ interface AppContainerState {
 }
 
 export default class AppContainer extends React.Component<unknown, AppContainerState> {
+    private nativePreloaderPresent = false
+
     constructor(props: any) {
         super(props)
         this.state = {
@@ -46,12 +48,14 @@ export default class AppContainer extends React.Component<unknown, AppContainerS
     }
 
     componentDidMount() {
+        this.nativePreloaderPresent = document.getElementById("preloader") !== null
         this.reload()
     }
 
     componentDidUpdate(_prevProps: unknown, prevState: AppContainerState) {
-        if (prevState.loading && !this.state.loading) {
+        if (prevState.loading && !this.state.loading && this.nativePreloaderPresent) {
             document.getElementById("preloader")?.remove()
+            this.nativePreloaderPresent = false
         }
     }
 
@@ -59,7 +63,7 @@ export default class AppContainer extends React.Component<unknown, AppContainerS
         const { error, loading } = this.state
         if (error !== undefined) return <FullPageError error={error} />
         if (loading) {
-            if (document.getElementById("preloader")) return null
+            if (this.nativePreloaderPresent) return null
             return <FullPagePreloader />
         }
 
