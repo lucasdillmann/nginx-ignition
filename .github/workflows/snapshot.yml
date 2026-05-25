@@ -76,6 +76,7 @@ jobs:
       GOPATH: /data/cache/go
       GOMODCACHE: /data/cache/go/pkg/mod
       PNPM_HOME: /data/cache/pnpm
+      BUILDKIT_CACHE: /data/cache/docker
     steps:
       - uses: actions/checkout@v5
       - name: Extract version from CHANGELOG.md
