@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.40.1
+
+- Security fixes (thanks @tonghuaroot for 
+  [the report](https://github.com/lucasdillmann/nginx-ignition/security/advisories/GHSA-jr34-h97m-9hpx)!)
+
 ## 2.40.0
 
 - Users can now update their own name and username from the account settings modal in the shell header.
