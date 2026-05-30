@@ -1,4 +1,5 @@
 DOCKER_IMAGE ?= dillmann/nginx-ignition
+PRIVATE_DOCKER_IMAGE ?= docker.lan.dillmann.dev/nginx-ignition
 VERSION ?= 0.0.0
 PR_ID ?= 0
 BUILDKIT_CACHE ?= build/cache/docker
@@ -53,6 +54,8 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		--cache-to type=local,dest=$(BUILDKIT_CACHE),mode=max \
 		--tag $(DOCKER_IMAGE):$(VERSION) \
 		--tag $(DOCKER_IMAGE):latest \
+		--tag $(PRIVATE_DOCKER_IMAGE):$(VERSION) \
+		--tag $(PRIVATE_DOCKER_IMAGE):latest \
 		--platform linux/amd64,linux/arm64 \
 		--push .
 
@@ -62,6 +65,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		--cache-from type=local,src=$(BUILDKIT_CACHE) \
 		--cache-to type=local,dest=$(BUILDKIT_CACHE),mode=max \
 		--tag $(DOCKER_IMAGE):$(SNAPSHOT_TAG_SUFFIX) \
+		--tag $(PRIVATE_DOCKER_IMAGE):$(SNAPSHOT_TAG_SUFFIX) \
 		--platform linux/amd64,linux/arm64 \
 		--push .
 

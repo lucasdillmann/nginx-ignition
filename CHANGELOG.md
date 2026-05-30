@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.41.0
+
+- Development workflow improvements
+
 ## 2.40.1
 
 - Security fixes (thanks @tonghuaroot for 
