@@ -1,10 +1,9 @@
 .log-viewer-container {
     display: flex;
-    flex-grow: 1;
-    flex-shrink: 1;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
     overflow: auto;
-    min-height: calc(100vh - 340px);
-    max-height: calc(100vh - 340px);
     background-color: var(--ant-color-bg-container);
     border-radius: var(--ant-border-radius);
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;

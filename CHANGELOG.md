@@ -3,6 +3,7 @@
 ## 2.41.0
 
 - Development workflow improvements
+- Fixed double scrollbar on the logs page after the UI overhaul
 
 ## 2.40.1
 
