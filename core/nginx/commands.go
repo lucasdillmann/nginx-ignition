@@ -30,7 +30,7 @@ type Commands interface {
 		search *LogSearch,
 	) ([]logline.LogLine, error)
 	GetMainLogs(ctx context.Context, lines int, search *LogSearch) ([]logline.LogLine, error)
-	GetStatus(ctx context.Context) bool
+	GetStatus(ctx context.Context) Status
 	GetTrafficStats(ctx context.Context) (*Stats, error)
 	GetConfigFiles(ctx context.Context, input GetConfigFilesInput) ([]byte, error)
 	GetMetadata(ctx context.Context) (*Metadata, error)

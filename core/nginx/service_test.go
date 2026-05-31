@@ -169,22 +169,32 @@ func Test_service(t *testing.T) {
 	})
 
 	t.Run("GetStatus", func(t *testing.T) {
-		t.Run("returns true when running", func(t *testing.T) {
+		t.Run("returns running when running", func(t *testing.T) {
+			tmpDir, err := os.MkdirTemp("", "nginx-status-test")
+			assert.NoError(t, err)
+			defer os.RemoveAll(tmpDir)
+
 			nginxService := &service{
 				semaphore: &semaphore{
 					state: runningState,
 				},
+				processManager: &processManager{
+					configPath: tmpDir,
+				},
 			}
-			assert.True(t, nginxService.GetStatus(t.Context()))
+			status := nginxService.GetStatus(t.Context())
+			assert.True(t, status.Running)
 		})
 
-		t.Run("returns false when stopped", func(t *testing.T) {
+		t.Run("returns not running when stopped", func(t *testing.T) {
 			nginxService := &service{
 				semaphore: &semaphore{
 					state: stoppedState,
 				},
 			}
-			assert.False(t, nginxService.GetStatus(t.Context()))
+			status := nginxService.GetStatus(t.Context())
+			assert.False(t, status.Running)
+			assert.Nil(t, status.UptimeSeconds)
 		})
 	})
 }

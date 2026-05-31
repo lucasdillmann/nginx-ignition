@@ -3,6 +3,7 @@ package nginx
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -51,5 +52,14 @@ func Test_processManager(t *testing.T) {
 
 			assert.NoFileExists(t, socketFile)
 		})
+	})
+
+	t.Run("uptimeSeconds", func(t *testing.T) {
+		pidFile := filepath.Join(tmpDir, "nginx.pid")
+		_ = os.WriteFile(pidFile, []byte(strconv.Itoa(os.Getpid())), 0o644)
+
+		uptime, err := manager.uptimeSeconds()
+		assert.NoError(t, err)
+		assert.GreaterOrEqual(t, uptime, int64(0))
 	})
 }

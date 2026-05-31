@@ -13,6 +13,9 @@ type statusHandler struct {
 }
 
 func (h statusHandler) handle(ctx *gin.Context) {
-	running := h.commands.GetStatus(ctx.Request.Context())
-	ctx.JSON(http.StatusOK, gin.H{"running": running})
+	status := h.commands.GetStatus(ctx.Request.Context())
+	ctx.JSON(http.StatusOK, gin.H{
+		"running":       status.Running,
+		"uptimeSeconds": status.UptimeSeconds,
+	})
 }

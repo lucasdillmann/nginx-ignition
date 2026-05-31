@@ -133,8 +133,21 @@ func (s *service) Stop(ctx context.Context) error {
 	})
 }
 
-func (s *service) GetStatus(_ context.Context) bool {
-	return s.semaphore.currentState() == runningState
+func (s *service) GetStatus(_ context.Context) Status {
+	running := s.semaphore.currentState() == runningState
+	status := Status{Running: running}
+	if !running {
+		return status
+	}
+
+	uptime, err := s.processManager.uptimeSeconds()
+	if err != nil {
+		log.Warnf("unable to resolve nginx uptime: %v", err)
+		return status
+	}
+
+	status.UptimeSeconds = &uptime
+	return status
 }
 
 func (s *service) GetHostLogs(

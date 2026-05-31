@@ -8,6 +8,11 @@ const (
 	NoneSupportType    SupportType = "NONE"
 )
 
+type Status struct {
+	UptimeSeconds *int64
+	Running       bool
+}
+
 type Stats struct {
 	ServerZones   map[string]StatsZoneData
 	FilterZones   map[string]map[string]StatsZoneData

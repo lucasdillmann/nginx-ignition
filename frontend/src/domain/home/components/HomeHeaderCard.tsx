@@ -75,7 +75,7 @@ export default class HomeHeaderCard extends React.PureComponent<HomeHeaderCardPr
 
     private renderActions(onRefresh: () => void) {
         const { current, latest } = AppContext.get().configuration.version
-        const updateAvailable = current !== undefined && latest !== undefined && current !== latest
+        const updateAvailable = Boolean(current) && Boolean(latest) && current !== latest
 
         return (
             <Flex className="home-header-card-actions" align="center" gap={8}>

@@ -23,10 +23,11 @@ func Test_statusHandler(t *testing.T) {
 			controller := gomock.NewController(t)
 			defer controller.Finish()
 
+			uptime := int64(3600)
 			commands := nginx.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetStatus(gomock.Any()).
-				Return(true)
+				Return(nginx.Status{Running: true, UptimeSeconds: &uptime})
 
 			handler := statusHandler{
 				commands: commands,
@@ -39,9 +40,10 @@ func Test_statusHandler(t *testing.T) {
 			engine.ServeHTTP(recorder, request)
 
 			assert.Equal(t, http.StatusOK, recorder.Code)
-			var response map[string]bool
+			var response map[string]any
 			json.Unmarshal(recorder.Body.Bytes(), &response)
-			assert.True(t, response["running"])
+			assert.True(t, response["running"].(bool))
+			assert.Equal(t, float64(3600), response["uptimeSeconds"].(float64))
 		})
 	})
 }
