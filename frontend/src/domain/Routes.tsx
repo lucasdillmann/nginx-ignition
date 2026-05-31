@@ -1,6 +1,7 @@
 import React from "react"
 import LoginPage from "./authentication/LoginPage"
 import HomePage from "./home/HomePage"
+import HelpPage from "./help/HelpPage"
 import AppRoute from "../core/components/router/AppRoute"
 import OnboardingPage from "./onboarding/OnboardingPage"
 import {
@@ -236,6 +237,12 @@ const Routes: AppRoute[] = [
             description: MessageKey.CommonUsers,
             icon: <TeamOutlined />,
         },
+    },
+    {
+        path: "/help",
+        requiresAuthentication: true,
+        fullPage: false,
+        component: <HelpPage />,
     },
     {
         path: "/",

@@ -1,83 +1,147 @@
-.home-guide-container h1 {
-    font-size: 38px;
-    margin: 0;
-    text-align: center;
+.home-dashboard-container {
+    gap: 24px;
 }
 
-.home-guide-subtitle {
-    margin: 10px 0 0 !important;
-    font-size: 28px !important;
-    text-align: center;
-}
-
-.home-guide-header-container {
-    background: var(--nginxIgnition-shellHeaderBg, var(--nginxIgnition-colorBgLayout));
-    padding: 120px 40px;
-    margin-bottom: 50px;
-}
-
-.home-guide-container h2 {
-    font-size: 28px;
-    margin-top: 20px;
-}
-
-.home-guide-container p {
-    font-size: 16px;
-    margin: 10px 0;
-    padding: 0;
-}
-
-.home-guide-right-side-video,
-.home-guide-left-side-video {
-    flex-grow: 0;
-    flex-shrink: 0;
-    width: 40%;
-}
-
-.home-guide-container video {
+.home-dashboard-overview-row {
+    gap: 24px;
     width: 100%;
 }
 
-.home-guide-right-side-video {
-    margin: 0 0 0 40px;
+.home-dashboard-totals-section {
+    flex: 1;
+    min-width: 280px;
 }
 
-.home-guide-left-side-video {
-    margin: 0 40px 0 0;
+.home-dashboard-nginx-section {
+    flex: 0 0 auto;
+    min-width: 220px;
+    margin-left: auto;
 }
 
-.home-guide-video-mask {
-    border-radius: 10px;
-    overflow: hidden;
-    height: fit-content;
-    line-height: 0;
+.home-dashboard-nginx-control {
+    padding: 16px;
+    border: 1px dashed var(--nginxIgnition-colorBorder);
+    border-radius: 8px;
+    background: transparent;
 }
 
-.home-guide-video-mask video {
+.home-dashboard-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.home-dashboard-section-header {
+    align-items: center;
+    justify-content: space-between;
+}
+
+.home-dashboard-section-title {
+    font-size: 16px;
+    font-weight: 500;
     margin: 0;
-    padding: 0;
-    line-height: 0 !important;
+    color: var(--nginxIgnition-colorTextSecondary);
 }
 
-.home-guide-section {
-    margin-bottom: 80px;
-    padding: 0 40px;
+.home-dashboard-cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
-.home-guide-section-content {
-    flex-grow: 1;
-    width: 60%;
+.home-dashboard-stat-card-link {
+    flex: 1;
+    min-width: 180px;
+    color: inherit;
+    text-decoration: none;
+    display: block;
 }
 
-.home-guide-footer-container {
-    background: var(--nginxIgnition-shellHeaderBg, var(--nginxIgnition-colorBgLayout));
-    padding: 60px 40px;
+.home-dashboard-stat-card-link:hover .home-dashboard-stat-card {
+    background: var(--nginxIgnition-colorBgContainer);
 }
 
-.home-guide-footer-container h1 {
+.home-dashboard-stat-card {
+    flex: 1;
+    min-width: 180px;
+    padding: 16px;
+    background: var(--nginxIgnition-colorBgLayout);
+    border-radius: 8px;
+    height: 100%;
+}
+
+.home-dashboard-nginx-status-value {
     font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2;
 }
 
-.home-guide-footer-container p {
-    font-size: 18px !important;
+.home-dashboard-status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.home-dashboard-nginx-actions {
+    margin-top: 12px;
+}
+
+.home-dashboard-split-row {
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.home-dashboard-panel {
+    flex: 1;
+    min-width: 320px;
+    padding: 16px;
+    background: var(--nginxIgnition-colorBgLayout);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.home-dashboard-cert-list {
+    gap: 8px;
+}
+
+.home-dashboard-cert-item {
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--nginxIgnition-colorBgContainer);
+    border-radius: 6px;
+}
+
+.home-dashboard-cert-domains {
+    font-weight: 500;
+    color: inherit;
+}
+
+.home-dashboard-cert-expiry {
+    color: var(--nginxIgnition-colorTextSecondary);
+    white-space: nowrap;
+    margin-left: 12px;
+}
+
+.home-dashboard-log-panel .log-viewer-container {
+    max-height: 280px;
+}
+
+.home-dashboard-empty {
+    padding: 16px 0;
+}
+
+.home-dashboard-section .traffic-stats-cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.home-dashboard-section .traffic-stats-stat-card {
+    flex: 1;
+    min-width: 180px;
 }

@@ -238,7 +238,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
         const { user, onboardingStatus } = AppContext.get()
 
         if (user?.id != null || onboardingStatus?.finished) {
-            return <Navigate to="/" />
+            return <Navigate to="/help" />
         }
 
         return <Preloader loading={loading}>{this.renderContent()}</Preloader>

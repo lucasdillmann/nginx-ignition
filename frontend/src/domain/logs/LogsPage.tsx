@@ -188,7 +188,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
 
     private buildAutoRefreshOptions() {
         return [1, 5, 10, 30, 60].map(item => ({
-            label: <I18n id={MessageKey.FrontendLogsAutoRefreshOption} params={{ seconds: item }} />,
+            label: <I18n id={MessageKey.CommonAutoRefreshOption} params={{ seconds: item }} />,
             value: item,
         }))
     }

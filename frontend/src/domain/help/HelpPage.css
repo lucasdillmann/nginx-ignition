@@ -1,0 +1,83 @@
+.help-guide-container h1 {
+    font-size: 38px;
+    margin: 0;
+    text-align: center;
+}
+
+.help-guide-subtitle {
+    margin: 10px 0 0 !important;
+    font-size: 28px !important;
+    text-align: center;
+}
+
+.help-guide-header-container {
+    background: var(--nginxIgnition-shellHeaderBg, var(--nginxIgnition-colorBgLayout));
+    padding: 120px 40px;
+    margin-bottom: 50px;
+}
+
+.help-guide-container h2 {
+    font-size: 28px;
+    margin-top: 20px;
+}
+
+.help-guide-container p {
+    font-size: 16px;
+    margin: 10px 0;
+    padding: 0;
+}
+
+.help-guide-right-side-video,
+.help-guide-left-side-video {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 40%;
+}
+
+.help-guide-container video {
+    width: 100%;
+}
+
+.help-guide-right-side-video {
+    margin: 0 0 0 40px;
+}
+
+.help-guide-left-side-video {
+    margin: 0 40px 0 0;
+}
+
+.help-guide-video-mask {
+    border-radius: 10px;
+    overflow: hidden;
+    height: fit-content;
+    line-height: 0;
+}
+
+.help-guide-video-mask video {
+    margin: 0;
+    padding: 0;
+    line-height: 0 !important;
+}
+
+.help-guide-section {
+    margin-bottom: 80px;
+    padding: 0 40px;
+}
+
+.help-guide-section-content {
+    flex-grow: 1;
+    width: 60%;
+}
+
+.help-guide-footer-container {
+    background: var(--nginxIgnition-shellHeaderBg, var(--nginxIgnition-colorBgLayout));
+    padding: 60px 40px;
+}
+
+.help-guide-footer-container h1 {
+    font-size: 24px;
+}
+
+.help-guide-footer-container p {
+    font-size: 18px !important;
+}
