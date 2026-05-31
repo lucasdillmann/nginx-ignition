@@ -111,7 +111,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
         const { loading } = this.state
         if (loading) return
 
-        this.setState({ loading: true }, () => this.fetchData())
+        this.setState({ loading: true, error: undefined }, () => this.fetchData())
     }
 
     private filterExpiringCertificates(certificates: CertificateResponse[]): CertificateResponse[] {
@@ -132,14 +132,6 @@ export default class HomePage extends React.Component<object, HomePageState> {
         const expiry = new Date(validUntil)
         expiry.setHours(0, 0, 0, 0)
         return Math.ceil((expiry.getTime() - now.getTime()) / (24 * 60 * 60 * 1000))
-    }
-
-    private filterExpiringCertificatesFromPage(
-        certificatesPage: { contents: CertificateResponse[] } | undefined,
-    ): CertificateResponse[] {
-        if (certificatesPage === undefined) return []
-
-        return this.filterExpiringCertificates(certificatesPage.contents)
     }
 
     private overviewClassName(countCardsLength: number, canViewNginx: boolean): string {
@@ -163,13 +155,13 @@ export default class HomePage extends React.Component<object, HomePageState> {
             const needsMetadata = canNginxServer || canTrafficStats
             const needsSettings = canLogs || canTrafficStats
 
-            const [metadata, nginxRunning, settings, hostsPage, streamsPage, certificatesPage] = await Promise.all([
+            const [metadata, nginxRunning, settings, hostsPage, streamsPage, certificates] = await Promise.all([
                 needsMetadata ? this.nginxService.getMetadata() : Promise.resolve(undefined),
                 needsMetadata ? this.nginxService.isRunning() : Promise.resolve(undefined),
                 needsSettings ? this.settingsService.get() : Promise.resolve(undefined),
                 canHosts ? this.hostService.list(1, 0) : Promise.resolve(undefined),
                 canStreams ? this.streamService.list(1, 0) : Promise.resolve(undefined),
-                canCertificates ? this.certificateService.list(100, 0) : Promise.resolve(undefined),
+                canCertificates ? this.certificateService.listAll() : Promise.resolve([]),
             ])
 
             let errorLogs: LogLine[] = []
@@ -192,8 +184,8 @@ export default class HomePage extends React.Component<object, HomePageState> {
                 settings,
                 hostCount: hostsPage?.totalItems,
                 streamCount: streamsPage?.totalItems,
-                certificateCount: certificatesPage?.totalItems,
-                expiringCertificates: this.filterExpiringCertificatesFromPage(certificatesPage),
+                certificateCount: canCertificates ? certificates.length : undefined,
+                expiringCertificates: canCertificates ? this.filterExpiringCertificates(certificates) : [],
                 errorLogs,
                 stats,
             })

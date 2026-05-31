@@ -27,6 +27,23 @@ export default class CertificateService {
         return this.gateway.getPage(pageSize, pageNumber, searchTerms).then(requireSuccessPayload)
     }
 
+    async listAll(searchTerms?: string): Promise<CertificateResponse[]> {
+        const pageSize = 100
+        const certificates: CertificateResponse[] = []
+        let pageNumber = 0
+
+        while (true) {
+            const page = await this.list(pageSize, pageNumber, searchTerms)
+            certificates.push(...page.contents)
+
+            if (page.contents.length === 0 || certificates.length >= page.totalItems) break
+
+            pageNumber++
+        }
+
+        return certificates
+    }
+
     async delete(id: string): Promise<void> {
         return this.gateway.delete(id).then(requireSuccessResponse)
     }
