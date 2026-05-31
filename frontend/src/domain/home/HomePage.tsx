@@ -23,6 +23,7 @@ import LogLine from "../logs/model/LogLine"
 import { Link } from "react-router-dom"
 import TagGroup from "../../core/components/taggroup/TagGroup"
 import CountCard from "./components/CountCard"
+import HomeHeaderCard from "./components/HomeHeaderCard"
 import NginxStatusCard from "./components/NginxStatusCard"
 import "./HomePage.css"
 import "../trafficstats/TrafficStatsPage.css"
@@ -95,23 +96,14 @@ export default class HomePage extends React.Component<object, HomePageState> {
     }
 
     private configureShell() {
-        AppShellContext.get().updateConfig({
-            title: MessageKey.FrontendHomeTitle,
-            subtitle: MessageKey.FrontendHomeSubtitle,
-            actions: [
-                {
-                    description: MessageKey.CommonRefresh,
-                    onClick: () => this.refreshData(),
-                },
-            ],
-        })
+        AppShellContext.get().updateConfig({})
     }
 
     private refreshData() {
         const { loading } = this.state
         if (loading) return
 
-        this.setState({ loading: true, error: undefined }, () => this.fetchData())
+        this.setState({ error: undefined }, () => this.fetchData())
     }
 
     private filterExpiringCertificates(certificates: CertificateResponse[]): CertificateResponse[] {
@@ -143,8 +135,6 @@ export default class HomePage extends React.Component<object, HomePageState> {
     }
 
     private async fetchData() {
-        this.setState({ loading: true })
-
         try {
             const canNginxServer = this.canViewNginxServer()
             const canHosts = this.canViewHosts()
@@ -195,7 +185,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
     }
 
     private renderOverviewSection() {
-        const { hostCount, streamCount, certificateCount, metadata } = this.state
+        const { hostCount, streamCount, certificateCount } = this.state
         const countCards: React.ReactNode[] = []
 
         if (this.canViewHosts() && hostCount !== undefined) {
@@ -225,7 +215,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
         return (
             <Flex className={this.overviewClassName(countCards.length, canViewNginx)} align="stretch" wrap="wrap">
                 {this.renderOverviewTotalsSection(countCards)}
-                {this.renderOverviewNginxSection(canViewNginx, metadata?.version)}
+                {this.renderOverviewNginxSection(canViewNginx)}
             </Flex>
         )
     }
@@ -243,18 +233,13 @@ export default class HomePage extends React.Component<object, HomePageState> {
         )
     }
 
-    private renderOverviewNginxSection(canViewNginx: boolean, version: string | undefined) {
+    private renderOverviewNginxSection(canViewNginx: boolean) {
         if (!canViewNginx) return null
 
         return (
             <div className="home-dashboard-section home-dashboard-nginx-section">
                 <h3 className="home-dashboard-section-title">
-                    <I18n
-                        id={{
-                            id: MessageKey.FrontendHomeNginxSectionTitle,
-                            params: { version: version ?? "—" },
-                        }}
-                    />
+                    <I18n id={MessageKey.FrontendHomeNginxSectionTitle} />
                 </h3>
                 <div className="home-dashboard-nginx-slot">
                     <NginxStatusCard />
@@ -454,8 +439,11 @@ export default class HomePage extends React.Component<object, HomePageState> {
 
         if (loading) return <Preloader loading />
 
+        const { metadata } = this.state
+
         return (
             <Flex className="home-dashboard-container" vertical>
+                <HomeHeaderCard metadata={metadata} onRefresh={() => this.refreshData()} />
                 {this.renderOverviewSection()}
                 {this.renderTrafficSection()}
                 {this.renderDetailsSection()}
