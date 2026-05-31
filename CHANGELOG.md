@@ -2,6 +2,10 @@
 
 ## 2.41.0
 
+- The home page is now an operator dashboard with the nginx status, resource counts, expiring certificates, recent error 
+  logs, and a traffic summary.
+- The feature tour with help videos moved to a dedicated Help page, accessible from the question-mark icon in the 
+  header menu.
 - Development workflow improvements
 - Fixed double scrollbar on the logs page after the UI overhaul
 
