@@ -12,17 +12,21 @@ import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n, I18nMessage, i18n } from "../../../core/i18n/I18n"
 import If from "../../../core/components/flowcontrol/If"
 
+interface NginxStatusCardProps {
+    refreshToken: number
+}
+
 interface NginxStatusCardState {
     loading: boolean
     running?: boolean
     uptimeSeconds?: number
 }
 
-export default class NginxStatusCard extends React.Component<object, NginxStatusCardState> {
+export default class NginxStatusCard extends React.Component<NginxStatusCardProps, NginxStatusCardState> {
     private readonly service: NginxService
     private readonly listener: NginxEventListener
 
-    constructor(props: object) {
+    constructor(props: NginxStatusCardProps) {
         super(props)
         this.service = new NginxService()
         this.state = { loading: true }
@@ -36,6 +40,12 @@ export default class NginxStatusCard extends React.Component<object, NginxStatus
 
     componentWillUnmount() {
         NginxEventDispatcher.remove(this.listener)
+    }
+
+    componentDidUpdate(previousProps: NginxStatusCardProps) {
+        if (previousProps.refreshToken !== this.props.refreshToken) {
+            this.refreshStatus()
+        }
     }
 
     private handleNginxEvent() {

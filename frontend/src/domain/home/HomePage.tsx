@@ -31,6 +31,7 @@ import "../logs/components/LogViewer.css"
 
 interface HomePageState {
     loading: boolean
+    refreshToken: number
     metadata?: NginxMetadata
     nginxRunning?: boolean
     settings?: SettingsDto
@@ -61,6 +62,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
         this.trafficStatsService = new TrafficStatsService()
         this.state = {
             loading: true,
+            refreshToken: 0,
             expiringCertificates: [],
             errorLogs: [],
         }
@@ -105,7 +107,10 @@ export default class HomePage extends React.Component<object, HomePageState> {
         const { loading } = this.state
         if (loading) return
 
-        this.setState({ error: undefined }, () => this.fetchData())
+        this.setState(
+            state => ({ error: undefined, refreshToken: state.refreshToken + 1 }),
+            () => this.fetchData(),
+        )
     }
 
     private filterExpiringCertificates(certificates: CertificateResponse[]): CertificateResponse[] {
@@ -238,13 +243,15 @@ export default class HomePage extends React.Component<object, HomePageState> {
     private renderOverviewNginxSection(canViewNginx: boolean) {
         if (!canViewNginx) return null
 
+        const { refreshToken } = this.state
+
         return (
             <div className="home-dashboard-section home-dashboard-nginx-section">
                 <h3 className="home-dashboard-section-title">
                     <I18n id={MessageKey.FrontendHomeNginxSectionTitle} />
                 </h3>
                 <div className="home-dashboard-nginx-slot">
-                    <NginxStatusCard />
+                    <NginxStatusCard refreshToken={refreshToken} />
                 </div>
             </div>
         )
