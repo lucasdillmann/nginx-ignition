@@ -1,30 +1,30 @@
-.home-header-card {
-    padding: 20px;
-    background: var(--nginxIgnition-colorBgLayout);
-    border-radius: 8px;
+.home-header {
+    background: var(--nginxIgnition-shellHeaderBg, var(--nginxIgnition-colorBgLayout));
+    padding: 48px 40px;
+    margin-bottom: 36px;
     width: 100%;
     box-sizing: border-box;
 }
 
-.home-header-card-columns {
+.home-header-columns {
     gap: 24px;
     width: 100%;
 }
 
-.home-header-card-greeting {
+.home-header-greeting {
     flex: 1;
     min-width: 240px;
     gap: 8px;
 }
 
-.home-header-card-title {
+.home-header-title {
     font-size: 28px;
     font-weight: 600;
     margin: 0;
     line-height: 1.2;
 }
 
-.home-header-card-subtitle {
+.home-header-subtitle {
     font-size: 16px;
     font-weight: 400;
     margin: 0;
@@ -32,48 +32,41 @@
     line-height: 1.5;
 }
 
-html:not([data-theme="dark"]) .home-header-card-subtitle {
+html:not([data-theme="dark"]) .home-header-subtitle {
     color: var(--nginxIgnition-colorTextTertiary);
 }
 
-.home-header-card-sidebar {
+.home-header-sidebar {
     gap: 0;
     min-width: 200px;
 }
 
-.home-header-card-meta-group {
+.home-header-meta-group {
     gap: 2px;
     line-height: 1.2;
 }
 
-.home-header-card-actions {
+.home-header-actions {
     margin-top: 20px;
 }
 
-.home-header-card-update-button.ant-btn {
+.home-header-update-button.ant-btn {
     color: var(--ant-color-warning-text) !important;
     background: var(--ant-color-warning-bg) !important;
     border-color: var(--ant-color-warning-border) !important;
 }
 
-.home-header-card-update-button.ant-btn:hover:not(:disabled) {
+.home-header-update-button.ant-btn:hover:not(:disabled) {
     color: var(--nginxIgnition-colorWarning) !important;
     background: var(--ant-color-warning-bg) !important;
     border-color: var(--nginxIgnition-colorWarning) !important;
 }
 
-.home-header-card-meta-line {
+.home-header-meta-line {
     font-size: 14px;
     color: var(--nginxIgnition-colorTextSecondary);
 }
 
-html:not([data-theme="dark"]) .home-header-card-meta-line {
+html:not([data-theme="dark"]) .home-header-meta-line {
     color: var(--nginxIgnition-colorTextTertiary);
-}
-
-.home-header-card-social-icon {
-    font-size: 16px;
-    cursor: pointer;
-    color: var(--nginxIgnition-colorTextSecondary);
-    margin-top: 5px;
 }

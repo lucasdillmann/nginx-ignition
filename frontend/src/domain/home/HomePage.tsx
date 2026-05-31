@@ -23,7 +23,7 @@ import LogLine from "../logs/model/LogLine"
 import { Link } from "react-router-dom"
 import TagGroup from "../../core/components/taggroup/TagGroup"
 import CountCard from "./components/CountCard"
-import HomeHeaderCard from "./components/HomeHeaderCard"
+import HomeHeader from "./components/HomeHeader"
 import NginxStatusCard from "./components/NginxStatusCard"
 import "./HomePage.css"
 import "../trafficstats/TrafficStatsPage.css"
@@ -96,7 +96,9 @@ export default class HomePage extends React.Component<object, HomePageState> {
     }
 
     private configureShell() {
-        AppShellContext.get().updateConfig({})
+        AppShellContext.get().updateConfig({
+            noContainerPadding: true,
+        })
     }
 
     private refreshData() {
@@ -442,12 +444,14 @@ export default class HomePage extends React.Component<object, HomePageState> {
         const { metadata } = this.state
 
         return (
-            <Flex className="home-dashboard-container" vertical>
-                <HomeHeaderCard metadata={metadata} onRefresh={() => this.refreshData()} />
-                {this.renderOverviewSection()}
-                {this.renderTrafficSection()}
-                {this.renderDetailsSection()}
-            </Flex>
+            <>
+                <HomeHeader metadata={metadata} onRefresh={() => this.refreshData()} />
+                <Flex className="home-dashboard-container" vertical>
+                    {this.renderOverviewSection()}
+                    {this.renderTrafficSection()}
+                    {this.renderDetailsSection()}
+                </Flex>
+            </>
         )
     }
 }

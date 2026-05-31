@@ -1,19 +1,18 @@
 import React from "react"
 import { Button, Flex } from "antd"
-import { GithubFilled, LinkedinFilled } from "@ant-design/icons"
 import AppContext from "../../../core/components/context/AppContext"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
 import NginxMetadata from "../../nginx/model/NginxMetadata"
-import "./HomeHeaderCard.css"
+import "./HomeHeader.css"
 import If from "../../../core/components/flowcontrol/If"
 
-export interface HomeHeaderCardProps {
+export interface HomeHeaderProps {
     metadata?: NginxMetadata
     onRefresh: () => void
 }
 
-export default class HomeHeaderCard extends React.PureComponent<HomeHeaderCardProps> {
+export default class HomeHeader extends React.PureComponent<HomeHeaderProps> {
     private firstName(): string {
         const user = AppContext.get().user
         if (user === undefined) return ""
@@ -28,19 +27,11 @@ export default class HomeHeaderCard extends React.PureComponent<HomeHeaderCardPr
         return `https://github.com/lucasdillmann/nginx-ignition/releases/${latest}`
     }
 
-    private handleGithubClick() {
-        window.open("https://github.com/lucasdillmann/nginx-ignition", "_blank", "noopener")
-    }
-
-    private handleLinkedInClick() {
-        window.open("https://linkedin.com/in/lucasdillmann", "_blank", "noopener")
-    }
-
     private renderAppVersion() {
         const { current } = AppContext.get().configuration.version
 
         return (
-            <span className="home-header-card-meta-line">
+            <span className="home-header-meta-line">
                 <I18n
                     id={
                         current
@@ -58,18 +49,9 @@ export default class HomeHeaderCard extends React.PureComponent<HomeHeaderCardPr
         if (metadata === undefined) return null
 
         return (
-            <span className="home-header-card-meta-line">
+            <span className="home-header-meta-line">
                 <I18n id={{ id: MessageKey.FrontendHomeNginxVersion, params: { version: metadata.version } }} />
             </span>
-        )
-    }
-
-    private renderSocialIcons() {
-        return (
-            <Flex className="home-header-card-social-row" align="center" gap={10}>
-                <LinkedinFilled className="home-header-card-social-icon" onClick={() => this.handleLinkedInClick()} />
-                <GithubFilled className="home-header-card-social-icon" onClick={() => this.handleGithubClick()} />
-            </Flex>
         )
     }
 
@@ -78,10 +60,10 @@ export default class HomeHeaderCard extends React.PureComponent<HomeHeaderCardPr
         const updateAvailable = Boolean(current) && Boolean(latest) && current !== latest
 
         return (
-            <Flex className="home-header-card-actions" align="center" gap={8}>
+            <Flex className="home-header-actions" align="center" gap={8}>
                 <If condition={updateAvailable}>
                     <Button
-                        className="home-header-card-update-button"
+                        className="home-header-update-button"
                         onClick={() => window.open(this.releaseUrl(latest!), "_blank", "noopener")}
                     >
                         <I18n id={MessageKey.FrontendHomeUpdateAvailable} />
@@ -98,10 +80,10 @@ export default class HomeHeaderCard extends React.PureComponent<HomeHeaderCardPr
         const { onRefresh } = this.props
 
         return (
-            <div className="home-header-card">
-                <Flex className="home-header-card-columns" align="center" justify="space-between" wrap="wrap">
-                    <Flex className="home-header-card-greeting" vertical justify="center">
-                        <h1 className="home-header-card-title">
+            <div className="home-header">
+                <Flex className="home-header-columns" align="center" justify="space-between" wrap="wrap">
+                    <Flex className="home-header-greeting" vertical justify="center">
+                        <h1 className="home-header-title">
                             <I18n
                                 id={{
                                     id: MessageKey.FrontendHomeGreetingTitle,
@@ -109,15 +91,14 @@ export default class HomeHeaderCard extends React.PureComponent<HomeHeaderCardPr
                                 }}
                             />
                         </h1>
-                        <p className="home-header-card-subtitle">
+                        <p className="home-header-subtitle">
                             <I18n id={MessageKey.FrontendHomeGreetingSubtitle} />
                         </p>
                     </Flex>
-                    <Flex className="home-header-card-sidebar" vertical align="flex-end">
-                        <Flex className="home-header-card-meta-group" vertical align="flex-end">
+                    <Flex className="home-header-sidebar" vertical align="flex-end">
+                        <Flex className="home-header-meta-group" vertical align="flex-end">
                             {this.renderAppVersion()}
                             {this.renderNginxVersion()}
-                            {this.renderSocialIcons()}
                         </Flex>
                         {this.renderActions(onRefresh)}
                     </Flex>
