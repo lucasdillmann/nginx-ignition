@@ -16,14 +16,14 @@ jobs:
       PNPM_HOME: /data/cache/pnpm
       BUILDKIT_CACHE: /data/cache/docker
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: 1.26.3
       - name: Install nfpm
@@ -31,19 +31,19 @@ jobs:
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
           sudo apt update
           sudo apt install -y nfpm gettext-base
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-qemu-action@v4
+      - uses: docker/setup-buildx-action@v4
         with:
           driver: docker-container
           driver-opts: |
             image=moby/buildkit:master
             network=host
           platforms: linux/amd64,linux/arm64
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           registry: docker.lan.dillmann.dev
           username: ${{ secrets.PRIVATE_DOCKER_USERNAME }}
@@ -64,7 +64,7 @@ jobs:
         run: |
           ./.github/scripts/update-release.sh "${{ steps.docker.outputs.DOCKER_IMAGE_HASH }}" "false" "${{ steps.tag.outputs.VERSION }}" "true"
       - name: Upload distribution files
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.tag.outputs.VERSION }}
           draft: true

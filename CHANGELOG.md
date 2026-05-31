@@ -2,12 +2,12 @@
 
 ## 2.41.0
 
-- The home page is now an operator dashboard with the nginx status, resource counts, expiring certificates, recent error 
-  logs, and a traffic summary.
-- The feature tour with help videos moved to a dedicated Help page, accessible from the question-mark icon in the 
-  header menu.
+- Home page was remade from scratch and is now an dashboard with a nginx ignition overview: nginx status and uptime,
+  resource counts, expiring certificates, recent error logs, and a traffic summary. The feature tour with help videos 
+  moved to a dedicated Help page, accessible from the question-mark icon in the header menu.
+- Fixed the double scrollbar issue on the logs page after the UI overhaul
 - Development workflow improvements
-- Fixed double scrollbar on the logs page after the UI overhaul
+- Other minor improvements and bug fixes
 
 ## 2.40.1
 
