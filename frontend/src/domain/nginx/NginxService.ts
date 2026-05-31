@@ -4,6 +4,7 @@ import NginxEventDispatcher from "./listener/NginxEventDispatcher"
 import { NginxOperation } from "./listener/NginxEventListener"
 import NginxMetadata from "./model/NginxMetadata"
 import LogLine from "../logs/model/LogLine"
+import { NginxStatusResponse } from "./model/NginxStatusResponse"
 
 export default class NginxService {
     private readonly gateway: NginxGateway
@@ -13,10 +14,11 @@ export default class NginxService {
     }
 
     async isRunning(): Promise<boolean> {
-        return this.gateway
-            .getStatus()
-            .then(requireSuccessPayload)
-            .then(response => response.running)
+        return this.getStatus().then(response => response.running)
+    }
+
+    async getStatus(): Promise<NginxStatusResponse> {
+        return this.gateway.getStatus().then(requireSuccessPayload)
     }
 
     async getMetadata(): Promise<NginxMetadata> {

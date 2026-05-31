@@ -7,8 +7,8 @@ import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
 const IGNITION_TIME_UNIT_OPTIONS_DATA = [
-    { value: TimeUnit.DAYS, messageKey: MessageKey.FrontendSettingsTabsIgnitionTimeUnitDays },
-    { value: TimeUnit.HOURS, messageKey: MessageKey.FrontendSettingsTabsIgnitionTimeUnitHours },
+    { value: TimeUnit.DAYS, messageKey: MessageKey.CommonTimeUnitDays },
+    { value: TimeUnit.HOURS, messageKey: MessageKey.CommonTimeUnitHours },
     { value: TimeUnit.MINUTES, messageKey: MessageKey.FrontendSettingsTabsIgnitionTimeUnitMinutes },
 ]
 

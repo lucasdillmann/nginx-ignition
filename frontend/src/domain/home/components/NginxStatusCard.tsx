@@ -9,11 +9,13 @@ import GenericNginxAction, { ActionType } from "../../nginx/actions/GenericNginx
 import { isAccessGranted } from "../../../core/components/accesscontrol/IsAccessGranted"
 import { UserAccessLevel } from "../../user/model/UserAccessLevel"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { I18n, I18nMessage } from "../../../core/i18n/I18n"
+import { I18n, I18nMessage, i18n } from "../../../core/i18n/I18n"
+import If from "../../../core/components/flowcontrol/If"
 
 interface NginxStatusCardState {
     loading: boolean
     running?: boolean
+    uptimeSeconds?: number
 }
 
 export default class NginxStatusCard extends React.Component<object, NginxStatusCardState> {
@@ -45,9 +47,32 @@ export default class NginxStatusCard extends React.Component<object, NginxStatus
 
     private refreshStatus() {
         this.service
-            .isRunning()
+            .getStatus()
             .catch(() => undefined)
-            .then(running => this.setState({ running, loading: false }))
+            .then(status =>
+                this.setState({
+                    running: status?.running,
+                    uptimeSeconds: status?.uptimeSeconds,
+                    loading: false,
+                }),
+            )
+    }
+
+    private formatCountUnit(count: number, singularKey: I18nMessage, pluralKey: I18nMessage): string {
+        const unit = i18n(count === 1 ? singularKey : pluralKey)
+        return `${count} ${unit}`
+    }
+
+    private uptimeLabelParams(totalSeconds: number): { days: string; hours: string; seconds: string } {
+        const dayCount = Math.floor(totalSeconds / 86400)
+        const hourCount = Math.floor((totalSeconds % 86400) / 3600)
+        const secondCount = Math.floor((totalSeconds % 3600) / 60) * 60 + (totalSeconds % 60)
+
+        return {
+            days: this.formatCountUnit(dayCount, MessageKey.CommonTimeUnitDay, MessageKey.CommonTimeUnitDays),
+            hours: this.formatCountUnit(hourCount, MessageKey.CommonTimeUnitHour, MessageKey.CommonTimeUnitHours),
+            seconds: this.formatCountUnit(secondCount, MessageKey.CommonTimeUnitSecond, MessageKey.CommonUnitSeconds),
+        }
     }
 
     private statusMetadata(): { color: string; label: I18nMessage } {
@@ -89,12 +114,24 @@ export default class NginxStatusCard extends React.Component<object, NginxStatus
     }
 
     private renderStatus() {
+        const { running, uptimeSeconds } = this.state
         const { color, label } = this.statusMetadata()
+        const showUptime = running === true && uptimeSeconds !== undefined
 
         return (
             <Flex className="home-dashboard-nginx-status" align="center">
                 <span className="home-dashboard-nginx-status-dot" style={{ backgroundColor: color }} />
-                <I18n id={label} />
+                <If condition={showUptime}>
+                    <I18n
+                        id={{
+                            id: MessageKey.FrontendHomeNginxOnlineUptime,
+                            params: this.uptimeLabelParams(uptimeSeconds!),
+                        }}
+                    />
+                </If>
+                <If condition={!showUptime}>
+                    <I18n id={label} />
+                </If>
             </Flex>
         )
     }
