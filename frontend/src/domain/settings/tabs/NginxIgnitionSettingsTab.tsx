@@ -9,7 +9,7 @@ import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 const IGNITION_TIME_UNIT_OPTIONS_DATA = [
     { value: TimeUnit.DAYS, messageKey: MessageKey.CommonTimeUnitDays },
     { value: TimeUnit.HOURS, messageKey: MessageKey.CommonTimeUnitHours },
-    { value: TimeUnit.MINUTES, messageKey: MessageKey.FrontendSettingsTabsIgnitionTimeUnitMinutes },
+    { value: TimeUnit.MINUTES, messageKey: MessageKey.CommonTimeUnitMinutes },
 ]
 
 export interface NginxIgnitionSettingsTabProps {

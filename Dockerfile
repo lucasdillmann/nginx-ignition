@@ -62,7 +62,8 @@ RUN apk add --no-cache \
       zlib \
       openssl \
       ca-certificates \
-      curl && \
+      curl \
+      procps && \
     update-ca-certificates
 
 ARG TARGETPLATFORM

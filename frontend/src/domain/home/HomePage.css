@@ -167,15 +167,14 @@ html:not([data-theme="dark"]) .home-dashboard-section-title {
     font-size: 14px;
     font-weight: 500;
     line-height: 1.4;
+    gap: 8px;
 }
 
-.home-dashboard-nginx-status-dot {
-    display: inline-block;
+.home-dashboard-nginx-status-border {
     width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 8px;
     flex-shrink: 0;
+    align-self: stretch;
+    border-radius: 4px;
 }
 
 .home-dashboard-split-row {

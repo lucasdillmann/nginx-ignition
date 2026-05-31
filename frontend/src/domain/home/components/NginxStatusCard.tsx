@@ -63,14 +63,20 @@ export default class NginxStatusCard extends React.Component<object, NginxStatus
         return `${count} ${unit}`
     }
 
-    private uptimeLabelParams(totalSeconds: number): { days: string; hours: string; seconds: string } {
+    private uptimeLabelParams(totalSeconds: number): { days: string; hours: string; minutes: string; seconds: string } {
         const dayCount = Math.floor(totalSeconds / 86400)
         const hourCount = Math.floor((totalSeconds % 86400) / 3600)
-        const secondCount = Math.floor((totalSeconds % 3600) / 60) * 60 + (totalSeconds % 60)
+        const minuteCount = Math.floor((totalSeconds % 3600) / 60)
+        const secondCount = totalSeconds % 60
 
         return {
             days: this.formatCountUnit(dayCount, MessageKey.CommonTimeUnitDay, MessageKey.CommonTimeUnitDays),
             hours: this.formatCountUnit(hourCount, MessageKey.CommonTimeUnitHour, MessageKey.CommonTimeUnitHours),
+            minutes: this.formatCountUnit(
+                minuteCount,
+                MessageKey.CommonTimeUnitMinute,
+                MessageKey.CommonTimeUnitMinutes,
+            ),
             seconds: this.formatCountUnit(secondCount, MessageKey.CommonTimeUnitSecond, MessageKey.CommonUnitSeconds),
         }
     }
@@ -116,22 +122,24 @@ export default class NginxStatusCard extends React.Component<object, NginxStatus
     private renderStatus() {
         const { running, uptimeSeconds } = this.state
         const { color, label } = this.statusMetadata()
-        const showUptime = running === true && uptimeSeconds !== undefined
+        const showUptime = running === true && Boolean(uptimeSeconds)
 
         return (
-            <Flex className="home-dashboard-nginx-status" align="center">
-                <span className="home-dashboard-nginx-status-dot" style={{ backgroundColor: color }} />
-                <If condition={showUptime}>
-                    <I18n
-                        id={{
-                            id: MessageKey.FrontendHomeNginxOnlineUptime,
-                            params: this.uptimeLabelParams(uptimeSeconds!),
-                        }}
-                    />
-                </If>
-                <If condition={!showUptime}>
-                    <I18n id={label} />
-                </If>
+            <Flex className="home-dashboard-nginx-status" align="stretch">
+                <span className="home-dashboard-nginx-status-border" style={{ backgroundColor: color }} />
+                <Flex className="home-dashboard-nginx-status-label" align="center">
+                    <If condition={showUptime}>
+                        <I18n
+                            id={{
+                                id: MessageKey.FrontendHomeNginxOnlineUptime,
+                                params: this.uptimeLabelParams(uptimeSeconds!),
+                            }}
+                        />
+                    </If>
+                    <If condition={!showUptime}>
+                        <I18n id={label} />
+                    </If>
+                </Flex>
             </Flex>
         )
     }

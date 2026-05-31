@@ -14,22 +14,22 @@
 .home-header-greeting {
     flex: 1;
     min-width: 240px;
-    gap: 8px;
+    gap: 10px;
 }
 
 .home-header-title {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 600;
     margin: 0;
     line-height: 1.2;
 }
 
 .home-header-subtitle {
-    font-size: 16px;
+    font-size: 22px;
     font-weight: 400;
     margin: 0;
     color: var(--nginxIgnition-colorTextSecondary);
-    line-height: 1.5;
+    line-height: 1.4;
 }
 
 html:not([data-theme="dark"]) .home-header-subtitle {
