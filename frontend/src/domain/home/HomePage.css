@@ -132,22 +132,24 @@
         color 0.2s;
 }
 
-html:not([data-theme="dark"]) .home-dashboard-view-all-link,
-html:not([data-theme="dark"]) .home-dashboard-view-all-link:hover,
-html:not([data-theme="dark"]) .home-dashboard-view-all-link:focus,
-html:not([data-theme="dark"]) .home-dashboard-view-all-link:active {
-    color: var(--nginxIgnition-colorTextSecondary) !important;
-}
-
 .home-dashboard-view-all-link:hover,
 .home-dashboard-view-all-link:focus {
     color: var(--nginxIgnition-colorTextTertiary);
     background: var(--nginxIgnition-colorBgElevated);
 }
 
-html:not([data-theme="dark"]) .home-dashboard-view-all-link:hover,
-html:not([data-theme="dark"]) .home-dashboard-view-all-link:focus {
-    color: var(--nginxIgnition-colorTextTertiary) !important;
+html:not([data-theme="dark"]) .home-dashboard-view-all-link,
+html:not([data-theme="dark"]) .home-dashboard-view-all-link:focus,
+html:not([data-theme="dark"]) .home-dashboard-view-all-link:active {
+    color: var(--nginxIgnition-buttonDefaultText) !important;
+    background: var(--nginxIgnition-buttonDefaultBg) !important;
+    border-color: var(--nginxIgnition-buttonDefaultBorder) !important;
+}
+
+html:not([data-theme="dark"]) .home-dashboard-view-all-link:hover {
+    color: var(--nginxIgnition-buttonDefaultHoverText) !important;
+    background: var(--nginxIgnition-buttonDefaultBgHover) !important;
+    border-color: var(--nginxIgnition-fieldBorderHover) !important;
 }
 
 .home-dashboard-section-title {
@@ -191,43 +193,43 @@ html:not([data-theme="dark"]) .home-dashboard-section-title {
     padding-top: 4px;
 }
 
+.home-dashboard-panel,
+.home-dashboard-log-content {
+    flex: 1;
+    min-height: 0;
+    max-height: 281px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
 .home-dashboard-panel {
     padding: 16px;
     background: var(--nginxIgnition-colorBgLayout);
     border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 312px;
 }
 
 .home-dashboard-details-column .home-dashboard-panel .home-dashboard-cert-list {
-    max-height: 280px;
-    overflow: auto;
-}
-
-.home-dashboard-log-content {
-    display: flex;
-    flex-direction: column;
     flex: 1;
-    min-height: 312px;
+    min-height: 0;
+    overflow: auto;
 }
 
 .home-dashboard-log-content .log-viewer-container {
     flex: 1;
-    min-height: 280px;
+    min-height: 0;
+    overflow: auto;
 }
 
 .home-dashboard-panel .home-dashboard-empty,
-.home-dashboard-log-content .home-dashboard-empty,
-.home-dashboard-section > .home-dashboard-empty {
+.home-dashboard-log-content .home-dashboard-empty {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 0;
-    min-height: 280px;
+    min-height: 0;
 }
 
 .home-dashboard-cert-list {
@@ -250,6 +252,10 @@ html:not([data-theme="dark"]) .home-dashboard-section-title {
     color: var(--nginxIgnition-colorTextSecondary);
     white-space: nowrap;
     margin-left: 12px;
+}
+
+.home-dashboard-traffic-panel {
+    min-height: auto;
 }
 
 .home-dashboard-empty {

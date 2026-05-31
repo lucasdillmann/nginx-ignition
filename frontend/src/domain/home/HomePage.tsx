@@ -1,5 +1,5 @@
 import React from "react"
-import { Button, Empty, Flex } from "antd"
+import { Empty, Flex } from "antd"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import Preloader from "../../core/components/preloader/Preloader"
 import EmptyStates from "../../core/components/emptystate/EmptyStates"
@@ -16,12 +16,12 @@ import { CertificateResponse } from "../certificate/model/CertificateResponse"
 import SettingsService from "../settings/SettingsService"
 import SettingsDto from "../settings/model/SettingsDto"
 import TrafficStatsService from "../trafficstats/TrafficStatsService"
-import TrafficStatsResponse from "../trafficstats/model/TrafficStatsResponse"
+import TrafficStatsResponse, { ZoneData } from "../trafficstats/model/TrafficStatsResponse"
 import ZoneStatCards from "../trafficstats/components/ZoneStatCards"
 import LogViewer from "../logs/components/LogViewer"
 import LogLine from "../logs/model/LogLine"
 import { Link } from "react-router-dom"
-import { navigateTo } from "../../core/components/router/AppRouter"
+import TagGroup from "../../core/components/taggroup/TagGroup"
 import CountCard from "./components/CountCard"
 import NginxStatusCard from "./components/NginxStatusCard"
 import "./HomePage.css"
@@ -94,10 +94,6 @@ export default class HomePage extends React.Component<object, HomePageState> {
         return isAccessGranted(UserAccessLevel.READ_ONLY, permissions => permissions.trafficStats)
     }
 
-    private canViewSettings(): boolean {
-        return isAccessGranted(UserAccessLevel.READ_ONLY, permissions => permissions.settings)
-    }
-
     private configureShell() {
         AppShellContext.get().updateConfig({
             title: MessageKey.FrontendHomeTitle,
@@ -138,9 +134,20 @@ export default class HomePage extends React.Component<object, HomePageState> {
         return Math.ceil((expiry.getTime() - now.getTime()) / (24 * 60 * 60 * 1000))
     }
 
-    private formatCertificateDomains(certificate: CertificateResponse): string {
-        if (certificate.domainNames.length === 0) return ""
-        return certificate.domainNames.join(", ")
+    private filterExpiringCertificatesFromPage(
+        certificatesPage: { contents: CertificateResponse[] } | undefined,
+    ): CertificateResponse[] {
+        if (certificatesPage === undefined) return []
+
+        return this.filterExpiringCertificates(certificatesPage.contents)
+    }
+
+    private overviewClassName(countCardsLength: number, canViewNginx: boolean): string {
+        let className = `home-dashboard-overview-row home-dashboard-overview-row-count-${countCardsLength}`
+
+        if (canViewNginx) className += " home-dashboard-overview-row-with-nginx"
+
+        return className
     }
 
     private async fetchData() {
@@ -186,9 +193,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
                 hostCount: hostsPage?.totalItems,
                 streamCount: streamsPage?.totalItems,
                 certificateCount: certificatesPage?.totalItems,
-                expiringCertificates: certificatesPage
-                    ? this.filterExpiringCertificates(certificatesPage.contents)
-                    : [],
+                expiringCertificates: this.filterExpiringCertificatesFromPage(certificatesPage),
                 errorLogs,
                 stats,
             })
@@ -224,82 +229,69 @@ export default class HomePage extends React.Component<object, HomePageState> {
 
         const canViewNginx = this.canViewNginxServer()
         if (countCards.length === 0 && !canViewNginx) return null
-        const overviewClassName = `home-dashboard-overview-row home-dashboard-overview-row-count-${countCards.length}${
-            canViewNginx ? " home-dashboard-overview-row-with-nginx" : ""
-        }`
 
         return (
-            <Flex className={overviewClassName} align="stretch" wrap="wrap">
-                {countCards.length > 0 && (
-                    <div className="home-dashboard-section home-dashboard-totals-section">
-                        <h3 className="home-dashboard-section-title">
-                            <I18n id={MessageKey.FrontendHomeTotalsTitle} />
-                        </h3>
-                        <Flex className="traffic-stats-cards-row">{countCards}</Flex>
-                    </div>
-                )}
-                {canViewNginx && (
-                    <div className="home-dashboard-section home-dashboard-nginx-section">
-                        <h3 className="home-dashboard-section-title">
-                            <I18n
-                                id={{
-                                    id: MessageKey.FrontendHomeNginxSectionTitle,
-                                    params: { version: metadata?.version ?? "—" },
-                                }}
-                            />
-                        </h3>
-                        <div className="home-dashboard-nginx-slot">
-                            <NginxStatusCard />
-                        </div>
-                    </div>
-                )}
+            <Flex className={this.overviewClassName(countCards.length, canViewNginx)} align="stretch" wrap="wrap">
+                {this.renderOverviewTotalsSection(countCards)}
+                {this.renderOverviewNginxSection(canViewNginx, metadata?.version)}
             </Flex>
         )
+    }
+
+    private renderOverviewTotalsSection(countCards: React.ReactNode[]) {
+        if (countCards.length === 0) return null
+
+        return (
+            <div className="home-dashboard-section home-dashboard-totals-section">
+                <h3 className="home-dashboard-section-title">
+                    <I18n id={MessageKey.FrontendHomeTotalsTitle} />
+                </h3>
+                <Flex className="traffic-stats-cards-row">{countCards}</Flex>
+            </div>
+        )
+    }
+
+    private renderOverviewNginxSection(canViewNginx: boolean, version: string | undefined) {
+        if (!canViewNginx) return null
+
+        return (
+            <div className="home-dashboard-section home-dashboard-nginx-section">
+                <h3 className="home-dashboard-section-title">
+                    <I18n
+                        id={{
+                            id: MessageKey.FrontendHomeNginxSectionTitle,
+                            params: { version: version ?? "—" },
+                        }}
+                    />
+                </h3>
+                <div className="home-dashboard-nginx-slot">
+                    <NginxStatusCard />
+                </div>
+            </div>
+        )
+    }
+
+    private renderDashboardEmpty(message: I18nMessage) {
+        return <Empty className="home-dashboard-empty" description={<I18n id={message} />} />
     }
 
     private renderTrafficEmptyState() {
         const { metadata, nginxRunning, stats } = this.state
 
         if (metadata?.availableSupport?.stats === NginxSupportType.NONE) {
-            return (
-                <Empty
-                    className="home-dashboard-empty"
-                    description={<I18n id={MessageKey.FrontendHomeTrafficUnsupported} />}
-                />
-            )
+            return this.renderDashboardEmpty(MessageKey.FrontendHomeTrafficUnsupported)
         }
 
         if (metadata && !metadata.stats.enabled) {
-            return (
-                <Empty
-                    className="home-dashboard-empty"
-                    description={<I18n id={MessageKey.FrontendHomeTrafficDisabled} />}
-                >
-                    {this.canViewSettings() && (
-                        <Button type="primary" onClick={() => navigateTo("/settings")}>
-                            <I18n id={MessageKey.CommonSettings} />
-                        </Button>
-                    )}
-                </Empty>
-            )
+            return this.renderDashboardEmpty(MessageKey.FrontendHomeTrafficDisabled)
         }
 
         if (nginxRunning === false) {
-            return (
-                <Empty
-                    className="home-dashboard-empty"
-                    description={<I18n id={MessageKey.FrontendHomeTrafficOffline} />}
-                />
-            )
+            return this.renderDashboardEmpty(MessageKey.FrontendHomeTrafficOffline)
         }
 
         if (stats?.serverZones?.["*"]?.requestCounter === 0) {
-            return (
-                <Empty
-                    className="home-dashboard-empty"
-                    description={<I18n id={MessageKey.FrontendHomeTrafficNoData} />}
-                />
-            )
+            return this.renderDashboardEmpty(MessageKey.FrontendHomeTrafficNoData)
         }
 
         return null
@@ -313,6 +305,34 @@ export default class HomePage extends React.Component<object, HomePageState> {
         )
     }
 
+    private renderTrafficSectionHeader(emptyState: React.ReactNode | null) {
+        return (
+            <Flex className="home-dashboard-section-header">
+                <h3 className="home-dashboard-section-title">
+                    <I18n id={MessageKey.CommonTrafficStats} />
+                </h3>
+                {emptyState === null && this.renderViewAllLink("/traffic-stats")}
+            </Flex>
+        )
+    }
+
+    private renderTrafficSectionContent(emptyState: React.ReactNode | null, globalZone: ZoneData | undefined) {
+        if (emptyState !== null) {
+            return <div className="home-dashboard-panel home-dashboard-traffic-panel">{emptyState}</div>
+        }
+
+        if (globalZone === undefined) return null
+
+        return (
+            <ZoneStatCards
+                requests={globalZone.requestCounter}
+                inBytes={globalZone.inBytes}
+                outBytes={globalZone.outBytes}
+                avgResponseTime={globalZone.requestMsec}
+            />
+        )
+    }
+
     private renderTrafficSection() {
         if (!this.canViewTrafficStats()) return null
 
@@ -322,38 +342,26 @@ export default class HomePage extends React.Component<object, HomePageState> {
 
         return (
             <div className="home-dashboard-section">
-                <Flex className="home-dashboard-section-header">
-                    <h3 className="home-dashboard-section-title">
-                        <I18n id={MessageKey.CommonTrafficStats} />
-                    </h3>
-                    {!emptyState && this.renderViewAllLink("/traffic-stats")}
-                </Flex>
-                {emptyState}
-                {!emptyState && globalZone && (
-                    <ZoneStatCards
-                        requests={globalZone.requestCounter}
-                        inBytes={globalZone.inBytes}
-                        outBytes={globalZone.outBytes}
-                        avgResponseTime={globalZone.requestMsec}
-                    />
-                )}
+                {this.renderTrafficSectionHeader(emptyState)}
+                {this.renderTrafficSectionContent(emptyState, globalZone)}
             </div>
         )
     }
 
+    private renderCertificateExpiryMessage(days: number) {
+        if (days <= 0) return <I18n id={MessageKey.FrontendHomeExpiresToday} />
+
+        return <I18n id={MessageKey.FrontendHomeExpiresInDays} params={{ days }} />
+    }
+
     private renderExpiringCertificateItem(certificate: CertificateResponse) {
         const days = this.daysUntilExpiry(certificate.validUntil)
-        const expiryMessage =
-            days <= 0 ? (
-                <I18n id={MessageKey.FrontendHomeExpiresToday} />
-            ) : (
-                <I18n id={MessageKey.FrontendHomeExpiresInDays} params={{ days }} />
-            )
+        const expiryMessage = this.renderCertificateExpiryMessage(days)
 
         return (
             <Flex key={certificate.id} className="home-dashboard-cert-item" align="center">
                 <Link to={`/certificates/${certificate.id}`} className="home-dashboard-cert-domains">
-                    {this.formatCertificateDomains(certificate)}
+                    <TagGroup values={certificate.domainNames} maximumSize={1} />
                 </Link>
                 <span className="home-dashboard-cert-expiry">{expiryMessage}</span>
             </Flex>
@@ -364,12 +372,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
         const { expiringCertificates } = this.state
 
         if (expiringCertificates.length === 0) {
-            return (
-                <Empty
-                    className="home-dashboard-empty"
-                    description={<I18n id={MessageKey.FrontendHomeNoCertificatesExpiring} />}
-                />
-            )
+            return this.renderDashboardEmpty(MessageKey.FrontendHomeNoCertificatesExpiring)
         }
 
         return (
@@ -395,27 +398,35 @@ export default class HomePage extends React.Component<object, HomePageState> {
         )
     }
 
-    private renderRecentErrorsEmpty(message: I18nMessage) {
-        return <Empty className="home-dashboard-empty" description={<I18n id={message} />} />
-    }
-
     private renderRecentErrorsContent() {
         const { settings, errorLogs } = this.state
         const serverLogsEnabled = settings?.nginx.logs.serverLogsEnabled === true
 
         if (!serverLogsEnabled) {
-            return this.renderRecentErrorsEmpty(MessageKey.FrontendHomeRecentErrorsDisabled)
+            return this.renderDashboardEmpty(MessageKey.FrontendHomeRecentErrorsDisabled)
         }
 
         if (errorLogs.length === 0) {
-            return this.renderRecentErrorsEmpty(MessageKey.FrontendHomeRecentErrorsEmpty)
+            return this.renderDashboardEmpty(MessageKey.FrontendHomeRecentErrorsEmpty)
         }
 
         return <LogViewer lines={errorLogs} />
     }
 
+    private renderRecentErrorsBody(content: React.ReactNode) {
+        const serverLogsEnabled = this.state.settings?.nginx.logs.serverLogsEnabled === true
+
+        if (serverLogsEnabled) {
+            return <div className="home-dashboard-log-content">{content}</div>
+        }
+
+        return <div className="home-dashboard-panel">{content}</div>
+    }
+
     private renderRecentErrorsPanel() {
         if (!this.canViewLogs()) return null
+
+        const content = this.renderRecentErrorsContent()
 
         return (
             <div className="home-dashboard-details-column">
@@ -425,7 +436,7 @@ export default class HomePage extends React.Component<object, HomePageState> {
                     </h3>
                     {this.renderViewAllLink("/logs")}
                 </Flex>
-                <div className="home-dashboard-log-content">{this.renderRecentErrorsContent()}</div>
+                {this.renderRecentErrorsBody(content)}
             </div>
         )
     }
