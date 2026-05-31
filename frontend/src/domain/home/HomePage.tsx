@@ -6,7 +6,7 @@ import EmptyStates from "../../core/components/emptystate/EmptyStates"
 import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGranted"
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { I18n } from "../../core/i18n/I18n"
+import { I18n, I18nMessage } from "../../core/i18n/I18n"
 import NginxService from "../nginx/NginxService"
 import NginxMetadata, { NginxSupportType } from "../nginx/model/NginxMetadata"
 import HostService from "../host/HostService"
@@ -375,30 +375,34 @@ export default class HomePage extends React.Component<object, HomePageState> {
         )
     }
 
-    private renderRecentErrorsPanel() {
-        if (!this.canViewLogs()) return null
+    private renderRecentErrorsEmpty(message: I18nMessage) {
+        return <Empty className="home-dashboard-empty" description={<I18n id={message} />} />
+    }
 
+    private renderRecentErrorsContent() {
         const { settings, errorLogs } = this.state
         const serverLogsEnabled = settings?.nginx.logs.serverLogsEnabled === true
+
+        if (!serverLogsEnabled) {
+            return this.renderRecentErrorsEmpty(MessageKey.FrontendHomeRecentErrorsDisabled)
+        }
+
+        if (errorLogs.length === 0) {
+            return this.renderRecentErrorsEmpty(MessageKey.FrontendHomeRecentErrorsEmpty)
+        }
+
+        return <LogViewer lines={errorLogs} />
+    }
+
+    private renderRecentErrorsPanel() {
+        if (!this.canViewLogs()) return null
 
         return (
             <div className="home-dashboard-panel home-dashboard-log-panel">
                 <h3 className="home-dashboard-section-title">
                     <I18n id={MessageKey.FrontendHomeRecentErrorsTitle} />
                 </h3>
-                {!serverLogsEnabled ? (
-                    <Empty
-                        className="home-dashboard-empty"
-                        description={<I18n id={MessageKey.FrontendHomeRecentErrorsDisabled} />}
-                    />
-                ) : errorLogs.length === 0 ? (
-                    <Empty
-                        className="home-dashboard-empty"
-                        description={<I18n id={MessageKey.FrontendHomeRecentErrorsEmpty} />}
-                    />
-                ) : (
-                    <LogViewer lines={errorLogs} />
-                )}
+                {this.renderRecentErrorsContent()}
             </div>
         )
     }
