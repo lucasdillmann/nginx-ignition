@@ -45,6 +45,26 @@
     gap: 16px;
 }
 
+.traffic-stats-stat-card-link {
+    flex: 1;
+    min-width: 180px;
+    color: inherit;
+    text-decoration: none;
+    display: block;
+}
+
+.traffic-stats-stat-card-link:hover .traffic-stats-stat-card,
+.traffic-stats-stat-card-link:focus .traffic-stats-stat-card {
+    background: var(--nginxIgnition-colorBgElevated);
+}
+
+html:not([data-theme="dark"]) .traffic-stats-stat-card-link,
+html:not([data-theme="dark"]) .traffic-stats-stat-card-link:hover,
+html:not([data-theme="dark"]) .traffic-stats-stat-card-link:focus,
+html:not([data-theme="dark"]) .traffic-stats-stat-card-link:active {
+    color: inherit;
+}
+
 .traffic-stats-stat-card {
     flex: 1;
     min-width: 180px;

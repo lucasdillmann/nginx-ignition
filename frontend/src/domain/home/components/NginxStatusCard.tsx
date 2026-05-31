@@ -88,12 +88,12 @@ export default class NginxStatusCard extends React.Component<object, NginxStatus
         })
     }
 
-    private renderStatusValue() {
+    private renderStatus() {
         const { color, label } = this.statusMetadata()
 
         return (
-            <Flex className="home-dashboard-nginx-status-value" align="center">
-                <span className="home-dashboard-status-dot" style={{ backgroundColor: color }} />
+            <Flex className="home-dashboard-nginx-status" align="center">
+                <span className="home-dashboard-nginx-status-dot" style={{ backgroundColor: color }} />
                 <I18n id={label} />
             </Flex>
         )
@@ -118,7 +118,7 @@ export default class NginxStatusCard extends React.Component<object, NginxStatus
 
         return (
             <Flex className="home-dashboard-nginx-actions" gap={8} wrap="wrap">
-                <Button size="small" danger onClick={() => this.confirmStop()} disabled={readOnly}>
+                <Button size="small" type="primary" danger onClick={() => this.confirmStop()} disabled={readOnly}>
                     <I18n id={MessageKey.FrontendHomeNginxStop} />
                 </Button>
                 <Button
@@ -139,9 +139,7 @@ export default class NginxStatusCard extends React.Component<object, NginxStatus
         return (
             <Preloader loading={loading} size={32}>
                 <div className="home-dashboard-nginx-control">
-                    <div className="ant-statistic">
-                        <div className="ant-statistic-content">{this.renderStatusValue()}</div>
-                    </div>
+                    {this.renderStatus()}
                     <ConfigProvider componentSize="small">{this.renderActions()}</ConfigProvider>
                 </div>
             </Preloader>

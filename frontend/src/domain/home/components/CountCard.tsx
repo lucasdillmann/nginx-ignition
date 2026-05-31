@@ -14,8 +14,8 @@ export default class CountCard extends React.PureComponent<CountCardProps> {
         const { title, count, linkTo } = this.props
 
         return (
-            <Link to={linkTo} className="home-dashboard-stat-card-link">
-                <div className="home-dashboard-stat-card">
+            <Link to={linkTo} className="traffic-stats-stat-card-link">
+                <div className="traffic-stats-stat-card">
                     <Statistic title={<I18n id={title} />} value={count} />
                 </div>
             </Link>

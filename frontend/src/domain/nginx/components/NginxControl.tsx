@@ -131,7 +131,7 @@ export default class NginxControl extends React.Component<NginxControlProps, Ngi
             return (
                 <Button
                     color="primary"
-                    variant="outlined"
+                    variant="solid"
                     onClick={() => this.performNginxAction(ActionType.START)}
                     disabled={readOnly}
                 >
@@ -141,13 +141,13 @@ export default class NginxControl extends React.Component<NginxControlProps, Ngi
 
         return (
             <>
-                <Button color="danger" variant="outlined" onClick={() => this.confirmStop()} disabled={readOnly}>
+                <Button color="danger" variant="solid" onClick={() => this.confirmStop()} disabled={readOnly}>
                     <I18n id={MessageKey.FrontendNginxControlStopButton} />
                 </Button>
                 <Button
                     className="nginx-reload-button"
                     color="primary"
-                    variant="outlined"
+                    variant="solid"
                     onClick={() => this.performNginxAction(ActionType.RELOAD)}
                     disabled={readOnly}
                 >
