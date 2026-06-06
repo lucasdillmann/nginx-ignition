@@ -2,6 +2,12 @@
 
 ## 2.42.0
 
+- Ignition now includes alerts for important events
+  - Get notified when certificates are expiring, renewals succeed or fail, nginx reloads fails and many more
+  - Inbox to see what happened, browse history, and mark alerts as read
+  - Send alerts by email (SMTP, Resend, or AWS SES), SMS or other systems (AWS SNS), to Telegram, Slack, Discord, and 
+    custom webhooks with more integrations available in future versions.
+  - Choose which events go to each channel and set your preferred notification language
 - Minor fixes and improvements
 
 ## 2.41.0

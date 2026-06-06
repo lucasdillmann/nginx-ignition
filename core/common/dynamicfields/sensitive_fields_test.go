@@ -96,6 +96,30 @@ func Test_RemoveSensitiveFields(t *testing.T) {
 		assert.NotContains(t, values, "field4")
 	})
 
+	t.Run("merges missing sensitive fields from right", func(t *testing.T) {
+		left := map[string]any{
+			"field1": "updated",
+		}
+		right := map[string]any{
+			"field1": "original",
+			"field2": "secret",
+		}
+
+		dynamicField1 := newDynamicField(t.Context())
+		dynamicField1.ID = "field1"
+
+		dynamicField2 := newDynamicField(t.Context())
+		dynamicField2.ID = "field2"
+		dynamicField2.Sensitive = true
+
+		dynamicFields := []DynamicField{*dynamicField1, *dynamicField2}
+
+		result := MergeSensitiveFields(left, right, dynamicFields)
+
+		assert.Equal(t, "updated", result["field1"])
+		assert.Equal(t, "secret", result["field2"])
+	})
+
 	t.Run("do nothing for non-existent fields", func(t *testing.T) {
 		values := map[string]any{
 			"field1": "value1",

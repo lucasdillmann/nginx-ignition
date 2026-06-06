@@ -6,11 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"dillmann.com.br/nginx-ignition/api/common/authorization"
-	"dillmann.com.br/nginx-ignition/core/user"
+	coreuser "dillmann.com.br/nginx-ignition/core/user"
 )
 
 type updateProfileHandler struct {
-	commands user.Commands
+	commands coreuser.Commands
 }
 
 func (h updateProfileHandler) handle(ctx *gin.Context) {
@@ -26,6 +26,7 @@ func (h updateProfileHandler) handle(ctx *gin.Context) {
 		currentUserID,
 		getStringValue(payload.Name),
 		getStringValue(payload.Username),
+		payload.NotificationLanguage,
 	); err != nil {
 		panic(err)
 	}

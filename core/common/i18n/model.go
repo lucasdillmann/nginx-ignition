@@ -9,11 +9,26 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/container"
 )
 
-type Message struct {
-	ctx       context.Context
+type DetachedMessage struct {
 	Variables map[string]any
 	Key       string
-	static    bool
+}
+
+type Message struct {
+	ctx context.Context
+	DetachedMessage
+	static bool
+}
+
+func (m Message) Detach() *DetachedMessage {
+	variables := make(map[string]any, len(m.Variables))
+	for key, value := range m.Variables {
+		variables[key] = value
+	}
+	return &DetachedMessage{
+		Key:       m.Key,
+		Variables: variables,
+	}
 }
 
 func (m Message) String() string {

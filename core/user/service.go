@@ -18,12 +18,18 @@ import (
 type service struct {
 	repository    Repository
 	configuration *configuration.Configuration
+	i18nCommands  i18n.Commands
 }
 
-func newService(repository Repository, cfg *configuration.Configuration) *service {
+func newService(
+	repository Repository,
+	cfg *configuration.Configuration,
+	i18nCommands i18n.Commands,
+) *service {
 	return &service{
 		repository:    repository,
 		configuration: cfg,
+		i18nCommands:  i18nCommands,
 	}
 }
 
@@ -132,7 +138,7 @@ func (s *service) UpdatePassword(
 func (s *service) UpdateProfile(
 	ctx context.Context,
 	id uuid.UUID,
-	name, username string,
+	name, username, notificationLanguage string,
 ) error {
 	databaseState, err := s.repository.FindByID(ctx, id)
 	if err != nil {
@@ -144,25 +150,27 @@ func (s *service) UpdateProfile(
 	}
 
 	request := &SaveRequest{
-		ID:          id,
-		Name:        name,
-		Username:    username,
-		Enabled:     databaseState.Enabled,
-		Permissions: databaseState.Permissions,
+		ID:                   id,
+		Name:                 name,
+		Username:             username,
+		NotificationLanguage: notificationLanguage,
+		Enabled:              databaseState.Enabled,
+		Permissions:          databaseState.Permissions,
 	}
 
 	updatedState := &User{
-		ID:           id,
-		Name:         name,
-		Username:     username,
-		Enabled:      databaseState.Enabled,
-		PasswordHash: databaseState.PasswordHash,
-		PasswordSalt: databaseState.PasswordSalt,
-		Permissions:  databaseState.Permissions,
-		TOTP:         databaseState.TOTP,
+		ID:                   id,
+		Name:                 name,
+		Username:             username,
+		NotificationLanguage: notificationLanguage,
+		Enabled:              databaseState.Enabled,
+		PasswordHash:         databaseState.PasswordHash,
+		PasswordSalt:         databaseState.PasswordSalt,
+		Permissions:          databaseState.Permissions,
+		TOTP:                 databaseState.TOTP,
 	}
 
-	if err := newValidator(s.repository).validate(
+	if err := newValidator(s.repository, s.i18nCommands).validate(
 		ctx,
 		updatedState,
 		databaseState,
@@ -224,17 +232,18 @@ func (s *service) Save(ctx context.Context, request *SaveRequest, currentUserID 
 	}
 
 	updatedState := &User{
-		ID:           request.ID,
-		Enabled:      request.Enabled,
-		Name:         request.Name,
-		Username:     request.Username,
-		PasswordHash: passwordHash,
-		PasswordSalt: passwordSalt,
-		Permissions:  request.Permissions,
-		TOTP:         totpValue,
+		ID:                   request.ID,
+		Enabled:              request.Enabled,
+		Name:                 request.Name,
+		Username:             request.Username,
+		NotificationLanguage: request.NotificationLanguage,
+		PasswordHash:         passwordHash,
+		PasswordSalt:         passwordSalt,
+		Permissions:          request.Permissions,
+		TOTP:                 totpValue,
 	}
 
-	if err := newValidator(s.repository).validate(
+	if err := newValidator(s.repository, s.i18nCommands).validate(
 		ctx,
 		updatedState,
 		databaseState,
@@ -257,6 +266,10 @@ func (s *service) List(
 	searchTerms *string,
 ) (*pagination.Page[User], error) {
 	return s.repository.FindPage(ctx, pageSize, pageNumber, searchTerms)
+}
+
+func (s *service) ListEnabledIDs(ctx context.Context) ([]uuid.UUID, error) {
+	return s.repository.ListEnabledIDs(ctx)
 }
 
 func (s *service) GetTOTPStatus(ctx context.Context, id uuid.UUID) (bool, error) {

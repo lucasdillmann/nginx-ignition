@@ -17,6 +17,7 @@ func Test_Converter(t *testing.T) {
 				Enabled:                 true,
 				Name:                    "Name",
 				Username:                "username",
+				NotificationLanguage:    "en",
 				PasswordHash:            "hash",
 				PasswordSalt:            "salt",
 				HostsAccessLevel:        "READ_WRITE",
@@ -42,6 +43,7 @@ func Test_Converter(t *testing.T) {
 			assert.Equal(t, model.Enabled, domain.Enabled)
 			assert.Equal(t, model.Name, domain.Name)
 			assert.Equal(t, model.Username, domain.Username)
+			assert.Equal(t, model.NotificationLanguage, domain.NotificationLanguage)
 			assert.Equal(t, model.PasswordHash, domain.PasswordHash)
 			assert.Equal(t, model.PasswordSalt, domain.PasswordSalt)
 			assert.Equal(t, user.AccessLevel(model.HostsAccessLevel), domain.Permissions.Hosts)
@@ -108,12 +110,13 @@ func Test_Converter(t *testing.T) {
 
 		t.Run("successfully converts a complete domain to model", func(t *testing.T) {
 			domain := &user.User{
-				ID:           uuid.New(),
-				Enabled:      true,
-				Name:         "Name",
-				Username:     "username",
-				PasswordHash: "hash",
-				PasswordSalt: "salt",
+				ID:                   uuid.New(),
+				Enabled:              true,
+				Name:                 "Name",
+				Username:             "username",
+				NotificationLanguage: "pt-BR",
+				PasswordHash:         "hash",
+				PasswordSalt:         "salt",
 				Permissions: user.Permissions{
 					Hosts:        user.ReadWriteAccessLevel,
 					Streams:      user.ReadWriteAccessLevel,
@@ -141,6 +144,7 @@ func Test_Converter(t *testing.T) {
 			assert.Equal(t, domain.Enabled, model.Enabled)
 			assert.Equal(t, domain.Name, model.Name)
 			assert.Equal(t, domain.Username, model.Username)
+			assert.Equal(t, domain.NotificationLanguage, model.NotificationLanguage)
 			assert.Equal(t, domain.PasswordHash, model.PasswordHash)
 			assert.Equal(t, domain.PasswordSalt, model.PasswordSalt)
 			assert.Equal(t, string(domain.Permissions.Hosts), model.HostsAccessLevel)

@@ -30,7 +30,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().FindByID(t.Context(), expected.ID).Return(expected, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			result, err := svc.Get(t.Context(), expected.ID)
 
 			assert.NoError(t, err)
@@ -48,7 +48,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().FindByID(t.Context(), id).Return(nil, expectedErr)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			result, err := svc.Get(t.Context(), id)
 
 			assert.Error(t, err)
@@ -68,7 +68,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().DeleteByID(t.Context(), id).Return(nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			err := svc.Delete(t.Context(), id)
 
 			assert.NoError(t, err)
@@ -87,7 +87,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().FindPage(t.Context(), 10, 1, &searchTerms).Return(expectedPage, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			result, err := svc.List(t.Context(), 10, 1, &searchTerms)
 
 			assert.NoError(t, err)
@@ -106,7 +106,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().Count(t.Context()).Return(expectedCount, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			count, err := svc.GetCount(t.Context())
 
 			assert.NoError(t, err)
@@ -123,7 +123,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().Count(t.Context()).Return(1, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			completed, err := svc.OnboardingCompleted(t.Context())
 
 			assert.NoError(t, err)
@@ -138,7 +138,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().Count(t.Context()).Return(0, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			completed, err := svc.OnboardingCompleted(t.Context())
 
 			assert.NoError(t, err)
@@ -158,10 +158,33 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().Save(t.Context(), gomock.Any()).Return(nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			err := svc.Save(t.Context(), request, nil)
 
 			assert.NoError(t, err)
+		})
+
+		t.Run("fails when notification language is omitted", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			usr.NotificationLanguage = "pt"
+
+			request := newSaveRequest()
+			request.ID = usr.ID
+			request.Password = nil
+			request.NotificationLanguage = ""
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), request.ID).Return(usr, nil)
+			repo.EXPECT().FindByUsername(t.Context(), request.Username).Return(usr, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newTestCommands(ctrl, repo, cfg)
+			err := svc.Save(t.Context(), request, nil)
+
+			assert.Error(t, err)
 		})
 
 		t.Run("removes TOTP when requested", func(t *testing.T) {
@@ -186,7 +209,7 @@ func Test_service(t *testing.T) {
 			})
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			err := svc.Save(t.Context(), request, nil)
 
 			assert.NoError(t, err)
@@ -206,7 +229,7 @@ func Test_service(t *testing.T) {
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "nonexistent").Return(nil, nil)
 
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			outcome, result, err := svc.Authenticate(t.Context(), "nonexistent", "password", "")
 
 			require.Error(t, err)
@@ -230,7 +253,7 @@ func Test_service(t *testing.T) {
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
 
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, "")
 
 			assert.NoError(t, err)
@@ -249,7 +272,7 @@ func Test_service(t *testing.T) {
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
 
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, "wrongpassword", "")
 
 			require.Error(t, err)
@@ -273,7 +296,7 @@ func Test_service(t *testing.T) {
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
 
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, "")
 
 			assert.NoError(t, err)
@@ -293,7 +316,7 @@ func Test_service(t *testing.T) {
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
 
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, "000000")
 
 			assert.NoError(t, err)
@@ -317,7 +340,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
 			repo.EXPECT().TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, code).Return(true, nil)
 
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, code)
 
 			assert.NoError(t, err)
@@ -341,7 +364,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
 			repo.EXPECT().TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, code).Return(false, nil)
 
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			outcome, result, err := svc.Authenticate(t.Context(), usr.Username, password, code)
 
 			assert.NoError(t, err)
@@ -367,14 +390,21 @@ func Test_service(t *testing.T) {
 				DoAndReturn(func(_ any, updated *User) error {
 					assert.Equal(t, newName, updated.Name)
 					assert.Equal(t, newUsername, updated.Username)
+					assert.Equal(t, usr.NotificationLanguage, updated.NotificationLanguage)
 					assert.Equal(t, usr.PasswordHash, updated.PasswordHash)
 					assert.Equal(t, usr.Permissions, updated.Permissions)
 					return nil
 				})
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
-			err := svc.UpdateProfile(t.Context(), usr.ID, newName, newUsername)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
+			err := svc.UpdateProfile(
+				t.Context(),
+				usr.ID,
+				newName,
+				newUsername,
+				usr.NotificationLanguage,
+			)
 
 			assert.NoError(t, err)
 		})
@@ -391,10 +421,41 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().FindByUsername(t.Context(), "takenuser").Return(otherUser, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
-			err := svc.UpdateProfile(t.Context(), usr.ID, "Updated Name", "takenuser")
+			svc, _ := newTestCommands(ctrl, repo, cfg)
+			err := svc.UpdateProfile(
+				t.Context(),
+				usr.ID,
+				"Updated Name",
+				"takenuser",
+				usr.NotificationLanguage,
+			)
 
 			assert.Error(t, err)
+		})
+
+		t.Run("sets notification language from request", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			usr.NotificationLanguage = "en"
+			newLanguage := "pt-BR"
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+			repo.EXPECT().
+				Save(t.Context(), gomock.Any()).
+				DoAndReturn(func(_ any, updated *User) error {
+					assert.Equal(t, newLanguage, updated.NotificationLanguage)
+					return nil
+				})
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newTestCommands(ctrl, repo, cfg)
+			err := svc.UpdateProfile(t.Context(), usr.ID, usr.Name, usr.Username, newLanguage)
+
+			assert.NoError(t, err)
 		})
 
 		t.Run("fails when name is too short", func(t *testing.T) {
@@ -408,8 +469,50 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
-			err := svc.UpdateProfile(t.Context(), usr.ID, "ab", usr.Username)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
+			err := svc.UpdateProfile(
+				t.Context(),
+				usr.ID,
+				"ab",
+				usr.Username,
+				usr.NotificationLanguage,
+			)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("fails when notification language is invalid", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newTestCommands(ctrl, repo, cfg)
+			err := svc.UpdateProfile(t.Context(), usr.ID, usr.Name, usr.Username, "invalid!!!")
+
+			assert.Error(t, err)
+		})
+
+		t.Run("fails when notification language is unsupported", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			i18nCommands := i18n.NewMockedCommands(ctrl)
+			i18nCommands.EXPECT().Supports(gomock.Any()).Return(false)
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg, i18nCommands)
+			err := svc.UpdateProfile(t.Context(), usr.ID, usr.Name, usr.Username, "fr")
 
 			assert.Error(t, err)
 		})
@@ -426,7 +529,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().IsEnabledByID(t.Context(), id).Return(true, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			enabled, err := svc.GetStatus(t.Context(), id)
 
 			assert.NoError(t, err)
@@ -446,7 +549,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			status, err := svc.GetTOTPStatus(t.Context(), usr.ID)
 
 			assert.NoError(t, err)
@@ -464,7 +567,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			status, err := svc.GetTOTPStatus(t.Context(), usr.ID)
 
 			assert.NoError(t, err)
@@ -482,7 +585,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			status, err := svc.GetTOTPStatus(t.Context(), usr.ID)
 
 			assert.NoError(t, err)
@@ -507,7 +610,7 @@ func Test_service(t *testing.T) {
 			})
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			err := svc.DisableTOTP(t.Context(), usr.ID)
 
 			assert.NoError(t, err)
@@ -530,7 +633,7 @@ func Test_service(t *testing.T) {
 			})
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			url, err := svc.EnableTOTP(t.Context(), usr.ID)
 
 			assert.NoError(t, err)
@@ -560,7 +663,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().TryUpdateLastUsedTOTPCode(t.Context(), usr.ID, code).Return(true, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			ok, err := svc.ActivateTOTP(t.Context(), usr.ID, code)
 
 			assert.NoError(t, err)
@@ -578,7 +681,7 @@ func Test_service(t *testing.T) {
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
 
 			cfg := &configuration.Configuration{}
-			svc, _ := newCommands(repo, cfg)
+			svc, _ := newTestCommands(ctrl, repo, cfg)
 			ok, err := svc.ActivateTOTP(t.Context(), usr.ID, "000000")
 
 			assert.NoError(t, err)

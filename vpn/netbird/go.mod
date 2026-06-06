@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/vpn/netbird
 
-go 1.26.3
+go 1.26.4
 
 require github.com/netbirdio/netbird v0.71.4
 

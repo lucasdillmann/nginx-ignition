@@ -16,6 +16,10 @@ import (
 	"dillmann.com.br/nginx-ignition/core/user"
 )
 
+func init() {
+	gin.SetMode(gin.TestMode)
+}
+
 func Test_updateProfileHandler(t *testing.T) {
 	t.Run("handle", func(t *testing.T) {
 		t.Run("returns 204 No Content on success", func(t *testing.T) {
@@ -24,18 +28,23 @@ func Test_updateProfileHandler(t *testing.T) {
 
 			id := uuid.New()
 			payload := userProfileUpdateRequestDTO{
-				Name:     new("Updated Name"),
-				Username: new("updateduser"),
+				Name:                 new("Updated Name"),
+				Username:             new("updateduser"),
+				NotificationLanguage: "en",
 			}
 
 			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
-				UpdateProfile(gomock.Any(), id, *payload.Name, *payload.Username).
+				UpdateProfile(
+					gomock.Any(),
+					id,
+					*payload.Name,
+					*payload.Username,
+					payload.NotificationLanguage,
+				).
 				Return(nil)
 
-			handler := updateProfileHandler{
-				commands: commands,
-			}
+			handler := updateProfileHandler{commands: commands}
 			engine := gin.New()
 			engine.Use(func(ginContext *gin.Context) {
 				ginContext.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: id}})

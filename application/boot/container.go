@@ -16,10 +16,12 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/lifecycle"
 	"dillmann.com.br/nginx-ignition/core/integration"
+	"dillmann.com.br/nginx-ignition/core/notification"
 	"dillmann.com.br/nginx-ignition/core/vpn"
 	"dillmann.com.br/nginx-ignition/database"
 	"dillmann.com.br/nginx-ignition/integration/docker"
 	"dillmann.com.br/nginx-ignition/integration/truenas"
+	"dillmann.com.br/nginx-ignition/notification/smtp"
 	"dillmann.com.br/nginx-ignition/vpn/netbird"
 	"dillmann.com.br/nginx-ignition/vpn/tailscale"
 )
@@ -48,9 +50,11 @@ func startContainer(ctx context.Context) error {
 		truenas.Install,
 		tailscale.Install,
 		netbird.Install,
+		smtp.Install,
 		installCertificateDriverAggregation,
 		installIntegrationDriverAggregation,
 		installVpnDriverAggregation,
+		installNotificationProviderAggregation,
 	)
 }
 
@@ -86,4 +90,10 @@ func installVpnDriverAggregation(
 		ts,
 		nb,
 	})
+}
+
+func installNotificationProviderAggregation(
+	smtpProvider *smtp.Provider,
+) error {
+	return container.Singleton([]notification.Provider{smtpProvider})
 }

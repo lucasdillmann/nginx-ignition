@@ -13,6 +13,7 @@ import (
 	"dillmann.com.br/nginx-ignition/api/i18n"
 	"dillmann.com.br/nginx-ignition/api/integration"
 	"dillmann.com.br/nginx-ignition/api/nginx"
+	"dillmann.com.br/nginx-ignition/api/notification"
 	"dillmann.com.br/nginx-ignition/api/settings"
 	"dillmann.com.br/nginx-ignition/api/stream"
 	"dillmann.com.br/nginx-ignition/api/user"
@@ -29,6 +30,7 @@ func Install() error {
 		cache.Install,
 		certificate.Install,
 		user.Install,
+		notification.Install,
 		host.Install,
 		i18n.Install,
 		integration.Install,

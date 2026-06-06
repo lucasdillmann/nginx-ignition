@@ -40,6 +40,7 @@ func Test_currentHandler(t *testing.T) {
 			var response userResponseDTO
 			json.Unmarshal(recorder.Body.Bytes(), &response)
 			assert.Equal(t, subject.ID, response.ID)
+			assert.Equal(t, subject.NotificationLanguage, response.NotificationLanguage)
 		})
 
 		t.Run("returns 401 Unauthorized when subject is missing", func(t *testing.T) {

@@ -24,8 +24,9 @@ type userPasswordUpdateRequestDTO struct {
 }
 
 type userProfileUpdateRequestDTO struct {
-	Name     *string `json:"name"`
-	Username *string `json:"username"`
+	Name                 *string `json:"name"`
+	Username             *string `json:"username"`
+	NotificationLanguage string  `json:"notificationLanguage"`
 }
 
 type userRequestDTO struct {
@@ -38,12 +39,13 @@ type userRequestDTO struct {
 }
 
 type userResponseDTO struct {
-	Permissions userPermissionsDTO `json:"permissions"`
-	Name        string             `json:"name"`
-	Username    string             `json:"username"`
-	ID          uuid.UUID          `json:"id"`
-	Enabled     bool               `json:"enabled"`
-	TOTPEnabled bool               `json:"totpEnabled"`
+	Permissions          userPermissionsDTO `json:"permissions"`
+	Name                 string             `json:"name"`
+	Username             string             `json:"username"`
+	NotificationLanguage string             `json:"notificationLanguage"`
+	ID                   uuid.UUID          `json:"id"`
+	Enabled              bool               `json:"enabled"`
+	TOTPEnabled          bool               `json:"totpEnabled"`
 }
 
 type userPermissionsDTO struct {

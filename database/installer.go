@@ -10,6 +10,7 @@ import (
 	"dillmann.com.br/nginx-ignition/database/common/migrations"
 	"dillmann.com.br/nginx-ignition/database/host"
 	"dillmann.com.br/nginx-ignition/database/integration"
+	"dillmann.com.br/nginx-ignition/database/notification"
 	"dillmann.com.br/nginx-ignition/database/settings"
 	"dillmann.com.br/nginx-ignition/database/stream"
 	"dillmann.com.br/nginx-ignition/database/user"
@@ -35,5 +36,6 @@ func Install() error {
 		stream.New,
 		backup.New,
 		vpn.New,
+		notification.New,
 	)
 }

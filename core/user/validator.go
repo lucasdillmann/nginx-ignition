@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"golang.org/x/text/language"
 
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 	"dillmann.com.br/nginx-ignition/core/common/validation"
@@ -17,8 +18,9 @@ const (
 )
 
 type validator struct {
-	delegate   *validation.ConsistencyValidator
-	repository Repository
+	delegate     *validation.ConsistencyValidator
+	repository   Repository
+	i18nCommands i18n.Commands
 }
 
 func (v *validator) validate(
@@ -64,8 +66,17 @@ func (v *validator) validate(
 	}
 
 	v.validatePermissions(ctx, request.Permissions)
+	v.validateNotificationLanguage(ctx, request.NotificationLanguage)
 
 	return v.delegate.Result()
+}
+
+func (v *validator) validateNotificationLanguage(ctx context.Context, notificationLanguage string) {
+	tag, err := language.Parse(notificationLanguage)
+
+	if err != nil || !v.i18nCommands.Supports(tag) {
+		v.delegate.Add("notificationLanguage", i18n.M(ctx, i18n.K.CommonInvalidValue))
+	}
 }
 
 func (v *validator) validatePermissions(ctx context.Context, permissions Permissions) {
@@ -117,9 +128,10 @@ func (v *validator) validatePermission(ctx context.Context, key string, value Ac
 	}
 }
 
-func newValidator(repository Repository) *validator {
+func newValidator(repository Repository, i18nCommands i18n.Commands) *validator {
 	return &validator{
-		delegate:   validation.NewValidator(),
-		repository: repository,
+		delegate:     validation.NewValidator(),
+		repository:   repository,
+		i18nCommands: i18nCommands,
 	}
 }

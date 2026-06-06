@@ -8,12 +8,13 @@ import (
 
 func toDomain(model *userModel) user.User {
 	return user.User{
-		ID:           model.ID,
-		Enabled:      model.Enabled,
-		Name:         model.Name,
-		Username:     model.Username,
-		PasswordHash: model.PasswordHash,
-		PasswordSalt: model.PasswordSalt,
+		ID:                   model.ID,
+		Enabled:              model.Enabled,
+		Name:                 model.Name,
+		Username:             model.Username,
+		NotificationLanguage: model.NotificationLanguage,
+		PasswordHash:         model.PasswordHash,
+		PasswordSalt:         model.PasswordSalt,
 		Permissions: user.Permissions{
 			Hosts:        user.AccessLevel(model.HostsAccessLevel),
 			Streams:      user.AccessLevel(model.StreamsAccessLevel),
@@ -48,6 +49,7 @@ func toModel(domain *user.User) userModel {
 		Enabled:                 domain.Enabled,
 		Name:                    domain.Name,
 		Username:                domain.Username,
+		NotificationLanguage:    domain.NotificationLanguage,
 		PasswordHash:            domain.PasswordHash,
 		PasswordSalt:            domain.PasswordSalt,
 		HostsAccessLevel:        string(domain.Permissions.Hosts),

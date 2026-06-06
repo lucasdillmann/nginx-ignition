@@ -51,11 +51,12 @@ func toDTO(domain *user.User) *userResponseDTO {
 	}
 
 	return &userResponseDTO{
-		ID:          domain.ID,
-		Enabled:     domain.Enabled,
-		TOTPEnabled: totpEnabled,
-		Name:        domain.Name,
-		Username:    domain.Username,
+		ID:                   domain.ID,
+		Enabled:              domain.Enabled,
+		TOTPEnabled:          totpEnabled,
+		Name:                 domain.Name,
+		Username:             domain.Username,
+		NotificationLanguage: domain.NotificationLanguage,
 		Permissions: userPermissionsDTO{
 			Hosts:        string(domain.Permissions.Hosts),
 			Streams:      string(domain.Permissions.Streams),

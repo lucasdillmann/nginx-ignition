@@ -54,6 +54,36 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			assert.Equal(t, "Updated User", saved.Name)
 			assert.False(t, saved.Enabled)
 		})
+
+		t.Run("uses database default notification language on insert when omitted",
+			func(t *testing.T) {
+				cmd := newUser()
+				cmd.NotificationLanguage = ""
+
+				err := repo.Save(t.Context(), cmd)
+				require.NoError(t, err)
+
+				saved, err := repo.FindByID(t.Context(), cmd.ID)
+				require.NoError(t, err)
+				require.NotNil(t, saved)
+				assert.Equal(t, "en", saved.NotificationLanguage)
+			})
+
+		t.Run("preserves notification language on update when omitted", func(t *testing.T) {
+			cmd := newUser()
+			cmd.NotificationLanguage = "pt"
+			require.NoError(t, repo.Save(t.Context(), cmd))
+
+			cmd.Name = "Updated User"
+			cmd.NotificationLanguage = ""
+			err := repo.Save(t.Context(), cmd)
+			require.NoError(t, err)
+
+			saved, err := repo.FindByID(t.Context(), cmd.ID)
+			require.NoError(t, err)
+			assert.Equal(t, "Updated User", saved.Name)
+			assert.Equal(t, "pt", saved.NotificationLanguage)
+		})
 	})
 
 	t.Run("FindByUsername", func(t *testing.T) {
@@ -150,6 +180,25 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			enabled, err := repo.IsEnabledByID(t.Context(), uuid.New())
 			require.NoError(t, err)
 			assert.False(t, enabled)
+		})
+	})
+
+	t.Run("ListEnabledIDs", func(t *testing.T) {
+		t.Run("returns only enabled user ids", func(t *testing.T) {
+			enabledUser := newUser()
+			enabledUser.Enabled = true
+			require.NoError(t, repo.Save(t.Context(), enabledUser))
+
+			disabledUser := newUser()
+			disabledUser.ID = uuid.New()
+			disabledUser.Username = uuid.New().String()
+			disabledUser.Enabled = false
+			require.NoError(t, repo.Save(t.Context(), disabledUser))
+
+			ids, err := repo.ListEnabledIDs(t.Context())
+			require.NoError(t, err)
+			assert.Contains(t, ids, enabledUser.ID)
+			assert.NotContains(t, ids, disabledUser.ID)
 		})
 	})
 

@@ -28,6 +28,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./database/... \
 		./integration/docker/... \
 		./integration/truenas/... \
+		./notification/smtp/... \
 		./vpn/netbird/... \
 		./vpn/tailscale/...
 
@@ -119,6 +120,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./database/... \
 		./integration/docker/... \
 		./integration/truenas/... \
+		./notification/smtp/... \
 		./vpn/netbird/... \
 		./vpn/tailscale/...
 	go tool golangci-lint run --fix \
@@ -133,15 +135,16 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 		./database/... \
 		./integration/docker/... \
 		./integration/truenas/... \
+		./notification/smtp/... \
 		./vpn/netbird/... \
 		./vpn/tailscale/...
 
 clean:
-	@find api application certificate core database i18n integration vpn -type f -name "*.mock.go" -delete
+	@find api application certificate core database i18n integration notification vpn -type f -name "*.mock.go" -delete
 
 .backend-test-mocks: .backend-prerequisites
 	@echo "Generating mock files..."
-	@find api application certificate core database i18n integration vpn -type f -name "*.go" \
+	@find api application certificate core database i18n integration notification vpn -type f -name "*.go" \
 		-not -name "*_test.go" \
 		-exec sh -c 'grep -q "^type [a-zA-Z0-9_]* interface" "$$1" && echo "$$1"' _ {} \; | \
 	while read -r file; do \
@@ -176,6 +179,7 @@ clean:
 		./database/... \
 		./integration/docker/... \
 		./integration/truenas/... \
+		./notification/smtp/... \
 		./vpn/netbird/... \
 		./vpn/tailscale/...
 
@@ -208,6 +212,7 @@ update-dependencies: .backend-prerequisites .frontend-prerequisites .update-ngin
 	cd database && go get -u ./...
 	cd integration/docker && go get -u ./...
 	cd integration/truenas && go get -u ./...
+	cd notification/smtp && go get -u ./...
 	cd tools && go get -u ./...
 	cd vpn/netbird && go get -u ./...
 	cd vpn/tailscale && go get -u ./...

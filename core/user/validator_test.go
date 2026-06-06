@@ -6,6 +6,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
+	"golang.org/x/text/language"
+
+	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
 func Test_validator(t *testing.T) {
@@ -19,7 +22,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -37,7 +40,7 @@ func Test_validator(t *testing.T) {
 			currentUser := &User{ID: usr.ID}
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, currentUser, request, new(usr.ID))
 
@@ -54,7 +57,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -72,7 +75,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(currentUser, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, currentUser, request, nil)
 
@@ -89,7 +92,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(&User{ID: otherID}, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -107,7 +110,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "ab").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -125,7 +128,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -142,7 +145,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -160,7 +163,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -178,7 +181,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -196,7 +199,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -214,7 +217,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -232,7 +235,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -250,7 +253,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -268,7 +271,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -286,7 +289,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -304,7 +307,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -322,7 +325,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -340,7 +343,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -358,7 +361,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -376,7 +379,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -394,7 +397,7 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 
@@ -412,7 +415,85 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
-			userValidator := newValidator(repo)
+			userValidator := newTestValidator(ctrl, repo)
+
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("supported notification language passes", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			request := newSaveRequest()
+			request.NotificationLanguage = "en"
+
+			i18nCommands := i18n.NewMockedCommands(ctrl)
+			i18nCommands.EXPECT().
+				Supports(language.English).
+				Return(true)
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
+			userValidator := newValidator(repo, i18nCommands)
+
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
+
+			assert.NoError(t, err)
+		})
+
+		t.Run("invalid notification language tag fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			request := newSaveRequest()
+			request.NotificationLanguage = "@@@"
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
+			userValidator := newValidator(repo, i18n.NewMockedCommands(ctrl))
+
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("unsupported notification language fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			request := newSaveRequest()
+			request.NotificationLanguage = "fr"
+
+			i18nCommands := i18n.NewMockedCommands(ctrl)
+			i18nCommands.EXPECT().
+				Supports(language.French).
+				Return(false)
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
+			userValidator := newValidator(repo, i18nCommands)
+
+			err := userValidator.validate(t.Context(), usr, nil, request, nil)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("empty notification language fails validation", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			request := newSaveRequest()
+			request.NotificationLanguage = ""
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), "testuser").Return(nil, nil)
+			userValidator := newTestValidator(ctrl, repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
 

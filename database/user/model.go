@@ -20,6 +20,7 @@ type userModel struct {
 	LogsAccessLevel         string    `bun:"logs_access_level,notnull"`
 	Name                    string    `bun:"name,notnull"`
 	Username                string    `bun:"username,notnull"`
+	NotificationLanguage    string    `bun:"notification_language,notnull"`
 	SettingsAccessLevel     string    `bun:"settings_access_level,notnull"`
 	UsersAccessLevel        string    `bun:"users_access_level,notnull"`
 	NginxServerAccessLevel  string    `bun:"nginx_server_access_level,notnull"`

@@ -19,6 +19,7 @@ type Repository interface {
 		searchTerms *string,
 	) (*pagination.Page[User], error)
 	IsEnabledByID(ctx context.Context, id uuid.UUID) (bool, error)
+	ListEnabledIDs(ctx context.Context) ([]uuid.UUID, error)
 	Count(ctx context.Context) (int, error)
 	TryUpdateLastUsedTOTPCode(ctx context.Context, id uuid.UUID, code string) (bool, error)
 }

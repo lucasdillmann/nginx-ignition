@@ -7,14 +7,14 @@ import (
 )
 
 func Install() error {
-	if err := container.Provide(buildScheduler); err != nil {
+	if err := container.Provide(New); err != nil {
 		return err
 	}
 
 	return container.Run(registerStartup, registerShutdown)
 }
 
-func buildScheduler() *Scheduler {
+func New() *Scheduler {
 	return &Scheduler{
 		tickers: make(map[Task]*time.Ticker),
 		stopped: false,

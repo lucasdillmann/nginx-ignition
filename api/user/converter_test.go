@@ -21,6 +21,7 @@ func Test_toDTO(t *testing.T) {
 		assert.Equal(t, subject.ID, result.ID)
 		assert.Equal(t, subject.Name, result.Name)
 		assert.Equal(t, subject.Username, result.Username)
+		assert.Equal(t, subject.NotificationLanguage, result.NotificationLanguage)
 		assert.True(t, result.Enabled)
 		assert.True(t, result.TOTPEnabled)
 		assert.Equal(t, string(user.ReadWriteAccessLevel), result.Permissions.Hosts)

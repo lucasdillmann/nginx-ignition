@@ -7,15 +7,19 @@ import (
 func Static(message string) *Message {
 	return &Message{
 		static: true,
-		Key:    message,
+		DetachedMessage: DetachedMessage{
+			Key: message,
+		},
 	}
 }
 
 func M(ctx context.Context, key string) *Message {
 	return &Message{
-		ctx:       ctx,
-		Key:       key,
-		Variables: make(map[string]any),
+		ctx: ctx,
+		DetachedMessage: DetachedMessage{
+			Key:       key,
+			Variables: make(map[string]any),
+		},
 	}
 }
 

@@ -8,11 +8,12 @@ import (
 
 func newUser() *user.User {
 	return &user.User{
-		ID:           uuid.New(),
-		Name:         "Test User",
-		Username:     "testuser-" + uuid.New().String(),
-		PasswordHash: "hash",
-		PasswordSalt: "salt",
+		ID:                   uuid.New(),
+		Name:                 "Test User",
+		Username:             "testuser-" + uuid.New().String(),
+		NotificationLanguage: "en",
+		PasswordHash:         "hash",
+		PasswordSalt:         "salt",
 		Permissions: user.Permissions{
 			Hosts:        user.ReadWriteAccessLevel,
 			Streams:      user.ReadWriteAccessLevel,

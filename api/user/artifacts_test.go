@@ -9,10 +9,11 @@ import (
 
 func newUser() *user.User {
 	return &user.User{
-		ID:       uuid.New(),
-		Name:     "Test User",
-		Username: "testuser",
-		Enabled:  true,
+		ID:                   uuid.New(),
+		Name:                 "Test User",
+		Username:             "testuser",
+		NotificationLanguage: "en",
+		Enabled:              true,
 		Permissions: user.Permissions{
 			Hosts:        user.ReadWriteAccessLevel,
 			Streams:      user.ReadWriteAccessLevel,

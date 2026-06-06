@@ -1,4 +1,4 @@
-go 1.26.3
+go 1.26.4
 
 use (
 	api
@@ -13,6 +13,7 @@ use (
 	i18n
 	integration/docker
 	integration/truenas
+	notification/smtp
 	tools
 	vpn/netbird
 	vpn/tailscale

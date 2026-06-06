@@ -11,7 +11,7 @@ import (
 
 func Test_BuildScheduler(t *testing.T) {
 	t.Run("builds scheduler", func(t *testing.T) {
-		sched := buildScheduler()
+		sched := New()
 
 		assert.NotNil(t, sched)
 		assert.NotNil(t, sched.tickers)
@@ -26,7 +26,7 @@ func Test_Scheduler(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			sched := buildScheduler()
+			sched := New()
 			task := NewMockedTask(ctrl)
 
 			err := sched.Register(t.Context(), task)
@@ -39,7 +39,7 @@ func Test_Scheduler(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			sched := buildScheduler()
+			sched := New()
 			sched.started = true
 
 			task := NewMockedTask(ctrl)
@@ -55,7 +55,7 @@ func Test_Scheduler(t *testing.T) {
 		})
 
 		t.Run("returns error when stopped", func(t *testing.T) {
-			sched := buildScheduler()
+			sched := New()
 			sched.stopped = true
 			task := NewMockedTask(gomock.NewController(t))
 
@@ -70,7 +70,7 @@ func Test_Scheduler(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			sched := buildScheduler()
+			sched := New()
 
 			task := NewMockedTask(ctrl)
 			task.EXPECT().Schedule(t.Context()).Return(&Schedule{
@@ -88,7 +88,7 @@ func Test_Scheduler(t *testing.T) {
 		})
 
 		t.Run("returns error when already started", func(t *testing.T) {
-			sched := buildScheduler()
+			sched := New()
 			sched.started = true
 
 			err := sched.start(t.Context())
@@ -97,7 +97,7 @@ func Test_Scheduler(t *testing.T) {
 		})
 
 		t.Run("returns error when stopped", func(t *testing.T) {
-			sched := buildScheduler()
+			sched := New()
 			sched.stopped = true
 
 			err := sched.start(t.Context())
@@ -109,7 +109,7 @@ func Test_Scheduler(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			sched := buildScheduler()
+			sched := New()
 
 			task := NewMockedTask(ctrl)
 			task.EXPECT().Schedule(t.Context()).Return(nil, errors.New("schedule error"))
@@ -127,7 +127,7 @@ func Test_Scheduler(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			sched := buildScheduler()
+			sched := New()
 			task := NewMockedTask(ctrl)
 			sched.tickers[task] = time.NewTicker(time.Second)
 
@@ -143,7 +143,7 @@ func Test_Scheduler(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			sched := buildScheduler()
+			sched := New()
 
 			task := NewMockedTask(ctrl)
 			task.EXPECT().Schedule(t.Context()).Return(&Schedule{
@@ -160,7 +160,7 @@ func Test_Scheduler(t *testing.T) {
 		})
 
 		t.Run("returns error when stopped", func(t *testing.T) {
-			sched := buildScheduler()
+			sched := New()
 			sched.stopped = true
 
 			err := sched.Reload(t.Context())
@@ -172,7 +172,7 @@ func Test_Scheduler(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			sched := buildScheduler()
+			sched := New()
 
 			task := NewMockedTask(ctrl)
 			task.EXPECT().Schedule(t.Context()).Return(nil, errors.New("schedule error"))

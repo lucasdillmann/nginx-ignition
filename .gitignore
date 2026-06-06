@@ -20,5 +20,4 @@ build/
 **/*.mock.go
 **/*.generated.go
 **/*.generated.ts
-i18n/*.md
 coverage.out

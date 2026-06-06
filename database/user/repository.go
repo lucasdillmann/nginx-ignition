@@ -125,6 +125,18 @@ func (r *repository) FindPage(
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
+func (r *repository) ListEnabledIDs(ctx context.Context) ([]uuid.UUID, error) {
+	ids := make([]uuid.UUID, 0)
+
+	err := r.database.Select().
+		Model((*userModel)(nil)).
+		Column("id").
+		Where("enabled = ?", true).
+		Scan(ctx, &ids)
+
+	return ids, err
+}
+
 func (r *repository) IsEnabledByID(ctx context.Context, id uuid.UUID) (bool, error) {
 	var model userModel
 
@@ -172,9 +184,19 @@ func (r *repository) Save(ctx context.Context, u *user.User) error {
 
 	model := toModel(u)
 	if exists {
-		_, err = transaction.NewUpdate().Model(&model).Where(constants.ByIDFilter, u.ID).Exec(ctx)
+		query := transaction.NewUpdate().Model(&model).Where(constants.ByIDFilter, u.ID)
+		if u.NotificationLanguage == "" {
+			query = query.ExcludeColumn("notification_language")
+		}
+
+		_, err = query.Exec(ctx)
 	} else {
-		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
+		query := transaction.NewInsert().Model(&model)
+		if u.NotificationLanguage == "" {
+			query = query.ExcludeColumn("notification_language")
+		}
+
+		_, err = query.Exec(ctx)
 	}
 
 	if err != nil {
