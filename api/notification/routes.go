@@ -9,6 +9,11 @@ import (
 	"dillmann.com.br/nginx-ignition/core/notification"
 )
 
+const (
+	configurationsPath    = "/api/notifications/configurations"
+	configurationByIDPath = "/api/notifications/configurations/:id"
+)
+
 func Install(
 	router *gin.Engine,
 	authorizer *authorization.ABAC,
@@ -24,7 +29,7 @@ func Install(
 	byIDPath.GET("", getHandler{commands}.handle)
 	byIDPath.POST("/mark-as-read", markAsReadHandler{commands}.handle)
 
-	configPath := router.Group("/api/notifications/configurations")
+	configPath := router.Group(configurationsPath)
 	configPath.GET("/available-providers", availableProvidersHandler{commands}.handle)
 	configPath.GET("", listConfigurationsHandler{commands}.handle)
 	configPath.POST("", createConfigurationHandler{commands}.handle)
@@ -44,9 +49,9 @@ func Install(
 		http.MethodGet,
 		"/api/notifications/configurations/available-providers",
 	)
-	authorizer.AllowAllUsers(http.MethodGet, "/api/notifications/configurations")
-	authorizer.AllowAllUsers(http.MethodPost, "/api/notifications/configurations")
-	authorizer.AllowAllUsers(http.MethodGet, "/api/notifications/configurations/:id")
-	authorizer.AllowAllUsers(http.MethodPut, "/api/notifications/configurations/:id")
-	authorizer.AllowAllUsers(http.MethodDelete, "/api/notifications/configurations/:id")
+	authorizer.AllowAllUsers(http.MethodGet, configurationsPath)
+	authorizer.AllowAllUsers(http.MethodPost, configurationsPath)
+	authorizer.AllowAllUsers(http.MethodGet, configurationByIDPath)
+	authorizer.AllowAllUsers(http.MethodPut, configurationByIDPath)
+	authorizer.AllowAllUsers(http.MethodDelete, configurationByIDPath)
 }

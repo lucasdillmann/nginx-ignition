@@ -179,12 +179,17 @@ func parseRecipients(recipientsText string) []string {
 	return recipients
 }
 
-func buildMessage(deliverable notification.Deliverable, fromAddress string) []byte {
+func buildMessage(
+	deliverable notification.Deliverable,
+	fromAddress string,
+	recipients []string,
+) []byte {
 	plainBody := formatPlainBody(deliverable)
 	htmlBody := formatHTMLBody(deliverable)
 
 	var buffer bytes.Buffer
 	_, _ = fmt.Fprintf(&buffer, "From: %s\r\n", fromAddress)
+	_, _ = fmt.Fprintf(&buffer, "To: %s\r\n", strings.Join(recipients, ", "))
 	encodedTitle := mime.QEncoding.Encode("utf-8", deliverable.Title)
 	_, _ = fmt.Fprintf(&buffer, "Subject: %s\r\n", encodedTitle)
 	_, _ = buffer.WriteString("MIME-Version: 1.0\r\n")

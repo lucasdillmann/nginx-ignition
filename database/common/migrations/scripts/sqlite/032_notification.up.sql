@@ -5,7 +5,7 @@ create table notification (
     user_id uuid not null,
     title text not null,
     summary text not null,
-    category varchar not null,
+    category varchar(64) not null,
     payload text not null,
     read_at timestamp,
     created_at timestamp not null,

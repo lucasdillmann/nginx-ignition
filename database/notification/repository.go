@@ -15,6 +15,12 @@ import (
 	"dillmann.com.br/nginx-ignition/database/common/database"
 )
 
+const (
+	byUserIDFilter         = "user_id = ?"
+	unreadFilter           = "read_at IS NULL"
+	byNotificationIDFilter = "notification_id = ?"
+)
+
 type repository struct {
 	database *database.Database
 }
@@ -72,7 +78,7 @@ func (r *repository) FindNotificationByIDAndUserID(
 	err := r.database.Select().
 		Model(&model).
 		Where(constants.ByIDFilter, notificationID).
-		Where("user_id = ?", userID).
+		Where(byUserIDFilter, userID).
 		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -95,7 +101,7 @@ func (r *repository) FindNotificationPage(
 	models := make([]notificationModel, 0)
 
 	applyFilters := func(query *bun.SelectQuery) *bun.SelectQuery {
-		query = query.Where("user_id = ?", userID)
+		query = query.Where(byUserIDFilter, userID)
 
 		if searchTerms != nil {
 			query = query.Where(
@@ -148,8 +154,8 @@ func (r *repository) MarkNotificationAsRead(
 		Model((*notificationModel)(nil)).
 		Set("read_at = ?", now).
 		Where(constants.ByIDFilter, notificationID).
-		Where("user_id = ?", userID).
-		Where("read_at IS NULL").
+		Where(byUserIDFilter, userID).
+		Where(unreadFilter).
 		Exec(ctx)
 
 	return err
@@ -161,8 +167,8 @@ func (r *repository) MarkAllNotificationsAsRead(ctx context.Context, userID uuid
 	_, err := r.database.Update().
 		Model((*notificationModel)(nil)).
 		Set("read_at = ?", now).
-		Where("user_id = ?", userID).
-		Where("read_at IS NULL").
+		Where(byUserIDFilter, userID).
+		Where(unreadFilter).
 		Exec(ctx)
 
 	return err
@@ -171,8 +177,8 @@ func (r *repository) MarkAllNotificationsAsRead(ctx context.Context, userID uuid
 func (r *repository) CountUnreadNotifications(ctx context.Context, userID uuid.UUID) (int, error) {
 	return r.database.Select().
 		Model((*notificationModel)(nil)).
-		Where("user_id = ?", userID).
-		Where("read_at IS NULL").
+		Where(byUserIDFilter, userID).
+		Where(unreadFilter).
 		Count(ctx)
 }
 
@@ -188,7 +194,7 @@ func (r *repository) GetLastForUserCategoryAndRelatedEntity(
 	err := r.database.Select().
 		Model(&model).
 		Join("INNER JOIN notification_related_entity AS related_entity ON related_entity.notification_id = ?TableAlias.id").
-		Where("user_id = ?", userID).
+		Where(byUserIDFilter, userID).
 		Where("category = ?", string(category)).
 		Where("related_entity.entity_type = ?", entityType).
 		Where("related_entity.entity_id = ?", entityID).
@@ -229,7 +235,7 @@ func (r *repository) FindRelatedEntitiesByNotificationID(
 
 	err := r.database.Select().
 		Model(&models).
-		Where("notification_id = ?", notificationID).
+		Where(byNotificationIDFilter, notificationID).
 		Scan(ctx)
 	if err != nil {
 		return nil, err
@@ -279,7 +285,7 @@ func (r *repository) FindConfigurationByIDAndUserID(
 	err := r.database.Select().
 		Model(&model).
 		Where(constants.ByIDFilter, configurationID).
-		Where("user_id = ?", userID).
+		Where(byUserIDFilter, userID).
 		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -301,7 +307,7 @@ func (r *repository) FindConfigurationsByUserID(
 
 	err := r.database.Select().
 		Model(&models).
-		Where("user_id = ?", userID).
+		Where(byUserIDFilter, userID).
 		Order("name").
 		Scan(ctx)
 	if err != nil {
@@ -340,7 +346,7 @@ func (r *repository) SaveConfiguration(
 		result, updateErr := transaction.NewUpdate().
 			Model(model).
 			Where(constants.ByIDFilter, model.ID).
-			Where("user_id = ?", value.UserID).
+			Where(byUserIDFilter, value.UserID).
 			Exec(ctx)
 		if updateErr != nil {
 			return updateErr
@@ -370,7 +376,7 @@ func (r *repository) DeleteConfigurationByIDAndUserID(
 	_, err := r.database.Delete().
 		Model((*configurationModel)(nil)).
 		Where(constants.ByIDFilter, configurationID).
-		Where("user_id = ?", userID).
+		Where(byUserIDFilter, userID).
 		Exec(ctx)
 
 	return err
@@ -384,7 +390,7 @@ func (r *repository) ConfigurationExistsByName(
 ) (bool, error) {
 	query := r.database.Select().
 		Model((*configurationModel)(nil)).
-		Where("user_id = ?", userID).
+		Where(byUserIDFilter, userID).
 		Where("name = ?", name)
 
 	if excludeID != nil {
@@ -402,7 +408,7 @@ func (r *repository) FindEnabledConfigurationsByUserID(
 
 	err := r.database.Select().
 		Model(&models).
-		Where("user_id = ?", userID).
+		Where(byUserIDFilter, userID).
 		Where("enabled = ?", true).
 		Order("name").
 		Scan(ctx)
@@ -438,7 +444,7 @@ func (r *repository) FindSubmissionsByNotificationID(
 
 	err := r.database.Select().
 		Model(&models).
-		Where("notification_id = ?", notificationID).
+		Where(byNotificationIDFilter, notificationID).
 		Scan(ctx)
 	if err != nil {
 		return nil, err
@@ -501,7 +507,7 @@ func (r *repository) FindPendingSubmissionsByNotificationID(
 
 	err := r.database.Select().
 		Model(&models).
-		Where("notification_id = ?", notificationID).
+		Where(byNotificationIDFilter, notificationID).
 		Where("status = ?", string(notification.SubmissionStatusPending)).
 		Scan(ctx)
 	if err != nil {

@@ -573,6 +573,94 @@ Each domain has `database/{domain}/`:
 
 Repository tests use `testutils.RunWithMockedDatabases` to verify behaviour against both SQLite and PostgreSQL.
 
+## Changelog & versioning
+
+The project changelog lives at [`CHANGELOG.md`](CHANGELOG.md) at the repository root. Every feature branch **must**
+update it before merge.
+
+### Semantic versioning
+
+nginx-ignition follows [semantic versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`):
+
+| Segment   | Bump when…                                                                                                                 |
+|-----------|----------------------------------------------------------------------------------------------------------------------------|
+| **MAJOR** | Breaking changes for users — removed features, incompatible config or API behaviour, migrations that require manual action |
+| **MINOR** | New user-facing features or meaningful capability additions, backward compatible                                           |
+| **PATCH** | Bug fixes, security patches, dependency updates, and other backward-compatible corrections with no new capability          |
+
+When unsure between MINOR and PATCH, ask whether a user would notice a new capability — if yes, MINOR.
+
+### CHANGELOG format
+
+Match the existing structure in [`CHANGELOG.md`](CHANGELOG.md):
+
+```markdown
+## 2.42.0
+
+- Feature headline — what users gain
+  - Sub-capability or detail
+  - Another sub-capability
+- Minor fixes and improvements
+```
+
+Rules:
+
+- Add a new `## X.Y.Z` block at the **top** of the file (below the `# CHANGELOG` title) for the release the branch
+  targets.
+- Use a top-level bullet per major feature; indent sub-bullets (two spaces) for related capabilities within that
+  feature.
+- One cohesive story per feature — if work spans multiple PRs or deliveries (backend, providers, UI), describe the
+  **complete user-facing feature** in a single entry and list all planned capabilities there (see notifications in
+  2.42.0).
+- Avoid duplicate bullets for the same capability (e.g. mention webhooks once).
+- Bug fixes and small improvements can be a single top-level bullet (`Minor fixes and improvements`) or grouped with
+  the feature they relate to.
+
+### User-facing language
+
+Write for **users and operators**, not developers. Describe features and outcomes — not how they were built.
+
+| Write about                                         | Avoid                                                                                          |
+|-----------------------------------------------------|------------------------------------------------------------------------------------------------|
+| What users can do                                   | Implementation (REST APIs, schedulers, retry dispatch, i18n resolution, repository layer)      |
+| Channels, integrations, UI surfaces                 | "Backend only", "foundation", "partial", "first provider", "planned for later"                 |
+| The full feature as shipped or as one release story | Framing current work as incomplete when the release entry should describe the whole capability |
+
+**Good** (from 2.42.0 — complete feature story, user outcomes):
+
+```markdown
+- Ignition now includes alerts for important events
+  - Get notified when certificates are expiring, renewals succeed or fail, nginx reloads fails and many more
+  - Inbox to see what happened, browse history, and mark alerts as read
+  - Send alerts by email (SMTP, Resend, or AWS SES), SMS or other systems (AWS SNS), to Telegram, Slack, Discord, and
+    custom webhooks with more integrations available in future versions.
+  - Choose which events go to each channel and set your preferred notification language
+```
+
+**Good** (from 2.32.0 — headline + indented capabilities):
+
+```markdown
+- Nginx Ignition now has integrated traffic statistics
+  - Real-time insights into server performance
+  - Metrics for request rates, response times, and bandwidth
+  - Traffic breakdown by host, domain, and upstream servers
+```
+
+**Bad** — implementation framing, incomplete story, duplicates:
+
+```markdown
+- Added notification foundation (backend)
+  - REST API for notification inbox and unread count
+  - SMTP provider — first delivery channel; more providers planned
+  - Scheduled retry dispatch for failed deliveries
+  - DetachedMessage i18n resolution per recipient
+  - Webhook provider support
+  - Custom webhook endpoints
+```
+
+Prefer the 2.42.0 style: one headline, sub-bullets for inbox, channels (email/SMS/chat/webhooks in one line), and
+preferences — no "foundation", no API/scheduler jargon, no duplicate webhook lines.
+
 ## Summary Checklist
 
 When working on any module:
@@ -602,3 +690,6 @@ When working on any module:
 - [ ] Class components (no hooks) unless project direction changes
 - [ ] `make .generate-i18n-files` before frontend build when keys change
 - [ ] `pnpm run check` / `make .frontend-lint` before finishing
+- [ ] `CHANGELOG.md` updated on every feature branch before merge
+- [ ] CHANGELOG entry: user-facing language, full feature story, format matches existing version blocks
+- [ ] Version bump follows semver (`MAJOR.MINOR.PATCH`) when setting the release number

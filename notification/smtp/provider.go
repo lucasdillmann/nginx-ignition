@@ -39,7 +39,7 @@ func (p *Provider) Send(
 ) error {
 	settings, recipients := parseMailSettings(parameters)
 
-	message := buildMessage(deliverable, settings.fromAddress)
+	message := buildMessage(deliverable, settings.fromAddress, recipients)
 
 	return p.sender.Send(ctx, settings, recipients, message)
 }

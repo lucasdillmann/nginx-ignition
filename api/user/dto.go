@@ -30,12 +30,13 @@ type userProfileUpdateRequestDTO struct {
 }
 
 type userRequestDTO struct {
-	Enabled     *bool              `json:"enabled"`
-	RemoveTOTP  *bool              `json:"removeTotp"`
-	Name        *string            `json:"name"`
-	Username    *string            `json:"username"`
-	Password    *string            `json:"password,omitempty"`
-	Permissions userPermissionsDTO `json:"permissions"`
+	Enabled              *bool              `json:"enabled"`
+	RemoveTOTP           *bool              `json:"removeTotp"`
+	Name                 *string            `json:"name"`
+	Username             *string            `json:"username"`
+	Password             *string            `json:"password,omitempty"`
+	NotificationLanguage string             `json:"notificationLanguage"`
+	Permissions          userPermissionsDTO `json:"permissions"`
 }
 
 type userResponseDTO struct {

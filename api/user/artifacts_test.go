@@ -33,11 +33,12 @@ func newUser() *user.User {
 
 func newUserRequest() userRequestDTO {
 	return userRequestDTO{
-		Name:       new("Test User"),
-		Username:   new("testuser"),
-		Password:   new("password123"),
-		Enabled:    new(true),
-		RemoveTOTP: new(false),
+		Name:                 new("Test User"),
+		Username:             new("testuser"),
+		Password:             new("password123"),
+		NotificationLanguage: "en",
+		Enabled:              new(true),
+		RemoveTOTP:           new(false),
 		Permissions: userPermissionsDTO{
 			Hosts:        string(user.ReadWriteAccessLevel),
 			Streams:      string(user.ReadWriteAccessLevel),

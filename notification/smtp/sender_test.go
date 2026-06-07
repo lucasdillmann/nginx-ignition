@@ -54,10 +54,11 @@ func Test_sender(t *testing.T) {
 				Actions: []notification.DeliverableAction{
 					{Label: "Open certificate", URL: "https://example.com/certificates/1"},
 				},
-			}, "alerts@example.com")
+			}, "alerts@example.com", []string{"recipient@example.com", "other@example.com"})
 
 			body := string(message)
 			assert.Contains(t, body, "From: alerts@example.com")
+			assert.Contains(t, body, "To: recipient@example.com, other@example.com")
 			assert.Contains(t, body, "Certificate expiring")
 			assert.Contains(t, body, "The certificate will expire soon.")
 			assert.Contains(t, body, "Renew before the deadline.")

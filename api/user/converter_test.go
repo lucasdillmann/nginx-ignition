@@ -86,6 +86,7 @@ func Test_toDomain(t *testing.T) {
 		assert.NotNil(t, result)
 		assert.Equal(t, *payload.Name, result.Name)
 		assert.Equal(t, *payload.Username, result.Username)
+		assert.Equal(t, payload.NotificationLanguage, result.NotificationLanguage)
 		assert.True(t, result.Enabled)
 		assert.False(t, result.RemoveTOTP)
 		assert.Equal(t, user.ReadWriteAccessLevel, result.Permissions.Hosts)

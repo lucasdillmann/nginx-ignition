@@ -14,12 +14,13 @@ func toDomain(dto *userRequestDTO) *user.SaveRequest {
 	}
 
 	return &user.SaveRequest{
-		ID:         uuid.New(),
-		Enabled:    getBoolValue(dto.Enabled),
-		RemoveTOTP: getBoolValue(dto.RemoveTOTP),
-		Name:       getStringValue(dto.Name),
-		Username:   getStringValue(dto.Username),
-		Password:   dto.Password,
+		ID:                   uuid.New(),
+		Enabled:              getBoolValue(dto.Enabled),
+		RemoveTOTP:           getBoolValue(dto.RemoveTOTP),
+		Name:                 getStringValue(dto.Name),
+		Username:             getStringValue(dto.Username),
+		Password:             dto.Password,
+		NotificationLanguage: dto.NotificationLanguage,
 		Permissions: user.Permissions{
 			Hosts:        user.AccessLevel(dto.Permissions.Hosts),
 			Streams:      user.AccessLevel(dto.Permissions.Streams),
