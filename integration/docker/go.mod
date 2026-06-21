@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/integration/docker
 
-go 1.26.3
+go 1.26.4
 
 require (
 	github.com/moby/moby/api v1.55.0

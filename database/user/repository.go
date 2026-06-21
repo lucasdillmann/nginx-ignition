@@ -178,18 +178,9 @@ func (r *repository) TryCreateInitialUser(ctx context.Context, u *user.User) (bo
 	}
 
 	model := toModel(u)
-	result, err := transaction.NewInsert().Model(&model).Exec(ctx)
+	_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 	if err != nil {
 		return false, err
-	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return false, err
-	}
-
-	if rowsAffected == 0 {
-		return false, nil
 	}
 
 	if err := transaction.Commit(); err != nil {

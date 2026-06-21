@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/integration/truenas
 
-go 1.26.3
+go 1.26.4
 
 require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible

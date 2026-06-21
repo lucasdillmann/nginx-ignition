@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/certificate/letsencrypt
 
-go 1.26.3
+go 1.26.4
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.22.0
