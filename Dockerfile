@@ -1,4 +1,4 @@
-FROM nginx:1.31.1-alpine AS builder
+FROM nginx:1.31.2-alpine AS builder
 
 RUN apk add --no-cache \
       gcc \
