@@ -2,6 +2,8 @@ package user
 
 import (
 	"strings"
+	"sync"
+	"sync/atomic"
 	"testing"
 
 	"github.com/google/uuid"
@@ -14,6 +16,94 @@ import (
 
 func Test_Repository(t *testing.T) {
 	testutils.RunWithMockedDatabases(t, runRepositoryTests)
+}
+
+func Test_Repository_TryCreateInitialUser(t *testing.T) {
+	t.Run("successfully creates the first user", func(t *testing.T) {
+		testutils.RunWithMockedDatabases(t, func(t *testing.T, db *database.Database) {
+			repo := New(db)
+			cmd := newUser()
+
+			created, err := repo.TryCreateInitialUser(t.Context(), cmd)
+			require.NoError(t, err)
+			assert.True(t, created)
+
+			count, err := repo.Count(t.Context())
+			require.NoError(t, err)
+			assert.Equal(t, 1, count)
+
+			saved, err := repo.FindByID(t.Context(), cmd.ID)
+			require.NoError(t, err)
+			require.NotNil(t, saved)
+			assert.Equal(t, cmd.Username, saved.Username)
+		})
+	})
+
+	t.Run("returns false when onboarding already completed", func(t *testing.T) {
+		testutils.RunWithMockedDatabases(t, func(t *testing.T, db *database.Database) {
+			repo := New(db)
+			existing := newUser()
+			created, err := repo.TryCreateInitialUser(t.Context(), existing)
+			require.NoError(t, err)
+			require.True(t, created)
+
+			another := newUser()
+			another.ID = uuid.New()
+			another.Username = uuid.New().String()
+
+			created, err = repo.TryCreateInitialUser(t.Context(), another)
+			require.NoError(t, err)
+			assert.False(t, created)
+
+			count, err := repo.Count(t.Context())
+			require.NoError(t, err)
+			assert.Equal(t, 1, count)
+		})
+	})
+
+	t.Run("allows only one winner under concurrent creation", func(t *testing.T) {
+		testutils.RunWithMockedDatabases(t, func(t *testing.T, db *database.Database) {
+			repo := New(db)
+			const goroutines = 10
+			var successCount int32
+			var failureCount int32
+			waitGroup := sync.WaitGroup{}
+			waitGroup.Add(goroutines)
+
+			for range goroutines {
+				go func() {
+					defer waitGroup.Done()
+
+					candidate := newUser()
+					candidate.ID = uuid.New()
+					candidate.Username = uuid.New().String()
+
+					created, err := repo.TryCreateInitialUser(t.Context(), candidate)
+					if err != nil {
+						if !strings.Contains(err.Error(), "SQLITE_BUSY") {
+							t.Errorf("TryCreateInitialUser returned error: %v", err)
+							return
+						}
+					}
+
+					if created {
+						atomic.AddInt32(&successCount, 1)
+					} else {
+						atomic.AddInt32(&failureCount, 1)
+					}
+				}()
+			}
+
+			waitGroup.Wait()
+
+			assert.Equal(t, int32(1), successCount)
+			assert.Equal(t, int32(goroutines-1), failureCount)
+
+			count, err := repo.Count(t.Context())
+			require.NoError(t, err)
+			assert.Equal(t, 1, count)
+		})
+	})
 }
 
 func runRepositoryTests(t *testing.T, db *database.Database) {

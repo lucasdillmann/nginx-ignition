@@ -247,6 +247,45 @@ func (s *service) Save(ctx context.Context, request *SaveRequest, currentUserID 
 	return s.repository.Save(ctx, updatedState)
 }
 
+func (s *service) FinishOnboarding(ctx context.Context, request *SaveRequest) error {
+	updatedState := &User{
+		ID:          request.ID,
+		Enabled:     request.Enabled,
+		Name:        request.Name,
+		Username:    request.Username,
+		Permissions: request.Permissions,
+		TOTP:        TOTP{},
+	}
+
+	if err := newValidator(s.repository).validate(
+		ctx,
+		updatedState,
+		nil,
+		request,
+		nil,
+	); err != nil {
+		return err
+	}
+
+	var err error
+	updatedState.PasswordHash, updatedState.PasswordSalt, err = passwordhash.New(s.configuration).
+		Hash(*request.Password)
+	if err != nil {
+		return err
+	}
+
+	created, err := s.repository.TryCreateInitialUser(ctx, updatedState)
+	if err != nil {
+		return err
+	}
+
+	if !created {
+		return ErrOnboardingAlreadyCompleted
+	}
+
+	return nil
+}
+
 func (s *service) GetStatus(ctx context.Context, id uuid.UUID) (bool, error) {
 	return s.repository.IsEnabledByID(ctx, id)
 }

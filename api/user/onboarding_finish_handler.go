@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -51,7 +52,12 @@ func (h onboardingFinishHandler) handle(ctx *gin.Context) {
 		TrafficStats: user.ReadOnlyAccessLevel,
 	}
 
-	if err = h.commands.Save(ctx.Request.Context(), domainModel, nil); err != nil {
+	if err = h.commands.FinishOnboarding(ctx.Request.Context(), domainModel); err != nil {
+		if errors.Is(err, user.ErrOnboardingAlreadyCompleted) {
+			ctx.Status(http.StatusForbidden)
+			return
+		}
+
 		panic(err)
 	}
 

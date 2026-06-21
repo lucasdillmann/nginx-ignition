@@ -3,7 +3,7 @@
 ## 2.42.1
 
 - Fix for the scenario where multiple admin users could be created during the onboarding flow under a race condition
-  (thanks @tikket1 for the report!)
+  (thanks @tikket1 [for the report](https://github.com/lucasdillmann/nginx-ignition/security/advisories/GHSA-pxcx-fv34-x9p5)!)
 - Upgrade of the nginx version from 1.31.1 to 1.31.2 (mainline)
 - Other minor fixes and improvements
 

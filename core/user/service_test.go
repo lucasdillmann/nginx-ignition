@@ -193,6 +193,60 @@ func Test_service(t *testing.T) {
 		})
 	})
 
+	t.Run("FinishOnboarding", func(t *testing.T) {
+		t.Run("creates the initial user successfully", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			request := newSaveRequest()
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), request.Username).Return(nil, nil)
+			repo.EXPECT().TryCreateInitialUser(t.Context(), gomock.Any()).Return(true, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.FinishOnboarding(t.Context(), request)
+
+			assert.NoError(t, err)
+		})
+
+		t.Run(
+			"returns ErrOnboardingAlreadyCompleted when user table is not empty",
+			func(t *testing.T) {
+				ctrl := gomock.NewController(t)
+				defer ctrl.Finish()
+
+				request := newSaveRequest()
+				repo := NewMockedRepository(ctrl)
+				repo.EXPECT().FindByUsername(t.Context(), request.Username).Return(nil, nil)
+				repo.EXPECT().TryCreateInitialUser(t.Context(), gomock.Any()).Return(false, nil)
+
+				cfg := &configuration.Configuration{}
+				svc, _ := newCommands(repo, cfg)
+				err := svc.FinishOnboarding(t.Context(), request)
+
+				assert.ErrorIs(t, err, ErrOnboardingAlreadyCompleted)
+			},
+		)
+
+		t.Run("returns validation error before repository call", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			request := newSaveRequest()
+			request.Password = nil
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), request.Username).Return(nil, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.FinishOnboarding(t.Context(), request)
+
+			assert.Error(t, err)
+		})
+	})
+
 	t.Run("Authenticate", func(t *testing.T) {
 		cfg := &configuration.Configuration{}
 		ph := passwordhash.New(cfg)

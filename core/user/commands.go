@@ -23,6 +23,7 @@ type Commands interface {
 		searchTerms *string,
 	) (*pagination.Page[User], error)
 	Save(ctx context.Context, user *SaveRequest, currentUserID *uuid.UUID) error
+	FinishOnboarding(ctx context.Context, request *SaveRequest) error
 	UpdatePassword(ctx context.Context, id uuid.UUID, oldPassword, newPassword string) error
 	UpdateProfile(ctx context.Context, id uuid.UUID, name, username string) error
 	OnboardingCompleted(ctx context.Context) (bool, error)

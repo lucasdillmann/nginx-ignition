@@ -6,6 +6,8 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect"
 
 	"dillmann.com.br/nginx-ignition/core/common/pagination"
 	"dillmann.com.br/nginx-ignition/core/user"
@@ -151,6 +153,66 @@ func (r *repository) Count(ctx context.Context) (int, error) {
 	}
 
 	return count, nil
+}
+
+func (r *repository) TryCreateInitialUser(ctx context.Context, u *user.User) (bool, error) {
+	transaction, err := r.database.Begin()
+	if err != nil {
+		return false, err
+	}
+
+	//nolint:errcheck
+	defer transaction.Rollback()
+
+	if err = lockUserTable(ctx, transaction); err != nil {
+		return false, err
+	}
+
+	exists, err := transaction.NewSelect().Model((*userModel)(nil)).Exists(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	if exists {
+		return false, nil
+	}
+
+	model := toModel(u)
+	result, err := transaction.NewInsert().Model(&model).Exec(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	if rowsAffected == 0 {
+		return false, nil
+	}
+
+	if err := transaction.Commit(); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func lockUserTable(ctx context.Context, transaction bun.Tx) error {
+	var statement string
+
+	switch transaction.Dialect().Name() {
+	case dialect.PG:
+		statement = `LOCK TABLE "user" IN EXCLUSIVE MODE`
+	case dialect.SQLite:
+		statement = "ROLLBACK; BEGIN IMMEDIATE;"
+	default:
+		return errors.New("unsupported database dialect")
+	}
+
+	_, err := transaction.ExecContext(ctx, statement)
+	return err
 }
 
 func (r *repository) Save(ctx context.Context, u *user.User) error {
