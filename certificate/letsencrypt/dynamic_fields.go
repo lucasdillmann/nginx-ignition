@@ -30,7 +30,7 @@ func mainDynamicFields(ctx context.Context) ([]dynamicfields.DynamicField, int) 
 		ID:           bypassDNSPropagationChecks,
 		Priority:     98,
 		Description:  i18n.M(ctx, i18n.K.CertificateLetsencryptBypassDnsPropagationChecks),
-		Required:     true,
+		Required:     false,
 		DefaultValue: false,
 		Type:         dynamicfields.BooleanType,
 	}
