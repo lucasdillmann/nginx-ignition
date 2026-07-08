@@ -2,16 +2,20 @@ module dillmann.com.br/nginx-ignition/vpn/netbird
 
 go 1.26.4
 
-require github.com/netbirdio/netbird v0.71.4
+require github.com/netbirdio/netbird v0.74.2
 
 replace (
-	github.com/cloudflare/circl => github.com/cunicu/circl v0.0.0-20230801113412-fec58fc7b5f6
-	github.com/dexidp/dex => github.com/netbirdio/dex v0.244.0
+	github.com/cloudflare/circl => codeberg.org/cunicu/circl v0.0.0-20230801113412-fec58fc7b5f6
+	github.com/dexidp/dex => github.com/netbirdio/dex v0.244.1-0.20260512110716-8d70ad8647c1
+	github.com/dexidp/dex/api/v2 => github.com/netbirdio/dex/api/v2 v2.0.0-20260512110716-8d70ad8647c1
 	github.com/getlantern/systray => github.com/netbirdio/systray v0.0.0-20231030152038-ef1ed2a27949
 	github.com/kardianos/service => github.com/netbirdio/service v0.0.0-20240911161631-f62744f42502
-	github.com/libp2p/go-netroute => github.com/netbirdio/go-netroute v0.0.0-20240611143515-f59b0e1d3944
+	github.com/libp2p/go-nat => github.com/libp2p/go-nat v0.2.0
+	github.com/mailru/easyjson => github.com/netbirdio/easyjson v0.9.0
 	github.com/pion/ice/v4 => github.com/netbirdio/ice/v4 v4.0.0-20250908184934-6202be846b51
-	golang.zx2c4.com/wireguard => github.com/netbirdio/wireguard-go v0.0.0-20260107100953-33b7c9d03db0
+	github.com/quic-go/qpack => github.com/quic-go/qpack v0.5.1
+	github.com/quic-go/quic-go => github.com/quic-go/quic-go v0.55.0
+	golang.zx2c4.com/wireguard => github.com/netbirdio/wireguard-go v0.0.0-20260628102922-2834bebf6c1a
 	gvisor.dev/gvisor => gvisor.dev/gvisor v0.0.0-20260224225140-573d5e7127a8
 )
 
