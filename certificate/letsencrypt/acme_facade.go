@@ -133,17 +133,12 @@ func parseResult(
 		return nil, err
 	}
 
-	privateKeyBlock, _ := pem.Decode(result.PrivateKey)
-	if privateKeyBlock == nil || privateKeyBlock.Type != "RSA PRIVATE KEY" {
+	privateKey, err := certcrypto.ParsePEMPrivateKey(result.PrivateKey)
+	if err != nil {
 		return nil, coreerror.New(
 			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "private key"),
 			false,
 		)
-	}
-
-	privateKey, err := x509.ParsePKCS1PrivateKey(privateKeyBlock.Bytes)
-	if err != nil {
-		return nil, err
 	}
 
 	encodedPrivateKey, err := x509.MarshalPKCS8PrivateKey(privateKey)
