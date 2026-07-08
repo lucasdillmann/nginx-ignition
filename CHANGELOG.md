@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2.42.0
+
+- Added support for 2 new DNS providers for Let's Encrypt certificates: OpusDNS and Poweradmin
+- Ability to skip DNS propagation checks while issuing a Let's Encrypt certificate
+- Security updates and fixes
+- Other minor fixes and improvements
+
 ## 2.41.1
 
 - Fix for the scenario where multiple admin users could be created during the onboarding flow under a race condition

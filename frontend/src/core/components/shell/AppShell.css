@@ -112,6 +112,10 @@ html:not([data-theme="dark"]) .shell-sider-menu-container a:visited {
     border-radius: 4px !important;
 }
 
+.shell-sider-menu-item .anticon {
+    margin: 0 5px;
+}
+
 .shell-sider-menu-container.ant-menu-dark .ant-menu-item:not(.ant-menu-item-selected):hover,
 .shell-sider-menu-container.ant-menu-dark .ant-menu-item-active:not(.ant-menu-item-selected) {
     background-color: var(--nginxIgnition-shellAccentBgHover) !important;
@@ -170,6 +174,7 @@ html:not([data-theme="dark"]) .shell-sider-menu-container a:visited {
     width: 42px !important;
     margin: 6px 0 !important;
     margin-left: 19px !important;
+    justify-content: center !important;
 }
 
 .shell-sider-container-collapsed .shell-sider-menu-container .ant-menu-inline-collapsed {
@@ -189,7 +194,6 @@ html:not([data-theme="dark"]) .shell-sider-menu-container a:visited {
     line-height: var(--shell-collapsed-menu-item-size) !important;
     display: flex;
     align-items: center;
-    justify-content: center;
 }
 
 .shell-sider-container-collapsed

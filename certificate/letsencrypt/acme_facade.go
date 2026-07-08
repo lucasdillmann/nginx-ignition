@@ -5,12 +5,12 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
-	"strings"
 	"time"
 
 	"github.com/go-acme/lego/v5/certcrypto"
 	acmecertificate "github.com/go-acme/lego/v5/certificate"
 	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/challenge/dns01"
 	"github.com/go-acme/lego/v5/lego"
 	"github.com/go-acme/lego/v5/registration"
 	"github.com/google/uuid"
@@ -48,7 +48,14 @@ func issueCertificate(
 
 	client.Challenge.Remove(challenge.TLSALPN01)
 	client.Challenge.Remove(challenge.HTTP01)
-	err = client.Challenge.SetDNS01Provider(dnsChallenge)
+
+	dnsOptions := make([]dns01.ChallengeOption, 0, 1)
+	propagationBypassCasted, propagationBypass := parameters["bypassDnsPropagationChecks"].(bool)
+	if propagationBypassCasted && propagationBypass {
+		dnsOptions = append(dnsOptions, dns01.PropagationWait(5*time.Second, true))
+	}
+
+	err = client.Challenge.SetDNS01Provider(dnsChallenge, dnsOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -71,6 +78,9 @@ func issueCertificate(
 		Domains: domainNames,
 		Bundle:  true,
 		KeyType: certcrypto.RSA2048,
+	}
+	if productionEnvironment {
+		request.PreferredChain = "ISRG Root X1"
 	}
 
 	cert, err := client.Certificate.Obtain(ctx, request)
@@ -100,8 +110,7 @@ func parseResult(
 	productionEnvironment bool,
 	client *lego.Client,
 ) (*certificate.Certificate, error) {
-	mainCert := strings.Replace(string(result.Certificate), string(result.IssuerCertificate), "", 1)
-	pemBlock, _ := pem.Decode([]byte(mainCert))
+	pemBlock, _ := pem.Decode(result.Certificate)
 	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
 		return nil, coreerror.New(
 			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "certificate"),
@@ -125,17 +134,12 @@ func parseResult(
 		return nil, err
 	}
 
-	privateKeyBlock, _ := pem.Decode(result.PrivateKey)
-	if privateKeyBlock == nil || privateKeyBlock.Type != "RSA PRIVATE KEY" {
+	privateKey, err := certcrypto.ParsePEMPrivateKey(result.PrivateKey)
+	if err != nil {
 		return nil, coreerror.New(
 			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "private key"),
 			false,
 		)
-	}
-
-	privateKey, err := x509.ParsePKCS1PrivateKey(privateKeyBlock.Bytes)
-	if err != nil {
-		return nil, err
 	}
 
 	encodedPrivateKey, err := x509.MarshalPKCS8PrivateKey(privateKey)
@@ -148,7 +152,7 @@ func parseResult(
 		return nil, err
 	}
 
-	encodedCertificationChain, err := encodeIssuerCertificate(ctx, result.IssuerCertificate)
+	certificationChain, err := encodeIssuerCertificates(ctx, result.IssuerCertificate)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +167,7 @@ func parseResult(
 		RenewAfter:         renewAt,
 		PrivateKey:         base64.StdEncoding.EncodeToString(encodedPrivateKey),
 		PublicKey:          base64.StdEncoding.EncodeToString(pemBlock.Bytes),
-		CertificationChain: []string{*encodedCertificationChain},
+		CertificationChain: certificationChain,
 		Parameters:         parameters,
 		Metadata:           &metadataJSON,
 	}
@@ -171,16 +175,33 @@ func parseResult(
 	return &output, nil
 }
 
-func encodeIssuerCertificate(ctx context.Context, issuer []byte) (*string, error) {
-	pemBlock, _ := pem.Decode(issuer)
-	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
+func encodeIssuerCertificates(ctx context.Context, issuer []byte) ([]string, error) {
+	chain := make([]string, 0)
+	remaining := issuer
+
+	for {
+		pemBlock, rest := pem.Decode(remaining)
+		if pemBlock == nil {
+			break
+		}
+
+		remaining = rest
+
+		if pemBlock.Type != "CERTIFICATE" {
+			continue
+		}
+
+		chain = append(chain, base64.StdEncoding.EncodeToString(pemBlock.Bytes))
+	}
+
+	if len(chain) == 0 {
 		return nil, coreerror.New(
 			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "issuer"),
 			false,
 		)
 	}
 
-	return new(base64.StdEncoding.EncodeToString(pemBlock.Bytes)), nil
+	return chain, nil
 }
 
 func fetchCertDates(
