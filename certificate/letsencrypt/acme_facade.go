@@ -11,6 +11,7 @@ import (
 	"github.com/go-acme/lego/v5/certcrypto"
 	acmecertificate "github.com/go-acme/lego/v5/certificate"
 	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/challenge/dns01"
 	"github.com/go-acme/lego/v5/lego"
 	"github.com/go-acme/lego/v5/registration"
 	"github.com/google/uuid"
@@ -48,7 +49,14 @@ func issueCertificate(
 
 	client.Challenge.Remove(challenge.TLSALPN01)
 	client.Challenge.Remove(challenge.HTTP01)
-	err = client.Challenge.SetDNS01Provider(dnsChallenge)
+
+	dnsOptions := make([]dns01.ChallengeOption, 0, 1)
+	propagationBypassCasted, propagationBypass := parameters["bypassDnsPropagationChecks"].(bool)
+	if propagationBypassCasted && propagationBypass {
+		dnsOptions = append(dnsOptions, dns01.PropagationWait(5*time.Second, true))
+	}
+
+	err = client.Challenge.SetDNS01Provider(dnsChallenge, dnsOptions...)
 	if err != nil {
 		return nil, err
 	}

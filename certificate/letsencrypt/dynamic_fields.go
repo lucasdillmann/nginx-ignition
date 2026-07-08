@@ -9,10 +9,12 @@ import (
 	"dillmann.com.br/nginx-ignition/core/common/i18n"
 )
 
+//nolint:gosec
 const (
-	termsOfServiceFieldID = "acceptTheTermsOfService"
-	emailAddressFieldID   = "emailAddress"
-	dnsProviderFieldID    = "challengeDnsProvider"
+	termsOfServiceFieldID      = "acceptTheTermsOfService"
+	emailAddressFieldID        = "emailAddress"
+	dnsProviderFieldID         = "challengeDnsProvider"
+	bypassDNSPropagationChecks = "bypassDnsPropagationChecks"
 )
 
 func mainDynamicFields(ctx context.Context) ([]dynamicfields.DynamicField, int) {
@@ -22,6 +24,15 @@ func mainDynamicFields(ctx context.Context) ([]dynamicfields.DynamicField, int) 
 		Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsProvider),
 		Required:    true,
 		Type:        dynamicfields.EnumType,
+	}
+
+	bypassDNSPropagationChecksField := dynamicfields.DynamicField{
+		ID:           bypassDNSPropagationChecks,
+		Priority:     98,
+		Description:  i18n.M(ctx, i18n.K.CertificateLetsencryptBypassDnsPropagationChecks),
+		Required:     true,
+		DefaultValue: false,
+		Type:         dynamicfields.BooleanType,
 	}
 
 	tosField := dynamicfields.DynamicField{
@@ -42,7 +53,12 @@ func mainDynamicFields(ctx context.Context) ([]dynamicfields.DynamicField, int) 
 		Type:        dynamicfields.EmailType,
 	}
 
-	return []dynamicfields.DynamicField{dnsField, tosField, emailField}, 0
+	return []dynamicfields.DynamicField{
+		dnsField,
+		emailField,
+		bypassDNSPropagationChecksField,
+		tosField,
+	}, 0
 }
 
 func resolveDynamicFields(ctx context.Context) []dynamicfields.DynamicField {

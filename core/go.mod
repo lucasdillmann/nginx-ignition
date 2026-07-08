@@ -10,7 +10,7 @@ require (
 	go.uber.org/dig v1.19.0
 	go.uber.org/mock v0.6.0
 	go.uber.org/zap v1.28.0
-	golang.org/x/text v0.38.0
+	golang.org/x/text v0.39.0
 )
 
 require (
