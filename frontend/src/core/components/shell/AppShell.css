@@ -170,6 +170,7 @@ html:not([data-theme="dark"]) .shell-sider-menu-container a:visited {
     width: 42px !important;
     margin: 6px 0 !important;
     margin-left: 19px !important;
+    justify-content: center !important;
 }
 
 .shell-sider-container-collapsed .shell-sider-menu-container .ant-menu-inline-collapsed {
