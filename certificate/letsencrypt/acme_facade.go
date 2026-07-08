@@ -5,7 +5,6 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
-	"strings"
 	"time"
 
 	"github.com/go-acme/lego/v5/certcrypto"
@@ -80,6 +79,9 @@ func issueCertificate(
 		Bundle:  true,
 		KeyType: certcrypto.RSA2048,
 	}
+	if productionEnvironment {
+		request.PreferredChain = "ISRG Root X1"
+	}
 
 	cert, err := client.Certificate.Obtain(ctx, request)
 	if err != nil {
@@ -108,8 +110,7 @@ func parseResult(
 	productionEnvironment bool,
 	client *lego.Client,
 ) (*certificate.Certificate, error) {
-	mainCert := strings.Replace(string(result.Certificate), string(result.IssuerCertificate), "", 1)
-	pemBlock, _ := pem.Decode([]byte(mainCert))
+	pemBlock, _ := pem.Decode(result.Certificate)
 	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
 		return nil, coreerror.New(
 			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "certificate"),
@@ -151,7 +152,7 @@ func parseResult(
 		return nil, err
 	}
 
-	encodedCertificationChain, err := encodeIssuerCertificate(ctx, result.IssuerCertificate)
+	certificationChain, err := encodeIssuerCertificates(ctx, result.IssuerCertificate)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +167,7 @@ func parseResult(
 		RenewAfter:         renewAt,
 		PrivateKey:         base64.StdEncoding.EncodeToString(encodedPrivateKey),
 		PublicKey:          base64.StdEncoding.EncodeToString(pemBlock.Bytes),
-		CertificationChain: []string{*encodedCertificationChain},
+		CertificationChain: certificationChain,
 		Parameters:         parameters,
 		Metadata:           &metadataJSON,
 	}
@@ -174,16 +175,33 @@ func parseResult(
 	return &output, nil
 }
 
-func encodeIssuerCertificate(ctx context.Context, issuer []byte) (*string, error) {
-	pemBlock, _ := pem.Decode(issuer)
-	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
+func encodeIssuerCertificates(ctx context.Context, issuer []byte) ([]string, error) {
+	chain := make([]string, 0)
+	remaining := issuer
+
+	for {
+		pemBlock, rest := pem.Decode(remaining)
+		if pemBlock == nil {
+			break
+		}
+
+		remaining = rest
+
+		if pemBlock.Type != "CERTIFICATE" {
+			continue
+		}
+
+		chain = append(chain, base64.StdEncoding.EncodeToString(pemBlock.Bytes))
+	}
+
+	if len(chain) == 0 {
 		return nil, coreerror.New(
 			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "issuer"),
 			false,
 		)
 	}
 
-	return new(base64.StdEncoding.EncodeToString(pemBlock.Bytes)), nil
+	return chain, nil
 }
 
 func fetchCertDates(
