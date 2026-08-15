@@ -1,20 +1,18 @@
 module dillmann.com.br/nginx-ignition/vpn/netbird
 
-go 1.26.4
+go 1.26.6
 
-require github.com/netbirdio/netbird v0.74.2
+require github.com/netbirdio/netbird v0.77.0
 
 replace (
 	github.com/cloudflare/circl => codeberg.org/cunicu/circl v0.0.0-20230801113412-fec58fc7b5f6
-	github.com/dexidp/dex => github.com/netbirdio/dex v0.244.1-0.20260512110716-8d70ad8647c1
+	github.com/dexidp/dex => github.com/netbirdio/dex v0.244.1-0.20260716205454-a163de3129e5
 	github.com/dexidp/dex/api/v2 => github.com/netbirdio/dex/api/v2 v2.0.0-20260512110716-8d70ad8647c1
 	github.com/getlantern/systray => github.com/netbirdio/systray v0.0.0-20231030152038-ef1ed2a27949
 	github.com/kardianos/service => github.com/netbirdio/service v0.0.0-20240911161631-f62744f42502
 	github.com/libp2p/go-nat => github.com/libp2p/go-nat v0.2.0
 	github.com/mailru/easyjson => github.com/netbirdio/easyjson v0.9.0
 	github.com/pion/ice/v4 => github.com/netbirdio/ice/v4 v4.0.0-20250908184934-6202be846b51
-	github.com/quic-go/qpack => github.com/quic-go/qpack v0.5.1
-	github.com/quic-go/quic-go => github.com/quic-go/quic-go v0.55.0
 	golang.zx2c4.com/wireguard => github.com/netbirdio/wireguard-go v0.0.0-20260628102922-2834bebf6c1a
 	gvisor.dev/gvisor => gvisor.dev/gvisor v0.0.0-20260224225140-573d5e7127a8
 )
@@ -69,7 +67,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.18 // indirect
 	github.com/googleapis/gax-go/v2 v2.23.0 // indirect
-	github.com/gopacket/gopacket v1.6.0 // indirect
+	github.com/gopacket/gopacket v1.6.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -99,7 +97,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/petermattis/goid v0.0.0-20260330135022-df67b199bc81 // indirect
 	github.com/pion/dtls/v2 v2.2.12 // indirect
-	github.com/pion/dtls/v3 v3.1.2 // indirect
+	github.com/pion/dtls/v3 v3.1.4 // indirect
 	github.com/pion/ice/v4 v4.0.0-00010101000000-000000000000 // indirect
 	github.com/pion/logging v0.2.4 // indirect
 	github.com/pion/mdns/v2 v2.1.0 // indirect
@@ -143,14 +141,14 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.28.0 // indirect
 	go.uber.org/zap/exp v0.3.0 // indirect
-	golang.org/x/crypto v0.53.0 // indirect
+	golang.org/x/crypto v0.54.0 // indirect
 	golang.org/x/exp v0.0.0-20260611194520-c48552f49976 // indirect
 	golang.org/x/mod v0.37.0 // indirect
 	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
-	golang.org/x/sync v0.21.0 // indirect
-	golang.org/x/sys v0.46.0 // indirect
-	golang.org/x/text v0.39.0 // indirect
+	golang.org/x/sync v0.22.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
 	golang.org/x/tools v0.47.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
@@ -159,7 +157,7 @@ require (
 	golang.zx2c4.com/wireguard/windows v1.0.1 // indirect
 	google.golang.org/api v0.287.1 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260706201446-f0a921348800 // indirect
-	google.golang.org/grpc v1.82.0 // indirect
+	google.golang.org/grpc v1.83.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/ini.v1 v1.67.3 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect

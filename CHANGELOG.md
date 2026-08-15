@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.43.0
+
+- Upgrade of the nginx version from 1.31.2 to 1.31.3 (mainline)
+- Added support for the Openprovider DNS provider for Let's Encrypt certificates
+- Security updates and fixes
+
 ## 2.42.0
 
 - Added support for 2 new DNS providers for Let's Encrypt certificates: OpusDNS and Poweradmin

@@ -1,6 +1,6 @@
 module dillmann.com.br/nginx-ignition/integration/truenas
 
-go 1.26.4
+go 1.26.6
 
 require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -9,5 +9,5 @@ require (
 
 require (
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674
-	golang.org/x/net v0.56.0 // indirect
+	golang.org/x/net v0.58.0 // indirect
 )

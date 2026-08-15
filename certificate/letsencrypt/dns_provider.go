@@ -157,6 +157,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/omglol"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/onecloudru"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/onlinenet"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/openprovider"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/opusdns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/oraclecloud"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/otc"
@@ -377,6 +378,7 @@ var providers = []dns.Provider{
 	&omglol.Provider{},
 	&onecloudru.Provider{},
 	&onlinenet.Provider{},
+	&openprovider.Provider{},
 	&opusdns.Provider{},
 	&oraclecloud.Provider{},
 	&otc.Provider{},

@@ -1,4 +1,4 @@
-FROM nginx:1.31.2-alpine AS builder
+FROM nginx:1.31.3-alpine AS builder
 
 RUN apk add --no-cache \
       gcc \
@@ -51,7 +51,7 @@ RUN mkdir -p /modules-lua && \
     cd /lua-resty-core && make install LUA_LIB_DIR=/modules-lua && \
     cd /lua-resty-lrucache && make install LUA_LIB_DIR=/modules-lua
 
-FROM alpine:edge AS workspace
+FROM alpine:3 AS workspace
 
 RUN apk add --no-cache \
       luajit \
