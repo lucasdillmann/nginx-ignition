@@ -1,3 +1,3 @@
 module dillmann.com.br/nginx-ignition/application
 
-go 1.26.4
+go 1.26.6
