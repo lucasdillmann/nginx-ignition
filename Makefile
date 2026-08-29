@@ -8,6 +8,7 @@ LDFLAGS := -X 'nginx-ignition/internal/core/common/version.Number=$(VERSION)'
 
 .backend-prerequisites:
 	go mod tidy
+	cd tools/i18n && go mod tidy
 
 .frontend-prerequisites:
 	cd frontend/ && pnpm install
@@ -32,7 +33,7 @@ LDFLAGS := -X 'nginx-ignition/internal/core/common/version.Number=$(VERSION)'
 	GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o build/$(DIR)/$(ARCH)$(EXT) ./cmd
 
 .generate-i18n-files:
-	cd tools/i18n && go mod tidy && go run .
+	cd tools/i18n && go run .
 
 .build-release-docker-image:
 	mkdir -p $(BUILDKIT_CACHE)
