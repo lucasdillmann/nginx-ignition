@@ -6,12 +6,12 @@ import (
 	"os"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/tools/i18n/formatter"
-	"dillmann.com.br/nginx-ignition/tools/i18n/formatter/golangdictionary"
-	"dillmann.com.br/nginx-ignition/tools/i18n/formatter/golangkeys"
-	"dillmann.com.br/nginx-ignition/tools/i18n/formatter/sortedproperties"
-	"dillmann.com.br/nginx-ignition/tools/i18n/formatter/typescriptkeys"
-	"dillmann.com.br/nginx-ignition/tools/i18n/reader"
+	"nginx-ignition/tools/i18n/formatter"
+	"nginx-ignition/tools/i18n/formatter/golangdictionary"
+	"nginx-ignition/tools/i18n/formatter/golangkeys"
+	"nginx-ignition/tools/i18n/formatter/sortedproperties"
+	"nginx-ignition/tools/i18n/formatter/typescriptkeys"
+	"nginx-ignition/tools/i18n/reader"
 )
 
 func Write(propertiesFiles []reader.PropertiesFile) error {
@@ -26,7 +26,7 @@ func Write(propertiesFiles []reader.PropertiesFile) error {
 	if err := writeFile(
 		propertiesFiles[0],
 		golangkeys.New(),
-		"i18n/keys.generated.go",
+		"internal/i18n/keys.generated.go",
 	); err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func Write(propertiesFiles []reader.PropertiesFile) error {
 		if err := writeFile(
 			propertiesFile,
 			golangdictionary.New(),
-			fmt.Sprintf("i18n/%s.generated.go", strings.ToLower(propertiesFile.NormalizedLanguageTag)),
+			fmt.Sprintf("internal/i18n/%s.generated.go", strings.ToLower(propertiesFile.NormalizedLanguageTag)),
 		); err != nil {
 			return err
 		}
@@ -43,7 +43,7 @@ func Write(propertiesFiles []reader.PropertiesFile) error {
 		if err := writeFile(
 			propertiesFile,
 			sortedproperties.New(),
-			fmt.Sprintf("i18n/messages_%s.properties", strings.ToLower(propertiesFile.LanguageTag)),
+			fmt.Sprintf("internal/i18n/messages_%s.properties", strings.ToLower(propertiesFile.LanguageTag)),
 		); err != nil {
 			return err
 		}

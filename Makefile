@@ -4,7 +4,7 @@ VERSION ?= 0.0.0
 PR_ID ?= 0
 BUILDKIT_CACHE ?= build/cache/docker
 SNAPSHOT_TAG_SUFFIX := $(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,$(VERSION)-snapshot)
-LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSION)'
+LDFLAGS := -X 'nginx-ignition/internal/core/common/version.Number=$(VERSION)'
 
 .backend-prerequisites:
 	go mod tidy
@@ -16,7 +16,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	cd frontend/ && pnpm run check
 
 .backend-lint: .backend-prerequisites .backend-test-mocks
-	go tool -modfile=tools/go.mod golangci-lint run ./...
+	go tool -modfile=tools/go.mod golangci-lint run ./internal/...
 
 .frontend-build: .frontend-prerequisites .generate-i18n-files
 	cd frontend/ && pnpm run build
@@ -29,7 +29,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	$(MAKE) .backend-build-file OS=windows ARCH=arm64 DIR=windows EXT=.exe
 
 .backend-build-file:
-	GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o build/$(DIR)/$(ARCH)$(EXT) application/main.go
+	GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o build/$(DIR)/$(ARCH)$(EXT) ./cmd
 
 .generate-i18n-files:
 	cd tools/i18n && go mod tidy && go run .
@@ -69,7 +69,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	rm -Rf build/nginx-ignition.$(OS)-$(ARCH).zip
 	mkdir -p build/zip
 	cp -Rf frontend/build build/zip/frontend
-	cp -Rf database/common/migrations/scripts build/zip/migrations
+	cp -Rf internal/database/common/migrations/scripts build/zip/migrations
 	cp dist/$(OS)/instructions.md build/zip/instructions.md
 	cp dist/$(OS)/nginx-ignition.properties build/zip/
 	[ -z "$(SERVICE_FILE_EXT)" ] || cp dist/$(OS)/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/
@@ -94,15 +94,15 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	cd frontend/ && pnpm exec prettier --write .
 
 .backend-format: .backend-prerequisites .backend-test-mocks
-	go tool -modfile=tools/go.mod fieldalignment -fix ./...
-	go tool -modfile=tools/go.mod golangci-lint run --fix ./...
+	go tool -modfile=tools/go.mod fieldalignment -fix ./internal/...
+	go tool -modfile=tools/go.mod golangci-lint run --fix ./internal/...
 
 clean:
-	@find api application certificate core database i18n integration vpn -type f -name "*.mock.go" -delete
+	@find internal -type f -name "*.mock.go" -delete
 
 .backend-test-mocks: .backend-prerequisites
 	@echo "Generating mock files..."
-	@find api application certificate core database i18n integration vpn -type f -name "*.go" \
+	@find internal -type f -name "*.go" \
 		-not -name "*_test.go" \
 		-exec sh -c 'grep -q "^type [a-zA-Z0-9_]* interface" "$$1" && echo "$$1"' _ {} \; | \
 	while read -r file; do \
@@ -125,7 +125,7 @@ clean:
 	done
 
 .backend-test: .backend-test-mocks .generate-i18n-files
-	go test -coverprofile=coverage.out -covermode=atomic ./...
+	go test -coverprofile=coverage.out -covermode=atomic ./internal/...
 
 .update-nginx-docker-image:
 	@LATEST=$$(curl -fsSL https://raw.githubusercontent.com/docker-library/official-images/master/library/nginx | \
@@ -145,7 +145,7 @@ clean:
 	fi
 
 update-dependencies: .backend-prerequisites .frontend-prerequisites .update-nginx-docker-image
-	go get -u ./api/... ./application/... ./certificate/... ./core/... ./database/... ./i18n/... ./integration/... ./vpn/...
+	go get -u ./internal/...
 	go get -u github.com/netbirdio/netbird@latest
 	go get -u tailscale.com@latest
 	go mod tidy

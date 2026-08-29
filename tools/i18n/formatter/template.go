@@ -4,7 +4,7 @@ import (
 	"io"
 	"text/template"
 
-	"dillmann.com.br/nginx-ignition/tools/i18n/reader"
+	"nginx-ignition/tools/i18n/reader"
 )
 
 type TemplateBuilder func(file *reader.PropertiesFile) (string, any)

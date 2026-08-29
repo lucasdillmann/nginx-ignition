@@ -1,0 +1,52 @@
+package user
+
+import (
+	"context"
+
+	"nginx-ignition/internal/core/common/configuration"
+	"nginx-ignition/internal/core/common/coreerror"
+	"nginx-ignition/internal/core/common/i18n"
+	"nginx-ignition/internal/core/common/lifecycle"
+	"nginx-ignition/internal/core/common/log"
+)
+
+type startup struct {
+	service       *service
+	configuration *configuration.Configuration
+}
+
+func registerStartup(lc *lifecycle.Lifecycle, service *service, cfg *configuration.Configuration) {
+	commandInstance := &startup{service, cfg}
+	lc.RegisterStartup(commandInstance)
+}
+
+func (s startup) Run(ctx context.Context) error {
+	username, err := s.configuration.Get("nginx-ignition.password-reset.username")
+	if err != nil || username == "" {
+		return nil
+	}
+
+	newPassword, err := s.service.resetPassword(ctx, username)
+	if err != nil {
+		log.Errorf("Error resetting password for the user %s: %s", username, err)
+		return err
+	}
+
+	log.Infof(
+		"Password reset completed successfully for the user %s. New password: %s",
+		username,
+		newPassword,
+	)
+	return coreerror.New(
+		i18n.M(ctx, i18n.K.CoreUserPasswordResetMode),
+		true,
+	)
+}
+
+func (s startup) Priority() int {
+	return startupPriority
+}
+
+func (s startup) Async() bool {
+	return false
+}

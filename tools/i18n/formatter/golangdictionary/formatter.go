@@ -1,7 +1,7 @@
 package golangdictionary
 
 import (
-	"dillmann.com.br/nginx-ignition/tools/i18n/formatter"
+	"nginx-ignition/tools/i18n/formatter"
 )
 
 const template = `package i18n

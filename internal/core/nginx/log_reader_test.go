@@ -1,0 +1,38 @@
+package nginx
+
+import (
+	"os"
+	"path/filepath"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"nginx-ignition/internal/core/common/configuration"
+	"nginx-ignition/internal/core/common/logline"
+)
+
+func Test_logReader(t *testing.T) {
+	tmpDir, _ := os.MkdirTemp("", "logs")
+	defer os.RemoveAll(tmpDir)
+
+	_ = os.Mkdir(filepath.Join(tmpDir, "logs"), 0o755)
+	logFile := filepath.Join(tmpDir, "logs", "test.log")
+	_ = os.WriteFile(logFile, []byte("line1\nline2\nline3\n"), 0o644)
+
+	cfg := configuration.NewWithOverrides(map[string]string{
+		"nginx-ignition.nginx.config-path": tmpDir,
+	})
+	reader := newLogReader(cfg)
+
+	t.Run("read", func(t *testing.T) {
+		t.Run("reads lines correctly", func(t *testing.T) {
+			lines, err := reader.read(t.Context(), "test.log")
+			assert.NoError(t, err)
+			assert.Equal(t, []logline.LogLine{
+				{LineNumber: 0, Contents: "line1"},
+				{LineNumber: 1, Contents: "line2"},
+				{LineNumber: 2, Contents: "line3"},
+			}, lines)
+		})
+	})
+}

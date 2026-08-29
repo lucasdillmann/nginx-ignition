@@ -1,0 +1,73 @@
+package host
+
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+
+	"nginx-ignition/internal/api/common/logline"
+	"nginx-ignition/internal/core/common/valuerange"
+	"nginx-ignition/internal/core/nginx"
+)
+
+type logsHandler struct {
+	commands nginx.Commands
+}
+
+const (
+	defaultLineCount = 50
+)
+
+var (
+	lineCountRange    = valuerange.New(1, 99_999)
+	allowedQualifiers = map[string]bool{
+		"access": true,
+		"error":  true,
+	}
+)
+
+func (h logsHandler) handle(ctx *gin.Context) {
+	lineCount := defaultLineCount
+	queryValue := ctx.Query("lines")
+
+	if queryValue != "" {
+		var err error
+		lineCount, err = strconv.Atoi(queryValue)
+
+		if err != nil || !lineCountRange.Contains(lineCount) {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message": fmt.Sprintf(
+					"Lines amount should be between %d and %d",
+					lineCountRange.Min,
+					lineCountRange.Max,
+				),
+			})
+			return
+		}
+	}
+
+	qualifier := ctx.Param("qualifier")
+	if !allowedQualifiers[qualifier] {
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+
+	id, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+
+	search := logline.ExtractSearchParams(ctx)
+
+	logs, err := h.commands.GetHostLogs(ctx.Request.Context(), id, qualifier, lineCount, search)
+	if err != nil {
+		panic(err)
+	}
+
+	payload := logline.ToResponseDTOs(logs)
+	ctx.JSON(http.StatusOK, payload)
+}

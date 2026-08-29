@@ -1,0 +1,60 @@
+package transip
+
+import (
+	"context"
+
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/transip"
+
+	"nginx-ignition/internal/certificate/letsencrypt/dns"
+	"nginx-ignition/internal/core/common/dynamicfields"
+	"nginx-ignition/internal/core/common/i18n"
+)
+
+const (
+	accountNameFieldID    = "transIpAccountName"
+	privateKeyPathFieldID = "transIpPrivateKeyPath"
+)
+
+type Provider struct{}
+
+func (p *Provider) ID() string { return "TRANSIP" }
+
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsTransipName)
+}
+
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
+		{
+			ID:          accountNameFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsTransipAccountName),
+			Required:    true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+		{
+			ID:          privateKeyPathFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsTransipPrivateKeyPath),
+			Required:    true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+	})
+}
+
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
+	accountName, _ := parameters[accountNameFieldID].(string)
+	privateKeyPath, _ := parameters[privateKeyPathFieldID].(string)
+
+	cfg := transip.NewDefaultConfig()
+	cfg.AccountName = accountName
+	cfg.PrivateKeyPath = privateKeyPath
+	cfg.TTL = int64(dns.TTL)
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+
+	return transip.NewDNSProviderConfig(cfg)
+}

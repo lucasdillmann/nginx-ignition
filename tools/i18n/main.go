@@ -6,21 +6,21 @@ import (
 	"path/filepath"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/tools/i18n/reader"
-	"dillmann.com.br/nginx-ignition/tools/i18n/validator"
-	"dillmann.com.br/nginx-ignition/tools/i18n/writer"
+	"nginx-ignition/tools/i18n/reader"
+	"nginx-ignition/tools/i18n/validator"
+	"nginx-ignition/tools/i18n/writer"
 )
 
 func main() {
 	log.Println("Starting i18n code generation...")
 
-	if _, err := os.Stat("i18n"); os.IsNotExist(err) {
+	if _, err := os.Stat("internal/i18n"); os.IsNotExist(err) {
 		if err := os.Chdir(filepath.Join("..", "..")); err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	propertiesFiles, err := reader.ReadPropertiesFiles("i18n")
+	propertiesFiles, err := reader.ReadPropertiesFiles("internal/i18n")
 	if err != nil {
 		log.Printf("Error reading properties files: %v", err)
 		os.Exit(1)

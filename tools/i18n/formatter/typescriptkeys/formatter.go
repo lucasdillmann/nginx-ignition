@@ -1,7 +1,7 @@
 package typescriptkeys
 
 import (
-	"dillmann.com.br/nginx-ignition/tools/i18n/formatter"
+	"nginx-ignition/tools/i18n/formatter"
 )
 
 const template = `enum MessageKey {

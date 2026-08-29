@@ -1,0 +1,49 @@
+package nginx
+
+import (
+	"bufio"
+	"context"
+	"os"
+	"path/filepath"
+
+	"nginx-ignition/internal/core/common/configuration"
+	"nginx-ignition/internal/core/common/logline"
+)
+
+type logReader struct {
+	configProvider *configuration.Configuration
+}
+
+func newLogReader(configProvider *configuration.Configuration) *logReader {
+	return &logReader{
+		configProvider: configProvider,
+	}
+}
+
+func (r *logReader) read(_ context.Context, fileName string) ([]logline.LogLine, error) {
+	basePath, err := r.configProvider.Get("nginx-ignition.nginx.config-path")
+	if err != nil {
+		return nil, err
+	}
+
+	normalizedPath := filepath.Join(basePath, "logs")
+	filePath := filepath.Join(normalizedPath, fileName)
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	//nolint:errcheck
+	defer file.Close()
+
+	lines := make([]logline.LogLine, 0)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, logline.LogLine{
+			LineNumber: len(lines),
+			Contents:   scanner.Text(),
+		})
+	}
+
+	return lines, scanner.Err()
+}

@@ -124,7 +124,7 @@ linters:
       - third_party$
       - builtin$
       - examples$
-      - ^i18n/
+      - ^internal/i18n/
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
@@ -140,8 +140,9 @@ formatters:
   settings:
     goimports:
       local-prefixes:
-        - dillmann.com.br/nginx-ignition
+        - nginx-ignition
     gofumpt:
+      module-path: nginx-ignition
       extra:
         group-params: true
   exclusions:
@@ -153,4 +154,4 @@ formatters:
       - third_party$
       - builtin$
       - examples$
-      - ^i18n/
+      - ^internal/i18n/

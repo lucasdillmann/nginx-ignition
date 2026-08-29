@@ -1,0 +1,197 @@
+package cfgfiles
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"path/filepath"
+
+	"nginx-ignition/internal/core/accesslist"
+	"nginx-ignition/internal/core/cache"
+	"nginx-ignition/internal/core/certificate"
+	"nginx-ignition/internal/core/common/configuration"
+	"nginx-ignition/internal/core/common/log"
+	"nginx-ignition/internal/core/host"
+	"nginx-ignition/internal/core/integration"
+	"nginx-ignition/internal/core/settings"
+	"nginx-ignition/internal/core/stream"
+)
+
+type Facade struct {
+	hostCommands     host.Commands
+	streamCommands   stream.Commands
+	cacheCommands    cache.Commands
+	settingsCommands settings.Commands
+	configuration    *configuration.Configuration
+	providers        []fileProvider
+}
+
+func newFacade(
+	hostCommands host.Commands,
+	streamCommands stream.Commands,
+	cacheCommands cache.Commands,
+	integrationCommands integration.Commands,
+	cfg *configuration.Configuration,
+	accessListCommands accesslist.Commands,
+	certificateCommands certificate.Commands,
+	settingsCommands settings.Commands,
+) *Facade {
+	providers := []fileProvider{
+		newAccessListFileProvider(accessListCommands),
+		newHostCertificateFileProvider(certificateCommands),
+		newHostConfigurationFileProvider(integrationCommands),
+		newHostRouteStaticResponseFileProvider(),
+		newHostRouteSourceCodeFileProvider(),
+		newMainConfigurationFileProvider(cfg),
+		newMimeTypesFileProvider(),
+		newStreamFileProvider(),
+		newGeoIPFileProvider(cfg),
+	}
+
+	return &Facade{
+		hostCommands:     hostCommands,
+		streamCommands:   streamCommands,
+		cacheCommands:    cacheCommands,
+		settingsCommands: settingsCommands,
+		providers:        providers,
+		configuration:    cfg,
+	}
+}
+
+func (f *Facade) GetConfigurationFiles(
+	ctx context.Context,
+	paths *Paths,
+	supportedFeatures *SupportedFeatures,
+) (
+	configFiles []File,
+	hosts []host.Host,
+	streams []stream.Stream,
+	err error,
+) {
+	enabledHosts, err := f.hostCommands.GetAllEnabled(ctx)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	enabledStreams, err := f.streamCommands.GetAllEnabled(ctx)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	enabledCaches, err := f.cacheCommands.GetAllInUse(ctx)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	cfg, err := f.settingsCommands.Get(ctx)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	providerCtx := &providerContext{
+		context:           ctx,
+		paths:             paths,
+		hosts:             enabledHosts,
+		streams:           enabledStreams,
+		caches:            enabledCaches,
+		supportedFeatures: supportedFeatures,
+		cfg:               cfg,
+	}
+
+	configFiles = make([]File, 0)
+	for _, provider := range f.providers {
+		files, err := provider.provide(providerCtx)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+
+		configFiles = append(configFiles, files...)
+	}
+
+	return configFiles, enabledHosts, enabledStreams, nil
+}
+
+func (f *Facade) ReplaceConfigurationFiles(
+	ctx context.Context,
+	supportedFeatures *SupportedFeatures,
+) ([]host.Host, []stream.Stream, error) {
+	configDir, err := f.configuration.Get("nginx-ignition.nginx.config-path")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	cleanPath := filepath.Clean(configDir)
+	toNginxPath := func(p string) string {
+		return filepath.ToSlash(p) + "/"
+	}
+
+	paths := &Paths{
+		Base:   toNginxPath(cleanPath),
+		Config: toNginxPath(filepath.Join(cleanPath, "config")),
+		Logs:   toNginxPath(filepath.Join(cleanPath, "logs")),
+		Cache:  toNginxPath(filepath.Join(cleanPath, "cache")),
+		Temp:   toNginxPath(filepath.Join(cleanPath, "temp")),
+	}
+
+	if err = f.createMissingFolders(paths); err != nil {
+		return nil, nil, err
+	}
+
+	configFiles, hosts, streams, err := f.GetConfigurationFiles(ctx, paths, supportedFeatures)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	log.Infof(
+		"Rebuilding nginx configuration files for %d hosts and %d streams",
+		len(hosts),
+		len(streams),
+	)
+	if err := f.emptyConfigFolder(paths); err != nil {
+		return nil, nil, err
+	}
+
+	for _, file := range configFiles {
+		if err := f.writeConfigFile(paths, file); err != nil {
+			return nil, nil, err
+		}
+	}
+
+	return hosts, streams, nil
+}
+
+func (f *Facade) createMissingFolders(paths *Paths) error {
+	for _, folderPath := range []string{paths.Config, paths.Logs, paths.Cache, paths.Temp} {
+		if _, err := os.Stat(folderPath); os.IsNotExist(err) {
+			if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
+				return fmt.Errorf("unable to create folder %s: %w", folderPath, err)
+			}
+		}
+	}
+
+	return nil
+}
+
+func (f *Facade) emptyConfigFolder(paths *Paths) error {
+	files, err := os.ReadDir(paths.Config)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		if err := os.RemoveAll(filepath.Join(paths.Config, file.Name())); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (f *Facade) writeConfigFile(paths *Paths, file File) error {
+	filePath := filepath.Join(paths.Config, file.Name)
+	if err := os.WriteFile(filePath, []byte(file.FormattedContents()), 0o644); err != nil {
+		return fmt.Errorf("unable to write file %s: %w", filePath, err)
+	}
+
+	return nil
+}

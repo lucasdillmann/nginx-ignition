@@ -1,4 +1,4 @@
-module dillmann.com.br/nginx-ignition/tools/i18n
+module nginx-ignition/tools/i18n
 
 go 1.27.0
 

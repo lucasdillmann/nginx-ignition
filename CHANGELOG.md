@@ -3,10 +3,10 @@
 ## 2.44.0
 
 - Added support for the NexDNS DNS provider for Let's Encrypt certificates
-- Updated Go to 1.27.0 and other internal dependencies
-- Simplification of the Go backend into a single root module
 - Upgrade of the nginx version from 1.31.3 to 1.31.4 (mainline) on the official Docker image
-- Security fixes and updates
+- Security fixes and updatesma
+- Updated Go to 1.27.0 and other internal dependencies
+- Simplification of the Go backend codebase into a single root module with a cmd + internal folder layout
 
 ## 2.43.0
 

@@ -26,7 +26,7 @@ contents:
       mode: 0644
       owner: root
       group: root
-  - src: "database/common/migrations/scripts/"
+  - src: "internal/database/common/migrations/scripts/"
     dst: "/opt/nginx-ignition/migrations/"
     type: tree
     file_info:

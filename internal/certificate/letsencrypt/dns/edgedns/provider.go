@@ -1,0 +1,106 @@
+package edgedns
+
+import (
+	"context"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/edgedns"
+
+	"nginx-ignition/internal/certificate/letsencrypt/dns"
+	"nginx-ignition/internal/core/common/dynamicfields"
+	"nginx-ignition/internal/core/common/i18n"
+)
+
+//nolint:gosec
+const (
+	hostFieldID         = "edgeDnsHost"
+	clientTokenFieldID  = "edgeDnsClientToken"
+	clientSecretFieldID = "edgeDnsClientSecret"
+	accessTokenFieldID  = "edgeDnsAccessToken"
+	accountKeyFieldID   = "edgeDnsAccountKey"
+)
+
+type Provider struct{}
+
+func (p *Provider) ID() string { return "EDGEDNS" }
+
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEdgednsName)
+}
+
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
+		{
+			ID:          hostFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsEdgednsEdgegridHost),
+			Required:    true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+		{
+			ID: clientTokenFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsEdgednsEdgegridClientToken,
+			),
+			Required:  true,
+			Sensitive: true,
+			Type:      dynamicfields.SingleLineTextType,
+		},
+		{
+			ID: clientSecretFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsEdgednsEdgegridClientSecret,
+			),
+			Required:  true,
+			Sensitive: true,
+			Type:      dynamicfields.SingleLineTextType,
+		},
+		{
+			ID: accessTokenFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsEdgednsEdgegridAccessToken,
+			),
+			Required:  true,
+			Sensitive: true,
+			Type:      dynamicfields.SingleLineTextType,
+		},
+		{
+			ID: accountKeyFieldID,
+			Description: i18n.M(
+				ctx,
+				i18n.K.CertificateLetsencryptDnsEdgednsEdgegridAccountKey,
+			),
+			Required: true,
+			Type:     dynamicfields.SingleLineTextType,
+		},
+	})
+}
+
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
+	host, _ := parameters[hostFieldID].(string)
+	clientToken, _ := parameters[clientTokenFieldID].(string)
+	clientSecret, _ := parameters[clientSecretFieldID].(string)
+	accessToken, _ := parameters[accessTokenFieldID].(string)
+	accountKey, _ := parameters[accountKeyFieldID].(string)
+
+	cfg := edgedns.NewDefaultConfig()
+	cfg.Config = &edgegrid.Config{
+		Host:         host,
+		ClientToken:  clientToken,
+		ClientSecret: clientSecret,
+		AccessToken:  accessToken,
+		AccountKey:   accountKey,
+	}
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+
+	return edgedns.NewDNSProviderConfig(cfg)
+}

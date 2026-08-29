@@ -1,0 +1,37 @@
+package host
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+
+	"nginx-ignition/internal/api/common/converter"
+	"nginx-ignition/internal/core/host"
+)
+
+type updateHandler struct {
+	commands host.Commands
+}
+
+func (h updateHandler) handle(ctx *gin.Context) {
+	payload := &hostRequestDTO{}
+	if err := ctx.BindJSON(payload); err != nil {
+		panic(err)
+	}
+
+	id, err := uuid.Parse(ctx.Param("id"))
+	if err != nil || id == uuid.Nil {
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+
+	domainModel := converter.Wrap(ctx.Request.Context(), toDomain, payload)
+	domainModel.ID = id
+
+	if err = h.commands.Save(ctx.Request.Context(), domainModel); err != nil {
+		panic(err)
+	}
+
+	ctx.Status(http.StatusNoContent)
+}
