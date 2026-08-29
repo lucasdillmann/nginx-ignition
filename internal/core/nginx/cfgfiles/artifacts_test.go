@@ -5,13 +5,13 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/accesslist"
-	"nginx-ignition/internal/core/binding"
-	"nginx-ignition/internal/core/cache"
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/host"
-	"nginx-ignition/internal/core/settings"
-	"nginx-ignition/internal/core/stream"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/cache"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/stream"
 )
 
 func newPaths() *Paths {

@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
 )
 
 var geoIPReleasesURL = "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases?per_page=1&page=0"

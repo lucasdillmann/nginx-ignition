@@ -9,10 +9,10 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect"
 
-	"nginx-ignition/internal/core/common/pagination"
-	"nginx-ignition/internal/core/user"
-	"nginx-ignition/internal/database/common/constants"
-	"nginx-ignition/internal/database/common/database"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/constants"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/database"
 )
 
 type repository struct {

@@ -3,7 +3,7 @@ package cache
 import (
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/cache"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/cache"
 )
 
 func newCache() *cache.Cache {

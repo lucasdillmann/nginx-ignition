@@ -6,9 +6,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/common/coreerror"
-	"nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/coreerror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
 )
 
 type service struct {

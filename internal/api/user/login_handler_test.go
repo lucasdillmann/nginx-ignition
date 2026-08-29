@@ -11,9 +11,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"nginx-ignition/internal/api/common/authorization"
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/authorization"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/user"
 )
 
 func init() {

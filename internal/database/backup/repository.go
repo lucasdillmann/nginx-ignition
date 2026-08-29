@@ -8,9 +8,9 @@ import (
 
 	"github.com/JCoupalK/go-pgdump"
 
-	"nginx-ignition/internal/core/backup"
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/database/common/database"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/backup"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/database"
 )
 
 type repository struct {

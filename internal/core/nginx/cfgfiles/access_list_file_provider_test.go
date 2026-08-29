@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"nginx-ignition/internal/core/accesslist"
-	"nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
 )
 
 func Test_accessListFileProvider(t *testing.T) {

@@ -1,21 +1,21 @@
 package core
 
 import (
-	"nginx-ignition/internal/core/accesslist"
-	"nginx-ignition/internal/core/backup"
-	"nginx-ignition/internal/core/binding"
-	"nginx-ignition/internal/core/cache"
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/common/broadcast"
-	"nginx-ignition/internal/core/common/container"
-	"nginx-ignition/internal/core/common/scheduler"
-	"nginx-ignition/internal/core/host"
-	"nginx-ignition/internal/core/integration"
-	"nginx-ignition/internal/core/nginx"
-	"nginx-ignition/internal/core/settings"
-	"nginx-ignition/internal/core/stream"
-	"nginx-ignition/internal/core/user"
-	"nginx-ignition/internal/core/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/backup"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/cache"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/broadcast"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/container"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/scheduler"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/nginx"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/stream"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/vpn"
 )
 
 func Install() error {

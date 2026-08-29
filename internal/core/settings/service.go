@@ -3,8 +3,8 @@ package settings
 import (
 	"context"
 
-	"nginx-ignition/internal/core/binding"
-	"nginx-ignition/internal/core/common/scheduler"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/scheduler"
 )
 
 type service struct {

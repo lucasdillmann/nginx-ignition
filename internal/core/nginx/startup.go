@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"nginx-ignition/internal/core/common/lifecycle"
-	"nginx-ignition/internal/core/common/log"
-	"nginx-ignition/internal/core/common/retry"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/lifecycle"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/retry"
 )
 
 type startup struct {

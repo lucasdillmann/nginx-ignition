@@ -3,7 +3,7 @@ package certificate
 import (
 	"encoding/json"
 
-	"nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
 )
 
 func toDomain(model *certificateModel) (*certificate.Certificate, error) {

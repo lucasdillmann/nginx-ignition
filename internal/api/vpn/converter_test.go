@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	corevpn "nginx-ignition/internal/core/vpn"
+	corevpn "github.com/lucasdillmann/nginx-ignition/internal/core/vpn"
 )
 
 func Test_toDTO(t *testing.T) {

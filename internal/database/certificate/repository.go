@@ -8,10 +8,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/common/pagination"
-	"nginx-ignition/internal/database/common/constants"
-	"nginx-ignition/internal/database/common/database"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/constants"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/database"
 )
 
 const (

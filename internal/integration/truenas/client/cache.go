@@ -6,7 +6,7 @@ import (
 
 	"github.com/patrickmn/go-cache"
 
-	"nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
 )
 
 var (

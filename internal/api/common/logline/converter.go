@@ -1,7 +1,7 @@
 package logline
 
 import (
-	"nginx-ignition/internal/core/common/logline"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/logline"
 )
 
 func ToResponseDTOs(logLines []logline.LogLine) []ResponseDTO {

@@ -1,6 +1,6 @@
 package backup
 
-import "nginx-ignition/internal/core/backup"
+import "github.com/lucasdillmann/nginx-ignition/internal/core/backup"
 
 func newBackup() *backup.Backup {
 	return &backup.Backup{

@@ -1,19 +1,19 @@
 package database
 
 import (
-	"nginx-ignition/internal/core/common/container"
-	"nginx-ignition/internal/database/accesslist"
-	"nginx-ignition/internal/database/backup"
-	"nginx-ignition/internal/database/cache"
-	"nginx-ignition/internal/database/certificate"
-	"nginx-ignition/internal/database/common/database"
-	"nginx-ignition/internal/database/common/migrations"
-	"nginx-ignition/internal/database/host"
-	"nginx-ignition/internal/database/integration"
-	"nginx-ignition/internal/database/settings"
-	"nginx-ignition/internal/database/stream"
-	"nginx-ignition/internal/database/user"
-	"nginx-ignition/internal/database/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/container"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/backup"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/cache"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/database"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/migrations"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/stream"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/vpn"
 )
 
 func Install() error {

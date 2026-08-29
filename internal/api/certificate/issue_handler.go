@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/api/common/apierror"
-	"nginx-ignition/internal/api/common/converter"
-	"nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/apierror"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/converter"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
 )
 
 type issueHandler struct {

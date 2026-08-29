@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
 )
 
 func (m *processManager) isPidAlive(pid int64) bool {

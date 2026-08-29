@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"nginx-ignition/internal/core/nginx"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/nginx"
 )
 
 func Test_toTrafficStatsResponseDTO(t *testing.T) {

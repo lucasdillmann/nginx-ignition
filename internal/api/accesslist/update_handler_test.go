@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"nginx-ignition/internal/core/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/accesslist"
 )
 
 func init() {

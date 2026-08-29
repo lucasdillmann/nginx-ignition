@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"nginx-ignition/tools/i18n/reader"
-	"nginx-ignition/tools/i18n/validator"
-	"nginx-ignition/tools/i18n/writer"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/reader"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/validator"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/writer"
 )
 
 func main() {

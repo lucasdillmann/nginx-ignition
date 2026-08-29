@@ -1,7 +1,7 @@
 package i18n
 
 import (
-	"nginx-ignition/internal/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/i18n"
 )
 
 func newDictionary() i18n.Dictionary {

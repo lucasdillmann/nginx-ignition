@@ -8,17 +8,17 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/common/broadcast"
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/coreerror"
-	"nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/core/common/log"
-	"nginx-ignition/internal/core/common/logline"
-	"nginx-ignition/internal/core/host"
-	"nginx-ignition/internal/core/nginx/cfgfiles"
-	"nginx-ignition/internal/core/settings"
-	"nginx-ignition/internal/core/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/broadcast"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/coreerror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/logline"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/nginx/cfgfiles"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/vpn"
 )
 
 type service struct {

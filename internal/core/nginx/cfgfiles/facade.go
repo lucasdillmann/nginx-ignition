@@ -6,15 +6,15 @@ import (
 	"os"
 	"path/filepath"
 
-	"nginx-ignition/internal/core/accesslist"
-	"nginx-ignition/internal/core/cache"
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/log"
-	"nginx-ignition/internal/core/host"
-	"nginx-ignition/internal/core/integration"
-	"nginx-ignition/internal/core/settings"
-	"nginx-ignition/internal/core/stream"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/cache"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/stream"
 )
 
 type Facade struct {

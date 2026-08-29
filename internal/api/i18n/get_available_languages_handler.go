@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
 )
 
 type getAvailableLanguagesHandler struct {

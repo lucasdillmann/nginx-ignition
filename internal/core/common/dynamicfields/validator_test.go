@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"nginx-ignition/internal/core/common/validation"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/validation"
 )
 
 func Test_Validate(t *testing.T) {

@@ -3,7 +3,7 @@ package integration
 import (
 	"encoding/json"
 
-	"nginx-ignition/internal/core/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
 )
 
 func toDomain(model *integrationModel) (*integration.Integration, error) {

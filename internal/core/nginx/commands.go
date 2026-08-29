@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/common/logline"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/logline"
 )
 
 type LogSearch struct {

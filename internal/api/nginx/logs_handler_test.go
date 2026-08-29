@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	apilogline "nginx-ignition/internal/api/common/logline"
-	"nginx-ignition/internal/core/common/logline"
-	"nginx-ignition/internal/core/nginx"
+	apilogline "github.com/lucasdillmann/nginx-ignition/internal/api/common/logline"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/logline"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/nginx"
 )
 
 func init() {

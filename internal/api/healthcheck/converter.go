@@ -1,7 +1,7 @@
 package healthcheck
 
 import (
-	"nginx-ignition/internal/core/common/healthcheck"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/healthcheck"
 )
 
 func toDTO(status *healthcheck.Status) *statusDTO {

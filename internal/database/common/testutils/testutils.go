@@ -11,10 +11,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/log"
-	"nginx-ignition/internal/database/common/database"
-	"nginx-ignition/internal/database/common/migrations"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/database"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/migrations"
 )
 
 type TestExecutor func(*testing.T, *database.Database)

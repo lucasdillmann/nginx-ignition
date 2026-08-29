@@ -12,12 +12,12 @@ import (
 
 	acmelog "github.com/go-acme/lego/v5/log"
 
-	"nginx-ignition/internal/certificate/commons"
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/coreerror"
-	"nginx-ignition/internal/core/common/dynamicfields"
-	"nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/commons"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/coreerror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/dynamicfields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
 )
 
 const (

@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"nginx-ignition/internal/core/binding"
-	"nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/core/common/validation"
-	"nginx-ignition/internal/core/common/valuerange"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/validation"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/valuerange"
 )
 
 const (

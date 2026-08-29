@@ -3,7 +3,7 @@ package accesslist
 import (
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/accesslist"
 )
 
 type accessListRequestDTO struct {

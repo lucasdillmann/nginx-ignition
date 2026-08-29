@@ -3,8 +3,8 @@ package scheduler
 import (
 	"context"
 
-	"nginx-ignition/internal/core/common/lifecycle"
-	"nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/lifecycle"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
 )
 
 type shutdown struct {

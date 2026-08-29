@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/binding"
-	"nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
 )
 
 func toDomain(model *hostModel) (*host.Host, error) {

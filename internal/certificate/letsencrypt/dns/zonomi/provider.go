@@ -6,9 +6,9 @@ import (
 	"github.com/go-acme/lego/v5/challenge"
 	"github.com/go-acme/lego/v5/providers/dns/zonomi"
 
-	"nginx-ignition/internal/certificate/letsencrypt/dns"
-	"nginx-ignition/internal/core/common/dynamicfields"
-	"nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/letsencrypt/dns"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/dynamicfields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
 )
 
 //nolint:gosec

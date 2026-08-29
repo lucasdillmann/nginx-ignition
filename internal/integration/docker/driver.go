@@ -3,12 +3,12 @@ package docker
 import (
 	"context"
 
-	"nginx-ignition/internal/core/common/dynamicfields"
-	"nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/core/common/pagination"
-	"nginx-ignition/internal/core/integration"
-	"nginx-ignition/internal/integration/docker/fields"
-	"nginx-ignition/internal/integration/docker/resolver"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/dynamicfields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/integration/docker/fields"
+	"github.com/lucasdillmann/nginx-ignition/internal/integration/docker/resolver"
 )
 
 type Driver struct{}

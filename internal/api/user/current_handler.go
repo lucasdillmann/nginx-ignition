@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/api/common/authorization"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/authorization"
 )
 
 type currentHandler struct{}

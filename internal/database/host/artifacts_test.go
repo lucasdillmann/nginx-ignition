@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
-	"nginx-ignition/internal/core/binding"
-	"nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
 )
 
 func cleanup(ctx context.Context, t *testing.T, repo host.Repository) {

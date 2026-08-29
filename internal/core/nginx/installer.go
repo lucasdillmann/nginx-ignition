@@ -1,13 +1,13 @@
 package nginx
 
 import (
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/container"
-	"nginx-ignition/internal/core/host"
-	"nginx-ignition/internal/core/nginx/cfgfiles"
-	"nginx-ignition/internal/core/settings"
-	"nginx-ignition/internal/core/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/container"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/nginx/cfgfiles"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/vpn"
 )
 
 func Install() error {

@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 
-	"nginx-ignition/internal/core/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/user"
 )
 
 type Subject struct {

@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/settings"
-	"nginx-ignition/internal/database/common/database"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/database"
 )
 
 type repository struct {

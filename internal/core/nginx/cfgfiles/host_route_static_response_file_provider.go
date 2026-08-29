@@ -3,7 +3,7 @@ package cfgfiles
 import (
 	"fmt"
 
-	"nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
 )
 
 type hostRouteStaticResponseFileProvider struct{}

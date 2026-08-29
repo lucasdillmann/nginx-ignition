@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/core/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
 )
 
 type availableDriversHandler struct {

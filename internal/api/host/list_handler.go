@@ -5,10 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/api/common/pagination"
-	"nginx-ignition/internal/core/common/log"
-	"nginx-ignition/internal/core/host"
-	"nginx-ignition/internal/core/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
 )
 
 type listHandler struct {

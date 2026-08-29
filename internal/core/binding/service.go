@@ -3,8 +3,8 @@ package binding
 import (
 	"context"
 
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/common/validation"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/validation"
 )
 
 type service struct {

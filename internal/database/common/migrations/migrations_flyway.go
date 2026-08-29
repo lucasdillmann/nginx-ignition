@@ -3,7 +3,7 @@ package migrations
 import (
 	"database/sql"
 
-	"nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
 )
 
 func (m *Migrations) migrateFromFlyway(db *sql.DB, driver string) error {

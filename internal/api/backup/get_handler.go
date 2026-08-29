@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/core/backup"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/backup"
 )
 
 type getHandler struct {

@@ -3,11 +3,11 @@ package host
 import (
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/api/common/authorization"
-	"nginx-ignition/internal/core/host"
-	"nginx-ignition/internal/core/nginx"
-	"nginx-ignition/internal/core/settings"
-	"nginx-ignition/internal/core/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/authorization"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/nginx"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/user"
 )
 
 func Install(

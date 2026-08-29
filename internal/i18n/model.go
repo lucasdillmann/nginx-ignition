@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/text/language"
 
-	"nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
 )
 
 type Dictionary interface {

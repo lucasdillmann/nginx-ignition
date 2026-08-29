@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 
-	"nginx-ignition/internal/core/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/accesslist"
 )
 
 type hostModel struct {

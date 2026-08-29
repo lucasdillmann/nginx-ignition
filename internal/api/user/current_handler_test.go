@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"nginx-ignition/internal/api/common/authorization"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/authorization"
 )
 
 func init() {

@@ -7,10 +7,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/common/pagination"
-	"nginx-ignition/internal/core/vpn"
-	"nginx-ignition/internal/database/common/constants"
-	"nginx-ignition/internal/database/common/database"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/constants"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/database"
 )
 
 type repository struct {

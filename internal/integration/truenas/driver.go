@@ -7,14 +7,14 @@ import (
 	"strconv"
 	"strings"
 
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/coreerror"
-	"nginx-ignition/internal/core/common/dynamicfields"
-	"nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/core/common/pagination"
-	"nginx-ignition/internal/core/integration"
-	"nginx-ignition/internal/integration/truenas/client"
-	"nginx-ignition/internal/integration/truenas/fields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/coreerror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/dynamicfields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/integration/truenas/client"
+	"github.com/lucasdillmann/nginx-ignition/internal/integration/truenas/fields"
 )
 
 type Driver struct {

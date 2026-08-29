@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 
-	"nginx-ignition/internal/core/common/lifecycle"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/lifecycle"
 )
 
 type startup struct {

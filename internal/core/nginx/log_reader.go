@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/logline"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/logline"
 )
 
 type logReader struct {

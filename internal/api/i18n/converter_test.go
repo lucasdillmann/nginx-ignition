@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/text/language"
 
-	"nginx-ignition/internal/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/i18n"
 )
 
 func Test_converter(t *testing.T) {

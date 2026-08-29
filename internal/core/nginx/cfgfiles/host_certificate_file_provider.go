@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/binding"
-	"nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
 )
 
 type hostCertificateFileProvider struct {

@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/api/common/dynamicfield"
-	"nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/dynamicfield"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
 )
 
 func toAvailableProviderResponse(

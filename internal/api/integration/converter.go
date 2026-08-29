@@ -3,8 +3,8 @@ package integration
 import (
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/api/common/dynamicfield"
-	"nginx-ignition/internal/core/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/dynamicfield"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
 )
 
 func toDTO(data *integration.Integration) *integrationResponse {

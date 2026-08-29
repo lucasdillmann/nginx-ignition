@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/core/nginx"
-	"nginx-ignition/internal/core/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/nginx"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
 )
 
 type metadataHandler struct {

@@ -5,13 +5,13 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/accesslist"
-	"nginx-ignition/internal/core/binding"
-	"nginx-ignition/internal/core/cache"
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/common/pagination"
-	"nginx-ignition/internal/core/integration"
-	"nginx-ignition/internal/core/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/cache"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/vpn"
 )
 
 type service struct {

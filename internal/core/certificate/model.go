@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/common/dynamicfields"
-	"nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/dynamicfields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
 )
 
 type Certificate struct {

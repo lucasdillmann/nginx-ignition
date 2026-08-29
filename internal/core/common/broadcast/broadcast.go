@@ -3,7 +3,7 @@ package broadcast
 import (
 	"context"
 
-	"nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
 )
 
 var channels = make(map[string]chan context.Context)

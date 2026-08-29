@@ -3,7 +3,7 @@ package binding
 import (
 	"context"
 
-	"nginx-ignition/internal/core/common/validation"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/validation"
 )
 
 type Commands interface {

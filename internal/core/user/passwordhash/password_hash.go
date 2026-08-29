@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"slices"
 
-	"nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
 )
 
 type PasswordHash struct {

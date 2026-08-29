@@ -7,9 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/api/common/apierror"
-	"nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/core/common/valuerange"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/apierror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/valuerange"
 )
 
 var pageSizeRange = valuerange.New(1, 1000)

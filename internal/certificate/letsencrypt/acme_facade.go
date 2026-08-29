@@ -16,9 +16,9 @@ import (
 	"github.com/google/uuid"
 	jsoniter "github.com/json-iterator/go"
 
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/common/coreerror"
-	"nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/coreerror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
 )
 
 func issueCertificate(

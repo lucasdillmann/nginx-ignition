@@ -15,8 +15,8 @@ import (
 
 	netbird "github.com/netbirdio/netbird/client/embed"
 
-	"nginx-ignition/internal/core/common/log"
-	"nginx-ignition/internal/core/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/vpn"
 )
 
 type netbirdEndpoint struct {

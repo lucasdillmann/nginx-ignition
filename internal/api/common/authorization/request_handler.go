@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/api/common/apierror"
-	"nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/apierror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
 )
 
 const (

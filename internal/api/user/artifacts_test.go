@@ -3,8 +3,8 @@ package user
 import (
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/common/pagination"
-	"nginx-ignition/internal/core/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/user"
 )
 
 func newUser() *user.User {

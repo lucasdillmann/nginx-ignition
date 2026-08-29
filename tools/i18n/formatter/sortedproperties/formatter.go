@@ -5,8 +5,8 @@ import (
 	"io"
 	"slices"
 
-	"nginx-ignition/tools/i18n/formatter"
-	"nginx-ignition/tools/i18n/reader"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/formatter"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/reader"
 )
 
 type sortedFormatter struct{}

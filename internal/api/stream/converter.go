@@ -1,7 +1,7 @@
 package stream
 
 import (
-	"nginx-ignition/internal/core/stream"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/stream"
 )
 
 func toDTO(input *stream.Stream) *streamResponseDTO {

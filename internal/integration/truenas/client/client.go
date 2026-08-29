@@ -1,8 +1,8 @@
 package client
 
 import (
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/integration/truenas/fields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/integration/truenas/fields"
 )
 
 type Client interface {

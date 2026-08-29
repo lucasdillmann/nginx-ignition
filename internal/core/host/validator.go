@@ -8,16 +8,16 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/accesslist"
-	"nginx-ignition/internal/core/binding"
-	"nginx-ignition/internal/core/cache"
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/common/constants"
-	"nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/core/common/validation"
-	"nginx-ignition/internal/core/common/valuerange"
-	"nginx-ignition/internal/core/integration"
-	"nginx-ignition/internal/core/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/cache"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/constants"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/validation"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/valuerange"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/vpn"
 )
 
 type validator struct {

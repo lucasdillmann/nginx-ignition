@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/stream"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/stream"
 )
 
 type deleteHandler struct {

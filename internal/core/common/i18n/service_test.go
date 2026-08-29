@@ -7,7 +7,7 @@ import (
 	"go.uber.org/mock/gomock"
 	"golang.org/x/text/language"
 
-	"nginx-ignition/internal/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/i18n"
 )
 
 func Test_service(t *testing.T) {

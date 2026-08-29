@@ -4,10 +4,10 @@ import (
 	"context"
 	"strings"
 
-	"nginx-ignition/internal/core/cache"
-	"nginx-ignition/internal/core/host"
-	"nginx-ignition/internal/core/settings"
-	"nginx-ignition/internal/core/stream"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/cache"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/stream"
 )
 
 type SupportType string

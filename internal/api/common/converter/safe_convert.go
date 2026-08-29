@@ -3,8 +3,8 @@ package converter
 import (
 	"context"
 
-	"nginx-ignition/internal/core/common/coreerror"
-	"nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/coreerror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
 )
 
 func Wrap[I, O any](ctx context.Context, converter func(I) O, input I) O {

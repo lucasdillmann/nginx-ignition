@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
 
 	"github.com/golang-migrate/migrate/v4"
 	migratordb "github.com/golang-migrate/migrate/v4/database"

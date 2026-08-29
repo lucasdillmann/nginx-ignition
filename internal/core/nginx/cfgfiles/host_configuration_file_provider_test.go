@@ -9,12 +9,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"nginx-ignition/internal/core/binding"
-	"nginx-ignition/internal/core/cache"
-	"nginx-ignition/internal/core/common/coreerror"
-	"nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/core/host"
-	"nginx-ignition/internal/core/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/cache"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/coreerror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
 )
 
 func Test_hostConfigurationFileProvider(t *testing.T) {

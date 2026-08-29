@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/user"
 )
 
 type PermissionResolver func(permissions user.Permissions) user.AccessLevel

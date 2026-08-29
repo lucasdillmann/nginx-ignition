@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
 )
 
 func newCertificate() *certificate.Certificate {

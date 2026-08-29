@@ -3,9 +3,9 @@ package certificate
 import (
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/api/common/authorization"
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/authorization"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/user"
 )
 
 func Install(router *gin.Engine, commands certificate.Commands, authorizer *authorization.ABAC) {

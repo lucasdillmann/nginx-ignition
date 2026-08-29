@@ -6,12 +6,12 @@ import (
 	"os"
 	"strings"
 
-	"nginx-ignition/tools/i18n/formatter"
-	"nginx-ignition/tools/i18n/formatter/golangdictionary"
-	"nginx-ignition/tools/i18n/formatter/golangkeys"
-	"nginx-ignition/tools/i18n/formatter/sortedproperties"
-	"nginx-ignition/tools/i18n/formatter/typescriptkeys"
-	"nginx-ignition/tools/i18n/reader"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/formatter"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/formatter/golangdictionary"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/formatter/golangkeys"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/formatter/sortedproperties"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/formatter/typescriptkeys"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/reader"
 )
 
 func Write(propertiesFiles []reader.PropertiesFile) error {

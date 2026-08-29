@@ -3,8 +3,8 @@ package accesslist
 import (
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/accesslist"
-	"nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
 )
 
 func newAccessListRequestDTO() accessListRequestDTO {

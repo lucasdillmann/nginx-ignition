@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/text/language"
 
-	core18n "nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/i18n"
+	core18n "github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/i18n"
 )
 
 type getDictionaryHandler struct {

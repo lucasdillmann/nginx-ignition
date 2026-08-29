@@ -1,4 +1,4 @@
-module nginx-ignition/tools
+module github.com/lucasdillmann/nginx-ignition/tools
 
 go 1.27.0
 

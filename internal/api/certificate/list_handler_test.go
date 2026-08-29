@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"nginx-ignition/internal/api/common/pagination"
-	"nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
 )
 
 func init() {

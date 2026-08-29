@@ -8,10 +8,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 
-	"nginx-ignition/internal/core/accesslist"
-	"nginx-ignition/internal/core/common/pagination"
-	"nginx-ignition/internal/database/common/constants"
-	"nginx-ignition/internal/database/common/database"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/constants"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/database"
 )
 
 const (

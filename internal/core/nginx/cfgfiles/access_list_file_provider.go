@@ -6,7 +6,7 @@ import (
 
 	"github.com/ncw/pwhash/apr1_crypt"
 
-	"nginx-ignition/internal/core/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/accesslist"
 )
 
 type accessListFileProvider struct {

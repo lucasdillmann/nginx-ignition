@@ -140,9 +140,9 @@ formatters:
   settings:
     goimports:
       local-prefixes:
-        - nginx-ignition
+        - github.com/lucasdillmann/nginx-ignition
     gofumpt:
-      module-path: nginx-ignition
+      module-path: github.com/lucasdillmann/nginx-ignition
       extra:
         group-params: true
   exclusions:

@@ -13,8 +13,8 @@ import (
 	"tailscale.com/client/local"
 	"tailscale.com/tsnet"
 
-	"nginx-ignition/internal/core/common/log"
-	"nginx-ignition/internal/core/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/vpn"
 )
 
 type tailnetEndpoint struct {

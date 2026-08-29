@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 
-	"nginx-ignition/internal/core/common/healthcheck"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/healthcheck"
 )
 
 type healthCheckProvider struct {

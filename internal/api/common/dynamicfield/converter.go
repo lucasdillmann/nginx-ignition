@@ -1,6 +1,6 @@
 package dynamicfield
 
-import "nginx-ignition/internal/core/common/dynamicfields"
+import "github.com/lucasdillmann/nginx-ignition/internal/core/common/dynamicfields"
 
 func ToResponse(fields []dynamicfields.DynamicField) []Response {
 	response := make([]Response, len(fields))

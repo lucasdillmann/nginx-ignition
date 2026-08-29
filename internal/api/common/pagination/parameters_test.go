@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
-	"nginx-ignition/internal/api/common/apierror"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/apierror"
 )
 
 func init() {

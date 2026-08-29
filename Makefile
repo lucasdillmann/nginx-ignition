@@ -4,7 +4,7 @@ VERSION ?= 0.0.0
 PR_ID ?= 0
 BUILDKIT_CACHE ?= build/cache/docker
 SNAPSHOT_TAG_SUFFIX := $(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,$(VERSION)-snapshot)
-LDFLAGS := -X 'nginx-ignition/internal/core/common/version.Number=$(VERSION)'
+LDFLAGS := -X 'github.com/lucasdillmann/nginx-ignition/internal/core/common/version.Number=$(VERSION)'
 
 .backend-prerequisites:
 	go mod tidy

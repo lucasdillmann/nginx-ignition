@@ -3,7 +3,7 @@ package user
 import (
 	"strings"
 
-	"nginx-ignition/internal/core/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/user"
 )
 
 func toDomain(model *userModel) user.User {

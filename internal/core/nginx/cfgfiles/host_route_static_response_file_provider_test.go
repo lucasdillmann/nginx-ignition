@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	"nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
 )
 
 func Test_hostRouteStaticResponseFileProvider(t *testing.T) {

@@ -7,12 +7,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/pquerna/otp/totp"
 
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/coreerror"
-	"nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/core/common/pagination"
-	"nginx-ignition/internal/core/common/validation"
-	"nginx-ignition/internal/core/user/passwordhash"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/coreerror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/validation"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/user/passwordhash"
 )
 
 type service struct {

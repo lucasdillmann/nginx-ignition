@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"nginx-ignition/internal/core/binding"
-	"nginx-ignition/internal/core/common/scheduler"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/scheduler"
 )
 
 func Test_service(t *testing.T) {

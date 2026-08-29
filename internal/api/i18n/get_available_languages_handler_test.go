@@ -11,8 +11,8 @@ import (
 	"go.uber.org/mock/gomock"
 	"golang.org/x/text/language"
 
-	corei18n "nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/i18n"
+	corei18n "github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/i18n"
 )
 
 func init() {

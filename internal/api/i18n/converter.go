@@ -3,7 +3,7 @@ package i18n
 import (
 	"golang.org/x/text/language"
 
-	"nginx-ignition/internal/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/i18n"
 )
 
 func toDictionaryDTO(dictionary i18n.Dictionary) dictionaryResponseDTO {

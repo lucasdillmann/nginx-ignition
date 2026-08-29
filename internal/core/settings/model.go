@@ -1,7 +1,7 @@
 package settings
 
 import (
-	"nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
 )
 
 type Settings struct {

@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/text/language"
 
-	"nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
 )
 
 const maximumLanguageTags = 10

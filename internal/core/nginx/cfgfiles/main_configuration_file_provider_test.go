@@ -7,11 +7,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	"nginx-ignition/internal/core/cache"
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/host"
-	"nginx-ignition/internal/core/settings"
-	"nginx-ignition/internal/core/stream"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/cache"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/stream"
 )
 
 func Test_mainConfigurationFileProvider(t *testing.T) {

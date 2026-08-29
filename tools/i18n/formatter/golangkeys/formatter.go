@@ -1,7 +1,7 @@
 package golangkeys
 
 import (
-	"nginx-ignition/tools/i18n/formatter"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/formatter"
 )
 
 const template = `package i18n

@@ -1,6 +1,6 @@
 package nginx
 
-import "nginx-ignition/internal/core/nginx"
+import "github.com/lucasdillmann/nginx-ignition/internal/core/nginx"
 
 func toTrafficStatsResponseDTO(stats *nginx.Stats) trafficStatsResponseDTO {
 	if stats == nil {

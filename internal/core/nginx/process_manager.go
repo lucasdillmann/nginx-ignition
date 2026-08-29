@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
 )
 
 type processManager struct {

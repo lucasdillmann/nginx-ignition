@@ -3,7 +3,7 @@ package integration
 import (
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
 )
 
 func newIntegration() *integration.Integration {

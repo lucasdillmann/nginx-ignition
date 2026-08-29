@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 	"go.uber.org/mock/gomock"
 
-	"nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
 )
 
 func newHTTPBinding() *Binding {

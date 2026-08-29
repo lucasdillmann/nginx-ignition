@@ -3,7 +3,7 @@ package vpn
 import (
 	"encoding/json"
 
-	"nginx-ignition/internal/core/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/vpn"
 )
 
 func toDomain(model *vpnModel) (*vpn.VPN, error) {

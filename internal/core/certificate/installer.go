@@ -1,7 +1,7 @@
 package certificate
 
 import (
-	"nginx-ignition/internal/core/common/container"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/container"
 )
 
 func Install() error {

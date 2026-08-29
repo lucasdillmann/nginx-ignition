@@ -7,9 +7,9 @@ import (
 	"syscall"
 	"time"
 
-	"nginx-ignition/internal/core/common/container"
-	"nginx-ignition/internal/core/common/lifecycle"
-	"nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/container"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/lifecycle"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
 )
 
 func Start() error {

@@ -3,7 +3,7 @@ package host
 import (
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
 )
 
 type CodeLanguage string

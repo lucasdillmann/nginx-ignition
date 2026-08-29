@@ -7,9 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/api/common/logline"
-	"nginx-ignition/internal/core/common/valuerange"
-	"nginx-ignition/internal/core/nginx"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/logline"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/valuerange"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/nginx"
 )
 
 type logsHandler struct {

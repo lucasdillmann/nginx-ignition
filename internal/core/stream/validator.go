@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"nginx-ignition/internal/core/common/constants"
-	"nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/core/common/validation"
-	"nginx-ignition/internal/core/common/valuerange"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/constants"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/validation"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/valuerange"
 )
 
 var portRange = valuerange.New(1, 65535)

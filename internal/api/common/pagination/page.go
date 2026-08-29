@@ -1,6 +1,6 @@
 package pagination
 
-import "nginx-ignition/internal/core/common/pagination"
+import "github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
 
 type PageDTO[T any] struct {
 	Contents   []T `json:"contents"`

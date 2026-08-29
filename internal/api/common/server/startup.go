@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/lifecycle"
-	"nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/lifecycle"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
 )
 
 type startup struct {

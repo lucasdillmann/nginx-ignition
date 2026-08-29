@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"nginx-ignition/internal/database/common/database"
-	"nginx-ignition/internal/database/common/testutils"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/database"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/common/testutils"
 )
 
 func Test_Repository(t *testing.T) {

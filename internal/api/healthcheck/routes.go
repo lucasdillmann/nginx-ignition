@@ -5,10 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"nginx-ignition/internal/api/common/authorization"
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/healthcheck"
-	"nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/authorization"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/healthcheck"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
 )
 
 const (

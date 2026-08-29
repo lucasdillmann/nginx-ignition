@@ -3,7 +3,7 @@ package dynamicfields
 import (
 	"context"
 
-	"nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
 )
 
 func newDynamicField(ctx context.Context) *DynamicField {

@@ -11,11 +11,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/api/common/apierror"
-	"nginx-ignition/internal/core/common/configuration"
-	"nginx-ignition/internal/core/common/i18n"
-	"nginx-ignition/internal/core/common/log"
-	"nginx-ignition/internal/core/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/apierror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/user"
 )
 
 const (

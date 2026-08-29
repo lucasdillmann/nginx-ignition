@@ -1,9 +1,9 @@
 package main
 
 import (
-	"nginx-ignition/internal/application"
-	"nginx-ignition/internal/core/common/log"
-	"nginx-ignition/internal/core/common/version"
+	"github.com/lucasdillmann/nginx-ignition/internal/application"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/version"
 )
 
 func main() {

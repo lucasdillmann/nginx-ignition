@@ -3,8 +3,8 @@ package settings
 import (
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/binding"
-	"nginx-ignition/internal/core/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
 )
 
 type settingsDTO struct {

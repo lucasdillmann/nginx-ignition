@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
-	applog "nginx-ignition/internal/core/common/log"
+	applog "github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
 )
 
 type logAdapter struct {

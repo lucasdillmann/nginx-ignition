@@ -3,9 +3,9 @@ package commons
 import (
 	"context"
 
-	"nginx-ignition/internal/core/certificate"
-	"nginx-ignition/internal/core/common/dynamicfields"
-	"nginx-ignition/internal/core/common/validation"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/dynamicfields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/validation"
 )
 
 type DomainRules interface {

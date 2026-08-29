@@ -3,7 +3,7 @@ package vpn
 import (
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/vpn"
 )
 
 func newVPN() *vpn.VPN {

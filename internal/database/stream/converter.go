@@ -3,7 +3,7 @@ package stream
 import (
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/stream"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/stream"
 )
 
 func toDomain(model *streamModel) stream.Stream {

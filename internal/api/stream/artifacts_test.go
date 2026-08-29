@@ -3,8 +3,8 @@ package stream
 import (
 	"github.com/google/uuid"
 
-	"nginx-ignition/internal/core/common/pagination"
-	"nginx-ignition/internal/core/stream"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/stream"
 )
 
 func newStream() *stream.Stream {

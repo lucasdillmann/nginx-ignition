@@ -1,7 +1,7 @@
 package coreerror
 
 import (
-	"nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
 )
 
 type CoreError struct {
