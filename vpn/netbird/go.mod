@@ -97,7 +97,7 @@ require (
 	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/moby/go-archive v0.2.0 // indirect
 	github.com/oapi-codegen/runtime v1.1.2 // indirect
-	github.com/onsi/gomega v1.42.1 // indirect
+	github.com/onsi/gomega v1.43.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/petermattis/goid v0.0.0-20260330135022-df67b199bc81 // indirect
 	github.com/pion/dtls/v2 v2.2.12 // indirect

@@ -119,7 +119,7 @@ require (
 	github.com/liquidweb/liquidweb-go v1.6.4 // indirect
 	github.com/mattn/go-colorable v0.1.15 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
-	github.com/maxatome/go-testdeep v1.14.0 // indirect
+	github.com/maxatome/go-testdeep v1.16.0 // indirect
 	github.com/miekg/dns v1.1.73 // indirect
 	github.com/mimuret/golang-iij-dpf v0.9.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -142,8 +142,8 @@ require (
 	github.com/nxadm/tail v1.4.11 // indirect
 	github.com/nzdjb/go-metaname v1.0.0 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
-	github.com/onsi/ginkgo/v2 v2.32.0 // indirect
-	github.com/onsi/gomega v1.42.1 // indirect
+	github.com/onsi/ginkgo/v2 v2.32.1 // indirect
+	github.com/onsi/gomega v1.43.0 // indirect
 	github.com/openshift/gssapi v0.0.0-20260819120910-d6b72669a11e // indirect
 	github.com/ovh/go-ovh v1.9.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
