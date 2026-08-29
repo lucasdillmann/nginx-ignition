@@ -145,7 +145,7 @@ clean:
 	fi
 
 update-dependencies: .backend-prerequisites .frontend-prerequisites .update-nginx-docker-image
-	go get -u ./...
+	go get -u ./api/... ./application/... ./certificate/... ./core/... ./database/... ./i18n/... ./integration/... ./vpn/...
 	go get -u github.com/netbirdio/netbird@latest
 	go get -u tailscale.com@latest
 	go mod tidy
