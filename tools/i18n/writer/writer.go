@@ -2,10 +2,10 @@ package writer
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/core/common/log"
 	"dillmann.com.br/nginx-ignition/tools/i18n/formatter"
 	"dillmann.com.br/nginx-ignition/tools/i18n/formatter/golangdictionary"
 	"dillmann.com.br/nginx-ignition/tools/i18n/formatter/golangkeys"
@@ -68,6 +68,6 @@ func writeFile(
 		return err
 	}
 
-	log.Infof("i18n code file written: %s", path)
+	log.Printf("i18n code file written: %s", path)
 	return nil
 }

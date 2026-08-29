@@ -7,7 +7,7 @@ SNAPSHOT_TAG_SUFFIX := $(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,$(VERS
 LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSION)'
 
 .backend-prerequisites:
-	go work sync
+	go mod tidy
 
 .frontend-prerequisites:
 	cd frontend/ && pnpm install
@@ -16,20 +16,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	cd frontend/ && pnpm run check
 
 .backend-lint: .backend-prerequisites .backend-test-mocks
-	go tool golangci-lint run \
-		./api/... \
-		./application/... \
-		./certificate/commons/... \
-		./certificate/custom/... \
-		./certificate/external/... \
-		./certificate/letsencrypt/... \
-		./certificate/selfsigned/... \
-		./core/... \
-		./database/... \
-		./integration/docker/... \
-		./integration/truenas/... \
-		./vpn/netbird/... \
-		./vpn/tailscale/...
+	go tool -modfile=tools/go.mod golangci-lint run ./...
 
 .frontend-build: .frontend-prerequisites .generate-i18n-files
 	cd frontend/ && pnpm run build
@@ -45,7 +32,7 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o build/$(DIR)/$(ARCH)$(EXT) application/main.go
 
 .generate-i18n-files:
-	go run ./tools/i18n/
+	cd tools/i18n && go mod tidy && go run .
 
 .build-release-docker-image:
 	mkdir -p $(BUILDKIT_CACHE)
@@ -107,34 +94,8 @@ LDFLAGS := -X 'dillmann.com.br/nginx-ignition/core/common/version.Number=$(VERSI
 	cd frontend/ && pnpm exec prettier --write .
 
 .backend-format: .backend-prerequisites .backend-test-mocks
-	go tool fieldalignment -fix \
-		./api/... \
-		./application/... \
-		./certificate/commons/... \
-		./certificate/custom/... \
-		./certificate/external/... \
-		./certificate/letsencrypt/... \
-		./certificate/selfsigned/... \
-		./core/... \
-		./database/... \
-		./integration/docker/... \
-		./integration/truenas/... \
-		./vpn/netbird/... \
-		./vpn/tailscale/...
-	go tool golangci-lint run --fix \
-		./api/... \
-		./application/... \
-		./certificate/commons/... \
-		./certificate/custom/... \
-		./certificate/external/... \
-		./certificate/letsencrypt/... \
-		./certificate/selfsigned/... \
-		./core/... \
-		./database/... \
-		./integration/docker/... \
-		./integration/truenas/... \
-		./vpn/netbird/... \
-		./vpn/tailscale/...
+	go tool -modfile=tools/go.mod fieldalignment -fix ./...
+	go tool -modfile=tools/go.mod golangci-lint run --fix ./...
 
 clean:
 	@find api application certificate core database i18n integration vpn -type f -name "*.mock.go" -delete
@@ -155,7 +116,7 @@ clean:
 		for i in $$interfaces; do \
 			mock_names_flag="$$mock_names_flag,$$i=Mocked$$i"; \
 		done; \
-		go tool go.uber.org/mock/mockgen \
+		go tool -modfile=tools/go.mod go.uber.org/mock/mockgen \
 			-source "$$file" \
 			-package "$$package_name" \
 			-destination "$$mock_file" \
@@ -164,20 +125,7 @@ clean:
 	done
 
 .backend-test: .backend-test-mocks .generate-i18n-files
-	go test -coverprofile=coverage.out -covermode=atomic \
-		./api/... \
-		./application/... \
-		./certificate/commons/... \
-		./certificate/custom/... \
-		./certificate/external/... \
-		./certificate/letsencrypt/... \
-		./certificate/selfsigned/... \
-		./core/... \
-		./database/... \
-		./integration/docker/... \
-		./integration/truenas/... \
-		./vpn/netbird/... \
-		./vpn/tailscale/...
+	go test -coverprofile=coverage.out -covermode=atomic ./...
 
 .update-nginx-docker-image:
 	@LATEST=$$(curl -fsSL https://raw.githubusercontent.com/docker-library/official-images/master/library/nginx | \
@@ -197,22 +145,12 @@ clean:
 	fi
 
 update-dependencies: .backend-prerequisites .frontend-prerequisites .update-nginx-docker-image
-	cd api && go get -u ./...
-	cd application && go get -u ./...
-	cd certificate/commons && go get -u ./...
-	cd certificate/custom && go get -u ./...
-	cd certificate/external && go get -u ./...
-	cd certificate/letsencrypt && go get -u ./...
-	cd certificate/selfsigned && go get -u ./...
-	cd core && go get -u ./...
-	cd database && go get -u ./...
-	cd integration/docker && go get -u ./...
-	cd integration/truenas && go get -u ./...
-	cd tools && go get -u ./...
-	cd i18n && go get -u ./...
-	cd vpn/netbird && go get -u github.com/netbirdio/netbird@latest
-	cd vpn/tailscale && go get -u tailscale.com@latest
-	go work sync
+	go get -u ./...
+	go get -u github.com/netbirdio/netbird@latest
+	go get -u tailscale.com@latest
+	go mod tidy
+	cd tools && go get -u ./... && go mod tidy
+	cd tools/i18n && go get -u ./... && go mod tidy
 	cd frontend && pnpm update
 
 lint: .frontend-lint .backend-lint

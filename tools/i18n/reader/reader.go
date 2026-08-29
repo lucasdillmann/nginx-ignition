@@ -3,14 +3,13 @@ package reader
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-
-	"dillmann.com.br/nginx-ignition/core/common/log"
 )
 
 func ReadPropertiesFiles(baseFolder string) ([]PropertiesFile, error) {
@@ -41,7 +40,7 @@ func ReadPropertiesFiles(baseFolder string) ([]PropertiesFile, error) {
 			return nil, err
 		}
 
-		log.Infof("i18n properties file foud for %s: %s", propertiesFile.LanguageTag, fullPath)
+		log.Printf("i18n properties file foud for %s: %s", propertiesFile.LanguageTag, fullPath)
 		output = append(output, propertiesFile)
 	}
 
