@@ -146,6 +146,7 @@ import (
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/netcup"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/netlify"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/netnod"
+	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nexdns"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/ngenix"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nicmanager"
 	"dillmann.com.br/nginx-ignition/certificate/letsencrypt/dns/nicru"
@@ -367,6 +368,7 @@ var providers = []dns.Provider{
 	&netcup.Provider{},
 	&netlify.Provider{},
 	&netnod.Provider{},
+	&nexdns.Provider{},
 	&ngenix.Provider{},
 	&nicmanager.Provider{},
 	&nicru.Provider{},
