@@ -38,6 +38,7 @@ linters:
     goconst:
       min-len: 3
       min-occurrences: 3
+      ignore-map-keys: true
     gocyclo:
       min-complexity: 20
     gosec:
@@ -81,6 +82,12 @@ linters:
         - name: function-result-limit
           disabled: true
         - name: max-public-structs
+          disabled: true
+        - name: use-slices-sort
+          disabled: true
+        - name: epoch-naming
+          disabled: true
+        - name: package-naming
           disabled: true
         - name: exported
           arguments:
@@ -134,7 +141,8 @@ formatters:
       local-prefixes:
         - dillmann.com.br/nginx-ignition
     gofumpt:
-      extra-rules: true
+      extra:
+        group-params: true
   exclusions:
     generated: lax
     paths:

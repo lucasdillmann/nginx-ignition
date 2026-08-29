@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.44.0
+
+- Updated Go to 1.27.0 and other internal dependencies
+- Upgrade of the nginx version from 1.31.3 to 1.31.4 (mainline) on the official Docker image
+- Security fixes and updates
+
 ## 2.43.0
 
 - Upgrade of the nginx version from 1.31.2 to 1.31.3 (mainline)
