@@ -1,0 +1,34 @@
+package user
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+)
+
+type Commands interface {
+	Authenticate(
+		ctx context.Context,
+		username, password, code string,
+	) (AuthenticationOutcome, *User, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	Get(ctx context.Context, id uuid.UUID) (*User, error)
+	GetCount(ctx context.Context) (int, error)
+	GetStatus(ctx context.Context, id uuid.UUID) (bool, error)
+	List(
+		ctx context.Context,
+		pageSize, pageNumber int,
+		searchTerms *string,
+	) (*pagination.Page[User], error)
+	Save(ctx context.Context, user *SaveRequest, currentUserID *uuid.UUID) error
+	FinishOnboarding(ctx context.Context, request *SaveRequest) error
+	UpdatePassword(ctx context.Context, id uuid.UUID, oldPassword, newPassword string) error
+	UpdateProfile(ctx context.Context, id uuid.UUID, name, username string) error
+	OnboardingCompleted(ctx context.Context) (bool, error)
+	GetTOTPStatus(ctx context.Context, id uuid.UUID) (bool, error)
+	DisableTOTP(ctx context.Context, id uuid.UUID) error
+	EnableTOTP(ctx context.Context, id uuid.UUID) (string, error)
+	ActivateTOTP(ctx context.Context, id uuid.UUID, code string) (bool, error)
+}

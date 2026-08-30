@@ -75,7 +75,7 @@ RUN mkdir -p opt/nginx-ignition/data \
              usr/lib/nginx/modules \
              usr/share/lua/5.1
 
-COPY ./database/common/migrations/scripts /opt/nginx-ignition/migrations
+COPY ./internal/database/common/migrations/scripts /opt/nginx-ignition/migrations
 COPY ./frontend/build /opt/nginx-ignition/frontend
 COPY build/${TARGETPLATFORM} /opt/nginx-ignition/nginx-ignition
 

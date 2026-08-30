@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"dillmann.com.br/nginx-ignition/tools/i18n/reader"
+	"github.com/lucasdillmann/nginx-ignition/tools/i18n/reader"
 )
 
 var (

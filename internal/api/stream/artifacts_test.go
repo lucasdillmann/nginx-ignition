@@ -1,0 +1,55 @@
+package stream
+
+import (
+	"github.com/google/uuid"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/stream"
+)
+
+func newStream() *stream.Stream {
+	return &stream.Stream{
+		ID:      uuid.New(),
+		Name:    "Test Stream",
+		Type:    stream.SimpleType,
+		Enabled: true,
+		Binding: stream.Address{
+			Address:  "0.0.0.0",
+			Port:     new(80),
+			Protocol: stream.TCPProtocol,
+		},
+		DefaultBackend: stream.Backend{
+			Address: stream.Address{
+				Address:  "127.0.0.1",
+				Port:     new(8080),
+				Protocol: stream.TCPProtocol,
+			},
+		},
+	}
+}
+
+func newStreamRequest() streamRequestDTO {
+	return streamRequestDTO{
+		Name:    new("Test Stream"),
+		Type:    new(string(stream.SimpleType)),
+		Enabled: new(true),
+		Binding: &addressDTO{
+			Address:  new("0.0.0.0"),
+			Port:     new(80),
+			Protocol: stream.TCPProtocol,
+		},
+		DefaultBackend: &backendDTO{
+			Target: &addressDTO{
+				Address:  new("127.0.0.1"),
+				Port:     new(8080),
+				Protocol: stream.TCPProtocol,
+			},
+		},
+	}
+}
+
+func newStreamPage() *pagination.Page[stream.Stream] {
+	return pagination.Of([]stream.Stream{
+		*newStream(),
+	})
+}

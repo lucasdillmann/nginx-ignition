@@ -1,0 +1,53 @@
+package yandex
+
+import (
+	"context"
+
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/yandex"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/letsencrypt/dns"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/dynamicfields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+)
+
+//nolint:gosec
+const (
+	pddTokenFieldID = "yandexPddToken"
+)
+
+type Provider struct{}
+
+func (p *Provider) ID() string { return "YANDEX" }
+
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsYandexName)
+}
+
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
+		{
+			ID:          pddTokenFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsYandexPddToken),
+			Required:    true,
+			Sensitive:   true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+	})
+}
+
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
+	pddToken, _ := parameters[pddTokenFieldID].(string)
+
+	cfg := yandex.NewDefaultConfig()
+	cfg.PddToken = pddToken
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
+
+	return yandex.NewDNSProviderConfig(cfg)
+}

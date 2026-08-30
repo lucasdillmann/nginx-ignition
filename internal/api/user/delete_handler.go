@@ -1,0 +1,41 @@
+package user
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/api/common/authorization"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/user"
+)
+
+type deleteHandler struct {
+	commands user.Commands
+}
+
+func (h deleteHandler) handle(ctx *gin.Context) {
+	id, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+
+	currentUserID := authorization.CurrentSubject(ctx).User.ID
+	if id == currentUserID {
+		ctx.JSON(
+			http.StatusBadRequest,
+			gin.H{
+				"message": "You cannot delete your own user",
+			},
+		)
+		return
+	}
+
+	err = h.commands.Delete(ctx.Request.Context(), id)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx.Status(http.StatusNoContent)
+}

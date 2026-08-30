@@ -1,0 +1,62 @@
+package glesys
+
+import (
+	"context"
+
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/glesys"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/letsencrypt/dns"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/dynamicfields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+)
+
+//nolint:gosec
+const (
+	apiUserFieldID = "gleSysApiUser"
+	apiKeyFieldID  = "gleSysApiKey"
+)
+
+type Provider struct{}
+
+func (p *Provider) ID() string { return "GLESYS" }
+
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGlesysName)
+}
+
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
+		{
+			ID:          apiUserFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGlesysApiUser),
+			Required:    true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+		{
+			ID:          apiKeyFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsGlesysApiKey),
+			Required:    true,
+			Sensitive:   true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+	})
+}
+
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
+	apiUser, _ := parameters[apiUserFieldID].(string)
+	apiKey, _ := parameters[apiKeyFieldID].(string)
+
+	cfg := glesys.NewDefaultConfig()
+	cfg.APIUser = apiUser
+	cfg.APIKey = apiKey
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+
+	return glesys.NewDNSProviderConfig(cfg)
+}

@@ -1,0 +1,63 @@
+package constellix
+
+import (
+	"context"
+
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/constellix"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/letsencrypt/dns"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/dynamicfields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+)
+
+//nolint:gosec
+const (
+	apiKeyFieldID    = "constellixApiKey"
+	secretKeyFieldID = "constellixSecretKey"
+)
+
+type Provider struct{}
+
+func (p *Provider) ID() string { return "CONSTELLIX" }
+
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsConstellixName)
+}
+
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
+		{
+			ID:          apiKeyFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsConstellixApiKey),
+			Required:    true,
+			Sensitive:   true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+		{
+			ID:          secretKeyFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsConstellixSecretKey),
+			Required:    true,
+			Sensitive:   true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+	})
+}
+
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
+	apiKey, _ := parameters[apiKeyFieldID].(string)
+	secretKey, _ := parameters[secretKeyFieldID].(string)
+
+	cfg := constellix.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.SecretKey = secretKey
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+	cfg.TTL = dns.TTL
+
+	return constellix.NewDNSProviderConfig(cfg)
+}

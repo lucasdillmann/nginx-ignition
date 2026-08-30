@@ -1,0 +1,195 @@
+package resolver
+
+import (
+	"context"
+	"fmt"
+	"net/url"
+	"strings"
+
+	"github.com/moby/moby/api/types/network"
+	"github.com/moby/moby/api/types/swarm"
+	"github.com/moby/moby/client"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/coreerror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
+)
+
+type swarmAdapter struct {
+	client         *client.Client
+	publicURL      string
+	dnsResolvers   []string
+	useServiceMesh bool
+}
+
+func (s *swarmAdapter) ResolveOptionByID(ctx context.Context, id string) (*Option, error) {
+	availableOptions, err := s.ResolveOptions(ctx, false, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range availableOptions {
+		if item.ID == id {
+			return &item, nil
+		}
+	}
+
+	return nil, nil
+}
+
+func (s *swarmAdapter) ResolveOptions(
+	ctx context.Context,
+	tcpOnly bool,
+	searchTerms *string,
+) ([]Option, error) {
+	services, err := s.client.ServiceList(ctx, client.ServiceListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	if searchTerms != nil && strings.TrimSpace(*searchTerms) != "" {
+		normalizedTerms := strings.ToLower(strings.TrimSpace(*searchTerms))
+		filteredResults := make([]swarm.Service, 0)
+
+		for _, service := range services.Items {
+			if strings.Contains(strings.ToLower(service.Spec.Name), normalizedTerms) {
+				filteredResults = append(filteredResults, service)
+			}
+		}
+
+		services.Items = filteredResults
+	}
+
+	return s.buildServiceOptions(services.Items, tcpOnly), nil
+}
+
+func (s *swarmAdapter) buildServiceOptions(services []swarm.Service, tcpOnly bool) []Option {
+	optionIDs := make(map[string]bool)
+	options := make([]Option, 0, len(services))
+
+	for _, service := range services {
+		if service.Spec.EndpointSpec == nil || service.Spec.EndpointSpec.Ports == nil {
+			continue
+		}
+
+		for _, port := range service.Spec.EndpointSpec.Ports {
+			if tcpOnly && port.Protocol != network.TCP {
+				continue
+			}
+
+			if option := s.buildServiceOption(&port, &service); option != nil &&
+				!optionIDs[option.ID] {
+				options = append(options, *option)
+				optionIDs[option.ID] = true
+			}
+		}
+	}
+
+	return options
+}
+
+func (s *swarmAdapter) buildServiceOption(port *swarm.PortConfig, service *swarm.Service) *Option {
+	portNumber := port.PublishedPort
+
+	if portNumber == 0 {
+		return nil
+	}
+
+	qualifierType := ingressQualifier
+	if port.PublishMode == swarm.PortConfigPublishModeHost {
+		qualifierType = hostQualifier
+	}
+
+	return &Option{
+		DriverOption: integration.DriverOption{
+			ID:           fmt.Sprintf("%s:%d:%s", service.ID, portNumber, qualifierType),
+			Name:         service.Spec.Name,
+			Port:         int(portNumber),
+			Qualifier:    new(qualifierType),
+			Protocol:     integration.Protocol(port.Protocol),
+			DNSResolvers: s.dnsResolvers,
+		},
+		privatePort: int(port.TargetPort),
+		urlResolver: func(ctx context.Context, option *Option) (*string, []string, error) {
+			return s.buildServiceOptionURL(ctx, option, service)
+		},
+	}
+}
+
+func (s *swarmAdapter) buildServiceOptionURL(
+	ctx context.Context,
+	option *Option,
+	service *swarm.Service,
+) (*string, []string, error) {
+	if s.useServiceMesh && *option.Qualifier == ingressQualifier {
+		dnsResolvers := s.dnsResolvers
+		if len(dnsResolvers) == 0 {
+			dnsResolvers = []string{defaultDockerDNSIP}
+		}
+
+		fullURL := fmt.Sprintf(httpURLTemplate, service.Spec.Name, option.privatePort)
+		return &fullURL, dnsResolvers, nil
+	}
+
+	if s.publicURL != "" {
+		uri, err := url.Parse(s.publicURL)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		fullURL := fmt.Sprintf(httpURLTemplate, uri.Hostname(), option.Port)
+		return &fullURL, nil, nil
+	}
+
+	nodeAddress, err := s.findNodeAddress(ctx, service)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	fullURL := fmt.Sprintf(httpURLTemplate, *nodeAddress, option.Port)
+	return &fullURL, nil, err
+}
+
+func (s *swarmAdapter) findNodeAddress(
+	ctx context.Context,
+	service *swarm.Service,
+) (*string, error) {
+	filters := client.Filters{}
+	filters.Add("service", service.ID)
+
+	tasks, err := s.client.TaskList(ctx, client.TaskListOptions{
+		Filters: filters,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(tasks.Items) == 0 {
+		return nil, coreerror.New(
+			i18n.M(ctx, i18n.K.IntegrationDockerResolverNoRunningTasks).V("id", service.ID),
+			false,
+		)
+	}
+
+	nodes, err := s.client.NodeList(ctx, client.NodeListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(nodes.Items) == 0 {
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.IntegrationDockerResolverNoNodesFound), false)
+	}
+
+	for _, task := range tasks.Items {
+		for _, node := range nodes.Items {
+			if node.ID == task.NodeID && task.Status.State == swarm.TaskStateRunning {
+				return &node.Status.Addr, nil
+			}
+		}
+	}
+
+	return nil, coreerror.New(
+		i18n.M(ctx, i18n.K.IntegrationDockerResolverNoMatchingNodes).V("id", service.ID),
+		false,
+	)
+}

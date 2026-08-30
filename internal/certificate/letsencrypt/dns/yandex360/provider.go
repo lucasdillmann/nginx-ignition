@@ -1,0 +1,70 @@
+package yandex360
+
+import (
+	"context"
+	"strconv"
+
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/yandex360"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/letsencrypt/dns"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/dynamicfields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+)
+
+//nolint:gosec
+const (
+	oauthTokenFieldID = "yandex360OAuthToken"
+	orgIDFieldID      = "yandex360OrgId"
+)
+
+type Provider struct{}
+
+func (p *Provider) ID() string {
+	return "YANDEX360"
+}
+
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsYandex360Name)
+}
+
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
+		{
+			ID:          oauthTokenFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsYandex360OauthToken),
+			Required:    true,
+			Sensitive:   true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+		{
+			ID:          orgIDFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsYandex360OrgId),
+			Required:    true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+	})
+}
+
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
+	oauthToken, _ := parameters[oauthTokenFieldID].(string)
+	orgIDStr, _ := parameters[orgIDFieldID].(string)
+
+	orgID, err := strconv.ParseInt(orgIDStr, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg := yandex360.NewDefaultConfig()
+	cfg.OAuthToken = oauthToken
+	cfg.OrgID = orgID
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+
+	return yandex360.NewDNSProviderConfig(cfg)
+}

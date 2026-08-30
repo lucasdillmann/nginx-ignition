@@ -1,0 +1,120 @@
+package aws
+
+import (
+	"context"
+	"strings"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	route53client "github.com/aws/aws-sdk-go-v2/service/route53"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/route53"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/letsencrypt/dns"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/coreerror"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/dynamicfields"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
+)
+
+//nolint:gosec
+const (
+	region           = "us-east-1"
+	accessKeyFieldID = "awsAccessKey"
+	secretKeyFieldID = "awsSecretKey"
+)
+
+type Provider struct{}
+
+func (p *Provider) ID() string {
+	return "AWS_ROUTE53"
+}
+
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsName)
+}
+
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
+		{
+			ID:          accessKeyFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsAccessKey),
+			Required:    true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+		{
+			ID:          secretKeyFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsSecretKey),
+			Required:    true,
+			Sensitive:   true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+	})
+}
+
+func (p *Provider) ChallengeProvider(
+	ctx context.Context,
+	domainNames []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
+	accessKey, _ := parameters[accessKeyFieldID].(string)
+	secretKey, _ := parameters[secretKeyFieldID].(string)
+
+	hostedZoneID, err := resolveHostedZoneID(ctx, accessKey, secretKey, domainNames)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg := route53.NewDefaultConfig()
+	cfg.AccessKeyID = accessKey
+	cfg.SecretAccessKey = secretKey
+	cfg.HostedZoneID = *hostedZoneID
+	cfg.Region = region
+	cfg.MaxRetries = dns.MaxRetries
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+
+	return route53.NewDNSProviderConfig(cfg)
+}
+
+func resolveHostedZoneID(
+	ctx context.Context,
+	accessKey, secretKey string,
+	domainNames []string,
+) (*string, error) {
+	cfg := aws.Config{
+		Credentials: credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
+		Region:      region,
+	}
+
+	client := route53client.NewFromConfig(cfg)
+	hostedZones, err := client.ListHostedZones(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, domainName := range domainNames {
+		var bestMatch *string
+		var bestMatchLength int
+
+		for _, hostedZone := range hostedZones.HostedZones {
+			hostedZoneName := strings.TrimSuffix(*hostedZone.Name, ".")
+
+			if domainName == hostedZoneName || strings.HasSuffix(domainName, "."+hostedZoneName) {
+				if len(hostedZoneName) > bestMatchLength {
+					bestMatch = hostedZone.Id
+					bestMatchLength = len(hostedZoneName)
+				}
+			}
+		}
+
+		if bestMatch != nil {
+			return bestMatch, nil
+		}
+	}
+
+	return nil, coreerror.New(
+		i18n.M(ctx, i18n.K.CertificateLetsencryptDnsAwsErrorAwsHostedZoneNotFound),
+		true,
+	)
+}

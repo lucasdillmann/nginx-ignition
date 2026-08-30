@@ -1,0 +1,24 @@
+package nginx
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/nginx"
+)
+
+type reloadHandler struct {
+	commands nginx.Commands
+}
+
+func (h reloadHandler) handle(ctx *gin.Context) {
+	if err := h.commands.Reload(ctx.Request.Context(), false); err != nil {
+		log.Warnf("Failed to reload Nginx: %s", err.Error())
+		ctx.JSON(http.StatusFailedDependency, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.Status(http.StatusNoContent)
+}

@@ -1,0 +1,49 @@
+package stream
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/pagination"
+)
+
+type service struct {
+	streamRepository Repository
+}
+
+func newCommands(streamRepository Repository) Commands {
+	return &service{streamRepository}
+}
+
+func (s *service) Save(ctx context.Context, input *Stream) error {
+	if err := newValidator().validate(ctx, input); err != nil {
+		return err
+	}
+
+	return s.streamRepository.Save(ctx, input)
+}
+
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
+	return s.streamRepository.DeleteByID(ctx, id)
+}
+
+func (s *service) List(
+	ctx context.Context,
+	pageSize, pageNumber int,
+	searchTerms *string,
+) (*pagination.Page[Stream], error) {
+	return s.streamRepository.FindPage(ctx, pageSize, pageNumber, searchTerms)
+}
+
+func (s *service) Get(ctx context.Context, id uuid.UUID) (*Stream, error) {
+	return s.streamRepository.FindByID(ctx, id)
+}
+
+func (s *service) GetAllEnabled(ctx context.Context) ([]Stream, error) {
+	return s.streamRepository.FindAllEnabled(ctx)
+}
+
+func (s *service) Exists(ctx context.Context, id uuid.UUID) (bool, error) {
+	return s.streamRepository.ExistsByID(ctx, id)
+}
