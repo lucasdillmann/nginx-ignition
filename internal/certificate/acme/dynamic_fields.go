@@ -92,7 +92,7 @@ func mainDynamicFields(ctx context.Context) ([]dynamicfields.DynamicField, int) 
 		emailField,
 		bypassDNSPropagationChecksField,
 		tosField,
-	}, 0
+	}, 1
 }
 
 func resolveDynamicFields(ctx context.Context) []dynamicfields.DynamicField {
