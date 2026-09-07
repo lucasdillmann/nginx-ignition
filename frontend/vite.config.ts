@@ -84,7 +84,7 @@ export default defineConfig({
     resolve: {
         alias: {
             // @ts-expect-error Types not available
-            "@": path.resolve(__dirname, "src"),
+            "@": path.resolve(import.meta.dirname, "src"),
         },
     },
 })

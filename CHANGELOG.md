@@ -3,6 +3,8 @@
 ## 2.45.0
 
 - Added Actalis and ZeroSSL as alternative SSL Certificate Authorities to Let's Encrypt
+- Upgrade of the nginx version from 1.31.4 to 1.31.5 (mainline) on the official Docker image
+- Security fixes and updates
 
 ## 2.44.0
 
