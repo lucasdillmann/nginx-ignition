@@ -1,6 +1,6 @@
 module github.com/lucasdillmann/nginx-ignition
 
-go 1.27.0
+go 1.27.1
 
 exclude github.com/ugorji/go v1.1.4
 
