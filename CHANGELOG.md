@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.45.0
+
+- Added Actalis and ZeroSSL as alternative SSL Certificate Authorities to Let's Encrypt
+
 ## 2.44.0
 
 - Added support for the NexDNS DNS provider for Let's Encrypt certificates

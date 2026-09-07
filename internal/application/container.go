@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/acme"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/custom"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/external"
-	"github.com/lucasdillmann/nginx-ignition/internal/certificate/letsencrypt"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/selfsigned"
 	"github.com/lucasdillmann/nginx-ignition/internal/core"
 	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
@@ -40,7 +40,7 @@ func startContainer(ctx context.Context) error {
 		database.Install,
 		core.Install,
 		api.Install,
-		letsencrypt.Install,
+		acme.Install,
 		selfsigned.Install,
 		custom.Install,
 		external.Install,
@@ -55,7 +55,7 @@ func startContainer(ctx context.Context) error {
 }
 
 func installCertificateDriverAggregation(
-	acmeCertificateProvider *letsencrypt.Provider,
+	acmeCertificateProvider *acme.Provider,
 	customCertificateProvider *custom.Provider,
 	selfSignedCertificateProvider *selfsigned.Provider,
 	externalCertificateProvider *external.Provider,
