@@ -27,7 +27,7 @@ func mainDynamicFields(ctx context.Context) ([]dynamicfields.DynamicField, int) 
 	certificateAuthorityField := dynamicfields.DynamicField{
 		ID:           certificateAuthorityFieldID,
 		Priority:     1,
-		Description:  i18n.M(ctx, i18n.K.CertificateAcmeDnsProvider),
+		Description:  i18n.M(ctx, i18n.K.CertificateAcmeCertificateAuthority),
 		Required:     true,
 		Type:         dynamicfields.EnumType,
 		DefaultValue: LetsEncryptProduction,

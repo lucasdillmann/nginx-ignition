@@ -24,7 +24,7 @@ func LinkedToProvider(id string, fields []dynamicfields.DynamicField) []dynamicf
 	output := make([]dynamicfields.DynamicField, 0, len(fields))
 
 	for index, field := range fields {
-		field.Priority = index + 2
+		field.Priority = index + 3
 		if field.Conditions == nil {
 			field.Conditions = make([]dynamicfields.Condition, 0, 1)
 		}
