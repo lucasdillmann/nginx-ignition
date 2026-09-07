@@ -20,7 +20,8 @@
 - ⚡ **Versatile routing:** Configure proxies, redirections, custom JS/Lua code, static responses, or file serving.
 - ⚙️ **Server configuration:** Easy configuration of the nginx server (maximum body/upload size, server tokens, 
      timeouts, log level, etc).
-- 🔐 **SSL certificates:** Automated Let's Encrypt (ACME), self-signed, or bring your own certificates.
+- 🔐 **SSL certificates:** Automated Let's Encrypt, Actalis and ZeroSSL (ACME), self-signed, or bring your own 
+     certificates.
 - 🐳 **Native integrations:** First-class support for Docker, Docker Swarm, Tailscale and NetBird VPNs, and TrueNAS.
 - 🛡️ **Security:** Secure access with two-factor authentication, attribute-based access control (ABAC) and per-host 
      access lists using basic authentication and source IP checks.
