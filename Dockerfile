@@ -37,7 +37,6 @@ RUN --mount=type=cache,target=/root/.ccache \
       --with-compat \
       --with-http_ssl_module \
       --with-http_v2_module \
-      --with-http_grpc_module \
       --with-stream \
       --add-dynamic-module=/ngx_devel_kit \
       --add-dynamic-module=/lua-nginx-module \
