@@ -268,7 +268,7 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
     }
 
     private renderForm() {
-        const { validationResult, formValues, metadata } = this.state
+        const { validationResult, formValues } = this.state
 
         return (
             <Form<HostFormValues>
@@ -393,7 +393,6 @@ export default class HostFormPage extends React.Component<any, HostFormPageState
                     validationResult={validationResult}
                     onRouteRemove={index => this.removeRoute(index)}
                     onChange={() => this.formRef.current?.resetFields()}
-                    metadata={metadata}
                 />
 
                 <Flex style={{ marginTop: 50 }}>

@@ -25,7 +25,6 @@ import { Link } from "react-router-dom"
 import CodeEditorModal from "../../../core/components/codeeditor/CodeEditorModal"
 import { CodeEditorLanguage } from "../../../core/components/codeeditor/CodeEditor"
 import { hostFormValuesDefaults } from "../model/HostFormValuesDefaults"
-import NginxMetadata from "../../nginx/model/NginxMetadata"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
@@ -73,7 +72,6 @@ export interface HostRoutesProps {
     validationResult: ValidationResult
     onRouteRemove: (index: number) => void
     onChange: () => void
-    metadata?: NginxMetadata
 }
 
 interface HostRoutesState {
@@ -466,13 +464,13 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
     }
 
     private renderRoute(field: FormListFieldData, operations: FormListOperation, index: number) {
-        const { validationResult, routes, metadata } = this.props
+        const { validationResult, routes } = this.props
         const { routeSettingsOpenModalIndex } = this.state
         const { name } = field
         const type = routes[index].type
 
         return (
-            <Flex className="host-form-route-container">
+            <Flex className="host-form-route-container" key={field.key}>
                 <Form.Item name={[name, "priority"]} hidden>
                     <InputNumber />
                 </Form.Item>
@@ -527,7 +525,6 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
                     index={index}
                     fieldPath={name}
                     validationResult={validationResult}
-                    metadata={metadata}
                 />
 
                 <ArrowUpOutlined

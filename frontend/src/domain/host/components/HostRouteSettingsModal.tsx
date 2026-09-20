@@ -1,4 +1,4 @@
-import { Alert, Form, FormItemProps, Input, Modal, Select, Switch, Tabs } from "antd"
+import { Form, FormItemProps, Input, Modal, Select, Switch, Tabs } from "antd"
 import FormLayout from "../../../core/components/form/FormLayout"
 import TextArea from "antd/es/input/TextArea"
 import React from "react"
@@ -13,8 +13,6 @@ import { HostFormRoute } from "../model/HostFormValues"
 import CacheResponse from "../../cache/model/CacheResponse"
 import CacheService from "../../cache/CacheService"
 import HostRouteConditionalConfig from "./HostRouteConditionalConfig"
-import NginxMetadata, { NginxSupportType } from "../../nginx/model/NginxMetadata"
-import If from "../../../core/components/flowcontrol/If"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
@@ -54,7 +52,6 @@ export interface HostRouteSettingsProps {
     onClose: () => void
     onCancel: () => void
     validationResult: ValidationResult
-    metadata?: NginxMetadata
 }
 
 export default class HostRouteSettingsModal extends React.Component<HostRouteSettingsProps> {
@@ -119,7 +116,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
     }
 
     private renderMainTab() {
-        const { index, validationResult, fieldPath, route, metadata } = this.props
+        const { index, validationResult, fieldPath, route } = this.props
 
         return (
             <>
@@ -276,25 +273,6 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                             }))}
                         />
                     </Form.Item>
-                    <If
-                        condition={
-                            route.protocol === HostRouteProtocol.GRPC &&
-                            metadata?.availableSupport.grpc === NginxSupportType.NONE
-                        }
-                    >
-                        <Alert
-                            type="warning"
-                            showIcon
-                            title={
-                                <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsGrpcModuleWarningTitle} />
-                            }
-                            description={
-                                <I18n
-                                    id={MessageKey.FrontendHostComponentsHostroutesettingsGrpcModuleWarningDescription}
-                                />
-                            }
-                        />
-                    </If>
                 </HostRouteConditionalConfig>
                 <HostRouteConditionalConfig route={route} types={PROXY_ROUTE_TYPES}>
                     <Form.Item
