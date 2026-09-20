@@ -503,7 +503,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			features := host.FeatureSet{
 				WebsocketSupport: true,
 			}
-			result := provider.buildRouteFeatures(features)
+			result := provider.buildRouteFeatures(features, host.HTTP11RouteProtocol)
 			assert.Contains(t, result, "proxy_http_version 1.1;")
 			assert.Contains(t, result, "proxy_set_header Upgrade $http_upgrade;")
 			assert.Contains(t, result, "proxy_set_header Connection \"upgrade\";")
@@ -513,7 +513,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			features := host.FeatureSet{
 				WebsocketSupport: false,
 			}
-			assert.Equal(t, "", provider.buildRouteFeatures(features))
+			assert.Equal(t, "", provider.buildRouteFeatures(features, host.HTTP11RouteProtocol))
 		})
 	})
 

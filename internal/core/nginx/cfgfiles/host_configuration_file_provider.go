@@ -314,7 +314,7 @@ func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 		headers,
 		r.Response.StatusCode,
 		r.Priority,
-		p.buildRouteFeatures(h.FeatureSet),
+		p.buildRouteFeatures(h.FeatureSet, r.Protocol),
 		p.buildRouteSettings(ctx, r),
 	)
 }
@@ -334,7 +334,7 @@ func (p *hostConfigurationFileProvider) buildProxyRoute(
 		r.SourcePath,
 		p.buildProxyPass(r),
 		p.buildProtocolProxyVersion(r),
-		p.buildRouteFeatures(features),
+		p.buildRouteFeatures(features, r.Protocol),
 		p.buildRouteSettings(ctx, r),
 	)
 }
@@ -387,7 +387,7 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 		dnsConfig,
 		p.buildProxyPass(r, *proxyURL),
 		p.buildProtocolProxyVersion(r),
-		p.buildRouteFeatures(features),
+		p.buildRouteFeatures(features, r.Protocol),
 		p.buildRouteSettings(ctx, r),
 	), nil
 }
@@ -406,7 +406,7 @@ func (p *hostConfigurationFileProvider) buildRedirectRoute(
 		r.SourcePath,
 		*r.RedirectCode,
 		*r.TargetURI,
-		p.buildRouteFeatures(features),
+		p.buildRouteFeatures(features, r.Protocol),
 		p.buildRouteSettings(ctx, r),
 	)
 }
@@ -448,13 +448,16 @@ func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(
 		headerBlock,
 		r.SourcePath,
 		routeBlock,
-		p.buildRouteFeatures(h.FeatureSet),
+		p.buildRouteFeatures(h.FeatureSet, r.Protocol),
 		p.buildRouteSettings(ctx, r),
 	), nil
 }
 
-func (p *hostConfigurationFileProvider) buildRouteFeatures(features host.FeatureSet) string {
-	if features.WebsocketSupport {
+func (p *hostConfigurationFileProvider) buildRouteFeatures(
+	features host.FeatureSet,
+	protocol host.RouteProtocol,
+) string {
+	if features.WebsocketSupport && protocol != host.GRPCRouteProtocol {
 		return `
 			proxy_http_version 1.1;
 			proxy_set_header Upgrade $http_upgrade;
