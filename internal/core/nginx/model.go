@@ -94,6 +94,7 @@ type Metadata struct {
 	BuildDetails  string
 	Modules       []string
 	tlsSniEnabled bool
+	grpcDisabled  bool
 }
 
 func (m *Metadata) SNISupportType() SupportType {
@@ -139,15 +140,11 @@ func (m *Metadata) RunCodeSupportType() SupportType {
 }
 
 func (m *Metadata) GRPCSupportType() SupportType {
-	if m.hasModule("http_grpc_module") {
-		return StaticSupportType
+	if m.grpcDisabled {
+		return NoneSupportType
 	}
 
-	if m.hasModule("ngx_http_grpc_module") {
-		return DynamicSupportType
-	}
-
-	return NoneSupportType
+	return StaticSupportType
 }
 
 func (m *Metadata) hasModule(name string) bool {
