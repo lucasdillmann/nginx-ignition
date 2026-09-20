@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.45.0
+
+- Host routes now support the selection of the upstream protocol (HTTP/1.0, HTTP/1.1 or gRPC), enabling proxy and
+  integration routes to connect to gRPC and gRPCs upstream servers.
+
 ## 2.44.0
 
 - Added support for the NexDNS DNS provider for Let's Encrypt certificates

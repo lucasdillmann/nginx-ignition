@@ -17,7 +17,8 @@
 
 - 🌐 **Virtual hosts:** Easily manage multiple hosts with custom domains, routes, and port bindings.
 - 🔄 **Streams:** Proxy TCP, UDP, and Unix sockets with SNI-based routing, circuit breakers, and load balancing.
-- ⚡ **Versatile routing:** Configure proxies, redirections, custom JS/Lua code, static responses, or file serving.
+- ⚡ **Versatile routing:** Configure proxies (including gRPC/gRPCS upstreams), redirections, custom JS/Lua code, 
+     static responses, or file serving.
 - ⚙️ **Server configuration:** Easy configuration of the nginx server (maximum body/upload size, server tokens, 
      timeouts, log level, etc).
 - 🔐 **SSL certificates:** Automated Let's Encrypt (ACME), self-signed, or bring your own certificates.
