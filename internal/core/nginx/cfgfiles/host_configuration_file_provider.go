@@ -15,6 +15,11 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
 )
 
+const (
+	httpScheme  = "http://"
+	httpsScheme = "https://"
+)
+
 type hostConfigurationFileProvider struct {
 	integrationCommands integration.Commands
 }
@@ -357,7 +362,7 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	}
 
 	if r.Integration.UseHTTPS {
-		proxyURL = new(strings.Replace(*proxyURL, "http://", "https://", 1))
+		proxyURL = new(strings.Replace(*proxyURL, httpScheme, httpsScheme, 1))
 	}
 
 	if r.TargetURI != nil && strings.TrimSpace(*r.TargetURI) != "" {
@@ -504,10 +509,10 @@ func (p *hostConfigurationFileProvider) buildProtocolProxyVersion(r *host.Route)
 
 func (p *hostConfigurationFileProvider) toGrpcURL(uri string) string {
 	switch {
-	case strings.HasPrefix(uri, "https://"):
-		return "grpcs://" + strings.TrimPrefix(uri, "https://")
-	case strings.HasPrefix(uri, "http://"):
-		return "grpc://" + strings.TrimPrefix(uri, "http://")
+	case strings.HasPrefix(uri, httpsScheme):
+		return "grpcs://" + strings.TrimPrefix(uri, httpsScheme)
+	case strings.HasPrefix(uri, httpScheme):
+		return "grpc://" + strings.TrimPrefix(uri, httpScheme)
 	default:
 		return uri
 	}

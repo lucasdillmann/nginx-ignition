@@ -3,7 +3,10 @@
 ## 2.45.0
 
 - Host routes now support the selection of the upstream protocol (HTTP/1.0, HTTP/1.1 or gRPC), enabling proxy and
-  integration routes to connect to gRPC and gRPCs upstream servers.
+  integration routes to connect to gRPC and gRPCs upstream servers. Nginx gRPC module is included by default in
+  the Ignition's official Docker image.
+- Updated Go to 1.27.1 and other internal dependencies
+- Security updates and fixes
 
 ## 2.44.0
 
