@@ -13,6 +13,14 @@ const (
 	LuaCodeLanguage        CodeLanguage = "LUA"
 )
 
+type RouteProtocol string
+
+const (
+	HTTP10RouteProtocol RouteProtocol = "HTTP_1_0"
+	HTTP11RouteProtocol RouteProtocol = "HTTP_1_1"
+	GRPCRouteProtocol   RouteProtocol = "GRPC"
+)
+
 type RouteType string
 
 const (
@@ -46,14 +54,15 @@ type FeatureSet struct {
 }
 
 type Route struct {
-	Settings     RouteSettings
-	RedirectCode *int
+	Integration  *RouteIntegrationConfig
 	TargetURI    *string
 	AccessListID *uuid.UUID
 	CacheID      *uuid.UUID
 	Response     *RouteStaticResponse
-	Integration  *RouteIntegrationConfig
 	SourceCode   *RouteSourceCode
+	RedirectCode *int
+	Settings     RouteSettings
+	Protocol     RouteProtocol
 	Type         RouteType
 	SourcePath   string
 	Priority     int

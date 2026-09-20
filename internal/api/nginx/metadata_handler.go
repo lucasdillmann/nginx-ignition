@@ -36,6 +36,7 @@ func (h metadataHandler) handle(ctx *gin.Context) {
 			"runCode": metadata.RunCodeSupportType(),
 			"tlsSni":  metadata.SNISupportType(),
 			"stats":   metadata.StatsSupportType(),
+			"grpc":    metadata.GRPCSupportType(),
 		},
 	})
 }

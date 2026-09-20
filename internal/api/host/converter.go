@@ -83,6 +83,7 @@ func toRouteDTO(route *host.Route) routeDTO {
 		AccessListID: route.AccessListID,
 		CacheID:      route.CacheID,
 		SourceCode:   toRouteSourceCodeDTO(route.SourceCode),
+		Protocol:     &route.Protocol,
 	}
 }
 
@@ -203,6 +204,7 @@ func toRouteSlice(routes []routeDTO) []host.Route {
 			AccessListID: route.AccessListID,
 			CacheID:      route.CacheID,
 			SourceCode:   toRouteSourceCode(route.SourceCode),
+			Protocol:     getRouteProtocolValue(route.Protocol),
 		}
 	}
 
@@ -310,6 +312,14 @@ func getStringValue(value *string) string {
 	if value == nil {
 		return ""
 	}
+	return *value
+}
+
+func getRouteProtocolValue(value *host.RouteProtocol) host.RouteProtocol {
+	if value == nil {
+		return host.HTTP11RouteProtocol
+	}
+
 	return *value
 }
 

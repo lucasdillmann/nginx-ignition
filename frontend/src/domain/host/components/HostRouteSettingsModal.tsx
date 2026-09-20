@@ -1,4 +1,4 @@
-import { Form, FormItemProps, Input, Modal, Switch, Tabs } from "antd"
+import { Alert, Form, FormItemProps, Input, Modal, Select, Switch, Tabs } from "antd"
 import FormLayout from "../../../core/components/form/FormLayout"
 import TextArea from "antd/es/input/TextArea"
 import React from "react"
@@ -8,11 +8,13 @@ import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
 import AccessListResponse from "../../accesslist/model/AccessListResponse"
 import PageResponse from "../../../core/pagination/PageResponse"
 import AccessListService from "../../accesslist/AccessListService"
-import { HostRouteType } from "../model/HostRequest"
+import { HostRouteProtocol, HostRouteType } from "../model/HostRequest"
 import { HostFormRoute } from "../model/HostFormValues"
 import CacheResponse from "../../cache/model/CacheResponse"
 import CacheService from "../../cache/CacheService"
 import HostRouteConditionalConfig from "./HostRouteConditionalConfig"
+import NginxMetadata, { NginxSupportType } from "../../nginx/model/NginxMetadata"
+import If from "../../../core/components/flowcontrol/If"
 import { I18n } from "../../../core/i18n/I18n"
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 
@@ -21,6 +23,18 @@ const ACCESS_LIST_SUPPORTED_ROUTE_TYPES: HostRouteType[] = [
     HostRouteType.INTEGRATION,
     HostRouteType.PROXY,
     HostRouteType.STATIC_FILES,
+]
+
+const HOST_ROUTE_PROTOCOL_OPTIONS_DATA = [
+    {
+        value: HostRouteProtocol.HTTP_1_1,
+        messageKey: MessageKey.FrontendHostComponentsHostroutesettingsProtocolHttp11,
+    },
+    {
+        value: HostRouteProtocol.HTTP_1_0,
+        messageKey: MessageKey.FrontendHostComponentsHostroutesettingsProtocolHttp10,
+    },
+    { value: HostRouteProtocol.GRPC, messageKey: MessageKey.FrontendHostComponentsHostroutesettingsProtocolGrpc },
 ]
 
 const ItemProps: FormItemProps = {
@@ -40,6 +54,7 @@ export interface HostRouteSettingsProps {
     onClose: () => void
     onCancel: () => void
     validationResult: ValidationResult
+    metadata?: NginxMetadata
 }
 
 export default class HostRouteSettingsModal extends React.Component<HostRouteSettingsProps> {
@@ -104,7 +119,7 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
     }
 
     private renderMainTab() {
-        const { index, validationResult, fieldPath, route } = this.props
+        const { index, validationResult, fieldPath, route, metadata } = this.props
 
         return (
             <>
@@ -240,6 +255,46 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                     >
                         <Switch />
                     </Form.Item>
+                </HostRouteConditionalConfig>
+                <HostRouteConditionalConfig route={route} types={PROXY_ROUTE_TYPES}>
+                    <Form.Item
+                        {...ItemProps}
+                        name={[fieldPath, "protocol"]}
+                        label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsUpstreamProtocol} />}
+                        validateStatus={validationResult.getStatus(`routes[${index}].protocol`)}
+                        help={
+                            validationResult.getMessage(`routes[${index}].protocol`) ?? (
+                                <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsUpstreamProtocolHelp} />
+                            )
+                        }
+                        required
+                    >
+                        <Select
+                            options={HOST_ROUTE_PROTOCOL_OPTIONS_DATA.map(item => ({
+                                value: item.value,
+                                label: <I18n id={item.messageKey} />,
+                            }))}
+                        />
+                    </Form.Item>
+                    <If
+                        condition={
+                            route.protocol === HostRouteProtocol.GRPC &&
+                            metadata?.availableSupport.grpc === NginxSupportType.NONE
+                        }
+                    >
+                        <Alert
+                            type="warning"
+                            showIcon
+                            title={
+                                <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsGrpcModuleWarningTitle} />
+                            }
+                            description={
+                                <I18n
+                                    id={MessageKey.FrontendHostComponentsHostroutesettingsGrpcModuleWarningDescription}
+                                />
+                            }
+                        />
+                    </If>
                 </HostRouteConditionalConfig>
                 <HostRouteConditionalConfig route={route} types={PROXY_ROUTE_TYPES}>
                     <Form.Item

@@ -138,6 +138,18 @@ func (m *Metadata) RunCodeSupportType() SupportType {
 	return NoneSupportType
 }
 
+func (m *Metadata) GRPCSupportType() SupportType {
+	if m.hasModule("http_grpc_module") {
+		return StaticSupportType
+	}
+
+	if m.hasModule("ngx_http_grpc_module") {
+		return DynamicSupportType
+	}
+
+	return NoneSupportType
+}
+
 func (m *Metadata) hasModule(name string) bool {
 	for _, module := range m.Modules {
 		if module == name {

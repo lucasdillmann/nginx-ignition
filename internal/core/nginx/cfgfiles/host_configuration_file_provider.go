@@ -324,9 +324,11 @@ func (p *hostConfigurationFileProvider) buildProxyRoute(
 			%s
 			%s
 			%s
+			%s
 		}`,
 		r.SourcePath,
 		p.buildProxyPass(r),
+		p.buildProtocolProxyVersion(r),
 		p.buildRouteFeatures(features),
 		p.buildRouteSettings(ctx, r),
 	)
@@ -374,10 +376,12 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 			%s
 			%s
 			%s
+			%s
 		}`,
 		r.SourcePath,
 		dnsConfig,
 		p.buildProxyPass(r, *proxyURL),
+		p.buildProtocolProxyVersion(r),
 		p.buildRouteFeatures(features),
 		p.buildRouteSettings(ctx, r),
 	), nil
@@ -467,14 +471,46 @@ func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...str
 	}
 
 	builder := strings.Builder{}
-	_, _ = fmt.Fprintf(&builder, "proxy_pass %s;", *targetURI)
+	grpcProtocol := r.Protocol == host.GRPCRouteProtocol
+
+	if grpcProtocol {
+		_, _ = fmt.Fprintf(&builder, "grpc_pass %s;", p.toGrpcURL(*targetURI))
+	} else {
+		_, _ = fmt.Fprintf(&builder, "proxy_pass %s;", *targetURI)
+	}
 
 	if r.Settings.KeepOriginalDomainName {
 		u, _ := url.Parse(*targetURI)
-		_, _ = fmt.Fprintf(&builder, "\nproxy_set_header Host %s;", u.Host)
+		if grpcProtocol {
+			_, _ = fmt.Fprintf(&builder, "\ngrpc_set_header Host %s;", u.Host)
+		} else {
+			_, _ = fmt.Fprintf(&builder, "\nproxy_set_header Host %s;", u.Host)
+		}
 	}
 
 	return builder.String()
+}
+
+func (p *hostConfigurationFileProvider) buildProtocolProxyVersion(r *host.Route) string {
+	switch r.Protocol {
+	case host.HTTP10RouteProtocol:
+		return "proxy_http_version 1;"
+	case host.GRPCRouteProtocol:
+		return ""
+	default:
+		return "proxy_http_version 1.1;"
+	}
+}
+
+func (p *hostConfigurationFileProvider) toGrpcURL(uri string) string {
+	switch {
+	case strings.HasPrefix(uri, "https://"):
+		return "grpcs://" + strings.TrimPrefix(uri, "https://")
+	case strings.HasPrefix(uri, "http://"):
+		return "grpc://" + strings.TrimPrefix(uri, "http://")
+	default:
+		return uri
+	}
 }
 
 func (p *hostConfigurationFileProvider) buildRouteSettings(

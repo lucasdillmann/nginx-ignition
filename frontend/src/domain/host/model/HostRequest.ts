@@ -17,6 +17,12 @@ export enum HostRouteSourceCodeLanguage {
     LUA = "LUA",
 }
 
+export enum HostRouteProtocol {
+    HTTP_1_0 = "HTTP_1_0",
+    HTTP_1_1 = "HTTP_1_1",
+    GRPC = "GRPC",
+}
+
 export interface HostFeatureSet {
     websocketsSupport: boolean
     http2Support: boolean
@@ -57,6 +63,7 @@ export interface HostRoute {
     priority: number
     enabled: boolean
     type: HostRouteType
+    protocol: HostRouteProtocol
     sourcePath: string
     settings: HostRouteSettings
     targetUri?: string

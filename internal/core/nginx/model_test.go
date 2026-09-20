@@ -64,4 +64,27 @@ func Test_Metadata(t *testing.T) {
 			assert.Equal(t, NoneSupportType, metadata.RunCodeSupportType())
 		})
 	})
+
+	t.Run("GRPCSupportType", func(t *testing.T) {
+		t.Run("returns StaticSupportType when http_grpc_module is present", func(t *testing.T) {
+			metadata := newMetadata()
+			metadata.Modules = []string{"http_grpc_module"}
+			assert.Equal(t, StaticSupportType, metadata.GRPCSupportType())
+		})
+
+		t.Run(
+			"returns DynamicSupportType when ngx_http_grpc_module is present",
+			func(t *testing.T) {
+				metadata := newMetadata()
+				metadata.Modules = []string{"ngx_http_grpc_module"}
+				assert.Equal(t, DynamicSupportType, metadata.GRPCSupportType())
+			},
+		)
+
+		t.Run("returns NoneSupportType when neither module is present", func(t *testing.T) {
+			metadata := newMetadata()
+			metadata.Modules = []string{"other"}
+			assert.Equal(t, NoneSupportType, metadata.GRPCSupportType())
+		})
+	})
 }

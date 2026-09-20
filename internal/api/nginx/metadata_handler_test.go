@@ -55,6 +55,13 @@ func Test_metadataHandler(t *testing.T) {
 			statsResponse := response["stats"].(map[string]any)
 			assert.Equal(t, settingsData.Nginx.Stats.Enabled, statsResponse["enabled"])
 			assert.Equal(t, settingsData.Nginx.Stats.AllHosts, statsResponse["allHosts"])
+
+			availableSupport := response["availableSupport"].(map[string]any)
+			assert.Equal(
+				t,
+				string(metadataData.GRPCSupportType()),
+				availableSupport["grpc"],
+			)
 		})
 
 		t.Run("panics when command returns error", func(t *testing.T) {
