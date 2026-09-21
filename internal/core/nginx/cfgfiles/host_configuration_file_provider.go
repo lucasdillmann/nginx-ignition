@@ -457,9 +457,8 @@ func (p *hostConfigurationFileProvider) buildRouteFeatures(
 	features host.FeatureSet,
 	protocol host.RouteProtocol,
 ) string {
-	if features.WebsocketSupport && protocol != host.GRPCRouteProtocol {
+	if features.WebsocketSupport && protocol == host.HTTP11RouteProtocol {
 		return `
-			proxy_http_version 1.1;
 			proxy_set_header Upgrade $http_upgrade;
 			proxy_set_header Connection "upgrade";
 		`
@@ -501,10 +500,10 @@ func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...str
 
 func (p *hostConfigurationFileProvider) buildProtocolProxyVersion(r *host.Route) string {
 	switch r.Protocol {
-	case host.HTTP10RouteProtocol:
-		return "proxy_http_version 1;"
 	case host.GRPCRouteProtocol:
 		return ""
+	case host.HTTP10RouteProtocol:
+		return "proxy_http_version 1;"
 	default:
 		return "proxy_http_version 1.1;"
 	}
