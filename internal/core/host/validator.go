@@ -218,6 +218,8 @@ func (v *validator) validateRoute(
 		return err
 	}
 
+	v.validateRouteProtocol(ctx, route, index)
+
 	switch route.Type {
 	case ProxyRouteType:
 		v.validateProxyRoute(ctx, route, index)
@@ -239,6 +241,17 @@ func (v *validator) validateRoute(
 	}
 
 	return nil
+}
+
+func (v *validator) validateRouteProtocol(ctx context.Context, route *Route, index int) {
+	switch route.Protocol {
+	case "", HTTP10RouteProtocol, HTTP11RouteProtocol, GRPCRouteProtocol:
+	default:
+		v.delegate.Add(
+			buildIndexedRoutePath(index, "protocol"),
+			i18n.M(ctx, i18n.K.CommonInvalidValue),
+		)
+	}
 }
 
 func (v *validator) validateStaticFilesRoute(ctx context.Context, route *Route, index int) {

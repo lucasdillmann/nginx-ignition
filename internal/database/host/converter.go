@@ -76,6 +76,7 @@ func toDomain(model *hostModel) (*host.Host, error) {
 			RedirectCode: route.RedirectCode,
 			AccessListID: route.AccessListID,
 			CacheID:      route.CacheID,
+			Protocol:     toRouteProtocol(route.Protocol),
 			Settings: host.RouteSettings{
 				IncludeForwardHeaders:   route.IncludeForwardHeaders,
 				ProxySSLServerName:      route.ProxySSLServerName,
@@ -176,6 +177,7 @@ func toModel(domain *host.Host) (*hostModel, error) {
 			SourcePath:              route.SourcePath,
 			TargetURI:               route.TargetURI,
 			CustomSettings:          route.Settings.Custom,
+			Protocol:                toRouteProtocolValue(route.Protocol),
 			StaticResponseCode:      responseStatusCode,
 			StaticResponsePayload:   responsePayload,
 			StaticResponseHeaders:   responseHeaders,
@@ -236,4 +238,20 @@ func formatHeaders(headers map[string]string) (*string, error) {
 		return nil, err
 	}
 	return new(string(result)), nil
+}
+
+func toRouteProtocol(value string) host.RouteProtocol {
+	if value == "" {
+		return host.HTTP11RouteProtocol
+	}
+
+	return host.RouteProtocol(value)
+}
+
+func toRouteProtocolValue(value host.RouteProtocol) string {
+	if value == "" {
+		return string(host.HTTP11RouteProtocol)
+	}
+
+	return string(value)
 }

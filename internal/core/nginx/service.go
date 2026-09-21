@@ -270,5 +270,6 @@ func (s *service) resolveSupportedFeatures(
 		RunCodeType: cfgfiles.SupportType(metadata.RunCodeSupportType()),
 		StreamType:  cfgfiles.SupportType(metadata.StreamSupportType()),
 		StatsType:   cfgfiles.SupportType(metadata.StatsSupportType()),
+		GRPCType:    cfgfiles.SupportType(metadata.GRPCSupportType()),
 	}, nil
 }

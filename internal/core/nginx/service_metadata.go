@@ -31,6 +31,7 @@ func (s *service) GetMetadata(ctx context.Context) (*Metadata, error) {
 	staticModules := s.extractStaticModules(configureArgs)
 	dynamicModules := s.extractDynamicModules(configureArgs)
 	modulesPath := s.extractModulesPath(configureArgs)
+	grpcDisabled := strings.Contains(configureArgs, "--without-http_grpc_module")
 	fileModules := s.listModuleFiles(modulesPath)
 	modules := s.mergeModules(staticModules, dynamicModules, fileModules)
 
@@ -43,6 +44,7 @@ func (s *service) GetMetadata(ctx context.Context) (*Metadata, error) {
 		BuildDetails:  buildDetails,
 		Modules:       modules,
 		tlsSniEnabled: tlsSniEnabled,
+		grpcDisabled:  grpcDisabled,
 	}, nil
 }
 

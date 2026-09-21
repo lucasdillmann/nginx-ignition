@@ -1,4 +1,4 @@
-FROM nginx:1.31.4-alpine AS builder
+FROM nginx:1.31.6-alpine AS builder
 
 RUN apk add --no-cache \
       gcc \
@@ -36,6 +36,7 @@ RUN --mount=type=cache,target=/root/.ccache \
     ./configure \
       --with-compat \
       --with-http_ssl_module \
+      --with-http_v2_module \
       --with-stream \
       --add-dynamic-module=/ngx_devel_kit \
       --add-dynamic-module=/lua-nginx-module \

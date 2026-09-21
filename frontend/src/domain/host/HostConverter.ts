@@ -10,6 +10,7 @@ import HostRequest, {
     HostBinding,
     HostRoute,
     HostRouteIntegration,
+    HostRouteProtocol,
     HostRouteStaticResponse,
     HostRouteType,
     HostVpn,
@@ -175,6 +176,7 @@ class HostConverter {
             redirectCode,
             sourceCode,
             cache,
+            protocol,
         } = route
         const response =
             type === HostRouteType.STATIC_RESPONSE && this.notNull(route.response)
@@ -206,6 +208,7 @@ class HostConverter {
             priority,
             enabled,
             type,
+            protocol: protocol ?? HostRouteProtocol.HTTP_1_1,
             settings,
             targetUri: targetUriForType,
             sourcePath,

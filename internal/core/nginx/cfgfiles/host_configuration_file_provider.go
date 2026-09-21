@@ -15,6 +15,11 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
 )
 
+const (
+	httpScheme  = "http://"
+	httpsScheme = "https://"
+)
+
 type hostConfigurationFileProvider struct {
 	integrationCommands integration.Commands
 }
@@ -309,7 +314,7 @@ func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 		headers,
 		r.Response.StatusCode,
 		r.Priority,
-		p.buildRouteFeatures(h.FeatureSet),
+		p.buildRouteFeatures(h.FeatureSet, r.Protocol),
 		p.buildRouteSettings(ctx, r),
 	)
 }
@@ -324,10 +329,12 @@ func (p *hostConfigurationFileProvider) buildProxyRoute(
 			%s
 			%s
 			%s
+			%s
 		}`,
 		r.SourcePath,
 		p.buildProxyPass(r),
-		p.buildRouteFeatures(features),
+		p.buildProtocolProxyVersion(r),
+		p.buildRouteFeatures(features, r.Protocol),
 		p.buildRouteSettings(ctx, r),
 	)
 }
@@ -355,7 +362,7 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 	}
 
 	if r.Integration.UseHTTPS {
-		proxyURL = new(strings.Replace(*proxyURL, "http://", "https://", 1))
+		proxyURL = new(strings.Replace(*proxyURL, httpScheme, httpsScheme, 1))
 	}
 
 	if r.TargetURI != nil && strings.TrimSpace(*r.TargetURI) != "" {
@@ -374,11 +381,13 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 			%s
 			%s
 			%s
+			%s
 		}`,
 		r.SourcePath,
 		dnsConfig,
 		p.buildProxyPass(r, *proxyURL),
-		p.buildRouteFeatures(features),
+		p.buildProtocolProxyVersion(r),
+		p.buildRouteFeatures(features, r.Protocol),
 		p.buildRouteSettings(ctx, r),
 	), nil
 }
@@ -397,7 +406,7 @@ func (p *hostConfigurationFileProvider) buildRedirectRoute(
 		r.SourcePath,
 		*r.RedirectCode,
 		*r.TargetURI,
-		p.buildRouteFeatures(features),
+		p.buildRouteFeatures(features, r.Protocol),
 		p.buildRouteSettings(ctx, r),
 	)
 }
@@ -439,15 +448,17 @@ func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(
 		headerBlock,
 		r.SourcePath,
 		routeBlock,
-		p.buildRouteFeatures(h.FeatureSet),
+		p.buildRouteFeatures(h.FeatureSet, r.Protocol),
 		p.buildRouteSettings(ctx, r),
 	), nil
 }
 
-func (p *hostConfigurationFileProvider) buildRouteFeatures(features host.FeatureSet) string {
-	if features.WebsocketSupport {
+func (p *hostConfigurationFileProvider) buildRouteFeatures(
+	features host.FeatureSet,
+	protocol host.RouteProtocol,
+) string {
+	if features.WebsocketSupport && protocol == host.HTTP11RouteProtocol {
 		return `
-			proxy_http_version 1.1;
 			proxy_set_header Upgrade $http_upgrade;
 			proxy_set_header Connection "upgrade";
 		`
@@ -467,14 +478,46 @@ func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...str
 	}
 
 	builder := strings.Builder{}
-	_, _ = fmt.Fprintf(&builder, "proxy_pass %s;", *targetURI)
+	grpcProtocol := r.Protocol == host.GRPCRouteProtocol
+
+	if grpcProtocol {
+		_, _ = fmt.Fprintf(&builder, "grpc_pass %s;", p.toGrpcURL(*targetURI))
+	} else {
+		_, _ = fmt.Fprintf(&builder, "proxy_pass %s;", *targetURI)
+	}
 
 	if r.Settings.KeepOriginalDomainName {
 		u, _ := url.Parse(*targetURI)
-		_, _ = fmt.Fprintf(&builder, "\nproxy_set_header Host %s;", u.Host)
+		if grpcProtocol {
+			_, _ = fmt.Fprintf(&builder, "\ngrpc_set_header Host %s;", u.Host)
+		} else {
+			_, _ = fmt.Fprintf(&builder, "\nproxy_set_header Host %s;", u.Host)
+		}
 	}
 
 	return builder.String()
+}
+
+func (p *hostConfigurationFileProvider) buildProtocolProxyVersion(r *host.Route) string {
+	switch r.Protocol {
+	case host.GRPCRouteProtocol:
+		return ""
+	case host.HTTP10RouteProtocol:
+		return "proxy_http_version 1.0;"
+	default:
+		return "proxy_http_version 1.1;"
+	}
+}
+
+func (p *hostConfigurationFileProvider) toGrpcURL(uri string) string {
+	switch {
+	case strings.HasPrefix(uri, httpsScheme):
+		return "grpcs://" + strings.TrimPrefix(uri, httpsScheme)
+	case strings.HasPrefix(uri, httpScheme):
+		return "grpc://" + strings.TrimPrefix(uri, httpScheme)
+	default:
+		return uri
+	}
 }
 
 func (p *hostConfigurationFileProvider) buildRouteSettings(
@@ -492,14 +535,17 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(
 	}
 
 	if r.Settings.IncludeForwardHeaders {
-		_, _ = builder.WriteString(`
-			proxy_set_header x-forwarded-for $proxy_add_x_forwarded_for;
-			proxy_set_header x-forwarded-host $host;
-			proxy_set_header x-forwarded-proto $scheme;
-			proxy_set_header x-forwarded-scheme $scheme;
-			proxy_set_header x-forwarded-port $server_port;
-			proxy_set_header x-real-ip $remote_addr;
-		`)
+		prefix := "proxy_set_header "
+		if r.Protocol == host.GRPCRouteProtocol {
+			prefix = "grpc_set_header "
+		}
+
+		_, _ = builder.WriteString(prefix + "x-forwarded-for $proxy_add_x_forwarded_for;\n")
+		_, _ = builder.WriteString(prefix + "x-forwarded-host $host;\n")
+		_, _ = builder.WriteString(prefix + "x-forwarded-proto $scheme;\n")
+		_, _ = builder.WriteString(prefix + "x-forwarded-scheme $scheme;\n")
+		_, _ = builder.WriteString(prefix + "x-forwarded-port $server_port;\n")
+		_, _ = builder.WriteString(prefix + "x-real-ip $remote_addr;\n")
 	}
 
 	if r.Settings.Custom != nil {

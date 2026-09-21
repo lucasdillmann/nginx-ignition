@@ -23,6 +23,7 @@ type SupportedFeatures struct {
 	StreamType  SupportType
 	RunCodeType SupportType
 	StatsType   SupportType
+	GRPCType    SupportType
 }
 
 type providerContext struct {

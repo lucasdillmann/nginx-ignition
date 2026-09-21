@@ -1,5 +1,5 @@
 import HostFormValues from "./HostFormValues"
-import { HostBindingType, HostRouteType } from "./HostRequest"
+import { HostBindingType, HostRouteProtocol, HostRouteType } from "./HostRequest"
 
 export function hostFormValuesDefaults(): HostFormValues {
     return {
@@ -20,6 +20,7 @@ export function hostFormValuesDefaults(): HostFormValues {
                 priority: 0,
                 enabled: true,
                 type: HostRouteType.PROXY,
+                protocol: HostRouteProtocol.HTTP_1_1,
                 sourcePath: "/",
                 targetUri: "",
                 settings: {

@@ -64,4 +64,17 @@ func Test_Metadata(t *testing.T) {
 			assert.Equal(t, NoneSupportType, metadata.RunCodeSupportType())
 		})
 	})
+
+	t.Run("GRPCSupportType", func(t *testing.T) {
+		t.Run("returns StaticSupportType when gRPC is built by default", func(t *testing.T) {
+			metadata := newMetadata()
+			assert.Equal(t, StaticSupportType, metadata.GRPCSupportType())
+		})
+
+		t.Run("returns NoneSupportType when gRPC is explicitly disabled", func(t *testing.T) {
+			metadata := newMetadata()
+			metadata.grpcDisabled = true
+			assert.Equal(t, NoneSupportType, metadata.GRPCSupportType())
+		})
+	})
 }

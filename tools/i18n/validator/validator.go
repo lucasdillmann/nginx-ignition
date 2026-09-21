@@ -15,6 +15,7 @@ var (
 	duplicatedValuesBypassPrefixes = []string{
 		"certificate/",
 		"frontend/nginx/control/feature-streams",
+		"frontend/nginx/control/feature-grpc",
 		"frontend/stream/form/backend-title",
 		"frontend/stream/utils/simple",
 		"frontend/certificate/renew-button",

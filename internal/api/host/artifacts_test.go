@@ -26,6 +26,7 @@ func newHostRequestDTO() hostRequestDTO {
 				Type:       new(host.ProxyRouteType),
 				SourcePath: new("/"),
 				TargetURI:  new("http://backend"),
+				Protocol:   new(host.HTTP11RouteProtocol),
 				Settings: &routeSettingsDTO{
 					IncludeForwardHeaders:  new(true),
 					IgnoreSSLErrors:        new(true),
@@ -68,6 +69,7 @@ func newHost() *host.Host {
 				Type:       host.ProxyRouteType,
 				SourcePath: "/",
 				TargetURI:  new("http://backend"),
+				Protocol:   host.HTTP11RouteProtocol,
 				Settings: host.RouteSettings{
 					IncludeForwardHeaders:  true,
 					IgnoreSSLErrors:        true,

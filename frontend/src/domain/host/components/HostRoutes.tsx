@@ -470,7 +470,7 @@ export default class HostRoutes extends React.Component<HostRoutesProps, HostRou
         const type = routes[index].type
 
         return (
-            <Flex className="host-form-route-container">
+            <Flex className="host-form-route-container" key={field.key}>
                 <Form.Item name={[name, "priority"]} hidden>
                     <InputNumber />
                 </Form.Item>

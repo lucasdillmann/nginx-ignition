@@ -175,6 +175,81 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			result := provider.buildProxyPass(r, "http://override:9090")
 			assert.Equal(t, "proxy_pass http://override:9090;", result)
 		})
+
+		t.Run("returns grpc_pass for grpc protocol", func(t *testing.T) {
+			r := &host.Route{
+				Protocol:  host.GRPCRouteProtocol,
+				TargetURI: new("http://backend:8080"),
+			}
+			result := provider.buildProxyPass(r)
+			assert.Equal(t, "grpc_pass grpc://backend:8080;", result)
+		})
+
+		t.Run("returns grpcs_pass for grpc protocol with https scheme", func(t *testing.T) {
+			r := &host.Route{
+				Protocol:  host.GRPCRouteProtocol,
+				TargetURI: new("https://backend:443"),
+			}
+			result := provider.buildProxyPass(r)
+			assert.Equal(t, "grpc_pass grpcs://backend:443;", result)
+		})
+
+		t.Run("sets Host header via grpc_set_header for grpc protocol", func(t *testing.T) {
+			r := &host.Route{
+				Protocol:  host.GRPCRouteProtocol,
+				TargetURI: new("http://backend:8080"),
+				Settings: host.RouteSettings{
+					KeepOriginalDomainName: true,
+				},
+			}
+			result := provider.buildProxyPass(r)
+			assert.Contains(t, result, "grpc_pass grpc://backend:8080;")
+			assert.Contains(t, result, "grpc_set_header Host backend:8080;")
+		})
+	})
+
+	t.Run("BuildProtocolProxyVersion", func(t *testing.T) {
+		provider := &hostConfigurationFileProvider{}
+
+		t.Run("returns HTTP 1.0 when protocol is HTTP_1_0", func(t *testing.T) {
+			r := &host.Route{Protocol: host.HTTP10RouteProtocol}
+			assert.Equal(t, "proxy_http_version 1.0;", provider.buildProtocolProxyVersion(r))
+		})
+
+		t.Run("returns HTTP 1.1 by default", func(t *testing.T) {
+			r := &host.Route{}
+			assert.Equal(t, "proxy_http_version 1.1;", provider.buildProtocolProxyVersion(r))
+		})
+
+		t.Run("returns HTTP 1.1 for HTTP_1_1 protocol", func(t *testing.T) {
+			r := &host.Route{Protocol: host.HTTP11RouteProtocol}
+			assert.Equal(t, "proxy_http_version 1.1;", provider.buildProtocolProxyVersion(r))
+		})
+
+		t.Run("returns empty for grpc protocol", func(t *testing.T) {
+			r := &host.Route{Protocol: host.GRPCRouteProtocol}
+			assert.Equal(t, "", provider.buildProtocolProxyVersion(r))
+		})
+	})
+
+	t.Run("ToGrpcURL", func(t *testing.T) {
+		provider := &hostConfigurationFileProvider{}
+
+		t.Run("converts http scheme to grpc", func(t *testing.T) {
+			assert.Equal(t, "grpc://backend:8080", provider.toGrpcURL("http://backend:8080"))
+		})
+
+		t.Run("converts https scheme to grpcs", func(t *testing.T) {
+			assert.Equal(t, "grpcs://backend:443", provider.toGrpcURL("https://backend:443"))
+		})
+
+		t.Run("leaves scheme-less uris unchanged", func(t *testing.T) {
+			assert.Equal(t, "backend:8080", provider.toGrpcURL("backend:8080"))
+		})
+
+		t.Run("leaves grpc uris unchanged", func(t *testing.T) {
+			assert.Equal(t, "grpc://backend:8080", provider.toGrpcURL("grpc://backend:8080"))
+		})
 	})
 
 	t.Run("BuildRedirectRoute", func(t *testing.T) {
@@ -291,6 +366,57 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			assert.NoError(t, err)
 			assert.Contains(t, result, "proxy_pass https://1.2.3.4:80;")
 		})
+
+		t.Run("generates grpc_pass for grpc protocol", func(t *testing.T) {
+			integrationID := uuid.New()
+			r := &host.Route{
+				SourcePath: "/api",
+				Protocol:   host.GRPCRouteProtocol,
+				Integration: &host.RouteIntegrationConfig{
+					IntegrationID: integrationID,
+					OptionID:      "opt-1",
+				},
+			}
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			integrationCmds := integration.NewMockedCommands(ctrl)
+			integrationCmds.EXPECT().
+				GetOptionURL(gomock.Any(), integrationID, "opt-1").
+				Return(new("http://1.2.3.4:80"), nil, nil)
+			provider.integrationCommands = integrationCmds
+
+			result, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
+			assert.NoError(t, err)
+			assert.Contains(t, result, "grpc_pass grpc://1.2.3.4:80;")
+		})
+
+		t.Run("generates grpcs_pass for grpc protocol with UseHTTPS", func(t *testing.T) {
+			integrationID := uuid.New()
+			r := &host.Route{
+				SourcePath: "/api",
+				Protocol:   host.GRPCRouteProtocol,
+				Integration: &host.RouteIntegrationConfig{
+					IntegrationID: integrationID,
+					OptionID:      "opt-1",
+					UseHTTPS:      true,
+				},
+			}
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			integrationCmds := integration.NewMockedCommands(ctrl)
+			integrationCmds.EXPECT().
+				GetOptionURL(gomock.Any(), integrationID, "opt-1").
+				Return(new("http://1.2.3.4:80"), nil, nil)
+			provider.integrationCommands = integrationCmds
+
+			result, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
+			assert.NoError(t, err)
+			assert.Contains(t, result, "grpc_pass grpcs://1.2.3.4:80;")
+		})
 	})
 
 	t.Run("BuildExecuteCodeRoute", func(t *testing.T) {
@@ -377,8 +503,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			features := host.FeatureSet{
 				WebsocketSupport: true,
 			}
-			result := provider.buildRouteFeatures(features)
-			assert.Contains(t, result, "proxy_http_version 1.1;")
+			result := provider.buildRouteFeatures(features, host.HTTP11RouteProtocol)
 			assert.Contains(t, result, "proxy_set_header Upgrade $http_upgrade;")
 			assert.Contains(t, result, "proxy_set_header Connection \"upgrade\";")
 		})
@@ -387,7 +512,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			features := host.FeatureSet{
 				WebsocketSupport: false,
 			}
-			assert.Equal(t, "", provider.buildRouteFeatures(features))
+			assert.Equal(t, "", provider.buildRouteFeatures(features, host.HTTP11RouteProtocol))
 		})
 	})
 
@@ -571,6 +696,31 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			_, err := provider.buildRoute(ctx, h, r)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "invalid route type")
+		})
+	})
+
+	t.Run("BuildProxyRoute", func(t *testing.T) {
+		provider := &hostConfigurationFileProvider{}
+		ctx := newProviderContext(t)
+
+		t.Run("emits proxy_http_version 1 for HTTP_1_0 protocol", func(t *testing.T) {
+			r := &host.Route{
+				SourcePath: "/",
+				Protocol:   host.HTTP10RouteProtocol,
+				TargetURI:  new("http://backend:8080"),
+			}
+			result := provider.buildProxyRoute(ctx, r, host.FeatureSet{})
+			assert.Contains(t, result, "proxy_http_version 1.0;")
+			assert.Contains(t, result, "proxy_pass http://backend:8080;")
+		})
+
+		t.Run("emits proxy_http_version 1.1 by default", func(t *testing.T) {
+			r := &host.Route{
+				SourcePath: "/",
+				TargetURI:  new("http://backend:8080"),
+			}
+			result := provider.buildProxyRoute(ctx, r, host.FeatureSet{})
+			assert.Contains(t, result, "proxy_http_version 1.1;")
 		})
 	})
 

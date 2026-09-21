@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/core/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/host"
 	"github.com/lucasdillmann/nginx-ignition/internal/core/settings"
 )
 
@@ -34,6 +35,7 @@ func Test_toDTO(t *testing.T) {
 		assert.True(t, *result.FeatureSet.StatsEnabled)
 		assert.Equal(t, "index.html", *result.Routes[0].Settings.IndexFile)
 		assert.True(t, *result.VPNs[0].EnableHTTPS)
+		assert.Equal(t, host.HTTP11RouteProtocol, *result.Routes[0].Protocol)
 	})
 
 	t.Run("returns nil when input is nil", func(t *testing.T) {
@@ -56,10 +58,18 @@ func Test_toDomain(t *testing.T) {
 		assert.True(t, result.FeatureSet.StatsEnabled)
 		assert.Equal(t, "index.html", *result.Routes[0].Settings.IndexFile)
 		assert.True(t, result.VPNs[0].EnableHTTPS)
+		assert.Equal(t, host.HTTP11RouteProtocol, result.Routes[0].Protocol)
 	})
 
 	t.Run("returns nil when input is nil", func(t *testing.T) {
 		result := toDomain(nil)
 		assert.Nil(t, result)
+	})
+
+	t.Run("defaults protocol to HTTP_1_1 when missing", func(t *testing.T) {
+		input := newHostRequestDTO()
+		input.Routes[0].Protocol = nil
+		result := toDomain(&input)
+		assert.Equal(t, host.HTTP11RouteProtocol, result.Routes[0].Protocol)
 	})
 }

@@ -1,4 +1,4 @@
-import { Form, FormItemProps, Input, Modal, Switch, Tabs } from "antd"
+import { Form, FormItemProps, Input, Modal, Select, Switch, Tabs } from "antd"
 import FormLayout from "../../../core/components/form/FormLayout"
 import TextArea from "antd/es/input/TextArea"
 import React from "react"
@@ -8,7 +8,7 @@ import PaginatedSelect from "../../../core/components/select/PaginatedSelect"
 import AccessListResponse from "../../accesslist/model/AccessListResponse"
 import PageResponse from "../../../core/pagination/PageResponse"
 import AccessListService from "../../accesslist/AccessListService"
-import { HostRouteType } from "../model/HostRequest"
+import { HostRouteProtocol, HostRouteType } from "../model/HostRequest"
 import { HostFormRoute } from "../model/HostFormValues"
 import CacheResponse from "../../cache/model/CacheResponse"
 import CacheService from "../../cache/CacheService"
@@ -21,6 +21,18 @@ const ACCESS_LIST_SUPPORTED_ROUTE_TYPES: HostRouteType[] = [
     HostRouteType.INTEGRATION,
     HostRouteType.PROXY,
     HostRouteType.STATIC_FILES,
+]
+
+const HOST_ROUTE_PROTOCOL_OPTIONS_DATA = [
+    {
+        value: HostRouteProtocol.HTTP_1_1,
+        messageKey: MessageKey.FrontendHostComponentsHostroutesettingsProtocolHttp11,
+    },
+    {
+        value: HostRouteProtocol.HTTP_1_0,
+        messageKey: MessageKey.FrontendHostComponentsHostroutesettingsProtocolHttp10,
+    },
+    { value: HostRouteProtocol.GRPC, messageKey: MessageKey.FrontendHostComponentsHostroutesettingsProtocolGrpc },
 ]
 
 const ItemProps: FormItemProps = {
@@ -239,6 +251,27 @@ export default class HostRouteSettingsModal extends React.Component<HostRouteSet
                         required
                     >
                         <Switch />
+                    </Form.Item>
+                </HostRouteConditionalConfig>
+                <HostRouteConditionalConfig route={route} types={PROXY_ROUTE_TYPES}>
+                    <Form.Item
+                        {...ItemProps}
+                        name={[fieldPath, "protocol"]}
+                        label={<I18n id={MessageKey.FrontendHostComponentsHostroutesettingsUpstreamProtocol} />}
+                        validateStatus={validationResult.getStatus(`routes[${index}].protocol`)}
+                        help={
+                            validationResult.getMessage(`routes[${index}].protocol`) ?? (
+                                <I18n id={MessageKey.FrontendHostComponentsHostroutesettingsUpstreamProtocolHelp} />
+                            )
+                        }
+                        required
+                    >
+                        <Select
+                            options={HOST_ROUTE_PROTOCOL_OPTIONS_DATA.map(item => ({
+                                value: item.value,
+                                label: <I18n id={item.messageKey} />,
+                            }))}
+                        />
                     </Form.Item>
                 </HostRouteConditionalConfig>
                 <HostRouteConditionalConfig route={route} types={PROXY_ROUTE_TYPES}>

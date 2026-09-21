@@ -33,6 +33,7 @@ type routeDTO struct {
 	AccessListID *uuid.UUID            `json:"accessListId"`
 	CacheID      *uuid.UUID            `json:"cacheId"`
 	SourceCode   *routeSourceCodeDTO   `json:"sourceCode"`
+	Protocol     *host.RouteProtocol   `json:"protocol"`
 }
 
 type routeSourceCodeDTO struct {

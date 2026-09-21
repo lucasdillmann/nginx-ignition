@@ -9,6 +9,7 @@ export interface NginxAvailableSupport {
     streams: NginxSupportType
     tlsSni: NginxSupportType
     stats: NginxSupportType
+    grpc: NginxSupportType
 }
 
 export interface NginxStatsConfig {

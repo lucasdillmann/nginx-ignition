@@ -171,6 +171,29 @@ func Test_validator(t *testing.T) {
 				assertViolations(t, err, i18n.K.CoreHostDuplicatedSourcePath)
 			})
 
+			t.Run("validates protocol", func(t *testing.T) {
+				hostValidator, mocks := setupValidator(t)
+				h := newHost()
+				h.Routes[0].Type = ProxyRouteType
+				h.Routes[0].TargetURI = new("http://backend")
+				h.Routes[0].Protocol = "INVALID"
+
+				mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+				mocks.repository.EXPECT().FindDefault(t.Context()).Return(nil, nil).AnyTimes()
+				mocks.binding.EXPECT().
+					Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+					Return(nil).
+					AnyTimes()
+
+				err := hostValidator.validate(t.Context(), h)
+				assertViolations(t, err, i18n.K.CommonInvalidValue)
+
+				h.Routes[0].Protocol = GRPCRouteProtocol
+				hostValidator = mocks.newValidator()
+				err = hostValidator.validate(t.Context(), h)
+				assert.NoError(t, err)
+			})
+
 			t.Run("validates route types", func(t *testing.T) {
 				t.Run("Proxy", func(t *testing.T) {
 					hostValidator, mocks := setupValidator(t)
