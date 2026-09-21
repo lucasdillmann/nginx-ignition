@@ -535,14 +535,17 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(
 	}
 
 	if r.Settings.IncludeForwardHeaders {
-		_, _ = builder.WriteString(`
-			proxy_set_header x-forwarded-for $proxy_add_x_forwarded_for;
-			proxy_set_header x-forwarded-host $host;
-			proxy_set_header x-forwarded-proto $scheme;
-			proxy_set_header x-forwarded-scheme $scheme;
-			proxy_set_header x-forwarded-port $server_port;
-			proxy_set_header x-real-ip $remote_addr;
-		`)
+		prefix := "proxy_set_header "
+		if r.Protocol == host.GRPCRouteProtocol {
+			prefix = "grpc_set_header "
+		}
+
+		_, _ = builder.WriteString(prefix + "x-forwarded-for $proxy_add_x_forwarded_for;\n")
+		_, _ = builder.WriteString(prefix + "x-forwarded-host $host;\n")
+		_, _ = builder.WriteString(prefix + "x-forwarded-proto $scheme;\n")
+		_, _ = builder.WriteString(prefix + "x-forwarded-scheme $scheme;\n")
+		_, _ = builder.WriteString(prefix + "x-forwarded-port $server_port;\n")
+		_, _ = builder.WriteString(prefix + "x-real-ip $remote_addr;\n")
 	}
 
 	if r.Settings.Custom != nil {
