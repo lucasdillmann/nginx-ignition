@@ -503,7 +503,7 @@ func (p *hostConfigurationFileProvider) buildProtocolProxyVersion(r *host.Route)
 	case host.GRPCRouteProtocol:
 		return ""
 	case host.HTTP10RouteProtocol:
-		return "proxy_http_version 1;"
+		return "proxy_http_version 1.0;"
 	default:
 		return "proxy_http_version 1.1;"
 	}

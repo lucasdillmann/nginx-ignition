@@ -213,7 +213,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 		t.Run("returns HTTP 1.0 when protocol is HTTP_1_0", func(t *testing.T) {
 			r := &host.Route{Protocol: host.HTTP10RouteProtocol}
-			assert.Equal(t, "proxy_http_version 1;", provider.buildProtocolProxyVersion(r))
+			assert.Equal(t, "proxy_http_version 1.0;", provider.buildProtocolProxyVersion(r))
 		})
 
 		t.Run("returns HTTP 1.1 by default", func(t *testing.T) {
@@ -710,7 +710,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				TargetURI:  new("http://backend:8080"),
 			}
 			result := provider.buildProxyRoute(ctx, r, host.FeatureSet{})
-			assert.Contains(t, result, "proxy_http_version 1;")
+			assert.Contains(t, result, "proxy_http_version 1.0;")
 			assert.Contains(t, result, "proxy_pass http://backend:8080;")
 		})
 
