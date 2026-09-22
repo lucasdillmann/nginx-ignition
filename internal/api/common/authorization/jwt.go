@@ -138,7 +138,7 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 }
 
 func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
-	windowSize, err := j.configuration.GetInt("refresh-window-seconds")
+	windowSize, err := j.configuration.GetInt("renew-window-seconds")
 	if err != nil {
 		return nil, err
 	}
@@ -154,11 +154,17 @@ func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
 	}
 
 	if time.Now().Add(time.Second * time.Duration(windowSize)).After(expiration.Time) {
-		newClaims := *subject.claims
+		newClaims := make(jwt.MapClaims, len(*subject.claims)+1)
+		for key, value := range *subject.claims {
+			newClaims[key] = value
+		}
+
+		newClaims["jti"] = uuid.New().String()
 		newClaims["exp"] = time.Now().
 			Add(time.Second * time.Duration(windowSize)).
 			Add(time.Second * time.Duration(clockSkewSeconds)).
 			Unix()
+
 		return j.sign(&newClaims)
 	}
 
