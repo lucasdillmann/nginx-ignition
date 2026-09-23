@@ -1,6 +1,8 @@
 package authorization
 
 import (
+	"cmp"
+	"slices"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -11,12 +13,17 @@ import (
 
 type PermissionResolver func(permissions user.Permissions) user.AccessLevel
 
+type pathPermissionResolver struct {
+	resolver PermissionResolver
+	path     string
+}
+
 type ABAC struct {
-	configuration           *configuration.Configuration
-	pathPermissionResolvers map[string]PermissionResolver
-	jwt                     *Jwt
-	anonymousPaths          []string
-	allowedForAllUsers      []string
+	configuration       *configuration.Configuration
+	permissionResolvers []pathPermissionResolver
+	jwt                 *Jwt
+	anonymousPaths      []string
+	allowedForAllUsers  []string
 }
 
 func New(cfg *configuration.Configuration, commands user.Commands) (*ABAC, error) {
@@ -26,10 +33,10 @@ func New(cfg *configuration.Configuration, commands user.Commands) (*ABAC, error
 	}
 
 	return &ABAC{
-		configuration:           cfg,
-		anonymousPaths:          []string{},
-		pathPermissionResolvers: map[string]PermissionResolver{},
-		jwt:                     jwt,
+		configuration:       cfg,
+		anonymousPaths:      []string{},
+		permissionResolvers: make([]pathPermissionResolver, 0),
+		jwt:                 jwt,
 	}, nil
 }
 
@@ -50,35 +57,34 @@ func (m *ABAC) ConfigureGroup(
 	path string,
 	permissionResolver PermissionResolver,
 ) *gin.RouterGroup {
-	m.pathPermissionResolvers[path] = permissionResolver
+	m.permissionResolvers = append(
+		m.permissionResolvers,
+		pathPermissionResolver{
+			path:     path,
+			resolver: permissionResolver,
+		},
+	)
+
+	slices.SortFunc(m.permissionResolvers, func(left, right pathPermissionResolver) int {
+		return cmp.Compare(len(right.path), len(left.path))
+	})
+
 	return router.Group(path)
 }
 
 func (m *ABAC) isAnonymous(method, path string) bool {
-	for _, p := range m.anonymousPaths {
-		if p == method+":"+path {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(m.anonymousPaths, method+":"+path)
 }
 
 func (m *ABAC) isAllowedForAllUsers(method, path string) bool {
-	for _, p := range m.allowedForAllUsers {
-		if p == method+":"+path {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(m.allowedForAllUsers, method+":"+path)
 }
 
 func (m *ABAC) isAccessGranted(method, path string, permissions *user.Permissions) bool {
 	currentAccessLevel := user.NoAccessAccessLevel
-	for basePath, resolver := range m.pathPermissionResolvers {
-		if strings.HasPrefix(path, basePath) {
-			currentAccessLevel = resolver(*permissions)
+	for _, item := range m.permissionResolvers {
+		if strings.HasPrefix(path, item.path) {
+			currentAccessLevel = item.resolver(*permissions)
 			break
 		}
 	}

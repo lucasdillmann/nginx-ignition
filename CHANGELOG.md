@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.45.1
+
+- Fix for the scenario where the wrong permission could be used to validate an API request (thanks @manus-pi 
+  [for the report](https://github.com/lucasdillmann/nginx-ignition/security/advisories/GHSA-xvfj-fpwj-fmx9)!)
+
 ## 2.45.0
 
 - Host routes now support the selection of the upstream protocol (HTTP/1.0, HTTP/1.1 or gRPC), enabling proxy and
