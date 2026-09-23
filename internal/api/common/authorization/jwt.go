@@ -15,6 +15,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
 	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
 	"github.com/lucasdillmann/nginx-ignition/internal/core/common/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/core/common/ttlcache"
 	"github.com/lucasdillmann/nginx-ignition/internal/core/user"
 )
 
@@ -27,7 +28,7 @@ const (
 type Jwt struct {
 	configuration *configuration.Configuration
 	commands      user.Commands
-	revokedIDs    []string
+	revokedTokens *ttlcache.Cache[string, any]
 	secretKey     []byte
 }
 
@@ -39,16 +40,21 @@ func newJwt(cfg *configuration.Configuration, commands user.Commands) (*Jwt, err
 		return nil, err
 	}
 
+	cacheTTL := 24 * time.Hour
+	if ttlSeconds, err := prefixedConfiguration.GetInt("ttl-seconds"); err == nil {
+		cacheTTL = time.Duration(ttlSeconds) * time.Second
+	}
+
 	return &Jwt{
 		configuration: prefixedConfiguration,
 		commands:      commands,
 		secretKey:     secretKey,
-		revokedIDs:    []string{},
+		revokedTokens: ttlcache.New[string, any](cacheTTL),
 	}, nil
 }
 
 func (j *Jwt) RevokeToken(tokenID string) {
-	j.revokedIDs = append(j.revokedIDs, tokenID)
+	j.revokedTokens.Set(tokenID, struct{}{})
 }
 
 func (j *Jwt) GenerateToken(usr *user.User) (*string, error) {
@@ -165,20 +171,24 @@ func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
 			Add(time.Second * time.Duration(clockSkewSeconds)).
 			Unix()
 
-		return j.sign(&newClaims)
+		result, err := j.sign(&newClaims)
+		if err != nil {
+			return nil, err
+		}
+
+		if previousJti, casted := (*subject.claims)["jti"].(string); casted {
+			j.revokedTokens.Set(previousJti, nil)
+		}
+
+		return result, nil
 	}
 
 	return nil, nil
 }
 
 func (j *Jwt) isRevoked(tokenID string) bool {
-	for _, id := range j.revokedIDs {
-		if id == tokenID {
-			return true
-		}
-	}
-
-	return false
+	_, found := j.revokedTokens.Get(tokenID)
+	return found
 }
 
 func (j *Jwt) sign(claims *jwt.MapClaims) (*string, error) {
