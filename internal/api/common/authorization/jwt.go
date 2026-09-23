@@ -69,7 +69,15 @@ func newJwt(cfg *configuration.Configuration, commands user.Commands) (*Jwt, err
 		return nil, errors.New("renew-window-seconds cannot be negative")
 	}
 
+	if renewWindowSeconds > ttlSeconds {
+		return nil, errors.New("renew-window-seconds cannot be bigger than ttl-seconds")
+	}
+
 	cacheTTL := (time.Duration(ttlSeconds) + time.Duration(clockSkewSeconds) + 1) * time.Second
+	revokedTokens, err := ttlcache.New[string, bool](cacheTTL)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Jwt{
 		commands:           commands,
@@ -77,7 +85,7 @@ func newJwt(cfg *configuration.Configuration, commands user.Commands) (*Jwt, err
 		ttlSeconds:         ttlSeconds,
 		clockSkewSeconds:   clockSkewSeconds,
 		renewWindowSeconds: renewWindowSeconds,
-		revokedTokens:      ttlcache.New[string, bool](cacheTTL),
+		revokedTokens:      revokedTokens,
 	}, nil
 }
 

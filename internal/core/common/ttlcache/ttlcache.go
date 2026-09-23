@@ -1,6 +1,7 @@
 package ttlcache
 
 import (
+	"errors"
 	"sync"
 	"time"
 )
@@ -16,7 +17,11 @@ type entry[V any] struct {
 	expiration time.Time
 }
 
-func New[K comparable, V any](ttl time.Duration) *Cache[K, V] {
+func New[K comparable, V any](ttl time.Duration) (*Cache[K, V], error) {
+	if ttl <= 0 {
+		return nil, errors.New("ttl cannot be zero or negative")
+	}
+
 	cache := &Cache[K, V]{
 		items: make(map[K]entry[V]),
 		ttl:   ttl,
@@ -24,7 +29,7 @@ func New[K comparable, V any](ttl time.Duration) *Cache[K, V] {
 
 	go cache.cleanupLoop()
 
-	return cache
+	return cache, nil
 }
 
 func (c *Cache[K, V]) Set(key K, value V) {

@@ -133,7 +133,7 @@ func Test_Jwt_RefreshToken(t *testing.T) {
 
 	t.Run("returns a new token when within the renewal window", func(t *testing.T) {
 		authorizer, _ := newAuthorizerWithOverrides(t, map[string]string{
-			"nginx-ignition.security.jwt.renew-window-seconds": "7200",
+			"nginx-ignition.security.jwt.renew-window-seconds": "30",
 		})
 		usr := newUser()
 		token, _ := authorizer.Jwt().GenerateToken(usr)
@@ -174,6 +174,67 @@ func Test_New(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, authorizer)
+	})
+
+	t.Run("returns an error when ttl-seconds is less than 30", func(t *testing.T) {
+		controller := gomock.NewController(t)
+		commands := user.NewMockedCommands(controller)
+		cfg := configuration.NewWithOverrides(map[string]string{
+			"nginx-ignition.security.jwt.secret":      testJwtSecret,
+			"nginx-ignition.security.jwt.ttl-seconds": "10",
+		})
+
+		authorizer, err := New(cfg, commands)
+
+		assert.Error(t, err)
+		assert.Nil(t, authorizer)
+		assert.Contains(t, err.Error(), "ttl-seconds cannot be less than 30")
+	})
+
+	t.Run("returns an error when clock-skew-seconds is negative", func(t *testing.T) {
+		controller := gomock.NewController(t)
+		commands := user.NewMockedCommands(controller)
+		cfg := configuration.NewWithOverrides(map[string]string{
+			"nginx-ignition.security.jwt.secret":             testJwtSecret,
+			"nginx-ignition.security.jwt.clock-skew-seconds": "-1",
+		})
+
+		authorizer, err := New(cfg, commands)
+
+		assert.Error(t, err)
+		assert.Nil(t, authorizer)
+		assert.Contains(t, err.Error(), "clock-skew-seconds cannot be negative")
+	})
+
+	t.Run("returns an error when renew-window-seconds is negative", func(t *testing.T) {
+		controller := gomock.NewController(t)
+		commands := user.NewMockedCommands(controller)
+		cfg := configuration.NewWithOverrides(map[string]string{
+			"nginx-ignition.security.jwt.secret":               testJwtSecret,
+			"nginx-ignition.security.jwt.renew-window-seconds": "-1",
+		})
+
+		authorizer, err := New(cfg, commands)
+
+		assert.Error(t, err)
+		assert.Nil(t, authorizer)
+		assert.Contains(t, err.Error(), "renew-window-seconds cannot be negative")
+	})
+
+	t.Run("returns an error when renew-window-seconds > ttl-seconds", func(t *testing.T) {
+		controller := gomock.NewController(t)
+		commands := user.NewMockedCommands(controller)
+		cfg := configuration.NewWithOverrides(map[string]string{
+			"nginx-ignition.security.jwt.secret":               testJwtSecret,
+			"nginx-ignition.security.jwt.ttl-seconds":          "60",
+			"nginx-ignition.security.jwt.renew-window-seconds": "120",
+		})
+
+		authorizer, err := New(cfg, commands)
+
+		assert.Error(t, err)
+		assert.Nil(t, authorizer)
+		assert.Contains(t, err.Error(), "renew-window-seconds cannot be bigger than ttl-seconds")
 	})
 }
 

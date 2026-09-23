@@ -106,7 +106,7 @@ func Test_RequestHandler(t *testing.T) {
 
 		t.Run("refreshes the token when within the renewal window", func(t *testing.T) {
 			setup := newRequestHandlerSetup(t, map[string]string{
-				"nginx-ignition.security.jwt.renew-window-seconds": "7200",
+				"nginx-ignition.security.jwt.renew-window-seconds": "30",
 			})
 			usr := newUser()
 			usr.Permissions.NginxServer = user.ReadOnlyAccessLevel
