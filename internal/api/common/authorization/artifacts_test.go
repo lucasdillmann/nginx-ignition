@@ -55,7 +55,10 @@ func newAuthorizerWithOverrides(
 	commands := user.NewMockedCommands(controller)
 
 	configOverrides := map[string]string{
-		"nginx-ignition.security.jwt.secret": testJwtSecret,
+		"nginx-ignition.security.jwt.secret":               testJwtSecret,
+		"nginx-ignition.security.jwt.clock-skew-seconds":   "0",
+		"nginx-ignition.security.jwt.ttl-seconds":          "30",
+		"nginx-ignition.security.jwt.renew-window-seconds": "10",
 	}
 	for key, value := range overrides {
 		configOverrides[key] = value

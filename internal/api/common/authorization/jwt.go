@@ -26,10 +26,12 @@ const (
 )
 
 type Jwt struct {
-	configuration *configuration.Configuration
-	commands      user.Commands
-	revokedTokens *ttlcache.Cache[string, any]
-	secretKey     []byte
+	commands           user.Commands
+	revokedTokens      *ttlcache.Cache[string, bool]
+	secretKey          []byte
+	ttlSeconds         int
+	clockSkewSeconds   int
+	renewWindowSeconds int
 }
 
 func newJwt(cfg *configuration.Configuration, commands user.Commands) (*Jwt, error) {
@@ -40,38 +42,54 @@ func newJwt(cfg *configuration.Configuration, commands user.Commands) (*Jwt, err
 		return nil, err
 	}
 
-	cacheTTL := 24 * time.Hour
-	if ttlSeconds, err := prefixedConfiguration.GetInt("ttl-seconds"); err == nil {
-		cacheTTL = time.Duration(ttlSeconds) * time.Second
+	ttlSeconds, err := prefixedConfiguration.GetInt("ttl-seconds")
+	if err != nil {
+		return nil, err
 	}
 
+	if ttlSeconds < 30 {
+		return nil, errors.New("ttl-seconds cannot be less than 30")
+	}
+
+	clockSkewSeconds, err := prefixedConfiguration.GetInt("clock-skew-seconds")
+	if err != nil {
+		return nil, err
+	}
+
+	if clockSkewSeconds < 0 {
+		return nil, errors.New("clock-skew-seconds cannot be negative")
+	}
+
+	renewWindowSeconds, err := prefixedConfiguration.GetInt("renew-window-seconds")
+	if err != nil {
+		return nil, err
+	}
+
+	if renewWindowSeconds < 0 {
+		return nil, errors.New("renew-window-seconds cannot be negative")
+	}
+
+	cacheTTL := (time.Duration(ttlSeconds) + time.Duration(clockSkewSeconds) + 1) * time.Second
+
 	return &Jwt{
-		configuration: prefixedConfiguration,
-		commands:      commands,
-		secretKey:     secretKey,
-		revokedTokens: ttlcache.New[string, any](cacheTTL),
+		commands:           commands,
+		secretKey:          secretKey,
+		ttlSeconds:         ttlSeconds,
+		clockSkewSeconds:   clockSkewSeconds,
+		renewWindowSeconds: renewWindowSeconds,
+		revokedTokens:      ttlcache.New[string, bool](cacheTTL),
 	}, nil
 }
 
 func (j *Jwt) RevokeToken(tokenID string) {
-	j.revokedTokens.Set(tokenID, struct{}{})
+	j.revokedTokens.Set(tokenID, true)
 }
 
 func (j *Jwt) GenerateToken(usr *user.User) (*string, error) {
-	ttlSeconds, err := j.configuration.GetInt("ttl-seconds")
-	if err != nil {
-		return nil, err
-	}
-
-	clockSkewSeconds, err := j.configuration.GetInt("clock-skew-seconds")
-	if err != nil {
-		return nil, err
-	}
-
-	notBefore := time.Now().Add(time.Second * time.Duration(clockSkewSeconds) * -1).Unix()
+	notBefore := time.Now().Add(time.Second * time.Duration(j.clockSkewSeconds) * -1).Unix()
 	expiresAt := time.Now().
-		Add(time.Second * time.Duration(ttlSeconds)).
-		Add(time.Second * time.Duration(clockSkewSeconds)).
+		Add(time.Second * time.Duration(j.ttlSeconds)).
+		Add(time.Second * time.Duration(j.clockSkewSeconds)).
 		Unix()
 
 	claims := jwt.MapClaims{
@@ -144,22 +162,12 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 }
 
 func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
-	windowSize, err := j.configuration.GetInt("renew-window-seconds")
-	if err != nil {
-		return nil, err
-	}
-
-	clockSkewSeconds, err := j.configuration.GetInt("clock-skew-seconds")
-	if err != nil {
-		return nil, err
-	}
-
 	expiration, err := subject.claims.GetExpirationTime()
 	if err != nil {
 		return nil, err
 	}
 
-	if time.Now().Add(time.Second * time.Duration(windowSize)).After(expiration.Time) {
+	if time.Now().Add(time.Second * time.Duration(j.renewWindowSeconds)).After(expiration.Time) {
 		newClaims := make(jwt.MapClaims, len(*subject.claims)+1)
 		for key, value := range *subject.claims {
 			newClaims[key] = value
@@ -167,8 +175,8 @@ func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
 
 		newClaims["jti"] = uuid.New().String()
 		newClaims["exp"] = time.Now().
-			Add(time.Second * time.Duration(windowSize)).
-			Add(time.Second * time.Duration(clockSkewSeconds)).
+			Add(time.Second * time.Duration(j.renewWindowSeconds)).
+			Add(time.Second * time.Duration(j.clockSkewSeconds)).
 			Unix()
 
 		result, err := j.sign(&newClaims)
@@ -177,7 +185,7 @@ func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
 		}
 
 		if previousJti, casted := (*subject.claims)["jti"].(string); casted {
-			j.revokedTokens.Set(previousJti, nil)
+			j.revokedTokens.Set(previousJti, true)
 		}
 
 		return result, nil
@@ -187,8 +195,8 @@ func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
 }
 
 func (j *Jwt) isRevoked(tokenID string) bool {
-	_, found := j.revokedTokens.Get(tokenID)
-	return found
+	_, ok := j.revokedTokens.Get(tokenID)
+	return ok
 }
 
 func (j *Jwt) sign(claims *jwt.MapClaims) (*string, error) {
