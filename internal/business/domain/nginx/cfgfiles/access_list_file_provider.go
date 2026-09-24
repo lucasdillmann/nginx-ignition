@@ -56,19 +56,24 @@ func (p *accessListFileProvider) buildConfFile(
 		for _, sourceAddress := range entry.SourceAddress {
 			entriesContents = append(
 				entriesContents,
-				fmt.Sprintf("%s %s;", toNginxOperation(entry.Outcome), sourceAddress),
+				nginxSprintf(
+					"%s %s;",
+					directiveFragment(toNginxOperation(entry.Outcome)),
+					sourceAddress,
+				),
 			)
 		}
 	}
 
 	usernamePasswordContents := ""
 	if len(accessList.Credentials) > 0 {
-		usernamePasswordContents = fmt.Sprintf(
+		usernamePasswordContents = nginxSprintf(
 			`
-				auth_basic "%s"; 
-				auth_basic_user_file "%saccess-list-%s.htpasswd";
+				auth_basic %s;
+				auth_basic_user_file %s;
 			`,
-			accessList.Realm, paths.Config, accessList.ID,
+			accessList.Realm,
+			paths.Config+"access-list-"+accessList.ID.String()+".htpasswd",
 		)
 	}
 
@@ -86,13 +91,13 @@ func (p *accessListFileProvider) buildConfFile(
 		forwardHeadersContents = `proxy_set_header Authorization "";`
 	}
 
-	contents := fmt.Sprintf(
+	contents := nginxSprintf(
 		"%s\n%s\n%s all;\n%s\n%s",
-		satisfyContents,
-		strings.Join(entriesContents, "\n"),
-		toNginxOperation(accessList.DefaultOutcome),
-		usernamePasswordContents,
-		forwardHeadersContents,
+		directiveFragment(satisfyContents),
+		directiveFragment(strings.Join(entriesContents, "\n")),
+		directiveFragment(toNginxOperation(accessList.DefaultOutcome)),
+		directiveFragment(usernamePasswordContents),
+		directiveFragment(forwardHeadersContents),
 	)
 
 	return &File{
@@ -109,7 +114,10 @@ func (p *accessListFileProvider) buildHtpasswdFile(accessList *accesslist2.Acces
 	contents := make([]string, 0)
 	for _, credential := range accessList.Credentials {
 		hash := apr1_crypt.Crypt(credential.Password, apr1_crypt.GenerateSalt(8))
-		contents = append(contents, fmt.Sprintf("%s:%s", credential.Username, hash))
+		contents = append(
+			contents,
+			fmt.Sprintf("%s:%s", sanitizeHtpasswdUsername(credential.Username), hash),
+		)
 	}
 
 	return &File{

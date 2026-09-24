@@ -82,8 +82,8 @@ func Test_accessListFileProvider(t *testing.T) {
 
 			file := provider.buildConfFile(&accessList, paths)
 			assert.Equal(t, fmt.Sprintf("access-list-%s.conf", id), file.Name)
-			assert.Contains(t, file.Contents, "allow 10.0.0.1;")
-			assert.Contains(t, file.Contents, "allow 10.0.0.2;")
+			assert.Contains(t, file.Contents, "allow \"10.0.0.1\";")
+			assert.Contains(t, file.Contents, "allow \"10.0.0.2\";")
 			assert.Contains(t, file.Contents, "deny all;")
 			assert.Contains(t, file.Contents, "satisfy any;")
 		})

@@ -3,7 +3,9 @@ package stream
 import (
 	"context"
 	"fmt"
+	"net"
 	"strings"
+	"unicode"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/constants"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
@@ -185,12 +187,23 @@ func (v *validator) validateAddressValue(ctx context.Context, fieldPrefix string
 		return
 	}
 
-	if address.Protocol == SocketProtocol && !strings.HasPrefix(address.Address, "/") {
-		v.delegate.Add(
-			fieldPrefix+".protocol",
-			i18n.M(ctx, i18n.K.CommonStartsWithSlashRequired),
-		)
+	if address.Protocol == SocketProtocol {
+		if !strings.HasPrefix(address.Address, "/") {
+			v.delegate.Add(
+				fieldPrefix+".protocol",
+				i18n.M(ctx, i18n.K.CommonStartsWithSlashRequired),
+			)
+			return
+		}
+
+		if strings.IndexFunc(address.Address, unicode.IsControl) >= 0 {
+			v.delegate.Add(fieldPrefix+".address", i18n.M(ctx, i18n.K.CommonInvalidValue))
+		}
 		return
+	}
+
+	if net.ParseIP(address.Address) == nil && !constants.TLDPattern.MatchString(address.Address) {
+		v.delegate.Add(fieldPrefix+".address", i18n.M(ctx, i18n.K.CommonInvalidValue))
 	}
 }
 

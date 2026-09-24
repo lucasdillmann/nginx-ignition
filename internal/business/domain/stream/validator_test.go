@@ -112,6 +112,34 @@ func Test_validator(t *testing.T) {
 				assertViolations(t, err, i18n.K.CommonBetweenValues)
 			})
 
+			t.Run("network address validation", func(t *testing.T) {
+				for _, address := range []string{
+					"127.0.0.1",
+					"::1",
+					"backend.example.com",
+				} {
+					s := newStream()
+					s.Binding.Address = address
+					require.NoError(t, validate(s))
+				}
+
+				for _, address := range []string{
+					"backend",
+					"127.0.0.1:80",
+					"127.0.0.1; } server { listen 20000; }",
+					"backend name",
+					"backend\\name",
+				} {
+					s := newStream()
+					s.Binding.Address = address
+					assertViolations(t, validate(s), i18n.K.CommonInvalidValue)
+				}
+
+				s := newStream()
+				s.Binding.Address = ""
+				assertViolations(t, validate(s), i18n.K.CommonCannotBeEmpty)
+			})
+
 			t.Run("socket protocol validation", func(t *testing.T) {
 				s := newStream()
 				s.Binding.Protocol = SocketProtocol

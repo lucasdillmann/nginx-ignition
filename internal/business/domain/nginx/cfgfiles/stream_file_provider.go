@@ -2,6 +2,8 @@ package cfgfiles
 
 import (
 	"fmt"
+	"net"
+	"strconv"
 	"strings"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/coreerror"
@@ -62,7 +64,11 @@ func (p *streamFileProvider) buildSimpleStream(s *stream.Stream) (*string, error
 		return nil, err
 	}
 
-	return p.buildStream(s, *upstream, fmt.Sprintf("proxy_pass %s;", upstreamID))
+	return p.buildStream(
+		s,
+		*upstream,
+		nginxSprintf("proxy_pass %s;", upstreamID),
+	)
 }
 
 func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
@@ -71,10 +77,14 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 
 	switch s.Binding.Protocol {
 	case stream.SocketProtocol:
-		_, _ = fmt.Fprintf(&instruction, "unix:\"%s\"", s.Binding.Address)
+		nginxFprintf(&instruction, "%s", "unix:"+s.Binding.Address)
 
 	case stream.TCPProtocol:
-		_, _ = fmt.Fprintf(&instruction, "%s:%d", s.Binding.Address, *s.Binding.Port)
+		nginxFprintf(
+			&instruction,
+			"%s",
+			net.JoinHostPort(s.Binding.Address, strconv.Itoa(*s.Binding.Port)),
+		)
 
 		if s.FeatureSet.UseProxyProtocol {
 			_, _ = instruction.WriteString(" proxy_protocol")
@@ -89,7 +99,11 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 		}
 
 	case stream.UDPProtocol:
-		_, _ = fmt.Fprintf(&instruction, "%s:%d udp", s.Binding.Address, *s.Binding.Port)
+		nginxFprintf(
+			&instruction,
+			"%s udp",
+			net.JoinHostPort(s.Binding.Address, strconv.Itoa(*s.Binding.Port)),
+		)
 
 	default:
 		return nil, fmt.Errorf("unknown binding protocol: %s", s.Binding.Protocol)
@@ -109,27 +123,31 @@ func (p *streamFileProvider) buildUpstream(
 	name string,
 ) (*string, error) {
 	instructions := strings.Builder{}
-	_, _ = fmt.Fprintf(&instructions, "upstream %s {\n", name)
+	nginxFprintf(&instructions, "upstream %s {\n", name)
 
 	for _, backend := range backends {
 		address := backend.Address
 		switch address.Protocol {
 		case stream.SocketProtocol:
-			_, _ = fmt.Fprintf(&instructions, "server unix:\"%s\"", address.Address)
+			nginxFprintf(&instructions, "server %s", "unix:"+address.Address)
 
 		case stream.TCPProtocol, stream.UDPProtocol:
-			_, _ = fmt.Fprintf(&instructions, "server %s:%d", address.Address, *address.Port)
+			nginxFprintf(
+				&instructions,
+				"server %s",
+				net.JoinHostPort(address.Address, strconv.Itoa(*address.Port)),
+			)
 
 		default:
 			return nil, fmt.Errorf("unknown backend protocol: %s", address.Protocol)
 		}
 
 		if backend.Weight != nil {
-			_, _ = fmt.Fprintf(&instructions, " weight=%d", *backend.Weight)
+			nginxFprintf(&instructions, " weight=%d", *backend.Weight)
 		}
 
 		if backend.CircuitBreaker != nil {
-			_, _ = fmt.Fprintf(
+			nginxFprintf(
 				&instructions,
 				" max_fails=%d fail_timeout=%ds",
 				backend.CircuitBreaker.MaxFailures,
@@ -157,7 +175,7 @@ func (p *streamFileProvider) buildRoutedStream(
 
 	mapping := strings.Builder{}
 	mappingID := fmt.Sprintf("$stream_%s_router", nginxID(s))
-	_, _ = fmt.Fprintf(&mapping, "map $ssl_preread_server_name %s {\n", mappingID)
+	nginxFprintf(&mapping, "map $ssl_preread_server_name %s {\n", mappingID)
 
 	upstreams := strings.Builder{}
 	for routeIndex, route := range s.Routes {
@@ -170,7 +188,7 @@ func (p *streamFileProvider) buildRoutedStream(
 		_, _ = upstreams.WriteString(*upstream + "\n")
 
 		for _, domainName := range route.DomainNames {
-			_, _ = fmt.Fprintf(&mapping, "%s %s;\n", domainName, routeID)
+			nginxFprintf(&mapping, "%s %s;\n", domainName, routeID)
 		}
 	}
 
@@ -181,8 +199,8 @@ func (p *streamFileProvider) buildRoutedStream(
 	}
 
 	_, _ = upstreams.WriteString(*defaultUpstream + "\n")
-	_, _ = fmt.Fprintf(&mapping, "default %s;\n}", defaultUpstreamID)
-	instructions := fmt.Sprintf(
+	nginxFprintf(&mapping, "default %s;\n}", defaultUpstreamID)
+	instructions := nginxSprintf(
 		`
 			ssl_preread on;
 			proxy_pass %s;
@@ -211,7 +229,7 @@ func (p *streamFileProvider) buildStream(
 		socketKeepAlive = "proxy_socket_keepalive on;"
 	}
 
-	return new(fmt.Sprintf(
+	return new(nginxSprintf(
 		`
 		%s 
 
@@ -222,11 +240,11 @@ func (p *streamFileProvider) buildStream(
 			%s
 		}
 		`,
-		upstreams,
-		*binding,
-		tcpNoDelay,
-		socketKeepAlive,
-		instructions,
+		directiveFragment(upstreams),
+		directiveFragment(*binding),
+		directiveFragment(tcpNoDelay),
+		directiveFragment(socketKeepAlive),
+		directiveFragment(instructions),
 	)), nil
 }
 

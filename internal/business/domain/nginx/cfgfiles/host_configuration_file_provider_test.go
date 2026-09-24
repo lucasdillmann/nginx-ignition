@@ -46,8 +46,8 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		assert.Len(t, files, 1)
 		assert.Equal(t, fmt.Sprintf("host-%s.conf", h.ID), files[0].Name)
 		assert.Contains(t, files[0].Contents, "server_name _;")
-		assert.Contains(t, files[0].Contents, "listen 0.0.0.0:80 default_server;")
-		assert.Contains(t, files[0].Contents, "proxy_pass http://backend:8080;")
+		assert.Contains(t, files[0].Contents, "listen \"0.0.0.0:80\" default_server;")
+		assert.Contains(t, files[0].Contents, "proxy_pass \"http://backend:8080\";")
 	})
 
 	t.Run("Provide with traffic stats enabled", func(t *testing.T) {
@@ -140,7 +140,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			}
 			assert.Equal(
 				t,
-				"server_name example.com www.example.com;",
+				"server_name \"example.com\" \"www.example.com\";",
 				provider.buildServerNames(h),
 			)
 		})
@@ -153,7 +153,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			r := &host.Route{
 				TargetURI: new("http://backend:8080"),
 			}
-			assert.Equal(t, "proxy_pass http://backend:8080;", provider.buildProxyPass(r))
+			assert.Equal(t, "proxy_pass \"http://backend:8080\";", provider.buildProxyPass(r))
 		})
 
 		t.Run("sets Host header when KeepOriginalDomainName is true", func(t *testing.T) {
@@ -164,8 +164,8 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				},
 			}
 			result := provider.buildProxyPass(r)
-			assert.Contains(t, result, "proxy_pass http://backend:8080;")
-			assert.Contains(t, result, "proxy_set_header Host backend:8080;")
+			assert.Contains(t, result, `proxy_pass "http://backend:8080";`)
+			assert.Contains(t, result, `proxy_set_header Host "backend:8080";`)
 		})
 
 		t.Run("handles custom target URI override", func(t *testing.T) {
@@ -173,7 +173,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				TargetURI: new("http://default:8080"),
 			}
 			result := provider.buildProxyPass(r, "http://override:9090")
-			assert.Equal(t, "proxy_pass http://override:9090;", result)
+			assert.Equal(t, `proxy_pass "http://override:9090";`, result)
 		})
 
 		t.Run("returns grpc_pass for grpc protocol", func(t *testing.T) {
@@ -182,7 +182,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				TargetURI: new("http://backend:8080"),
 			}
 			result := provider.buildProxyPass(r)
-			assert.Equal(t, "grpc_pass grpc://backend:8080;", result)
+			assert.Equal(t, `grpc_pass "grpc://backend:8080";`, result)
 		})
 
 		t.Run("returns grpcs_pass for grpc protocol with https scheme", func(t *testing.T) {
@@ -191,7 +191,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				TargetURI: new("https://backend:443"),
 			}
 			result := provider.buildProxyPass(r)
-			assert.Equal(t, "grpc_pass grpcs://backend:443;", result)
+			assert.Equal(t, `grpc_pass "grpcs://backend:443";`, result)
 		})
 
 		t.Run("sets Host header via grpc_set_header for grpc protocol", func(t *testing.T) {
@@ -203,8 +203,8 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				},
 			}
 			result := provider.buildProxyPass(r)
-			assert.Contains(t, result, "grpc_pass grpc://backend:8080;")
-			assert.Contains(t, result, "grpc_set_header Host backend:8080;")
+			assert.Contains(t, result, `grpc_pass "grpc://backend:8080";`)
+			assert.Contains(t, result, `grpc_set_header Host "backend:8080";`)
 		})
 	})
 
@@ -263,8 +263,8 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				TargetURI:    new("http://new.example.com"),
 			}
 			result := provider.buildRedirectRoute(ctx, r, host.FeatureSet{})
-			assert.Contains(t, result, "location /old {")
-			assert.Contains(t, result, "return 301 http://new.example.com;")
+			assert.Contains(t, result, `location "/old" {`)
+			assert.Contains(t, result, `return 301 "http://new.example.com";`)
 		})
 	})
 
@@ -293,9 +293,9 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 			result, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
 			assert.NoError(t, err)
-			assert.Contains(t, result, "location /api {")
-			assert.Contains(t, result, "resolver 8.8.8.8 8.8.4.4 valid=5s;")
-			assert.Contains(t, result, "proxy_pass http://1.2.3.4:80;")
+			assert.Contains(t, result, `location "/api" {`)
+			assert.Contains(t, result, `resolver "8.8.8.8" "8.8.4.4" valid=5s;`)
+			assert.Contains(t, result, `proxy_pass "http://1.2.3.4:80";`)
 		})
 
 		t.Run("generates integration route config with target URI", func(t *testing.T) {
@@ -320,7 +320,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 			result, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
 			assert.NoError(t, err)
-			assert.Contains(t, result, "proxy_pass http://1.2.3.4:80/v1/resource;")
+			assert.Contains(t, result, `proxy_pass "http://1.2.3.4:80/v1/resource";`)
 		})
 
 		t.Run("returns error when integration option not found", func(t *testing.T) {
@@ -364,7 +364,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 			result, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
 			assert.NoError(t, err)
-			assert.Contains(t, result, "proxy_pass https://1.2.3.4:80;")
+			assert.Contains(t, result, `proxy_pass "https://1.2.3.4:80";`)
 		})
 
 		t.Run("generates grpc_pass for grpc protocol", func(t *testing.T) {
@@ -389,7 +389,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 			result, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
 			assert.NoError(t, err)
-			assert.Contains(t, result, "grpc_pass grpc://1.2.3.4:80;")
+			assert.Contains(t, result, `grpc_pass "grpc://1.2.3.4:80";`)
 		})
 
 		t.Run("generates grpcs_pass for grpc protocol with UseHTTPS", func(t *testing.T) {
@@ -415,7 +415,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 
 			result, err := provider.buildIntegrationRoute(ctx, r, host.FeatureSet{})
 			assert.NoError(t, err)
-			assert.Contains(t, result, "grpc_pass grpcs://1.2.3.4:80;")
+			assert.Contains(t, result, `grpc_pass "grpcs://1.2.3.4:80";`)
 		})
 	})
 
@@ -440,7 +440,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				result,
 				fmt.Sprintf("js_import route_1 from \"/etc/nginx/host-%s-route-1.js\";", h.ID),
 			)
-			assert.Contains(t, result, "js_content route_1.handler;")
+			assert.Contains(t, result, `js_content "route_1.handler";`)
 		})
 
 		t.Run("generates lua route config", func(t *testing.T) {
@@ -630,7 +630,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				"",
 			)
 			assert.NoError(t, err)
-			assert.Contains(t, result, "listen 127.0.0.1:8080 ;")
+			assert.Contains(t, result, `listen "127.0.0.1:8080" ;`)
 		})
 
 		t.Run("generates HTTPS binding", func(t *testing.T) {
@@ -652,7 +652,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				"",
 			)
 			assert.NoError(t, err)
-			assert.Contains(t, result, "listen 0.0.0.0:443 ssl ;")
+			assert.Contains(t, result, `listen "0.0.0.0:443" ssl ;`)
 			assert.Contains(
 				t,
 				result,
@@ -711,7 +711,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 			}
 			result := provider.buildProxyRoute(ctx, r, host.FeatureSet{})
 			assert.Contains(t, result, "proxy_http_version 1.0;")
-			assert.Contains(t, result, "proxy_pass http://backend:8080;")
+			assert.Contains(t, result, `proxy_pass "http://backend:8080";`)
 		})
 
 		t.Run("emits proxy_http_version 1.1 by default", func(t *testing.T) {
@@ -762,21 +762,21 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		t.Run("generates comprehensive cache config", func(t *testing.T) {
 			result := provider.buildCacheConfig(caches, &cacheID)
 			cacheIDNoDashes := strings.ReplaceAll(cacheID.String(), "-", "")
-			assert.Contains(t, result, fmt.Sprintf("proxy_cache cache_%s;", cacheIDNoDashes))
+			assert.Contains(t, result, fmt.Sprintf(`proxy_cache "cache_%s";`, cacheIDNoDashes))
 			assert.Contains(t, result, "proxy_cache_min_uses 2;")
 			assert.Contains(t, result, "proxy_cache_background_update on;")
 			assert.Contains(t, result, "proxy_cache_revalidate on;")
-			assert.Contains(t, result, "proxy_cache_valid 200 302 600s;")
-			assert.Contains(t, result, "proxy_cache_methods get head;")
+			assert.Contains(t, result, `proxy_cache_valid "200" "302" 600s;`)
+			assert.Contains(t, result, `proxy_cache_methods "get" "head";`)
 			assert.Contains(t, result, "proxy_ignore_headers Cache-Control Expires;")
 			assert.Contains(t, result, "add_header X-Cache-Status $upstream_cache_status;")
-			assert.Contains(t, result, "proxy_cache_use_stale error timeout;")
+			assert.Contains(t, result, `proxy_cache_use_stale "error" "timeout";`)
 			assert.Contains(t, result, "proxy_cache_lock on;")
 			assert.Contains(t, result, "proxy_cache_lock_timeout 5s;")
 			assert.Contains(t, result, "proxy_cache_lock_age 10s;")
-			assert.Contains(t, result, "proxy_cache_bypass $cookie_nocache;")
-			assert.Contains(t, result, "proxy_no_cache $arg_nocache;")
-			assert.Contains(t, result, "if ($uri !~* \"\\.(jpg|png)$\")")
+			assert.Contains(t, result, `proxy_cache_bypass "$cookie_nocache";`)
+			assert.Contains(t, result, `proxy_no_cache "$arg_nocache";`)
+			assert.Contains(t, result, "if ($uri !~* \"\\\\.(jpg|png)$\")")
 		})
 
 		t.Run("returns empty string when cache not found", func(t *testing.T) {
@@ -803,7 +803,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 				},
 			}
 			result := provider.buildStaticFilesRoute(ctx, r)
-			assert.Contains(t, result, "location /static/ {")
+			assert.Contains(t, result, `location "/static/" {`)
 			assert.Contains(t, result, "root \"/var/www/static\";")
 			assert.Contains(t, result, "autoindex on;")
 		})
