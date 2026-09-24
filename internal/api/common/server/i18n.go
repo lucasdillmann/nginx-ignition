@@ -10,14 +10,19 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
 )
 
-const maximumLanguageTags = 10
+const (
+	maximumLanguageTags = 10
+	maximumHeaderBytes  = 128
+)
 
 func i18nMiddleware(commands i18n.Commands) gin.HandlerFunc {
 	return func(ginCtx *gin.Context) {
 		lang := commands.DefaultLanguage()
 
 		langHeader := ginCtx.GetHeader("Accept-Language")
-		if strings.Count(langHeader, "-")+strings.Count(langHeader, "_") > maximumLanguageTags {
+		if len(langHeader) > maximumHeaderBytes ||
+			strings.Count(langHeader, "-")+strings.Count(langHeader, "_") > maximumLanguageTags ||
+			strings.Count(langHeader, ",") > maximumLanguageTags {
 			langHeader = ""
 		}
 

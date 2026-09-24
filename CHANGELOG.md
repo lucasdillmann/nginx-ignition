@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.45.2
+
+- Fix for an unauthenticated denial-of-service scenario caused by processing large `Accept-Language` headers (thanks
+  @kemrec [for the report](https://github.com/lucasdillmann/nginx-ignition/security/advisories/GHSA-969c-hr69-6q97)!)
+
 ## 2.45.1
 
 - Fix for the scenario where the wrong permission could be used to validate an API request (thanks @manus-pi 

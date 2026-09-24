@@ -2,6 +2,7 @@ package apierror
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -20,6 +21,20 @@ func init() {
 }
 
 func Test_handler(t *testing.T) {
+	consistencyError := &validation.ConsistencyError{
+		Violations: []validation.ConsistencyViolation{
+			{Path: "name", Message: i18n.Static("Name is required")},
+			{Path: "port", Message: i18n.Static("Port is invalid")},
+		},
+	}
+	emptyConsistencyError := &validation.ConsistencyError{
+		Violations: []validation.ConsistencyViolation{},
+	}
+	apiError := New(http.StatusTeapot, i18n.Static("API failure"))
+	userCoreError := coreerror.New(i18n.Static("User error"), true)
+	systemCoreError := coreerror.New(i18n.Static("System error"), false)
+	maxBytesError := &http.MaxBytesError{Limit: 1024}
+
 	tests := []struct {
 		err            any
 		name           string
@@ -28,90 +43,211 @@ func Test_handler(t *testing.T) {
 	}{
 		{
 			name:           "APIError",
-			err:            New(http.StatusBadRequest, i18n.Static("Bad Request")),
-			expectedStatus: http.StatusBadRequest,
-			expectedBody:   `{"message":"Bad Request"}`,
+			err:            apiError,
+			expectedStatus: http.StatusTeapot,
+			expectedBody:   `{"message":"API failure"}`,
 		},
 		{
-			name: "ConsistencyError",
-			err: &validation.ConsistencyError{
-				Violations: []validation.ConsistencyViolation{
-					{
-						Path:    "field1",
-						Message: i18n.Static("error1"),
-					},
-				},
-			},
-			expectedStatus: http.StatusBadRequest,
-			expectedBody:   `{"consistencyProblems":[{"fieldPath":"field1","message":"error1"}],"message":"api/common/apierror/consistency-problems"}`,
+			name:           "wrapped APIError",
+			err:            fmt.Errorf("request failed: %w", error(apiError)),
+			expectedStatus: http.StatusTeapot,
+			expectedBody:   `{"message":"API failure"}`,
 		},
 		{
-			name: "CoreError (UserRelated)",
-			err: &coreerror.CoreError{
-				Message:     i18n.Static("User error"),
-				UserRelated: true,
-			},
+			name:           "ConsistencyError",
+			err:            consistencyError,
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   `{"consistencyProblems":[{"fieldPath":"name","message":"Name is required"},{"fieldPath":"port","message":"Port is invalid"}],"message":"api/common/apierror/consistency-problems"}`,
+		},
+		{
+			name:           "wrapped ConsistencyError",
+			err:            fmt.Errorf("validation failed: %w", error(consistencyError)),
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   `{"consistencyProblems":[{"fieldPath":"name","message":"Name is required"},{"fieldPath":"port","message":"Port is invalid"}],"message":"api/common/apierror/consistency-problems"}`,
+		},
+		{
+			name:           "ConsistencyError without violations",
+			err:            emptyConsistencyError,
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   `{"consistencyProblems":[],"message":"api/common/apierror/consistency-problems"}`,
+		},
+		{
+			name:           "user related CoreError",
+			err:            userCoreError,
 			expectedStatus: http.StatusBadRequest,
 			expectedBody:   `{"message":"User error"}`,
 		},
 		{
-			name: "CoreError (Not UserRelated)",
-			err: &coreerror.CoreError{
-				Message:     i18n.Static("System error"),
-				UserRelated: false,
-			},
-			expectedStatus: http.StatusInternalServerError,
-			expectedBody:   "",
+			name:           "wrapped user related CoreError",
+			err:            fmt.Errorf("request failed: %w", error(userCoreError)),
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   `{"message":"User error"}`,
 		},
 		{
-			name:           "JWT Invalid Signature",
+			name:           "system CoreError",
+			err:            systemCoreError,
+			expectedStatus: http.StatusInternalServerError,
+		},
+		{
+			name:           "wrapped system CoreError",
+			err:            fmt.Errorf("request failed: %w", error(systemCoreError)),
+			expectedStatus: http.StatusInternalServerError,
+		},
+		{
+			name:           "MaxBytesError",
+			err:            maxBytesError,
+			expectedStatus: http.StatusRequestEntityTooLarge,
+		},
+		{
+			name:           "wrapped MaxBytesError",
+			err:            fmt.Errorf("request failed: %w", maxBytesError),
+			expectedStatus: http.StatusRequestEntityTooLarge,
+		},
+		{
+			name:           "JWT invalid signature",
 			err:            jwt.ErrSignatureInvalid,
 			expectedStatus: http.StatusUnauthorized,
-			expectedBody:   "",
 		},
 		{
-			name:           "Generic Error",
+			name:           "wrapped JWT invalid signature",
+			err:            fmt.Errorf("authentication failed: %w", jwt.ErrSignatureInvalid),
+			expectedStatus: http.StatusUnauthorized,
+		},
+		{
+			name:           "generic error",
 			err:            errors.New("generic error"),
 			expectedStatus: http.StatusInternalServerError,
-			expectedBody:   "",
 		},
 		{
-			name:           "Non-error outcome",
+			name:           "string outcome",
 			err:            "some panic string",
 			expectedStatus: http.StatusInternalServerError,
-			expectedBody:   "",
+		},
+		{
+			name:           "integer outcome",
+			err:            42,
+			expectedStatus: http.StatusInternalServerError,
+		},
+		{
+			name:           "nil outcome",
+			err:            nil,
+			expectedStatus: http.StatusInternalServerError,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			recorder := performHandlerOutcome(t, test.err)
+			assertHandlerResponse(t, recorder, test.expectedStatus, test.expectedBody)
+		})
+	}
+}
+
+func Test_handlerErrorPrecedence(t *testing.T) {
+	apiError := New(http.StatusTeapot, i18n.Static("API failure"))
+	consistencyError := validation.NewError(nil)
+	userCoreError := coreerror.New(i18n.Static("User error"), true)
+	systemCoreError := coreerror.New(i18n.Static("System error"), false)
+	maxBytesError := &http.MaxBytesError{Limit: 1024}
+
+	tests := []struct {
+		err            error
+		name           string
+		expectedBody   string
+		expectedStatus int
+	}{
+		{
+			name: "APIError before ConsistencyError",
+			err: errors.Join(
+				apiError,
+				consistencyError,
+				maxBytesError,
+				jwt.ErrSignatureInvalid,
+			),
+			expectedStatus: http.StatusTeapot,
+			expectedBody:   `{"message":"API failure"}`,
+		},
+		{
+			name: "ConsistencyError before CoreError",
+			err: errors.Join(
+				consistencyError,
+				userCoreError,
+				maxBytesError,
+				jwt.ErrSignatureInvalid,
+			),
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   `{"consistencyProblems":[],"message":"api/common/apierror/consistency-problems"}`,
+		},
+		{
+			name:           "CoreError before MaxBytesError",
+			err:            errors.Join(systemCoreError, maxBytesError, jwt.ErrSignatureInvalid),
+			expectedStatus: http.StatusInternalServerError,
+		},
+		{
+			name:           "MaxBytesError before JWT error",
+			err:            errors.Join(maxBytesError, jwt.ErrSignatureInvalid),
+			expectedStatus: http.StatusRequestEntityTooLarge,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			recorder := performHandlerOutcome(t, test.err)
+			assertHandlerResponse(t, recorder, test.expectedStatus, test.expectedBody)
+		})
+	}
+}
+
+func Test_handlerAsRecovery(t *testing.T) {
+	tests := []struct {
+		outcome        any
+		name           string
+		expectedBody   string
+		expectedStatus int
+	}{
+		{
+			name:           "APIError",
+			outcome:        New(http.StatusTeapot, i18n.Static("API failure")),
+			expectedStatus: http.StatusTeapot,
+			expectedBody:   `{"message":"API failure"}`,
+		},
+		{
+			name:           "MaxBytesError",
+			outcome:        &http.MaxBytesError{Limit: 1024},
+			expectedStatus: http.StatusRequestEntityTooLarge,
+		},
+		{
+			name:           "JWT invalid signature",
+			outcome:        jwt.ErrSignatureInvalid,
+			expectedStatus: http.StatusUnauthorized,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			engine := gin.New()
-			engine.GET("/", func(ginContext *gin.Context) {
-				Handler(ginContext, test.err)
+			engine.Use(gin.CustomRecoveryWithWriter(nil, Handler))
+			engine.GET("/", func(*gin.Context) {
+				panic(test.outcome)
 			})
 
 			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("GET", "/", nil)
+			request := httptest.NewRequest(http.MethodGet, "/", nil)
 			engine.ServeHTTP(recorder, request)
 
-			assert.Equalf(
-				t,
-				test.expectedStatus,
-				recorder.Code,
-				"for test '%s': expected status %d but got %d. Body: %s",
-				test.name,
-				test.expectedStatus,
-				recorder.Code,
-				recorder.Body.String(),
-			)
-			if test.expectedBody != "" {
-				assert.JSONEq(t, test.expectedBody, recorder.Body.String())
-			}
+			assertHandlerResponse(t, recorder, test.expectedStatus, test.expectedBody)
 		})
 	}
 }
 
 func Test_canHandle(t *testing.T) {
+	apiError := New(http.StatusBadRequest, i18n.Static("message"))
+	consistencyError := &validation.ConsistencyError{}
+	coreError := &coreerror.CoreError{Message: i18n.Static("message")}
+	wrappedAPIError := fmt.Errorf("request failed: %w", error(apiError))
+	wrappedConsistencyError := fmt.Errorf("validation failed: %w", error(consistencyError))
+	wrappedCoreError := fmt.Errorf("request failed: %w", error(coreError))
+
 	tests := []struct {
 		err      error
 		name     string
@@ -119,31 +255,66 @@ func Test_canHandle(t *testing.T) {
 	}{
 		{
 			name:     "APIError",
-			err:      New(http.StatusBadRequest, i18n.Static("msg")),
+			err:      apiError,
+			expected: true,
+		},
+		{
+			name:     "wrapped APIError",
+			err:      wrappedAPIError,
 			expected: true,
 		},
 		{
 			name:     "ConsistencyError",
-			err:      &validation.ConsistencyError{},
+			err:      consistencyError,
+			expected: true,
+		},
+		{
+			name:     "wrapped ConsistencyError",
+			err:      wrappedConsistencyError,
 			expected: true,
 		},
 		{
 			name:     "CoreError",
-			err:      &coreerror.CoreError{},
+			err:      coreError,
 			expected: true,
 		},
 		{
-			name:     "JWT Invalid Signature",
+			name:     "wrapped CoreError",
+			err:      wrappedCoreError,
+			expected: true,
+		},
+		{
+			name:     "MaxBytesError",
+			err:      &http.MaxBytesError{Limit: 1024},
+			expected: true,
+		},
+		{
+			name:     "wrapped MaxBytesError",
+			err:      fmt.Errorf("request failed: %w", &http.MaxBytesError{Limit: 1024}),
+			expected: true,
+		},
+		{
+			name:     "JWT invalid signature",
 			err:      jwt.ErrSignatureInvalid,
 			expected: true,
 		},
 		{
-			name:     "Generic Error",
+			name:     "wrapped JWT invalid signature",
+			err:      fmt.Errorf("authentication failed: %w", jwt.ErrSignatureInvalid),
+			expected: true,
+		},
+		{
+			name:     "generic error",
 			err:      errors.New("generic"),
 			expected: false,
 		},
 		{
-			name:     "Nil Error",
+			name:     "wrapped generic error",
+			err:      fmt.Errorf("request failed: %w", errors.New("generic")),
+			expected: false,
+		},
+		{
+			name:     "nil error",
 			err:      nil,
 			expected: false,
 		},
@@ -154,4 +325,36 @@ func Test_canHandle(t *testing.T) {
 			assert.Equal(t, test.expected, CanHandle(test.err))
 		})
 	}
+}
+
+func performHandlerOutcome(t *testing.T, outcome any) *httptest.ResponseRecorder {
+	t.Helper()
+
+	engine := gin.New()
+	engine.GET("/", func(ginContext *gin.Context) {
+		Handler(ginContext, outcome)
+	})
+
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/", nil)
+	engine.ServeHTTP(recorder, request)
+
+	return recorder
+}
+
+func assertHandlerResponse(
+	t *testing.T,
+	recorder *httptest.ResponseRecorder,
+	expectedStatus int,
+	expectedBody string,
+) {
+	t.Helper()
+
+	assert.Equal(t, expectedStatus, recorder.Code)
+	if expectedBody == "" {
+		assert.Empty(t, recorder.Body.String())
+		return
+	}
+
+	assert.JSONEq(t, expectedBody, recorder.Body.String())
 }

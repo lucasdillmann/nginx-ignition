@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"time"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
 	"github.com/lucasdillmann/nginx-ignition/internal/core/common/lifecycle"
@@ -26,27 +25,23 @@ func registerStartup(
 }
 
 func (s startup) Run(_ context.Context) error {
-	port, err := s.configuration.Get("nginx-ignition.server.port")
+	serverCfg, err := loadServerConfig(s.configuration)
 	if err != nil {
 		return err
 	}
 
-	address, err := s.configuration.Get("nginx-ignition.server.address")
-	if err != nil {
-		return err
-	}
-
-	log.Infof("Starting HTTP server on port %s", port)
+	log.Infof("Starting HTTP server on port %s", serverCfg.port)
 	s.state.server = &http.Server{
 		Handler:           s.state.engine.Handler(),
-		IdleTimeout:       120 * time.Second,
-		WriteTimeout:      30 * time.Second,
-		ReadHeaderTimeout: 2 * time.Second,
-		ReadTimeout:       15 * time.Second,
+		IdleTimeout:       serverCfg.idleTimeout,
+		WriteTimeout:      serverCfg.writeTimeout,
+		ReadTimeout:       serverCfg.readTimeout,
+		ReadHeaderTimeout: serverCfg.readHeaderTimeout,
+		MaxHeaderBytes:    serverCfg.maxHeaderBytes,
 		ErrorLog:          log.Std(),
 	}
 
-	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", address, port))
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", serverCfg.address, serverCfg.port))
 	if err != nil {
 		return err
 	}

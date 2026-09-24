@@ -3,6 +3,12 @@ package configuration
 var defaultValues = map[string]string{
 	"nginx-ignition.server.port":                                   "8090",
 	"nginx-ignition.server.address":                                "0.0.0.0",
+	"nginx-ignition.server.read-timeout-seconds":                   "15",
+	"nginx-ignition.server.write-timeout-seconds":                  "30",
+	"nginx-ignition.server.idle-timeout-seconds":                   "120",
+	"nginx-ignition.server.read-header-timeout-seconds":            "2",
+	"nginx-ignition.server.max-header-bytes":                       "16384",
+	"nginx-ignition.server.max-body-bytes":                         "10485760",
 	"nginx-ignition.health-check.enabled":                          "true",
 	"nginx-ignition.nginx.binary-path":                             "nginx",
 	"nginx-ignition.nginx.config-path":                             "/tmp/nginx-ignition/nginx",
