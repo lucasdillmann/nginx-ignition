@@ -54,6 +54,8 @@ jobs:
       - uses: pnpm/action-setup@v6
         with:
           version: 11
+      - name: Configure pnpm store
+        run: pnpm config set store-dir /data/cache/pnpm/store --global
       - uses: actions/setup-go@v6
         with:
           go-version: 1.27.1
@@ -105,6 +107,8 @@ jobs:
       - uses: pnpm/action-setup@v6
         with:
           version: 11
+      - name: Configure pnpm store
+        run: pnpm config set store-dir /data/cache/pnpm/store --global
       - uses: actions/setup-go@v6
         with:
           go-version: 1.27.1
