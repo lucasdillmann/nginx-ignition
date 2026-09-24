@@ -4,6 +4,7 @@
 
 - New security policy
 - Improvement of the internal code organization
+- Code and development dependencies upgrades
 
 ## 2.45.2
 
