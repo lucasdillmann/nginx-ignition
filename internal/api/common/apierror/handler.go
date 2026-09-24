@@ -28,6 +28,7 @@ func Handler(ctx *gin.Context, outcome any) {
 	httpError := &APIError{}
 	consistencyError := &validation.ConsistencyError{}
 	coreError := &coreerror.CoreError{}
+	maxSizeError := &http.MaxBytesError{}
 
 	switch {
 	case errors.As(err, &httpError):
@@ -36,6 +37,8 @@ func Handler(ctx *gin.Context, outcome any) {
 		handleConsistencyError(ctx, consistencyError)
 	case errors.As(err, &coreError):
 		handleCoreError(ctx, coreError)
+	case errors.As(err, &maxSizeError):
+		handleMaxSizeError(ctx)
 	case errors.Is(err, jwt.ErrSignatureInvalid):
 		handleInvalidTokenError(ctx)
 	default:
@@ -51,10 +54,12 @@ func CanHandle(err error) bool {
 	httpError := &APIError{}
 	consistencyError := &validation.ConsistencyError{}
 	coreError := &coreerror.CoreError{}
+	maxSizeError := &http.MaxBytesError{}
 
 	return errors.As(err, &httpError) ||
 		errors.As(err, &consistencyError) ||
 		errors.As(err, &coreError) ||
+		errors.As(err, &maxSizeError) ||
 		errors.Is(err, jwt.ErrSignatureInvalid)
 }
 
@@ -66,6 +71,10 @@ func handleGenericError(ctx *gin.Context, err error) {
 
 func handleInvalidTokenError(ctx *gin.Context) {
 	ctx.Status(http.StatusUnauthorized)
+}
+
+func handleMaxSizeError(ctx *gin.Context) {
+	ctx.Status(http.StatusRequestEntityTooLarge)
 }
 
 func handleHTTPError(ctx *gin.Context, err *APIError) {

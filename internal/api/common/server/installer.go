@@ -31,9 +31,15 @@ func build(
 ) {
 	gin.SetMode(gin.ReleaseMode)
 
+	bodyLimit, err := bodyLimitMiddleware(cfg)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
 	engine := gin.New()
 	engine.Use(i18nMiddleware(i18nCommands))
 	engine.Use(gin.CustomRecoveryWithWriter(nil, apierror.Handler))
+	engine.Use(bodyLimit)
 
 	authorizer, err := authorization.New(cfg, userCommands)
 	if err != nil {
