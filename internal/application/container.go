@@ -4,24 +4,27 @@ import (
 	"context"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api"
-	"github.com/lucasdillmann/nginx-ignition/internal/certificate/custom"
-	"github.com/lucasdillmann/nginx-ignition/internal/certificate/external"
-	"github.com/lucasdillmann/nginx-ignition/internal/certificate/letsencrypt"
-	"github.com/lucasdillmann/nginx-ignition/internal/certificate/selfsigned"
-	"github.com/lucasdillmann/nginx-ignition/internal/core"
-	"github.com/lucasdillmann/nginx-ignition/internal/core/certificate"
-	"github.com/lucasdillmann/nginx-ignition/internal/core/common/configuration"
-	"github.com/lucasdillmann/nginx-ignition/internal/core/common/container"
-	"github.com/lucasdillmann/nginx-ignition/internal/core/common/healthcheck"
-	"github.com/lucasdillmann/nginx-ignition/internal/core/common/i18n"
-	"github.com/lucasdillmann/nginx-ignition/internal/core/common/lifecycle"
-	"github.com/lucasdillmann/nginx-ignition/internal/core/integration"
-	"github.com/lucasdillmann/nginx-ignition/internal/core/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/business"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/container"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/healthcheck"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/lifecycle"
+	businesscertificate "github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
+	businessintegration "github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
+	businessvpn "github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/custom"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/external"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/selfsigned"
 	"github.com/lucasdillmann/nginx-ignition/internal/database"
-	"github.com/lucasdillmann/nginx-ignition/internal/integration/docker"
-	"github.com/lucasdillmann/nginx-ignition/internal/integration/truenas"
-	"github.com/lucasdillmann/nginx-ignition/internal/vpn/netbird"
-	"github.com/lucasdillmann/nginx-ignition/internal/vpn/tailscale"
+	"github.com/lucasdillmann/nginx-ignition/internal/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/integration/domain/docker"
+	"github.com/lucasdillmann/nginx-ignition/internal/integration/domain/truenas"
+	"github.com/lucasdillmann/nginx-ignition/internal/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/vpn/domain/netbird"
+	"github.com/lucasdillmann/nginx-ignition/internal/vpn/domain/tailscale"
 )
 
 func startContainer(ctx context.Context) error {
@@ -38,16 +41,11 @@ func startContainer(ctx context.Context) error {
 	return container.Run(
 		i18n.Install,
 		database.Install,
-		core.Install,
+		business.Install,
 		api.Install,
-		letsencrypt.Install,
-		selfsigned.Install,
-		custom.Install,
-		external.Install,
-		docker.Install,
-		truenas.Install,
-		tailscale.Install,
-		netbird.Install,
+		certificate.Install,
+		integration.Install,
+		vpn.Install,
 		installCertificateDriverAggregation,
 		installIntegrationDriverAggregation,
 		installVpnDriverAggregation,
@@ -60,7 +58,7 @@ func installCertificateDriverAggregation(
 	selfSignedCertificateProvider *selfsigned.Provider,
 	externalCertificateProvider *external.Provider,
 ) error {
-	return container.Singleton([]certificate.Provider{
+	return container.Singleton([]businesscertificate.Provider{
 		acmeCertificateProvider,
 		customCertificateProvider,
 		selfSignedCertificateProvider,
@@ -72,7 +70,7 @@ func installIntegrationDriverAggregation(
 	dockerAdapter *docker.Driver,
 	trueNasAdapter *truenas.Driver,
 ) error {
-	return container.Singleton([]integration.Driver{
+	return container.Singleton([]businessintegration.Driver{
 		dockerAdapter,
 		trueNasAdapter,
 	})
@@ -82,7 +80,7 @@ func installVpnDriverAggregation(
 	ts *tailscale.Driver,
 	nb *netbird.Driver,
 ) error {
-	return container.Singleton([]vpn.Driver{
+	return container.Singleton([]businessvpn.Driver{
 		ts,
 		nb,
 	})
