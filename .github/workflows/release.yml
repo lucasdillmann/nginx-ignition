@@ -9,12 +9,18 @@ jobs:
     runs-on: self-hosted
     permissions:
       contents: write
+    concurrency:
+      group: nginx-ignition-image-build
+      cancel-in-progress: false
+      queue: max
     env:
       GOPATH: /data/cache/go
       GOMODCACHE: /data/cache/go/pkg/mod
+      GOCACHE: /data/cache/go/build
       GOTOOLCHAIN: ""
       PNPM_HOME: /data/cache/pnpm
       BUILDKIT_CACHE: /data/cache/docker
+      BUILDKIT_PROGRESS: plain
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -27,6 +33,14 @@ jobs:
         with:
           go-version: 1.27.1
           cache: false
+      - name: Inspect caches
+        run: |
+          echo "Runner: $RUNNER_NAME"
+          echo "pnpm store: $(pnpm store path)"
+          go env GOPATH GOMODCACHE GOCACHE
+          for path in "$GOMODCACHE" "$GOCACHE" "$(pnpm store path)" "$BUILDKIT_CACHE"; do
+            [ ! -d "$path" ] || du -sh "$path"
+          done
       - name: Install nfpm
         run: |
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
@@ -34,13 +48,16 @@ jobs:
           sudo apt install -y nfpm gettext-base
       - uses: docker/setup-qemu-action@v4
         with:
-          cache-image: false
+          cache-image: true
           platforms: linux/amd64,linux/arm64
       - uses: docker/setup-buildx-action@v4
         with:
+          version: v0.37.1
+          name: nginx-ignition-builder
+          keep-state: true
           driver: docker-container
           driver-opts: |
-            image=moby/buildkit:master
+            image=moby/buildkit:v0.33.0
             network=host
           platforms: linux/amd64,linux/arm64
       - uses: docker/login-action@v4

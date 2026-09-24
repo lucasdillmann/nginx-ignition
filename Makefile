@@ -5,13 +5,20 @@ PR_ID ?= 0
 BUILDKIT_CACHE ?= build/cache/docker
 SNAPSHOT_TAG_SUFFIX := $(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,$(VERSION)-snapshot)
 LDFLAGS := -X 'github.com/lucasdillmann/nginx-ignition/internal/business/core/version.Number=$(VERSION)'
+PNPM_INSTALL_FLAGS := $(if $(filter true,$(CI)),--frozen-lockfile,)
 
 .backend-prerequisites:
+ifeq ($(CI),true)
+	go mod download
+	cd tools && go mod download
+	cd tools/i18n && go mod download
+else
 	go mod tidy
 	cd tools/i18n && go mod tidy
+endif
 
 .frontend-prerequisites:
-	cd frontend/ && pnpm install
+	cd frontend/ && pnpm install $(PNPM_INSTALL_FLAGS)
 
 .frontend-lint: .frontend-prerequisites
 	cd frontend/ && pnpm run check
@@ -38,8 +45,9 @@ LDFLAGS := -X 'github.com/lucasdillmann/nginx-ignition/internal/business/core/ve
 .build-release-docker-image:
 	mkdir -p $(BUILDKIT_CACHE)
 	docker buildx build \
+		--progress=plain \
 		--cache-from type=local,src=$(BUILDKIT_CACHE) \
-		--cache-to type=local,dest=$(BUILDKIT_CACHE),mode=max \
+		--cache-to type=local,dest=$(BUILDKIT_CACHE),mode=max,reset=true \
 		--tag $(DOCKER_IMAGE):$(VERSION) \
 		--tag $(DOCKER_IMAGE):latest \
 		--tag $(PRIVATE_DOCKER_IMAGE):$(VERSION) \
@@ -50,8 +58,9 @@ LDFLAGS := -X 'github.com/lucasdillmann/nginx-ignition/internal/business/core/ve
 .build-snapshot-docker-image:
 	mkdir -p $(BUILDKIT_CACHE)
 	docker buildx build \
+		--progress=plain \
 		--cache-from type=local,src=$(BUILDKIT_CACHE) \
-		--cache-to type=local,dest=$(BUILDKIT_CACHE),mode=max \
+		--cache-to type=local,dest=$(BUILDKIT_CACHE),mode=max,reset=true \
 		--tag $(DOCKER_IMAGE):$(SNAPSHOT_TAG_SUFFIX) \
 		--tag $(PRIVATE_DOCKER_IMAGE):$(SNAPSHOT_TAG_SUFFIX) \
 		--platform linux/amd64,linux/arm64 \

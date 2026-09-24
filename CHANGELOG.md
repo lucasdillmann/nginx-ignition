@@ -5,6 +5,7 @@
 - New security policy
 - Improvement of the internal code organization
 - Code and development dependencies upgrades
+- Improved CI dependency and Docker build caching
 
 ## 2.45.2
 

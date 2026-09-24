@@ -1,0 +1,8 @@
+.DS_Store
+.git
+.github
+.idea
+coverage.out
+dist
+docs
+frontend/node_modules
