@@ -55,7 +55,7 @@
     "scripts": {
         "start": "vite",
         "build": "tsc && vite build",
-        "check": "pnpm dlx prettier --check src && pnpm exec eslint src"
+        "check": "pnpm exec prettier --check src && pnpm exec eslint src"
     },
     "browserslist": {
         "production": [

@@ -1,6 +1,8 @@
 FROM nginx:1.31.6-alpine AS builder
 
-RUN apk add --no-cache \
+RUN --mount=type=cache,id=nginx-builder-apk,target=/var/cache/apk,sharing=locked \
+    apk update && \
+    apk add \
       gcc \
       ccache \
       libc-dev \
@@ -31,7 +33,7 @@ ENV LUAJIT_LIB=/usr/lib \
     LUAJIT_INC=/usr/include/luajit-2.1 \
     PATH="/usr/lib/ccache/bin:$PATH"
 
-RUN --mount=type=cache,target=/root/.ccache \
+RUN --mount=type=cache,id=nginx-ccache,target=/root/.ccache,sharing=shared \
     cd nginx-${NGINX_VERSION} && \
     ./configure \
       --with-compat \
@@ -54,7 +56,9 @@ RUN mkdir -p /modules-lua && \
 
 FROM alpine:3 AS workspace
 
-RUN apk add --no-cache \
+RUN --mount=type=cache,id=nginx-workspace-apk,target=/var/cache/apk,sharing=locked \
+    apk update && \
+    apk add \
       luajit \
       libmaxminddb \
       libxml2 \
