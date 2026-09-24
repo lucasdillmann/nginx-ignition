@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.45.3
+
+- New security policy
+
 ## 2.45.2
 
 - Fix for an unauthenticated denial-of-service scenario caused by processing large `Accept-Language` headers (thanks
