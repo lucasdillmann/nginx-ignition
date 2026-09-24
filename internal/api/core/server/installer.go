@@ -1,0 +1,53 @@
+package server
+
+import (
+	"github.com/gin-gonic/gin"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/api/core/apierror"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/container"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+)
+
+func Install() error {
+	if err := container.Provide(build); err != nil {
+		return err
+	}
+
+	return container.Run(registerStartup, registerShutdown)
+}
+
+func build(
+	cfg *configuration.Configuration,
+	userCommands user.Commands,
+	i18nCommands i18n.Commands,
+) (
+	*gin.Engine,
+	*state,
+	*authorization.ABAC,
+	error,
+) {
+	gin.SetMode(gin.ReleaseMode)
+
+	bodyLimit, err := bodyLimitMiddleware(cfg)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	engine := gin.New()
+	engine.Use(i18nMiddleware(i18nCommands))
+	engine.Use(gin.CustomRecoveryWithWriter(nil, apierror.Handler))
+	engine.Use(bodyLimit)
+
+	authorizer, err := authorization.New(cfg, userCommands)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	engine.Use(authorizer.HandleRequest)
+
+	return engine, newState(engine), authorizer, nil
+}

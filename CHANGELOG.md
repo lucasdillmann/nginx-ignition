@@ -3,6 +3,7 @@
 ## 2.45.3
 
 - New security policy
+- Improvement of the internal code organization
 
 ## 2.45.2
 

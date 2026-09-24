@@ -4,7 +4,7 @@ VERSION ?= 0.0.0
 PR_ID ?= 0
 BUILDKIT_CACHE ?= build/cache/docker
 SNAPSHOT_TAG_SUFFIX := $(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,$(VERSION)-snapshot)
-LDFLAGS := -X 'github.com/lucasdillmann/nginx-ignition/internal/core/common/version.Number=$(VERSION)'
+LDFLAGS := -X 'github.com/lucasdillmann/nginx-ignition/internal/business/core/version.Number=$(VERSION)'
 
 .backend-prerequisites:
 	go mod tidy
@@ -70,7 +70,7 @@ LDFLAGS := -X 'github.com/lucasdillmann/nginx-ignition/internal/core/common/vers
 	rm -Rf build/nginx-ignition.$(OS)-$(ARCH).zip
 	mkdir -p build/zip
 	cp -Rf frontend/build build/zip/frontend
-	cp -Rf internal/database/common/migrations/scripts build/zip/migrations
+	cp -Rf internal/database/core/migrations/scripts build/zip/migrations
 	cp dist/$(OS)/instructions.md build/zip/instructions.md
 	cp dist/$(OS)/nginx-ignition.properties build/zip/
 	[ -z "$(SERVICE_FILE_EXT)" ] || cp dist/$(OS)/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/
