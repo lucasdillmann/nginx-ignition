@@ -9,7 +9,7 @@ import (
 	"github.com/JCoupalK/go-pgdump"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
-	backup2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/backup"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/backup"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
 
@@ -21,14 +21,14 @@ type repository struct {
 func New(
 	db *database.Database,
 	config *configuration.Configuration,
-) backup2.Repository {
+) backup.Repository {
 	return &repository{
 		db:     db,
 		config: config.WithPrefix("nginx-ignition.database"),
 	}
 }
 
-func (r *repository) Get(_ context.Context) (*backup2.Backup, error) {
+func (r *repository) Get(_ context.Context) (*backup.Backup, error) {
 	driver, err := r.config.Get("driver")
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (r *repository) Get(_ context.Context) (*backup2.Backup, error) {
 	}
 }
 
-func (r *repository) getSqliteBackup() (*backup2.Backup, error) {
+func (r *repository) getSqliteBackup() (*backup.Backup, error) {
 	fileName := "nginx-ignition.db"
 
 	folder, err := r.config.Get("data-path")
@@ -59,14 +59,14 @@ func (r *repository) getSqliteBackup() (*backup2.Backup, error) {
 		return nil, err
 	}
 
-	return &backup2.Backup{
+	return &backup.Backup{
 		FileName:    fileName,
 		ContentType: "application/x-sqlite3",
 		Contents:    contents,
 	}, nil
 }
 
-func (r *repository) getPostgresBackup() (*backup2.Backup, error) {
+func (r *repository) getPostgresBackup() (*backup.Backup, error) {
 	tempFile, err := os.CreateTemp(os.TempDir(), "nginx-ignition.sql")
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (r *repository) getPostgresBackup() (*backup2.Backup, error) {
 		return nil, err
 	}
 
-	return &backup2.Backup{
+	return &backup.Backup{
 		FileName:    "nginx-ignition.sql",
 		ContentType: "text/plain",
 		Contents:    contents,

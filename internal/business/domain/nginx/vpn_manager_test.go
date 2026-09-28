@@ -8,10 +8,10 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/binding"
-	certificate2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
-	settings2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
-	vpn2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
 
 func Test_endpointAdapter(t *testing.T) {
@@ -64,14 +64,14 @@ func Test_endpointAdapter(t *testing.T) {
 				name:        name,
 				domainName:  &domain,
 				enableHTTPS: true,
-				certDetails: &certificate2.Certificate{ID: certID1},
+				certDetails: &certificate.Certificate{ID: certID1},
 			}
 			adapterCert2 := &endpointAdapter{
 				vpnID:       id,
 				name:        name,
 				domainName:  &domain,
 				enableHTTPS: true,
-				certDetails: &certificate2.Certificate{ID: certID2},
+				certDetails: &certificate.Certificate{ID: certID2},
 			}
 			assert.NotEqual(t, adapterCert1.Hash(), adapterCert2.Hash())
 		})
@@ -83,14 +83,14 @@ func Test_endpointAdapter(t *testing.T) {
 				name:        name,
 				domainName:  &domain,
 				enableHTTPS: true,
-				certDetails: &certificate2.Certificate{ID: certID},
+				certDetails: &certificate.Certificate{ID: certID},
 			}
 			adapter2 := &endpointAdapter{
 				vpnID:       id,
 				name:        name,
 				domainName:  &domain,
 				enableHTTPS: true,
-				certDetails: &certificate2.Certificate{ID: certID},
+				certDetails: &certificate.Certificate{ID: certID},
 			}
 			assert.Equal(t, adapter1.Hash(), adapter2.Hash())
 		})
@@ -120,17 +120,17 @@ func Test_endpointAdapter(t *testing.T) {
 			targets := adapter.Targets()
 
 			assert.Len(t, targets, 2)
-			assert.Equal(t, vpn2.EndpointTarget{
+			assert.Equal(t, vpn.EndpointTarget{
 				Host:  domain,
 				IP:    "127.0.0.1",
 				Port:  80,
-				HTTPS: vpn2.EndpointHTTPS{},
+				HTTPS: vpn.EndpointHTTPS{},
 			}, targets[0])
-			assert.Equal(t, vpn2.EndpointTarget{
+			assert.Equal(t, vpn.EndpointTarget{
 				Host: domain,
 				IP:   "127.0.0.1",
 				Port: 443,
-				HTTPS: vpn2.EndpointHTTPS{
+				HTTPS: vpn.EndpointHTTPS{
 					Enabled: true,
 				},
 			}, targets[1])
@@ -157,12 +157,12 @@ func Test_vpnManager(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		settingsCmds := settings2.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(t.Context()).AnyTimes().Return(&settings2.Settings{
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().Get(t.Context()).AnyTimes().Return(&settings.Settings{
 			GlobalBindings: globalBindings,
 		}, nil)
 
-		certCommands := certificate2.NewMockedCommands(ctrl)
+		certCommands := certificate.NewMockedCommands(ctrl)
 
 		manager := newVpnManager(nil, settingsCmds, certCommands)
 
@@ -245,15 +245,15 @@ func Test_vpnManager(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			vpnCmds := vpn2.NewMockedCommands(ctrl)
+			vpnCmds := vpn.NewMockedCommands(ctrl)
 			vpnCmds.EXPECT().Stop(t.Context(), ep2).Return(nil)
 
 			manager := &vpnManager{
 				vpnCommands:      vpnCmds,
-				currentEndpoints: []vpn2.Endpoint{ep1, ep2},
+				currentEndpoints: []vpn.Endpoint{ep1, ep2},
 			}
 
-			err := manager.stopObsoleteEndpoints(t.Context(), []vpn2.Endpoint{ep1})
+			err := manager.stopObsoleteEndpoints(t.Context(), []vpn.Endpoint{ep1})
 			assert.NoError(t, err)
 		})
 	})
@@ -273,15 +273,15 @@ func Test_vpnManager(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			vpnCmds := vpn2.NewMockedCommands(ctrl)
+			vpnCmds := vpn.NewMockedCommands(ctrl)
 			vpnCmds.EXPECT().Start(t.Context(), ep2).Return(nil)
 
 			manager := &vpnManager{
 				vpnCommands:      vpnCmds,
-				currentEndpoints: []vpn2.Endpoint{ep1},
+				currentEndpoints: []vpn.Endpoint{ep1},
 			}
 
-			err := manager.startNewEndpoints(t.Context(), []vpn2.Endpoint{ep1, ep2})
+			err := manager.startNewEndpoints(t.Context(), []vpn.Endpoint{ep1, ep2})
 			assert.NoError(t, err)
 		})
 	})

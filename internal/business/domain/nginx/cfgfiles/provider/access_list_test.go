@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"fmt"
@@ -8,17 +8,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	accesslist2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/accesslist"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
 )
 
-func Test_accessListFileProvider(t *testing.T) {
+func Test_accessListProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
 		t.Run("generate the file successfully", func(t *testing.T) {
-			provider := &accessListFileProvider{}
+			provider := &accessListProvider{}
 			id := uuid.New()
 			ctx := newProviderContext(t)
-			ctx.hosts = []host.Host{
+			ctx.Hosts = []host.Host{
 				{
 					AccessListID: &id,
 				},
@@ -27,16 +27,16 @@ func Test_accessListFileProvider(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			commands := accesslist2.NewMockedCommands(ctrl)
+			commands := accesslist.NewMockedCommands(ctrl)
 			accList := newAccessList()
 			accList.ID = id
 			commands.EXPECT().
 				GetAll(gomock.Any()).
-				Return([]accesslist2.AccessList{accList}, nil)
+				Return([]accesslist.AccessList{accList}, nil)
 
 			provider.commands = commands
 
-			files, err := provider.provide(ctx)
+			files, err := provider.Provide(ctx)
 			assert.NoError(t, err)
 			assert.Len(t, files, 2)
 			assert.Equal(t, fmt.Sprintf("access-list-%s.conf", id), files[0].Name)
@@ -47,16 +47,16 @@ func Test_accessListFileProvider(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			commands := accesslist2.NewMockedCommands(ctrl)
+			commands := accesslist.NewMockedCommands(ctrl)
 			commands.EXPECT().
 				GetAll(gomock.Any()).
 				Return(nil, assert.AnError)
 
 			ctx := newProviderContext(t)
-			provider := &accessListFileProvider{
+			provider := &accessListProvider{
 				commands: commands,
 			}
-			_, err := provider.provide(ctx)
+			_, err := provider.Provide(ctx)
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 	})
@@ -64,15 +64,15 @@ func Test_accessListFileProvider(t *testing.T) {
 	t.Run("BuildConfFile", func(t *testing.T) {
 		id := uuid.New()
 		paths := newPaths()
-		provider := &accessListFileProvider{}
+		provider := &accessListProvider{}
 
 		t.Run("generates correct content for IP based access list", func(t *testing.T) {
 			accessList := newAccessList()
 			accessList.ID = id
 			accessList.Credentials = nil
-			accessList.Entries = []accesslist2.Entry{
+			accessList.Entries = []accesslist.Entry{
 				{
-					Outcome: accesslist2.AllowOutcome,
+					Outcome: accesslist.AllowOutcome,
 					SourceAddress: []string{
 						"10.0.0.1",
 						"10.0.0.2",
@@ -106,9 +106,9 @@ func Test_accessListFileProvider(t *testing.T) {
 			accessList := newAccessList()
 			accessList.ID = id
 			accessList.SatisfyAll = true
-			accessList.Entries = []accesslist2.Entry{
+			accessList.Entries = []accesslist.Entry{
 				{
-					Outcome:       accesslist2.AllowOutcome,
+					Outcome:       accesslist.AllowOutcome,
 					SourceAddress: []string{"10.0.0.1"},
 				},
 			}
@@ -121,9 +121,9 @@ func Test_accessListFileProvider(t *testing.T) {
 			accessList := newAccessList()
 			accessList.ID = id
 			accessList.SatisfyAll = false
-			accessList.Entries = []accesslist2.Entry{
+			accessList.Entries = []accesslist.Entry{
 				{
-					Outcome:       accesslist2.AllowOutcome,
+					Outcome:       accesslist.AllowOutcome,
 					SourceAddress: []string{"10.0.0.1"},
 				},
 			}
@@ -152,7 +152,7 @@ func Test_accessListFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildHtpasswdFile", func(t *testing.T) {
-		provider := &accessListFileProvider{}
+		provider := &accessListProvider{}
 
 		t.Run("returns nil for no credentials", func(t *testing.T) {
 			accessList := newAccessList()
@@ -162,7 +162,7 @@ func Test_accessListFileProvider(t *testing.T) {
 
 		t.Run("generates htpasswd entries", func(t *testing.T) {
 			accessList := newAccessList()
-			accessList.Credentials = []accesslist2.Credentials{
+			accessList.Credentials = []accesslist.Credentials{
 				{
 					Username: "user1",
 					Password: "password1",
@@ -176,7 +176,7 @@ func Test_accessListFileProvider(t *testing.T) {
 }
 
 func Test_toNginxOperation(t *testing.T) {
-	assert.Equal(t, "allow", toNginxOperation(accesslist2.AllowOutcome))
-	assert.Equal(t, "deny", toNginxOperation(accesslist2.DenyOutcome))
+	assert.Equal(t, "allow", toNginxOperation(accesslist.AllowOutcome))
+	assert.Equal(t, "deny", toNginxOperation(accesslist.DenyOutcome))
 	assert.Equal(t, "", toNginxOperation("INVALID"))
 }

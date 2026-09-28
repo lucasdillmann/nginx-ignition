@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"fmt"
@@ -6,34 +6,34 @@ import (
 
 	"github.com/ncw/pwhash/apr1_crypt"
 
-	accesslist2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/accesslist"
 )
 
-type accessListFileProvider struct {
-	commands accesslist2.Commands
+type accessListProvider struct {
+	commands accesslist.Commands
 }
 
-func newAccessListFileProvider(commands accesslist2.Commands) *accessListFileProvider {
-	return &accessListFileProvider{
+func newAccessListProvider(commands accesslist.Commands) *accessListProvider {
+	return &accessListProvider{
 		commands: commands,
 	}
 }
 
-func (p *accessListFileProvider) provide(ctx *providerContext) ([]File, error) {
-	accessLists, err := p.commands.GetAll(ctx.context)
+func (p *accessListProvider) Provide(ctx *Context) ([]File, error) {
+	accessLists, err := p.commands.GetAll(ctx.Context)
 	if err != nil {
 		return nil, err
 	}
 
 	outputs := make([]File, 0)
 	for _, accessList := range accessLists {
-		outputs = append(outputs, p.build(&accessList, ctx.paths)...)
+		outputs = append(outputs, p.build(&accessList, ctx.Paths)...)
 	}
 
 	return outputs, nil
 }
 
-func (p *accessListFileProvider) build(accessList *accesslist2.AccessList, paths *Paths) []File {
+func (p *accessListProvider) build(accessList *accesslist.AccessList, paths *Paths) []File {
 	outputs := make([]File, 0)
 
 	if confFile := p.buildConfFile(accessList, paths); confFile != nil {
@@ -47,8 +47,8 @@ func (p *accessListFileProvider) build(accessList *accesslist2.AccessList, paths
 	return outputs
 }
 
-func (p *accessListFileProvider) buildConfFile(
-	accessList *accesslist2.AccessList,
+func (p *accessListProvider) buildConfFile(
+	accessList *accesslist.AccessList,
 	paths *Paths,
 ) *File {
 	entriesContents := make([]string, 0)
@@ -106,7 +106,7 @@ func (p *accessListFileProvider) buildConfFile(
 	}
 }
 
-func (p *accessListFileProvider) buildHtpasswdFile(accessList *accesslist2.AccessList) *File {
+func (p *accessListProvider) buildHtpasswdFile(accessList *accesslist.AccessList) *File {
 	if len(accessList.Credentials) == 0 {
 		return nil
 	}
@@ -126,11 +126,11 @@ func (p *accessListFileProvider) buildHtpasswdFile(accessList *accesslist2.Acces
 	}
 }
 
-func toNginxOperation(outcome accesslist2.Outcome) string {
+func toNginxOperation(outcome accesslist.Outcome) string {
 	switch outcome {
-	case accesslist2.AllowOutcome:
+	case accesslist.AllowOutcome:
 		return "allow"
-	case accesslist2.DenyOutcome:
+	case accesslist.DenyOutcome:
 		return "deny"
 	default:
 		return ""

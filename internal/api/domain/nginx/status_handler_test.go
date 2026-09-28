@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	nginx2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/nginx"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/nginx"
 )
 
 func init() {
@@ -24,10 +24,10 @@ func Test_statusHandler(t *testing.T) {
 			defer controller.Finish()
 
 			uptime := int64(3600)
-			commands := nginx2.NewMockedCommands(controller)
+			commands := nginx.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetStatus(gomock.Any()).
-				Return(nginx2.Status{Running: true, UptimeSeconds: &uptime})
+				Return(nginx.Status{Running: true, UptimeSeconds: &uptime})
 
 			handler := statusHandler{
 				commands: commands,

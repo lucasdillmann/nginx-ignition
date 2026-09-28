@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"fmt"

@@ -8,18 +8,18 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/log"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/scheduler"
-	settings2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
 )
 
 type logRotationTask struct {
 	service          *service
-	settingsCommands settings2.Commands
+	settingsCommands settings.Commands
 }
 
 func registerScheduledTask(
 	ctx context.Context,
 	service *service,
-	settingsCommands settings2.Commands,
+	settingsCommands settings.Commands,
 	sched *scheduler.Scheduler,
 ) error {
 	task := logRotationTask{service, settingsCommands}
@@ -40,11 +40,11 @@ func (t logRotationTask) Schedule(ctx context.Context) (*scheduler.Schedule, err
 
 	certCfg := cfg.LogRotation
 	switch certCfg.IntervalUnit {
-	case settings2.MinutesTimeUnit:
+	case settings.MinutesTimeUnit:
 		interval = time.Minute * time.Duration(certCfg.IntervalUnitCount)
-	case settings2.HoursTimeUnit:
+	case settings.HoursTimeUnit:
 		interval = time.Hour * time.Duration(certCfg.IntervalUnitCount)
-	case settings2.DaysTimeUnit:
+	case settings.DaysTimeUnit:
 		interval = time.Hour * 24 * time.Duration(certCfg.IntervalUnitCount)
 	default:
 		return nil, coreerror.New(i18n.M(ctx, i18n.K.CommonInvalidIntervalUnit), false)

@@ -12,7 +12,7 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/coreerror"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
-	settings2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
 )
 
 func Test_service_GetTrafficStats(t *testing.T) {
@@ -20,10 +20,10 @@ func Test_service_GetTrafficStats(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		settingsCmds := settings2.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(gomock.Any()).Return(&settings2.Settings{
-			Nginx: &settings2.NginxSettings{
-				Stats: &settings2.NginxStatsSettings{
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().Get(gomock.Any()).Return(&settings.Settings{
+			Nginx: &settings.NginxSettings{
+				Stats: &settings.NginxStatsSettings{
 					Enabled: true,
 				},
 			},
@@ -62,10 +62,10 @@ func Test_service_GetTrafficStats(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		settingsCmds := settings2.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(gomock.Any()).Return(&settings2.Settings{
-			Nginx: &settings2.NginxSettings{
-				Stats: &settings2.NginxStatsSettings{
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().Get(gomock.Any()).Return(&settings.Settings{
+			Nginx: &settings.NginxSettings{
+				Stats: &settings.NginxStatsSettings{
 					Enabled: false,
 				},
 			},
@@ -88,9 +88,9 @@ func Test_service_GetTrafficStats(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		settingsCmds := settings2.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(gomock.Any()).Return(&settings2.Settings{
-			Nginx: &settings2.NginxSettings{
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().Get(gomock.Any()).Return(&settings.Settings{
+			Nginx: &settings.NginxSettings{
 				Stats: nil,
 			},
 		}, nil)
@@ -112,8 +112,8 @@ func Test_service_GetTrafficStats(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		settingsCmds := settings2.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(gomock.Any()).Return(&settings2.Settings{
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().Get(gomock.Any()).Return(&settings.Settings{
 			Nginx: nil,
 		}, nil)
 
@@ -135,7 +135,7 @@ func Test_service_GetTrafficStats(t *testing.T) {
 		defer ctrl.Finish()
 
 		expectedErr := assert.AnError
-		settingsCmds := settings2.NewMockedCommands(ctrl)
+		settingsCmds := settings.NewMockedCommands(ctrl)
 		settingsCmds.EXPECT().Get(gomock.Any()).Return(nil, expectedErr)
 
 		nginxService := &service{
@@ -152,10 +152,10 @@ func Test_service_GetTrafficStats(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		settingsCmds := settings2.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(gomock.Any()).Return(&settings2.Settings{
-			Nginx: &settings2.NginxSettings{
-				Stats: &settings2.NginxStatsSettings{
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().Get(gomock.Any()).Return(&settings.Settings{
+			Nginx: &settings.NginxSettings{
+				Stats: &settings.NginxStatsSettings{
 					Enabled: true,
 				},
 			},

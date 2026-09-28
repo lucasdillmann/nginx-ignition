@@ -13,7 +13,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
-	settings2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
 )
 
 func init() {
@@ -32,10 +32,10 @@ func Test_getHandler(t *testing.T) {
 				Get(gomock.Any(), hostData.ID).
 				Return(hostData, nil)
 
-			settingsCommands := settings2.NewMockedCommands(controller)
+			settingsCommands := settings.NewMockedCommands(controller)
 			settingsCommands.EXPECT().
 				Get(gomock.Any()).
-				Return(&settings2.Settings{}, nil)
+				Return(&settings.Settings{}, nil)
 
 			engine := gin.New()
 			handler := getHandler{

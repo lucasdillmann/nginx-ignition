@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"fmt"
@@ -12,13 +12,13 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
 )
 
-func Test_hostRouteSourceCodeFileProvider(t *testing.T) {
+func Test_hostRouteSourceCodeProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
-		provider := &hostRouteSourceCodeFileProvider{}
+		provider := &hostRouteSourceCodeProvider{}
 		hostID := uuid.New()
 		ctx := newProviderContext(t)
-		ctx.supportedFeatures.RunCodeType = DynamicSupportType
-		ctx.hosts = []host.Host{
+		ctx.SupportedFeatures.RunCodeType = DynamicSupportType
+		ctx.Hosts = []host.Host{
 			{
 				ID: hostID,
 				Routes: []host.Route{
@@ -35,19 +35,19 @@ func Test_hostRouteSourceCodeFileProvider(t *testing.T) {
 			},
 		}
 
-		files, err := provider.provide(ctx)
+		files, err := provider.Provide(ctx)
 		assert.NoError(t, err)
 		assert.Len(t, files, 1)
 		assert.Equal(t, fmt.Sprintf("host-%s-route-10.js", hostID), files[0].Name)
 	})
 
 	t.Run("BuildSourceCodeFiles", func(t *testing.T) {
-		provider := &hostRouteSourceCodeFileProvider{}
+		provider := &hostRouteSourceCodeProvider{}
 		hostID := uuid.New()
 
 		t.Run("generates javascript files when supported", func(t *testing.T) {
 			ctx := newProviderContext(t)
-			ctx.supportedFeatures.RunCodeType = DynamicSupportType
+			ctx.SupportedFeatures.RunCodeType = DynamicSupportType
 			h := &host.Host{
 				ID: hostID,
 				Routes: []host.Route{
@@ -72,7 +72,7 @@ func Test_hostRouteSourceCodeFileProvider(t *testing.T) {
 
 		t.Run("returns error when code execution is not supported", func(t *testing.T) {
 			ctx := newProviderContext(t)
-			ctx.supportedFeatures.RunCodeType = NoneSupportType
+			ctx.SupportedFeatures.RunCodeType = NoneSupportType
 			h := &host.Host{
 				Routes: []host.Route{
 					{

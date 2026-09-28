@@ -9,7 +9,7 @@ import (
 	"github.com/uptrace/bun"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
-	host2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/constants"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
@@ -23,13 +23,13 @@ type repository struct {
 	database *database.Database
 }
 
-func New(db *database.Database) host2.Repository {
+func New(db *database.Database) host.Repository {
 	return &repository{
 		database: db,
 	}
 }
 
-func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*host2.Host, error) {
+func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*host.Host, error) {
 	var model hostModel
 
 	err := r.database.Select().
@@ -95,7 +95,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r *repository) Save(ctx context.Context, h *host2.Host) error {
+func (r *repository) Save(ctx context.Context, h *host.Host) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -212,7 +212,7 @@ func (r *repository) FindPage(
 	ctx context.Context,
 	pageSize, pageNumber int,
 	searchTerms *string,
-) (*pagination.Page[host2.Host], error) {
+) (*pagination.Page[host.Host], error) {
 	models := make([]hostModel, 0)
 
 	query := r.database.Select().Model(&models)
@@ -240,7 +240,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	result := make([]host2.Host, 0)
+	result := make([]host.Host, 0)
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {
@@ -253,7 +253,7 @@ func (r *repository) FindPage(
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAllEnabled(ctx context.Context) ([]host2.Host, error) {
+func (r *repository) FindAllEnabled(ctx context.Context) ([]host.Host, error) {
 	models := make([]hostModel, 0)
 
 	err := r.database.Select().
@@ -267,7 +267,7 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]host2.Host, error) {
 		return nil, err
 	}
 
-	result := make([]host2.Host, 0)
+	result := make([]host.Host, 0)
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {
@@ -279,7 +279,7 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]host2.Host, error) {
 	return result, nil
 }
 
-func (r *repository) FindDefault(ctx context.Context) (*host2.Host, error) {
+func (r *repository) FindDefault(ctx context.Context) (*host.Host, error) {
 	var model hostModel
 
 	err := r.database.Select().

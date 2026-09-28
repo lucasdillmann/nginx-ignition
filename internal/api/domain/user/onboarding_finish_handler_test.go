@@ -15,7 +15,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 func init() {
@@ -29,7 +29,7 @@ func Test_onboardingFinishHandler(t *testing.T) {
 			defer controller.Finish()
 
 			payload := newUserRequest()
-			commands := user2.NewMockedCommands(controller)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				OnboardingCompleted(gomock.Any()).
 				Return(false, nil)
@@ -38,7 +38,7 @@ func Test_onboardingFinishHandler(t *testing.T) {
 				Return(nil)
 			commands.EXPECT().
 				Authenticate(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
-				Return(user2.AuthenticationSuccessful, &user2.User{
+				Return(user.AuthenticationSuccessful, &user.User{
 					ID:       uuid.New(),
 					Username: "admin",
 				}, nil)
@@ -71,7 +71,7 @@ func Test_onboardingFinishHandler(t *testing.T) {
 			defer controller.Finish()
 
 			payload := newUserRequest()
-			commands := user2.NewMockedCommands(controller)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				OnboardingCompleted(gomock.Any()).
 				Return(true, nil)
@@ -104,13 +104,13 @@ func Test_onboardingFinishHandler(t *testing.T) {
 			defer controller.Finish()
 
 			payload := newUserRequest()
-			commands := user2.NewMockedCommands(controller)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				OnboardingCompleted(gomock.Any()).
 				Return(false, nil)
 			commands.EXPECT().
 				FinishOnboarding(gomock.Any(), gomock.Any()).
-				Return(user2.ErrOnboardingAlreadyCompleted)
+				Return(user.ErrOnboardingAlreadyCompleted)
 
 			cfg := configuration.NewWithOverrides(map[string]string{
 				"nginx-ignition.security.jwt.secret": "1234567890123456789012345678901234567890123456789012345678901234",
@@ -140,7 +140,7 @@ func Test_onboardingFinishHandler(t *testing.T) {
 			defer controller.Finish()
 
 			payload := newUserRequest()
-			commands := user2.NewMockedCommands(controller)
+			commands := user.NewMockedCommands(controller)
 
 			expectedErr := assert.AnError
 			commands.EXPECT().

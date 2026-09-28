@@ -8,31 +8,31 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 const testJwtSecret = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 
-func newPermissions() user2.Permissions {
-	return user2.Permissions{
-		Hosts:        user2.NoAccessAccessLevel,
-		Streams:      user2.NoAccessAccessLevel,
-		Certificates: user2.NoAccessAccessLevel,
-		Logs:         user2.NoAccessAccessLevel,
-		Integrations: user2.NoAccessAccessLevel,
-		AccessLists:  user2.NoAccessAccessLevel,
-		Settings:     user2.NoAccessAccessLevel,
-		Users:        user2.NoAccessAccessLevel,
-		NginxServer:  user2.NoAccessAccessLevel,
-		ExportData:   user2.NoAccessAccessLevel,
-		VPNs:         user2.NoAccessAccessLevel,
-		Caches:       user2.NoAccessAccessLevel,
-		TrafficStats: user2.NoAccessAccessLevel,
+func newPermissions() user.Permissions {
+	return user.Permissions{
+		Hosts:        user.NoAccessAccessLevel,
+		Streams:      user.NoAccessAccessLevel,
+		Certificates: user.NoAccessAccessLevel,
+		Logs:         user.NoAccessAccessLevel,
+		Integrations: user.NoAccessAccessLevel,
+		AccessLists:  user.NoAccessAccessLevel,
+		Settings:     user.NoAccessAccessLevel,
+		Users:        user.NoAccessAccessLevel,
+		NginxServer:  user.NoAccessAccessLevel,
+		ExportData:   user.NoAccessAccessLevel,
+		VPNs:         user.NoAccessAccessLevel,
+		Caches:       user.NoAccessAccessLevel,
+		TrafficStats: user.NoAccessAccessLevel,
 	}
 }
 
-func newUser() *user2.User {
-	return &user2.User{
+func newUser() *user.User {
+	return &user.User{
 		ID:          uuid.New(),
 		Username:    "testuser",
 		Name:        "Test User",
@@ -41,7 +41,7 @@ func newUser() *user2.User {
 	}
 }
 
-func newAuthorizer(t *testing.T) (*ABAC, *user2.MockedCommands) {
+func newAuthorizer(t *testing.T) (*ABAC, *user.MockedCommands) {
 	t.Helper()
 	return newAuthorizerWithOverrides(t, map[string]string{})
 }
@@ -49,10 +49,10 @@ func newAuthorizer(t *testing.T) (*ABAC, *user2.MockedCommands) {
 func newAuthorizerWithOverrides(
 	t *testing.T,
 	overrides map[string]string,
-) (*ABAC, *user2.MockedCommands) {
+) (*ABAC, *user.MockedCommands) {
 	t.Helper()
 	controller := gomock.NewController(t)
-	commands := user2.NewMockedCommands(controller)
+	commands := user.NewMockedCommands(controller)
 
 	configOverrides := map[string]string{
 		"nginx-ignition.security.jwt.secret":               testJwtSecret,

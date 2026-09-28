@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	settings2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
 )
 
 func Test_logRotationTask(t *testing.T) {
@@ -16,11 +16,11 @@ func Test_logRotationTask(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repo := settings2.NewMockedCommands(ctrl)
-			repo.EXPECT().Get(t.Context()).Return(&settings2.Settings{
-				LogRotation: &settings2.LogRotationSettings{
+			repo := settings.NewMockedCommands(ctrl)
+			repo.EXPECT().Get(t.Context()).Return(&settings.Settings{
+				LogRotation: &settings.LogRotationSettings{
 					Enabled:           true,
-					IntervalUnit:      settings2.MinutesTimeUnit,
+					IntervalUnit:      settings.MinutesTimeUnit,
 					IntervalUnitCount: 30,
 				},
 			}, nil)
@@ -39,11 +39,11 @@ func Test_logRotationTask(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repo := settings2.NewMockedCommands(ctrl)
-			repo.EXPECT().Get(t.Context()).Return(&settings2.Settings{
-				LogRotation: &settings2.LogRotationSettings{
+			repo := settings.NewMockedCommands(ctrl)
+			repo.EXPECT().Get(t.Context()).Return(&settings.Settings{
+				LogRotation: &settings.LogRotationSettings{
 					Enabled:           true,
-					IntervalUnit:      settings2.HoursTimeUnit,
+					IntervalUnit:      settings.HoursTimeUnit,
 					IntervalUnitCount: 2,
 				},
 			}, nil)
@@ -61,11 +61,11 @@ func Test_logRotationTask(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repo := settings2.NewMockedCommands(ctrl)
-			repo.EXPECT().Get(t.Context()).Return(&settings2.Settings{
-				LogRotation: &settings2.LogRotationSettings{
+			repo := settings.NewMockedCommands(ctrl)
+			repo.EXPECT().Get(t.Context()).Return(&settings.Settings{
+				LogRotation: &settings.LogRotationSettings{
 					Enabled:           false,
-					IntervalUnit:      settings2.DaysTimeUnit,
+					IntervalUnit:      settings.DaysTimeUnit,
 					IntervalUnitCount: 1,
 				},
 			}, nil)
@@ -84,9 +84,9 @@ func Test_logRotationTask(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repo := settings2.NewMockedCommands(ctrl)
-			repo.EXPECT().Get(t.Context()).Return(&settings2.Settings{
-				LogRotation: &settings2.LogRotationSettings{
+			repo := settings.NewMockedCommands(ctrl)
+			repo.EXPECT().Get(t.Context()).Return(&settings.Settings{
+				LogRotation: &settings.LogRotationSettings{
 					IntervalUnit: "invalid",
 				},
 			}, nil)
@@ -103,7 +103,7 @@ func Test_logRotationTask(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repo := settings2.NewMockedCommands(ctrl)
+			repo := settings.NewMockedCommands(ctrl)
 			repo.EXPECT().Get(t.Context()).Return(nil, assert.AnError)
 
 			task := &logRotationTask{

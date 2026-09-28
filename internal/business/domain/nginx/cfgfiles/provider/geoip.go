@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"encoding/json"
@@ -36,12 +36,12 @@ type gitHubReleaseAsset struct {
 	BrowserDownloadURL string `json:"browser_download_url"`
 }
 
-type geoIPFileProvider struct {
+type geoIPProvider struct {
 	config *configuration.Configuration
 }
 
-func newGeoIPFileProvider(config *configuration.Configuration) *geoIPFileProvider {
-	return &geoIPFileProvider{
+func newGeoIPProvider(config *configuration.Configuration) *geoIPProvider {
+	return &geoIPProvider{
 		config: config,
 	}
 }
@@ -52,8 +52,8 @@ type geoIPCachePaths struct {
 	version string
 }
 
-func (p *geoIPFileProvider) provide(ctx *providerContext) ([]File, error) {
-	if !ctx.cfg.Nginx.Stats.Enabled {
+func (p *geoIPProvider) Provide(ctx *Context) ([]File, error) {
+	if !ctx.Cfg.Nginx.Stats.Enabled {
 		return nil, nil
 	}
 
@@ -102,16 +102,16 @@ func (p *geoIPFileProvider) provide(ctx *providerContext) ([]File, error) {
 	}, nil
 }
 
-func (p *geoIPFileProvider) hasCachedFiles(cache geoIPCachePaths) bool {
+func (p *geoIPProvider) hasCachedFiles(cache geoIPCachePaths) bool {
 	return p.exists(cache.country) && p.exists(cache.city)
 }
 
-func (p *geoIPFileProvider) isCacheUpToDate(cache geoIPCachePaths, latestVersion string) bool {
+func (p *geoIPProvider) isCacheUpToDate(cache geoIPCachePaths, latestVersion string) bool {
 	cachedVersion := p.readCachedVersion(cache.version)
 	return cachedVersion == latestVersion && p.hasCachedFiles(cache)
 }
 
-func (p *geoIPFileProvider) fallbackToCacheOrError(
+func (p *geoIPProvider) fallbackToCacheOrError(
 	cache geoIPCachePaths,
 	message string,
 	err error,
@@ -133,7 +133,7 @@ func (p *geoIPFileProvider) fallbackToCacheOrError(
 	return nil, errors.New(message + " and no cached version available")
 }
 
-func (p *geoIPFileProvider) downloadBothDatabases(
+func (p *geoIPProvider) downloadBothDatabases(
 	cache geoIPCachePaths,
 	countryURL, cityURL string,
 ) (countryData, cityData []byte, err error) {
@@ -168,7 +168,7 @@ func (p *geoIPFileProvider) downloadBothDatabases(
 	return countryData, cityData, nil
 }
 
-func (p *geoIPFileProvider) updateCache(
+func (p *geoIPProvider) updateCache(
 	cache geoIPCachePaths,
 	version string,
 	countryData, cityData []byte,
@@ -178,7 +178,7 @@ func (p *geoIPFileProvider) updateCache(
 	_ = os.WriteFile(cache.version, []byte(version), 0o644)
 }
 
-func (p *geoIPFileProvider) fetchLatestRelease() (*gitHubRelease, error) {
+func (p *geoIPProvider) fetchLatestRelease() (*gitHubRelease, error) {
 	log.Info(
 		"Checking for GeoIP database updates (courtesy of https://github.com/P3TERX/GeoLite.mmdb)...",
 	)
@@ -206,7 +206,7 @@ func (p *geoIPFileProvider) fetchLatestRelease() (*gitHubRelease, error) {
 	return &releases[0], nil
 }
 
-func (p *geoIPFileProvider) download(url, dbType string) ([]byte, error) {
+func (p *geoIPProvider) download(url, dbType string) ([]byte, error) {
 	log.Infof("Downloading GeoIP %s database from [%s]...", dbType, url)
 
 	resp, err := p.executeRequest(url, 30*time.Minute)
@@ -223,7 +223,7 @@ func (p *geoIPFileProvider) download(url, dbType string) ([]byte, error) {
 	return io.ReadAll(resp.Body)
 }
 
-func (p *geoIPFileProvider) executeRequest(
+func (p *geoIPProvider) executeRequest(
 	url string,
 	timeout time.Duration,
 ) (*http.Response, error) {
@@ -240,7 +240,7 @@ func (p *geoIPFileProvider) executeRequest(
 	return client.Do(req)
 }
 
-func (p *geoIPFileProvider) findAssetURL(release *gitHubRelease, assetName string) string {
+func (p *geoIPProvider) findAssetURL(release *gitHubRelease, assetName string) string {
 	for _, asset := range release.Assets {
 		if asset.Name == assetName {
 			return asset.BrowserDownloadURL
@@ -250,7 +250,7 @@ func (p *geoIPFileProvider) findAssetURL(release *gitHubRelease, assetName strin
 	return ""
 }
 
-func (p *geoIPFileProvider) readCachedVersion(path string) string {
+func (p *geoIPProvider) readCachedVersion(path string) string {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return ""
@@ -259,7 +259,7 @@ func (p *geoIPFileProvider) readCachedVersion(path string) string {
 	return strings.TrimSpace(string(data))
 }
 
-func (p *geoIPFileProvider) readCachedFiles(countryPath, cityPath string) ([]File, error) {
+func (p *geoIPProvider) readCachedFiles(countryPath, cityPath string) ([]File, error) {
 	countryData, err := os.ReadFile(countryPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read cached GeoIP Country file: %w", err)
@@ -282,7 +282,7 @@ func (p *geoIPFileProvider) readCachedFiles(countryPath, cityPath string) ([]Fil
 	}, nil
 }
 
-func (p *geoIPFileProvider) exists(path string) bool {
+func (p *geoIPProvider) exists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
 }

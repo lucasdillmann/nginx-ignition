@@ -8,7 +8,7 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/dynamicfields"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
-	dns2 "github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns"
 )
 
 const (
@@ -25,7 +25,7 @@ func (p *Provider) Name(ctx context.Context) *i18n.Message {
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
-	return dns2.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          programFieldID,
 			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsExecProgramPath),
@@ -56,8 +56,8 @@ func (p *Provider) ChallengeProvider(
 	cfg := exec.NewDefaultConfig()
 	cfg.Program = program
 	cfg.Mode = mode
-	cfg.PropagationTimeout = dns2.PropagationTimeout
-	cfg.PollingInterval = dns2.PollingInterval
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return exec.NewDNSProviderConfig(cfg)
 }

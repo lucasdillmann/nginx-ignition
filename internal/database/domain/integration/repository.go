@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
-	integration2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/constants"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
@@ -17,7 +17,7 @@ type repository struct {
 	database *database.Database
 }
 
-func New(db *database.Database) integration2.Repository {
+func New(db *database.Database) integration.Repository {
 	return &repository{
 		database: db,
 	}
@@ -26,7 +26,7 @@ func New(db *database.Database) integration2.Repository {
 func (r *repository) FindByID(
 	ctx context.Context,
 	id uuid.UUID,
-) (*integration2.Integration, error) {
+) (*integration.Integration, error) {
 	var model integrationModel
 
 	err := r.database.Select().
@@ -108,7 +108,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	return tx.Commit()
 }
 
-func (r *repository) Save(ctx context.Context, values *integration2.Integration) error {
+func (r *repository) Save(ctx context.Context, values *integration.Integration) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -151,7 +151,7 @@ func (r *repository) FindPage(
 	pageSize, pageNumber int,
 	searchTerms *string,
 	enabledOnly bool,
-) (*pagination.Page[integration2.Integration], error) {
+) (*pagination.Page[integration.Integration], error) {
 	models := make([]integrationModel, 0)
 
 	query := r.database.Select().Model(&models)
@@ -177,7 +177,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	result := make([]integration2.Integration, 0)
+	result := make([]integration.Integration, 0)
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {

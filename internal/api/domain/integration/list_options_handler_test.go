@@ -14,7 +14,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/pagination"
 
 	corepagination "github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
-	integration2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
 )
 
 func init() {
@@ -28,7 +28,7 @@ func Test_listOptionsHandler(t *testing.T) {
 			defer controller.Finish()
 
 			id := uuid.New()
-			options := []integration2.DriverOption{
+			options := []integration.DriverOption{
 				{
 					ID:   "opt-1",
 					Name: "Option 1",
@@ -40,7 +40,7 @@ func Test_listOptionsHandler(t *testing.T) {
 			}
 			page := corepagination.Of(options)
 
-			commands := integration2.NewMockedCommands(controller)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				ListOptions(gomock.Any(), id, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(page, nil)
@@ -81,7 +81,7 @@ func Test_listOptionsHandler(t *testing.T) {
 
 			id := uuid.New()
 			expectedErr := assert.AnError
-			commands := integration2.NewMockedCommands(controller)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				ListOptions(gomock.Any(), id, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil, expectedErr)

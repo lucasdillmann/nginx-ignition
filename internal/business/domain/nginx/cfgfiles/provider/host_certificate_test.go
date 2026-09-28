@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"encoding/base64"
@@ -14,7 +14,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
 )
 
-func Test_hostCertificateFileProvider(t *testing.T) {
+func Test_hostCertificateProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
 		paths := &Paths{
 			Config: "/etc/nginx/",
@@ -23,10 +23,10 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 
 		certID := uuid.New()
 
-		ctx := &providerContext{
-			context: t.Context(),
-			paths:   paths,
-			hosts: []host.Host{
+		ctx := &Context{
+			Context: t.Context(),
+			Paths:   paths,
+			Hosts: []host.Host{
 				{
 					ID: id,
 					Bindings: []binding.Binding{
@@ -37,7 +37,7 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 					},
 				},
 			},
-			cfg: newSettings(),
+			Cfg: newSettings(),
 		}
 
 		t.Run("successfully provides certificates", func(t *testing.T) {
@@ -58,11 +58,11 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 				AnyTimes().
 				Return(cert, nil)
 
-			provider := &hostCertificateFileProvider{
+			provider := &hostCertificateProvider{
 				certificateCommands: certificateCmds,
 			}
 
-			files, err := provider.provide(ctx)
+			files, err := provider.Provide(ctx)
 			assert.NoError(t, err)
 			assert.Len(t, files, 1)
 
@@ -93,10 +93,10 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 			certificateCmds := certificate.NewMockedCommands(ctrl)
 			certificateCmds.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil, assert.AnError)
 
-			provider := &hostCertificateFileProvider{
+			provider := &hostCertificateProvider{
 				certificateCommands: certificateCmds,
 			}
-			_, err := provider.provide(ctx)
+			_, err := provider.Provide(ctx)
 			assert.ErrorIs(t, err, assert.AnError)
 		})
 
@@ -109,14 +109,14 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 				Get(gomock.Any(), gomock.Any()).
 				Return(newCertificate(), nil)
 
-			provider := &hostCertificateFileProvider{
+			provider := &hostCertificateProvider{
 				certificateCommands: certificateCmds,
 			}
 
-			subCtx := &providerContext{
-				context: t.Context(),
-				paths:   paths,
-				hosts: []host.Host{
+			subCtx := &Context{
+				Context: t.Context(),
+				Paths:   paths,
+				Hosts: []host.Host{
 					{
 						Bindings: []binding.Binding{
 							{Type: binding.HTTPSBindingType, CertificateID: &certID},
@@ -124,10 +124,10 @@ func Test_hostCertificateFileProvider(t *testing.T) {
 						},
 					},
 				},
-				cfg: newSettings(),
+				Cfg: newSettings(),
 			}
 
-			files, err := provider.provide(subCtx)
+			files, err := provider.Provide(subCtx)
 			assert.NoError(t, err)
 			assert.Len(t, files, 1)
 		})

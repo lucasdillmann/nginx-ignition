@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"fmt"
@@ -12,23 +12,23 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/stream"
 )
 
-type streamFileProvider struct{}
+type streamProvider struct{}
 
-func newStreamFileProvider() *streamFileProvider {
-	return &streamFileProvider{}
+func newStreamProvider() *streamProvider {
+	return &streamProvider{}
 }
 
-func (p *streamFileProvider) provide(ctx *providerContext) ([]File, error) {
-	if len(ctx.streams) > 0 && ctx.supportedFeatures.StreamType == NoneSupportType {
+func (p *streamProvider) Provide(ctx *Context) ([]File, error) {
+	if len(ctx.Streams) > 0 && ctx.SupportedFeatures.StreamType == NoneSupportType {
 		return nil, coreerror.New(
-			i18n.M(ctx.context, i18n.K.CoreNginxCfgfilesStreamNotEnabled),
+			i18n.M(ctx.Context, i18n.K.CoreNginxCfgfilesStreamNotEnabled),
 			false,
 		)
 	}
 
-	files := make([]File, 0, len(ctx.streams))
+	files := make([]File, 0, len(ctx.Streams))
 
-	for _, s := range ctx.streams {
+	for _, s := range ctx.Streams {
 		contents, err := p.buildConfigFileContents(ctx, &s)
 		if err != nil {
 			return nil, err
@@ -43,8 +43,8 @@ func (p *streamFileProvider) provide(ctx *providerContext) ([]File, error) {
 	return files, nil
 }
 
-func (p *streamFileProvider) buildConfigFileContents(
-	ctx *providerContext,
+func (p *streamProvider) buildConfigFileContents(
+	ctx *Context,
 	s *stream.Stream,
 ) (*string, error) {
 	switch s.Type {
@@ -57,7 +57,7 @@ func (p *streamFileProvider) buildConfigFileContents(
 	}
 }
 
-func (p *streamFileProvider) buildSimpleStream(s *stream.Stream) (*string, error) {
+func (p *streamProvider) buildSimpleStream(s *stream.Stream) (*string, error) {
 	upstreamID := fmt.Sprintf("stream_%s_default", nginxID(s))
 	upstream, err := p.buildUpstream([]stream.Backend{s.DefaultBackend}, upstreamID)
 	if err != nil {
@@ -71,7 +71,7 @@ func (p *streamFileProvider) buildSimpleStream(s *stream.Stream) (*string, error
 	)
 }
 
-func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
+func (p *streamProvider) buildBinding(s *stream.Stream) (*string, error) {
 	instruction := strings.Builder{}
 	_, _ = instruction.WriteString("listen ")
 
@@ -118,7 +118,7 @@ func (p *streamFileProvider) buildBinding(s *stream.Stream) (*string, error) {
 	return new(instruction.String()), nil
 }
 
-func (p *streamFileProvider) buildUpstream(
+func (p *streamProvider) buildUpstream(
 	backends []stream.Backend,
 	name string,
 ) (*string, error) {
@@ -162,13 +162,13 @@ func (p *streamFileProvider) buildUpstream(
 	return new(instructions.String()), nil
 }
 
-func (p *streamFileProvider) buildRoutedStream(
-	ctx *providerContext,
+func (p *streamProvider) buildRoutedStream(
+	ctx *Context,
 	s *stream.Stream,
 ) (*string, error) {
-	if ctx.supportedFeatures.TLSSNI == NoneSupportType {
+	if ctx.SupportedFeatures.TLSSNI == NoneSupportType {
 		return nil, coreerror.New(
-			i18n.M(ctx.context, i18n.K.CoreNginxCfgfilesStreamSniNotEnabled),
+			i18n.M(ctx.Context, i18n.K.CoreNginxCfgfilesStreamSniNotEnabled),
 			false,
 		)
 	}
@@ -210,7 +210,7 @@ func (p *streamFileProvider) buildRoutedStream(
 	return p.buildStream(s, upstreams.String()+mapping.String(), instructions)
 }
 
-func (p *streamFileProvider) buildStream(
+func (p *streamProvider) buildStream(
 	s *stream.Stream,
 	upstreams, instructions string,
 ) (*string, error) {

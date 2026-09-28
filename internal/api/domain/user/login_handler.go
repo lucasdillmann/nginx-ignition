@@ -6,12 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
-
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 type loginHandler struct {
-	commands   user2.Commands
+	commands   user.Commands
 	authorizer *authorization.ABAC
 }
 
@@ -41,7 +40,7 @@ func (h loginHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	if outcome != user2.AuthenticationSuccessful || usr == nil {
+	if outcome != user.AuthenticationSuccessful || usr == nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"reason": outcome,
 		})

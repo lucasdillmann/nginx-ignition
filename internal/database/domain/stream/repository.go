@@ -9,7 +9,7 @@ import (
 	"github.com/uptrace/bun"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
-	stream2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/stream"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/stream"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/constants"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
@@ -25,13 +25,13 @@ type repository struct {
 	database *database.Database
 }
 
-func New(db *database.Database) stream2.Repository {
+func New(db *database.Database) stream.Repository {
 	return &repository{
 		database: db,
 	}
 }
 
-func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*stream2.Stream, error) {
+func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*stream.Stream, error) {
 	var model streamModel
 
 	err := r.database.Select().
@@ -82,7 +82,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r *repository) Save(ctx context.Context, strm *stream2.Stream) error {
+func (r *repository) Save(ctx context.Context, strm *stream.Stream) error {
 	exists, err := r.ExistsByID(ctx, strm.ID)
 	if err != nil {
 		return err
@@ -123,7 +123,7 @@ func (r *repository) FindPage(
 	ctx context.Context,
 	pageSize, pageNumber int,
 	searchTerms *string,
-) (*pagination.Page[stream2.Stream], error) {
+) (*pagination.Page[stream.Stream], error) {
 	models := make([]streamModel, 0)
 
 	query := r.database.Select().Model(&models)
@@ -145,7 +145,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	result := make([]stream2.Stream, 0)
+	result := make([]stream.Stream, 0)
 	for _, model := range models {
 		domainValue := toDomain(&model)
 		err = r.fillLinkedModels(ctx, &domainValue)
@@ -159,7 +159,7 @@ func (r *repository) FindPage(
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAllEnabled(ctx context.Context) ([]stream2.Stream, error) {
+func (r *repository) FindAllEnabled(ctx context.Context) ([]stream.Stream, error) {
 	models := make([]streamModel, 0)
 
 	err := r.database.Select().
@@ -170,7 +170,7 @@ func (r *repository) FindAllEnabled(ctx context.Context) ([]stream2.Stream, erro
 		return nil, err
 	}
 
-	result := make([]stream2.Stream, 0)
+	result := make([]stream.Stream, 0)
 	for _, model := range models {
 		domainValue := toDomain(&model)
 		err = r.fillLinkedModels(ctx, &domainValue)
@@ -240,7 +240,7 @@ func (r *repository) cleanupLinkedModels(
 func (r *repository) saveLinkedModels(
 	ctx context.Context,
 	transaction bun.Tx,
-	strm *stream2.Stream,
+	strm *stream.Stream,
 ) error {
 	err := r.cleanupLinkedModels(ctx, transaction, strm.ID)
 	if err != nil {
@@ -271,7 +271,7 @@ func (r *repository) saveLinkedModels(
 	return err
 }
 
-func (r *repository) fillLinkedModels(ctx context.Context, strm *stream2.Stream) error {
+func (r *repository) fillLinkedModels(ctx context.Context, strm *stream.Stream) error {
 	routeModels := make([]streamRouteModel, 0)
 	err := r.database.Select().
 		Model(&routeModels).

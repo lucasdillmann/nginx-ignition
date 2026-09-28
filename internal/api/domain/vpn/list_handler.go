@@ -6,12 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/pagination"
-
-	vpn2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
 
 type listHandler struct {
-	commands vpn2.Commands
+	commands vpn.Commands
 }
 
 func (h listHandler) handle(ctx *gin.Context) {
@@ -33,13 +32,13 @@ func (h listHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	pageData := pagination.Convert(page, func(vpn *vpn2.VPN) *vpnResponse {
-		driver, err := h.commands.GetAvailableDriverByID(ctx, vpn.Driver)
+	pageData := pagination.Convert(page, func(item *vpn.VPN) *vpnResponse {
+		driver, err := h.commands.GetAvailableDriverByID(ctx, item.Driver)
 		if err != nil {
 			panic(err)
 		}
 
-		return toDTO(vpn, driver)
+		return toDTO(item, driver)
 	})
 
 	ctx.JSON(http.StatusOK, pageData)

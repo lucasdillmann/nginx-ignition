@@ -13,8 +13,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
-
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 func init() {
@@ -33,7 +32,7 @@ func Test_updatePasswordHandler(t *testing.T) {
 				NewPassword:     new("newpassword"),
 			}
 
-			commands := user2.NewMockedCommands(controller)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				UpdatePassword(gomock.Any(), id, *payload.CurrentPassword, *payload.NewPassword).
 				Return(nil)
@@ -43,7 +42,7 @@ func Test_updatePasswordHandler(t *testing.T) {
 			}
 			engine := gin.New()
 			engine.Use(func(ginContext *gin.Context) {
-				ginContext.Set("ABAC:Subject", &authorization.Subject{User: &user2.User{ID: id}})
+				ginContext.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: id}})
 				ginContext.Next()
 			})
 			engine.PATCH("/current/update-password", handler.handle)
@@ -76,7 +75,7 @@ func Test_updatePasswordHandler(t *testing.T) {
 			engine.Use(func(ginContext *gin.Context) {
 				ginContext.Set(
 					"ABAC:Subject",
-					&authorization.Subject{User: &user2.User{ID: uuid.New()}},
+					&authorization.Subject{User: &user.User{ID: uuid.New()}},
 				)
 				ginContext.Next()
 			})

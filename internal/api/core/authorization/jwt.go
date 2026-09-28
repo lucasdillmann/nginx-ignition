@@ -17,7 +17,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/log"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/ttlcache"
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 const (
@@ -27,7 +27,7 @@ const (
 )
 
 type Jwt struct {
-	commands           user2.Commands
+	commands           user.Commands
 	revokedTokens      *ttlcache.Cache[string, bool]
 	secretKey          []byte
 	ttlSeconds         int
@@ -35,7 +35,7 @@ type Jwt struct {
 	renewWindowSeconds int
 }
 
-func newJwt(cfg *configuration.Configuration, commands user2.Commands) (*Jwt, error) {
+func newJwt(cfg *configuration.Configuration, commands user.Commands) (*Jwt, error) {
 	prefixedConfiguration := cfg.WithPrefix("nginx-ignition.security.jwt")
 
 	secretKey, err := initializeSecret(prefixedConfiguration)
@@ -94,7 +94,7 @@ func (j *Jwt) RevokeToken(tokenID string) {
 	j.revokedTokens.Set(tokenID, true)
 }
 
-func (j *Jwt) GenerateToken(usr *user2.User) (*string, error) {
+func (j *Jwt) GenerateToken(usr *user.User) (*string, error) {
 	notBefore := time.Now().Add(time.Second * time.Duration(j.clockSkewSeconds) * -1).Unix()
 	expiresAt := time.Now().
 		Add(time.Second * time.Duration(j.ttlSeconds)).

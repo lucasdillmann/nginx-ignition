@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
-	certificate2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/constants"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
@@ -22,7 +22,7 @@ type repository struct {
 	database *database.Database
 }
 
-func New(db *database.Database) certificate2.Repository {
+func New(db *database.Database) certificate.Repository {
 	return &repository{
 		database: db,
 	}
@@ -31,7 +31,7 @@ func New(db *database.Database) certificate2.Repository {
 func (r *repository) FindByID(
 	ctx context.Context,
 	id uuid.UUID,
-) (*certificate2.Certificate, error) {
+) (*certificate.Certificate, error) {
 	var model certificateModel
 
 	err := r.database.Select().
@@ -96,7 +96,7 @@ func (r *repository) InUseByID(ctx context.Context, id uuid.UUID) (bool, error) 
 
 func (r *repository) GetAutoRenewSettings(
 	ctx context.Context,
-) (*certificate2.AutoRenewSettings, error) {
+) (*certificate.AutoRenewSettings, error) {
 	var enabled bool
 	var intervalUnit string
 	var intervalUnitCount int
@@ -111,7 +111,7 @@ func (r *repository) GetAutoRenewSettings(
 		return nil, err
 	}
 
-	return &certificate2.AutoRenewSettings{
+	return &certificate.AutoRenewSettings{
 		Enabled:           enabled,
 		IntervalUnit:      intervalUnit,
 		IntervalUnitCount: intervalUnitCount,
@@ -138,7 +138,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r *repository) Save(ctx context.Context, cert *certificate2.Certificate) error {
+func (r *repository) Save(ctx context.Context, cert *certificate.Certificate) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -180,7 +180,7 @@ func (r *repository) FindPage(
 	ctx context.Context,
 	pageSize, pageNumber int,
 	searchTerms *string,
-) (*pagination.Page[certificate2.Certificate], error) {
+) (*pagination.Page[certificate.Certificate], error) {
 	certificates := make([]certificateModel, 0)
 
 	query := r.database.Select().Model(&certificates)
@@ -213,7 +213,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	result := make([]certificate2.Certificate, 0)
+	result := make([]certificate.Certificate, 0)
 	for _, model := range certificates {
 		//nolint:revive
 		if domain, err := toDomain(&model); err != nil {
@@ -226,7 +226,7 @@ func (r *repository) FindPage(
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAllDueToRenew(ctx context.Context) ([]certificate2.Certificate, error) {
+func (r *repository) FindAllDueToRenew(ctx context.Context) ([]certificate.Certificate, error) {
 	certificates := make([]certificateModel, 0)
 
 	err := r.database.Select().
@@ -237,7 +237,7 @@ func (r *repository) FindAllDueToRenew(ctx context.Context) ([]certificate2.Cert
 		return nil, err
 	}
 
-	result := make([]certificate2.Certificate, 0)
+	result := make([]certificate.Certificate, 0)
 	for _, model := range certificates {
 		//nolint:revive
 		if domain, err := toDomain(&model); err != nil {

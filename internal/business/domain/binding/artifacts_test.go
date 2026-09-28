@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 	"go.uber.org/mock/gomock"
 
-	certificate2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 )
 
 func newHTTPBinding() *Binding {
@@ -24,15 +24,15 @@ func newHTTPSBinding() *Binding {
 	}
 }
 
-func certCommandsExists(ctrl *gomock.Controller, certID uuid.UUID) certificate2.Commands {
-	m := certificate2.NewMockedCommands(ctrl)
+func certCommandsExists(ctrl *gomock.Controller, certID uuid.UUID) certificate.Commands {
+	m := certificate.NewMockedCommands(ctrl)
 	m.EXPECT().Exists(gomock.Any(), certID).AnyTimes().Return(true, nil)
 	m.EXPECT().Exists(gomock.Any(), gomock.Not(certID)).AnyTimes().Return(false, nil)
 	return m
 }
 
-func certCommandsNotExists(ctrl *gomock.Controller) certificate2.Commands {
-	m := certificate2.NewMockedCommands(ctrl)
+func certCommandsNotExists(ctrl *gomock.Controller) certificate.Commands {
+	m := certificate.NewMockedCommands(ctrl)
 	m.EXPECT().Exists(gomock.Any(), gomock.Any()).AnyTimes().Return(false, nil)
 	return m
 }

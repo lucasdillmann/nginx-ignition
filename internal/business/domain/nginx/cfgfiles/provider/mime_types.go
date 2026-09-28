@@ -1,12 +1,12 @@
-package cfgfiles
+package provider
 
-type mimeTypesFileProvider struct{}
+type mimeTypesProvider struct{}
 
-func newMimeTypesFileProvider() *mimeTypesFileProvider {
-	return &mimeTypesFileProvider{}
+func newMimeTypesProvider() *mimeTypesProvider {
+	return &mimeTypesProvider{}
 }
 
-func (p *mimeTypesFileProvider) provide(_ *providerContext) ([]File, error) {
+func (p *mimeTypesProvider) Provide(_ *Context) ([]File, error) {
 	contents := `
 		types {
 			text/html html htm shtml;

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	host2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
 )
 
 func init() {
@@ -27,10 +27,10 @@ func Test_createHandler(t *testing.T) {
 			defer controller.Finish()
 
 			payload := newHostRequestDTO()
-			commands := host2.NewMockedCommands(controller)
+			commands := host.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
-				DoAndReturn(func(_ context.Context, h *host2.Host) error {
+				DoAndReturn(func(_ context.Context, h *host.Host) error {
 					assert.Equal(t, payload.DomainNames[0], h.DomainNames[0])
 					return nil
 				})
@@ -76,7 +76,7 @@ func Test_createHandler(t *testing.T) {
 
 			payload := newHostRequestDTO()
 			expectedErr := errors.New("command error")
-			commands := host2.NewMockedCommands(controller)
+			commands := host.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(expectedErr)

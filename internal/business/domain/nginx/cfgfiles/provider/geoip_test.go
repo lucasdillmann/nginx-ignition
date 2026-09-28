@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
 )
 
-func Test_geoIPFileProvider(t *testing.T) {
+func Test_geoIPProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
 		t.Run("successfully downloads and caches if no cache exists", func(t *testing.T) {
 			tempDir := t.TempDir()
@@ -43,16 +43,16 @@ func Test_geoIPFileProvider(t *testing.T) {
 			countryDownloadURL = ts.URL + "/download-country"
 			cityDownloadURL = ts.URL + "/download-city"
 
-			provider := &geoIPFileProvider{config: config}
+			provider := &geoIPProvider{config: config}
 			// Override the URL for testing
 			oldURL := geoIPReleasesURL
 			geoIPReleasesURL = ts.URL + "/releases"
 			defer func() { geoIPReleasesURL = oldURL }()
 
 			ctx := newProviderContext(t)
-			ctx.cfg = newSettings()
-			ctx.cfg.Nginx.Stats.Enabled = true
-			files, err := provider.provide(ctx)
+			ctx.Cfg = newSettings()
+			ctx.Cfg.Nginx.Stats.Enabled = true
+			files, err := provider.Provide(ctx)
 
 			assert.NoError(t, err)
 			assert.Len(t, files, 2)
@@ -93,15 +93,15 @@ func Test_geoIPFileProvider(t *testing.T) {
 			}))
 			defer ts.Close()
 
-			provider := &geoIPFileProvider{config: config}
+			provider := &geoIPProvider{config: config}
 			oldURL := geoIPReleasesURL
 			geoIPReleasesURL = ts.URL
 			defer func() { geoIPReleasesURL = oldURL }()
 
 			ctx := newProviderContext(t)
-			ctx.cfg = newSettings()
-			ctx.cfg.Nginx.Stats.Enabled = true
-			files, err := provider.provide(ctx)
+			ctx.Cfg = newSettings()
+			ctx.Cfg.Nginx.Stats.Enabled = true
+			files, err := provider.Provide(ctx)
 
 			assert.NoError(t, err)
 			assert.Len(t, files, 2)
@@ -131,15 +131,15 @@ func Test_geoIPFileProvider(t *testing.T) {
 			}))
 			defer ts.Close()
 
-			provider := &geoIPFileProvider{config: config}
+			provider := &geoIPProvider{config: config}
 			oldURL := geoIPReleasesURL
 			geoIPReleasesURL = ts.URL
 			defer func() { geoIPReleasesURL = oldURL }()
 
 			ctx := newProviderContext(t)
-			ctx.cfg = newSettings()
-			ctx.cfg.Nginx.Stats.Enabled = true
-			files, err := provider.provide(ctx)
+			ctx.Cfg = newSettings()
+			ctx.Cfg.Nginx.Stats.Enabled = true
+			files, err := provider.Provide(ctx)
 
 			assert.NoError(t, err)
 			assert.Len(t, files, 2)
@@ -158,27 +158,27 @@ func Test_geoIPFileProvider(t *testing.T) {
 			}))
 			defer ts.Close()
 
-			provider := &geoIPFileProvider{config: config}
+			provider := &geoIPProvider{config: config}
 			oldURL := geoIPReleasesURL
 			geoIPReleasesURL = ts.URL
 			defer func() { geoIPReleasesURL = oldURL }()
 
 			ctx := newProviderContext(t)
-			ctx.cfg = newSettings()
-			ctx.cfg.Nginx.Stats.Enabled = true
-			_, err := provider.provide(ctx)
+			ctx.Cfg = newSettings()
+			ctx.Cfg.Nginx.Stats.Enabled = true
+			_, err := provider.Provide(ctx)
 
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "Failed to fetch latest GeoIP release")
 		})
 
 		t.Run("returns nothing if stats are disabled", func(t *testing.T) {
-			provider := &geoIPFileProvider{config: configuration.New()}
+			provider := &geoIPProvider{config: configuration.New()}
 			ctx := newProviderContext(t)
-			ctx.cfg = newSettings()
-			ctx.cfg.Nginx.Stats.Enabled = false
+			ctx.Cfg = newSettings()
+			ctx.Cfg.Nginx.Stats.Enabled = false
 
-			files, err := provider.provide(ctx)
+			files, err := provider.Provide(ctx)
 			assert.NoError(t, err)
 			assert.Nil(t, files)
 		})

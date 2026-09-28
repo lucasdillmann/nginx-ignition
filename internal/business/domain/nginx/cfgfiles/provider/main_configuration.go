@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"path/filepath"
@@ -12,41 +12,41 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/stream"
 )
 
-type mainConfigurationFileProvider struct {
+type mainConfigurationProvider struct {
 	config *configuration.Configuration
 }
 
-func newMainConfigurationFileProvider(
+func newMainConfigurationProvider(
 	config *configuration.Configuration,
-) *mainConfigurationFileProvider {
-	return &mainConfigurationFileProvider{
+) *mainConfigurationProvider {
+	return &mainConfigurationProvider{
 		config: config,
 	}
 }
 
-func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, error) {
-	cfg := ctx.cfg
+func (p *mainConfigurationProvider) Provide(ctx *Context) ([]File, error) {
+	cfg := ctx.Cfg
 	logs := cfg.Nginx.Logs
 	moduleLines := strings.Builder{}
 	streamLines := strings.Builder{}
 
-	if ctx.supportedFeatures.StreamType != NoneSupportType {
-		if ctx.supportedFeatures.StreamType == DynamicSupportType {
+	if ctx.SupportedFeatures.StreamType != NoneSupportType {
+		if ctx.SupportedFeatures.StreamType == DynamicSupportType {
 			_, _ = moduleLines.WriteString("load_module modules/ngx_stream_module.so;\n")
 		}
 
 		_, _ = streamLines.WriteString("stream {\n")
-		_, _ = streamLines.WriteString(p.getStreamIncludes(ctx.paths, ctx.streams))
+		_, _ = streamLines.WriteString(p.getStreamIncludes(ctx.Paths, ctx.Streams))
 		_, _ = streamLines.WriteString("}\n")
 	}
 
-	if ctx.supportedFeatures.RunCodeType == DynamicSupportType {
+	if ctx.SupportedFeatures.RunCodeType == DynamicSupportType {
 		_, _ = moduleLines.WriteString("load_module modules/ndk_http_module.so;\n")
 		_, _ = moduleLines.WriteString("load_module modules/ngx_http_js_module.so;\n")
 		_, _ = moduleLines.WriteString("load_module modules/ngx_http_lua_module.so;\n")
 	}
 
-	if ctx.supportedFeatures.StatsType == DynamicSupportType {
+	if ctx.SupportedFeatures.StatsType == DynamicSupportType {
 		_, _ = moduleLines.WriteString("load_module modules/ngx_http_geoip2_module.so;\n")
 		_, _ = moduleLines.WriteString(
 			"load_module modules/ngx_http_vhost_traffic_status_module.so;\n",
@@ -63,7 +63,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		userStatement = ""
 	}
 
-	statsDefinitions, err := p.getStatsDefinitions(ctx.paths, cfg.Nginx.Stats)
+	statsDefinitions, err := p.getStatsDefinitions(ctx.Paths, cfg.Nginx.Stats)
 	if err != nil {
 		return nil, err
 	}
@@ -116,8 +116,8 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		directiveFragment(userStatement),
 		directiveFragment(moduleLines.String()),
 		cfg.Nginx.WorkerProcesses,
-		ctx.paths.Base+"nginx.pid",
-		directiveFragment(p.getErrorLogPath(ctx.paths, logs)),
+		ctx.Paths.Base+"nginx.pid",
+		directiveFragment(p.getErrorLogPath(ctx.Paths, logs)),
 		cfg.Nginx.WorkerConnections,
 		directiveFragment(statusFlag(cfg.Nginx.SendfileEnabled)),
 		directiveFragment(statusFlag(cfg.Nginx.ServerTokensEnabled)),
@@ -135,17 +135,17 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		cfg.Nginx.Buffers.LargeClientHeader.SizeKb,
 		cfg.Nginx.Buffers.Output.Amount,
 		cfg.Nginx.Buffers.Output.SizeKb,
-		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "client-body")),
-		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "proxy")),
-		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "fastcgi")),
-		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "scgi")),
-		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "uwsgi")),
+		filepath.ToSlash(filepath.Join(ctx.Paths.Temp, "client-body")),
+		filepath.ToSlash(filepath.Join(ctx.Paths.Temp, "proxy")),
+		filepath.ToSlash(filepath.Join(ctx.Paths.Temp, "fastcgi")),
+		filepath.ToSlash(filepath.Join(ctx.Paths.Temp, "scgi")),
+		filepath.ToSlash(filepath.Join(ctx.Paths.Temp, "uwsgi")),
 		cfg.Nginx.DefaultContentType,
-		ctx.paths.Config+"mime.types",
+		ctx.Paths.Config+"mime.types",
 		rawConfigFragment(customCfg),
-		directiveFragment(p.getCacheDefinitions(ctx.paths, ctx.caches)),
+		directiveFragment(p.getCacheDefinitions(ctx.Paths, ctx.Caches)),
 		directiveFragment(statsDefinitions),
-		directiveFragment(p.getHostIncludes(ctx.paths, ctx.hosts)),
+		directiveFragment(p.getHostIncludes(ctx.Paths, ctx.Hosts)),
 		directiveFragment(streamLines.String()),
 	)
 
@@ -157,7 +157,7 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 	}, nil
 }
 
-func (p *mainConfigurationFileProvider) getErrorLogPath(
+func (p *mainConfigurationProvider) getErrorLogPath(
 	paths *Paths,
 	logs *settings.NginxLogsSettings,
 ) string {
@@ -172,7 +172,7 @@ func (p *mainConfigurationFileProvider) getErrorLogPath(
 	return "off"
 }
 
-func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []host.Host) string {
+func (p *mainConfigurationProvider) getHostIncludes(paths *Paths, hosts []host.Host) string {
 	includes := make([]string, 0, len(hosts))
 	for _, h := range hosts {
 		includes = append(
@@ -184,7 +184,7 @@ func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []ho
 	return strings.Join(includes, "\n")
 }
 
-func (p *mainConfigurationFileProvider) getStreamIncludes(
+func (p *mainConfigurationProvider) getStreamIncludes(
 	paths *Paths,
 	streams []stream.Stream,
 ) string {
@@ -200,7 +200,7 @@ func (p *mainConfigurationFileProvider) getStreamIncludes(
 	return strings.Join(includes, "\n")
 }
 
-func (p *mainConfigurationFileProvider) getCacheDefinitions(
+func (p *mainConfigurationProvider) getCacheDefinitions(
 	paths *Paths,
 	caches []cache.Cache,
 ) string {
@@ -239,7 +239,7 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(
 	return strings.Join(results, "\n")
 }
 
-func (p *mainConfigurationFileProvider) getStatsDefinitions(
+func (p *mainConfigurationProvider) getStatsDefinitions(
 	paths *Paths,
 	cfg *settings.NginxStatsSettings,
 ) (string, error) {

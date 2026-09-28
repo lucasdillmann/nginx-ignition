@@ -9,7 +9,7 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/binding"
-	vpn2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
 
 func Test_validator(t *testing.T) {
@@ -474,7 +474,7 @@ func Test_validator(t *testing.T) {
 						Return(nil).AnyTimes()
 					mocks.vpn.EXPECT().
 						Get(t.Context(), vpnID).
-						Return(&vpn2.VPN{Enabled: true, Driver: "driver1"}, nil)
+						Return(&vpn.VPN{Enabled: true, Driver: "driver1"}, nil)
 					mocks.vpn.EXPECT().
 						GetAvailableDrivers(t.Context()).
 						Return(nil, nil).AnyTimes()
@@ -500,13 +500,13 @@ func Test_validator(t *testing.T) {
 						Return(nil).AnyTimes()
 					mocks.vpn.EXPECT().
 						Get(t.Context(), vpnID).
-						Return(&vpn2.VPN{Enabled: true, Driver: "driver1"}, nil)
+						Return(&vpn.VPN{Enabled: true, Driver: "driver1"}, nil)
 					mocks.vpn.EXPECT().
 						GetAvailableDrivers(t.Context()).
-						Return([]vpn2.AvailableDriver{
+						Return([]vpn.AvailableDriver{
 							{
 								ID:                 "driver1",
-								EndpointSSLSupport: vpn2.DriverManagedEndpointSSLSupport,
+								EndpointSSLSupport: vpn.DriverManagedEndpointSSLSupport,
 							},
 						}, nil)
 
@@ -528,13 +528,13 @@ func Test_validator(t *testing.T) {
 						Return(nil).AnyTimes()
 					mocks.vpn.EXPECT().
 						Get(t.Context(), vpnID).
-						Return(&vpn2.VPN{Enabled: true, Driver: "driver1"}, nil)
+						Return(&vpn.VPN{Enabled: true, Driver: "driver1"}, nil)
 					mocks.vpn.EXPECT().
 						GetAvailableDrivers(t.Context()).
-						Return([]vpn2.AvailableDriver{
+						Return([]vpn.AvailableDriver{
 							{
 								ID:                 "driver1",
-								EndpointSSLSupport: vpn2.DriverManagedEndpointSSLSupport,
+								EndpointSSLSupport: vpn.DriverManagedEndpointSSLSupport,
 							},
 						}, nil)
 					mocks.certificate.EXPECT().Exists(t.Context(), certID).Return(false, nil)
@@ -557,13 +557,13 @@ func Test_validator(t *testing.T) {
 						Return(nil).AnyTimes()
 					mocks.vpn.EXPECT().
 						Get(t.Context(), vpnID).
-						Return(&vpn2.VPN{Enabled: true, Driver: "driver1"}, nil)
+						Return(&vpn.VPN{Enabled: true, Driver: "driver1"}, nil)
 					mocks.vpn.EXPECT().
 						GetAvailableDrivers(t.Context()).
-						Return([]vpn2.AvailableDriver{
+						Return([]vpn.AvailableDriver{
 							{
 								ID:                 "driver1",
-								EndpointSSLSupport: vpn2.ProviderManagedEndpointSSLSupport,
+								EndpointSSLSupport: vpn.ProviderManagedEndpointSSLSupport,
 							},
 						}, nil)
 

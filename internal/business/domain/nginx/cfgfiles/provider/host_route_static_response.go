@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"fmt"
@@ -6,23 +6,23 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
 )
 
-type hostRouteStaticResponseFileProvider struct{}
+type hostRouteStaticResponseProvider struct{}
 
-func newHostRouteStaticResponseFileProvider() *hostRouteStaticResponseFileProvider {
-	return &hostRouteStaticResponseFileProvider{}
+func newHostRouteStaticResponseProvider() *hostRouteStaticResponseProvider {
+	return &hostRouteStaticResponseProvider{}
 }
 
-func (p *hostRouteStaticResponseFileProvider) provide(ctx *providerContext) ([]File, error) {
-	outputs := make([]File, 0, len(ctx.hosts))
+func (p *hostRouteStaticResponseProvider) Provide(ctx *Context) ([]File, error) {
+	outputs := make([]File, 0, len(ctx.Hosts))
 
-	for _, h := range ctx.hosts {
+	for _, h := range ctx.Hosts {
 		outputs = append(outputs, p.buildStaticResponseFiles(&h)...)
 	}
 
 	return outputs, nil
 }
 
-func (p *hostRouteStaticResponseFileProvider) buildStaticResponseFiles(h *host.Host) []File {
+func (p *hostRouteStaticResponseProvider) buildStaticResponseFiles(h *host.Host) []File {
 	outputs := make([]File, 0)
 
 	for _, r := range h.Routes {

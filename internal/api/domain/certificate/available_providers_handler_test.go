@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	certificate2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 )
 
 func init() {
@@ -23,8 +23,8 @@ func Test_availableProvidersHandler(t *testing.T) {
 			controller := gomock.NewController(t)
 			defer controller.Finish()
 
-			providers := []certificate2.AvailableProvider{}
-			commands := certificate2.NewMockedCommands(controller)
+			providers := []certificate.AvailableProvider{}
+			commands := certificate.NewMockedCommands(controller)
 			commands.EXPECT().
 				AvailableProviders(gomock.Any()).
 				Return(providers, nil)

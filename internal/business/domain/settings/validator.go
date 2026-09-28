@@ -9,7 +9,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/validation"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/valuerange"
-	binding2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/binding"
 )
 
 const (
@@ -30,11 +30,11 @@ var (
 )
 
 type validator struct {
-	commands binding2.Commands
+	commands binding.Commands
 	delegate *validation.ConsistencyValidator
 }
 
-func newValidator(commands binding2.Commands) *validator {
+func newValidator(commands binding.Commands) *validator {
 	return &validator{
 		commands,
 		validation.NewValidator(),
@@ -133,7 +133,7 @@ func (v *validator) validateCertificateAutoRenew(
 	)
 }
 
-func (v *validator) validateGlobalBindings(ctx context.Context, settings []binding2.Binding) error {
+func (v *validator) validateGlobalBindings(ctx context.Context, settings []binding.Binding) error {
 	for index, b := range settings {
 		if err := v.commands.Validate(ctx, "globalBindings", index, &b, v.delegate); err != nil {
 			return err

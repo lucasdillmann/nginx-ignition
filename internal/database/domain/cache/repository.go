@@ -9,7 +9,7 @@ import (
 	"github.com/uptrace/bun"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
-	cache2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/cache"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/cache"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/constants"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
@@ -22,13 +22,13 @@ type repository struct {
 	database *database.Database
 }
 
-func New(db *database.Database) cache2.Repository {
+func New(db *database.Database) cache.Repository {
 	return &repository{
 		database: db,
 	}
 }
 
-func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*cache2.Cache, error) {
+func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*cache.Cache, error) {
 	var model cacheModel
 
 	err := r.database.Select().
@@ -99,7 +99,7 @@ func (r *repository) FindPage(
 	ctx context.Context,
 	pageNumber, pageSize int,
 	searchTerms *string,
-) (*pagination.Page[cache2.Cache], error) {
+) (*pagination.Page[cache.Cache], error) {
 	models := make([]cacheModel, 0)
 
 	query := r.database.Select().Model(&models)
@@ -122,7 +122,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	result := make([]cache2.Cache, 0)
+	result := make([]cache.Cache, 0)
 	for _, model := range models {
 		result = append(result, toDomain(&model))
 	}
@@ -130,7 +130,7 @@ func (r *repository) FindPage(
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAllInUse(ctx context.Context) ([]cache2.Cache, error) {
+func (r *repository) FindAllInUse(ctx context.Context) ([]cache.Cache, error) {
 	models := make([]cacheModel, 0)
 
 	hostSubquery := r.database.
@@ -154,7 +154,7 @@ func (r *repository) FindAllInUse(ctx context.Context) ([]cache2.Cache, error) {
 		return nil, err
 	}
 
-	result := make([]cache2.Cache, len(models))
+	result := make([]cache.Cache, len(models))
 	for index, model := range models {
 		result[index] = toDomain(&model)
 	}
@@ -162,7 +162,7 @@ func (r *repository) FindAllInUse(ctx context.Context) ([]cache2.Cache, error) {
 	return result, nil
 }
 
-func (r *repository) Save(ctx context.Context, domain *cache2.Cache) error {
+func (r *repository) Save(ctx context.Context, domain *cache.Cache) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err

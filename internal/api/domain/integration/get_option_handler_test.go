@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	integration2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
 )
 
 func init() {
@@ -26,11 +26,11 @@ func Test_getOptionHandler(t *testing.T) {
 
 			id := uuid.New()
 			optionID := "opt-1"
-			option := &integration2.DriverOption{
+			option := &integration.DriverOption{
 				ID:   optionID,
 				Name: "Option 1",
 			}
-			commands := integration2.NewMockedCommands(controller)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetOption(gomock.Any(), id, optionID).
 				Return(option, nil)
@@ -75,7 +75,7 @@ func Test_getOptionHandler(t *testing.T) {
 
 			id := uuid.New()
 			optionID := "opt-1"
-			commands := integration2.NewMockedCommands(controller)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetOption(gomock.Any(), id, optionID).
 				Return(nil, nil)
@@ -104,7 +104,7 @@ func Test_getOptionHandler(t *testing.T) {
 			id := uuid.New()
 			optionID := "opt-1"
 			expectedErr := assert.AnError
-			commands := integration2.NewMockedCommands(controller)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetOption(gomock.Any(), id, optionID).
 				Return(nil, expectedErr)

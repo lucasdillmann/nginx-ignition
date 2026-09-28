@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
-	vpn2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/constants"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
@@ -17,13 +17,13 @@ type repository struct {
 	database *database.Database
 }
 
-func New(db *database.Database) vpn2.Repository {
+func New(db *database.Database) vpn.Repository {
 	return &repository{
 		database: db,
 	}
 }
 
-func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*vpn2.VPN, error) {
+func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*vpn.VPN, error) {
 	var model vpnModel
 
 	err := r.database.Select().
@@ -102,7 +102,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	return tx.Commit()
 }
 
-func (r *repository) Save(ctx context.Context, values *vpn2.VPN) error {
+func (r *repository) Save(ctx context.Context, values *vpn.VPN) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err
@@ -145,7 +145,7 @@ func (r *repository) FindPage(
 	pageSize, pageNumber int,
 	searchTerms *string,
 	enabledOnly bool,
-) (*pagination.Page[vpn2.VPN], error) {
+) (*pagination.Page[vpn.VPN], error) {
 	models := make([]vpnModel, 0)
 
 	query := r.database.Select().Model(&models)
@@ -171,7 +171,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	result := make([]vpn2.VPN, 0)
+	result := make([]vpn.VPN, 0)
 	for _, model := range models {
 		domain, err := toDomain(&model)
 		if err != nil {

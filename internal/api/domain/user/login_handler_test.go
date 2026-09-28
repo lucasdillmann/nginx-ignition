@@ -14,7 +14,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 func init() {
@@ -22,9 +22,9 @@ func init() {
 }
 
 func Test_loginHandler(t *testing.T) {
-	setup := func(t *testing.T) (*user2.MockedCommands, *gin.Engine) {
+	setup := func(t *testing.T) (*user.MockedCommands, *gin.Engine) {
 		controller := gomock.NewController(t)
-		commands := user2.NewMockedCommands(controller)
+		commands := user.NewMockedCommands(controller)
 		authorizer, _ := authorization.New(configuration.New(), commands)
 		handler := loginHandler{
 			commands:   commands,
@@ -56,7 +56,7 @@ func Test_loginHandler(t *testing.T) {
 			commands, engine := setup(t)
 			commands.EXPECT().
 				Authenticate(gomock.Any(), *payload.Username, *payload.Password, gomock.Any()).
-				Return(user2.AuthenticationSuccessful, subject, nil)
+				Return(user.AuthenticationSuccessful, subject, nil)
 
 			recorder := performRequest(engine, payload)
 
@@ -75,7 +75,7 @@ func Test_loginHandler(t *testing.T) {
 			commands, engine := setup(t)
 			commands.EXPECT().
 				Authenticate(gomock.Any(), *payload.Username, *payload.Password, gomock.Any()).
-				Return(user2.AuthenticationFailed, nil, nil)
+				Return(user.AuthenticationFailed, nil, nil)
 
 			recorder := performRequest(engine, payload)
 
@@ -94,7 +94,7 @@ func Test_loginHandler(t *testing.T) {
 			commands, engine := setup(t)
 			commands.EXPECT().
 				Authenticate(gomock.Any(), *payload.Username, *payload.Password, "123456").
-				Return(user2.AuthenticationSuccessful, subject, nil)
+				Return(user.AuthenticationSuccessful, subject, nil)
 
 			recorder := performRequest(engine, payload)
 
@@ -113,14 +113,14 @@ func Test_loginHandler(t *testing.T) {
 			commands, engine := setup(t)
 			commands.EXPECT().
 				Authenticate(gomock.Any(), *payload.Username, *payload.Password, gomock.Any()).
-				Return(user2.AuthenticationMissingTOTP, nil, nil)
+				Return(user.AuthenticationMissingTOTP, nil, nil)
 
 			recorder := performRequest(engine, payload)
 
 			assert.Equal(t, http.StatusUnauthorized, recorder.Code)
 			var response map[string]any
 			json.Unmarshal(recorder.Body.Bytes(), &response)
-			assert.Equal(t, string(user2.AuthenticationMissingTOTP), response["reason"])
+			assert.Equal(t, string(user.AuthenticationMissingTOTP), response["reason"])
 		})
 	})
 }

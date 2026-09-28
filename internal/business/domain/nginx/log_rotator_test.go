@@ -12,8 +12,8 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
-	host2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
-	settings2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
 )
 
 func Test_logRotator(t *testing.T) {
@@ -57,8 +57,8 @@ func Test_logRotator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repo := host2.NewMockedCommands(ctrl)
-			repo.EXPECT().GetAllEnabled(t.Context()).Return([]host2.Host{
+			repo := host.NewMockedCommands(ctrl)
+			repo.EXPECT().GetAllEnabled(t.Context()).Return([]host.Host{
 				{
 					ID: id1,
 				},
@@ -103,16 +103,16 @@ func Test_logRotator(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			settingsCmds := settings2.NewMockedCommands(ctrl)
-			settingsCmds.EXPECT().Get(t.Context()).Return(&settings2.Settings{
-				LogRotation: &settings2.LogRotationSettings{
+			settingsCmds := settings.NewMockedCommands(ctrl)
+			settingsCmds.EXPECT().Get(t.Context()).Return(&settings.Settings{
+				LogRotation: &settings.LogRotationSettings{
 					Enabled:      true,
 					MaximumLines: 2,
 				},
 			}, nil)
 
-			hostCmds := host2.NewMockedCommands(ctrl)
-			hostCmds.EXPECT().GetAllEnabled(t.Context()).Return([]host2.Host{}, nil)
+			hostCmds := host.NewMockedCommands(ctrl)
+			hostCmds.EXPECT().GetAllEnabled(t.Context()).Return([]host.Host{}, nil)
 
 			pm := &processManager{
 				binaryPath: fakeNginx,

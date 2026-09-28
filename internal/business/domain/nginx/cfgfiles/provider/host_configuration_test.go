@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"fmt"
@@ -17,9 +17,9 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
 )
 
-func Test_hostConfigurationFileProvider(t *testing.T) {
+func Test_hostConfigurationProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 
 		h := newHost()
 		h.Routes = []host.Route{
@@ -32,8 +32,8 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		}
 
 		ctx := newProviderContext(t)
-		ctx.hosts = []host.Host{h}
-		ctx.cfg = newSettings()
+		ctx.Hosts = []host.Host{h}
+		ctx.Cfg = newSettings()
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -41,7 +41,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		integrationCmds := integration.NewMockedCommands(ctrl)
 		provider.integrationCommands = integrationCmds
 
-		files, err := provider.provide(ctx)
+		files, err := provider.Provide(ctx)
 		assert.NoError(t, err)
 		assert.Len(t, files, 1)
 		assert.Equal(t, fmt.Sprintf("host-%s.conf", h.ID), files[0].Name)
@@ -51,7 +51,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("Provide with traffic stats enabled", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 
 		h := newHost()
 		h.FeatureSet.StatsEnabled = true
@@ -65,10 +65,10 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		}
 
 		ctx := newProviderContext(t)
-		ctx.hosts = []host.Host{h}
-		ctx.cfg = newSettings()
-		ctx.cfg.Nginx.Stats.Enabled = true
-		ctx.supportedFeatures.StatsType = StaticSupportType
+		ctx.Hosts = []host.Host{h}
+		ctx.Cfg = newSettings()
+		ctx.Cfg.Nginx.Stats.Enabled = true
+		ctx.SupportedFeatures.StatsType = StaticSupportType
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -76,7 +76,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		integrationCmds := integration.NewMockedCommands(ctrl)
 		provider.integrationCommands = integrationCmds
 
-		files, err := provider.provide(ctx)
+		files, err := provider.Provide(ctx)
 		assert.NoError(t, err)
 		assert.Len(t, files, 1)
 		assert.Contains(t, files[0].Contents, fmt.Sprintf("set $stats_host_id \"%s\";", h.ID))
@@ -89,7 +89,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("Provide with global traffic stats enabled", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 
 		h := newHost()
 		h.FeatureSet.StatsEnabled = false
@@ -103,11 +103,11 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		}
 
 		ctx := newProviderContext(t)
-		ctx.hosts = []host.Host{h}
-		ctx.cfg = newSettings()
-		ctx.cfg.Nginx.Stats.Enabled = true
-		ctx.cfg.Nginx.Stats.AllHosts = true
-		ctx.supportedFeatures.StatsType = StaticSupportType
+		ctx.Hosts = []host.Host{h}
+		ctx.Cfg = newSettings()
+		ctx.Cfg.Nginx.Stats.Enabled = true
+		ctx.Cfg.Nginx.Stats.AllHosts = true
+		ctx.SupportedFeatures.StatsType = StaticSupportType
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -115,14 +115,14 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 		integrationCmds := integration.NewMockedCommands(ctrl)
 		provider.integrationCommands = integrationCmds
 
-		files, err := provider.provide(ctx)
+		files, err := provider.Provide(ctx)
 		assert.NoError(t, err)
 		assert.Len(t, files, 1)
 		assert.Contains(t, files[0].Contents, "vhost_traffic_status on;")
 	})
 
 	t.Run("BuildServerNames", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 
 		t.Run("returns underscore for default server", func(t *testing.T) {
 			h := &host.Host{
@@ -147,7 +147,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildProxyPass", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 
 		t.Run("returns simple proxy_pass", func(t *testing.T) {
 			r := &host.Route{
@@ -209,7 +209,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildProtocolProxyVersion", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 
 		t.Run("returns HTTP 1.0 when protocol is HTTP_1_0", func(t *testing.T) {
 			r := &host.Route{Protocol: host.HTTP10RouteProtocol}
@@ -233,7 +233,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("ToGrpcURL", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 
 		t.Run("converts http scheme to grpc", func(t *testing.T) {
 			assert.Equal(t, "grpc://backend:8080", provider.toGrpcURL("http://backend:8080"))
@@ -253,7 +253,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildRedirectRoute", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		ctx := newProviderContext(t)
 
 		t.Run("generates redirect route config", func(t *testing.T) {
@@ -269,7 +269,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildIntegrationRoute", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		ctx := newProviderContext(t)
 
 		t.Run("generates integration route config with dns resolvers", func(t *testing.T) {
@@ -420,7 +420,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildExecuteCodeRoute", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		ctx := newProviderContext(t)
 		h := &host.Host{ID: uuid.New()}
 
@@ -470,7 +470,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildStaticResponseRoute", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		ctx := newProviderContext(t)
 		h := &host.Host{ID: uuid.New()}
 
@@ -497,7 +497,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildRouteFeatures", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 
 		t.Run("returns websocket config when enabled", func(t *testing.T) {
 			features := host.FeatureSet{
@@ -517,7 +517,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildRouteSettings", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		ctx := newProviderContext(t)
 
 		t.Run("includes forward headers when enabled", func(t *testing.T) {
@@ -606,9 +606,9 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildBinding", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		ctx := newProviderContext(t)
-		ctx.cfg = newSettings()
+		ctx.Cfg = newSettings()
 		h := &host.Host{ID: uuid.New()}
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -687,7 +687,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildRoute", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		ctx := newProviderContext(t)
 		h := &host.Host{}
 
@@ -700,7 +700,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildProxyRoute", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		ctx := newProviderContext(t)
 
 		t.Run("emits proxy_http_version 1 for HTTP_1_0 protocol", func(t *testing.T) {
@@ -725,7 +725,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildCacheConfig", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		cacheID := uuid.New()
 		c := newCache()
 		c.ID = cacheID
@@ -791,7 +791,7 @@ func Test_hostConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildStaticFilesRoute", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		ctx := newProviderContext(t)
 
 		t.Run("generates static files config", func(t *testing.T) {

@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/binding"
-	host2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
 )
 
-func cleanup(ctx context.Context, t *testing.T, repo host2.Repository) {
+func cleanup(ctx context.Context, t *testing.T, repo host.Repository) {
 	result, err := repo.(*repository).database.Unwrap().Query("SELECT id FROM host")
 	require.NoError(t, err)
 
@@ -35,20 +35,20 @@ func cleanup(ctx context.Context, t *testing.T, repo host2.Repository) {
 	}
 }
 
-func newHost() *host2.Host {
-	return &host2.Host{
+func newHost() *host.Host {
+	return &host.Host{
 		ID:                uuid.New(),
 		DomainNames:       []string{"example.com"},
 		Enabled:           true,
 		DefaultServer:     false,
 		UseGlobalBindings: true,
-		Routes: []host2.Route{
+		Routes: []host.Route{
 			{
 				ID:         uuid.New(),
 				Priority:   10,
-				Type:       host2.StaticResponseRouteType,
+				Type:       host.StaticResponseRouteType,
 				SourcePath: "/",
-				Settings: host2.RouteSettings{
+				Settings: host.RouteSettings{
 					IncludeForwardHeaders:   true,
 					IgnoreSSLErrors:         true,
 					ProxySSLServerName:      false,
@@ -57,7 +57,7 @@ func newHost() *host2.Host {
 					IndexFile:               new("index.html"),
 					Custom:                  new("# Custom config"),
 				},
-				Response: &host2.RouteStaticResponse{
+				Response: &host.RouteStaticResponse{
 					StatusCode: 200,
 					Payload:    new("OK"),
 				},
@@ -71,12 +71,12 @@ func newHost() *host2.Host {
 				Port: 8080,
 			},
 		},
-		FeatureSet: host2.FeatureSet{
+		FeatureSet: host.FeatureSet{
 			WebsocketSupport:    true,
 			HTTP2Support:        true,
 			RedirectHTTPToHTTPS: false,
 			StatsEnabled:        true,
 		},
-		VPNs: []host2.VPN{},
+		VPNs: []host.VPN{},
 	}
 }

@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"context"
@@ -13,25 +13,25 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 )
 
-type hostCertificateFileProvider struct {
+type hostCertificateProvider struct {
 	certificateCommands certificate.Commands
 }
 
-func newHostCertificateFileProvider(
+func newHostCertificateProvider(
 	certificateCommands certificate.Commands,
-) *hostCertificateFileProvider {
-	return &hostCertificateFileProvider{
+) *hostCertificateProvider {
+	return &hostCertificateProvider{
 		certificateCommands: certificateCommands,
 	}
 }
 
-func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, error) {
-	bindings := make([]binding.Binding, 0, len(ctx.hosts)+len(ctx.cfg.GlobalBindings))
-	for _, h := range ctx.hosts {
+func (p *hostCertificateProvider) Provide(ctx *Context) ([]File, error) {
+	bindings := make([]binding.Binding, 0, len(ctx.Hosts)+len(ctx.Cfg.GlobalBindings))
+	for _, h := range ctx.Hosts {
 		bindings = append(bindings, h.Bindings...)
 	}
 
-	bindings = append(bindings, ctx.cfg.GlobalBindings...)
+	bindings = append(bindings, ctx.Cfg.GlobalBindings...)
 
 	outputs := make([]File, 0)
 	uniqueCertIDs := map[string]bool{}
@@ -42,7 +42,7 @@ func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, err
 			if !uniqueCertIDs[certID] {
 				uniqueCertIDs[certID] = true
 
-				output, err := p.buildCertificateFile(ctx.context, *b.CertificateID)
+				output, err := p.buildCertificateFile(ctx.Context, *b.CertificateID)
 				if err != nil {
 					return nil, err
 				}
@@ -55,7 +55,7 @@ func (p *hostCertificateFileProvider) provide(ctx *providerContext) ([]File, err
 	return outputs, nil
 }
 
-func (p *hostCertificateFileProvider) buildCertificateFile(
+func (p *hostCertificateProvider) buildCertificateFile(
 	ctx context.Context,
 	certificateID uuid.UUID,
 ) (*File, error) {
