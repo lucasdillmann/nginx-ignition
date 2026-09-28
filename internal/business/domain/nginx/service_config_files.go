@@ -68,12 +68,16 @@ func (s *service) replaceConfigurationFiles(
 	supportedFeatures *provider.SupportedFeatures,
 ) ([]host.Host, error) {
 	paths := s.configPaths()
-
 	if err := s.createMissingFolders(paths); err != nil {
 		return nil, err
 	}
 
-	configFiles, hosts, streams, err := s.configFilesManager.GetConfigurationFiles(
+	log.Infof("Rebuilding nginx configuration files on %s...", paths.Base)
+	if err := s.testConfigurationFiles(ctx, supportedFeatures, paths); err != nil {
+		return nil, err
+	}
+
+	configFiles, hosts, _, err := s.configFilesManager.GetConfigurationFiles(
 		ctx,
 		paths,
 		supportedFeatures,
@@ -82,12 +86,7 @@ func (s *service) replaceConfigurationFiles(
 		return nil, err
 	}
 
-	log.Infof(
-		"Rebuilding nginx configuration files for %d hosts and %d streams",
-		len(hosts),
-		len(streams),
-	)
-
+	log.Infof("Validation and generation successful. Creating (or replacing) configuration files...")
 	if err := s.emptyConfigFolder(paths); err != nil {
 		return nil, err
 	}
@@ -101,8 +100,63 @@ func (s *service) replaceConfigurationFiles(
 	return hosts, nil
 }
 
+func (s *service) testConfigurationFiles(
+	ctx context.Context,
+	supportedFeatures *provider.SupportedFeatures,
+	paths *provider.Paths,
+) error {
+	testRoot, err := s.createTestConfigRoot(paths)
+	if err != nil {
+		return err
+	}
+
+	defer s.removeTestConfigRoot(testRoot)
+
+	testPaths := newConfigPaths(testRoot)
+	if err = s.createMissingFolders(testPaths); err != nil {
+		return err
+	}
+
+	configFiles, _, _, err := s.configFilesManager.GetConfigurationFiles(
+		ctx,
+		testPaths,
+		supportedFeatures,
+	)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range configFiles {
+		if err := s.writeConfigFile(testPaths, file); err != nil {
+			return err
+		}
+	}
+
+	log.Infof("Testing nginx staging configuration files on %s...", testRoot)
+	return s.processManager.ValidateConfiguration(ctx, testRoot)
+}
+
+func (s *service) createTestConfigRoot(paths *provider.Paths) (string, error) {
+	root, err := os.MkdirTemp(filepath.Clean(paths.Temp), "config-test-")
+	if err != nil {
+		return "", fmt.Errorf("unable to create configuration test folder: %w", err)
+	}
+
+	return root, nil
+}
+
+func (s *service) removeTestConfigRoot(root string) {
+	if err := os.RemoveAll(root); err != nil {
+		log.Warnf("Unable to remove configuration test folder %s: %v", root, err)
+	}
+}
+
 func (s *service) configPaths() *provider.Paths {
-	cleanPath := filepath.Clean(s.processManager.configPath)
+	return newConfigPaths(s.processManager.configPath)
+}
+
+func newConfigPaths(root string) *provider.Paths {
+	cleanPath := filepath.Clean(root)
 	toNginxPath := func(p string) string {
 		return filepath.ToSlash(p) + "/"
 	}
