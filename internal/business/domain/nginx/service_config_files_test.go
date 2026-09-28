@@ -45,6 +45,91 @@ func Test_service_configFiles(t *testing.T) {
 		})
 	})
 
+	t.Run("newConfigPaths", func(t *testing.T) {
+		t.Run("builds paths relative to the given root", func(t *testing.T) {
+			root := filepath.Join(tmpDir, "candidate")
+
+			paths := newConfigPaths(root)
+
+			basePath := filepath.ToSlash(root) + "/"
+			assert.Equal(t, basePath, paths.Base)
+			assert.Equal(t, basePath+"config/", paths.Config)
+			assert.Equal(t, basePath+"logs/", paths.Logs)
+			assert.Equal(t, basePath+"cache/", paths.Cache)
+			assert.Equal(t, basePath+"temp/", paths.Temp)
+		})
+
+		t.Run("cleans up the given root", func(t *testing.T) {
+			paths := newConfigPaths(tmpDir + "/./config/..")
+
+			assert.Equal(t, filepath.ToSlash(tmpDir)+"/", paths.Base)
+		})
+	})
+
+	t.Run("createTestConfigRoot", func(t *testing.T) {
+		t.Run("creates a folder inside the configured temp folder", func(t *testing.T) {
+			paths := nginxService.configPaths()
+			require.NoError(t, os.MkdirAll(filepath.Clean(paths.Temp), os.ModePerm))
+
+			root, err := nginxService.createTestConfigRoot(paths)
+
+			require.NoError(t, err)
+			assert.DirExists(t, root)
+			assert.Equal(t, filepath.Clean(paths.Temp), filepath.Dir(root))
+		})
+
+		t.Run("creates a different folder on every call", func(t *testing.T) {
+			paths := nginxService.configPaths()
+			require.NoError(t, os.MkdirAll(filepath.Clean(paths.Temp), os.ModePerm))
+
+			first, err := nginxService.createTestConfigRoot(paths)
+			require.NoError(t, err)
+			t.Cleanup(func() { nginxService.removeTestConfigRoot(first) })
+
+			second, err := nginxService.createTestConfigRoot(paths)
+			require.NoError(t, err)
+			t.Cleanup(func() { nginxService.removeTestConfigRoot(second) })
+
+			assert.NotEqual(t, first, second)
+		})
+
+		t.Run("returns error when the temp folder is not usable", func(t *testing.T) {
+			missingService := &service{
+				processManager: &processManager{
+					configPath: filepath.Join(tmpDir, "missing"),
+				},
+			}
+
+			root, err := missingService.createTestConfigRoot(missingService.configPaths())
+
+			assert.Error(t, err)
+			assert.Empty(t, root)
+		})
+	})
+
+	t.Run("removeTestConfigRoot", func(t *testing.T) {
+		t.Run("removes the folder and its contents", func(t *testing.T) {
+			root, err := nginxService.createTestConfigRoot(nginxService.configPaths())
+			require.NoError(t, err)
+			require.NoError(t, os.MkdirAll(filepath.Join(root, "config"), os.ModePerm))
+			require.NoError(t, os.WriteFile(
+				filepath.Join(root, "config", "nginx.conf"),
+				[]byte("events {}"),
+				0o644,
+			))
+
+			nginxService.removeTestConfigRoot(root)
+
+			assert.NoDirExists(t, root)
+		})
+
+		t.Run("does nothing if the folder does not exist", func(t *testing.T) {
+			nginxService.removeTestConfigRoot(filepath.Join(tmpDir, "config-test-missing"))
+
+			assert.NoDirExists(t, filepath.Join(tmpDir, "config-test-missing"))
+		})
+	})
+
 	t.Run("createMissingFolders", func(t *testing.T) {
 		t.Run("creates config, logs, cache and temp folders", func(t *testing.T) {
 			paths := nginxService.configPaths()

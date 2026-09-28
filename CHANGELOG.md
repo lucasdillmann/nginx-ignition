@@ -2,6 +2,8 @@
 
 ## 2.46.0
 
+- Nginx configuration files are now tested against the nginx binary before being applied. When the test fails, the
+  reload is aborted and the current configuration is kept untouched.
 - New security policy
 - Improvement of the internal code organization
 - Code and development dependencies upgrades
