@@ -3,7 +3,13 @@
 ## 2.46.0
 
 - Nginx configuration files are now tested against the nginx binary before being applied. When the test fails, the
-  reload is aborted and the current configuration is kept untouched.
+  start/reload is aborted and the current configuration is kept untouched, so an invalid configuration can no longer 
+  break the whole instance on reload.
+- Values rendered into the nginx configuration files are now escaped, and stream addresses and access list realms are
+  now validated more strictly against their expected formats, preventing nginx configuration directive injection (thanks
+  @manus-use [for the report](https://github.com/lucasdillmann/nginx-ignition/security/advisories/GHSA-76f8-49cc-cf53)!)
+  - Note: Stream addresses must now be a valid IP address or hostname (Unix socket paths must start with "/"), and
+    access list realms can no longer contain control characters.
 - New security policy
 - Improvement of the internal code organization
 - Code and development dependencies upgrades
