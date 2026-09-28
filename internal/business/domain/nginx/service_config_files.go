@@ -86,7 +86,9 @@ func (s *service) replaceConfigurationFiles(
 		return nil, err
 	}
 
-	log.Infof("Validation and generation successful. Creating (or replacing) configuration files...")
+	log.Infof(
+		"Validation and generation successful. Creating (or replacing) configuration files...",
+	)
 	if err := s.emptyConfigFolder(paths); err != nil {
 		return nil, err
 	}
