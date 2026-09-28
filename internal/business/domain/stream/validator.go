@@ -204,7 +204,8 @@ func (v *validator) validateAddressValue(ctx context.Context, fieldPrefix string
 		return
 	}
 
-	if net.ParseIP(address.Address) == nil && !constants.HostnamePattern.MatchString(address.Address) {
+	if net.ParseIP(address.Address) == nil &&
+		!constants.HostnamePattern.MatchString(address.Address) {
 		v.delegate.Add(addressField, i18n.M(ctx, i18n.K.CommonInvalidValue))
 	}
 }
