@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	vpn2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
 
 func Test_toDTO(t *testing.T) {
@@ -41,9 +41,9 @@ func Test_doDomain(t *testing.T) {
 
 func Test_toAvailableDriverDTO(t *testing.T) {
 	t.Run("converts domain object to DTO", func(t *testing.T) {
-		subject := &vpn2.AvailableDriver{
+		subject := &vpn.AvailableDriver{
 			ID:                 "netbird",
-			EndpointSSLSupport: vpn2.DriverManagedEndpointSSLSupport,
+			EndpointSSLSupport: vpn.DriverManagedEndpointSSLSupport,
 		}
 		result := toAvailableDriverDTO(subject)
 

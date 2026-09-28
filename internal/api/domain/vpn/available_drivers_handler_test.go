@@ -11,7 +11,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
-	vpn2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
 
 func init() {
@@ -24,7 +24,7 @@ func Test_availableDriversHandler(t *testing.T) {
 			controller := gomock.NewController(t)
 			defer controller.Finish()
 
-			drivers := []vpn2.AvailableDriver{
+			drivers := []vpn.AvailableDriver{
 				{
 					ID:   "openvpn",
 					Name: i18n.Static("OpenVPN"),
@@ -35,7 +35,7 @@ func Test_availableDriversHandler(t *testing.T) {
 				},
 			}
 
-			commands := vpn2.NewMockedCommands(controller)
+			commands := vpn.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetAvailableDrivers(gomock.Any()).
 				Return(drivers, nil)
@@ -62,7 +62,7 @@ func Test_availableDriversHandler(t *testing.T) {
 			defer controller.Finish()
 
 			expectedErr := assert.AnError
-			commands := vpn2.NewMockedCommands(controller)
+			commands := vpn.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetAvailableDrivers(gomock.Any()).
 				Return(nil, expectedErr)

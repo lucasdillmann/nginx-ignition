@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"context"
@@ -26,14 +26,14 @@ type SupportedFeatures struct {
 	GRPCType    SupportType
 }
 
-type providerContext struct {
-	context           context.Context
-	paths             *Paths
-	supportedFeatures *SupportedFeatures
-	cfg               *settings.Settings
-	hosts             []host.Host
-	streams           []stream.Stream
-	caches            []cache.Cache
+type Context struct {
+	Context           context.Context
+	Paths             *Paths
+	SupportedFeatures *SupportedFeatures
+	Cfg               *settings.Settings
+	Hosts             []host.Host
+	Streams           []stream.Stream
+	Caches            []cache.Cache
 }
 
 type Paths struct {
@@ -44,8 +44,8 @@ type Paths struct {
 	Temp   string
 }
 
-type fileProvider interface {
-	provide(ctx *providerContext) ([]File, error)
+type Provider interface {
+	Provide(ctx *Context) ([]File, error)
 }
 
 type File struct {

@@ -9,7 +9,7 @@ import (
 	"github.com/uptrace/bun"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
-	accesslist2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/accesslist"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/constants"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
@@ -22,13 +22,13 @@ type repository struct {
 	database *database.Database
 }
 
-func New(db *database.Database) accesslist2.Repository {
+func New(db *database.Database) accesslist.Repository {
 	return &repository{
 		database: db,
 	}
 }
 
-func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*accesslist2.AccessList, error) {
+func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*accesslist.AccessList, error) {
 	var model accessListModel
 
 	err := r.database.Select().
@@ -100,7 +100,7 @@ func (r *repository) FindPage(
 	ctx context.Context,
 	pageNumber, pageSize int,
 	searchTerms *string,
-) (*pagination.Page[accesslist2.AccessList], error) {
+) (*pagination.Page[accesslist.AccessList], error) {
 	models := make([]accessListModel, 0)
 
 	query := r.database.Select().Model(&models)
@@ -124,7 +124,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	result := make([]accesslist2.AccessList, 0)
+	result := make([]accesslist.AccessList, 0)
 	for _, model := range models {
 		result = append(result, toDomain(&model))
 	}
@@ -132,7 +132,7 @@ func (r *repository) FindPage(
 	return pagination.New(pageNumber, pageSize, count, result), nil
 }
 
-func (r *repository) FindAll(ctx context.Context) ([]accesslist2.AccessList, error) {
+func (r *repository) FindAll(ctx context.Context) ([]accesslist.AccessList, error) {
 	models := make([]accessListModel, 0)
 
 	err := r.database.Select().
@@ -145,7 +145,7 @@ func (r *repository) FindAll(ctx context.Context) ([]accesslist2.AccessList, err
 		return nil, err
 	}
 
-	result := make([]accesslist2.AccessList, 0)
+	result := make([]accesslist.AccessList, 0)
 	for _, model := range models {
 		result = append(result, toDomain(&model))
 	}
@@ -153,7 +153,7 @@ func (r *repository) FindAll(ctx context.Context) ([]accesslist2.AccessList, err
 	return result, nil
 }
 
-func (r *repository) Save(ctx context.Context, accessList *accesslist2.AccessList) error {
+func (r *repository) Save(ctx context.Context, accessList *accesslist.AccessList) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err

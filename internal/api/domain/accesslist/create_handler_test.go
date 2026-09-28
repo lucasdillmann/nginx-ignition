@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	accesslist2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/accesslist"
 )
 
 func init() {
@@ -27,10 +27,10 @@ func Test_createHandler(t *testing.T) {
 			defer controller.Finish()
 
 			payload := newAccessListRequestDTO()
-			commands := accesslist2.NewMockedCommands(controller)
+			commands := accesslist.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
-				DoAndReturn(func(_ context.Context, accessList *accesslist2.AccessList) error {
+				DoAndReturn(func(_ context.Context, accessList *accesslist.AccessList) error {
 					assert.Equal(t, *payload.Name, accessList.Name)
 					return nil
 				})
@@ -80,7 +80,7 @@ func Test_createHandler(t *testing.T) {
 			defer controller.Finish()
 
 			payload := newAccessListRequestDTO()
-			commands := accesslist2.NewMockedCommands(controller)
+			commands := accesslist.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any()).
 				Return(expectedErr)

@@ -5,11 +5,11 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
-	vpn2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
 
-func newVPN() *vpn2.VPN {
-	return &vpn2.VPN{
+func newVPN() *vpn.VPN {
+	return &vpn.VPN{
 		ID:      uuid.New(),
 		Name:    "Test VPN",
 		Driver:  "test-driver",
@@ -20,11 +20,11 @@ func newVPN() *vpn2.VPN {
 	}
 }
 
-func newVPNAvailableDriver() *vpn2.AvailableDriver {
-	return &vpn2.AvailableDriver{
+func newVPNAvailableDriver() *vpn.AvailableDriver {
+	return &vpn.AvailableDriver{
 		ID:                 "test-driver",
 		Name:               i18n.Static("Test Driver"),
-		EndpointSSLSupport: vpn2.DriverManagedEndpointSSLSupport,
+		EndpointSSLSupport: vpn.DriverManagedEndpointSSLSupport,
 	}
 }
 
@@ -39,8 +39,8 @@ func newVPNRequest() vpnRequest {
 	}
 }
 
-func newVPNPage() *pagination.Page[vpn2.VPN] {
-	return pagination.Of([]vpn2.VPN{
+func newVPNPage() *pagination.Page[vpn.VPN] {
+	return pagination.Of([]vpn.VPN{
 		*newVPN(),
 	})
 }

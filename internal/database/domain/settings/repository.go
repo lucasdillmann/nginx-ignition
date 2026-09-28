@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	settings2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
 
@@ -13,13 +13,13 @@ type repository struct {
 	database *database.Database
 }
 
-func New(db *database.Database) settings2.Repository {
+func New(db *database.Database) settings.Repository {
 	return &repository{
 		database: db,
 	}
 }
 
-func (r *repository) Get(ctx context.Context) (*settings2.Settings, error) {
+func (r *repository) Get(ctx context.Context) (*settings.Settings, error) {
 	nginx := nginxModel{}
 	if err := r.database.Select().Model(&nginx).Scan(ctx); err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (r *repository) Get(ctx context.Context) (*settings2.Settings, error) {
 	return toDomain(&nginx, &logRotation, &certificate, bindings, &buffers, &stats), nil
 }
 
-func (r *repository) Save(ctx context.Context, set *settings2.Settings) error {
+func (r *repository) Save(ctx context.Context, set *settings.Settings) error {
 	nginx, logRotation, certificate, bindings, buffers, stats := toModel(set)
 
 	transaction, err := r.database.Begin()

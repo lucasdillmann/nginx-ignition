@@ -4,6 +4,7 @@ package nginx
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"os"
 	"strings"
@@ -60,7 +61,7 @@ func (m *processManager) uptimeSeconds() (int64, error) {
 }
 
 func (m *processManager) runBackgroundCommand(waitDelay time.Duration, extraArgs ...string) error {
-	cmd := m.prepareCommand(extraArgs...)
+	cmd := m.prepareCommand(context.Background(), m.configPath, extraArgs...)
 
 	var outputBuffer bytes.Buffer
 	cmd.Stdout = &outputBuffer

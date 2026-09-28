@@ -13,7 +13,7 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
-	settings2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
 )
 
 func init() {
@@ -32,10 +32,10 @@ func Test_listHandler(t *testing.T) {
 				List(gomock.Any(), 10, 1, gomock.Any()).
 				Return(page, nil)
 
-			settingsCommands := settings2.NewMockedCommands(controller)
+			settingsCommands := settings.NewMockedCommands(controller)
 			settingsCommands.EXPECT().
 				Get(gomock.Any()).
-				Return(&settings2.Settings{}, nil)
+				Return(&settings.Settings{}, nil)
 
 			recorder := httptest.NewRecorder()
 			ginContext, _ := gin.CreateTestContext(recorder)

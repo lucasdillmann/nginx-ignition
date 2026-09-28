@@ -6,19 +6,18 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
-
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 func Install(
 	router *gin.Engine,
 	authorizer *authorization.ABAC,
-	commands user2.Commands,
+	commands user.Commands,
 ) {
 	basePath := authorizer.ConfigureGroup(
 		router,
 		"/api/users",
-		func(permissions user2.Permissions) user2.AccessLevel { return permissions.Users },
+		func(permissions user.Permissions) user.AccessLevel { return permissions.Users },
 	)
 	basePath.GET("", listHandler{commands}.handle)
 	basePath.POST("", createHandler{commands}.handle)

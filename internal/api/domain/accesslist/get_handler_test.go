@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	accesslist2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/accesslist"
 )
 
 func init() {
@@ -27,10 +27,10 @@ func Test_getHandler(t *testing.T) {
 			defer controller.Finish()
 
 			accessList := newAccessList()
-			commands := accesslist2.NewMockedCommands(controller)
+			commands := accesslist.NewMockedCommands(controller)
 			commands.EXPECT().
 				Get(gomock.Any(), gomock.Any()).
-				DoAndReturn(func(_ context.Context, idToGet uuid.UUID) (*accesslist2.AccessList, error) {
+				DoAndReturn(func(_ context.Context, idToGet uuid.UUID) (*accesslist.AccessList, error) {
 					assert.Equal(t, accessList.ID, idToGet)
 					return accessList, nil
 				})
@@ -71,7 +71,7 @@ func Test_getHandler(t *testing.T) {
 			defer controller.Finish()
 
 			id := uuid.New()
-			commands := accesslist2.NewMockedCommands(controller)
+			commands := accesslist.NewMockedCommands(controller)
 			commands.EXPECT().
 				Get(gomock.Any(), id).
 				Return(nil, nil)
@@ -95,7 +95,7 @@ func Test_getHandler(t *testing.T) {
 			defer controller.Finish()
 
 			id := uuid.New()
-			commands := accesslist2.NewMockedCommands(controller)
+			commands := accesslist.NewMockedCommands(controller)
 			commands.EXPECT().
 				Get(gomock.Any(), id).
 				Return(nil, expectedErr)

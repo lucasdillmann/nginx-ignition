@@ -13,8 +13,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
-
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 func init() {
@@ -29,7 +28,7 @@ func Test_updateHandler(t *testing.T) {
 
 			id := uuid.New()
 			payload := newUserRequest()
-			commands := user2.NewMockedCommands(controller)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				Save(gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(nil)
@@ -41,7 +40,7 @@ func Test_updateHandler(t *testing.T) {
 			engine.Use(func(ginContext *gin.Context) {
 				ginContext.Set(
 					"ABAC:Subject",
-					&authorization.Subject{User: &user2.User{ID: uuid.New()}},
+					&authorization.Subject{User: &user.User{ID: uuid.New()}},
 				)
 				ginContext.Next()
 			})

@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 2.45.3
+## 2.46.0
 
 - New security policy
 - Improvement of the internal code organization

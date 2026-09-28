@@ -11,8 +11,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
-
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 func init() {
@@ -26,7 +25,7 @@ func Test_deleteHandler(t *testing.T) {
 			defer controller.Finish()
 
 			id := uuid.New()
-			commands := user2.NewMockedCommands(controller)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				Delete(gomock.Any(), id).
 				Return(nil)
@@ -38,7 +37,7 @@ func Test_deleteHandler(t *testing.T) {
 			engine.Use(func(ginContext *gin.Context) {
 				ginContext.Set(
 					"ABAC:Subject",
-					&authorization.Subject{User: &user2.User{ID: uuid.New()}},
+					&authorization.Subject{User: &user.User{ID: uuid.New()}},
 				)
 				ginContext.Next()
 			})
@@ -61,7 +60,7 @@ func Test_deleteHandler(t *testing.T) {
 			}
 			engine := gin.New()
 			engine.Use(func(ginContext *gin.Context) {
-				ginContext.Set("ABAC:Subject", &authorization.Subject{User: &user2.User{ID: id}})
+				ginContext.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: id}})
 				ginContext.Next()
 			})
 			engine.DELETE("/api/users/:id", handler.handle)
@@ -93,7 +92,7 @@ func Test_deleteHandler(t *testing.T) {
 
 			id := uuid.New()
 			expectedErr := assert.AnError
-			commands := user2.NewMockedCommands(controller)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				Delete(gomock.Any(), id).
 				Return(expectedErr)
@@ -105,7 +104,7 @@ func Test_deleteHandler(t *testing.T) {
 			engine.Use(func(ginContext *gin.Context) {
 				ginContext.Set(
 					"ABAC:Subject",
-					&authorization.Subject{User: &user2.User{ID: uuid.New()}},
+					&authorization.Subject{User: &user.User{ID: uuid.New()}},
 				)
 				ginContext.Next()
 			})

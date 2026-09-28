@@ -13,8 +13,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
-
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 func init() {
@@ -32,7 +31,7 @@ func Test_totpActivateHandler(t *testing.T) {
 				Code: new("123456"),
 			}
 
-			commands := user2.NewMockedCommands(controller)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				ActivateTOTP(gomock.Any(), id, *payload.Code).
 				Return(true, nil)
@@ -40,7 +39,7 @@ func Test_totpActivateHandler(t *testing.T) {
 			handler := totpActivateHandler{commands: commands}
 			engine := gin.New()
 			engine.Use(func(ginContext *gin.Context) {
-				ginContext.Set("ABAC:Subject", &authorization.Subject{User: &user2.User{ID: id}})
+				ginContext.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: id}})
 				ginContext.Next()
 			})
 			engine.POST("/current/totp/activate", handler.handle)
@@ -62,7 +61,7 @@ func Test_totpActivateHandler(t *testing.T) {
 				Code: new("000000"),
 			}
 
-			commands := user2.NewMockedCommands(controller)
+			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
 				ActivateTOTP(gomock.Any(), id, *payload.Code).
 				Return(false, nil)
@@ -70,7 +69,7 @@ func Test_totpActivateHandler(t *testing.T) {
 			handler := totpActivateHandler{commands: commands}
 			engine := gin.New()
 			engine.Use(func(ginContext *gin.Context) {
-				ginContext.Set("ABAC:Subject", &authorization.Subject{User: &user2.User{ID: id}})
+				ginContext.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: id}})
 				ginContext.Next()
 			})
 			engine.POST("/current/totp/activate", handler.handle)

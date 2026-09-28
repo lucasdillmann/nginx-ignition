@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"fmt"
@@ -12,25 +12,25 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/stream"
 )
 
-func Test_streamFileProvider(t *testing.T) {
+func Test_streamProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
-		provider := &streamFileProvider{}
+		provider := &streamProvider{}
 		id := uuid.New()
 		s := newStream()
 		s.ID = id
 
 		ctx := newProviderContext(t)
-		ctx.supportedFeatures.StreamType = StaticSupportType
-		ctx.streams = []stream.Stream{s}
+		ctx.SupportedFeatures.StreamType = StaticSupportType
+		ctx.Streams = []stream.Stream{s}
 
-		files, err := provider.provide(ctx)
+		files, err := provider.Provide(ctx)
 		assert.NoError(t, err)
 		assert.Len(t, files, 1)
 		assert.Equal(t, fmt.Sprintf("stream-%s.conf", id), files[0].Name)
 
 		t.Run("returns error when streams present but not supported", func(t *testing.T) {
-			ctx.supportedFeatures.StreamType = NoneSupportType
-			_, err := provider.provide(ctx)
+			ctx.SupportedFeatures.StreamType = NoneSupportType
+			_, err := provider.Provide(ctx)
 			assert.Error(t, err)
 			var coreErr *coreerror.CoreError
 			assert.ErrorAs(t, err, &coreErr)
@@ -38,16 +38,16 @@ func Test_streamFileProvider(t *testing.T) {
 		})
 
 		t.Run("returns error for unknown stream type", func(t *testing.T) {
-			ctx.supportedFeatures.StreamType = StaticSupportType
-			ctx.streams[0].Type = "UNKNOWN"
-			_, err := provider.provide(ctx)
+			ctx.SupportedFeatures.StreamType = StaticSupportType
+			ctx.Streams[0].Type = "UNKNOWN"
+			_, err := provider.Provide(ctx)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "unknown stream type")
 		})
 	})
 
 	t.Run("BuildBinding", func(t *testing.T) {
-		provider := &streamFileProvider{}
+		provider := &streamProvider{}
 
 		t.Run("TCP binding with all flags", func(t *testing.T) {
 			s := &stream.Stream{
@@ -113,7 +113,7 @@ func Test_streamFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildUpstream", func(t *testing.T) {
-		provider := &streamFileProvider{}
+		provider := &streamProvider{}
 
 		t.Run("generates upstream with circuit breaker and weight", func(t *testing.T) {
 			backends := []stream.Backend{
@@ -161,13 +161,13 @@ func Test_streamFileProvider(t *testing.T) {
 	})
 
 	t.Run("BuildRoutedStream", func(t *testing.T) {
-		provider := &streamFileProvider{}
+		provider := &streamProvider{}
 		id := uuid.New()
 		idStr := nginxID(&stream.Stream{ID: id})
 
 		t.Run("generates SNI routing configuration", func(t *testing.T) {
 			ctx := newProviderContext(t)
-			ctx.supportedFeatures.TLSSNI = StaticSupportType
+			ctx.SupportedFeatures.TLSSNI = StaticSupportType
 			s := &stream.Stream{
 				ID:   id,
 				Type: stream.SNIRouterType,
@@ -214,7 +214,7 @@ func Test_streamFileProvider(t *testing.T) {
 
 		t.Run("returns error when TLSSNI not supported", func(t *testing.T) {
 			ctx := newProviderContext(t)
-			ctx.supportedFeatures.TLSSNI = NoneSupportType
+			ctx.SupportedFeatures.TLSSNI = NoneSupportType
 			s := &stream.Stream{Type: stream.SNIRouterType}
 			_, err := provider.buildRoutedStream(ctx, s)
 			assert.Error(t, err)

@@ -8,10 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
-type PermissionResolver func(permissions user2.Permissions) user2.AccessLevel
+type PermissionResolver func(permissions user.Permissions) user.AccessLevel
 
 type pathPermissionResolver struct {
 	resolver PermissionResolver
@@ -26,7 +26,7 @@ type ABAC struct {
 	allowedForAllUsers  []string
 }
 
-func New(cfg *configuration.Configuration, commands user2.Commands) (*ABAC, error) {
+func New(cfg *configuration.Configuration, commands user.Commands) (*ABAC, error) {
 	jwt, err := newJwt(cfg, commands)
 	if err != nil {
 		return nil, err
@@ -80,8 +80,8 @@ func (m *ABAC) isAllowedForAllUsers(method, path string) bool {
 	return slices.Contains(m.allowedForAllUsers, method+":"+path)
 }
 
-func (m *ABAC) isAccessGranted(method, path string, permissions *user2.Permissions) bool {
-	currentAccessLevel := user2.NoAccessAccessLevel
+func (m *ABAC) isAccessGranted(method, path string, permissions *user.Permissions) bool {
+	currentAccessLevel := user.NoAccessAccessLevel
 	for _, item := range m.permissionResolvers {
 		if strings.HasPrefix(path, item.path) {
 			currentAccessLevel = item.resolver(*permissions)
@@ -91,10 +91,10 @@ func (m *ABAC) isAccessGranted(method, path string, permissions *user2.Permissio
 
 	switch method {
 	case "GET":
-		return currentAccessLevel == user2.ReadOnlyAccessLevel ||
-			currentAccessLevel == user2.ReadWriteAccessLevel
+		return currentAccessLevel == user.ReadOnlyAccessLevel ||
+			currentAccessLevel == user.ReadWriteAccessLevel
 	case "POST", "PUT", "DELETE", "PATCH":
-		return currentAccessLevel == user2.ReadWriteAccessLevel
+		return currentAccessLevel == user.ReadWriteAccessLevel
 	default:
 		return false
 	}

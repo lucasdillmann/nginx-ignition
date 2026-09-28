@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"testing"
@@ -24,11 +24,11 @@ func newPaths() *Paths {
 	}
 }
 
-func newProviderContext(t *testing.T) *providerContext {
-	return &providerContext{
-		context: t.Context(),
-		paths:   newPaths(),
-		supportedFeatures: &SupportedFeatures{
+func newProviderContext(t *testing.T) *Context {
+	return &Context{
+		Context: t.Context(),
+		Paths:   newPaths(),
+		SupportedFeatures: &SupportedFeatures{
 			TLSSNI:      StaticSupportType,
 			StreamType:  StaticSupportType,
 			RunCodeType: StaticSupportType,

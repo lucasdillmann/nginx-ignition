@@ -10,7 +10,7 @@ import (
 	"github.com/uptrace/bun/dialect"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/constants"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
@@ -19,13 +19,13 @@ type repository struct {
 	database *database.Database
 }
 
-func New(db *database.Database) user2.Repository {
+func New(db *database.Database) user.Repository {
 	return &repository{
 		database: db,
 	}
 }
 
-func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*user2.User, error) {
+func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*user.User, error) {
 	var model userModel
 
 	err := r.database.Select().Model(&model).Where(constants.ByIDFilter, id).Scan(ctx)
@@ -61,7 +61,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	return transaction.Commit()
 }
 
-func (r *repository) FindByUsername(ctx context.Context, username string) (*user2.User, error) {
+func (r *repository) FindByUsername(ctx context.Context, username string) (*user.User, error) {
 	var model userModel
 
 	err := r.database.Select().
@@ -84,7 +84,7 @@ func (r *repository) FindPage(
 	ctx context.Context,
 	pageSize, pageNumber int,
 	searchTerms *string,
-) (*pagination.Page[user2.User], error) {
+) (*pagination.Page[user.User], error) {
 	models := make([]userModel, 0)
 
 	query := r.database.Select().Model(&models)
@@ -119,7 +119,7 @@ func (r *repository) FindPage(
 		return nil, err
 	}
 
-	result := make([]user2.User, 0)
+	result := make([]user.User, 0)
 	for _, model := range models {
 		result = append(result, toDomain(&model))
 	}
@@ -155,7 +155,7 @@ func (r *repository) Count(ctx context.Context) (int, error) {
 	return count, nil
 }
 
-func (r *repository) TryCreateInitialUser(ctx context.Context, u *user2.User) (bool, error) {
+func (r *repository) TryCreateInitialUser(ctx context.Context, u *user.User) (bool, error) {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return false, err
@@ -206,7 +206,7 @@ func lockUserTable(ctx context.Context, transaction bun.Tx) error {
 	return err
 }
 
-func (r *repository) Save(ctx context.Context, u *user2.User) error {
+func (r *repository) Save(ctx context.Context, u *user.User) error {
 	transaction, err := r.database.Begin()
 	if err != nil {
 		return err

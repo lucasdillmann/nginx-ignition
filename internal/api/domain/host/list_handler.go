@@ -8,13 +8,13 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/pagination"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/log"
-	host2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
 )
 
 type listHandler struct {
 	settingsCommands settings.Commands
-	hostCommands     host2.Commands
+	hostCommands     host.Commands
 }
 
 func (h listHandler) handle(ctx *gin.Context) {
@@ -39,7 +39,7 @@ func (h listHandler) handle(ctx *gin.Context) {
 
 	ctx.JSON(
 		http.StatusOK,
-		pagination.Convert(page, func(item *host2.Host) *hostResponseDTO {
+		pagination.Convert(page, func(item *host.Host) *hostResponseDTO {
 			return toDTO(item, globalSettings)
 		}),
 	)

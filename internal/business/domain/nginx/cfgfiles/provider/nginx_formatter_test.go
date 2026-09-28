@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"strings"
@@ -74,16 +74,16 @@ func Test_nginxConfigInjection(t *testing.T) {
 			SourceAddress: []string{`10.0.0.1"; return 200 "injected;`},
 		}}
 
-		file := (&accessListFileProvider{}).buildConfFile(&accessList, newPaths())
+		file := (&accessListProvider{}).buildConfFile(&accessList, newPaths())
 		assert.Contains(t, file.Contents, `auth_basic "Realm\"; return 200 \"injected;";`)
 		assert.Contains(t, file.Contents, `allow "10.0.0.1\"; return 200 \"injected;";`)
 		assert.NotContains(t, file.Contents, "\nreturn 200;")
 	})
 
 	t.Run("escapes binding addresses", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		ctx := newProviderContext(t)
-		ctx.cfg = newSettings()
+		ctx.Cfg = newSettings()
 		h := newHost()
 		binding := binding.Binding{
 			Type: binding.HTTPBindingType,
@@ -109,7 +109,7 @@ func Test_nginxConfigInjection(t *testing.T) {
 	})
 
 	t.Run("escapes route and header values", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		ctx := newProviderContext(t)
 		h := newHost()
 		route := host.Route{
@@ -130,7 +130,7 @@ func Test_nginxConfigInjection(t *testing.T) {
 	})
 
 	t.Run("escapes stream backend addresses", func(t *testing.T) {
-		provider := &streamFileProvider{}
+		provider := &streamProvider{}
 		upstream, err := provider.buildUpstream([]stream.Backend{{
 			Address: stream.Address{
 				Protocol: stream.TCPProtocol,
@@ -144,7 +144,7 @@ func Test_nginxConfigInjection(t *testing.T) {
 	})
 
 	t.Run("escapes cache expressions and extensions", func(t *testing.T) {
-		provider := &hostConfigurationFileProvider{}
+		provider := &hostConfigurationProvider{}
 		cacheID := uuid.New()
 		cacheConfig := newCache()
 		cacheConfig.ID = cacheID

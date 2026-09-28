@@ -9,7 +9,7 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/dynamicfields"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
-	dns2 "github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns"
 )
 
 //nolint:gosec
@@ -29,7 +29,7 @@ func (p *Provider) Name(ctx context.Context) *i18n.Message {
 }
 
 func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
-	return dns2.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
 		{
 			ID:          oauthTokenFieldID,
 			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsYandex360OauthToken),
@@ -62,9 +62,9 @@ func (p *Provider) ChallengeProvider(
 	cfg := yandex360.NewDefaultConfig()
 	cfg.OAuthToken = oauthToken
 	cfg.OrgID = orgID
-	cfg.TTL = dns2.TTL
-	cfg.PropagationTimeout = dns2.PropagationTimeout
-	cfg.PollingInterval = dns2.PollingInterval
+	cfg.TTL = dns.TTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
 
 	return yandex360.NewDNSProviderConfig(cfg)
 }

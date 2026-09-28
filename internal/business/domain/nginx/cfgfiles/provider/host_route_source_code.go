@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"fmt"
@@ -8,16 +8,16 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
 )
 
-type hostRouteSourceCodeFileProvider struct{}
+type hostRouteSourceCodeProvider struct{}
 
-func newHostRouteSourceCodeFileProvider() *hostRouteSourceCodeFileProvider {
-	return &hostRouteSourceCodeFileProvider{}
+func newHostRouteSourceCodeProvider() *hostRouteSourceCodeProvider {
+	return &hostRouteSourceCodeProvider{}
 }
 
-func (p *hostRouteSourceCodeFileProvider) provide(ctx *providerContext) ([]File, error) {
+func (p *hostRouteSourceCodeProvider) Provide(ctx *Context) ([]File, error) {
 	outputs := make([]File, 0)
 
-	for _, h := range ctx.hosts {
+	for _, h := range ctx.Hosts {
 		files, err := p.buildSourceCodeFiles(ctx, &h)
 		if err != nil {
 			return nil, err
@@ -29,8 +29,8 @@ func (p *hostRouteSourceCodeFileProvider) provide(ctx *providerContext) ([]File,
 	return outputs, nil
 }
 
-func (p *hostRouteSourceCodeFileProvider) buildSourceCodeFiles(
-	ctx *providerContext,
+func (p *hostRouteSourceCodeProvider) buildSourceCodeFiles(
+	ctx *Context,
 	h *host.Host,
 ) ([]File, error) {
 	outputs := make([]File, 0)
@@ -40,9 +40,9 @@ func (p *hostRouteSourceCodeFileProvider) buildSourceCodeFiles(
 			continue
 		}
 
-		if ctx.supportedFeatures.RunCodeType == NoneSupportType {
+		if ctx.SupportedFeatures.RunCodeType == NoneSupportType {
 			return nil, coreerror.New(
-				i18n.M(ctx.context, i18n.K.CoreNginxCfgfilesHostRouteCodeNotEnabled),
+				i18n.M(ctx.Context, i18n.K.CoreNginxCfgfilesHostRouteCodeNotEnabled),
 				false,
 			)
 		}

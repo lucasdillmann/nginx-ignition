@@ -15,8 +15,8 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/coreerror"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/logline"
-	host2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
-	settings2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
 )
 
 func Test_service(t *testing.T) {
@@ -95,16 +95,16 @@ func Test_service(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		settingsCmds := settings2.NewMockedCommands(ctrl)
-		settingsCmds.EXPECT().Get(t.Context()).Return(&settings2.Settings{
-			LogRotation: &settings2.LogRotationSettings{
+		settingsCmds := settings.NewMockedCommands(ctrl)
+		settingsCmds.EXPECT().Get(t.Context()).Return(&settings.Settings{
+			LogRotation: &settings.LogRotationSettings{
 				Enabled:      true,
 				MaximumLines: 2,
 			},
 		}, nil)
 
-		hostCmds := host2.NewMockedCommands(ctrl)
-		hostCmds.EXPECT().GetAllEnabled(t.Context()).Return([]host2.Host{}, nil)
+		hostCmds := host.NewMockedCommands(ctrl)
+		hostCmds.EXPECT().GetAllEnabled(t.Context()).Return([]host.Host{}, nil)
 
 		nginxService := &service{
 			logRotator: newLogRotator(

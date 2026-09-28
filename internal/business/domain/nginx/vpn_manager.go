@@ -8,15 +8,15 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/binding"
-	certificate2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
-	vpn2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
 
 type endpointAdapter struct {
 	domainName  *string
-	certDetails *certificate2.Certificate
+	certDetails *certificate.Certificate
 	name        string
 	bindings    []binding.Binding
 	vpnID       uuid.UUID
@@ -24,22 +24,22 @@ type endpointAdapter struct {
 }
 
 type vpnManager struct {
-	vpnCommands         vpn2.Commands
+	vpnCommands         vpn.Commands
 	settingsCommands    settings.Commands
-	certificateCommands certificate2.Commands
-	currentEndpoints    []vpn2.Endpoint
+	certificateCommands certificate.Commands
+	currentEndpoints    []vpn.Endpoint
 }
 
 func newVpnManager(
-	vpnCommands vpn2.Commands,
+	vpnCommands vpn.Commands,
 	settingsCommands settings.Commands,
-	certificateCommands certificate2.Commands,
+	certificateCommands certificate.Commands,
 ) *vpnManager {
 	return &vpnManager{
 		vpnCommands:         vpnCommands,
 		settingsCommands:    settingsCommands,
 		certificateCommands: certificateCommands,
-		currentEndpoints:    make([]vpn2.Endpoint, 0),
+		currentEndpoints:    make([]vpn.Endpoint, 0),
 	}
 }
 
@@ -79,7 +79,7 @@ func (m *vpnManager) reload(ctx context.Context, hosts []host.Host) error {
 
 func (m *vpnManager) stopObsoleteEndpoints(
 	ctx context.Context,
-	newEndpoints []vpn2.Endpoint,
+	newEndpoints []vpn.Endpoint,
 ) error {
 	for _, oldEndpoint := range m.currentEndpoints {
 		found := false
@@ -100,7 +100,7 @@ func (m *vpnManager) stopObsoleteEndpoints(
 	return nil
 }
 
-func (m *vpnManager) startNewEndpoints(ctx context.Context, newEndpoints []vpn2.Endpoint) error {
+func (m *vpnManager) startNewEndpoints(ctx context.Context, newEndpoints []vpn.Endpoint) error {
 	for _, newEndpoint := range newEndpoints {
 		found := false
 		for _, oldDest := range m.currentEndpoints {
@@ -122,13 +122,13 @@ func (m *vpnManager) startNewEndpoints(ctx context.Context, newEndpoints []vpn2.
 func (m *vpnManager) buildEndpoints(
 	ctx context.Context,
 	hosts []host.Host,
-) ([]vpn2.Endpoint, error) {
+) ([]vpn.Endpoint, error) {
 	setts, err := m.settingsCommands.Get(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	endpoints := make([]vpn2.Endpoint, 0)
+	endpoints := make([]vpn.Endpoint, 0)
 	for _, h := range hosts {
 		hostEndpoints, err := m.buildHostEndpoints(ctx, &h, setts.GlobalBindings)
 		if err != nil {
@@ -145,8 +145,8 @@ func (m *vpnManager) buildHostEndpoints(
 	ctx context.Context,
 	h *host.Host,
 	globalBindings []binding.Binding,
-) ([]vpn2.Endpoint, error) {
-	endpoints := make([]vpn2.Endpoint, 0)
+) ([]vpn.Endpoint, error) {
+	endpoints := make([]vpn.Endpoint, 0)
 	for _, vpnEntry := range h.VPNs {
 		endpoint, err := m.mapVPNEntryToEndpoint(ctx, h, &vpnEntry, globalBindings)
 		if err != nil {
@@ -163,7 +163,7 @@ func (m *vpnManager) mapVPNEntryToEndpoint(
 	h *host.Host,
 	vpnEntry *host.VPN,
 	globalBindings []binding.Binding,
-) (vpn2.Endpoint, error) {
+) (vpn.Endpoint, error) {
 	bindings := h.Bindings
 	if h.UseGlobalBindings {
 		bindings = globalBindings
@@ -192,7 +192,7 @@ func (m *vpnManager) mapVPNEntryToEndpoint(
 func (m *vpnManager) getVPNCertificateDetails(
 	ctx context.Context,
 	vpnEntry *host.VPN,
-) (*certificate2.Certificate, error) {
+) (*certificate.Certificate, error) {
 	if !vpnEntry.EnableHTTPS || vpnEntry.CertificateID == nil {
 		return nil, nil
 	}
@@ -244,15 +244,15 @@ func (a *endpointAdapter) SourceName() string {
 	return a.name
 }
 
-func (a *endpointAdapter) Targets() []vpn2.EndpointTarget {
+func (a *endpointAdapter) Targets() []vpn.EndpointTarget {
 	var targetHost string
 	if a.domainName != nil {
 		targetHost = *a.domainName
 	}
 
-	output := make([]vpn2.EndpointTarget, 0, len(a.bindings))
+	output := make([]vpn.EndpointTarget, 0, len(a.bindings))
 	for _, b := range a.bindings {
-		https := vpn2.EndpointHTTPS{}
+		https := vpn.EndpointHTTPS{}
 
 		if b.Type == binding.HTTPSBindingType {
 			if !a.enableHTTPS {
@@ -267,7 +267,7 @@ func (a *endpointAdapter) Targets() []vpn2.EndpointTarget {
 			}
 		}
 
-		output = append(output, vpn2.EndpointTarget{
+		output = append(output, vpn.EndpointTarget{
 			Host:  targetHost,
 			IP:    b.IP,
 			Port:  b.Port,

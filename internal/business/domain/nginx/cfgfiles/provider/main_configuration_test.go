@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"fmt"
@@ -14,9 +14,9 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/stream"
 )
 
-func Test_mainConfigurationFileProvider(t *testing.T) {
+func Test_mainConfigurationProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{
+		provider := &mainConfigurationProvider{
 			config: configuration.New(),
 		}
 
@@ -25,12 +25,12 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 
 		t.Run("successfully generates basic config", func(t *testing.T) {
 			ctx := newProviderContext(t)
-			ctx.paths = paths
-			ctx.cfg = mockSettings
-			ctx.supportedFeatures.StreamType = NoneSupportType
-			ctx.supportedFeatures.RunCodeType = NoneSupportType
+			ctx.Paths = paths
+			ctx.Cfg = mockSettings
+			ctx.SupportedFeatures.StreamType = NoneSupportType
+			ctx.SupportedFeatures.RunCodeType = NoneSupportType
 
-			files, err := provider.provide(ctx)
+			files, err := provider.Provide(ctx)
 			assert.NoError(t, err)
 			assert.Len(t, files, 1)
 			assert.Contains(t, files[0].Contents, "worker_processes 1;")
@@ -42,13 +42,13 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 
 		t.Run("includes dynamic modules and stream block when enabled", func(t *testing.T) {
 			ctx := newProviderContext(t)
-			ctx.paths = paths
-			ctx.cfg = mockSettings
-			ctx.supportedFeatures.StreamType = DynamicSupportType
-			ctx.supportedFeatures.RunCodeType = DynamicSupportType
-			ctx.streams = []stream.Stream{{ID: uuid.New()}}
+			ctx.Paths = paths
+			ctx.Cfg = mockSettings
+			ctx.SupportedFeatures.StreamType = DynamicSupportType
+			ctx.SupportedFeatures.RunCodeType = DynamicSupportType
+			ctx.Streams = []stream.Stream{{ID: uuid.New()}}
 
-			files, err := provider.provide(ctx)
+			files, err := provider.Provide(ctx)
 			assert.NoError(t, err)
 			assert.Contains(t, files[0].Contents, "load_module modules/ngx_stream_module.so;")
 			assert.Contains(t, files[0].Contents, "load_module modules/ngx_http_js_module.so;")
@@ -59,19 +59,19 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 		t.Run("includes custom configuration", func(t *testing.T) {
 			mockSettings.Nginx.Custom = new("custom_directive on;")
 			ctx := newProviderContext(t)
-			ctx.paths = paths
-			ctx.cfg = mockSettings
-			ctx.supportedFeatures.StreamType = NoneSupportType
-			ctx.supportedFeatures.RunCodeType = NoneSupportType
+			ctx.Paths = paths
+			ctx.Cfg = mockSettings
+			ctx.SupportedFeatures.StreamType = NoneSupportType
+			ctx.SupportedFeatures.RunCodeType = NoneSupportType
 
-			files, err := provider.provide(ctx)
+			files, err := provider.Provide(ctx)
 			assert.NoError(t, err)
 			assert.Contains(t, files[0].Contents, "custom_directive on;")
 		})
 	})
 
 	t.Run("getErrorLogPath", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{
+		provider := &mainConfigurationProvider{
 			config: configuration.New(),
 		}
 		paths := &Paths{
@@ -99,7 +99,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("getHostIncludes", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{
+		provider := &mainConfigurationProvider{
 			config: configuration.New(),
 		}
 		paths := &Paths{
@@ -128,7 +128,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("getStreamIncludes", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{
+		provider := &mainConfigurationProvider{
 			config: configuration.New(),
 		}
 		paths := &Paths{
@@ -148,7 +148,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("getCacheDefinitions", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{
+		provider := &mainConfigurationProvider{
 			config: configuration.New(),
 		}
 		paths := &Paths{
@@ -196,7 +196,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 	})
 
 	t.Run("getStatsDefinitions", func(t *testing.T) {
-		provider := &mainConfigurationFileProvider{
+		provider := &mainConfigurationProvider{
 			config: configuration.New(),
 		}
 		paths := &Paths{

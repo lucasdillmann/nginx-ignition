@@ -1,8 +1,6 @@
 package nginx
 
 import (
-	"archive/zip"
-	"bytes"
 	"context"
 	"net/http"
 
@@ -16,13 +14,14 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/logline"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
-	cfgfiles2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/nginx/cfgfiles"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/nginx/cfgfiles"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/nginx/cfgfiles/provider"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
 
 type service struct {
-	configFilesManager *cfgfiles2.Facade
+	configFilesManager *cfgfiles.Facade
 	processManager     *processManager
 	semaphore          *semaphore
 	logReader          *logReader
@@ -35,7 +34,7 @@ type service struct {
 func newService(
 	cfg *configuration.Configuration,
 	hostCommands host.Commands,
-	configFilesManager *cfgfiles2.Facade,
+	configFilesManager *cfgfiles.Facade,
 	vpnCommands vpn.Commands,
 	settingsCommands settings.Commands,
 	certificateCommands certificate.Commands,
@@ -70,7 +69,7 @@ func (s *service) Reload(ctx context.Context, failIfNotRunning bool) error {
 	}
 
 	return s.semaphore.changeState(runningState, func() error {
-		hosts, _, err := s.configFilesManager.ReplaceConfigurationFiles(ctx, supportedFeatures)
+		hosts, err := s.replaceConfigurationFiles(ctx, supportedFeatures)
 		if err != nil {
 			return err
 		}
@@ -105,7 +104,7 @@ func (s *service) Start(ctx context.Context) error {
 	}
 
 	return s.semaphore.changeState(runningState, func() error {
-		hosts, _, err := s.configFilesManager.ReplaceConfigurationFiles(ctx, supportedFeatures)
+		hosts, err := s.replaceConfigurationFiles(ctx, supportedFeatures)
 		if err != nil {
 			return err
 		}
@@ -207,69 +206,19 @@ func (s *service) attachListeners() {
 	}
 }
 
-func (s *service) GetConfigFiles(
-	ctx context.Context,
-	input GetConfigFilesInput,
-) ([]byte, error) {
-	paths := &cfgfiles2.Paths{
-		Base:   input.BasePath,
-		Config: input.ConfigPath,
-		Logs:   input.LogPath,
-		Cache:  input.CachePath,
-		Temp:   input.TempPath,
-	}
-
-	supportedFeatures, err := s.resolveSupportedFeatures(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	configFiles, _, _, err := s.configFilesManager.GetConfigurationFiles(
-		ctx,
-		paths,
-		supportedFeatures,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	buffer := new(bytes.Buffer)
-	zipWriter := zip.NewWriter(buffer)
-
-	//nolint:errcheck
-	defer zipWriter.Close()
-
-	for _, file := range configFiles {
-		itemWriter, err := zipWriter.Create(file.Name)
-		if err != nil {
-			return nil, err
-		}
-
-		if _, err := itemWriter.Write([]byte(file.FormattedContents())); err != nil {
-			return nil, err
-		}
-	}
-
-	if err := zipWriter.Close(); err != nil {
-		return nil, err
-	}
-
-	return buffer.Bytes(), nil
-}
-
 func (s *service) resolveSupportedFeatures(
 	ctx context.Context,
-) (*cfgfiles2.SupportedFeatures, error) {
+) (*provider.SupportedFeatures, error) {
 	metadata, err := s.GetMetadata(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return &cfgfiles2.SupportedFeatures{
-		TLSSNI:      cfgfiles2.SupportType(metadata.SNISupportType()),
-		RunCodeType: cfgfiles2.SupportType(metadata.RunCodeSupportType()),
-		StreamType:  cfgfiles2.SupportType(metadata.StreamSupportType()),
-		StatsType:   cfgfiles2.SupportType(metadata.StatsSupportType()),
-		GRPCType:    cfgfiles2.SupportType(metadata.GRPCSupportType()),
+	return &provider.SupportedFeatures{
+		TLSSNI:      provider.SupportType(metadata.SNISupportType()),
+		RunCodeType: provider.SupportType(metadata.RunCodeSupportType()),
+		StreamType:  provider.SupportType(metadata.StreamSupportType()),
+		StatsType:   provider.SupportType(metadata.StatsSupportType()),
+		GRPCType:    provider.SupportType(metadata.GRPCSupportType()),
 	}, nil
 }

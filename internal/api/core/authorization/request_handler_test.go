@@ -10,13 +10,12 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/apierror"
-
-	user2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 type requestHandlerSetup struct {
 	authorizer *ABAC
-	commands   *user2.MockedCommands
+	commands   *user.MockedCommands
 	engine     *gin.Engine
 }
 
@@ -83,7 +82,7 @@ func Test_RequestHandler(t *testing.T) {
 		t.Run("denies write methods with read-only access", func(t *testing.T) {
 			setup := newRequestHandlerSetup(t, map[string]string{})
 			usr := newUser()
-			usr.Permissions.NginxServer = user2.ReadOnlyAccessLevel
+			usr.Permissions.NginxServer = user.ReadOnlyAccessLevel
 			token, _ := setup.authorizer.Jwt().GenerateToken(usr)
 			setup.commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
 
@@ -95,7 +94,7 @@ func Test_RequestHandler(t *testing.T) {
 		t.Run("grants access and stores the subject in the context", func(t *testing.T) {
 			setup := newRequestHandlerSetup(t, map[string]string{})
 			usr := newUser()
-			usr.Permissions.NginxServer = user2.ReadOnlyAccessLevel
+			usr.Permissions.NginxServer = user.ReadOnlyAccessLevel
 			token, _ := setup.authorizer.Jwt().GenerateToken(usr)
 			setup.commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
 
@@ -110,7 +109,7 @@ func Test_RequestHandler(t *testing.T) {
 				"nginx-ignition.security.jwt.renew-window-seconds": "30",
 			})
 			usr := newUser()
-			usr.Permissions.NginxServer = user2.ReadOnlyAccessLevel
+			usr.Permissions.NginxServer = user.ReadOnlyAccessLevel
 			token, _ := setup.authorizer.Jwt().GenerateToken(usr)
 			setup.commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
 
@@ -134,7 +133,7 @@ func newRequestHandlerSetup(t *testing.T, overrides map[string]string) *requestH
 	protectedGroup := authorizer.ConfigureGroup(
 		engine,
 		"/api/nginx",
-		func(permissions user2.Permissions) user2.AccessLevel { return permissions.NginxServer },
+		func(permissions user.Permissions) user.AccessLevel { return permissions.NginxServer },
 	)
 	protectedGroup.Any("/status", func(ctx *gin.Context) {
 		subject := CurrentSubject(ctx)

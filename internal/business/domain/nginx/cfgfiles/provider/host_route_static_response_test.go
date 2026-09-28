@@ -1,4 +1,4 @@
-package cfgfiles
+package provider
 
 import (
 	"fmt"
@@ -10,12 +10,12 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
 )
 
-func Test_hostRouteStaticResponseFileProvider(t *testing.T) {
+func Test_hostRouteStaticResponseProvider(t *testing.T) {
 	t.Run("Provide", func(t *testing.T) {
-		provider := &hostRouteStaticResponseFileProvider{}
+		provider := &hostRouteStaticResponseProvider{}
 		hostID := uuid.New()
 		ctx := newProviderContext(t)
-		ctx.hosts = []host.Host{
+		ctx.Hosts = []host.Host{
 			{
 				ID: hostID,
 				Routes: []host.Route{
@@ -31,14 +31,14 @@ func Test_hostRouteStaticResponseFileProvider(t *testing.T) {
 			},
 		}
 
-		files, err := provider.provide(ctx)
+		files, err := provider.Provide(ctx)
 		assert.NoError(t, err)
 		assert.Len(t, files, 1)
 		assert.Equal(t, fmt.Sprintf("host-%s-route-10.payload", hostID), files[0].Name)
 	})
 
 	t.Run("BuildStaticResponseFiles", func(t *testing.T) {
-		provider := &hostRouteStaticResponseFileProvider{}
+		provider := &hostRouteStaticResponseProvider{}
 		hostID := uuid.New()
 
 		t.Run("generates files for enabled static routes", func(t *testing.T) {

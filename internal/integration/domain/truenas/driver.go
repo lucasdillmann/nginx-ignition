@@ -13,7 +13,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
-	client2 "github.com/lucasdillmann/nginx-ignition/internal/integration/domain/truenas/client"
+	"github.com/lucasdillmann/nginx-ignition/internal/integration/domain/truenas/client"
 	"github.com/lucasdillmann/nginx-ignition/internal/integration/domain/truenas/fields"
 )
 
@@ -150,7 +150,7 @@ func (a *Driver) GetOptionProxyURL(
 func (a *Driver) getWorkloadPort(
 	parameters map[string]any,
 	appID, containerPort string,
-) (*client2.AvailableAppDTO, *client2.WorkloadPortDTO, error) {
+) (*client.AvailableAppDTO, *client.WorkloadPortDTO, error) {
 	apps, err := a.getAvailableApps(parameters)
 	if err != nil {
 		return nil, nil, err
@@ -170,7 +170,7 @@ func (a *Driver) getWorkloadPort(
 }
 
 func (a *Driver) buildOptions(
-	apps []client2.AvailableAppDTO,
+	apps []client.AvailableAppDTO,
 	tcpOnly bool,
 ) []integration.DriverOption {
 	options := make([]integration.DriverOption, 0)
@@ -200,8 +200,8 @@ func (a *Driver) buildOptions(
 	return options
 }
 
-func (a *Driver) getAvailableApps(parameters map[string]any) ([]client2.AvailableAppDTO, error) {
-	c, err := client2.For(a.configuration, parameters)
+func (a *Driver) getAvailableApps(parameters map[string]any) ([]client.AvailableAppDTO, error) {
+	c, err := client.For(a.configuration, parameters)
 	if err != nil {
 		return nil, err
 	}

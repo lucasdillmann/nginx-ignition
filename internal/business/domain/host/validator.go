@@ -17,13 +17,13 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/cache"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
-	vpn2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
 
 type validator struct {
 	hostRepository      Repository
 	integrationCommands integration.Commands
-	vpnCommands         vpn2.Commands
+	vpnCommands         vpn.Commands
 	accessListCommands  accesslist.Commands
 	cacheCommands       cache.Commands
 	bindingCommands     binding.Commands
@@ -34,7 +34,7 @@ type validator struct {
 func newValidator(
 	hostRepository Repository,
 	integrationCommands integration.Commands,
-	vpnCommands vpn2.Commands,
+	vpnCommands vpn.Commands,
 	accessListCommands accesslist.Commands,
 	cacheCommands cache.Commands,
 	bindingCommands binding.Commands,
@@ -405,7 +405,7 @@ func (v *validator) validateVPNEntry(
 	ctx context.Context,
 	value *VPN,
 	index int,
-	vpnDrivers []vpn2.AvailableDriver,
+	vpnDrivers []vpn.AvailableDriver,
 	vpnNameUsage map[uuid.UUID]map[string]int,
 ) error {
 	basePath := fmt.Sprintf("vpns[%d]", index)
@@ -450,10 +450,10 @@ func (v *validator) validateVPNEntry(
 
 func (v *validator) validateVPNCertificate(
 	ctx context.Context,
-	vpnData *vpn2.VPN,
+	vpnData *vpn.VPN,
 	hostVpn *VPN,
 	index int,
-	vpnDrivers []vpn2.AvailableDriver,
+	vpnDrivers []vpn.AvailableDriver,
 ) error {
 	fieldPath := fmt.Sprintf("vpns[%d].certificateId", index)
 	if hostVpn.CertificateID != nil && !hostVpn.EnableHTTPS {
@@ -483,8 +483,8 @@ func (v *validator) validateVPNCertificate(
 
 func (v *validator) findVPNDriver(
 	driverID string,
-	vpnDrivers []vpn2.AvailableDriver,
-) *vpn2.AvailableDriver {
+	vpnDrivers []vpn.AvailableDriver,
+) *vpn.AvailableDriver {
 	for _, d := range vpnDrivers {
 		if d.ID == driverID {
 			return &d
@@ -496,11 +496,11 @@ func (v *validator) findVPNDriver(
 
 func (v *validator) validateManagedSSLCertificate(
 	ctx context.Context,
-	driver *vpn2.AvailableDriver,
+	driver *vpn.AvailableDriver,
 	hostVpn *VPN,
 	fieldPath string,
 ) error {
-	if driver.EndpointSSLSupport != vpn2.DriverManagedEndpointSSLSupport {
+	if driver.EndpointSSLSupport != vpn.DriverManagedEndpointSSLSupport {
 		return nil
 	}
 
@@ -523,11 +523,11 @@ func (v *validator) validateManagedSSLCertificate(
 
 func (v *validator) validateProviderSSLCertificate(
 	ctx context.Context,
-	driver *vpn2.AvailableDriver,
+	driver *vpn.AvailableDriver,
 	hostVpn *VPN,
 	fieldPath string,
 ) {
-	if driver.EndpointSSLSupport != vpn2.ProviderManagedEndpointSSLSupport {
+	if driver.EndpointSSLSupport != vpn.ProviderManagedEndpointSSLSupport {
 		return
 	}
 

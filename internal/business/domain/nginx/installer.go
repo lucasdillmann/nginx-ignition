@@ -5,13 +5,13 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/container"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/host"
-	cfgfiles2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/nginx/cfgfiles"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/nginx/cfgfiles"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/settings"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
 
 func Install() error {
-	if err := container.Run(cfgfiles2.Install); err != nil {
+	if err := container.Run(cfgfiles.Install); err != nil {
 		return err
 	}
 
@@ -25,7 +25,7 @@ func Install() error {
 func newCommands(
 	cfg *configuration.Configuration,
 	hostCommands host.Commands,
-	configFilesManager *cfgfiles2.Facade,
+	configFilesManager *cfgfiles.Facade,
 	vpnCommands vpn.Commands,
 	settingsCommands settings.Commands,
 	certificateCommands certificate.Commands,

@@ -4,11 +4,10 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/dynamicfield"
-
-	integration2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
 )
 
-func toDTO(data *integration2.Integration) *integrationResponse {
+func toDTO(data *integration.Integration) *integrationResponse {
 	if data == nil {
 		return nil
 	}
@@ -22,8 +21,8 @@ func toDTO(data *integration2.Integration) *integrationResponse {
 	}
 }
 
-func toDomain(data *integrationRequest, id uuid.UUID) *integration2.Integration {
-	return &integration2.Integration{
+func toDomain(data *integrationRequest, id uuid.UUID) *integration.Integration {
+	return &integration.Integration{
 		ID:         id,
 		Driver:     data.Driver,
 		Name:       data.Name,
@@ -32,8 +31,8 @@ func toDomain(data *integrationRequest, id uuid.UUID) *integration2.Integration 
 	}
 }
 
-func fromDTO(id uuid.UUID, data *integrationRequest) *integration2.Integration {
-	return &integration2.Integration{
+func fromDTO(id uuid.UUID, data *integrationRequest) *integration.Integration {
+	return &integration.Integration{
 		ID:         id,
 		Driver:     data.Driver,
 		Name:       data.Name,
@@ -42,7 +41,7 @@ func fromDTO(id uuid.UUID, data *integrationRequest) *integration2.Integration {
 	}
 }
 
-func toOptionDTO(option *integration2.DriverOption) *integrationOptionResponse {
+func toOptionDTO(option *integration.DriverOption) *integrationOptionResponse {
 	return &integrationOptionResponse{
 		ID:        option.ID,
 		Name:      option.Name,
@@ -52,7 +51,7 @@ func toOptionDTO(option *integration2.DriverOption) *integrationOptionResponse {
 	}
 }
 
-func toAvailableDriverDTO(data *integration2.AvailableDriver) integrationDriverResponse {
+func toAvailableDriverDTO(data *integration.AvailableDriver) integrationDriverResponse {
 	return integrationDriverResponse{
 		ID:                  data.ID,
 		Name:                data.Name,

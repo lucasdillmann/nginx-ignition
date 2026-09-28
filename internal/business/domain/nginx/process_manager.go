@@ -1,6 +1,7 @@
 package nginx
 
 import (
+	"context"
 	"errors"
 	"os"
 	"os/exec"
@@ -33,6 +34,25 @@ func newProcessManager(cfg *configuration.Configuration) (*processManager, error
 		binaryPath: binaryPath,
 		configPath: configPath,
 	}, nil
+}
+
+func (m *processManager) ValidateConfiguration(ctx context.Context, configRoot string) error {
+	cmd := m.prepareCommand(ctx, configRoot, "-t")
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		if ctxErr := ctx.Err(); ctxErr != nil {
+			return ctxErr
+		}
+
+		if len(output) > 0 {
+			return errors.New(string(output))
+		}
+
+		return err
+	}
+
+	return nil
 }
 
 func (m *processManager) sendReloadSignal() error {
@@ -89,7 +109,7 @@ func (m *processManager) currentPid() (int64, error) {
 }
 
 func (m *processManager) runCommand(extraArgs ...string) error {
-	cmd := m.prepareCommand(extraArgs...)
+	cmd := m.prepareCommand(context.Background(), m.configPath, extraArgs...)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -99,14 +119,18 @@ func (m *processManager) runCommand(extraArgs ...string) error {
 	return nil
 }
 
-func (m *processManager) prepareCommand(extraArgs ...string) *exec.Cmd {
+func (m *processManager) prepareCommand(
+	ctx context.Context,
+	configRoot string,
+	extraArgs ...string,
+) *exec.Cmd {
 	args := append(
 		[]string{
-			"-e", filepath.Join(m.configPath, "logs", "main.log"),
-			"-c", filepath.Join(m.configPath, "config", "nginx.conf"),
+			"-e", filepath.Join(configRoot, "logs", "main.log"),
+			"-c", filepath.Join(configRoot, "config", "nginx.conf"),
 		},
 		extraArgs...,
 	)
 
-	return exec.Command(m.binaryPath, args...)
+	return exec.CommandContext(ctx, m.binaryPath, args...)
 }

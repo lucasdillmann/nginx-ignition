@@ -11,7 +11,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
-	integration2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
 )
 
 func init() {
@@ -24,7 +24,7 @@ func Test_availableDriversHandler(t *testing.T) {
 			controller := gomock.NewController(t)
 			defer controller.Finish()
 
-			drivers := []integration2.AvailableDriver{
+			drivers := []integration.AvailableDriver{
 				{
 					ID:   "docker",
 					Name: i18n.Static("Docker"),
@@ -35,7 +35,7 @@ func Test_availableDriversHandler(t *testing.T) {
 				},
 			}
 
-			commands := integration2.NewMockedCommands(controller)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetAvailableDrivers(gomock.Any()).
 				Return(drivers, nil)
@@ -62,7 +62,7 @@ func Test_availableDriversHandler(t *testing.T) {
 			defer controller.Finish()
 
 			expectedErr := assert.AnError
-			commands := integration2.NewMockedCommands(controller)
+			commands := integration.NewMockedCommands(controller)
 			commands.EXPECT().
 				GetAvailableDrivers(gomock.Any()).
 				Return(nil, expectedErr)

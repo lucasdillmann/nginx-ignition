@@ -11,7 +11,7 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/validation"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/accesslist"
-	binding2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/binding"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/binding"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/cache"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/integration"
@@ -24,7 +24,7 @@ type validatorMocks struct {
 	vpn         *vpn.MockedCommands
 	accessList  *accesslist.MockedCommands
 	cache       *cache.MockedCommands
-	binding     *binding2.MockedCommands
+	binding     *binding.MockedCommands
 	certificate *certificate.MockedCommands
 }
 
@@ -45,9 +45,9 @@ func newHost() *Host {
 		ID:          uuid.New(),
 		Enabled:     true,
 		DomainNames: []string{"example.com"},
-		Bindings: []binding2.Binding{
+		Bindings: []binding.Binding{
 			{
-				Type: binding2.HTTPBindingType,
+				Type: binding.HTTPBindingType,
 				IP:   "0.0.0.0",
 				Port: 80,
 			},
@@ -78,7 +78,7 @@ func setupValidator(t *testing.T) (*validator, *validatorMocks) {
 	vpnCmds := vpn.NewMockedCommands(ctrl)
 	aclCmds := accesslist.NewMockedCommands(ctrl)
 	cacheCmds := cache.NewMockedCommands(ctrl)
-	bindingCmds := binding2.NewMockedCommands(ctrl)
+	bindingCmds := binding.NewMockedCommands(ctrl)
 	certCmds := certificate.NewMockedCommands(ctrl)
 
 	mocks := &validatorMocks{

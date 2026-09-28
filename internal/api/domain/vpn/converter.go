@@ -4,11 +4,10 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/dynamicfield"
-
-	vpn2 "github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
 
-func toDTO(data *vpn2.VPN, driver *vpn2.AvailableDriver) *vpnResponse {
+func toDTO(data *vpn.VPN, driver *vpn.AvailableDriver) *vpnResponse {
 	if data == nil {
 		return nil
 	}
@@ -23,8 +22,8 @@ func toDTO(data *vpn2.VPN, driver *vpn2.AvailableDriver) *vpnResponse {
 	}
 }
 
-func toDomain(data *vpnRequest, id uuid.UUID) *vpn2.VPN {
-	return &vpn2.VPN{
+func toDomain(data *vpnRequest, id uuid.UUID) *vpn.VPN {
+	return &vpn.VPN{
 		ID:         id,
 		Driver:     data.Driver,
 		Name:       data.Name,
@@ -33,8 +32,8 @@ func toDomain(data *vpnRequest, id uuid.UUID) *vpn2.VPN {
 	}
 }
 
-func fromDTO(id uuid.UUID, data *vpnRequest) *vpn2.VPN {
-	return &vpn2.VPN{
+func fromDTO(id uuid.UUID, data *vpnRequest) *vpn.VPN {
+	return &vpn.VPN{
 		ID:         id,
 		Driver:     data.Driver,
 		Name:       data.Name,
@@ -43,7 +42,7 @@ func fromDTO(id uuid.UUID, data *vpnRequest) *vpn2.VPN {
 	}
 }
 
-func toAvailableDriverDTO(data *vpn2.AvailableDriver) vpnDriverResponse {
+func toAvailableDriverDTO(data *vpn.AvailableDriver) vpnDriverResponse {
 	return vpnDriverResponse{
 		ID:                    data.ID,
 		Name:                  data.Name,
