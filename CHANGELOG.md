@@ -6,6 +6,7 @@
 - Improvement of the internal code organization
 - Code and development dependencies upgrades
 - Improved CI dependency and Docker build caching
+- Security fixes and improvements
 
 ## 2.45.2
 

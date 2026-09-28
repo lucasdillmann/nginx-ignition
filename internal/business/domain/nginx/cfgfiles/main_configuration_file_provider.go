@@ -1,7 +1,6 @@
 package cfgfiles
 
 import (
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -56,10 +55,10 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 
 	var customCfg string
 	if cfg.Nginx.Custom != nil {
-		customCfg = fmt.Sprintf("\n%s\n", *cfg.Nginx.Custom)
+		customCfg = nginxSprintf("\n%s\n", rawConfigFragment(*cfg.Nginx.Custom))
 	}
 
-	userStatement := fmt.Sprintf("user %s %s;", cfg.Nginx.RuntimeUser, cfg.Nginx.RuntimeUser)
+	userStatement := nginxSprintf("user %s %s;", cfg.Nginx.RuntimeUser, cfg.Nginx.RuntimeUser)
 	if runtime.IsWindows() {
 		userStatement = ""
 	}
@@ -69,12 +68,12 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		return nil, err
 	}
 
-	contents := fmt.Sprintf(
+	contents := nginxSprintf(
 		`
 			%s
 			%s
 			worker_processes %d;
-			pid "%snginx.pid";
+			pid %s;
 			error_log %s;
 			
 			events {
@@ -98,14 +97,14 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 				client_header_buffer_size %dk;
 				large_client_header_buffers %d %dk;
 				output_buffers %d %dk;
-				client_body_temp_path "%s" 1 2;
-				proxy_temp_path "%s" 1 2;
-				fastcgi_temp_path "%s" 1 2;
-				scgi_temp_path "%s" 1 2;
-				uwsgi_temp_path "%s" 1 2;
+				client_body_temp_path %s 1 2;
+				proxy_temp_path %s 1 2;
+				fastcgi_temp_path %s 1 2;
+				scgi_temp_path %s 1 2;
+				uwsgi_temp_path %s 1 2;
 
 				default_type %s;
-				include "%smime.types";
+				include %s;
 				%s
 				%s
 				%s
@@ -114,15 +113,15 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 			
 			%s
 		`,
-		userStatement,
-		moduleLines.String(),
+		directiveFragment(userStatement),
+		directiveFragment(moduleLines.String()),
 		cfg.Nginx.WorkerProcesses,
-		ctx.paths.Base,
-		p.getErrorLogPath(ctx.paths, logs),
+		ctx.paths.Base+"nginx.pid",
+		directiveFragment(p.getErrorLogPath(ctx.paths, logs)),
 		cfg.Nginx.WorkerConnections,
-		statusFlag(cfg.Nginx.SendfileEnabled),
-		statusFlag(cfg.Nginx.ServerTokensEnabled),
-		statusFlag(cfg.Nginx.TCPNoDelayEnabled),
+		directiveFragment(statusFlag(cfg.Nginx.SendfileEnabled)),
+		directiveFragment(statusFlag(cfg.Nginx.ServerTokensEnabled)),
+		directiveFragment(statusFlag(cfg.Nginx.TCPNoDelayEnabled)),
 		cfg.Nginx.Timeouts.Keepalive,
 		cfg.Nginx.Timeouts.Connect,
 		cfg.Nginx.Timeouts.Read,
@@ -142,12 +141,12 @@ func (p *mainConfigurationFileProvider) provide(ctx *providerContext) ([]File, e
 		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "scgi")),
 		filepath.ToSlash(filepath.Join(ctx.paths.Temp, "uwsgi")),
 		cfg.Nginx.DefaultContentType,
-		ctx.paths.Config,
-		customCfg,
-		p.getCacheDefinitions(ctx.paths, ctx.caches),
-		statsDefinitions,
-		p.getHostIncludes(ctx.paths, ctx.hosts),
-		streamLines.String(),
+		ctx.paths.Config+"mime.types",
+		rawConfigFragment(customCfg),
+		directiveFragment(p.getCacheDefinitions(ctx.paths, ctx.caches)),
+		directiveFragment(statsDefinitions),
+		directiveFragment(p.getHostIncludes(ctx.paths, ctx.hosts)),
+		directiveFragment(streamLines.String()),
 	)
 
 	return []File{
@@ -163,9 +162,9 @@ func (p *mainConfigurationFileProvider) getErrorLogPath(
 	logs *settings.NginxLogsSettings,
 ) string {
 	if logs.ServerLogsEnabled {
-		return fmt.Sprintf(
-			"\"%smain.log\" %s",
-			paths.Logs,
+		return nginxSprintf(
+			"%s %s",
+			paths.Logs+"main.log",
 			strings.ToLower(string(logs.ServerLogsLevel)),
 		)
 	}
@@ -176,7 +175,10 @@ func (p *mainConfigurationFileProvider) getErrorLogPath(
 func (p *mainConfigurationFileProvider) getHostIncludes(paths *Paths, hosts []host.Host) string {
 	includes := make([]string, 0, len(hosts))
 	for _, h := range hosts {
-		includes = append(includes, fmt.Sprintf("include \"%shost-%s.conf\";", paths.Config, h.ID))
+		includes = append(
+			includes,
+			nginxSprintf("include %s;", paths.Config+"host-"+h.ID.String()+".conf"),
+		)
 	}
 
 	return strings.Join(includes, "\n")
@@ -191,7 +193,7 @@ func (p *mainConfigurationFileProvider) getStreamIncludes(
 	for _, s := range streams {
 		includes = append(
 			includes,
-			fmt.Sprintf("include \"%sstream-%s.conf\";", paths.Config, s.ID),
+			nginxSprintf("include %s;", paths.Config+"stream-"+s.ID.String()+".conf"),
 		)
 	}
 
@@ -217,20 +219,20 @@ func (p *mainConfigurationFileProvider) getCacheDefinitions(
 
 		inactive := ""
 		if c.InactiveSeconds != nil {
-			inactive = fmt.Sprintf(" inactive=%ds", *c.InactiveSeconds)
+			inactive = " " + nginxSprintf("inactive=%ds", *c.InactiveSeconds)
 		}
 
 		maxSize := ""
 		if c.MaximumSizeMB != nil {
-			maxSize = fmt.Sprintf(" max_size=%dm", *c.MaximumSizeMB)
+			maxSize = " " + nginxSprintf("max_size=%dm", *c.MaximumSizeMB)
 		}
 
-		results = append(results, fmt.Sprintf(
-			"proxy_cache_path \"%s\" levels=1:2 keys_zone=cache_%s:10m%s%s;",
+		results = append(results, nginxSprintf(
+			"proxy_cache_path %s levels=1:2 keys_zone=%s:10m%s%s;",
 			*storagePath,
-			cacheIDNoDashes,
-			inactive,
-			maxSize,
+			directiveFragment("cache_"+cacheIDNoDashes),
+			directiveFragment(inactive),
+			directiveFragment(maxSize),
 		))
 	}
 
@@ -249,7 +251,7 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 	geoIPCityFilePath := filepath.Join(paths.Config, "geoip-city.mmdb")
 	output := strings.Builder{}
 
-	_, _ = fmt.Fprintf(
+	nginxFprintf(
 		&output,
 		`
 		geoip2 %s {
@@ -297,14 +299,15 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 			dbLocation = new(filepath.Join(dataPath, "traffic-stats.db"))
 		}
 
-		_, _ = fmt.Fprintf(&output, "vhost_traffic_status_dump \"%s\" 5s;\n", *dbLocation)
+		nginxFprintf(&output, "vhost_traffic_status_dump %s 5s;\n", *dbLocation)
 	}
 
-	_, _ = fmt.Fprintf(&output,
+	nginxFprintf(
+		&output,
 		`
-		server { 
+		server {
 			root /dev/null;
-            listen unix:%s;
+            listen %s;
 			access_log off;
 			vhost_traffic_status off;
 			
@@ -314,7 +317,7 @@ func (p *mainConfigurationFileProvider) getStatsDefinitions(
 			}
         }
 		`,
-		filepath.Join(paths.Base, "traffic-stats.socket"),
+		"unix:"+filepath.Join(paths.Base, "traffic-stats.socket"),
 	)
 
 	return output.String(), nil

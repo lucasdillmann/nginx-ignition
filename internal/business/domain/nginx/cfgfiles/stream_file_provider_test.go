@@ -68,7 +68,7 @@ func Test_streamFileProvider(t *testing.T) {
 			assert.NoError(t, err)
 			assert.Equal(
 				t,
-				"listen 0.0.0.0:80 proxy_protocol deferred so_keepalive=on reuseport;",
+				`listen "0.0.0.0:80" proxy_protocol deferred so_keepalive=on reuseport;`,
 				*result,
 			)
 		})
@@ -84,7 +84,7 @@ func Test_streamFileProvider(t *testing.T) {
 
 			result, err := provider.buildBinding(s)
 			assert.NoError(t, err)
-			assert.Equal(t, "listen 127.0.0.1:53 udp reuseport;", *result)
+			assert.Equal(t, `listen "127.0.0.1:53" udp reuseport;`, *result)
 		})
 
 		t.Run("Unix socket binding", func(t *testing.T) {
@@ -97,7 +97,7 @@ func Test_streamFileProvider(t *testing.T) {
 
 			result, err := provider.buildBinding(s)
 			assert.NoError(t, err)
-			assert.Equal(t, "listen unix:\"/tmp/nginx.sock\" reuseport;", *result)
+			assert.Equal(t, `listen "unix:/tmp/nginx.sock" reuseport;`, *result)
 		})
 
 		t.Run("returns error for unknown protocol", func(t *testing.T) {
@@ -139,13 +139,13 @@ func Test_streamFileProvider(t *testing.T) {
 
 			result, err := provider.buildUpstream(backends, "test_upstream")
 			assert.NoError(t, err)
-			assert.Contains(t, *result, "upstream test_upstream {")
+			assert.Contains(t, *result, `upstream "test_upstream" {`)
 			assert.Contains(
 				t,
 				*result,
-				"server 10.0.0.1:8080 weight=5 max_fails=3 fail_timeout=30s;",
+				`server "10.0.0.1:8080" weight=5 max_fails=3 fail_timeout=30s;`,
 			)
-			assert.Contains(t, *result, "server unix:\"/var/run/backend.sock\";")
+			assert.Contains(t, *result, `server "unix:/var/run/backend.sock";`)
 		})
 
 		t.Run("returns error for unknown backend protocol", func(t *testing.T) {
@@ -204,12 +204,12 @@ func Test_streamFileProvider(t *testing.T) {
 			assert.Contains(
 				t,
 				*result,
-				fmt.Sprintf("map $ssl_preread_server_name $stream_%s_router {", idStr),
+				fmt.Sprintf(`map $ssl_preread_server_name "$stream_%s_router" {`, idStr),
 			)
-			assert.Contains(t, *result, fmt.Sprintf("example.com stream_%s_route_0;", idStr))
-			assert.Contains(t, *result, fmt.Sprintf("default stream_%s_default;", idStr))
+			assert.Contains(t, *result, fmt.Sprintf(`"example.com" "stream_%s_route_0";`, idStr))
+			assert.Contains(t, *result, fmt.Sprintf(`default "stream_%s_default";`, idStr))
 			assert.Contains(t, *result, "ssl_preread on;")
-			assert.Contains(t, *result, fmt.Sprintf("proxy_pass $stream_%s_router;", idStr))
+			assert.Contains(t, *result, fmt.Sprintf(`proxy_pass "$stream_%s_router";`, idStr))
 		})
 
 		t.Run("returns error when TLSSNI not supported", func(t *testing.T) {

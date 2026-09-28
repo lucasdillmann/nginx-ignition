@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_ToDTO(t *testing.T) {
@@ -44,6 +45,16 @@ func Test_ToDomain(t *testing.T) {
 	t.Run("returns nil when input is nil", func(t *testing.T) {
 		accessList := toDomain(nil)
 		assert.Nil(t, accessList)
+	})
+
+	t.Run("converts a missing realm to an empty value", func(t *testing.T) {
+		payload := newAccessListRequestDTO()
+		payload.Realm = nil
+
+		accessList := toDomain(&payload)
+
+		require.NotNil(t, accessList)
+		assert.Empty(t, accessList.Realm)
 	})
 
 	t.Run("converts DTO to domain object", func(t *testing.T) {

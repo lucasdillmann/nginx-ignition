@@ -34,6 +34,8 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			assert.NoError(t, err)
 			assert.Len(t, files, 1)
 			assert.Contains(t, files[0].Contents, "worker_processes 1;")
+			assert.Contains(t, files[0].Contents, `error_log "/var/log/nginx/main.log" "warn";`)
+			assert.NotContains(t, files[0].Contents, "error_log error_log")
 			assert.NotContains(t, files[0].Contents, "load_module")
 			assert.NotContains(t, files[0].Contents, "stream {")
 		})
@@ -90,7 +92,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			}
 			assert.Equal(
 				t,
-				"\"/var/log/nginx/main.log\" warn",
+				"\"/var/log/nginx/main.log\" \"warn\"",
 				provider.getErrorLogPath(paths, logs),
 			)
 		})
@@ -232,7 +234,7 @@ func Test_mainConfigurationFileProvider(t *testing.T) {
 			assert.Contains(t, result, "vhost_traffic_status_filter_by_host on;")
 			assert.Contains(t, result, "vhost_traffic_status_stats_by_upstream on;")
 			assert.Contains(t, result, "server {")
-			assert.Contains(t, result, "listen unix:/etc/nginx/traffic-stats.socket;")
+			assert.Contains(t, result, "listen \"unix:/etc/nginx/traffic-stats.socket\";")
 			assert.NotContains(t, result, "vhost_traffic_status_dump")
 		})
 

@@ -2,7 +2,9 @@ package cfgfiles
 
 import (
 	"fmt"
+	"net"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/google/uuid"
@@ -85,9 +87,9 @@ func (p *hostConfigurationFileProvider) buildHost(
 	statsCfg := ctx.cfg.Nginx.Stats
 
 	if statsCfg.Enabled {
-		stats = fmt.Sprintf(
+		stats = nginxSprintf(
 			`
-			set $stats_host_id "%s";
+			set $stats_host_id %s;
 			vhost_traffic_status %s;
 			vhost_traffic_status_filter_by_set_key $stats_host_id hosts;
 			vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@host:$stats_host_id;
@@ -98,7 +100,7 @@ func (p *hostConfigurationFileProvider) buildHost(
 			vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@domain:$server_name;
 			`,
 			h.ID,
-			statusFlag(statsCfg.AllHosts || h.FeatureSet.StatsEnabled),
+			directiveFragment(statusFlag(statsCfg.AllHosts || h.FeatureSet.StatsEnabled)),
 		)
 	}
 
@@ -122,7 +124,7 @@ func (p *hostConfigurationFileProvider) buildServerNames(h *host.Host) string {
 		return "server_name _;"
 	}
 
-	return "server_name " + strings.Join(h.DomainNames, " ") + ";"
+	return nginxSprintfArgs("server_name %s;", h.DomainNames...)
 }
 
 func (p *hostConfigurationFileProvider) buildBinding(
@@ -132,26 +134,33 @@ func (p *hostConfigurationFileProvider) buildBinding(
 	routes []string,
 	serverNames, httpsRedirect, http2, stats string,
 ) (string, error) {
+	bindingAddress := net.JoinHostPort(b.IP, strconv.Itoa(b.Port))
+	certificateID := ""
+	if b.CertificateID != nil {
+		certificateID = b.CertificateID.String()
+	}
+
 	listen := ""
 	switch b.Type {
 	case binding.HTTPBindingType:
-		listen = fmt.Sprintf("listen %s:%d %s;", b.IP, b.Port, p.buildBindingAdditionalParams(h))
+		listen = nginxSprintf(
+			"listen %s %s;",
+			bindingAddress,
+			directiveFragment(p.buildBindingAdditionalParams(h)),
+		)
 	case binding.HTTPSBindingType:
-		listen = fmt.Sprintf(
+		listen = nginxSprintf(
 			`
-				listen %s:%d ssl %s;
-				ssl_certificate "%scertificate-%s.pem";
-				ssl_certificate_key "%scertificate-%s.pem";
+				listen %s ssl %s;
+				ssl_certificate %s;
+				ssl_certificate_key %s;
 				ssl_protocols TLSv1.2 TLSv1.3;
 				ssl_ciphers HIGH:!aNULL:!MD5;
 			`,
-			b.IP,
-			b.Port,
-			p.buildBindingAdditionalParams(h),
-			ctx.paths.Config,
-			b.CertificateID,
-			ctx.paths.Config,
-			b.CertificateID,
+			bindingAddress,
+			directiveFragment(p.buildBindingAdditionalParams(h)),
+			ctx.paths.Config+"certificate-"+certificateID+".pem",
+			ctx.paths.Config+"certificate-"+certificateID+".pem",
 		)
 	default:
 		return "", fmt.Errorf("invalid binding type: %s", b.Type)
@@ -163,12 +172,36 @@ func (p *hostConfigurationFileProvider) buildBinding(
 	}
 
 	logs := ctx.cfg.Nginx.Logs
+	accessLog := "access_log off;"
+	if logs.AccessLogsEnabled {
+		accessLog = nginxSprintf(
+			"access_log %s;",
+			ctx.paths.Logs+"host-"+h.ID.String()+".access.log",
+		)
+	}
 
-	return fmt.Sprintf(
+	errorLog := "error_log off;"
+	if logs.ErrorLogsEnabled {
+		errorLog = nginxSprintf(
+			"error_log %s %s;",
+			ctx.paths.Logs+"host-"+h.ID.String()+".error.log",
+			strings.ToLower(string(logs.ErrorLogsLevel)),
+		)
+	}
+
+	accessList := ""
+	if h.AccessListID != nil {
+		accessList = nginxSprintf(
+			"include %s;",
+			ctx.paths.Config+"access-list-"+h.AccessListID.String()+".conf",
+		)
+	}
+
+	return nginxSprintf(
 		`server {
 			root /dev/null;
-			access_log %s;
-			error_log %s;
+			%s
+			%s
 			gzip %s;
 			client_max_body_size %dM;
 			%s
@@ -180,35 +213,18 @@ func (p *hostConfigurationFileProvider) buildBinding(
 			%s
 			%s
 		}`,
-		flag(
-			logs.AccessLogsEnabled,
-			fmt.Sprintf("\"%shost-%s.access.log\"", ctx.paths.Logs, h.ID),
-			"off",
-		),
-		flag(
-			logs.ErrorLogsEnabled,
-			fmt.Sprintf(
-				"\"%shost-%s.error.log\" %s",
-				ctx.paths.Logs,
-				h.ID,
-				strings.ToLower(string(logs.ErrorLogsLevel)),
-			),
-			"off",
-		),
-		statusFlag(ctx.cfg.Nginx.GzipEnabled),
+		directiveFragment(accessLog),
+		directiveFragment(errorLog),
+		directiveFragment(statusFlag(ctx.cfg.Nginx.GzipEnabled)),
 		ctx.cfg.Nginx.MaximumBodySizeMb,
-		flag(
-			h.AccessListID != nil,
-			fmt.Sprintf("include \"%saccess-list-%s.conf\";", ctx.paths.Config, h.AccessListID),
-			"",
-		),
-		p.buildCacheConfig(ctx.caches, h.CacheID),
-		conditionalHTTPSRedirect,
-		http2,
-		stats,
-		listen,
-		serverNames,
-		strings.Join(routes, "\n"),
+		directiveFragment(accessList),
+		directiveFragment(p.buildCacheConfig(ctx.caches, h.CacheID)),
+		directiveFragment(conditionalHTTPSRedirect),
+		directiveFragment(http2),
+		directiveFragment(stats),
+		directiveFragment(listen),
+		directiveFragment(serverNames),
+		directiveFragment(strings.Join(routes, "\n")),
 	), nil
 }
 
@@ -254,13 +270,15 @@ func (p *hostConfigurationFileProvider) buildStaticFilesRoute(
 
 	indexFile := ""
 	if r.Settings.IndexFile != nil && strings.TrimSpace(*r.Settings.IndexFile) != "" {
-		indexFile = fmt.Sprintf("index \"%s\";", *r.Settings.IndexFile)
+		indexFile = nginxSprintf("index %s;", *r.Settings.IndexFile)
 	}
 
-	return fmt.Sprintf(
+	rewritePattern := "^" + normalizedSourcePath + "(.*)$"
+
+	return nginxSprintf(
 		`location %s {
-			rewrite  ^%s(.*) /$1 break;
-			root "%s";
+			rewrite %s %s break;
+			root %s;
 			%s
 			autoindex %s;
 			autoindex_exact_size off;
@@ -269,11 +287,12 @@ func (p *hostConfigurationFileProvider) buildStaticFilesRoute(
 			%s
 		}`,
 		normalizedSourcePath,
-		normalizedSourcePath,
+		rewritePattern,
+		"/$1",
 		*r.TargetURI,
-		indexFile,
-		statusFlag(r.Settings.DirectoryListingEnabled),
-		p.buildRouteSettings(ctx, r),
+		directiveFragment(indexFile),
+		directiveFragment(statusFlag(r.Settings.DirectoryListingEnabled)),
+		directiveFragment(p.buildRouteSettings(ctx, r)),
 	)
 }
 
@@ -286,16 +305,20 @@ func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 	payloadFilePath := fmt.Sprintf("/host-%s-route-%d.payload", h.ID, r.Priority)
 
 	for key, value := range r.Response.Headers {
-		headers += fmt.Sprintf(`add_header "%s" "%s" always;`, key, value) + "\n"
+		headers += nginxSprintf(
+			"add_header %s %s always;\n",
+			key,
+			sanitizeHeaderValue(value),
+		)
 	}
 
-	return fmt.Sprintf(
+	return nginxSprintf(
 		`
 		location @route_%d/static_payload {
 			internal;
 			%s
-			root "%s";
-			try_files "%s" =%d;
+			root %s;
+			try_files %s =%d;
 		}
 
 		location %s {
@@ -306,16 +329,16 @@ func (p *hostConfigurationFileProvider) buildStaticResponseRoute(
 			return 599;
 		}`,
 		r.Priority,
-		headers,
+		directiveFragment(headers),
 		ctx.paths.Config,
 		payloadFilePath,
 		r.Response.StatusCode,
 		r.SourcePath,
-		headers,
+		directiveFragment(headers),
 		r.Response.StatusCode,
 		r.Priority,
-		p.buildRouteFeatures(h.FeatureSet, r.Protocol),
-		p.buildRouteSettings(ctx, r),
+		directiveFragment(p.buildRouteFeatures(h.FeatureSet, r.Protocol)),
+		directiveFragment(p.buildRouteSettings(ctx, r)),
 	)
 }
 
@@ -324,7 +347,7 @@ func (p *hostConfigurationFileProvider) buildProxyRoute(
 	r *host.Route,
 	features host.FeatureSet,
 ) string {
-	return fmt.Sprintf(
+	return nginxSprintf(
 		`location %s {
 			%s
 			%s
@@ -332,10 +355,10 @@ func (p *hostConfigurationFileProvider) buildProxyRoute(
 			%s
 		}`,
 		r.SourcePath,
-		p.buildProxyPass(r),
-		p.buildProtocolProxyVersion(r),
-		p.buildRouteFeatures(features, r.Protocol),
-		p.buildRouteSettings(ctx, r),
+		directiveFragment(p.buildProxyPass(r)),
+		directiveFragment(p.buildProtocolProxyVersion(r)),
+		directiveFragment(p.buildRouteFeatures(features, r.Protocol)),
+		directiveFragment(p.buildRouteSettings(ctx, r)),
 	)
 }
 
@@ -371,11 +394,10 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 
 	dnsConfig := ""
 	if len(dnsResolvers) > 0 {
-		ips := strings.Join(dnsResolvers, " ")
-		dnsConfig = fmt.Sprintf("resolver %s valid=5s;", ips)
+		dnsConfig = nginxSprintfArgs("resolver %s valid=5s;", dnsResolvers...)
 	}
 
-	return fmt.Sprintf(
+	return nginxSprintf(
 		`location %s {
 			%s
 			%s
@@ -384,11 +406,11 @@ func (p *hostConfigurationFileProvider) buildIntegrationRoute(
 			%s
 		}`,
 		r.SourcePath,
-		dnsConfig,
-		p.buildProxyPass(r, *proxyURL),
-		p.buildProtocolProxyVersion(r),
-		p.buildRouteFeatures(features, r.Protocol),
-		p.buildRouteSettings(ctx, r),
+		directiveFragment(dnsConfig),
+		directiveFragment(p.buildProxyPass(r, *proxyURL)),
+		directiveFragment(p.buildProtocolProxyVersion(r)),
+		directiveFragment(p.buildRouteFeatures(features, r.Protocol)),
+		directiveFragment(p.buildRouteSettings(ctx, r)),
 	), nil
 }
 
@@ -397,7 +419,7 @@ func (p *hostConfigurationFileProvider) buildRedirectRoute(
 	r *host.Route,
 	features host.FeatureSet,
 ) string {
-	return fmt.Sprintf(
+	return nginxSprintf(
 		`location %s {
 			return %d %s;
 			%s
@@ -406,8 +428,8 @@ func (p *hostConfigurationFileProvider) buildRedirectRoute(
 		r.SourcePath,
 		*r.RedirectCode,
 		*r.TargetURI,
-		p.buildRouteFeatures(features, r.Protocol),
-		p.buildRouteSettings(ctx, r),
+		directiveFragment(p.buildRouteFeatures(features, r.Protocol)),
+		directiveFragment(p.buildRouteSettings(ctx, r)),
 	)
 }
 
@@ -419,37 +441,38 @@ func (p *hostConfigurationFileProvider) buildExecuteCodeRoute(
 	var headerBlock, routeBlock string
 	switch r.SourceCode.Language {
 	case host.JavascriptCodeLanguage:
-		headerBlock = fmt.Sprintf(
-			"js_import route_%d from \"%shost-%s-route-%d.js\";",
+		headerBlock = nginxSprintf(
+			"js_import route_%d from %s;",
 			r.Priority,
-			ctx.paths.Config,
-			h.ID,
-			r.Priority,
+			ctx.paths.Config+"host-"+h.ID.String()+"-route-"+strconv.Itoa(r.Priority)+".js",
 		)
-		routeBlock = fmt.Sprintf("js_content route_%d.%s;", r.Priority, *r.SourceCode.MainFunction)
+		routeBlock = nginxSprintf(
+			"js_content %s;",
+			"route_"+strconv.Itoa(r.Priority)+"."+*r.SourceCode.MainFunction,
+		)
 	case host.LuaCodeLanguage:
-		routeBlock = fmt.Sprintf(
+		routeBlock = nginxSprintf(
 			`content_by_lua_block {
 				%s
 			}`,
-			r.SourceCode.Contents,
+			rawConfigFragment(r.SourceCode.Contents),
 		)
 	default:
 		return "", fmt.Errorf("invalid language: %s", r.SourceCode.Language)
 	}
 
-	return fmt.Sprintf(
+	return nginxSprintf(
 		`%s
 		location %s {
 			%s
 			%s
 			%s
 		}`,
-		headerBlock,
+		directiveFragment(headerBlock),
 		r.SourcePath,
-		routeBlock,
-		p.buildRouteFeatures(h.FeatureSet, r.Protocol),
-		p.buildRouteSettings(ctx, r),
+		directiveFragment(routeBlock),
+		directiveFragment(p.buildRouteFeatures(h.FeatureSet, r.Protocol)),
+		directiveFragment(p.buildRouteSettings(ctx, r)),
 	), nil
 }
 
@@ -481,17 +504,17 @@ func (p *hostConfigurationFileProvider) buildProxyPass(r *host.Route, uri ...str
 	grpcProtocol := r.Protocol == host.GRPCRouteProtocol
 
 	if grpcProtocol {
-		_, _ = fmt.Fprintf(&builder, "grpc_pass %s;", p.toGrpcURL(*targetURI))
+		nginxFprintf(&builder, "grpc_pass %s;", p.toGrpcURL(*targetURI))
 	} else {
-		_, _ = fmt.Fprintf(&builder, "proxy_pass %s;", *targetURI)
+		nginxFprintf(&builder, "proxy_pass %s;", *targetURI)
 	}
 
 	if r.Settings.KeepOriginalDomainName {
 		u, _ := url.Parse(*targetURI)
 		if grpcProtocol {
-			_, _ = fmt.Fprintf(&builder, "\ngrpc_set_header Host %s;", u.Host)
+			nginxFprintf(&builder, "\ngrpc_set_header Host %s;", u.Host)
 		} else {
-			_, _ = fmt.Fprintf(&builder, "\nproxy_set_header Host %s;", u.Host)
+			nginxFprintf(&builder, "\nproxy_set_header Host %s;", u.Host)
 		}
 	}
 
@@ -550,15 +573,14 @@ func (p *hostConfigurationFileProvider) buildRouteSettings(
 
 	if r.Settings.Custom != nil {
 		_, _ = builder.WriteString("\n")
-		_, _ = builder.WriteString(*r.Settings.Custom)
+		_, _ = builder.WriteString(string(rawConfigFragment(*r.Settings.Custom)))
 	}
 
 	if r.AccessListID != nil {
-		_, _ = fmt.Fprintf(
+		nginxFprintf(
 			&builder,
-			"\ninclude \"%saccess-list-%s.conf\";",
-			ctx.paths.Config,
-			*r.AccessListID,
+			"\ninclude %s;",
+			ctx.paths.Config+"access-list-"+r.AccessListID.String()+".conf",
 		)
 	}
 
@@ -591,7 +613,7 @@ func (p *hostConfigurationFileProvider) buildCacheConfig(
 	_, _ = builder.WriteString("\n")
 
 	cacheIDNoDashes := strings.ReplaceAll(c.ID.String(), "-", "")
-	_, _ = fmt.Fprintf(&builder, "proxy_cache cache_%s;", cacheIDNoDashes)
+	nginxFprintf(&builder, "proxy_cache %s;", "cache_"+cacheIDNoDashes)
 
 	p.appendCacheDurations(&builder, c)
 	p.appendCacheMethods(&builder, c)
@@ -608,12 +630,13 @@ func (p *hostConfigurationFileProvider) appendCacheDurations(
 	c *cache.Cache,
 ) {
 	for _, d := range c.Durations {
-		_, _ = fmt.Fprintf(
-			builder,
-			"\nproxy_cache_valid %s %ds;",
-			strings.Join(d.StatusCodes, " "),
-			d.ValidTimeSeconds,
-		)
+		arguments := make([]any, 0, len(d.StatusCodes)+1)
+		for _, statusCode := range d.StatusCodes {
+			arguments = append(arguments, statusCode)
+		}
+		arguments = append(arguments, directiveFragment(nginxSprintf("%ds", d.ValidTimeSeconds)))
+
+		nginxFprintfArgs(builder, "\nproxy_cache_valid %s;", arguments...)
 	}
 }
 
@@ -627,7 +650,7 @@ func (p *hostConfigurationFileProvider) appendCacheMethods(
 			methods[index] = strings.ToLower(string(method))
 		}
 
-		_, _ = fmt.Fprintf(builder, "\nproxy_cache_methods %s;", strings.Join(methods, " "))
+		nginxFprintfArgs(builder, "\nproxy_cache_methods %s;", methods...)
 	}
 }
 
@@ -635,13 +658,17 @@ func (p *hostConfigurationFileProvider) appendCacheStandardOptions(
 	builder *strings.Builder,
 	c *cache.Cache,
 ) {
-	_, _ = fmt.Fprintf(builder, "\nproxy_cache_min_uses %d;", c.MinimumUsesBeforeCaching)
-	_, _ = fmt.Fprintf(
+	nginxFprintf(builder, "\nproxy_cache_min_uses %d;", c.MinimumUsesBeforeCaching)
+	nginxFprintf(
 		builder,
 		"\nproxy_cache_background_update %s;",
-		statusFlag(c.BackgroundUpdate),
+		directiveFragment(statusFlag(c.BackgroundUpdate)),
 	)
-	_, _ = fmt.Fprintf(builder, "\nproxy_cache_revalidate %s;", statusFlag(c.Revalidate))
+	nginxFprintf(
+		builder,
+		"\nproxy_cache_revalidate %s;",
+		directiveFragment(statusFlag(c.Revalidate)),
+	)
 
 	if c.IgnoreUpstreamCacheHeaders {
 		_, _ = builder.WriteString("\nproxy_ignore_headers Cache-Control Expires;")
@@ -659,24 +686,24 @@ func (p *hostConfigurationFileProvider) appendCacheStandardOptions(
 			staleOptions[index] = strings.ToLower(string(option))
 		}
 
-		staleConfig = strings.Join(staleOptions, " ")
+		nginxFprintfArgs(builder, "\nproxy_cache_use_stale %s;", staleOptions...)
+	} else {
+		nginxFprintf(builder, "\nproxy_cache_use_stale %s;", directiveFragment(staleConfig))
 	}
-
-	_, _ = fmt.Fprintf(builder, "\nproxy_cache_use_stale %s;", staleConfig)
 }
 
 func (p *hostConfigurationFileProvider) appendCacheLock(builder *strings.Builder, c *cache.Cache) {
 	if c.ConcurrencyLock.Enabled {
 		_, _ = builder.WriteString("\nproxy_cache_lock on;")
 		if c.ConcurrencyLock.TimeoutSeconds != nil {
-			_, _ = fmt.Fprintf(
+			nginxFprintf(
 				builder,
 				"\nproxy_cache_lock_timeout %ds;",
 				*c.ConcurrencyLock.TimeoutSeconds,
 			)
 		}
 		if c.ConcurrencyLock.AgeSeconds != nil {
-			_, _ = fmt.Fprintf(
+			nginxFprintf(
 				builder,
 				"\nproxy_cache_lock_age %ds;",
 				*c.ConcurrencyLock.AgeSeconds,
@@ -690,11 +717,11 @@ func (p *hostConfigurationFileProvider) appendCacheBypassRules(
 	c *cache.Cache,
 ) {
 	for _, rule := range c.BypassRules {
-		_, _ = fmt.Fprintf(builder, "\nproxy_cache_bypass %s;", rule)
+		nginxFprintf(builder, "\nproxy_cache_bypass %s;", rule)
 	}
 
 	for _, rule := range c.NoCacheRules {
-		_, _ = fmt.Fprintf(builder, "\nproxy_no_cache %s;", rule)
+		nginxFprintf(builder, "\nproxy_no_cache %s;", rule)
 	}
 }
 
@@ -715,14 +742,14 @@ func (p *hostConfigurationFileProvider) appendCacheFileExtensions(
 	}
 
 	_, _ = builder.WriteString("\n")
-	_, _ = fmt.Fprintf(
+	nginxFprintf(
 		builder,
 		`
-			if ($uri !~* "%s") { 
-				set $__no_cache_allowed_extension 1; 
+			if ($uri !~* %s) {
+				set $__no_cache_allowed_extension 1;
 			}
 			proxy_no_cache $__no_cache_allowed_extension;
 		`,
-		fmt.Sprintf("\\.(%s)$", strings.Join(extensions, "|")),
+		"\\.("+strings.Join(extensions, "|")+")$",
 	)
 }

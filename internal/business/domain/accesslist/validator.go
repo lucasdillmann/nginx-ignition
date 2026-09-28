@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"unicode"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/validation"
@@ -25,6 +26,8 @@ func (v *validator) validate(ctx context.Context, accessList *AccessList) error 
 		v.delegate.Add("name", i18n.M(ctx, i18n.K.CommonValueMissing))
 	}
 
+	v.validateRealm(ctx, accessList)
+
 	knownUsernames := map[string]bool{}
 	for index, value := range accessList.Credentials {
 		v.validateCredentials(ctx, index, &value, &knownUsernames)
@@ -36,6 +39,22 @@ func (v *validator) validate(ctx context.Context, accessList *AccessList) error 
 	}
 
 	return v.delegate.Result()
+}
+
+func (v *validator) validateRealm(ctx context.Context, accessList *AccessList) {
+	if len(accessList.Credentials) == 0 {
+		return
+	}
+
+	if strings.TrimSpace(accessList.Realm) == "" {
+		v.delegate.Add("realm", i18n.M(ctx, i18n.K.CommonValueMissing))
+		return
+	}
+
+	if strings.ContainsAny(accessList.Realm, "\";{}") ||
+		strings.IndexFunc(accessList.Realm, unicode.IsControl) >= 0 {
+		v.delegate.Add("realm", i18n.M(ctx, i18n.K.CommonInvalidValue))
+	}
 }
 
 func (v *validator) validateEntry(

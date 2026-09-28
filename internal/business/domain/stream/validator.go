@@ -3,7 +3,9 @@ package stream
 import (
 	"context"
 	"fmt"
+	"net"
 	"strings"
+	"unicode"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/constants"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
@@ -180,17 +182,31 @@ func (v *validator) validateAddressProtocol(
 }
 
 func (v *validator) validateAddressValue(ctx context.Context, fieldPrefix string, address Address) {
+	addressField := fieldPrefix + ".address"
+
 	if strings.TrimSpace(address.Address) == "" {
-		v.delegate.Add(fieldPrefix+".address", i18n.M(ctx, i18n.K.CommonCannotBeEmpty))
+		v.delegate.Add(addressField, i18n.M(ctx, i18n.K.CommonCannotBeEmpty))
 		return
 	}
 
-	if address.Protocol == SocketProtocol && !strings.HasPrefix(address.Address, "/") {
-		v.delegate.Add(
-			fieldPrefix+".protocol",
-			i18n.M(ctx, i18n.K.CommonStartsWithSlashRequired),
-		)
+	if address.Protocol == SocketProtocol {
+		if !strings.HasPrefix(address.Address, "/") {
+			v.delegate.Add(
+				fieldPrefix+".protocol",
+				i18n.M(ctx, i18n.K.CommonStartsWithSlashRequired),
+			)
+			return
+		}
+
+		if strings.IndexFunc(address.Address, unicode.IsControl) >= 0 {
+			v.delegate.Add(addressField, i18n.M(ctx, i18n.K.CommonInvalidValue))
+		}
 		return
+	}
+
+	if net.ParseIP(address.Address) == nil &&
+		!constants.HostnamePattern.MatchString(address.Address) {
+		v.delegate.Add(addressField, i18n.M(ctx, i18n.K.CommonInvalidValue))
 	}
 }
 

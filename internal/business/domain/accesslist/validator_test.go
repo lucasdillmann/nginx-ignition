@@ -17,6 +17,49 @@ func Test_validator(t *testing.T) {
 			assert.NoError(t, err)
 		})
 
+		t.Run("valid realm with credentials passes", func(t *testing.T) {
+			accessList := newAccessList()
+			accessList.Realm = "Restricted area"
+
+			err := newValidator().validate(t.Context(), accessList)
+
+			assert.NoError(t, err)
+		})
+
+		t.Run("empty realm with credentials fails", func(t *testing.T) {
+			accessList := newAccessList()
+			accessList.Realm = "   "
+
+			err := newValidator().validate(t.Context(), accessList)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("invalid realm characters fail", func(t *testing.T) {
+			for _, realm := range []string{
+				`Realm"; return 200 "injected;`,
+				"Realm{return 200}",
+				"Realm\r\nInjected",
+			} {
+				accessList := newAccessList()
+				accessList.Realm = realm
+
+				err := newValidator().validate(t.Context(), accessList)
+
+				assert.Error(t, err)
+			}
+		})
+
+		t.Run("empty realm without credentials passes", func(t *testing.T) {
+			accessList := newAccessList()
+			accessList.Credentials = nil
+			accessList.Realm = ""
+
+			err := newValidator().validate(t.Context(), accessList)
+
+			assert.NoError(t, err)
+		})
+
 		t.Run("empty name fails", func(t *testing.T) {
 			accessList := newAccessList()
 			accessList.Name = ""

@@ -62,10 +62,15 @@ func toDomain(request *accessListRequestDTO) *accesslist.AccessList {
 		})
 	}
 
+	realm := ""
+	if request.Realm != nil {
+		realm = *request.Realm
+	}
+
 	return &accesslist.AccessList{
 		ID:                          uuid.New(),
 		Name:                        *request.Name,
-		Realm:                       *request.Realm,
+		Realm:                       realm,
 		SatisfyAll:                  *request.SatisfyAll,
 		DefaultOutcome:              *request.DefaultOutcome,
 		Entries:                     entries,

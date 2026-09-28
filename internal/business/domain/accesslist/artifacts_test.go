@@ -8,6 +8,7 @@ func newAccessList() *AccessList {
 	return &AccessList{
 		ID:             uuid.New(),
 		Name:           "Default Access List",
+		Realm:          "Restricted",
 		DefaultOutcome: AllowOutcome,
 		Entries: []Entry{
 			{
