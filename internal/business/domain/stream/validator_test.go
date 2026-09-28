@@ -117,6 +117,8 @@ func Test_validator(t *testing.T) {
 					"127.0.0.1",
 					"::1",
 					"backend.example.com",
+					"backend",
+					"localhost",
 				} {
 					s := newStream()
 					s.Binding.Address = address
@@ -124,7 +126,6 @@ func Test_validator(t *testing.T) {
 				}
 
 				for _, address := range []string{
-					"backend",
 					"127.0.0.1:80",
 					"127.0.0.1; } server { listen 20000; }",
 					"backend name",

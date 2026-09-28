@@ -182,8 +182,10 @@ func (v *validator) validateAddressProtocol(
 }
 
 func (v *validator) validateAddressValue(ctx context.Context, fieldPrefix string, address Address) {
+	addressField := fieldPrefix + ".address"
+
 	if strings.TrimSpace(address.Address) == "" {
-		v.delegate.Add(fieldPrefix+".address", i18n.M(ctx, i18n.K.CommonCannotBeEmpty))
+		v.delegate.Add(addressField, i18n.M(ctx, i18n.K.CommonCannotBeEmpty))
 		return
 	}
 
@@ -197,13 +199,13 @@ func (v *validator) validateAddressValue(ctx context.Context, fieldPrefix string
 		}
 
 		if strings.IndexFunc(address.Address, unicode.IsControl) >= 0 {
-			v.delegate.Add(fieldPrefix+".address", i18n.M(ctx, i18n.K.CommonInvalidValue))
+			v.delegate.Add(addressField, i18n.M(ctx, i18n.K.CommonInvalidValue))
 		}
 		return
 	}
 
-	if net.ParseIP(address.Address) == nil && !constants.TLDPattern.MatchString(address.Address) {
-		v.delegate.Add(fieldPrefix+".address", i18n.M(ctx, i18n.K.CommonInvalidValue))
+	if net.ParseIP(address.Address) == nil && !constants.HostnamePattern.MatchString(address.Address) {
+		v.delegate.Add(addressField, i18n.M(ctx, i18n.K.CommonInvalidValue))
 	}
 }
 
