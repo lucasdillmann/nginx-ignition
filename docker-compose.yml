@@ -1,3 +1,6 @@
+# THIS IS AN EXAMPLE FILE
+# Do not deploy it as is. Please review and update all values accordingly.
+
 services:
   postgres:
     image: postgres:18-alpine
@@ -6,16 +9,19 @@ services:
     environment:
       POSTGRES_DB: nginx_ignition
       POSTGRES_USER: nginx_ignition
+
+      # DO NOT USE THIS PASSWORD VALUE IN A PRODUCTION ENVIRONMENT
+      # Remember to change to a strong and secret password before deployment
       POSTGRES_PASSWORD: PlaceYourSuperSecretDatabasePasswordHere
     volumes:
-      - nginx_ignition_postgres_data:/var/lib/postgresql/data
+      - nginx-ignition_postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U nginx_ignition"]
       interval: 5s
       timeout: 5s
       retries: 3
     networks:
-      - nginx-ignition-network
+      - nginx-ignition_default
 
   nginx-ignition:
     image: dillmann/nginx-ignition:latest
@@ -32,7 +38,15 @@ services:
       NGINX_IGNITION_DATABASE_NAME: nginx_ignition
       NGINX_IGNITION_DATABASE_SSL_MODE: disable
       NGINX_IGNITION_DATABASE_USERNAME: nginx_ignition
+
+      # DO NOT USE THIS PASSWORD VALUE IN A PRODUCTION ENVIRONMENT
+      # Remember to change to a strong and secret password before deployment. It must be the same password you used
+      # for the PostgreSQL database above.
       NGINX_IGNITION_DATABASE_PASSWORD: PlaceYourSuperSecretDatabasePasswordHere
+
+      # DO NOT USE THIS SECRET VALUE IN A PRODUCTION ENVIRONMENT
+      # Remember to change to a strong and secret private key exactly 64 chars long (256 bits) before deployment.
+      # For more details, please check the docs/configuration-properties.md file.
       NGINX_IGNITION_SECURITY_JWT_SECRET: PlaceYourSecretJwtPrivateKeyHereButRememberThatShouldHave64Chars
     depends_on:
       postgres:
@@ -43,12 +57,12 @@ services:
       timeout: 5s
       retries: 3
     networks:
-      - nginx-ignition-network
+      - nginx-ignition_default
 
 networks:
-  nginx-ignition-network:
+  nginx-ignition_default:
     driver: bridge
 
 volumes:
-  nginx_ignition_postgres_data:
+  nginx-ignition_postgres-data:
     driver: local

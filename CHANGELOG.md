@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.47.0
+
+- The example Docker Compose file is now clearly marked as an example, and warns about the placeholder database
+  password and JWT secret values that must be replaced before deployment (thanks @28Hus
+  [for the suggestion](https://github.com/lucasdillmann/nginx-ignition/issues/148))
+
 ## 2.46.0
 
 - Nginx configuration files are now tested against the nginx binary before being applied. When the test fails, the
