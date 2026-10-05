@@ -15,6 +15,7 @@ import (
 
 	netbird "github.com/netbirdio/netbird/client/embed"
 
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/constants"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/log"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
@@ -45,6 +46,10 @@ func (e *netbirdEndpoint) stop(ctx context.Context) {
 
 func (e *netbirdEndpoint) start(ctx context.Context) error {
 	log.Infof("Starting NetBird %s endpoint...", e.endpoint.SourceName())
+	if !constants.SubdomainNamePattern.MatchString(e.endpoint.SourceName()) {
+		return fmt.Errorf("invalid VPN source name %q", e.endpoint.SourceName())
+	}
+
 	basePath := filepath.Join(e.configDir, "netbird", e.endpoint.SourceName())
 
 	opts := netbird.Options{

@@ -13,6 +13,7 @@ import (
 	"tailscale.com/client/local"
 	"tailscale.com/tsnet"
 
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/constants"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/log"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/vpn"
 )
@@ -45,6 +46,9 @@ func (e *tailnetEndpoint) stop(ctx context.Context) {
 
 func (e *tailnetEndpoint) start(ctx context.Context) error {
 	log.Infof("Starting tailscale %s endpoint...", e.endpoint.SourceName())
+	if !constants.SubdomainNamePattern.MatchString(e.endpoint.SourceName()) {
+		return fmt.Errorf("invalid VPN source name %q", e.endpoint.SourceName())
+	}
 
 	e.tsServer = new(tsnet.Server)
 	e.tsServer.AuthKey = e.authKey
