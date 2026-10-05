@@ -119,6 +119,12 @@ export default class HostVpns extends React.Component<HostVpnsProps, HostVpnsSta
                     }
                     label={<I18n id={MessageKey.FrontendHostComponentsHostvpnsPeerName} />}
                     required
+                    rules={[
+                        {
+                            pattern: /^[a-z](?:[a-z0-9_-]{0,61}[a-z0-9])?$/,
+                            message: <I18n id={MessageKey.CoreHostInvalidVpnName} />,
+                        },
+                    ]}
                 >
                     <Input />
                 </Form.Item>

@@ -414,6 +414,8 @@ func (v *validator) validateVPNEntry(
 
 	if strings.TrimSpace(value.Name) == "" {
 		v.delegate.Add(namePath, i18n.M(ctx, i18n.K.CommonValueMissing))
+	} else if !constants.SubdomainNamePattern.MatchString(value.Name) {
+		v.delegate.Add(namePath, i18n.M(ctx, i18n.K.CoreHostInvalidVpnName))
 	}
 
 	if value.VPNID == uuid.Nil {

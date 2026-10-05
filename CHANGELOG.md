@@ -1,7 +1,12 @@
 # CHANGELOG
 
-## 2.47.0
+## 2.46.1
 
+- Fix for a path traversal vulnerability in host VPN names that allowed a low-privilege user to leak the VPN drivers'
+  generated credentials (thanks @Tan-JunWei
+  [for the report](https://github.com/lucasdillmann/nginx-ignition/security/advisories/GHSA-6mg8-569f-cq25)!)
+  - Note: Host VPN names must now use only lowercase letters, numbers, underscores and hyphens, start with a letter,
+    and be at most 63 characters long.
 - The example Docker Compose file is now clearly marked as an example, and warns about the placeholder database
   password and JWT secret values that must be replaced before deployment (thanks @28Hus
   [for the suggestion](https://github.com/lucasdillmann/nginx-ignition/issues/148))

@@ -459,6 +459,58 @@ func Test_validator(t *testing.T) {
 				assertViolations(t, err, i18n.K.CoreHostVpnNotFound)
 			})
 
+			t.Run("invalid vpn names", func(t *testing.T) {
+				for _, name := range []string{
+					"../../../../..//opt/nginx-ignition",
+					"..",
+					"1vpn",
+					"Vpn",
+					"vpn name",
+					"vpn/name",
+					"vpn\\name",
+					"vpn.name",
+					"-vpn",
+					"_vpn",
+					"vpn-",
+				} {
+					hostValidator, mocks := setupValidator(t)
+					h := newHost()
+					vpnID := uuid.New()
+					h.VPNs = []VPN{{VPNID: vpnID, Name: name}}
+
+					mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.binding.EXPECT().
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Return(nil)
+					mocks.vpn.EXPECT().
+						Get(t.Context(), vpnID).
+						Return(&vpn.VPN{Enabled: true, Driver: "driver1"}, nil)
+
+					err := hostValidator.validate(t.Context(), h)
+					assertViolations(t, err, i18n.K.CoreHostInvalidVpnName)
+				}
+			})
+
+			t.Run("valid vpn names", func(t *testing.T) {
+				for _, name := range []string{"vpn1", "a", "web_server", "web-server", "v2_beta-1"} {
+					hostValidator, mocks := setupValidator(t)
+					h := newHost()
+					vpnID := uuid.New()
+					h.VPNs = []VPN{{VPNID: vpnID, Name: name}}
+
+					mocks.vpn.EXPECT().GetAvailableDrivers(t.Context()).Return(nil, nil).AnyTimes()
+					mocks.binding.EXPECT().
+						Validate(t.Context(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+						Return(nil)
+					mocks.vpn.EXPECT().
+						Get(t.Context(), vpnID).
+						Return(&vpn.VPN{Enabled: true, Driver: "driver1"}, nil)
+
+					err := hostValidator.validate(t.Context(), h)
+					assert.NoError(t, err)
+				}
+			})
+
 			t.Run("vpn certificate validation", func(t *testing.T) {
 				t.Run("certificate informed but https disabled", func(t *testing.T) {
 					hostValidator, mocks := setupValidator(t)
