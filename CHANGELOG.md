@@ -10,6 +10,7 @@
 - The example Docker Compose file is now clearly marked as an example, and warns about the placeholder database
   password and JWT secret values that must be replaced before deployment (thanks @28Hus
   [for the suggestion](https://github.com/lucasdillmann/nginx-ignition/issues/148))
+- Other minor fixes and improvements
 
 ## 2.46.0
 

@@ -111,8 +111,8 @@ func (r *repository) FindPage(
 	}
 
 	err = query.
-		Limit(pageSize).
-		Offset(pageSize * pageNumber).
+		Limit(int64(pageSize)).
+		Offset(int64(pageSize * pageNumber)).
 		Order("name").
 		Scan(ctx)
 	if err != nil {
@@ -124,7 +124,7 @@ func (r *repository) FindPage(
 		result = append(result, toDomain(&model))
 	}
 
-	return pagination.New(pageNumber, pageSize, count, result), nil
+	return pagination.New(pageNumber, pageSize, int(count), result), nil
 }
 
 func (r *repository) IsEnabledByID(ctx context.Context, id uuid.UUID) (bool, error) {
@@ -152,7 +152,7 @@ func (r *repository) Count(ctx context.Context) (int, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *repository) TryCreateInitialUser(ctx context.Context, u *user.User) (bool, error) {

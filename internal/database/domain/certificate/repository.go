@@ -205,8 +205,8 @@ func (r *repository) FindPage(
 	}
 
 	err = query.
-		Limit(pageSize).
-		Offset(pageSize * pageNumber).
+		Limit(int64(pageSize)).
+		Offset(int64(pageSize * pageNumber)).
 		Order("domain_names").
 		Scan(ctx)
 	if err != nil {
@@ -223,7 +223,7 @@ func (r *repository) FindPage(
 		}
 	}
 
-	return pagination.New(pageNumber, pageSize, count, result), nil
+	return pagination.New(pageNumber, pageSize, int(count), result), nil
 }
 
 func (r *repository) FindAllDueToRenew(ctx context.Context) ([]certificate.Certificate, error) {

@@ -232,8 +232,8 @@ func (r *repository) FindPage(
 		Relation("Bindings").
 		Relation("Routes").
 		Relation("VPNs").
-		Limit(pageSize).
-		Offset(pageSize * pageNumber).
+		Limit(int64(pageSize)).
+		Offset(int64(pageSize * pageNumber)).
 		Order("domain_names").
 		Scan(ctx)
 	if err != nil {
@@ -250,7 +250,7 @@ func (r *repository) FindPage(
 		result = append(result, *domain)
 	}
 
-	return pagination.New(pageNumber, pageSize, count, result), nil
+	return pagination.New(pageNumber, pageSize, int(count), result), nil
 }
 
 func (r *repository) FindAllEnabled(ctx context.Context) ([]host.Host, error) {
