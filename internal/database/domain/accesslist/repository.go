@@ -116,8 +116,8 @@ func (r *repository) FindPage(
 	err = query.
 		Relation("Credentials").
 		Relation("EntrySets").
-		Limit(pageSize).
-		Offset(pageSize * pageNumber).
+		Limit(int64(pageSize)).
+		Offset(int64(pageSize * pageNumber)).
 		Order("name").
 		Scan(ctx)
 	if err != nil {
@@ -129,7 +129,7 @@ func (r *repository) FindPage(
 		result = append(result, toDomain(&model))
 	}
 
-	return pagination.New(pageNumber, pageSize, count, result), nil
+	return pagination.New(pageNumber, pageSize, int(count), result), nil
 }
 
 func (r *repository) FindAll(ctx context.Context) ([]accesslist.AccessList, error) {

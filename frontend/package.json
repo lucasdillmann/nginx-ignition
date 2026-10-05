@@ -28,7 +28,7 @@
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@uiw/react-codemirror": "^4.25.12",
-        "@vitejs/plugin-react": "^6.1.1",
+        "@vitejs/plugin-react": "^6.1.2",
         "antd": "^6.6.5",
         "codemirror": "^6.0.2",
         "debounce": "^3.0.0",
@@ -37,7 +37,7 @@
         "react-dom": "^19.3.0",
         "react-router-dom": "^7.18.4",
         "typescript": "^5.9.3",
-        "vite": "^8.3.1",
+        "vite": "^8.3.2",
         "vite-plugin-svgr": "^4.5.0",
         "vite-tsconfig-paths": "^5.1.4"
     },
@@ -50,7 +50,7 @@
         "eslint-plugin-react": "^7.37.5",
         "globals": "^16.5.0",
         "prettier": "^3.9.9",
-        "typescript-eslint": "^8.70.1"
+        "typescript-eslint": "^8.71.0"
     },
     "scripts": {
         "start": "vite",
