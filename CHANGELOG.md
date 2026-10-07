@@ -7,6 +7,10 @@
   using a username and password. Permissions granted to the token are the same as the user who owns it.
   - Note: Users will be logged out after the update from a previous version, as the access tokens issued before it are 
     no longer accepted since the claims changed slightly.
+  - Note: API tokens can't manage other API tokens or log out, as those operations are reserved for interactive
+    sessions.
+  - Documentation: A new [API tokens](https://github.com/lucasdillmann/nginx-ignition/blob/main/docs/api-tokens.md)
+    documentation page describes how to create, use and revoke tokens.
 
 ## 2.46.1
 

@@ -122,5 +122,28 @@ func Test_apiTokenCreateHandler(t *testing.T) {
 
 			assert.Equal(t, http.StatusUnauthorized, recorder.Code)
 		})
+
+		t.Run("returns 400 Bad Request when called with an API token", func(t *testing.T) {
+			controller := gomock.NewController(t)
+			defer controller.Finish()
+
+			usr := newUser()
+			commands := user.NewMockedCommands(controller)
+			handler := apiTokenCreateHandler{commands: commands}
+
+			engine := gin.New()
+			engine.Use(func(ginContext *gin.Context) {
+				ginContext.Set("ABAC:Subject", &authorization.Subject{
+					User: usr,
+					Kind: authorization.APIKind,
+				})
+				ginContext.Next()
+			})
+			engine.POST("/current/tokens", handler.handle)
+
+			recorder := performRequest(engine, apiTokenCreateRequestDTO{Name: new("automation")})
+
+			assert.Equal(t, http.StatusBadRequest, recorder.Code)
+		})
 	})
 }

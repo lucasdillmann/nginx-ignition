@@ -22,6 +22,11 @@ func (h apiTokenCreateHandler) handle(ctx *gin.Context) {
 		return
 	}
 
+	if currentSubject.Kind == authorization.APIKind {
+		ctx.Status(http.StatusBadRequest)
+		return
+	}
+
 	requestPayload := &apiTokenCreateRequestDTO{}
 	if err := ctx.BindJSON(requestPayload); err != nil {
 		panic(err)

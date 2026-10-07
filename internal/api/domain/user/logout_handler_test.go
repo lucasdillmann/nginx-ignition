@@ -47,5 +47,35 @@ func Test_logoutHandler(t *testing.T) {
 
 			assert.Equal(t, http.StatusNoContent, recorder.Code)
 		})
+
+		t.Run("returns 400 Bad Request when called with an API token", func(t *testing.T) {
+			controller := gomock.NewController(t)
+			defer controller.Finish()
+
+			cfg := configuration.NewWithOverrides(map[string]string{
+				"nginx-ignition.security.jwt.secret": "1234567890123456789012345678901234567890123456789012345678901234",
+			})
+			commands := user.NewMockedCommands(controller)
+			authorizer, _ := authorization.New(cfg, commands)
+
+			handler := logoutHandler{
+				authorizer: authorizer,
+			}
+			engine := gin.New()
+			engine.Use(func(ginContext *gin.Context) {
+				ginContext.Set("ABAC:Subject", &authorization.Subject{
+					TokenID: "token-id",
+					Kind:    authorization.APIKind,
+				})
+				ginContext.Next()
+			})
+			engine.POST("/api/users/logout", handler.handle)
+
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("POST", "/api/users/logout", nil)
+			engine.ServeHTTP(recorder, request)
+
+			assert.Equal(t, http.StatusBadRequest, recorder.Code)
+		})
 	})
 }

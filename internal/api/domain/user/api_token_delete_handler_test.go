@@ -56,5 +56,44 @@ func Test_apiTokenDeleteHandler(t *testing.T) {
 				engine.ServeHTTP(recorder, request)
 			})
 		})
+
+		t.Run("returns 401 Unauthorized without a subject", func(t *testing.T) {
+			controller := gomock.NewController(t)
+			commands := user.NewMockedCommands(controller)
+			handler := apiTokenDeleteHandler{commands: commands}
+			engine := gin.New()
+			engine.DELETE("/current/tokens/:id", handler.handle)
+
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("DELETE", "/current/tokens/"+uuid.New().String(), nil)
+			engine.ServeHTTP(recorder, request)
+
+			assert.Equal(t, http.StatusUnauthorized, recorder.Code)
+		})
+
+		t.Run("returns 400 Bad Request when called with an API token", func(t *testing.T) {
+			controller := gomock.NewController(t)
+			defer controller.Finish()
+
+			usr := newUser()
+			commands := user.NewMockedCommands(controller)
+			handler := apiTokenDeleteHandler{commands: commands}
+
+			engine := gin.New()
+			engine.Use(func(ginContext *gin.Context) {
+				ginContext.Set("ABAC:Subject", &authorization.Subject{
+					User: &user.User{ID: usr.ID},
+					Kind: authorization.APIKind,
+				})
+				ginContext.Next()
+			})
+			engine.DELETE("/current/tokens/:id", handler.handle)
+
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("DELETE", "/current/tokens/"+uuid.New().String(), nil)
+			engine.ServeHTTP(recorder, request)
+
+			assert.Equal(t, http.StatusBadRequest, recorder.Code)
+		})
 	})
 }
