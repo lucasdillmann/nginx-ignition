@@ -27,8 +27,7 @@ class DeleteAPITokenAction {
     }
 
     async execute(tokenId: string): Promise<void> {
-        return UserConfirmation
-            .ask(MessageKey.FrontendUserTokensDeleteConfirmation)
+        return UserConfirmation.ask(MessageKey.FrontendUserTokensDeleteConfirmation)
             .then(() => this.service.deleteToken(tokenId))
             .then(() =>
                 Notification.success(MessageKey.FrontendUserTokensRevokedTitle, MessageKey.CommonSuccessMessage),

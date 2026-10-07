@@ -115,6 +115,12 @@ export default class APITokenCreateModal extends React.Component<APITokenCreateM
                 initialValues={{ expiration: dayjs().add(DEFAULT_EXPIRATION_DAYS, "day") }}
                 className="api-token-create-form"
             >
+                <Alert
+                    type="info"
+                    className="api-token-create-permissions"
+                    description={<I18n id={MessageKey.FrontendUserTokensPermissionsHelp} />}
+                />
+
                 <Form.Item
                     name="name"
                     validateStatus={validationResult.getStatus("name")}
@@ -136,13 +142,6 @@ export default class APITokenCreateModal extends React.Component<APITokenCreateM
                     <DatePicker showTime allowClear className="api-token-create-expiration" />
                 </Form.Item>
 
-                <Alert
-                    type="info"
-                    showIcon
-                    className="api-token-create-permissions"
-                    title={<I18n id={MessageKey.FrontendUserTokensPermissionsHelp} />}
-                />
-
                 <Flex justify="end" style={{ marginTop: 24 }}>
                     <Button type="primary" loading={loading} onClick={() => this.formRef.current?.submit()}>
                         <I18n id={MessageKey.FrontendUserTokensCreateButton} />
@@ -155,21 +154,12 @@ export default class APITokenCreateModal extends React.Component<APITokenCreateM
     private renderGeneratedToken() {
         return (
             <Flex vertical className="api-token-generated-container">
-                <Alert
-                    type="warning"
-                    showIcon
-                    title={<I18n id={MessageKey.FrontendUserTokensGeneratedTitle} />}
-                    description={<I18n id={MessageKey.FrontendUserTokensGeneratedDescription} />}
-                />
+                <Alert type="warning" description={<I18n id={MessageKey.FrontendUserTokensGeneratedDescription} />} />
 
                 <Flex className="api-token-generated-value-container" onClick={() => this.copyToken()}>
                     <code className="api-token-generated-value">{this.state.token}</code>
                     <CopyOutlined className="api-token-generated-copy-icon" />
                 </Flex>
-
-                <Button type="primary" icon={<CopyOutlined />} onClick={() => this.copyToken()}>
-                    <I18n id={MessageKey.CommonCopy} />
-                </Button>
             </Flex>
         )
     }

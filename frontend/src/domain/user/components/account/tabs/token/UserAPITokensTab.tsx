@@ -44,34 +44,24 @@ export default class UserAPITokensTab extends React.Component<Record<string, nev
                 renderer: item => item.name,
             },
             {
-                id: "createdAt",
-                description: MessageKey.FrontendUserTokensCreatedLabel,
-                renderer: item => formatDateTime(item.createdAt),
-                width: 250,
-            },
-            {
                 id: "expiration",
                 description: MessageKey.FrontendUserTokensExpirationLabel,
                 renderer: item =>
-                    item.expiration
-                        ? formatDateTime(item.expiration)
-                        : <I18n id={MessageKey.FrontendUserTokensNeverExpires} />,
-                width: 250,
+                    item.expiration ? (
+                        formatDateTime(item.expiration)
+                    ) : (
+                        <I18n id={MessageKey.FrontendUserTokensNeverExpires} />
+                    ),
+                width: 220,
             },
             {
                 id: "actions",
                 description: raw(""),
                 renderer: item => (
-                    <Button
-                        danger
-                        type="text"
-                        icon={
-                            <DeleteOutlined
-                                style={{ color: themedColors().DANGER }}
-                                className="action-icon"
-                                title={i18n(MessageKey.CommonDelete)}
-                            />
-                        }
+                    <DeleteOutlined
+                        style={{ color: themedColors().DANGER }}
+                        className="action-icon"
+                        title={i18n(MessageKey.CommonDelete)}
                         onClick={() => this.revokeToken(item)}
                     />
                 ),
@@ -114,7 +104,7 @@ export default class UserAPITokensTab extends React.Component<Record<string, nev
 
                 <Flex justify="end" className="api-tokens-footer">
                     <Button
-                        type="dashed"
+                        type="primary"
                         icon={<PlusOutlined />}
                         onClick={() => this.setState({ createModalOpen: true })}
                     >

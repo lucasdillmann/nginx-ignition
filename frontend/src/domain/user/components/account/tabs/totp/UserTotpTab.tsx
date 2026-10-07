@@ -37,8 +37,7 @@ export default class UserTotpTab extends React.Component<Record<string, never>, 
     }
 
     private handleDisabled() {
-        UserConfirmation
-            .ask(MessageKey.FrontendUserMenuTotpDisableConfirmation)
+        UserConfirmation.ask(MessageKey.FrontendUserMenuTotpDisableConfirmation)
             .then(() => this.setState({ loading: true }))
             .then(() => this.service.disableTotp())
             .then(() =>
