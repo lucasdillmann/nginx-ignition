@@ -220,6 +220,10 @@ func (j *Jwt) resolveUser(
 		return nil, err
 	}
 
+	if usr == nil {
+		return nil, j.invalidTokenError(ctx)
+	}
+
 	if !usr.Enabled && kind == SessionKind {
 		j.RevokeToken(tokenID)
 	}

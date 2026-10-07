@@ -1,17 +1,29 @@
 package authorization
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
+	"github.com/lucasdillmann/nginx-ignition/internal/api/core/apierror"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 const testJwtSecret = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
+func requireUnauthorized(t *testing.T, err error) {
+	t.Helper()
+
+	var apiErr *apierror.APIError
+
+	require.ErrorAs(t, err, &apiErr)
+	assert.Equal(t, http.StatusUnauthorized, apiErr.StatusCode)
+}
 
 func newPermissions() user.Permissions {
 	return user.Permissions{

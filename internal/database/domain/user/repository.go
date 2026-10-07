@@ -15,6 +15,10 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
 
+const (
+	byUserIDFilter = "user_id = ?"
+)
+
 type repository struct {
 	database *database.Database
 }
@@ -52,7 +56,7 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	_, err = transaction.NewDelete().
 		Model((*userTokenModel)(nil)).
-		Where("user_id = ?", id).
+		Where(byUserIDFilter, id).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -277,7 +281,7 @@ func (r *repository) FindTokensByUserID(
 
 	query := r.database.Select().
 		Model(&models).
-		Where("user_id = ?", userID)
+		Where(byUserIDFilter, userID)
 
 	if searchTerms != nil {
 		query = query.Where("LOWER(name) LIKE LOWER(?)", "%"+*searchTerms+"%")
@@ -312,7 +316,7 @@ func (r *repository) ExistsTokenByName(
 ) (bool, error) {
 	return r.database.Select().
 		Model((*userTokenModel)(nil)).
-		Where("user_id = ?", userID).
+		Where(byUserIDFilter, userID).
 		Where("LOWER(name) = LOWER(?)", name).
 		Exists(ctx)
 }
@@ -326,7 +330,7 @@ func (r *repository) FindTokenByID(
 	err := r.database.Select().
 		Model(&model).
 		Where(constants.ByIDFilter, id).
-		Where("user_id = ?", userID).
+		Where(byUserIDFilter, userID).
 		Scan(ctx)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -352,7 +356,7 @@ func (r *repository) DeleteTokenByID(ctx context.Context, userID, id uuid.UUID) 
 	_, err := r.database.Delete().
 		Model((*userTokenModel)(nil)).
 		Where(constants.ByIDFilter, id).
-		Where("user_id = ?", userID).
+		Where(byUserIDFilter, userID).
 		Exec(ctx)
 
 	return err

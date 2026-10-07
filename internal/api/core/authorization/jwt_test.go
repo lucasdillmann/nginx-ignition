@@ -161,6 +161,40 @@ func Test_Jwt_ValidateToken(t *testing.T) {
 		assert.Nil(t, subject)
 	})
 
+	t.Run("rejects a session token when the user no longer exists", func(t *testing.T) {
+		authorizer, commands := newAuthorizer(t)
+		usr := newUser()
+		token, _ := authorizer.Jwt().GenerateToken(usr, SessionKind, nil, nil)
+		tokenID := parseJwtClaims(t, authorizer, *token)["jti"].(string)
+
+		commands.EXPECT().Get(gomock.Any(), usr.ID).Return(nil, nil)
+
+		assert.NotPanics(t, func() {
+			subject, err := authorizer.Jwt().ValidateToken(context.Background(), *token)
+
+			assert.Nil(t, subject)
+			requireUnauthorized(t, err)
+		})
+		assert.False(t, authorizer.Jwt().isRevoked(tokenID))
+	})
+
+	t.Run("rejects an API token when the user no longer exists", func(t *testing.T) {
+		authorizer, commands := newAuthorizer(t)
+		usr := newUser()
+		tokenID := uuid.New()
+		token, _ := authorizer.Jwt().GenerateToken(usr, APIKind, &tokenID, nil)
+
+		commands.EXPECT().Get(gomock.Any(), usr.ID).Return(nil, nil)
+
+		assert.NotPanics(t, func() {
+			subject, err := authorizer.Jwt().ValidateToken(context.Background(), *token)
+
+			assert.Nil(t, subject)
+			requireUnauthorized(t, err)
+		})
+		assert.False(t, authorizer.Jwt().isRevoked(tokenID.String()))
+	})
+
 	t.Run("rejects a token without a kind claim", func(t *testing.T) {
 		authorizer, _ := newAuthorizer(t)
 		usr := newUser()
