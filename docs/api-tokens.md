@@ -58,15 +58,12 @@ credentials are [reserved](#reserved-operations) for interactive sessions and st
 A set of operations is reserved for interactive sessions and can't be performed with an API token. Attempting one
 answers with `403 Forbidden`:
 
-- **Account settings:** changing the profile and changing the password.
-- **Two-factor authentication:** reading the two-factor status, enabling, activating and disabling it.
-- **Managing API tokens:** listing, creating and revoking tokens, not even your own.
-- **Logging out:** logging out only invalidates interactive sessions.
+- **Account settings:** changing the profile and/or the password.
+- **Two-factor authentication:** reading the two-factor status, activating and disabling it.
+- **Managing API tokens:** listing, creating and revoking any token.
+- **Logging out:** logging out only invalidates interactive session tokens.
 
 Reading your own profile with `GET /api/users/current` is the one exception: tokens are allowed to do it.
-
-Because of this, revoking a token from the web interface is the only way to permanently disable it, and it is also the
-only way to turn two-factor authentication back on. If you suspect a token was leaked, revoke it and create a new one.
 
 ## Token lifecycle
 
