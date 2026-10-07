@@ -20,12 +20,6 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
-const (
-	uniqueIdentifier           = "nginx-ignition"
-	expectedJwtSecretSizeChars = 64
-	expectedJwtSecretSizeBytes = 512
-)
-
 type Jwt struct {
 	commands           user.Commands
 	revokedTokens      *ttlcache.Cache[string, bool]
@@ -94,33 +88,92 @@ func (j *Jwt) RevokeToken(tokenID string) {
 	j.revokedTokens.Set(tokenID, true)
 }
 
-func (j *Jwt) GenerateToken(usr *user.User) (*string, error) {
-	notBefore := time.Now().Add(time.Second * time.Duration(j.clockSkewSeconds) * -1).Unix()
-	expiresAt := time.Now().
-		Add(time.Second * time.Duration(j.ttlSeconds)).
-		Add(time.Second * time.Duration(j.clockSkewSeconds)).
-		Unix()
+func (j *Jwt) GenerateToken(
+	usr *user.User,
+	kind TokenKind,
+	tokenID *uuid.UUID,
+	expiration *time.Time,
+) (*string, error) {
+	identifier := uuid.New()
+	if tokenID != nil {
+		identifier = *tokenID
+	}
+
+	var expiresAt int64
+	if kind == SessionKind {
+		expiresAt = time.Now().
+			Add(time.Second * time.Duration(j.ttlSeconds)).
+			Add(time.Second * time.Duration(j.clockSkewSeconds)).
+			Unix()
+	} else if expiration != nil {
+		expiresAt = expiration.Unix()
+	}
 
 	claims := jwt.MapClaims{
-		"aud": uniqueIdentifier,
-		"iss": uniqueIdentifier,
-		"nbf": notBefore,
-		"iat": time.Now().Unix(),
-		"exp": expiresAt,
-		"jti": uuid.New().String(),
-		"sub": usr.ID.String(),
+		"aud":          uniqueIdentifier,
+		"iss":          uniqueIdentifier,
+		"nbf":          time.Now().Add(time.Second * time.Duration(j.clockSkewSeconds) * -1).Unix(),
+		"iat":          time.Now().Unix(),
+		"jti":          identifier.String(),
+		"sub":          usr.ID.String(),
+		tokenKindClaim: kind,
+	}
+
+	if expiresAt > 0 {
+		claims["exp"] = expiresAt
 	}
 
 	return j.sign(&claims)
 }
 
 func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, error) {
+	token, err := j.parse(ctx, tokenString)
+	if err != nil {
+		return nil, err
+	}
+
+	claims, isMapClaims := token.Claims.(jwt.MapClaims)
+	if !isMapClaims || !token.Valid {
+		return nil, j.invalidTokenError(ctx)
+	}
+
+	kind, err := j.resolveKind(ctx, claims)
+	if err != nil {
+		return nil, err
+	}
+
+	tokenID, casted := claims["jti"].(string)
+	if !casted || tokenID == "" {
+		return nil, j.invalidTokenError(ctx)
+	}
+
+	usr, err := j.resolveUser(ctx, claims, kind, tokenID)
+	if err != nil {
+		return nil, err
+	}
+
+	if kind == APIKind {
+		err = j.validateAPIToken(ctx, usr.ID, tokenID)
+	} else if j.isRevoked(tokenID) {
+		err = j.invalidTokenError(ctx)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &Subject{
+		Kind:    kind,
+		TokenID: tokenID,
+		User:    usr,
+		claims:  &claims,
+	}, nil
+}
+
+func (j *Jwt) parse(ctx context.Context, tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, apierror.New(
-				http.StatusUnauthorized,
-				i18n.M(ctx, i18n.K.ApiCommonAuthorizationInvalidAccessToken),
-			)
+			return nil, j.invalidTokenError(ctx)
 		}
 
 		return j.secretKey, nil
@@ -129,48 +182,93 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 		return nil, err
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		id := claims["sub"].(string)
-		userID, err := uuid.Parse(id)
-		if err != nil {
-			return nil, err
-		}
+	return token, nil
+}
 
-		usr, err := j.commands.Get(ctx, userID)
-		if err != nil {
-			return nil, err
-		}
-
-		tokenID := claims["jti"].(string)
-		if !usr.Enabled {
-			j.RevokeToken(tokenID)
-			return nil, apierror.New(
-				http.StatusUnauthorized,
-				i18n.M(ctx, i18n.K.ApiCommonAuthorizationInvalidAccessToken),
-			)
-		}
-
-		if j.isRevoked(tokenID) {
-			return nil, apierror.New(
-				http.StatusUnauthorized,
-				i18n.M(ctx, i18n.K.ApiCommonAuthorizationInvalidAccessToken),
-			)
-		}
-
-		return &Subject{
-			TokenID: tokenID,
-			User:    usr,
-			claims:  &claims,
-		}, nil
+func (j *Jwt) resolveKind(ctx context.Context, claims jwt.MapClaims) (TokenKind, error) {
+	value, casted := claims[tokenKindClaim].(float64)
+	if !casted {
+		return 0, j.invalidTokenError(ctx)
 	}
 
-	return nil, apierror.New(
+	switch kind := TokenKind(value); kind {
+	case SessionKind, APIKind:
+		return kind, nil
+	default:
+		return 0, j.invalidTokenError(ctx)
+	}
+}
+
+func (j *Jwt) resolveUser(
+	ctx context.Context,
+	claims jwt.MapClaims,
+	kind TokenKind,
+	tokenID string,
+) (*user.User, error) {
+	id, casted := claims["sub"].(string)
+	if !casted {
+		return nil, j.invalidTokenError(ctx)
+	}
+
+	userID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, err
+	}
+
+	usr, err := j.commands.Get(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	if usr == nil {
+		return nil, j.invalidTokenError(ctx)
+	}
+
+	if !usr.Enabled && kind == SessionKind {
+		j.RevokeToken(tokenID)
+	}
+
+	if !usr.Enabled {
+		return nil, j.invalidTokenError(ctx)
+	}
+
+	return usr, nil
+}
+
+func (j *Jwt) validateAPIToken(ctx context.Context, userID uuid.UUID, tokenID string) error {
+	id, err := uuid.Parse(tokenID)
+	if err != nil {
+		return j.invalidTokenError(ctx)
+	}
+
+	token, err := j.commands.FindAPIToken(ctx, userID, id)
+	if err != nil {
+		return err
+	}
+
+	if token == nil {
+		return j.invalidTokenError(ctx)
+	}
+
+	if token.Expiration != nil && !token.Expiration.After(time.Now()) {
+		return j.invalidTokenError(ctx)
+	}
+
+	return nil
+}
+
+func (j *Jwt) invalidTokenError(ctx context.Context) error {
+	return apierror.New(
 		http.StatusUnauthorized,
 		i18n.M(ctx, i18n.K.ApiCommonAuthorizationInvalidAccessToken),
 	)
 }
 
 func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
+	if subject == nil || subject.Kind != SessionKind || subject.claims == nil {
+		return nil, errors.New("token cannot be refreshed")
+	}
+
 	expiration, err := subject.claims.GetExpirationTime()
 	if err != nil {
 		return nil, err

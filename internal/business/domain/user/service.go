@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/pquerna/otp/totp"
@@ -401,4 +402,75 @@ func (s *service) resetPassword(ctx context.Context, username string) (string, e
 	user.PasswordHash = updatedHash
 	user.PasswordSalt = updatedSalt
 	return newPassword, s.repository.Save(ctx, user)
+}
+
+func (s *service) ListAPITokens(
+	ctx context.Context,
+	id uuid.UUID,
+	pageSize, pageNumber int,
+	searchTerms *string,
+) (*pagination.Page[APIToken], error) {
+	usr, err := s.repository.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if usr == nil {
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CoreUserNotFoundById), true)
+	}
+
+	return s.repository.FindTokensByUserID(ctx, usr.ID, pageNumber, pageSize, searchTerms)
+}
+
+func (s *service) CreateAPIToken(
+	ctx context.Context,
+	id uuid.UUID,
+	request *NewAPITokenRequest,
+) (*APIToken, error) {
+	usr, err := s.repository.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if usr == nil {
+		return nil, coreerror.New(i18n.M(ctx, i18n.K.CoreUserNotFoundById), true)
+	}
+
+	if err := newValidator(s.repository).validateAPIToken(ctx, usr.ID, request); err != nil {
+		return nil, err
+	}
+
+	token := &APIToken{
+		ID:         uuid.New(),
+		UserID:     usr.ID,
+		Name:       strings.TrimSpace(request.Name),
+		Expiration: request.Expiration,
+		CreatedAt:  time.Now(),
+	}
+
+	if err := s.repository.CreateToken(ctx, token); err != nil {
+		return nil, err
+	}
+
+	return token, nil
+}
+
+func (s *service) DeleteAPIToken(ctx context.Context, id, tokenID uuid.UUID) error {
+	token, err := s.repository.FindTokenByID(ctx, id, tokenID)
+	if err != nil {
+		return err
+	}
+
+	if token == nil {
+		return coreerror.New(i18n.M(ctx, i18n.K.CoreUserTokenNotFound), true)
+	}
+
+	return s.repository.DeleteTokenByID(ctx, id, token.ID)
+}
+
+func (s *service) FindAPIToken(
+	ctx context.Context,
+	id, tokenID uuid.UUID,
+) (*APIToken, error) {
+	return s.repository.FindTokenByID(ctx, id, tokenID)
 }

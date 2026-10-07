@@ -639,4 +639,215 @@ func Test_service(t *testing.T) {
 			assert.False(t, ok)
 		})
 	})
+
+	t.Run("ListAPITokens", func(t *testing.T) {
+		t.Run("returns the user tokens", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			expected := pagination.New(0, 25, 1, []APIToken{*newAPIToken(usr)})
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().
+				FindTokensByUserID(t.Context(), usr.ID, 0, 25, nil).
+				Return(expected, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.ListAPITokens(t.Context(), usr.ID, 25, 0, nil)
+
+			assert.NoError(t, err)
+			assert.Equal(t, expected, result)
+		})
+
+		t.Run("returns error when user is not found", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			id := uuid.New()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), id).Return(nil, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.ListAPITokens(t.Context(), id, 25, 0, nil)
+
+			assert.Error(t, err)
+			assert.Nil(t, result)
+		})
+	})
+
+	t.Run("CreateAPIToken", func(t *testing.T) {
+		t.Run("persists the new token", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			expiration := time.Now().Add(time.Hour * 24)
+			request := &NewAPITokenRequest{Name: "  automation  ", Expiration: &expiration}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().ExistsTokenByName(t.Context(), usr.ID, "automation").Return(false, nil)
+			repo.EXPECT().CreateToken(t.Context(), gomock.Any()).DoAndReturn(
+				func(_ any, token *APIToken) error {
+					assert.Equal(t, usr.ID, token.UserID)
+					assert.Equal(t, "automation", token.Name)
+					require.NotNil(t, token.Expiration)
+					assert.False(t, token.CreatedAt.IsZero())
+					assert.NotEqual(t, uuid.Nil, token.ID)
+					return nil
+				},
+			)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.CreateAPIToken(t.Context(), usr.ID, request)
+
+			assert.NoError(t, err)
+			require.NotNil(t, result)
+			assert.Equal(t, usr.ID, result.UserID)
+			assert.Equal(t, "automation", result.Name)
+		})
+
+		t.Run("supports tokens without expiration", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			request := &NewAPITokenRequest{Name: "no-expiration"}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().ExistsTokenByName(t.Context(), usr.ID, "no-expiration").Return(false, nil)
+			repo.EXPECT().CreateToken(t.Context(), gomock.Any()).Return(nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.CreateAPIToken(t.Context(), usr.ID, request)
+
+			assert.NoError(t, err)
+			require.NotNil(t, result)
+			assert.Nil(t, result.Expiration)
+		})
+
+		t.Run("returns a consistency error for duplicated names", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			request := &NewAPITokenRequest{Name: "Automation"}
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().ExistsTokenByName(t.Context(), usr.ID, "Automation").Return(true, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.CreateAPIToken(t.Context(), usr.ID, request)
+
+			assert.Error(t, err)
+			assert.Nil(t, result)
+		})
+
+		t.Run("returns error when repository fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			expectedErr := errors.New("insert failed")
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().ExistsTokenByName(t.Context(), usr.ID, "token").Return(false, nil)
+			repo.EXPECT().CreateToken(t.Context(), gomock.Any()).Return(expectedErr)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.CreateAPIToken(
+				t.Context(),
+				usr.ID,
+				&NewAPITokenRequest{Name: "token"},
+			)
+
+			assert.Equal(t, expectedErr, err)
+			assert.Nil(t, result)
+		})
+	})
+
+	t.Run("DeleteAPIToken", func(t *testing.T) {
+		t.Run("deletes the token", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			token := newAPIToken(usr)
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindTokenByID(t.Context(), usr.ID, token.ID).Return(token, nil)
+			repo.EXPECT().DeleteTokenByID(t.Context(), usr.ID, token.ID).Return(nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.DeleteAPIToken(t.Context(), usr.ID, token.ID)
+
+			assert.NoError(t, err)
+		})
+
+		t.Run("returns error when the token does not exist", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindTokenByID(t.Context(), usr.ID, gomock.Any()).Return(nil, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.DeleteAPIToken(t.Context(), usr.ID, uuid.New())
+
+			assert.Error(t, err)
+		})
+	})
+
+	t.Run("FindAPIToken", func(t *testing.T) {
+		t.Run("returns the token when found", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			expected := newAPIToken(usr)
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindTokenByID(t.Context(), usr.ID, expected.ID).Return(expected, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.FindAPIToken(t.Context(), usr.ID, expected.ID)
+
+			assert.NoError(t, err)
+			assert.Equal(t, expected, result)
+		})
+
+		t.Run("returns nil when not found", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindTokenByID(t.Context(), usr.ID, gomock.Any()).Return(nil, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.FindAPIToken(t.Context(), usr.ID, uuid.New())
+
+			assert.NoError(t, err)
+			assert.Nil(t, result)
+		})
+	})
 }

@@ -1,0 +1,23 @@
+.api-tokens-footer {
+    padding-top: 20px;
+}
+
+.api-tokens-empty-container {
+    padding: 40px 0;
+    text-align: center;
+}
+
+.api-tokens-empty-icon {
+    font-size: 40px;
+    color: var(--ant-color-text);
+    margin-bottom: 12px;
+}
+
+.api-tokens-empty-title {
+    margin-bottom: 8px !important;
+}
+
+.api-tokens-empty-description {
+    display: block;
+    max-width: 380px;
+}

@@ -1,6 +1,8 @@
 package user
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
@@ -58,4 +60,17 @@ func newUserPage() *pagination.Page[user.User] {
 	return pagination.Of([]user.User{
 		*newUser(),
 	})
+}
+
+func newAPIToken(usr *user.User) *user.APIToken {
+	createdAt := time.Now().UTC().Truncate(time.Second)
+	expiration := createdAt.Add(time.Hour * 24)
+
+	return &user.APIToken{
+		ID:         uuid.New(),
+		UserID:     usr.ID,
+		Name:       "automation",
+		Expiration: &expiration,
+		CreatedAt:  createdAt,
+	}
 }

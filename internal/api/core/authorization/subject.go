@@ -11,6 +11,7 @@ type Subject struct {
 	User    *user.User
 	claims  *jwt.MapClaims
 	TokenID string
+	Kind    TokenKind
 }
 
 func CurrentSubject(ctx *gin.Context) *Subject {

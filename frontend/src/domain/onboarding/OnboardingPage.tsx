@@ -13,7 +13,7 @@ import ValidationResultConverter from "../../core/validation/ValidationResultCon
 import ThemeContext from "../../core/components/context/ThemeContext"
 import ThemeToggle from "../../core/components/theme/ThemeToggle"
 import I18nLanguagePicker from "../../core/i18n/I18nLanguagePicker"
-import TotpSetup from "../user/components/TotpSetup"
+import TotpSetup from "../user/components/totp/TotpSetup"
 import LightBackground from "../authentication/background/light.jpg"
 import DarkBackground from "../authentication/background/dark.jpg"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"

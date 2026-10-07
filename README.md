@@ -25,6 +25,8 @@
 - 🐳 **Native integrations:** First-class support for Docker, Docker Swarm, Tailscale and NetBird VPNs, and TrueNAS.
 - 🛡️ **Security:** Secure access with two-factor authentication, attribute-based access control (ABAC) and per-host 
      access lists using basic authentication and source IP checks.
+- 🔑 **API tokens:** Generate and revoke your own tokens to authenticate scripts and external tools against the API 
+     without sharing your password.
 - 📋 **Logging:** Detailed access and error logs for the server and each virtual host, with built-in automatic log 
      rotation.
 - 📊 **Traffic statistics:** Real-time insights into server performance, including request rates, response times, and 
@@ -116,6 +118,7 @@ Download the latest version for your architecture from the [releases page](https
 Need to tune your setup? Explore our detailed guides:
 
 - 📜 **[Configuration properties](docs/configuration-properties.md):** Full list of available environment variables and configuration properties.
+- 🔑 **[API tokens](docs/api-tokens.md):** Authenticate scripts and external tools against the API.
 - 🏥 **[Health checks](docs/health-checks.md):** Monitor your instance's status.
 - 🔍 **[Troubleshooting](docs/troubleshooting.md):** Common issues and recovery steps (like password resets).
 - 🔁 **[Migrating from v1 to v2](docs/migration-guide.md):** Steps to upgrade from nginx ignition v1 to v2.

@@ -15,6 +15,10 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
 
+const (
+	byUserIDFilter = "user_id = ?"
+)
+
 type repository struct {
 	database *database.Database
 }
@@ -49,6 +53,14 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	//nolint:errcheck
 	defer transaction.Rollback()
+
+	_, err = transaction.NewDelete().
+		Model((*userTokenModel)(nil)).
+		Where(byUserIDFilter, id).
+		Exec(ctx)
+	if err != nil {
+		return err
+	}
 
 	_, err = transaction.NewDelete().
 		Model((*userModel)(nil)).
@@ -257,4 +269,95 @@ func (r *repository) TryUpdateLastUsedTOTPCode(
 	}
 
 	return affected > 0, nil
+}
+
+func (r *repository) FindTokensByUserID(
+	ctx context.Context,
+	userID uuid.UUID,
+	pageNumber, pageSize int,
+	searchTerms *string,
+) (*pagination.Page[user.APIToken], error) {
+	models := make([]userTokenModel, 0)
+
+	query := r.database.Select().
+		Model(&models).
+		Where(byUserIDFilter, userID)
+
+	if searchTerms != nil {
+		query = query.Where("LOWER(name) LIKE LOWER(?)", "%"+*searchTerms+"%")
+	}
+
+	count, err := query.Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = query.
+		Limit(int64(pageSize)).
+		Offset(int64(pageSize * pageNumber)).
+		Order("name").
+		Scan(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]user.APIToken, 0, len(models))
+	for _, model := range models {
+		result = append(result, toAPITokenDomain(&model))
+	}
+
+	return pagination.New(pageNumber, pageSize, int(count), result), nil
+}
+
+func (r *repository) ExistsTokenByName(
+	ctx context.Context,
+	userID uuid.UUID,
+	name string,
+) (bool, error) {
+	return r.database.Select().
+		Model((*userTokenModel)(nil)).
+		Where(byUserIDFilter, userID).
+		Where("LOWER(name) = LOWER(?)", name).
+		Exists(ctx)
+}
+
+func (r *repository) FindTokenByID(
+	ctx context.Context,
+	userID, id uuid.UUID,
+) (*user.APIToken, error) {
+	var model userTokenModel
+
+	err := r.database.Select().
+		Model(&model).
+		Where(constants.ByIDFilter, id).
+		Where(byUserIDFilter, userID).
+		Scan(ctx)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return new(toAPITokenDomain(&model)), nil
+}
+
+func (r *repository) CreateToken(ctx context.Context, token *user.APIToken) error {
+	model := toAPITokenModel(token)
+
+	_, err := r.database.Insert().Model(&model).Exec(ctx)
+
+	return err
+}
+
+func (r *repository) DeleteTokenByID(ctx context.Context, userID, id uuid.UUID) error {
+	_, err := r.database.Delete().
+		Model((*userTokenModel)(nil)).
+		Where(constants.ByIDFilter, id).
+		Where(byUserIDFilter, userID).
+		Exec(ctx)
+
+	return err
 }

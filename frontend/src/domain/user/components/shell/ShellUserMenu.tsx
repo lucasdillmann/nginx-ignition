@@ -1,22 +1,22 @@
 import React from "react"
 import { Flex } from "antd"
 import { LockOutlined, LogoutOutlined, QuestionCircleOutlined } from "@ant-design/icons"
-import AppContext from "../../../core/components/context/AppContext"
-import ThemeToggle from "../../../core/components/theme/ThemeToggle"
+import AppContext from "../../../../core/components/context/AppContext"
+import ThemeToggle from "../../../../core/components/theme/ThemeToggle"
 import "./ShellUserMenu.css"
-import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
-import UserService from "../UserService"
-import { navigateTo } from "../../../core/components/router/AppRouter"
-import Notification from "../../../core/components/notification/Notification"
-import { buildLoginUrl } from "../../../core/authentication/buildLoginUrl"
-import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import I18nLanguagePicker from "../../../core/i18n/I18nLanguagePicker"
-import UserSecuritySettingsModal, { UserSecuritySettingsTab } from "./UserSecuritySettingsModal"
+import UserConfirmation from "../../../../core/components/confirmation/UserConfirmation"
+import UserService from "../../UserService"
+import { navigateTo } from "../../../../core/components/router/AppRouter"
+import Notification from "../../../../core/components/notification/Notification"
+import { buildLoginUrl } from "../../../../core/authentication/buildLoginUrl"
+import MessageKey from "../../../../core/i18n/model/MessageKey.generated"
+import I18nLanguagePicker from "../../../../core/i18n/I18nLanguagePicker"
+import UserAccountSettingsModal, { UserAccountSettingsTab } from "../account/UserAccountSettingsModal"
 import ShellUserMenuQueue, { QueueAction } from "./ShellUserMenuQueue"
 
 interface ShellUserMenuState {
     modalOpen: boolean
-    modalInitialTab: UserSecuritySettingsTab
+    modalInitialTab: UserAccountSettingsTab
 }
 
 export default class ShellUserMenu extends React.Component<any, ShellUserMenuState> {
@@ -32,7 +32,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
     }
 
     private handleQueueAction(action: QueueAction) {
-        if (action == QueueAction.OPEN_TOTP_CONFIG) this.securitySettingsModal(true, "totp")
+        if (action == QueueAction.OPEN_TOTP_CONFIG) this.accountSettingsModal(true, "totp")
     }
 
     private async handleLogout() {
@@ -45,7 +45,7 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
             .then(() => navigateTo(buildLoginUrl()))
     }
 
-    private securitySettingsModal(modalOpen: boolean, modalInitialTab: UserSecuritySettingsTab = "password") {
+    private accountSettingsModal(modalOpen: boolean, modalInitialTab: UserAccountSettingsTab = "password") {
         this.setState({
             modalOpen,
             modalInitialTab,
@@ -69,20 +69,20 @@ export default class ShellUserMenu extends React.Component<any, ShellUserMenuSta
                 <Flex className="shell-user-menu-actions">
                     <ThemeToggle />
                     <I18nLanguagePicker />
-                    <LockOutlined onClick={() => this.securitySettingsModal(true, "password")} />
+                    <LockOutlined onClick={() => this.accountSettingsModal(true, "password")} />
                     <QuestionCircleOutlined onClick={() => navigateTo("/help")} />
                 </Flex>
-                <Flex className="shell-user-menu-user-name" onClick={() => this.securitySettingsModal(true, "profile")}>
+                <Flex className="shell-user-menu-user-name" onClick={() => this.accountSettingsModal(true, "profile")}>
                     {user?.name}
                 </Flex>
                 <Flex className="shell-user-menu-icon">
                     <LogoutOutlined onClick={() => this.handleLogout()} />
                 </Flex>
 
-                <UserSecuritySettingsModal
+                <UserAccountSettingsModal
                     open={modalOpen}
                     initialTab={modalInitialTab}
-                    onCancel={() => this.securitySettingsModal(false)}
+                    onCancel={() => this.accountSettingsModal(false)}
                 />
             </Flex>
         )

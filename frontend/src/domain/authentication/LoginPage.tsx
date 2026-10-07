@@ -18,7 +18,7 @@ import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n } from "../../core/i18n/I18n"
 import ThemeToggle from "../../core/components/theme/ThemeToggle"
 import I18nLanguagePicker from "../../core/i18n/I18nLanguagePicker"
-import ShellUserMenuQueue from "../user/components/ShellUserMenuQueue"
+import ShellUserMenuQueue from "../user/components/shell/ShellUserMenuQueue"
 
 interface TotpState {
     failed: boolean

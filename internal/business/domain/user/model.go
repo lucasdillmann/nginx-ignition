@@ -1,6 +1,10 @@
 package user
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type SaveRequest struct {
 	Password    *string
@@ -35,6 +39,19 @@ type TOTP struct {
 	Secret        *string
 	LastUsedCodes []string
 	Validated     bool
+}
+
+type APIToken struct {
+	CreatedAt  time.Time
+	Expiration *time.Time
+	Name       string
+	ID         uuid.UUID
+	UserID     uuid.UUID
+}
+
+type NewAPITokenRequest struct {
+	Expiration *time.Time
+	Name       string
 }
 
 type Permissions struct {

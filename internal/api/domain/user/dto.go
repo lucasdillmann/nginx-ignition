@@ -1,6 +1,8 @@
 package user
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -72,4 +74,24 @@ type totpEnableResponseDTO struct {
 
 type totpActivateRequestDTO struct {
 	Code *string `json:"code"`
+}
+
+type apiTokenCreateRequestDTO struct {
+	Name       *string    `json:"name"`
+	Expiration *time.Time `json:"expiration"`
+}
+
+type apiTokenResponseDTO struct {
+	CreatedAt  time.Time  `json:"createdAt"`
+	Expiration *time.Time `json:"expiration"`
+	Name       string     `json:"name"`
+	ID         uuid.UUID  `json:"id"`
+}
+
+type apiTokenCreatedResponseDTO struct {
+	CreatedAt  time.Time  `json:"createdAt"`
+	Expiration *time.Time `json:"expiration"`
+	Name       string     `json:"name"`
+	Token      string     `json:"token"`
+	ID         uuid.UUID  `json:"id"`
 }

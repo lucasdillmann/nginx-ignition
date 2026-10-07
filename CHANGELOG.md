@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2.47.0
+
+- Users can now create and revoke their own API tokens from the account settings modal, in the new "API Tokens" tab. 
+  Each token has a unique name, an optional expiration date, and can be used to authenticate against the API instead of 
+  using a username and password. Permissions granted to the token are the same as the user who owns it.
+  - Users will be logged out after the update from a previous version, as the access tokens issued before it are 
+    no longer accepted since the claims changed slightly.
+  - Operations reserved for interactive sessions can't be performed with an API token, and are answered with 
+    `403 Forbidden`: managing API tokens, logging out, changing the owner's profile or password, and reading, enabling, 
+    activating or disabling two-factor authentication. Reading the owner's profile with `GET /api/users/current` is 
+    still allowed.
+  - The new [API tokens](https://github.com/lucasdillmann/nginx-ignition/blob/main/docs/api-tokens.md)
+    documentation page describes how to create, use and revoke tokens.
+
 ## 2.46.1
 
 - Fix for a path traversal vulnerability in host VPN names that allowed a low-privilege user to leak the VPN drivers'

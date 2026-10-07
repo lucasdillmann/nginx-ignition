@@ -1,6 +1,8 @@
 package user
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
@@ -33,5 +35,18 @@ func newUser() *user.User {
 			Secret:    nil,
 			Validated: false,
 		},
+	}
+}
+
+func newAPIToken(usr *user.User) *user.APIToken {
+	createdAt := time.Now().UTC().Truncate(time.Second)
+	expiration := createdAt.Add(time.Hour * 24)
+
+	return &user.APIToken{
+		ID:         uuid.New(),
+		UserID:     usr.ID,
+		Name:       "test-token-" + uuid.New().String(),
+		Expiration: &expiration,
+		CreatedAt:  createdAt,
 	}
 }

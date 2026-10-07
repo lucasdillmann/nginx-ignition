@@ -19,11 +19,12 @@ type pathPermissionResolver struct {
 }
 
 type ABAC struct {
-	configuration       *configuration.Configuration
-	permissionResolvers []pathPermissionResolver
-	jwt                 *Jwt
-	anonymousPaths      []string
-	allowedForAllUsers  []string
+	configuration          *configuration.Configuration
+	permissionResolvers    []pathPermissionResolver
+	jwt                    *Jwt
+	anonymousPaths         []string
+	allowedForAllUsers     []string
+	sessionTokensOnlyPaths []string
 }
 
 func New(cfg *configuration.Configuration, commands user.Commands) (*ABAC, error) {
@@ -33,10 +34,12 @@ func New(cfg *configuration.Configuration, commands user.Commands) (*ABAC, error
 	}
 
 	return &ABAC{
-		configuration:       cfg,
-		anonymousPaths:      []string{},
-		permissionResolvers: make([]pathPermissionResolver, 0),
-		jwt:                 jwt,
+		configuration:          cfg,
+		anonymousPaths:         []string{},
+		allowedForAllUsers:     []string{},
+		sessionTokensOnlyPaths: []string{},
+		permissionResolvers:    make([]pathPermissionResolver, 0),
+		jwt:                    jwt,
 	}, nil
 }
 
@@ -50,6 +53,10 @@ func (m *ABAC) AllowAnonymous(method, path string) {
 
 func (m *ABAC) AllowAllUsers(method, path string) {
 	m.allowedForAllUsers = append(m.allowedForAllUsers, method+":"+path)
+}
+
+func (m *ABAC) AllowSessionsTokensOnly(method, path string) {
+	m.sessionTokensOnlyPaths = append(m.sessionTokensOnlyPaths, method+":"+path)
 }
 
 func (m *ABAC) ConfigureGroup(
@@ -78,6 +85,10 @@ func (m *ABAC) isAnonymous(method, path string) bool {
 
 func (m *ABAC) isAllowedForAllUsers(method, path string) bool {
 	return slices.Contains(m.allowedForAllUsers, method+":"+path)
+}
+
+func (m *ABAC) isSessionTokensOnly(method, path string) bool {
+	return slices.Contains(m.sessionTokensOnlyPaths, method+":"+path)
 }
 
 func (m *ABAC) isAccessGranted(method, path string, permissions *user.Permissions) bool {
