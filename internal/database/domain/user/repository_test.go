@@ -352,29 +352,125 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	})
 
 	t.Run("FindTokensByUserID", func(t *testing.T) {
-		t.Run("returns only the tokens owned by the user", func(t *testing.T) {
+		t.Run("returns only the tokens owned by the user, ordered by name", func(t *testing.T) {
 			usr := newUser()
 			require.NoError(t, repo.Save(t.Context(), usr))
 			other := newUser()
 			require.NoError(t, repo.Save(t.Context(), other))
 			require.NoError(t, repo.CreateToken(t.Context(), newAPIToken(other)))
 
-			token := newAPIToken(usr)
-			require.NoError(t, repo.CreateToken(t.Context(), token))
+			second := newAPIToken(usr)
+			second.Name = "zeta-token"
+			require.NoError(t, repo.CreateToken(t.Context(), second))
 
-			tokens, err := repo.FindTokensByUserID(t.Context(), usr.ID)
+			first := newAPIToken(usr)
+			first.Name = "alpha-token"
+			require.NoError(t, repo.CreateToken(t.Context(), first))
+
+			page, err := repo.FindTokensByUserID(t.Context(), usr.ID, 0, 10, nil)
 			require.NoError(t, err)
-			require.Len(t, tokens, 1)
-			assert.Equal(t, token.ID, tokens[0].ID)
+			assert.Equal(t, 2, page.TotalItems)
+			require.Len(t, page.Contents, 2)
+			assert.Equal(t, first.ID, page.Contents[0].ID)
+			assert.Equal(t, second.ID, page.Contents[1].ID)
 		})
 
-		t.Run("returns an empty list when the user has no tokens", func(t *testing.T) {
+		t.Run(
+			"returns a single page when there are more tokens than the page size",
+			func(t *testing.T) {
+				usr := newUser()
+				require.NoError(t, repo.Save(t.Context(), usr))
+
+				for _, name := range []string{"a-token", "b-token", "c-token"} {
+					token := newAPIToken(usr)
+					token.Name = name
+					require.NoError(t, repo.CreateToken(t.Context(), token))
+				}
+
+				page, err := repo.FindTokensByUserID(t.Context(), usr.ID, 0, 2, nil)
+				require.NoError(t, err)
+				assert.Equal(t, 3, page.TotalItems)
+				assert.Equal(t, 2, page.PageSize)
+				assert.Equal(t, 0, page.PageNumber)
+				require.Len(t, page.Contents, 2)
+				assert.Equal(t, "a-token", page.Contents[0].Name)
+
+				next, err := repo.FindTokensByUserID(t.Context(), usr.ID, 1, 2, nil)
+				require.NoError(t, err)
+				assert.Equal(t, 3, next.TotalItems)
+				require.Len(t, next.Contents, 1)
+				assert.Equal(t, "c-token", next.Contents[0].Name)
+			},
+		)
+
+		t.Run("filters by search terms", func(t *testing.T) {
 			usr := newUser()
 			require.NoError(t, repo.Save(t.Context(), usr))
 
-			tokens, err := repo.FindTokensByUserID(t.Context(), usr.ID)
+			matching := newAPIToken(usr)
+			matching.Name = "production-automation"
+			require.NoError(t, repo.CreateToken(t.Context(), matching))
+
+			other := newAPIToken(usr)
+			other.Name = "staging-automation"
+			require.NoError(t, repo.CreateToken(t.Context(), other))
+
+			searchTerms := "PRODUCTION"
+			page, err := repo.FindTokensByUserID(t.Context(), usr.ID, 0, 10, &searchTerms)
 			require.NoError(t, err)
-			assert.Empty(t, tokens)
+			assert.Equal(t, 1, page.TotalItems)
+			require.Len(t, page.Contents, 1)
+			assert.Equal(t, matching.ID, page.Contents[0].ID)
+		})
+
+		t.Run("returns an empty page when the user has no tokens", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+
+			page, err := repo.FindTokensByUserID(t.Context(), usr.ID, 0, 10, nil)
+			require.NoError(t, err)
+			assert.Equal(t, 0, page.TotalItems)
+			assert.Empty(t, page.Contents)
+		})
+	})
+
+	t.Run("ExistsTokenByName", func(t *testing.T) {
+		t.Run("returns true for an existing name", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+
+			token := newAPIToken(usr)
+			token.Name = "automation"
+			require.NoError(t, repo.CreateToken(t.Context(), token))
+
+			exists, err := repo.ExistsTokenByName(t.Context(), usr.ID, "AUTOMATION")
+			require.NoError(t, err)
+			assert.True(t, exists)
+		})
+
+		t.Run("returns false for an unknown name", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			require.NoError(t, repo.CreateToken(t.Context(), newAPIToken(usr)))
+
+			exists, err := repo.ExistsTokenByName(t.Context(), usr.ID, "unknown")
+			require.NoError(t, err)
+			assert.False(t, exists)
+		})
+
+		t.Run("returns false for a name owned by another user", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			other := newUser()
+			require.NoError(t, repo.Save(t.Context(), other))
+
+			token := newAPIToken(other)
+			token.Name = "automation"
+			require.NoError(t, repo.CreateToken(t.Context(), token))
+
+			exists, err := repo.ExistsTokenByName(t.Context(), usr.ID, "automation")
+			require.NoError(t, err)
+			assert.False(t, exists)
 		})
 	})
 

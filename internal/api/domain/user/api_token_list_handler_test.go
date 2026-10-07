@@ -13,6 +13,9 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/core/pagination"
+
+	corepagination "github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
@@ -33,42 +36,61 @@ func Test_apiTokenListHandler(t *testing.T) {
 	}
 
 	t.Run("handle", func(t *testing.T) {
-		t.Run("returns 200 OK with the user tokens", func(t *testing.T) {
+		t.Run("returns 200 OK with the requested page of user tokens", func(t *testing.T) {
 			usr := newUser()
 			token := newAPIToken(usr)
 
 			commands, engine := setup(t, usr.ID)
 			commands.EXPECT().
-				ListAPITokens(gomock.Any(), usr.ID).
-				Return([]user.APIToken{*token}, nil)
+				ListAPITokens(gomock.Any(), usr.ID, 25, 0, nil).
+				Return(corepagination.New(0, 25, 1, []user.APIToken{*token}), nil)
 
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/current/tokens", nil)
 			engine.ServeHTTP(recorder, request)
 
 			assert.Equal(t, http.StatusOK, recorder.Code)
-			var response []apiTokenResponseDTO
+			var response pagination.PageDTO[apiTokenResponseDTO]
 			require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &response))
-			require.Len(t, response, 1)
-			assert.Equal(t, token.ID, response[0].ID)
-			assert.Equal(t, token.Name, response[0].Name)
-			assert.Equal(t, token.Expiration, response[0].Expiration)
+			assert.Equal(t, 1, response.TotalItems)
+			require.Len(t, response.Contents, 1)
+			assert.Equal(t, token.ID, response.Contents[0].ID)
+			assert.Equal(t, token.Name, response.Contents[0].Name)
+			assert.Equal(t, token.Expiration, response.Contents[0].Expiration)
 		})
 
-		t.Run("returns 200 OK with an empty list", func(t *testing.T) {
+		t.Run("forwards pagination and search parameters", func(t *testing.T) {
 			usr := newUser()
+			searchTerms := "automation"
 
 			commands, engine := setup(t, usr.ID)
-			commands.EXPECT().ListAPITokens(gomock.Any(), usr.ID).Return(nil, nil)
+			commands.EXPECT().
+				ListAPITokens(gomock.Any(), usr.ID, 10, 2, &searchTerms).
+				Return(corepagination.New(2, 10, 0, []user.APIToken{}), nil)
+
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(
+				"GET",
+				"/current/tokens?pageSize=10&pageNumber=2&searchTerms=automation",
+				nil,
+			)
+			engine.ServeHTTP(recorder, request)
+
+			assert.Equal(t, http.StatusOK, recorder.Code)
+		})
+
+		t.Run("returns 401 Unauthorized without a subject", func(t *testing.T) {
+			controller := gomock.NewController(t)
+			commands := user.NewMockedCommands(controller)
+			handler := apiTokenListHandler{commands: commands}
+			engine := gin.New()
+			engine.GET("/current/tokens", handler.handle)
 
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/current/tokens", nil)
 			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, recorder.Code)
-			var response []apiTokenResponseDTO
-			require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &response))
-			assert.Empty(t, response)
+			assert.Equal(t, http.StatusUnauthorized, recorder.Code)
 		})
 	})
 }

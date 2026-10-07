@@ -404,7 +404,12 @@ func (s *service) resetPassword(ctx context.Context, username string) (string, e
 	return newPassword, s.repository.Save(ctx, user)
 }
 
-func (s *service) ListAPITokens(ctx context.Context, id uuid.UUID) ([]APIToken, error) {
+func (s *service) ListAPITokens(
+	ctx context.Context,
+	id uuid.UUID,
+	pageSize, pageNumber int,
+	searchTerms *string,
+) (*pagination.Page[APIToken], error) {
 	usr, err := s.repository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -414,7 +419,7 @@ func (s *service) ListAPITokens(ctx context.Context, id uuid.UUID) ([]APIToken, 
 		return nil, coreerror.New(i18n.M(ctx, i18n.K.CoreUserNotFoundById), true)
 	}
 
-	return s.repository.FindTokensByUserID(ctx, usr.ID)
+	return s.repository.FindTokensByUserID(ctx, usr.ID, pageNumber, pageSize, searchTerms)
 }
 
 func (s *service) CreateAPIToken(

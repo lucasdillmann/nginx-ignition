@@ -7,7 +7,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
-
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 

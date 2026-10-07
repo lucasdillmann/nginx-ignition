@@ -76,7 +76,7 @@ func (h onboardingFinishHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	token, err := h.authorizer.Jwt().GenerateToken(usr, authorization.SessionKind, uuid.Nil, nil)
+	token, err := h.authorizer.Jwt().GenerateToken(usr, authorization.SessionKind, nil, nil)
 	if err != nil {
 		panic(err)
 	}

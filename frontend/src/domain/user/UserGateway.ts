@@ -90,8 +90,12 @@ export default class UserGateway {
         return this.client.delete("/current/totp")
     }
 
-    async listTokens(): Promise<ApiResponse<APITokenResponse[]>> {
-        return this.client.get("/current/tokens")
+    async listTokens(
+        pageSize?: number,
+        pageNumber?: number,
+        searchTerms?: string,
+    ): Promise<ApiResponse<PageResponse<APITokenResponse>>> {
+        return this.client.get("/current/tokens", undefined, { pageSize, pageNumber, searchTerms })
     }
 
     async createToken(request: APITokenRequest): Promise<ApiResponse<APITokenCreatedResponse>> {

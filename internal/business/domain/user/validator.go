@@ -136,6 +136,15 @@ func (v *validator) validateAPIToken(
 
 	if name == "" {
 		v.delegate.Add("name", i18n.M(ctx, i18n.K.CommonCannotBeEmpty))
+	} else {
+		exists, err := v.repository.ExistsTokenByName(ctx, userID, name)
+		if err != nil {
+			return err
+		}
+
+		if exists {
+			v.delegate.Add("name", i18n.M(ctx, i18n.K.CoreUserDuplicatedTokenName))
+		}
 	}
 
 	if len(name) > maximumTokenNameChars {
@@ -147,15 +156,6 @@ func (v *validator) validateAPIToken(
 
 	if request.Expiration != nil && !request.Expiration.After(time.Now()) {
 		v.delegate.Add("expiration", i18n.M(ctx, i18n.K.CoreUserTokenExpiredDate))
-	}
-
-	if name != "" {
-		databaseToken, _ := v.repository.FindTokensByUserID(ctx, userID)
-		for _, token := range databaseToken {
-			if strings.EqualFold(token.Name, name) {
-				v.delegate.Add("name", i18n.M(ctx, i18n.K.CoreUserDuplicatedTokenName))
-			}
-		}
 	}
 
 	return v.delegate.Result()

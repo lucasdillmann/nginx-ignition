@@ -41,7 +41,7 @@ func (h apiTokenCreateHandler) handle(ctx *gin.Context) {
 	accessToken, err := h.authorizer.Jwt().GenerateToken(
 		currentSubject.User,
 		authorization.APIKind,
-		domainModel.ID,
+		&domainModel.ID,
 		domainModel.Expiration,
 	)
 	if err != nil {

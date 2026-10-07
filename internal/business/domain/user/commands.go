@@ -31,7 +31,12 @@ type Commands interface {
 	DisableTOTP(ctx context.Context, id uuid.UUID) error
 	EnableTOTP(ctx context.Context, id uuid.UUID) (string, error)
 	ActivateTOTP(ctx context.Context, id uuid.UUID, code string) (bool, error)
-	ListAPITokens(ctx context.Context, id uuid.UUID) ([]APIToken, error)
+	ListAPITokens(
+		ctx context.Context,
+		id uuid.UUID,
+		pageSize, pageNumber int,
+		searchTerms *string,
+	) (*pagination.Page[APIToken], error)
 	CreateAPIToken(
 		ctx context.Context,
 		id uuid.UUID,

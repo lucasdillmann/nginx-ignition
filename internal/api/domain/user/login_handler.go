@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
@@ -49,7 +48,7 @@ func (h loginHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	token, err := h.authorizer.Jwt().GenerateToken(usr, authorization.SessionKind, uuid.Nil, nil)
+	token, err := h.authorizer.Jwt().GenerateToken(usr, authorization.SessionKind, nil, nil)
 	if err != nil {
 		panic(err)
 	}

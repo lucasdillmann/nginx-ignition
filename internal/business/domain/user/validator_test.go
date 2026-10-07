@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -431,7 +432,9 @@ func Test_validator(t *testing.T) {
 			expiration := time.Now().Add(time.Hour * 24)
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindTokensByUserID(t.Context(), usr.ID).Return(nil, nil)
+			repo.EXPECT().
+				ExistsTokenByName(t.Context(), usr.ID, "automation").
+				Return(false, nil)
 			userValidator := newValidator(repo)
 
 			err := userValidator.validateAPIToken(
@@ -443,7 +446,7 @@ func Test_validator(t *testing.T) {
 			assert.NoError(t, err)
 		})
 
-		t.Run("blank name fails", func(t *testing.T) {
+		t.Run("blank name fails without querying the repository", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
@@ -461,6 +464,28 @@ func Test_validator(t *testing.T) {
 			assert.Error(t, err)
 		})
 
+		t.Run("returns the repository error when the name check fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			expectedErr := errors.New("database is unavailable")
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().
+				ExistsTokenByName(t.Context(), usr.ID, "automation").
+				Return(false, expectedErr)
+			userValidator := newValidator(repo)
+
+			err := userValidator.validateAPIToken(
+				t.Context(),
+				usr.ID,
+				&NewAPITokenRequest{Name: "automation"},
+			)
+
+			assert.Equal(t, expectedErr, err)
+		})
+
 		t.Run("too long name fails", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
@@ -469,8 +494,8 @@ func Test_validator(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().
-				FindTokensByUserID(t.Context(), usr.ID).
-				Return([]APIToken{*newAPIToken(usr)}, nil)
+				ExistsTokenByName(t.Context(), usr.ID, strings.Repeat("a", maximumTokenNameChars+1)).
+				Return(false, nil)
 			userValidator := newValidator(repo)
 
 			err := userValidator.validateAPIToken(
@@ -490,7 +515,9 @@ func Test_validator(t *testing.T) {
 			expiration := time.Now().Add(-time.Hour)
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().FindTokensByUserID(t.Context(), usr.ID).Return(nil, nil)
+			repo.EXPECT().
+				ExistsTokenByName(t.Context(), usr.ID, "automation").
+				Return(false, nil)
 			userValidator := newValidator(repo)
 
 			err := userValidator.validateAPIToken(
@@ -507,13 +534,11 @@ func Test_validator(t *testing.T) {
 			defer ctrl.Finish()
 
 			usr := newUser()
-			existing := newAPIToken(usr)
-			existing.Name = "automation"
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().
-				FindTokensByUserID(t.Context(), usr.ID).
-				Return([]APIToken{*existing}, nil)
+				ExistsTokenByName(t.Context(), usr.ID, "Automation").
+				Return(true, nil)
 			userValidator := newValidator(repo)
 
 			err := userValidator.validateAPIToken(

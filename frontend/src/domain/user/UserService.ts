@@ -96,8 +96,12 @@ export default class UserService {
         return this.gateway.disableTotp().then(requireSuccessResponse)
     }
 
-    async listTokens(): Promise<APITokenResponse[]> {
-        return this.gateway.listTokens().then(requireSuccessPayload)
+    async listTokens(
+        pageSize?: number,
+        pageNumber?: number,
+        searchTerms?: string,
+    ): Promise<PageResponse<APITokenResponse>> {
+        return this.gateway.listTokens(pageSize, pageNumber, searchTerms).then(requireSuccessPayload)
     }
 
     async createToken(request: APITokenRequest): Promise<APITokenCreatedResponse> {

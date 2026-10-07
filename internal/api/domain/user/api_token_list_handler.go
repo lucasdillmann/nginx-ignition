@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/core/pagination"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
@@ -20,15 +21,21 @@ func (h apiTokenListHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	tokens, err := h.commands.ListAPITokens(ctx.Request.Context(), currentSubject.User.ID)
+	pageSize, pageNumber, searchTerms, err := pagination.ExtractPaginationParameters(ctx)
 	if err != nil {
 		panic(err)
 	}
 
-	responsePayload := make([]apiTokenResponseDTO, 0, len(tokens))
-	for _, token := range tokens {
-		responsePayload = append(responsePayload, *toAPITokenDTO(&token))
+	page, err := h.commands.ListAPITokens(
+		ctx.Request.Context(),
+		currentSubject.User.ID,
+		pageSize,
+		pageNumber,
+		searchTerms,
+	)
+	if err != nil {
+		panic(err)
 	}
 
-	ctx.JSON(http.StatusOK, responsePayload)
+	ctx.JSON(http.StatusOK, pagination.Convert(page, toAPITokenDTO))
 }

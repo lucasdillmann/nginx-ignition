@@ -37,3 +37,7 @@
     font-size: 14px;
     opacity: 0.5;
 }
+
+.api-token-create-permissions {
+    margin-top: 4px;
+}

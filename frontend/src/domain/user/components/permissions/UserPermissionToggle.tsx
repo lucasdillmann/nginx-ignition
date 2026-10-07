@@ -1,11 +1,11 @@
-import { UserAccessLevel } from "../model/UserAccessLevel"
+import { UserAccessLevel } from "../../model/UserAccessLevel"
 import { CheckCircleOutlined, EyeOutlined, StopOutlined } from "@ant-design/icons"
 import { Flex, Form, Segmented } from "antd"
 import type { SegmentedProps } from "antd"
 import React from "react"
 import "./UserPermissionToggle.css"
-import { I18n } from "../../../core/i18n/I18n"
-import MessageKey from "../../../core/i18n/model/MessageKey.generated"
+import { I18n } from "../../../../core/i18n/I18n"
+import MessageKey from "../../../../core/i18n/model/MessageKey.generated"
 
 export interface UserPermissionToggleProps {
     id: string

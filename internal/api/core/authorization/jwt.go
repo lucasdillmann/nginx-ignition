@@ -20,20 +20,6 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
-const (
-	uniqueIdentifier           = "nginx-ignition"
-	expectedJwtSecretSizeChars = 64
-	expectedJwtSecretSizeBytes = 512
-	tokenKindClaim             = "kind"
-)
-
-type TokenKind string
-
-const (
-	SessionKind TokenKind = "SESSION"
-	APIKind     TokenKind = "API"
-)
-
 type Jwt struct {
 	commands           user.Commands
 	revokedTokens      *ttlcache.Cache[string, bool]
@@ -105,24 +91,22 @@ func (j *Jwt) RevokeToken(tokenID string) {
 func (j *Jwt) GenerateToken(
 	usr *user.User,
 	kind TokenKind,
-	tokenID uuid.UUID,
+	tokenID *uuid.UUID,
 	expiration *time.Time,
 ) (*string, error) {
-	if tokenID == uuid.Nil {
-		tokenID = uuid.New()
+	identifier := uuid.New()
+	if tokenID != nil {
+		identifier = *tokenID
 	}
 
 	var expiresAt int64
-	switch {
-	case expiration != nil:
-		expiresAt = expiration.Unix()
-	case kind == SessionKind:
+	if kind == SessionKind {
 		expiresAt = time.Now().
 			Add(time.Second * time.Duration(j.ttlSeconds)).
 			Add(time.Second * time.Duration(j.clockSkewSeconds)).
 			Unix()
-	default:
-		expiresAt = 0
+	} else if expiration != nil {
+		expiresAt = expiration.Unix()
 	}
 
 	claims := jwt.MapClaims{
@@ -130,9 +114,9 @@ func (j *Jwt) GenerateToken(
 		"iss":          uniqueIdentifier,
 		"nbf":          time.Now().Add(time.Second * time.Duration(j.clockSkewSeconds) * -1).Unix(),
 		"iat":          time.Now().Unix(),
-		"jti":          tokenID.String(),
+		"jti":          identifier.String(),
 		"sub":          usr.ID.String(),
-		tokenKindClaim: string(kind),
+		tokenKindClaim: kind,
 	}
 
 	if expiresAt > 0 {
@@ -202,16 +186,16 @@ func (j *Jwt) parse(ctx context.Context, tokenString string) (*jwt.Token, error)
 }
 
 func (j *Jwt) resolveKind(ctx context.Context, claims jwt.MapClaims) (TokenKind, error) {
-	value, casted := claims[tokenKindClaim].(string)
+	value, casted := claims[tokenKindClaim].(float64)
 	if !casted {
-		return "", j.invalidTokenError(ctx)
+		return 0, j.invalidTokenError(ctx)
 	}
 
 	switch kind := TokenKind(value); kind {
 	case SessionKind, APIKind:
 		return kind, nil
 	default:
-		return "", j.invalidTokenError(ctx)
+		return 0, j.invalidTokenError(ctx)
 	}
 }
 
@@ -236,8 +220,6 @@ func (j *Jwt) resolveUser(
 		return nil, err
 	}
 
-	// API tokens are revoked through their own database record, so only session
-	// tokens are tracked in the in-memory revocation cache
 	if !usr.Enabled && kind == SessionKind {
 		j.RevokeToken(tokenID)
 	}

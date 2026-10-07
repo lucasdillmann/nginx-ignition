@@ -646,15 +646,17 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			usr := newUser()
-			expected := []APIToken{*newAPIToken(usr)}
+			expected := pagination.New(0, 25, 1, []APIToken{*newAPIToken(usr)})
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
-			repo.EXPECT().FindTokensByUserID(t.Context(), usr.ID).Return(expected, nil)
+			repo.EXPECT().
+				FindTokensByUserID(t.Context(), usr.ID, 0, 25, nil).
+				Return(expected, nil)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			result, err := svc.ListAPITokens(t.Context(), usr.ID)
+			result, err := svc.ListAPITokens(t.Context(), usr.ID, 25, 0, nil)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expected, result)
@@ -671,7 +673,7 @@ func Test_service(t *testing.T) {
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			result, err := svc.ListAPITokens(t.Context(), id)
+			result, err := svc.ListAPITokens(t.Context(), id, 25, 0, nil)
 
 			assert.Error(t, err)
 			assert.Nil(t, result)
@@ -689,7 +691,7 @@ func Test_service(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
-			repo.EXPECT().FindTokensByUserID(t.Context(), usr.ID).Return(nil, nil)
+			repo.EXPECT().ExistsTokenByName(t.Context(), usr.ID, "automation").Return(false, nil)
 			repo.EXPECT().CreateToken(t.Context(), gomock.Any()).DoAndReturn(
 				func(_ any, token *APIToken) error {
 					assert.Equal(t, usr.ID, token.UserID)
@@ -720,7 +722,7 @@ func Test_service(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
-			repo.EXPECT().FindTokensByUserID(t.Context(), usr.ID).Return(nil, nil)
+			repo.EXPECT().ExistsTokenByName(t.Context(), usr.ID, "no-expiration").Return(false, nil)
 			repo.EXPECT().CreateToken(t.Context(), gomock.Any()).Return(nil)
 
 			cfg := &configuration.Configuration{}
@@ -737,13 +739,11 @@ func Test_service(t *testing.T) {
 			defer ctrl.Finish()
 
 			usr := newUser()
-			existing := newAPIToken(usr)
-			existing.Name = "automation"
 			request := &NewAPITokenRequest{Name: "Automation"}
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
-			repo.EXPECT().FindTokensByUserID(t.Context(), usr.ID).Return([]APIToken{*existing}, nil)
+			repo.EXPECT().ExistsTokenByName(t.Context(), usr.ID, "Automation").Return(true, nil)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
@@ -762,7 +762,7 @@ func Test_service(t *testing.T) {
 
 			repo := NewMockedRepository(ctrl)
 			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
-			repo.EXPECT().FindTokensByUserID(t.Context(), usr.ID).Return(nil, nil)
+			repo.EXPECT().ExistsTokenByName(t.Context(), usr.ID, "token").Return(false, nil)
 			repo.EXPECT().CreateToken(t.Context(), gomock.Any()).Return(expectedErr)
 
 			cfg := &configuration.Configuration{}

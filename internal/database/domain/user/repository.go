@@ -50,7 +50,10 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	err = r.cleanupTokens(ctx, transaction, id)
+	_, err = transaction.NewDelete().
+		Model((*userTokenModel)(nil)).
+		Where("user_id = ?", id).
+		Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -267,13 +270,28 @@ func (r *repository) TryUpdateLastUsedTOTPCode(
 func (r *repository) FindTokensByUserID(
 	ctx context.Context,
 	userID uuid.UUID,
-) ([]user.APIToken, error) {
+	pageNumber, pageSize int,
+	searchTerms *string,
+) (*pagination.Page[user.APIToken], error) {
 	models := make([]userTokenModel, 0)
 
-	err := r.database.Select().
+	query := r.database.Select().
 		Model(&models).
-		Where("user_id = ?", userID).
-		Order("created_at").
+		Where("user_id = ?", userID)
+
+	if searchTerms != nil {
+		query = query.Where("LOWER(name) LIKE LOWER(?)", "%"+*searchTerms+"%")
+	}
+
+	count, err := query.Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = query.
+		Limit(int64(pageSize)).
+		Offset(int64(pageSize * pageNumber)).
+		Order("name").
 		Scan(ctx)
 	if err != nil {
 		return nil, err
@@ -284,7 +302,19 @@ func (r *repository) FindTokensByUserID(
 		result = append(result, toAPITokenDomain(&model))
 	}
 
-	return result, nil
+	return pagination.New(pageNumber, pageSize, int(count), result), nil
+}
+
+func (r *repository) ExistsTokenByName(
+	ctx context.Context,
+	userID uuid.UUID,
+	name string,
+) (bool, error) {
+	return r.database.Select().
+		Model((*userTokenModel)(nil)).
+		Where("user_id = ?", userID).
+		Where("LOWER(name) = LOWER(?)", name).
+		Exists(ctx)
 }
 
 func (r *repository) FindTokenByID(
@@ -322,19 +352,6 @@ func (r *repository) DeleteTokenByID(ctx context.Context, userID, id uuid.UUID) 
 	_, err := r.database.Delete().
 		Model((*userTokenModel)(nil)).
 		Where(constants.ByIDFilter, id).
-		Where("user_id = ?", userID).
-		Exec(ctx)
-
-	return err
-}
-
-func (r *repository) cleanupTokens(
-	ctx context.Context,
-	transaction bun.Tx,
-	userID uuid.UUID,
-) error {
-	_, err := transaction.NewDelete().
-		Model((*userTokenModel)(nil)).
 		Where("user_id = ?", userID).
 		Exec(ctx)
 

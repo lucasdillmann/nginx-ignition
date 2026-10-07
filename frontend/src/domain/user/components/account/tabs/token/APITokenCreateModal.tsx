@@ -2,15 +2,15 @@ import React, { createRef } from "react"
 import { Alert, Button, DatePicker, Flex, Form, FormInstance, Input, Modal } from "antd"
 import { CopyOutlined } from "@ant-design/icons"
 import dayjs, { Dayjs } from "dayjs"
-import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { I18n, i18n } from "../../../core/i18n/I18n"
-import ValidationResult from "../../../core/validation/ValidationResult"
-import ValidationResultConverter from "../../../core/validation/ValidationResultConverter"
-import { UnexpectedResponseError } from "../../../core/apiclient/ApiResponse"
-import Notification from "../../../core/components/notification/Notification"
-import FormLayout from "../../../core/components/form/FormLayout"
-import UserService from "../UserService"
-import APITokenRequest from "../model/APITokenRequest"
+import MessageKey from "../../../../../../core/i18n/model/MessageKey.generated"
+import { I18n, i18n } from "../../../../../../core/i18n/I18n"
+import ValidationResult from "../../../../../../core/validation/ValidationResult"
+import ValidationResultConverter from "../../../../../../core/validation/ValidationResultConverter"
+import { UnexpectedResponseError } from "../../../../../../core/apiclient/ApiResponse"
+import Notification from "../../../../../../core/components/notification/Notification"
+import FormLayout from "../../../../../../core/components/form/FormLayout"
+import UserService from "../../../../UserService"
+import APITokenRequest from "../../../../model/APITokenRequest"
 import "./APITokenCreateModal.css"
 
 const DEFAULT_EXPIRATION_DAYS = 7
@@ -111,6 +111,7 @@ export default class APITokenCreateModal extends React.Component<APITokenCreateM
                 wrapperCol={FormLayout.ExpandedLabeledItem.wrapperCol}
                 ref={this.formRef}
                 layout="vertical"
+                onFinish={values => this.createToken(values)}
                 initialValues={{ expiration: dayjs().add(DEFAULT_EXPIRATION_DAYS, "day") }}
                 className="api-token-create-form"
             >
@@ -135,6 +136,13 @@ export default class APITokenCreateModal extends React.Component<APITokenCreateM
                     <DatePicker showTime allowClear className="api-token-create-expiration" />
                 </Form.Item>
 
+                <Alert
+                    type="info"
+                    showIcon
+                    className="api-token-create-permissions"
+                    title={<I18n id={MessageKey.FrontendUserTokensPermissionsHelp} />}
+                />
+
                 <Flex justify="end" style={{ marginTop: 24 }}>
                     <Button type="primary" loading={loading} onClick={() => this.formRef.current?.submit()}>
                         <I18n id={MessageKey.FrontendUserTokensCreateButton} />
@@ -150,7 +158,7 @@ export default class APITokenCreateModal extends React.Component<APITokenCreateM
                 <Alert
                     type="warning"
                     showIcon
-                    message={<I18n id={MessageKey.FrontendUserTokensGeneratedTitle} />}
+                    title={<I18n id={MessageKey.FrontendUserTokensGeneratedTitle} />}
                     description={<I18n id={MessageKey.FrontendUserTokensGeneratedDescription} />}
                 />
 

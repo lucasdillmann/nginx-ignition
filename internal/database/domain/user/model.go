@@ -36,9 +36,10 @@ type userModel struct {
 
 type userTokenModel struct {
 	bun.BaseModel `bun:"user_token"`
-	CreatedAt     time.Time  `bun:"created_at,notnull"`
-	Expiration    *time.Time `bun:"expiration"`
-	Name          string     `bun:"name,notnull"`
-	ID            uuid.UUID  `bun:"id,pk"`
-	UserID        uuid.UUID  `bun:"user_id,notnull"`
+
+	CreatedAt  time.Time  `bun:"created_at,notnull"`
+	Expiration *time.Time `bun:"expiration"`
+	Name       string     `bun:"name,notnull"`
+	ID         uuid.UUID  `bun:"id,pk"`
+	UserID     uuid.UUID  `bun:"user_id,notnull"`
 }

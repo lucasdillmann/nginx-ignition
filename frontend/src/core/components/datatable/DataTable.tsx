@@ -29,6 +29,7 @@ export interface DataTableProps<T> {
     dataProvider: (pageSize: number, pageNumber: number, searchTerms?: string) => Promise<PageResponse<T>>
     rowKey: (row: T) => React.Key
     disableSearch?: boolean
+    emptyState?: React.ReactNode
 }
 
 interface DataTableState<T> {
@@ -144,10 +145,11 @@ export default class DataTable<T> extends React.Component<DataTableProps<T>, Dat
     }
 
     render() {
-        const { loading, data, error, initialValues } = this.state
-        const { id, rowKey } = this.props
+        const { loading, data, error, initialValues, searchTerms } = this.state
+        const { id, rowKey, emptyState } = this.props
 
         if (error !== undefined) return EmptyStates.FailedToFetch
+        if (!loading && emptyState !== undefined && data.totalItems === 0 && !searchTerms) return emptyState
 
         return (
             <Preloader loading={loading}>

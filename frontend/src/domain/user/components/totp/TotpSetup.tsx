@@ -2,12 +2,12 @@ import React, { createRef } from "react"
 import { Button, Input, QRCode, Spin, Typography } from "antd"
 import { CopyOutlined, SafetyOutlined } from "@ant-design/icons"
 import type { OTPRef } from "antd/es/input/OTP"
-import Notification from "../../../core/components/notification/Notification"
-import MessageKey from "../../../core/i18n/model/MessageKey.generated"
-import { I18n, i18n } from "../../../core/i18n/I18n"
-import If from "../../../core/components/flowcontrol/If"
+import Notification from "../../../../core/components/notification/Notification"
+import MessageKey from "../../../../core/i18n/model/MessageKey.generated"
+import { I18n, i18n } from "../../../../core/i18n/I18n"
+import If from "../../../../core/components/flowcontrol/If"
 import "./TotpSetup.css"
-import UserService from "../UserService"
+import UserService from "../../UserService"
 
 export interface TotpSetupProps {
     onActivation: () => void
