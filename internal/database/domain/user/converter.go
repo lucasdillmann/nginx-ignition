@@ -69,6 +69,26 @@ func toModel(domain *user.User) userModel {
 	}
 }
 
+func toAPITokenDomain(model *userTokenModel) user.APIToken {
+	return user.APIToken{
+		ID:         model.ID,
+		UserID:     model.UserID,
+		Name:       model.Name,
+		Expiration: model.Expiration,
+		CreatedAt:  model.CreatedAt,
+	}
+}
+
+func toAPITokenModel(domain *user.APIToken) userTokenModel {
+	return userTokenModel{
+		ID:         domain.ID,
+		UserID:     domain.UserID,
+		Name:       domain.Name,
+		Expiration: domain.Expiration,
+		CreatedAt:  domain.CreatedAt,
+	}
+}
+
 func mapCodes(codes *string) []string {
 	if codes == nil || strings.TrimSpace(*codes) == "" {
 		return nil

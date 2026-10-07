@@ -1,7 +1,9 @@
 package user
 
 import (
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -415,6 +417,110 @@ func Test_validator(t *testing.T) {
 			userValidator := newValidator(repo)
 
 			err := userValidator.validate(t.Context(), usr, nil, request, nil)
+
+			assert.Error(t, err)
+		})
+	})
+
+	t.Run("validateAPIToken", func(t *testing.T) {
+		t.Run("valid token passes", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			expiration := time.Now().Add(time.Hour * 24)
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindTokensByUserID(t.Context(), usr.ID).Return(nil, nil)
+			userValidator := newValidator(repo)
+
+			err := userValidator.validateAPIToken(
+				t.Context(),
+				usr.ID,
+				&NewAPITokenRequest{Name: "automation", Expiration: &expiration},
+			)
+
+			assert.NoError(t, err)
+		})
+
+		t.Run("blank name fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+
+			repo := NewMockedRepository(ctrl)
+			userValidator := newValidator(repo)
+
+			err := userValidator.validateAPIToken(
+				t.Context(),
+				usr.ID,
+				&NewAPITokenRequest{Name: "   "},
+			)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("too long name fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().
+				FindTokensByUserID(t.Context(), usr.ID).
+				Return([]APIToken{*newAPIToken(usr)}, nil)
+			userValidator := newValidator(repo)
+
+			err := userValidator.validateAPIToken(
+				t.Context(),
+				usr.ID,
+				&NewAPITokenRequest{Name: strings.Repeat("a", maximumTokenNameChars+1)},
+			)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("expiration in the past fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			expiration := time.Now().Add(-time.Hour)
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindTokensByUserID(t.Context(), usr.ID).Return(nil, nil)
+			userValidator := newValidator(repo)
+
+			err := userValidator.validateAPIToken(
+				t.Context(),
+				usr.ID,
+				&NewAPITokenRequest{Name: "automation", Expiration: &expiration},
+			)
+
+			assert.Error(t, err)
+		})
+
+		t.Run("duplicated name fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			existing := newAPIToken(usr)
+			existing.Name = "automation"
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().
+				FindTokensByUserID(t.Context(), usr.ID).
+				Return([]APIToken{*existing}, nil)
+			userValidator := newValidator(repo)
+
+			err := userValidator.validateAPIToken(
+				t.Context(),
+				usr.ID,
+				&NewAPITokenRequest{Name: "Automation"},
+			)
 
 			assert.Error(t, err)
 		})

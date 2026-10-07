@@ -1,0 +1,39 @@
+.api-token-create-form {
+    padding-top: 10px;
+}
+
+.api-token-create-expiration {
+    width: 100%;
+}
+
+.api-token-generated-container {
+    gap: 20px;
+    padding-top: 10px;
+}
+
+.api-token-generated-value-container {
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 6px;
+    background: var(--ant-color-fill-tertiary);
+    cursor: pointer;
+    user-select: all;
+    transition: background 0.2s;
+}
+
+.api-token-generated-value-container:hover {
+    background: var(--ant-color-fill-secondary);
+}
+
+.api-token-generated-value {
+    flex: 1;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.api-token-generated-copy-icon {
+    font-size: 14px;
+    opacity: 0.5;
+}

@@ -31,6 +31,7 @@
         "@vitejs/plugin-react": "^6.1.2",
         "antd": "^6.6.5",
         "codemirror": "^6.0.2",
+        "dayjs": "^1.11.23",
         "debounce": "^3.0.0",
         "qs": "^6.16.0",
         "react": "^19.3.0",

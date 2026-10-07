@@ -274,6 +274,163 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			require.NoError(t, err)
 			assert.Nil(t, saved)
 		})
+
+		t.Run("also removes the user tokens", func(t *testing.T) {
+			cmd := newUser()
+			require.NoError(t, repo.Save(t.Context(), cmd))
+			token := newAPIToken(cmd)
+			require.NoError(t, repo.CreateToken(t.Context(), token))
+
+			require.NoError(t, repo.DeleteByID(t.Context(), cmd.ID))
+
+			saved, err := repo.FindTokenByID(t.Context(), cmd.ID, token.ID)
+			require.NoError(t, err)
+			assert.Nil(t, saved)
+		})
+	})
+
+	t.Run("CreateToken", func(t *testing.T) {
+		t.Run("persists the token attributes", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			token := newAPIToken(usr)
+
+			err := repo.CreateToken(t.Context(), token)
+			require.NoError(t, err)
+
+			saved, err := repo.FindTokenByID(t.Context(), usr.ID, token.ID)
+			require.NoError(t, err)
+			require.NotNil(t, saved)
+			assert.Equal(t, token.ID, saved.ID)
+			assert.Equal(t, usr.ID, saved.UserID)
+			assert.Equal(t, token.Name, saved.Name)
+			require.NotNil(t, saved.Expiration)
+			assert.True(t, saved.CreatedAt.Equal(token.CreatedAt))
+		})
+
+		t.Run("supports tokens without expiration", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			token := newAPIToken(usr)
+			token.Expiration = nil
+
+			require.NoError(t, repo.CreateToken(t.Context(), token))
+
+			saved, err := repo.FindTokenByID(t.Context(), usr.ID, token.ID)
+			require.NoError(t, err)
+			require.NotNil(t, saved)
+			assert.Nil(t, saved.Expiration)
+		})
+
+		t.Run("rejects duplicated names for the same user", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			token := newAPIToken(usr)
+			require.NoError(t, repo.CreateToken(t.Context(), token))
+
+			duplicated := newAPIToken(usr)
+			duplicated.Name = token.Name
+
+			err := repo.CreateToken(t.Context(), duplicated)
+			assert.Error(t, err)
+		})
+
+		t.Run("allows the same name for different users", func(t *testing.T) {
+			firstUser := newUser()
+			require.NoError(t, repo.Save(t.Context(), firstUser))
+			secondUser := newUser()
+			require.NoError(t, repo.Save(t.Context(), secondUser))
+
+			token := newAPIToken(firstUser)
+			require.NoError(t, repo.CreateToken(t.Context(), token))
+
+			another := newAPIToken(secondUser)
+			another.Name = token.Name
+
+			require.NoError(t, repo.CreateToken(t.Context(), another))
+		})
+	})
+
+	t.Run("FindTokensByUserID", func(t *testing.T) {
+		t.Run("returns only the tokens owned by the user", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			other := newUser()
+			require.NoError(t, repo.Save(t.Context(), other))
+			require.NoError(t, repo.CreateToken(t.Context(), newAPIToken(other)))
+
+			token := newAPIToken(usr)
+			require.NoError(t, repo.CreateToken(t.Context(), token))
+
+			tokens, err := repo.FindTokensByUserID(t.Context(), usr.ID)
+			require.NoError(t, err)
+			require.Len(t, tokens, 1)
+			assert.Equal(t, token.ID, tokens[0].ID)
+		})
+
+		t.Run("returns an empty list when the user has no tokens", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+
+			tokens, err := repo.FindTokensByUserID(t.Context(), usr.ID)
+			require.NoError(t, err)
+			assert.Empty(t, tokens)
+		})
+	})
+
+	t.Run("FindTokenByID", func(t *testing.T) {
+		t.Run("returns nil when the token belongs to another user", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			other := newUser()
+			require.NoError(t, repo.Save(t.Context(), other))
+			token := newAPIToken(other)
+			require.NoError(t, repo.CreateToken(t.Context(), token))
+
+			saved, err := repo.FindTokenByID(t.Context(), usr.ID, token.ID)
+			require.NoError(t, err)
+			assert.Nil(t, saved)
+		})
+
+		t.Run("returns nil when not found", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+
+			saved, err := repo.FindTokenByID(t.Context(), usr.ID, uuid.New())
+			require.NoError(t, err)
+			assert.Nil(t, saved)
+		})
+	})
+
+	t.Run("DeleteTokenByID", func(t *testing.T) {
+		t.Run("removes the token", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			token := newAPIToken(usr)
+			require.NoError(t, repo.CreateToken(t.Context(), token))
+
+			err := repo.DeleteTokenByID(t.Context(), usr.ID, token.ID)
+			require.NoError(t, err)
+
+			saved, err := repo.FindTokenByID(t.Context(), usr.ID, token.ID)
+			require.NoError(t, err)
+			assert.Nil(t, saved)
+		})
+
+		t.Run("keeps tokens owned by other users", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			other := newUser()
+			require.NoError(t, repo.Save(t.Context(), other))
+			token := newAPIToken(other)
+			require.NoError(t, repo.CreateToken(t.Context(), token))
+
+			require.NoError(t, repo.DeleteTokenByID(t.Context(), usr.ID, token.ID))
+
+			saved, err := repo.FindTokenByID(t.Context(), other.ID, token.ID)
+			require.NoError(t, err)
+			require.NotNil(t, saved)
+		})
 	})
 
 	t.Run("TryUpdateLastUsedTOTPCode", func(t *testing.T) {

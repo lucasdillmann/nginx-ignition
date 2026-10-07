@@ -1,6 +1,8 @@
 package user
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
@@ -30,4 +32,13 @@ type userModel struct {
 	ID                      uuid.UUID `bun:"id,pk"`
 	Enabled                 bool      `bun:"enabled,notnull"`
 	TotpValidated           bool      `bun:"totp_validated,notnull"`
+}
+
+type userTokenModel struct {
+	bun.BaseModel `bun:"user_token"`
+	CreatedAt     time.Time  `bun:"created_at,notnull"`
+	Expiration    *time.Time `bun:"expiration"`
+	Name          string     `bun:"name,notnull"`
+	ID            uuid.UUID  `bun:"id,pk"`
+	UserID        uuid.UUID  `bun:"user_id,notnull"`
 }

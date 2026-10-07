@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -20,7 +21,7 @@ func Test_Jwt_GenerateToken(t *testing.T) {
 		authorizer, _ := newAuthorizer(t)
 		usr := newUser()
 
-		token, err := authorizer.Jwt().GenerateToken(usr)
+		token, err := authorizer.Jwt().GenerateToken(usr, SessionKind, uuid.Nil, nil)
 		require.NoError(t, err)
 		require.NotNil(t, token)
 		require.NotEmpty(t, *token)
@@ -29,7 +30,37 @@ func Test_Jwt_GenerateToken(t *testing.T) {
 		assert.Equal(t, uniqueIdentifier, claims["iss"])
 		assert.Equal(t, uniqueIdentifier, claims["aud"])
 		assert.Equal(t, usr.ID.String(), claims["sub"])
+		assert.Equal(t, string(SessionKind), claims[tokenKindClaim])
 		assert.NotEmpty(t, claims["jti"])
+		assert.NotEmpty(t, claims["exp"])
+	})
+
+	t.Run("issues an API token with the provided ID and no expiration", func(t *testing.T) {
+		authorizer, _ := newAuthorizer(t)
+		usr := newUser()
+		tokenID := uuid.New()
+
+		token, err := authorizer.Jwt().GenerateToken(usr, APIKind, tokenID, nil)
+		require.NoError(t, err)
+
+		claims := parseJwtClaims(t, authorizer, *token)
+		assert.Equal(t, string(APIKind), claims[tokenKindClaim])
+		assert.Equal(t, tokenID.String(), claims["jti"])
+		assert.Empty(t, claims["exp"])
+	})
+
+	t.Run("issues an API token with the provided expiration", func(t *testing.T) {
+		authorizer, _ := newAuthorizer(t)
+		usr := newUser()
+		tokenID := uuid.New()
+		expiration := time.Now().Add(time.Hour * 24).Truncate(time.Second)
+
+		token, err := authorizer.Jwt().GenerateToken(usr, APIKind, tokenID, &expiration)
+		require.NoError(t, err)
+
+		claims := parseJwtClaims(t, authorizer, *token)
+		assert.Equal(t, tokenID.String(), claims["jti"])
+		assert.Equal(t, expiration.Unix(), int64(claims["exp"].(float64)))
 	})
 }
 
@@ -37,7 +68,7 @@ func Test_Jwt_ValidateToken(t *testing.T) {
 	t.Run("returns the subject for a valid token", func(t *testing.T) {
 		authorizer, commands := newAuthorizer(t)
 		usr := newUser()
-		token, _ := authorizer.Jwt().GenerateToken(usr)
+		token, _ := authorizer.Jwt().GenerateToken(usr, SessionKind, uuid.Nil, nil)
 
 		commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
 		subject, err := authorizer.Jwt().ValidateToken(context.Background(), *token)
@@ -79,7 +110,7 @@ func Test_Jwt_ValidateToken(t *testing.T) {
 	t.Run("rejects a revoked token", func(t *testing.T) {
 		authorizer, commands := newAuthorizer(t)
 		usr := newUser()
-		token, _ := authorizer.Jwt().GenerateToken(usr)
+		token, _ := authorizer.Jwt().GenerateToken(usr, SessionKind, uuid.Nil, nil)
 		tokenID := parseJwtClaims(t, authorizer, *token)["jti"].(string)
 		authorizer.Jwt().RevokeToken(tokenID)
 
@@ -94,7 +125,7 @@ func Test_Jwt_ValidateToken(t *testing.T) {
 		authorizer, commands := newAuthorizer(t)
 		usr := newUser()
 		usr.Enabled = false
-		token, _ := authorizer.Jwt().GenerateToken(usr)
+		token, _ := authorizer.Jwt().GenerateToken(usr, SessionKind, uuid.Nil, nil)
 		tokenID := parseJwtClaims(t, authorizer, *token)["jti"].(string)
 
 		commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
@@ -108,7 +139,7 @@ func Test_Jwt_ValidateToken(t *testing.T) {
 	t.Run("rejects a token for an unknown user", func(t *testing.T) {
 		authorizer, commands := newAuthorizer(t)
 		usr := newUser()
-		token, _ := authorizer.Jwt().GenerateToken(usr)
+		token, _ := authorizer.Jwt().GenerateToken(usr, SessionKind, uuid.Nil, nil)
 
 		commands.EXPECT().Get(gomock.Any(), usr.ID).Return(nil, errors.New("user not found"))
 		subject, err := authorizer.Jwt().ValidateToken(context.Background(), *token)
@@ -116,13 +147,137 @@ func Test_Jwt_ValidateToken(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, subject)
 	})
+
+	t.Run("rejects a token without a kind claim", func(t *testing.T) {
+		authorizer, _ := newAuthorizer(t)
+		usr := newUser()
+
+		raw := signRawToken(t, authorizer, jwt.MapClaims{
+			"aud": uniqueIdentifier,
+			"iss": uniqueIdentifier,
+			"sub": usr.ID.String(),
+			"jti": uuid.New().String(),
+			"exp": time.Now().Add(time.Hour).Unix(),
+		})
+
+		subject, err := authorizer.Jwt().ValidateToken(context.Background(), raw)
+
+		assert.Error(t, err)
+		assert.Nil(t, subject)
+	})
+
+	t.Run("rejects a token with an unknown kind claim", func(t *testing.T) {
+		authorizer, _ := newAuthorizer(t)
+		usr := newUser()
+
+		raw := signRawToken(t, authorizer, jwt.MapClaims{
+			"aud":          uniqueIdentifier,
+			"iss":          uniqueIdentifier,
+			"sub":          usr.ID.String(),
+			"jti":          uuid.New().String(),
+			"exp":          time.Now().Add(time.Hour).Unix(),
+			tokenKindClaim: "SOMETHING_ELSE",
+		})
+
+		subject, err := authorizer.Jwt().ValidateToken(context.Background(), raw)
+
+		assert.Error(t, err)
+		assert.Nil(t, subject)
+	})
+
+	t.Run("accepts an existing API token", func(t *testing.T) {
+		authorizer, commands := newAuthorizer(t)
+		usr := newUser()
+		tokenID := uuid.New()
+		token, _ := authorizer.Jwt().GenerateToken(usr, APIKind, tokenID, nil)
+
+		commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
+		commands.EXPECT().
+			FindAPIToken(gomock.Any(), usr.ID, tokenID).
+			Return(&user.APIToken{ID: tokenID, UserID: usr.ID}, nil)
+
+		subject, err := authorizer.Jwt().ValidateToken(context.Background(), *token)
+
+		require.NoError(t, err)
+		require.NotNil(t, subject)
+		assert.Equal(t, APIKind, subject.Kind)
+		assert.Equal(t, tokenID.String(), subject.TokenID)
+	})
+
+	t.Run("rejects an API token that was revoked", func(t *testing.T) {
+		authorizer, commands := newAuthorizer(t)
+		usr := newUser()
+		tokenID := uuid.New()
+		token, _ := authorizer.Jwt().GenerateToken(usr, APIKind, tokenID, nil)
+
+		commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
+		commands.EXPECT().FindAPIToken(gomock.Any(), usr.ID, tokenID).Return(nil, nil)
+
+		subject, err := authorizer.Jwt().ValidateToken(context.Background(), *token)
+
+		assert.Error(t, err)
+		assert.Nil(t, subject)
+	})
+
+	t.Run("rejects an API token whose database expiration already passed", func(t *testing.T) {
+		authorizer, commands := newAuthorizer(t)
+		usr := newUser()
+		tokenID := uuid.New()
+		expiration := time.Now().Add(time.Hour * 24)
+		token, _ := authorizer.Jwt().GenerateToken(usr, APIKind, tokenID, &expiration)
+
+		commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
+		commands.EXPECT().
+			FindAPIToken(gomock.Any(), usr.ID, tokenID).
+			Return(&user.APIToken{ID: tokenID, UserID: usr.ID, Expiration: &expiration}, nil)
+
+		subject, err := authorizer.Jwt().ValidateToken(context.Background(), *token)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, subject)
+	})
+
+	t.Run("rejects an API token whose database expiration is in the past", func(t *testing.T) {
+		authorizer, commands := newAuthorizer(t)
+		usr := newUser()
+		tokenID := uuid.New()
+		issuedExpiration := time.Now().Add(time.Hour * 24)
+		revokedExpiration := time.Now().Add(-time.Hour)
+		token, _ := authorizer.Jwt().GenerateToken(usr, APIKind, tokenID, &issuedExpiration)
+
+		commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
+		commands.EXPECT().
+			FindAPIToken(gomock.Any(), usr.ID, tokenID).
+			Return(&user.APIToken{ID: tokenID, UserID: usr.ID, Expiration: &revokedExpiration}, nil)
+
+		subject, err := authorizer.Jwt().ValidateToken(context.Background(), *token)
+
+		assert.Error(t, err)
+		assert.Nil(t, subject)
+	})
+
+	t.Run("rejects a disabled user without caching an API token as revoked", func(t *testing.T) {
+		authorizer, commands := newAuthorizer(t)
+		usr := newUser()
+		usr.Enabled = false
+		tokenID := uuid.New()
+		token, _ := authorizer.Jwt().GenerateToken(usr, APIKind, tokenID, nil)
+
+		commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
+
+		subject, err := authorizer.Jwt().ValidateToken(context.Background(), *token)
+
+		assert.Error(t, err)
+		assert.Nil(t, subject)
+		assert.False(t, authorizer.Jwt().isRevoked(tokenID.String()))
+	})
 }
 
 func Test_Jwt_RefreshToken(t *testing.T) {
 	t.Run("returns no token when the token is far from expiry", func(t *testing.T) {
 		authorizer, _ := newAuthorizer(t)
 		usr := newUser()
-		token, _ := authorizer.Jwt().GenerateToken(usr)
+		token, _ := authorizer.Jwt().GenerateToken(usr, SessionKind, uuid.Nil, nil)
 		subject := subjectFromToken(t, authorizer, *token, usr)
 
 		refreshed, err := authorizer.Jwt().RefreshToken(subject)
@@ -136,7 +291,7 @@ func Test_Jwt_RefreshToken(t *testing.T) {
 			"nginx-ignition.security.jwt.renew-window-seconds": "30",
 		})
 		usr := newUser()
-		token, _ := authorizer.Jwt().GenerateToken(usr)
+		token, _ := authorizer.Jwt().GenerateToken(usr, SessionKind, uuid.Nil, nil)
 		subject := subjectFromToken(t, authorizer, *token, usr)
 		originalTokenID := subject.TokenID
 
@@ -256,11 +411,22 @@ func parseJwtClaims(t *testing.T, authorizer *ABAC, raw string) jwt.MapClaims {
 	return claims
 }
 
+func signRawToken(t *testing.T, authorizer *ABAC, claims jwt.MapClaims) string {
+	t.Helper()
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
+
+	raw, err := token.SignedString(authorizer.jwt.secretKey)
+	require.NoError(t, err)
+
+	return raw
+}
+
 func subjectFromToken(t *testing.T, authorizer *ABAC, raw string, usr *user.User) *Subject {
 	t.Helper()
 	claims := parseJwtClaims(t, authorizer, raw)
 
 	return &Subject{
+		Kind:    SessionKind,
 		User:    usr,
 		TokenID: claims["jti"].(string),
 		claims:  &claims,

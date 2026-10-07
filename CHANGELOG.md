@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2.47.0
+
+- Users can now create and revoke their own API tokens from the account settings modal, in the new "API Tokens" tab. 
+  Each token has a unique name, an optional expiration date, and can be used to authenticate against the API instead of 
+  using a username and password. Permissions granted to the token are the same as the user who owns it.
+  - Note: Users will be logged out after the update from a previous version, as the access tokens issued before it are 
+    no longer accepted since the claims changed slightly.
+
 ## 2.46.1
 
 - Fix for a path traversal vulnerability in host VPN names that allowed a low-privilege user to leak the VPN drivers'

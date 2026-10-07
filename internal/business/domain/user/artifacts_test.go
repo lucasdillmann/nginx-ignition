@@ -1,6 +1,8 @@
 package user
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -51,5 +53,18 @@ func newSaveRequest() *SaveRequest {
 			Caches:       NoAccessAccessLevel,
 			TrafficStats: NoAccessAccessLevel,
 		},
+	}
+}
+
+func newAPIToken(usr *User) *APIToken {
+	createdAt := time.Now().UTC().Truncate(time.Second)
+	expiration := createdAt.Add(time.Hour * 24)
+
+	return &APIToken{
+		ID:         uuid.New(),
+		UserID:     usr.ID,
+		Name:       "test-token-" + uuid.New().String(),
+		Expiration: &expiration,
+		CreatedAt:  createdAt,
 	}
 }

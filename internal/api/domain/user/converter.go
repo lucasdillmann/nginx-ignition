@@ -74,6 +74,44 @@ func toDTO(domain *user.User) *userResponseDTO {
 	}
 }
 
+func toAPITokenDTO(domain *user.APIToken) *apiTokenResponseDTO {
+	if domain == nil {
+		return nil
+	}
+
+	return &apiTokenResponseDTO{
+		ID:         domain.ID,
+		Name:       domain.Name,
+		Expiration: domain.Expiration,
+		CreatedAt:  domain.CreatedAt,
+	}
+}
+
+func toAPITokenCreatedDTO(domain *user.APIToken, token string) *apiTokenCreatedResponseDTO {
+	if domain == nil {
+		return nil
+	}
+
+	return &apiTokenCreatedResponseDTO{
+		ID:         domain.ID,
+		Name:       domain.Name,
+		Token:      token,
+		Expiration: domain.Expiration,
+		CreatedAt:  domain.CreatedAt,
+	}
+}
+
+func toAPITokenDomain(dto *apiTokenCreateRequestDTO) *user.NewAPITokenRequest {
+	if dto == nil {
+		return nil
+	}
+
+	return &user.NewAPITokenRequest{
+		Name:       getStringValue(dto.Name),
+		Expiration: dto.Expiration,
+	}
+}
+
 func getBoolValue(value *bool) bool {
 	if value == nil {
 		return false

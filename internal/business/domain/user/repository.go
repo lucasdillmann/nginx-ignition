@@ -18,6 +18,10 @@ type Repository interface {
 		pageSize, pageNumber int,
 		searchTerms *string,
 	) (*pagination.Page[User], error)
+	CreateToken(ctx context.Context, token *APIToken) error
+	DeleteTokenByID(ctx context.Context, userID, id uuid.UUID) error
+	FindTokenByID(ctx context.Context, userID, id uuid.UUID) (*APIToken, error)
+	FindTokensByUserID(ctx context.Context, userID uuid.UUID) ([]APIToken, error)
 	IsEnabledByID(ctx context.Context, id uuid.UUID) (bool, error)
 	Count(ctx context.Context) (int, error)
 	TryCreateInitialUser(ctx context.Context, user *User) (bool, error)

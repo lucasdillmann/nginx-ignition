@@ -11,6 +11,9 @@ import UserUpdatePasswordRequest from "./model/UserUpdatePasswordRequest"
 import UserUpdateProfileRequest from "./model/UserUpdateProfileRequest"
 import GenericCreateResponse from "../../core/common/GenericCreateResponse"
 import UserTotpEnableResponse from "./model/UserTotpEnableResponse"
+import APITokenResponse from "./model/APITokenResponse"
+import APITokenRequest from "./model/APITokenRequest"
+import APITokenCreatedResponse from "./model/APITokenCreatedResponse"
 
 export default class UserService {
     private readonly gateway: UserGateway
@@ -91,5 +94,17 @@ export default class UserService {
 
     async disableTotp(): Promise<void> {
         return this.gateway.disableTotp().then(requireSuccessResponse)
+    }
+
+    async listTokens(): Promise<APITokenResponse[]> {
+        return this.gateway.listTokens().then(requireSuccessPayload)
+    }
+
+    async createToken(request: APITokenRequest): Promise<APITokenCreatedResponse> {
+        return this.gateway.createToken(request).then(requireSuccessPayload)
+    }
+
+    async deleteToken(id: string): Promise<void> {
+        return this.gateway.deleteToken(id).then(requireSuccessResponse)
     }
 }

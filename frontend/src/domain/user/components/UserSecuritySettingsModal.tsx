@@ -1,6 +1,6 @@
 import React from "react"
 import { Button, Flex, Form, FormInstance, Input, Modal, Tabs, Typography } from "antd"
-import { LockOutlined, SafetyOutlined, UserOutlined } from "@ant-design/icons"
+import { KeyOutlined, LockOutlined, SafetyOutlined, UserOutlined } from "@ant-design/icons"
 import UserService from "../UserService"
 import Notification from "../../../core/components/notification/Notification"
 import ValidationResult from "../../../core/validation/ValidationResult"
@@ -14,11 +14,15 @@ import ValidationResultConverter from "../../../core/validation/ValidationResult
 import MessageKey from "../../../core/i18n/model/MessageKey.generated"
 import { I18n } from "../../../core/i18n/I18n"
 import TotpSetup from "./TotpSetup"
+import APITokenList from "./APITokenList"
+import APITokenCreateModal from "./APITokenCreateModal"
+import APITokenResponse from "../model/APITokenResponse"
+import EmptyStates from "../../../core/components/emptystate/EmptyStates"
 import UserConfirmation from "../../../core/components/confirmation/UserConfirmation"
 import AppContext from "../../../core/components/context/AppContext"
 import "./UserSecuritySettingsModal.css"
 
-export type UserSecuritySettingsTab = "profile" | "password" | "totp"
+export type UserSecuritySettingsTab = "profile" | "password" | "totp" | "tokens"
 
 interface UserSecuritySettingsModalProps {
     open: boolean
@@ -31,6 +35,10 @@ interface UserSecuritySettingsModalState {
     validationResult: ValidationResult
     passwordFormValues: UserUpdatePasswordRequest
     profileFormValues: UserUpdateProfileRequest
+    tokens?: APITokenResponse[]
+    tokensLoading: boolean
+    tokensFailed: boolean
+    tokenModalOpen: boolean
     totpEnabled?: boolean
     totpLoading: boolean
 }
@@ -63,6 +71,9 @@ export default class UserSecuritySettingsModal extends React.Component<
             validationResult: new ValidationResult(),
             passwordFormValues: DEFAULT_PASSWORD_FORM_VALUES,
             profileFormValues: DEFAULT_PROFILE_FORM_VALUES,
+            tokensLoading: true,
+            tokensFailed: false,
+            tokenModalOpen: false,
             totpLoading: true,
         }
     }
@@ -70,6 +81,7 @@ export default class UserSecuritySettingsModal extends React.Component<
     componentDidUpdate(prevProps: Readonly<UserSecuritySettingsModalProps>) {
         if (this.props.open && !prevProps.open) {
             this.fetchTotpStatus()
+            this.fetchTokens()
             this.loadProfileFormValues()
         }
     }
@@ -94,6 +106,14 @@ export default class UserSecuritySettingsModal extends React.Component<
             .getTotpStatus()
             .then(enabled => this.setState({ totpEnabled: enabled, totpLoading: false }))
             .catch(() => this.setState({ totpLoading: false }))
+    }
+
+    private fetchTokens() {
+        this.setState({ tokensLoading: true, tokensFailed: false })
+        this.service
+            .listTokens()
+            .then(tokens => this.setState({ tokens, tokensLoading: false }))
+            .catch(() => this.setState({ tokensFailed: true, tokensLoading: false }))
     }
 
     private async executeProfileUpdate() {
@@ -156,6 +176,16 @@ export default class UserSecuritySettingsModal extends React.Component<
             )
             .catch(() => Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonTryAgainLater))
             .then(() => this.setState({ totpLoading: false }))
+    }
+
+    private handleTokenRevoke(token: APITokenResponse) {
+        UserConfirmation.ask(MessageKey.FrontendUserTokensDeleteConfirmation)
+            .then(() => this.service.deleteToken(token.id))
+            .then(() =>
+                Notification.success(MessageKey.FrontendUserTokensRevokedTitle, MessageKey.CommonSuccessMessage),
+            )
+            .catch(() => Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonTryAgainLater))
+            .then(() => this.fetchTokens())
     }
 
     private renderProfileTab() {
@@ -272,9 +302,29 @@ export default class UserSecuritySettingsModal extends React.Component<
         return <TotpSetup onActivation={() => this.setState({ totpEnabled: true })} />
     }
 
+    private renderTokensTab() {
+        const { tokens, tokensLoading, tokensFailed } = this.state
+
+        if (tokensLoading) {
+            return <Preloader loading={true} />
+        }
+
+        if (tokensFailed) {
+            return EmptyStates.FailedToFetch
+        }
+
+        return (
+            <APITokenList
+                tokens={tokens ?? []}
+                onCreate={() => this.setState({ tokenModalOpen: true })}
+                onRevoke={token => this.handleTokenRevoke(token)}
+            />
+        )
+    }
+
     render() {
         const { open, onCancel, initialTab = "password" } = this.props
-        const { loading } = this.state
+        const { loading, tokenModalOpen } = this.state
 
         return (
             <Modal
@@ -282,6 +332,7 @@ export default class UserSecuritySettingsModal extends React.Component<
                 onCancel={onCancel}
                 footer={null}
                 open={open}
+                width={700}
                 destroyOnHidden
             >
                 <Preloader loading={loading}>
@@ -304,13 +355,25 @@ export default class UserSecuritySettingsModal extends React.Component<
                             },
                             {
                                 key: "totp",
-                                label: <I18n id={MessageKey.CommonTwoFactorAuthentication} />,
+                                label: <I18n id={MessageKey.FrontendUserMenuTotpTabTitle} />,
                                 children: this.renderTotpTab(),
                                 icon: <SafetyOutlined />,
+                            },
+                            {
+                                key: "tokens",
+                                label: <I18n id={MessageKey.FrontendUserTokensTabTitle} />,
+                                children: this.renderTokensTab(),
+                                icon: <KeyOutlined />,
                             },
                         ]}
                     />
                 </Preloader>
+
+                <APITokenCreateModal
+                    open={tokenModalOpen}
+                    onCancel={() => this.setState({ tokenModalOpen: false })}
+                    onCreated={() => this.fetchTokens()}
+                />
             </Modal>
         )
     }

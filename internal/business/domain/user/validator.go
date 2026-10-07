@@ -3,6 +3,8 @@ package user
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -14,6 +16,7 @@ const (
 	minimumUsernameLength = 3
 	minimumNameLength     = 3
 	minimumPasswordLength = 8
+	maximumTokenNameChars = 256
 )
 
 type validator struct {
@@ -122,4 +125,38 @@ func newValidator(repository Repository) *validator {
 		delegate:   validation.NewValidator(),
 		repository: repository,
 	}
+}
+
+func (v *validator) validateAPIToken(
+	ctx context.Context,
+	userID uuid.UUID,
+	request *NewAPITokenRequest,
+) error {
+	name := strings.TrimSpace(request.Name)
+
+	if name == "" {
+		v.delegate.Add("name", i18n.M(ctx, i18n.K.CommonCannotBeEmpty))
+	}
+
+	if len(name) > maximumTokenNameChars {
+		v.delegate.Add(
+			"name",
+			i18n.M(ctx, i18n.K.CommonValueTooLong).V("max", maximumTokenNameChars),
+		)
+	}
+
+	if request.Expiration != nil && !request.Expiration.After(time.Now()) {
+		v.delegate.Add("expiration", i18n.M(ctx, i18n.K.CoreUserTokenExpiredDate))
+	}
+
+	if name != "" {
+		databaseToken, _ := v.repository.FindTokensByUserID(ctx, userID)
+		for _, token := range databaseToken {
+			if strings.EqualFold(token.Name, name) {
+				v.delegate.Add("name", i18n.M(ctx, i18n.K.CoreUserDuplicatedTokenName))
+			}
+		}
+	}
+
+	return v.delegate.Result()
 }

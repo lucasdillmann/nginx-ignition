@@ -11,6 +11,9 @@ import UserUpdateProfileRequest from "./model/UserUpdateProfileRequest"
 import GenericCreateResponse from "../../core/common/GenericCreateResponse"
 import UserTotpEnableResponse from "./model/UserTotpEnableResponse"
 import TotpStatusResponse from "./model/TotpStatusResponse"
+import APITokenResponse from "./model/APITokenResponse"
+import APITokenRequest from "./model/APITokenRequest"
+import APITokenCreatedResponse from "./model/APITokenCreatedResponse"
 
 export default class UserGateway {
     private readonly client: ApiClient
@@ -85,5 +88,17 @@ export default class UserGateway {
 
     async disableTotp(): Promise<ApiResponse<void>> {
         return this.client.delete("/current/totp")
+    }
+
+    async listTokens(): Promise<ApiResponse<APITokenResponse[]>> {
+        return this.client.get("/current/tokens")
+    }
+
+    async createToken(request: APITokenRequest): Promise<ApiResponse<APITokenCreatedResponse>> {
+        return this.client.post("/current/tokens", request)
+    }
+
+    async deleteToken(id: string): Promise<ApiResponse<void>> {
+        return this.client.delete(`/current/tokens/${id}`)
     }
 }

@@ -8,6 +8,7 @@ import (
 )
 
 type Subject struct {
+	Kind    TokenKind
 	User    *user.User
 	claims  *jwt.MapClaims
 	TokenID string
