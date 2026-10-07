@@ -15,11 +15,6 @@ type logoutHandler struct {
 func (h logoutHandler) handle(ctx *gin.Context) {
 	subject := authorization.CurrentSubject(ctx)
 
-	if subject.Kind == authorization.APIKind {
-		ctx.Status(http.StatusBadRequest)
-		return
-	}
-
 	h.authorizer.Jwt().RevokeToken(subject.TokenID)
 	ctx.Status(http.StatusNoContent)
 }

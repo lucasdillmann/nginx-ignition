@@ -35,7 +35,8 @@ curl -H "Authorization: Bearer YOUR_API_TOKEN" \
      http://localhost:8090/api/hosts
 ```
 
-Requests using an invalid, revoked or expired token are answered with `401 Unauthorized`.
+Requests using an invalid, revoked or expired token are answered with `401 Unauthorized`, and a valid token used on
+one of the [reserved operations](#reserved-operations) below is answered with `403 Forbidden`.
 
 > API tokens authenticate API calls only. They cannot be exchanged for a web interface session, so logging into the web
 > interface still requires a username and password.
@@ -49,16 +50,23 @@ If you need a token with a different (usually smaller) set of permissions, creat
 desired access levels and generate the token from that user's account. Creating users requires read-write access to the
 `Users` permission, so you'll need an account with that access to set this up.
 
+Note that a service user only limits what a token can reach through the API. Operations that change account
+credentials are [reserved](#reserved-operations) for interactive sessions and stay out of reach either way.
+
 ## Reserved operations
 
-A few operations are reserved for interactive sessions and can't be performed with an API token:
+A set of operations is reserved for interactive sessions and can't be performed with an API token. Attempting one
+answers with `403 Forbidden`:
 
-- **Managing API tokens:** an API token can't list, create or revoke tokens, not even its own. Such requests are
-  rejected.
-- **Logging out:** logging out only invalidates interactive sessions, so the request is rejected when it's made with an
-  API token.
+- **Account settings:** changing the profile and changing the password.
+- **Two-factor authentication:** reading the two-factor status, enabling, activating and disabling it.
+- **Managing API tokens:** listing, creating and revoking tokens, not even your own.
+- **Logging out:** logging out only invalidates interactive sessions.
 
-Because of this, revoking a token from the web interface is the only way to permanently disable it.
+Reading your own profile with `GET /api/users/current` is the one exception: tokens are allowed to do it.
+
+Because of this, revoking a token from the web interface is the only way to permanently disable it, and it is also the
+only way to turn two-factor authentication back on. If you suspect a token was leaked, revoke it and create a new one.
 
 ## Token lifecycle
 

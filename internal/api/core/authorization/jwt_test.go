@@ -350,6 +350,38 @@ func Test_Jwt_RefreshToken(t *testing.T) {
 		assert.Equal(t, usr.ID.String(), claims["sub"])
 		assert.NotEqual(t, originalTokenID, claims["jti"])
 	})
+
+	t.Run("returns an error for an API token", func(t *testing.T) {
+		authorizer, _ := newAuthorizer(t)
+		usr := newUser()
+		tokenID := uuid.New()
+		token, _ := authorizer.Jwt().GenerateToken(usr, APIKind, &tokenID, nil)
+		subject := subjectFromToken(t, authorizer, *token, usr)
+		subject.Kind = APIKind
+
+		refreshed, err := authorizer.Jwt().RefreshToken(subject)
+
+		assert.EqualError(t, err, "token cannot be refreshed")
+		assert.Nil(t, refreshed)
+	})
+
+	t.Run("returns an error for a nil subject", func(t *testing.T) {
+		authorizer, _ := newAuthorizer(t)
+
+		refreshed, err := authorizer.Jwt().RefreshToken(nil)
+
+		assert.EqualError(t, err, "token cannot be refreshed")
+		assert.Nil(t, refreshed)
+	})
+
+	t.Run("returns an error for a subject without claims", func(t *testing.T) {
+		authorizer, _ := newAuthorizer(t)
+
+		refreshed, err := authorizer.Jwt().RefreshToken(&Subject{Kind: SessionKind})
+
+		assert.EqualError(t, err, "token cannot be refreshed")
+		assert.Nil(t, refreshed)
+	})
 }
 
 func Test_Jwt_RevokeToken(t *testing.T) {

@@ -265,6 +265,10 @@ func (j *Jwt) invalidTokenError(ctx context.Context) error {
 }
 
 func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
+	if subject == nil || subject.Kind != SessionKind || subject.claims == nil {
+		return nil, errors.New("token cannot be refreshed")
+	}
+
 	expiration, err := subject.claims.GetExpirationTime()
 	if err != nil {
 		return nil, err

@@ -155,6 +155,66 @@ func Test_RequestHandler(t *testing.T) {
 
 			assert.Equal(t, http.StatusUnauthorized, recorder.Code)
 		})
+
+		t.Run("rejects an API token on a sessions-tokens-only path", func(t *testing.T) {
+			setup := newRequestHandlerSetup(t, map[string]string{})
+			usr := newUser()
+			tokenID := uuid.New()
+			token, _ := setup.authorizer.Jwt().GenerateToken(usr, APIKind, &tokenID, nil)
+
+			setup.commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
+			setup.commands.EXPECT().
+				FindAPIToken(gomock.Any(), usr.ID, tokenID).
+				Return(&user.APIToken{ID: tokenID, UserID: usr.ID}, nil)
+
+			recorder := performRequest(setup.engine, "POST", "/api/session-only", *token)
+
+			assert.Equal(t, http.StatusForbidden, recorder.Code)
+		})
+
+		t.Run("allows a session token on a sessions-tokens-only path", func(t *testing.T) {
+			setup := newRequestHandlerSetup(t, map[string]string{})
+			usr := newUser()
+			token, _ := setup.authorizer.Jwt().GenerateToken(usr, SessionKind, nil, nil)
+
+			setup.commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
+
+			recorder := performRequest(setup.engine, "POST", "/api/session-only", *token)
+
+			assert.Equal(t, http.StatusOK, recorder.Code)
+		})
+
+		t.Run(
+			"still applies the permission check on sessions-tokens-only paths",
+			func(t *testing.T) {
+				setup := newRequestHandlerSetup(t, map[string]string{})
+				usr := newUser()
+				usr.Permissions.NginxServer = user.NoAccessAccessLevel
+				token, _ := setup.authorizer.Jwt().GenerateToken(usr, SessionKind, nil, nil)
+
+				setup.commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
+
+				recorder := performRequest(setup.engine, "GET", "/api/restricted/status", *token)
+
+				assert.Equal(t, http.StatusForbidden, recorder.Code)
+			},
+		)
+
+		t.Run(
+			"allows a session token with permission on sessions-tokens-only paths",
+			func(t *testing.T) {
+				setup := newRequestHandlerSetup(t, map[string]string{})
+				usr := newUser()
+				usr.Permissions.NginxServer = user.ReadOnlyAccessLevel
+				token, _ := setup.authorizer.Jwt().GenerateToken(usr, SessionKind, nil, nil)
+
+				setup.commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
+
+				recorder := performRequest(setup.engine, "GET", "/api/restricted/status", *token)
+
+				assert.Equal(t, http.StatusOK, recorder.Code)
+			},
+		)
 	})
 }
 
@@ -184,6 +244,22 @@ func newRequestHandlerSetup(t *testing.T, overrides map[string]string) *requestH
 
 	authorizer.AllowAllUsers("GET", "/api/all-users")
 	engine.GET("/api/all-users", func(ctx *gin.Context) {
+		ctx.Status(http.StatusOK)
+	})
+
+	authorizer.AllowAllUsers("POST", "/api/session-only")
+	authorizer.AllowSessionsTokensOnly("POST", "/api/session-only")
+	engine.POST("/api/session-only", func(ctx *gin.Context) {
+		ctx.Status(http.StatusOK)
+	})
+
+	restrictedGroup := authorizer.ConfigureGroup(
+		engine,
+		"/api/restricted",
+		func(permissions user.Permissions) user.AccessLevel { return permissions.NginxServer },
+	)
+	authorizer.AllowSessionsTokensOnly("GET", "/api/restricted/status")
+	restrictedGroup.GET("/status", func(ctx *gin.Context) {
 		ctx.Status(http.StatusOK)
 	})
 

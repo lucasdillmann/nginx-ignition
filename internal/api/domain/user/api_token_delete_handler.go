@@ -21,11 +21,6 @@ func (h apiTokenDeleteHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	if currentSubject.Kind == authorization.APIKind {
-		ctx.Status(http.StatusBadRequest)
-		return
-	}
-
 	tokenID, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
 		panic(err)

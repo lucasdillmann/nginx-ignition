@@ -45,6 +45,14 @@ func (m *ABAC) HandleRequest(ctx *gin.Context) {
 		))
 	}
 
+	if subject.Kind != SessionKind && m.isSessionTokensOnly(ctx.Request.Method, path) {
+		ctx.Abort()
+		panic(apierror.New(
+			http.StatusForbidden,
+			i18n.M(ctx.Request.Context(), i18n.K.ApiCommonAuthorizationAccessDenied),
+		))
+	}
+
 	if !m.isAllowedForAllUsers(ctx.Request.Method, path) {
 		accessGranted := m.isAccessGranted(ctx.Request.Method, path, &subject.User.Permissions)
 		if !accessGranted {
@@ -56,11 +64,9 @@ func (m *ABAC) HandleRequest(ctx *gin.Context) {
 		}
 	}
 
-	if subject.Kind == SessionKind {
-		refreshedToken, _ := m.jwt.RefreshToken(subject)
-		if refreshedToken != nil {
-			ctx.Header("Authorization", "Bearer "+*refreshedToken)
-		}
+	refreshedToken, _ := m.jwt.RefreshToken(subject)
+	if refreshedToken != nil {
+		ctx.Header("Authorization", "Bearer "+*refreshedToken)
 	}
 
 	ctx.Set(RequestSubject, subject)

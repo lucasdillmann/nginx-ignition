@@ -21,11 +21,6 @@ func (h apiTokenListHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	if currentSubject.Kind == authorization.APIKind {
-		ctx.Status(http.StatusBadRequest)
-		return
-	}
-
 	pageSize, pageNumber, searchTerms, err := pagination.ExtractPaginationParameters(ctx)
 	if err != nil {
 		panic(err)

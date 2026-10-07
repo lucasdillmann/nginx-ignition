@@ -64,4 +64,15 @@ func Install(
 	authorizer.AllowAllUsers(http.MethodGet, "/api/users/current/tokens")
 	authorizer.AllowAllUsers(http.MethodPost, "/api/users/current/tokens")
 	authorizer.AllowAllUsers(http.MethodDelete, "/api/users/current/tokens/:id")
+
+	authorizer.AllowSessionsTokensOnly(http.MethodPost, "/api/users/logout")
+	authorizer.AllowSessionsTokensOnly(http.MethodPut, "/api/users/current")
+	authorizer.AllowSessionsTokensOnly(http.MethodPost, "/api/users/current/update-password")
+	authorizer.AllowSessionsTokensOnly(http.MethodGet, "/api/users/current/totp")
+	authorizer.AllowSessionsTokensOnly(http.MethodPost, "/api/users/current/totp")
+	authorizer.AllowSessionsTokensOnly(http.MethodPost, "/api/users/current/totp/activate")
+	authorizer.AllowSessionsTokensOnly(http.MethodDelete, "/api/users/current/totp")
+	authorizer.AllowSessionsTokensOnly(http.MethodGet, "/api/users/current/tokens")
+	authorizer.AllowSessionsTokensOnly(http.MethodPost, "/api/users/current/tokens")
+	authorizer.AllowSessionsTokensOnly(http.MethodDelete, "/api/users/current/tokens/:id")
 }
