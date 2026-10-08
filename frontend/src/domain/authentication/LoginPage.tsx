@@ -18,6 +18,7 @@ import MessageKey from "../../core/i18n/model/MessageKey.generated"
 import { I18n, i18n } from "../../core/i18n/I18n"
 import ThemeToggle from "../../core/components/theme/ThemeToggle"
 import I18nLanguagePicker from "../../core/i18n/I18nLanguagePicker"
+import Logo from "../../core/components/logo/Logo"
 import ShellUserMenuQueue from "../user/components/shell/ShellUserMenuQueue"
 
 interface TotpState {
@@ -234,6 +235,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
             <LoginFormPage
                 id="nginx-ignition-login-form"
                 formRef={this.formRef}
+                logo={<Logo size={44} />}
                 title={<I18n id={MessageKey.CommonAppName} />}
                 subTitle={this.renderSubtitle()}
                 onFinish={totp ? this.handleTotpSubmit.bind(this) : this.handleSubmit.bind(this)}

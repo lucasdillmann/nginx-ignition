@@ -13,6 +13,7 @@ import ValidationResultConverter from "../../core/validation/ValidationResultCon
 import ThemeContext from "../../core/components/context/ThemeContext"
 import ThemeToggle from "../../core/components/theme/ThemeToggle"
 import I18nLanguagePicker from "../../core/i18n/I18nLanguagePicker"
+import Logo from "../../core/components/logo/Logo"
 import TotpSetup from "../user/components/totp/TotpSetup"
 import LightBackground from "../authentication/background/light.jpg"
 import DarkBackground from "../authentication/background/dark.jpg"
@@ -178,6 +179,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
             return (
                 <LoginFormPage
                     id="nginx-ignition-onboarding-form"
+                    logo={<Logo size={44} />}
                     title={<I18n id={MessageKey.CommonAppName} />}
                     subTitle={this.renderSubtitle()}
                     backgroundImageUrl={backgroundImageUrl}
@@ -200,6 +202,7 @@ export default class OnboardingPage extends React.Component<any, OnboardingPageS
         return (
             <LoginFormPage
                 id="nginx-ignition-onboarding-form"
+                logo={<Logo size={44} />}
                 title={<I18n id={MessageKey.CommonAppName} />}
                 subTitle={this.renderSubtitle()}
                 onFinish={this.handleUserFormSubmit.bind(this)}

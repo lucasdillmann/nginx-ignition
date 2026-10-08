@@ -2,6 +2,7 @@
 
 ## 2.47.0
 
+- New project logo
 - Users can now create and revoke their own API tokens from the account settings modal, in the new "API Tokens" tab. 
   Each token has a unique name, an optional expiration date, and can be used to authenticate against the API instead of 
   using a username and password. Permissions granted to the token are the same as the user who owns it.

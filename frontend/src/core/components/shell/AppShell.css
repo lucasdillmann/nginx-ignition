@@ -1,7 +1,6 @@
 .shell-container {
     min-height: 100vh;
     --nginxIgnition-shellSiderForeground: #fff;
-    --nginxIgnition-shellSiderLogoCircleBg: #fff;
     --nginxIgnition-shellSiderLogoLinkHover: #d7e1ea;
     --nginxIgnition-shellTriggerColor: #c8d3dd;
     --nginxIgnition-shellTriggerColorHover: #d7e0e8;
@@ -40,7 +39,14 @@ html[data-theme="dark"] .shell-container {
 
 .shell-sider-logo-link {
     color: var(--nginxIgnition-shellSiderForeground);
-    font-size: 26px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.shell-sider-logo-title {
+    white-space: nowrap;
 }
 
 .shell-sider-logo-link:hover,
@@ -73,24 +79,6 @@ html:not([data-theme="dark"]) .shell-sider-logo-link-collapsed:focus {
     align-items: center;
     justify-content: center;
     color: var(--nginxIgnition-shellSiderForeground);
-}
-
-.shell-sider-logo-circle {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--nginxIgnition-shellSiderLogoCircleBg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.shell-sider-logo-letter {
-    display: block;
-    color: var(--ant-layout-sider-bg);
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1;
 }
 
 .shell-sider-menu-container {
