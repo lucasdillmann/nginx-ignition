@@ -11,6 +11,7 @@ import AppContext from "../context/AppContext"
 import MessageKey from "../../i18n/model/MessageKey.generated"
 import { I18n, I18nMessage } from "../../i18n/I18n"
 import LocalStorageRepository from "../../repository/LocalStorageRepository"
+import Logo from "../logo/Logo"
 
 const { Sider, Content } = Layout
 
@@ -142,7 +143,10 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
             return (
                 <div className="shell-sider-logo">
                     <Link to="/" className="shell-sider-logo-link">
-                        <I18n id={MessageKey.CommonAppName} />
+                        <Logo size={32} />
+                        <span className="shell-sider-logo-title">
+                            <I18n id={MessageKey.CommonAppName} />
+                        </span>
                     </Link>
                 </div>
             )
@@ -151,9 +155,7 @@ export default class AppShell extends React.Component<AppShellProps, AppShellSta
         return (
             <div className="shell-sider-logo shell-sider-logo-collapsed">
                 <Link to="/" className="shell-sider-logo-link shell-sider-logo-link-collapsed">
-                    <span className="shell-sider-logo-circle">
-                        <span className="shell-sider-logo-letter">N</span>
-                    </span>
+                    <Logo size={32} />
                 </Link>
             </div>
         )

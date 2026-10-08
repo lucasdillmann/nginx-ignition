@@ -4,11 +4,12 @@ import path from "path"
 import viteReact from "@vitejs/plugin-react"
 // @ts-expect-error Types are available even though the IDE says otherwise
 import { defineConfig } from "vite"
+import svgr from "vite-plugin-svgr"
 
 // https://vitejs.dev/config/
 export default defineConfig({
     base: "/",
-    plugins: [viteReact()],
+    plugins: [viteReact(), svgr()],
     server: {
         host: "0.0.0.0",
         port: 8080,

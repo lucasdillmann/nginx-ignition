@@ -1,0 +1,5 @@
+.app-logo {
+    display: block;
+    flex-shrink: 0;
+    color-scheme: dark !important;
+}
