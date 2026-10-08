@@ -9,50 +9,44 @@
             <g data-cell-id="1">
                 <g data-cell-id="d_xgrN8cmmKn0M77IVn5-11">
                     <g>
-                        <ellipse cx="452.5" cy="452" rx="452.5" ry="452.5" fill="#000000" stroke="none"
-                                 pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(68, 94, 130));"/>
+                        <ellipse cx="452.5" cy="452" rx="452.5" ry="452.5" fill="#445e82" stroke="none"
+                                 pointer-events="all" style="fill: rgb(68, 94, 130);"/>
                     </g>
                 </g>
                 <g data-cell-id="d_xgrN8cmmKn0M77IVn5-2">
                     <g>
-                        <path d="M -5 515.5 L 25 385.5 L 515 385.5 L 545 515.5 Z" fill="#000000" stroke="none"
-                              transform="rotate(90,270,450.5)" pointer-events="all"
-                              style="fill: light-dark(rgb(0, 0, 0), rgb(212, 225, 245));"/>
+                        <path d="M -5 515.5 L 25 385.5 L 515 385.5 L 545 515.5 Z" fill="#d4e1f5" stroke="none"
+                              transform="rotate(90,270,450.5)" pointer-events="all" style="fill: rgb(212, 225, 245);"/>
                     </g>
                 </g>
                 <g data-cell-id="d_xgrN8cmmKn0M77IVn5-3">
                     <g>
-                        <path d="M 360 515.5 L 390 385.5 L 880 385.5 L 910 515.5 Z" fill="#000000" stroke="none"
-                              transform="rotate(-90,635,450.5)" pointer-events="all"
-                              style="fill: light-dark(rgb(0, 0, 0), rgb(212, 225, 245));"/>
+                        <path d="M 360 515.5 L 390 385.5 L 880 385.5 L 910 515.5 Z" fill="#d4e1f5" stroke="none"
+                              transform="rotate(-90,635,450.5)" pointer-events="all" style="fill: rgb(212, 225, 245);"/>
                     </g>
                 </g>
                 <g data-cell-id="d_xgrN8cmmKn0M77IVn5-5">
                     <g>
-                        <path d="M 212.5 552 L 482.5 352 L 692.5 352 L 422.5 552 Z" fill="#ffffff" stroke="none"
-                              transform="rotate(90,452.5,452)" pointer-events="all"
-                              style="fill: light-dark(rgb(255, 255, 255), rgb(212, 225, 245));"/>
+                        <path d="M 212.5 552 L 482.5 352 L 692.5 352 L 422.5 552 Z" fill="#d4e1f5" stroke="none"
+                              transform="rotate(90,452.5,452)" pointer-events="all" style="fill: rgb(212, 225, 245);"/>
                     </g>
                 </g>
                 <g data-cell-id="d_xgrN8cmmKn0M77IVn5-8">
                     <g>
-                        <path d="M 545 330 L 575 200 L 695 200 L 725 330 Z" fill="#000000" stroke="none"
-                              transform="rotate(-90,635,265)" pointer-events="all"
-                              style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+                        <path d="M 545 330 L 575 200 L 695 200 L 725 330 Z" fill="#ffffff" stroke="none"
+                              transform="rotate(-90,635,265)" pointer-events="all" style="fill: rgb(255, 255, 255);"/>
                     </g>
                 </g>
                 <g data-cell-id="d_xgrN8cmmKn0M77IVn5-10">
                     <g>
-                        <path d="M 570 387 L 600 257 L 670 257 L 700 387 Z" fill="#000000" stroke="none"
-                              transform="rotate(-90,635,322)" pointer-events="all"
-                              style="fill: light-dark(rgb(0, 0, 0), rgb(68, 94, 130));"/>
+                        <path d="M 570 387 L 600 257 L 670 257 L 700 387 Z" fill="#445e82" stroke="none"
+                              transform="rotate(-90,635,322)" pointer-events="all" style="fill: rgb(68, 94, 130);"/>
                     </g>
                 </g>
                 <g data-cell-id="d_xgrN8cmmKn0M77IVn5-9">
                     <g>
-                        <path d="M 570 418 L 600 288 L 670 288 L 700 418 Z" fill="#000000" stroke="none"
-                              transform="rotate(-90,635,353)" pointer-events="all"
-                              style="fill: light-dark(rgb(0, 0, 0), rgb(212, 225, 245));"/>
+                        <path d="M 570 418 L 600 288 L 670 288 L 700 418 Z" fill="#d4e1f5" stroke="none"
+                              transform="rotate(-90,635,353)" pointer-events="all" style="fill: rgb(212, 225, 245);"/>
                     </g>
                 </g>
             </g>
