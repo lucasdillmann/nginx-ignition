@@ -63,6 +63,8 @@ linters:
       rules:
         - name: line-length-limit
           disabled: true
+        - name: multiline-if-init
+          disabled: true
         - name: cognitive-complexity
           disabled: true
         - name: add-constant
