@@ -24,16 +24,20 @@ func init() {
 func Test_loginHandler(t *testing.T) {
 	setup := func(t *testing.T) (*user.MockedCommands, *gin.Engine) {
 		controller := gomock.NewController(t)
-		commands := user.NewMockedCommands(controller)
-		authorizer, _ := authorization.New(configuration.New(), commands)
+		userCommands := user.NewMockedCommands(controller)
+		authorizer, _ := authorization.New(
+			configuration.New(),
+			userCommands,
+			newAuthorizationCommands(controller),
+		)
 		handler := loginHandler{
-			commands:   commands,
+			commands:   userCommands,
 			authorizer: authorizer,
 		}
 
 		engine := gin.New()
 		engine.POST("/api/users/login", handler.handle)
-		return commands, engine
+		return userCommands, engine
 	}
 
 	performRequest := func(engine *gin.Engine, payload any) *httptest.ResponseRecorder {

@@ -4,10 +4,21 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/authorization"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
+
+const testJwtSecret = "1234567890123456789012345678901234567890123456789012345678901234"
+
+func newAuthorizationCommands(controller *gomock.Controller) *authorization.MockedCommands {
+	commands := authorization.NewMockedCommands(controller)
+	commands.EXPECT().JwtSecret().Return(testJwtSecret).AnyTimes()
+
+	return commands
+}
 
 func newUser() *user.User {
 	return &user.User{

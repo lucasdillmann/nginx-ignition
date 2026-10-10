@@ -11,6 +11,7 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/apierror"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/authorization"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
@@ -64,10 +65,12 @@ func newAuthorizerWithOverrides(
 ) (*ABAC, *user.MockedCommands) {
 	t.Helper()
 	controller := gomock.NewController(t)
-	commands := user.NewMockedCommands(controller)
+	userCommands := user.NewMockedCommands(controller)
+
+	authorizationCommands := authorization.NewMockedCommands(controller)
+	authorizationCommands.EXPECT().JwtSecret().Return(testJwtSecret).AnyTimes()
 
 	configOverrides := map[string]string{
-		"nginx-ignition.security.jwt.secret":               testJwtSecret,
 		"nginx-ignition.security.jwt.clock-skew-seconds":   "0",
 		"nginx-ignition.security.jwt.ttl-seconds":          "30",
 		"nginx-ignition.security.jwt.renew-window-seconds": "10",
@@ -76,8 +79,12 @@ func newAuthorizerWithOverrides(
 		configOverrides[key] = value
 	}
 
-	authorizer, err := New(configuration.NewWithOverrides(configOverrides), commands)
+	authorizer, err := New(
+		configuration.NewWithOverrides(configOverrides),
+		userCommands,
+		authorizationCommands,
+	)
 	require.NoError(t, err)
 
-	return authorizer, commands
+	return authorizer, userCommands
 }

@@ -1,10 +1,8 @@
 package authorization
 
 const (
-	uniqueIdentifier           = "nginx-ignition"
-	expectedJwtSecretSizeChars = 64
-	expectedJwtSecretSizeBytes = 512
-	tokenKindClaim             = "jtk"
+	uniqueIdentifier = "nginx-ignition"
+	tokenKindClaim   = "jtk"
 )
 
 type TokenKind int

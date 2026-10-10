@@ -8,9 +8,9 @@ The nginx ignition uses JSON Web Tokens (JWT) to authenticate you and all the us
 using a private key, allowing the application to check if any received value is trustworthy.
 
 The JWT secret can be defined using the `NGINX_IGNITION_SECURITY_JWT_SECRET` environment variable, which must be
-a string value with exactly 64 chars-long. If no value is provided, nginx ignition will still work by generating a
-random value every time the app boots (which can be fine, but will force the users to log-in again everytime the
-app restarts).
+a string value with exactly 64 chars-long. It is only read on the first boot: from then on, the secret is read from
+the database, where it is stored, and the environment variable is ignored. If no value is provided, nginx ignition
+will still work by generating a random value and storing it on the first boot.
 
 An example of value to the environment variable follows. Please do not use this value in your installation, but rather
 generate a value just for you.
@@ -77,7 +77,7 @@ nginx ignition to suit you better, if needed.
 | NGINX_IGNITION_DATABASE_PASSWORD                         | Database username                                                                                     | postgres     |                                                                               |
 | NGINX_IGNITION_DATABASE_SCHEMA                           | Schema name (PostgreSQL only)                                                                         | example      | public                                                                        |
 | NGINX_IGNITION_DATABASE_DATA_PATH                        | Folder on where the database file should be stored. Applicable only for the `sqlite` database.        | /opt/example | /tmp/nginx-ignition/data (`C:\Windows\Temp\nginx-ignition\data` on Windows)   |
-| NGINX_IGNITION_SECURITY_JWT_SECRET                       | Secret key (64 chars long) for the authentication tokens                                              |              |                                                                               |
+| NGINX_IGNITION_SECURITY_JWT_SECRET                       | Custom secret key (64 chars long) for the authentication tokens, only used on the first boot          |              | A random value is generated on the first boot                                 |
 | NGINX_IGNITION_SECURITY_JWT_TTL_SECONDS                  | Amount of seconds that an authentication token will be valid before logout by inactivity              | 3600         | 3600                                                                          |
 | NGINX_IGNITION_SECURITY_JWT_RENEW_WINDOW_SECONDS         | Amount of seconds that an authentication token will be automatically renewed before its expiration    | 900          | 900                                                                           |
 | NGINX_IGNITION_SECURITY_JWT_CLOCK_SKEW_SECONDS           | Amount of seconds that the token's dates can variate from the server dates                            | 60           | 60                                                                            |

@@ -2,9 +2,7 @@ package authorization
 
 import (
 	"context"
-	"crypto/rand"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -15,27 +13,26 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
-	"github.com/lucasdillmann/nginx-ignition/internal/business/core/log"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/ttlcache"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/authorization"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 type Jwt struct {
-	commands           user.Commands
-	revokedTokens      *ttlcache.Cache[string, bool]
-	secretKey          []byte
-	ttlSeconds         int
-	clockSkewSeconds   int
-	renewWindowSeconds int
+	userCommands          user.Commands
+	authorizationCommands authorization.Commands
+	revokedTokens         *ttlcache.Cache[string, bool]
+	ttlSeconds            int
+	clockSkewSeconds      int
+	renewWindowSeconds    int
 }
 
-func newJwt(cfg *configuration.Configuration, commands user.Commands) (*Jwt, error) {
+func newJwt(
+	cfg *configuration.Configuration,
+	userCommands user.Commands,
+	authorizationCommands authorization.Commands,
+) (*Jwt, error) {
 	prefixedConfiguration := cfg.WithPrefix("nginx-ignition.security.jwt")
-
-	secretKey, err := initializeSecret(prefixedConfiguration)
-	if err != nil {
-		return nil, err
-	}
 
 	ttlSeconds, err := prefixedConfiguration.GetInt("ttl-seconds")
 	if err != nil {
@@ -75,13 +72,17 @@ func newJwt(cfg *configuration.Configuration, commands user.Commands) (*Jwt, err
 	}
 
 	return &Jwt{
-		commands:           commands,
-		secretKey:          secretKey,
-		ttlSeconds:         ttlSeconds,
-		clockSkewSeconds:   clockSkewSeconds,
-		renewWindowSeconds: renewWindowSeconds,
-		revokedTokens:      revokedTokens,
+		userCommands:          userCommands,
+		authorizationCommands: authorizationCommands,
+		ttlSeconds:            ttlSeconds,
+		clockSkewSeconds:      clockSkewSeconds,
+		renewWindowSeconds:    renewWindowSeconds,
+		revokedTokens:         revokedTokens,
 	}, nil
+}
+
+func (j *Jwt) secretKey() []byte {
+	return []byte(j.authorizationCommands.JwtSecret())
 }
 
 func (j *Jwt) RevokeToken(tokenID string) {
@@ -176,7 +177,7 @@ func (j *Jwt) parse(ctx context.Context, tokenString string) (*jwt.Token, error)
 			return nil, j.invalidTokenError(ctx)
 		}
 
-		return j.secretKey, nil
+		return j.secretKey(), nil
 	})
 	if err != nil {
 		return nil, err
@@ -215,7 +216,7 @@ func (j *Jwt) resolveUser(
 		return nil, err
 	}
 
-	usr, err := j.commands.Get(ctx, userID)
+	usr, err := j.userCommands.Get(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +242,7 @@ func (j *Jwt) validateAPIToken(ctx context.Context, userID uuid.UUID, tokenID st
 		return j.invalidTokenError(ctx)
 	}
 
-	token, err := j.commands.FindAPIToken(ctx, userID, id)
+	token, err := j.userCommands.FindAPIToken(ctx, userID, id)
 	if err != nil {
 		return err
 	}
@@ -308,39 +309,7 @@ func (j *Jwt) isRevoked(tokenID string) bool {
 
 func (j *Jwt) sign(claims *jwt.MapClaims) (*string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
-	tokenString, err := token.SignedString(j.secretKey)
+	tokenString, err := token.SignedString(j.secretKey())
+
 	return &tokenString, err
-}
-
-func initializeSecret(configurationProvider *configuration.Configuration) ([]byte, error) {
-	secret, err := configurationProvider.Get("secret")
-	if err != nil {
-		secret = ""
-	}
-
-	if secret != "" {
-		if len(secret) != expectedJwtSecretSizeChars {
-			message := fmt.Sprintf(
-				"JWT secret should be 64 characters long (512 bytes) but is %d characters long",
-				len(secret),
-			)
-			return nil, errors.New(message)
-		}
-
-		return []byte(secret), nil
-	}
-
-	log.Warnf(
-		"Application was initialized without a JWT secret and a random one will be generated. This will lead " +
-			"to users being logged-out every time the app restarts or they hit a different instance. Please " +
-			"refer to the documentation in order to provide a custom secret.",
-	)
-
-	secretBytes := make([]byte, expectedJwtSecretSizeBytes)
-	_, err = rand.Read(secretBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	return secretBytes, nil
 }

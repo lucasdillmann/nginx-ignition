@@ -29,26 +29,27 @@ func Test_onboardingFinishHandler(t *testing.T) {
 			defer controller.Finish()
 
 			payload := newUserRequest()
-			commands := user.NewMockedCommands(controller)
-			commands.EXPECT().
+			userCommands := user.NewMockedCommands(controller)
+			userCommands.EXPECT().
 				OnboardingCompleted(gomock.Any()).
 				Return(false, nil)
-			commands.EXPECT().
+			userCommands.EXPECT().
 				FinishOnboarding(gomock.Any(), gomock.Any()).
 				Return(nil)
-			commands.EXPECT().
+			userCommands.EXPECT().
 				Authenticate(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(user.AuthenticationSuccessful, &user.User{
 					ID:       uuid.New(),
 					Username: "admin",
 				}, nil)
 
-			cfg := configuration.NewWithOverrides(map[string]string{
-				"nginx-ignition.security.jwt.secret": "1234567890123456789012345678901234567890123456789012345678901234",
-			})
-			authorizer, _ := authorization.New(cfg, commands)
+			authorizer, _ := authorization.New(
+				configuration.New(),
+				userCommands,
+				newAuthorizationCommands(controller),
+			)
 			handler := onboardingFinishHandler{
-				commands:   commands,
+				commands:   userCommands,
 				authorizer: authorizer,
 			}
 			engine := gin.New()
@@ -71,17 +72,18 @@ func Test_onboardingFinishHandler(t *testing.T) {
 			defer controller.Finish()
 
 			payload := newUserRequest()
-			commands := user.NewMockedCommands(controller)
-			commands.EXPECT().
+			userCommands := user.NewMockedCommands(controller)
+			userCommands.EXPECT().
 				OnboardingCompleted(gomock.Any()).
 				Return(true, nil)
 
-			cfg := configuration.NewWithOverrides(map[string]string{
-				"nginx-ignition.security.jwt.secret": "1234567890123456789012345678901234567890123456789012345678901234",
-			})
-			authorizer, _ := authorization.New(cfg, commands)
+			authorizer, _ := authorization.New(
+				configuration.New(),
+				userCommands,
+				newAuthorizationCommands(controller),
+			)
 			handler := onboardingFinishHandler{
-				commands:   commands,
+				commands:   userCommands,
 				authorizer: authorizer,
 			}
 			engine := gin.New()
@@ -104,20 +106,21 @@ func Test_onboardingFinishHandler(t *testing.T) {
 			defer controller.Finish()
 
 			payload := newUserRequest()
-			commands := user.NewMockedCommands(controller)
-			commands.EXPECT().
+			userCommands := user.NewMockedCommands(controller)
+			userCommands.EXPECT().
 				OnboardingCompleted(gomock.Any()).
 				Return(false, nil)
-			commands.EXPECT().
+			userCommands.EXPECT().
 				FinishOnboarding(gomock.Any(), gomock.Any()).
 				Return(user.ErrOnboardingAlreadyCompleted)
 
-			cfg := configuration.NewWithOverrides(map[string]string{
-				"nginx-ignition.security.jwt.secret": "1234567890123456789012345678901234567890123456789012345678901234",
-			})
-			authorizer, _ := authorization.New(cfg, commands)
+			authorizer, _ := authorization.New(
+				configuration.New(),
+				userCommands,
+				newAuthorizationCommands(controller),
+			)
 			handler := onboardingFinishHandler{
-				commands:   commands,
+				commands:   userCommands,
 				authorizer: authorizer,
 			}
 			engine := gin.New()
@@ -140,22 +143,23 @@ func Test_onboardingFinishHandler(t *testing.T) {
 			defer controller.Finish()
 
 			payload := newUserRequest()
-			commands := user.NewMockedCommands(controller)
+			userCommands := user.NewMockedCommands(controller)
 
 			expectedErr := assert.AnError
-			commands.EXPECT().
+			userCommands.EXPECT().
 				OnboardingCompleted(gomock.Any()).
 				Return(false, nil)
-			commands.EXPECT().
+			userCommands.EXPECT().
 				FinishOnboarding(gomock.Any(), gomock.Any()).
 				Return(expectedErr)
 
-			cfg := configuration.NewWithOverrides(map[string]string{
-				"nginx-ignition.security.jwt.secret": "1234567890123456789012345678901234567890123456789012345678901234",
-			})
-			authorizer, _ := authorization.New(cfg, commands)
+			authorizer, _ := authorization.New(
+				configuration.New(),
+				userCommands,
+				newAuthorizationCommands(controller),
+			)
 			handler := onboardingFinishHandler{
-				commands:   commands,
+				commands:   userCommands,
 				authorizer: authorizer,
 			}
 			engine := gin.New()

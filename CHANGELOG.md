@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2.48.0
+
+- The JWT secret used to sign the authentication tokens is now stored in the database and read from there on every
+  boot, improving both the user sessions and the
+  [API tokens](https://github.com/lucasdillmann/nginx-ignition/blob/main/docs/api-tokens.md), as they are signed with
+  the same secret. Users are no longer logged out when the app restarts or when they hit a different instance, and the
+  API tokens are no longer invalidated by a reboot when no custom JWT secret was in use.
+  - Upgrading is transparent: if `NGINX_IGNITION_SECURITY_JWT_SECRET` was set before, keep it. Its value is stored in
+    the database on the first boot after the upgrade and your current secret keeps working, so there's no need to
+    change anything on your side.
+  - The environment variable is now optional and only used on the first boot, to provide your own custom secret. When
+    omitted, a secure random secret is generated and stored. Once the database holds a secret, the stored one is
+    always used and the environment variable is ignored, with a warning logged when it differs from the stored value.
+
 ## 2.47.0
 
 - New project logo
