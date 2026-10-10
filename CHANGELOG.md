@@ -13,6 +13,10 @@
   - The environment variable is now optional and only used on the first boot, to provide your own custom secret. When
     omitted, a secure random secret is generated and stored. Once the database holds a secret, the stored one is
     always used and the environment variable is ignored, with a warning logged when it differs from the stored value.
+- The embedded SQLite database now waits for a lock held by another connection instead of immediately failing with a
+  `database is locked` error, fixing intermittent write failures under concurrent access. The wait is 5 seconds by
+  default and can be changed through the `NGINX_IGNITION_DATABASE_SQLITE_BUSY_TIMEOUT_MS` environment variable. 
+  PostgreSQL is unaffected.
 
 ## 2.47.0
 

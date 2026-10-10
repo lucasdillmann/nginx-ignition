@@ -108,9 +108,14 @@ func (d *Database) initSqlite() error {
 		return err
 	}
 
+	busyTimeout, err := d.configuration.GetInt("sqlite.busy-timeout-ms")
+	if err != nil || busyTimeout <= 0 {
+		busyTimeout = defaultSQLiteBusyTimeoutMS
+	}
+
 	return d.initBun(
 		"sqlite",
-		fmt.Sprintf("file:%s", filePath),
+		fmt.Sprintf("file:%s?_pragma=busy_timeout(%d)", filePath, busyTimeout),
 		sqlitedialect.New(),
 	)
 }
