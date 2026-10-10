@@ -67,6 +67,7 @@ func Test_Repository_TryCreateInitialUser(t *testing.T) {
 			const goroutines = 10
 			var successCount int32
 			var failureCount int32
+			var busyCount int32
 			waitGroup := sync.WaitGroup{}
 			waitGroup.Add(goroutines)
 
@@ -80,10 +81,12 @@ func Test_Repository_TryCreateInitialUser(t *testing.T) {
 
 					created, err := repo.TryCreateInitialUser(t.Context(), candidate)
 					if err != nil {
-						if !strings.Contains(err.Error(), "SQLITE_BUSY") {
+						if strings.Contains(err.Error(), "SQLITE_BUSY") {
+							atomic.AddInt32(&busyCount, 1)
+						} else {
 							t.Errorf("TryCreateInitialUser returned error: %v", err)
-							return
 						}
+						return
 					}
 
 					if created {
@@ -96,6 +99,11 @@ func Test_Repository_TryCreateInitialUser(t *testing.T) {
 
 			waitGroup.Wait()
 
+			assert.Zero(
+				t,
+				busyCount,
+				"every attempt should wait for the write lock instead of failing with SQLITE_BUSY",
+			)
 			assert.Equal(t, int32(1), successCount)
 			assert.Equal(t, int32(goroutines-1), failureCount)
 

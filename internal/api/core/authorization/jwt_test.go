@@ -13,6 +13,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/authorization"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
@@ -397,28 +398,21 @@ func Test_Jwt_RevokeToken(t *testing.T) {
 }
 
 func Test_New(t *testing.T) {
-	t.Run("returns an error for an invalid JWT secret length", func(t *testing.T) {
+	newAuthorizer := func(cfg *configuration.Configuration) (*ABAC, error) {
 		controller := gomock.NewController(t)
-		commands := user.NewMockedCommands(controller)
-		cfg := configuration.NewWithOverrides(map[string]string{
-			"nginx-ignition.security.jwt.secret": "too-short",
-		})
+		userCommands := user.NewMockedCommands(controller)
+		authorizationCommands := authorization.NewMockedCommands(controller)
+		authorizationCommands.EXPECT().JwtSecret().Return(testJwtSecret).AnyTimes()
 
-		authorizer, err := New(cfg, commands)
-
-		assert.Error(t, err)
-		assert.Nil(t, authorizer)
-	})
+		return New(cfg, userCommands, authorizationCommands)
+	}
 
 	t.Run("returns an error when ttl-seconds is less than 30", func(t *testing.T) {
-		controller := gomock.NewController(t)
-		commands := user.NewMockedCommands(controller)
 		cfg := configuration.NewWithOverrides(map[string]string{
-			"nginx-ignition.security.jwt.secret":      testJwtSecret,
 			"nginx-ignition.security.jwt.ttl-seconds": "10",
 		})
 
-		authorizer, err := New(cfg, commands)
+		authorizer, err := newAuthorizer(cfg)
 
 		assert.Error(t, err)
 		assert.Nil(t, authorizer)
@@ -426,14 +420,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("returns an error when clock-skew-seconds is negative", func(t *testing.T) {
-		controller := gomock.NewController(t)
-		commands := user.NewMockedCommands(controller)
 		cfg := configuration.NewWithOverrides(map[string]string{
-			"nginx-ignition.security.jwt.secret":             testJwtSecret,
 			"nginx-ignition.security.jwt.clock-skew-seconds": "-1",
 		})
 
-		authorizer, err := New(cfg, commands)
+		authorizer, err := newAuthorizer(cfg)
 
 		assert.Error(t, err)
 		assert.Nil(t, authorizer)
@@ -441,14 +432,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("returns an error when renew-window-seconds is negative", func(t *testing.T) {
-		controller := gomock.NewController(t)
-		commands := user.NewMockedCommands(controller)
 		cfg := configuration.NewWithOverrides(map[string]string{
-			"nginx-ignition.security.jwt.secret":               testJwtSecret,
 			"nginx-ignition.security.jwt.renew-window-seconds": "-1",
 		})
 
-		authorizer, err := New(cfg, commands)
+		authorizer, err := newAuthorizer(cfg)
 
 		assert.Error(t, err)
 		assert.Nil(t, authorizer)
@@ -456,15 +444,12 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("returns an error when renew-window-seconds > ttl-seconds", func(t *testing.T) {
-		controller := gomock.NewController(t)
-		commands := user.NewMockedCommands(controller)
 		cfg := configuration.NewWithOverrides(map[string]string{
-			"nginx-ignition.security.jwt.secret":               testJwtSecret,
 			"nginx-ignition.security.jwt.ttl-seconds":          "60",
 			"nginx-ignition.security.jwt.renew-window-seconds": "120",
 		})
 
-		authorizer, err := New(cfg, commands)
+		authorizer, err := newAuthorizer(cfg)
 
 		assert.Error(t, err)
 		assert.Nil(t, authorizer)
@@ -479,7 +464,7 @@ func parseJwtClaims(t *testing.T, authorizer *ABAC, raw string) jwt.MapClaims {
 			return nil, errors.New("unexpected signing method")
 		}
 
-		return authorizer.jwt.secretKey, nil
+		return authorizer.jwt.secretKey(), nil
 	})
 	require.NoError(t, err)
 	require.True(t, token.Valid)
@@ -494,7 +479,7 @@ func signRawToken(t *testing.T, authorizer *ABAC, claims jwt.MapClaims) string {
 	t.Helper()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 
-	raw, err := token.SignedString(authorizer.jwt.secretKey)
+	raw, err := token.SignedString(authorizer.jwt.secretKey())
 	require.NoError(t, err)
 
 	return raw

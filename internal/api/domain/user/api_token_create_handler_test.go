@@ -24,10 +24,14 @@ import (
 func Test_apiTokenCreateHandler(t *testing.T) {
 	setup := func(t *testing.T, usr *user.User) (*user.MockedCommands, *gin.Engine) {
 		controller := gomock.NewController(t)
-		commands := user.NewMockedCommands(controller)
-		authorizer, _ := authorization.New(configuration.New(), commands)
+		userCommands := user.NewMockedCommands(controller)
+		authorizer, _ := authorization.New(
+			configuration.New(),
+			userCommands,
+			newAuthorizationCommands(controller),
+		)
 		handler := apiTokenCreateHandler{
-			commands:   commands,
+			commands:   userCommands,
 			authorizer: authorizer,
 		}
 
@@ -38,7 +42,7 @@ func Test_apiTokenCreateHandler(t *testing.T) {
 		})
 		engine.POST("/current/tokens", handler.handle)
 
-		return commands, engine
+		return userCommands, engine
 	}
 
 	performRequest := func(engine *gin.Engine, payload any) *httptest.ResponseRecorder {

@@ -9,6 +9,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/container"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
+	businessauthorization "github.com/lucasdillmann/nginx-ignition/internal/business/domain/authorization"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
@@ -23,6 +24,7 @@ func Install() error {
 func build(
 	cfg *configuration.Configuration,
 	userCommands user.Commands,
+	authorizationCommands businessauthorization.Commands,
 	i18nCommands i18n.Commands,
 ) (
 	*gin.Engine,
@@ -42,7 +44,7 @@ func build(
 	engine.Use(gin.CustomRecoveryWithWriter(nil, apierror.Handler))
 	engine.Use(bodyLimit)
 
-	authorizer, err := authorization.New(cfg, userCommands)
+	authorizer, err := authorization.New(cfg, userCommands, authorizationCommands)
 	if err != nil {
 		return nil, nil, nil, err
 	}

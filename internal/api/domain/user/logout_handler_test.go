@@ -25,11 +25,12 @@ func Test_logoutHandler(t *testing.T) {
 			controller := gomock.NewController(t)
 			defer controller.Finish()
 
-			cfg := configuration.NewWithOverrides(map[string]string{
-				"nginx-ignition.security.jwt.secret": "1234567890123456789012345678901234567890123456789012345678901234",
-			})
-			commands := user.NewMockedCommands(controller)
-			authorizer, _ := authorization.New(cfg, commands)
+			userCommands := user.NewMockedCommands(controller)
+			authorizer, _ := authorization.New(
+				configuration.New(),
+				userCommands,
+				newAuthorizationCommands(controller),
+			)
 
 			handler := logoutHandler{
 				authorizer: authorizer,

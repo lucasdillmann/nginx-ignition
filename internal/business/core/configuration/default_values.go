@@ -15,6 +15,7 @@ var defaultValues = map[string]string{
 	"nginx-ignition.vpn.config-path":                               "/tmp/nginx-ignition/vpn",
 	"nginx-ignition.database.driver":                               "sqlite",
 	"nginx-ignition.database.data-path":                            "/tmp/nginx-ignition/data",
+	"nginx-ignition.database.sqlite.busy-timeout-ms":               "5000",
 	"nginx-ignition.security.user-password-hashing.algorithm":      "SHA-512",
 	"nginx-ignition.security.user-password-hashing.salt-size":      "64",
 	"nginx-ignition.security.user-password-hashing.iterations":     "1024",

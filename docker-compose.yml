@@ -43,11 +43,6 @@ services:
       # Remember to change to a strong and secret password before deployment. It must be the same password you used
       # for the PostgreSQL database above.
       NGINX_IGNITION_DATABASE_PASSWORD: PlaceYourSuperSecretDatabasePasswordHere
-
-      # DO NOT USE THIS SECRET VALUE IN A PRODUCTION ENVIRONMENT
-      # Remember to change to a strong and secret key exactly 64 characters long before deployment.
-      # For more details, please check the docs/configuration-properties.md file.
-      NGINX_IGNITION_SECURITY_JWT_SECRET: PlaceYourSecretJwtPrivateKeyHereButRememberThatShouldHave64Chars
     depends_on:
       postgres:
         condition: service_healthy

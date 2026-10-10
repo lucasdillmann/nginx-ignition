@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/authorization"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
@@ -27,8 +28,12 @@ type ABAC struct {
 	sessionTokensOnlyPaths []string
 }
 
-func New(cfg *configuration.Configuration, commands user.Commands) (*ABAC, error) {
-	jwt, err := newJwt(cfg, commands)
+func New(
+	cfg *configuration.Configuration,
+	userCommands user.Commands,
+	authorizationCommands authorization.Commands,
+) (*ABAC, error) {
+	jwt, err := newJwt(cfg, userCommands, authorizationCommands)
 	if err != nil {
 		return nil, err
 	}

@@ -3,6 +3,7 @@ package domain
 import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/container"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/domain/accesslist"
+	"github.com/lucasdillmann/nginx-ignition/internal/database/domain/authorization"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/domain/backup"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/domain/cache"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/domain/certificate"
@@ -26,5 +27,6 @@ func Install() error {
 		stream.New,
 		backup.New,
 		vpn.New,
+		authorization.New,
 	)
 }
