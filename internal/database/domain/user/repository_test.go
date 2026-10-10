@@ -80,13 +80,12 @@ func Test_Repository_TryCreateInitialUser(t *testing.T) {
 					candidate.Username = uuid.New().String()
 
 					created, err := repo.TryCreateInitialUser(t.Context(), candidate)
-					if err != nil && strings.Contains(err.Error(), "SQLITE_BUSY") {
-						atomic.AddInt32(&busyCount, 1)
-						return
-					}
-
 					if err != nil {
-						t.Errorf("TryCreateInitialUser returned error: %v", err)
+						if strings.Contains(err.Error(), "SQLITE_BUSY") {
+							atomic.AddInt32(&busyCount, 1)
+						} else {
+							t.Errorf("TryCreateInitialUser returned error: %v", err)
+						}
 						return
 					}
 
@@ -100,19 +99,17 @@ func Test_Repository_TryCreateInitialUser(t *testing.T) {
 
 			waitGroup.Wait()
 
-			attempts := successCount + failureCount + busyCount
-			assert.Equal(t, int32(goroutines), attempts)
-
-			if busyCount > 0 {
-				assert.LessOrEqual(t, successCount, int32(1))
-			} else {
-				assert.Equal(t, int32(1), successCount)
-				assert.Equal(t, int32(goroutines-1), failureCount)
-			}
+			assert.Zero(
+				t,
+				busyCount,
+				"every attempt should wait for the write lock instead of failing with SQLITE_BUSY",
+			)
+			assert.Equal(t, int32(1), successCount)
+			assert.Equal(t, int32(goroutines-1), failureCount)
 
 			count, err := repo.Count(t.Context())
 			require.NoError(t, err)
-			assert.LessOrEqual(t, count, 1)
+			assert.Equal(t, 1, count)
 		})
 	})
 }
