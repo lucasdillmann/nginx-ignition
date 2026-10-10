@@ -17,6 +17,7 @@
   `database is locked` error, fixing intermittent write failures under concurrent access. The wait is 5 seconds by
   default and can be changed through the `NGINX_IGNITION_DATABASE_SQLITE_BUSY_TIMEOUT_MS` environment variable. 
   PostgreSQL is unaffected.
+- Added support for 4 new DNS providers for Let's Encrypt certificates: DNSMint, FENO, Myra and Webglobe
 - Updated Go to 1.27.2 and other internal dependencies
 
 ## 2.47.0
