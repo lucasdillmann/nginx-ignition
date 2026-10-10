@@ -83,10 +83,10 @@ func Test_service_initialize(t *testing.T) {
 
 		var stored string
 		repository.EXPECT().
-			SaveJwtSecret(t.Context(), gomock.Any()).
-			DoAndReturn(func(_ context.Context, secret *string) error {
+			SaveJwtSecretIfNotExists(t.Context(), gomock.Any()).
+			DoAndReturn(func(_ context.Context, secret *string) (*string, error) {
 				stored = *secret
-				return nil
+				return secret, nil
 			})
 
 		err := svc.initialize(t.Context())
@@ -118,10 +118,10 @@ func Test_service_initialize(t *testing.T) {
 
 		var stored string
 		repository.EXPECT().
-			SaveJwtSecret(t.Context(), gomock.Any()).
-			DoAndReturn(func(_ context.Context, secret *string) error {
+			SaveJwtSecretIfNotExists(t.Context(), gomock.Any()).
+			DoAndReturn(func(_ context.Context, secret *string) (*string, error) {
 				stored = *secret
-				return nil
+				return secret, nil
 			})
 
 		err := svc.initialize(t.Context())
@@ -130,6 +130,30 @@ func Test_service_initialize(t *testing.T) {
 		assert.Len(t, stored, 64)
 		assert.Equal(t, stored, svc.JwtSecret())
 	})
+
+	t.Run(
+		"uses the secret stored by another instance when it wins the creation",
+		func(t *testing.T) {
+			svc, repository := newServiceWithMockedRepository(t, map[string]string{})
+			repository.EXPECT().FindJwtSecret(t.Context()).Return(nil, nil)
+
+			var candidate string
+			stored := testAnotherJwtSecret
+			repository.EXPECT().
+				SaveJwtSecretIfNotExists(t.Context(), gomock.Any()).
+				DoAndReturn(func(_ context.Context, secret *string) (*string, error) {
+					candidate = *secret
+					return &stored, nil
+				})
+
+			err := svc.initialize(t.Context())
+
+			require.NoError(t, err)
+			assert.Len(t, candidate, 64)
+			assert.NotEqual(t, candidate, stored)
+			assert.Equal(t, stored, svc.JwtSecret())
+		},
+	)
 
 	t.Run("returns an error when the database lookup fails", func(t *testing.T) {
 		svc, repository := newServiceWithMockedRepository(t, map[string]string{})
@@ -145,11 +169,12 @@ func Test_service_initialize(t *testing.T) {
 		svc, repository := newServiceWithMockedRepository(t, map[string]string{})
 		repository.EXPECT().FindJwtSecret(t.Context()).Return(nil, nil)
 		repository.EXPECT().
-			SaveJwtSecret(t.Context(), gomock.Any()).
-			Return(assert.AnError)
+			SaveJwtSecretIfNotExists(t.Context(), gomock.Any()).
+			Return(nil, assert.AnError)
 
 		err := svc.initialize(t.Context())
 
 		assert.ErrorIs(t, err, assert.AnError)
+		assert.Empty(t, svc.JwtSecret())
 	})
 }

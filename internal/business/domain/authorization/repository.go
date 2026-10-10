@@ -6,5 +6,5 @@ import (
 
 type Repository interface {
 	FindJwtSecret(ctx context.Context) (*string, error)
-	SaveJwtSecret(ctx context.Context, secret *string) error
+	SaveJwtSecretIfNotExists(ctx context.Context, secret *string) (*string, error)
 }

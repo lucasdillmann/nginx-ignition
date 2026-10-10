@@ -31,7 +31,9 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 
 		t.Run("returns the stored JWT secret", func(t *testing.T) {
 			secret := testJwtSecret
-			require.NoError(t, repo.SaveJwtSecret(t.Context(), &secret))
+			stored, err := repo.SaveJwtSecretIfNotExists(t.Context(), &secret)
+			require.NoError(t, err)
+			require.NotNil(t, stored)
 
 			found, err := repo.FindJwtSecret(t.Context())
 			require.NoError(t, err)
@@ -40,30 +42,36 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 		})
 	})
 
-	t.Run("SaveJwtSecret", func(t *testing.T) {
-		t.Run("successfully stores the JWT secret", func(t *testing.T) {
+	t.Run("SaveJwtSecretIfNotExists", func(t *testing.T) {
+		t.Run("stores the JWT secret when the table is empty", func(t *testing.T) {
 			secret := testJwtSecret
-			require.NoError(t, repo.SaveJwtSecret(t.Context(), &secret))
-
-			found, err := repo.FindJwtSecret(t.Context())
+			stored, err := repo.SaveJwtSecretIfNotExists(t.Context(), &secret)
 			require.NoError(t, err)
-			require.NotNil(t, found)
-			assert.Equal(t, testJwtSecret, *found)
+			require.NotNil(t, stored)
+			assert.Equal(t, testJwtSecret, *stored)
+
+			total, err := db.Select().Model((*configurationModel)(nil)).Count(t.Context())
+			require.NoError(t, err)
+			assert.Equal(t, int64(1), total)
 		})
 
 		t.Run(
-			"replaces the previously stored JWT secret instead of adding a row",
+			"keeps the already stored JWT secret and returns it instead of the provided one",
 			func(t *testing.T) {
 				secret := testJwtSecret
-				require.NoError(t, repo.SaveJwtSecret(t.Context(), &secret))
+				_, err := repo.SaveJwtSecretIfNotExists(t.Context(), &secret)
+				require.NoError(t, err)
 
-				updated := testAnotherJwtSecret
-				require.NoError(t, repo.SaveJwtSecret(t.Context(), &updated))
+				another := testAnotherJwtSecret
+				stored, err := repo.SaveJwtSecretIfNotExists(t.Context(), &another)
+				require.NoError(t, err)
+				require.NotNil(t, stored)
+				assert.Equal(t, testJwtSecret, *stored)
 
 				found, err := repo.FindJwtSecret(t.Context())
 				require.NoError(t, err)
 				require.NotNil(t, found)
-				assert.Equal(t, testAnotherJwtSecret, *found)
+				assert.Equal(t, testJwtSecret, *found)
 
 				total, err := db.Select().Model((*configurationModel)(nil)).Count(t.Context())
 				require.NoError(t, err)

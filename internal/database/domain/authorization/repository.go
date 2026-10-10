@@ -5,6 +5,9 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect"
+
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/authorization"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 )
@@ -35,28 +38,59 @@ func (r *repository) FindJwtSecret(ctx context.Context) (*string, error) {
 	return &model.JwtSecret, nil
 }
 
-func (r *repository) SaveJwtSecret(ctx context.Context, secret *string) error {
+func (r *repository) SaveJwtSecretIfNotExists(
+	ctx context.Context,
+	secret *string,
+) (*string, error) {
 	transaction, err := r.database.Begin()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	//nolint:errcheck
 	defer transaction.Rollback()
 
-	if _, err = transaction.NewTruncateTable().
-		Model((*configurationModel)(nil)).
-		Exec(ctx); err != nil {
-		return err
+	if err = lockAuthorizationConfiguration(ctx, transaction); err != nil {
+		return nil, err
 	}
 
-	model := &configurationModel{
-		JwtSecret: *secret,
+	var model configurationModel
+
+	err = transaction.NewSelect().Model(&model).Limit(1).Scan(ctx)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		model = configurationModel{JwtSecret: *secret}
+
+		if _, err = transaction.NewInsert().Model(&model).Exec(ctx); err != nil {
+			return nil, err
+		}
+
+		if err = transaction.Commit(); err != nil {
+			return nil, err
+		}
+
+		return &model.JwtSecret, nil
 	}
 
-	if _, err = transaction.NewInsert().Model(model).Exec(ctx); err != nil {
-		return err
+	if err != nil {
+		return nil, err
 	}
 
-	return transaction.Commit()
+	return &model.JwtSecret, nil
+}
+
+func lockAuthorizationConfiguration(ctx context.Context, transaction bun.Tx) error {
+	var statement string
+
+	switch transaction.Dialect().Name() {
+	case dialect.PG:
+		statement = `LOCK TABLE authorization_configuration IN EXCLUSIVE MODE`
+	case dialect.SQLite:
+		statement = "ROLLBACK; BEGIN IMMEDIATE;"
+	default:
+		return errors.New("unsupported database dialect")
+	}
+
+	_, err := transaction.ExecContext(ctx, statement)
+	return err
 }

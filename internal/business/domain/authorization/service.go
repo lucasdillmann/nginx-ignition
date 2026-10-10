@@ -55,8 +55,13 @@ func (s *service) initialize(ctx context.Context) error {
 		)
 	}
 
-	s.secret = secret
-	return s.repository.SaveJwtSecret(ctx, &secret)
+	stored, err = s.repository.SaveJwtSecretIfNotExists(ctx, &secret)
+	if err != nil {
+		return err
+	}
+
+	s.secret = *stored
+	return nil
 }
 
 func (s *service) useStoredSecret(stored string) error {
