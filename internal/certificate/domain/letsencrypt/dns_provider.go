@@ -62,6 +62,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/dnsimple"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/dnsla"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/dnsmadeeasy"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/dnsmint"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/dnsservices"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/dode"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/domeneshop"
@@ -83,6 +84,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/exec"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/exoscale"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/f5xc"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/feno"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/fornex"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/freemyip"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/gandi"
@@ -137,6 +139,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/mittwald"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/myaddr"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/mydnsjp"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/myra"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/mythicbeasts"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/namecheap"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/namedotcom"
@@ -212,6 +215,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/vscale"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/vultr"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/wannafind"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/webglobe"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/webnamesca"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/webnamesru"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/websupport"
@@ -282,6 +286,7 @@ var providers = []dns.Provider{
 	&dnsimple.Provider{},
 	&dnsla.Provider{},
 	&dnsmadeeasy.Provider{},
+	&dnsmint.Provider{},
 	&dnscale.Provider{},
 	&dnsservices.Provider{},
 	&dode.Provider{},
@@ -304,6 +309,7 @@ var providers = []dns.Provider{
 	&exec.Provider{},
 	&exoscale.Provider{},
 	&f5xc.Provider{},
+	&feno.Provider{},
 	&fornex.Provider{},
 	&freemyip.Provider{},
 	&gandi.Provider{},
@@ -358,6 +364,7 @@ var providers = []dns.Provider{
 	&mittwald.Provider{},
 	&myaddr.Provider{},
 	&mydnsjp.Provider{},
+	&myra.Provider{},
 	&mythicbeasts.Provider{},
 	&namecheap.Provider{},
 	&namedotcom.Provider{},
@@ -433,6 +440,7 @@ var providers = []dns.Provider{
 	&vscale.Provider{},
 	&vultr.Provider{},
 	&wannafind.Provider{},
+	&webglobe.Provider{},
 	&webnamesca.Provider{},
 	&webnamesru.Provider{},
 	&websupport.Provider{},
