@@ -36,6 +36,16 @@
 
 <br />
 
+## 📸 A quick look
+
+<img src="docs/images/dashboard.png" alt="nginx ignition dashboard" width="700" />
+
+Manage your hosts, streams, certificates, integrations and users from a single dashboard.
+
+See the **[screenshots gallery](docs/screenshots.md)** for a walkthrough of every screen.
+
+<br />
+
 ## 🌐 Multi-language support
 
 nginx ignition supports multiple languages, including:
@@ -122,6 +132,7 @@ Need to tune your setup? Explore our detailed guides:
 - 🏥 **[Health checks](docs/health-checks.md):** Monitor your instance's status.
 - 🔍 **[Troubleshooting](docs/troubleshooting.md):** Common issues and recovery steps (like password resets).
 - 🔁 **[Migrating from v1 to v2](docs/migration-guide.md):** Steps to upgrade from nginx ignition v1 to v2.
+- 📸 **[Screenshots](docs/screenshots.md):** Every screen of the app, with a short description of what it does.
 
 <br />
 
