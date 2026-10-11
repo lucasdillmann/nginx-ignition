@@ -47,42 +47,47 @@ async function recordFlow(browser, token, name) {
     const module = await flow.module()
     const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "nginx-ignition-video-"))
 
-    const context = await createContext(browser, {
-        theme: "light",
-        viewport: { width: video.width, height: video.height },
-        deviceScaleFactor: 1,
-        video: { dir: temporaryDirectory, size: { width: video.width, height: video.height } },
-    })
-    await authenticate(context, token, "light")
-
-    const startedAt = Date.now()
-    const page = await openPage(context, "/")
-    await waitForApp(page)
-
-    await navigateToMenu(page, flow.menuItem)
-
-    if (!page.url().endsWith(flow.route)) {
-        throw new Error(`"${name}" landed on ${page.url()} instead of ${flow.route}`)
-    }
-
-    await sleep(startScreenHoldMilliseconds)
-
-    const startOffset = (Date.now() - startedAt) / 1000 - video.guardSeconds
-
     try {
-        await module.default(page)
-    } finally {
-        await context.close()
+        const context = await createContext(browser, {
+            theme: "light",
+            viewport: { width: video.width, height: video.height },
+            deviceScaleFactor: 1,
+            video: { dir: temporaryDirectory, size: { width: video.width, height: video.height } },
+        })
+        await authenticate(context, token, "light")
+
+        const startedAt = Date.now()
+        const page = await openPage(context, "/")
+        await waitForApp(page)
+
+        await navigateToMenu(page, flow.menuItem)
+
+        if (!page.url().endsWith(flow.route)) {
+            throw new Error(`"${name}" landed on ${page.url()} instead of ${flow.route}`)
+        }
+
+        await sleep(startScreenHoldMilliseconds)
+
+        const startOffset = (Date.now() - startedAt) / 1000 - video.guardSeconds
+
+        try {
+            await module.default(page)
+        } finally {
+            await context.close()
+        }
+
+        const recorded = fs
+            .readdirSync(temporaryDirectory)
+            .map(file => path.join(temporaryDirectory, file))
+            .find(file => file.endsWith(".webm"))
+
+        if (recorded === undefined) throw new Error(`No video was recorded for "${name}"`)
+
+        return { recorded, temporaryDirectory, startOffset }
+    } catch (error) {
+        fs.rmSync(temporaryDirectory, { recursive: true, force: true })
+        throw error
     }
-
-    const recorded = fs
-        .readdirSync(temporaryDirectory)
-        .map(file => path.join(temporaryDirectory, file))
-        .find(file => file.endsWith(".webm"))
-
-    if (recorded === undefined) throw new Error(`No video was recorded for "${name}"`)
-
-    return { recorded, temporaryDirectory, startOffset }
 }
 
 export async function recordVideos(api) {

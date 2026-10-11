@@ -22,7 +22,9 @@ class ApiClient {
 
         if (!response.ok) {
             const text = await response.text()
-            throw new Error(`${method} ${endpoint} failed with ${response.status}: ${text}`)
+            const error = new Error(`${method} ${endpoint} failed with ${response.status}: ${text}`)
+            error.status = response.status
+            throw error
         }
 
         if (response.status === 204) return undefined
@@ -46,17 +48,24 @@ class ApiClient {
 
 export async function authenticate() {
     const anonymous = new ApiClient()
-
-    const onboarding = await anonymous.post("/api/users/onboarding/finish", {
+    const account = {
         name: credentials.name,
         username: credentials.username,
         password: credentials.password,
-    })
+    }
 
-    const api = new ApiClient(onboarding.token)
-    log(`created the "${credentials.username}" administrator account`)
+    let token
+    try {
+        token = (await anonymous.post("/api/users/onboarding/finish", account)).token
+        log(`created the "${credentials.username}" administrator account`)
+    } catch (error) {
+        if (error.status !== 403) throw error
 
-    return api
+        token = (await anonymous.post("/api/users/login", account)).token
+        log(`signed in as the existing "${credentials.username}" account`)
+    }
+
+    return new ApiClient(token)
 }
 
 function findDockerSocket() {
