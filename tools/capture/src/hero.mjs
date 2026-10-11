@@ -118,15 +118,19 @@ export async function captureHero(api) {
         const screenshots = await capturePanels(browser, api.token)
 
         const composites = []
-        for (const panel of panels) {
-            const built = await buildPanel(screenshots[panel.source], panel.width)
-            composites.push({
-                input: built.shadow,
-                left: Math.max(0, panel.left + built.offset),
-                top: Math.max(0, panel.top + built.offset),
-            })
-            composites.push({ input: built.content, left: panel.left, top: panel.top })
-        }
+        const built = await Promise.all(panels.map(panel => buildPanel(screenshots[panel.source], panel.width)))
+
+        built.forEach((panel, index) => {
+            const placement = panels[index]
+            composites.push(
+                {
+                    input: panel.shadow,
+                    left: Math.max(0, placement.left + panel.offset),
+                    top: Math.max(0, placement.top + panel.offset),
+                },
+                { input: panel.content, left: placement.left, top: placement.top },
+            )
+        })
 
         await sharp({
             create: {

@@ -102,8 +102,8 @@ function stopManagedNginx() {
     } catch {}
 }
 
-function stopLeftoverNginx() {
-    const result = spawnSync("pgrep", ["-f", nginxConfigDirectory], { stdio: ["ignore", "pipe", "ignore"] })
+function stopLeftoverStack() {
+    const result = spawnSync("pgrep", ["-f", workspaceDirectory], { stdio: ["ignore", "pipe", "ignore"] })
     if (result.status !== 0) return
 
     const pids = result.stdout
@@ -115,7 +115,7 @@ function stopLeftoverNginx() {
     for (const pid of pids) {
         try {
             process.kill(pid, "SIGTERM")
-            log(`stopped a leftover nginx instance from a previous run (pid ${pid})`)
+            log(`stopped a leftover process from a previous run (pid ${pid})`)
         } catch {}
     }
 }
@@ -135,6 +135,7 @@ export async function startStack() {
         )
     }
 
+    stopLeftoverStack()
     await ensurePortIsFree()
 
     if (!keepStack) {
@@ -144,8 +145,6 @@ export async function startStack() {
 
     ensureDirectory(databaseDirectory)
     ensureDirectory(nginxConfigDirectory)
-
-    stopLeftoverNginx()
 
     buildBinary()
 
@@ -168,7 +167,12 @@ export async function startStack() {
     server.stderr.on("data", chunk => (output += chunk))
 
     let exited = false
-    server.once("exit", () => (exited = true))
+    const onExit = new Promise(resolve =>
+        server.once("exit", () => {
+            exited = true
+            resolve()
+        }),
+    )
 
     try {
         await waitForServer()
@@ -190,9 +194,7 @@ export async function startStack() {
             if (exited) return
 
             server.kill("SIGTERM")
-
-            const deadline = Date.now() + 10_000
-            while (!exited && Date.now() < deadline) await sleep(100)
+            await Promise.race([onExit, sleep(10_000)])
 
             if (!exited) server.kill("SIGKILL")
 

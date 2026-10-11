@@ -1,4 +1,4 @@
-import { clickButton, delay, editRow, scrollTo } from "./shared.mjs"
+import { delay, editRow, scrollTo } from "./shared.mjs"
 
 export default async function sslCertificates(page) {
     await editRow(page, "example.com")

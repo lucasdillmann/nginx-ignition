@@ -16,11 +16,11 @@ export async function scrollTo(page, text) {
 }
 
 function escapeForRegExp(value) {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    return value.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
 }
 
 function formItem(page, label) {
-    const pattern = new RegExp(`^${escapeForRegExp(label)}(\\s*\\(optional\\))?$`)
+    const pattern = new RegExp(String.raw`^${escapeForRegExp(label)}(\s*\(optional\))?$`)
 
     return page
         .locator("label")

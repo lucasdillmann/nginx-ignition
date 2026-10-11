@@ -45,6 +45,12 @@ async function open(context, routePath, prepare) {
     return page
 }
 
+async function save(page, name) {
+    const destination = path.join(docsImagesDirectory, name)
+    await page.screenshot({ path: destination })
+    log(`  ${name.replace(".png", "").padEnd(18)} ${formatBytes(fs.statSync(destination).size)}`)
+}
+
 async function captureGallery(browser, token, seeded) {
     const context = await createContext(browser, {
         theme: "light",
@@ -56,18 +62,13 @@ async function captureGallery(browser, token, seeded) {
     try {
         for (const item of gallery) {
             const page = await open(context, item.route, item.prepare)
-
-            const destination = path.join(docsImagesDirectory, `${item.name}.png`)
-            await page.screenshot({ path: destination })
-            log(`  ${item.name.padEnd(18)} ${formatBytes(fs.statSync(destination).size)}`)
+            await save(page, `${item.name}.png`)
             await page.close()
 
             if (item.companion === undefined) continue
 
             const form = await open(context, item.companion(seeded))
-            const formDestination = path.join(docsImagesDirectory, `${item.name}-form.png`)
-            await form.screenshot({ path: formDestination })
-            log(`  ${`${item.name}-form`.padEnd(18)} ${formatBytes(fs.statSync(formDestination).size)}`)
+            await save(form, `${item.name}-form.png`)
             await form.close()
         }
     } finally {
@@ -86,9 +87,7 @@ async function captureDarkGallery(browser, token) {
     try {
         for (const item of [gallery[0], gallery[1]]) {
             const page = await open(context, item.route)
-            const destination = path.join(docsImagesDirectory, `${item.name}-dark.png`)
-            await page.screenshot({ path: destination })
-            log(`  ${`${item.name}-dark`.padEnd(18)} ${formatBytes(fs.statSync(destination).size)}`)
+            await save(page, `${item.name}-dark.png`)
             await page.close()
         }
     } finally {
@@ -105,9 +104,8 @@ async function captureLogin(browser) {
 
     try {
         const page = await open(context, "/login")
-        const destination = path.join(docsImagesDirectory, "login.png")
-        await page.screenshot({ path: destination })
-        log(`  ${"login".padEnd(18)} ${formatBytes(fs.statSync(destination).size)}`)
+        await save(page, "login.png")
+        await page.close()
     } finally {
         await context.close()
     }

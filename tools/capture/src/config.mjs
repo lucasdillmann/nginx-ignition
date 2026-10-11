@@ -1,4 +1,5 @@
 import fs from "node:fs"
+import os from "node:os"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -31,7 +32,7 @@ function booleanFromEnvironment(name, fallback) {
 
 export const port = numberFromEnvironment("CAPTURE_PORT", 8090)
 export const baseUrl = `http://localhost:${port}`
-export const workspaceDirectory = process.env.CAPTURE_WORKSPACE ?? "/tmp/nginx-ignition/capture"
+export const workspaceDirectory = process.env.CAPTURE_WORKSPACE ?? path.join(os.tmpdir(), "nginx-ignition", "capture")
 export const databaseDirectory = path.join(workspaceDirectory, "data")
 export const nginxConfigDirectory = path.join(workspaceDirectory, "nginx")
 export const binaryPath = path.join(workspaceDirectory, "nginx-ignition")

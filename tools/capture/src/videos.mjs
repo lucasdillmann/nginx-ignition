@@ -1,4 +1,5 @@
 import fs from "node:fs"
+import os from "node:os"
 import path from "node:path"
 import { authenticate, createContext, launchBrowser, navigateToMenu, openPage, waitForApp } from "./browser.mjs"
 import { formatBytes, helpVideosDirectory, video } from "./config.mjs"
@@ -44,7 +45,7 @@ if (video.guardSeconds * 1000 >= startScreenHoldMilliseconds) {
 async function recordFlow(browser, token, name) {
     const flow = flows[name]
     const module = await flow.module()
-    const temporaryDirectory = fs.mkdtempSync(path.join(process.env.TMPDIR ?? "/tmp", "nginx-ignition-video-"))
+    const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "nginx-ignition-video-"))
 
     const context = await createContext(browser, {
         theme: "light",

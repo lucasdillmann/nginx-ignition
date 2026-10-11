@@ -342,6 +342,9 @@ export async function seed(api) {
     })
     log(`adjusted the server settings to listen on ${httpPort} and ${httpsPort}`)
 
+    await api.post("/api/nginx/reload").catch(() => api.post("/api/nginx/start"))
+    log(`reloaded nginx on ${httpPort} and ${httpsPort}`)
+
     await generateTraffic()
 
     const user = (await api.get("/api/users?pageSize=10")).contents.find(item => item.username === credentials.username)
@@ -361,16 +364,19 @@ export async function seed(api) {
 async function generateTraffic() {
     const origin = `http://127.0.0.1:${httpPort}`
     const paths = ["/", "/", "/", "/about", "/assets/app.css", "/api/health", "/legacy"]
+    const proxied = { headers: { host: "blog.example.com" } }
+    const requests = []
 
     for (let round = 0; round < 3; round++) {
-        for (const path of paths) {
-            await fetch(`${origin}${path}`, { redirect: "manual" }).catch(() => undefined)
+        for (const item of paths) {
+            requests.push(fetch(`${origin}${item}`, { redirect: "manual" }))
         }
 
-        await fetch(origin, { headers: { host: "blog.example.com" } }).catch(() => undefined)
-        await fetch(`${origin}/legacy`, { headers: { host: "blog.example.com" } }).catch(() => undefined)
+        requests.push(fetch(origin, proxied))
+        requests.push(fetch(`${origin}/legacy`, proxied))
     }
 
+    await Promise.all(requests.map(request => request.catch(() => undefined)))
     await new Promise(resolve => setTimeout(resolve, 500))
 
     log("generated sample traffic through the seeded nginx")
