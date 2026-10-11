@@ -34,7 +34,8 @@
     width: 40%;
 }
 
-.help-guide-container video {
+.help-guide-container video,
+.help-guide-container img {
     width: 100%;
 }
 
@@ -53,10 +54,12 @@
     line-height: 0;
 }
 
-.help-guide-video-mask video {
+.help-guide-video-mask video,
+.help-guide-video-mask img {
     margin: 0;
     padding: 0;
     line-height: 0 !important;
+    display: block;
 }
 
 .help-guide-section {

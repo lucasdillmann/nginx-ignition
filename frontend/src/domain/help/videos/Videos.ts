@@ -1,12 +1,12 @@
-import AccessLists from "./access-lists.mp4"
-import Caches from "./caches.mp4"
-import Hosts from "./hosts.mp4"
-import Integrations from "./integrations.mp4"
-import Logs from "./logs.mp4"
-import Settings from "./settings.mp4"
-import SslCertificates from "./ssl-certificates.mp4"
-import Streams from "./streams.mp4"
-import VPNs from "./vpns.mp4"
+import AccessLists from "./access-lists.webp"
+import Caches from "./caches.webp"
+import Hosts from "./hosts.webp"
+import Integrations from "./integrations.webp"
+import Logs from "./logs.webp"
+import Settings from "./settings.webp"
+import SslCertificates from "./ssl-certificates.webp"
+import Streams from "./streams.webp"
+import VPNs from "./vpns.webp"
 
 export default {
     AccessLists,

@@ -1,0 +1,16 @@
+{
+    "name": "@nginx-ignition/capture",
+    "type": "module",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Repeatable screenshot and help video capture for the nginx ignition documentation",
+    "scripts": {
+        "capture": "node ./src/capture.mjs",
+        "capture:screenshots": "node ./src/capture.mjs screenshots",
+        "capture:videos": "node ./src/capture.mjs videos"
+    },
+    "devDependencies": {
+        "playwright": "^1.56.0",
+        "sharp": "^0.34.4"
+    }
+}
