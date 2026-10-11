@@ -54,7 +54,7 @@ export default class HelpPage extends React.PureComponent {
                     </Flex>
                     <Flex className="help-guide-right-side-video">
                         <div className="help-guide-video-mask">
-                            <video src={Videos.Hosts} autoPlay loop controls />
+                            <img src={Videos.Hosts} alt="" />
                         </div>
                     </Flex>
                 </Flex>
@@ -62,7 +62,7 @@ export default class HelpPage extends React.PureComponent {
                 <Flex className="help-guide-section">
                     <Flex className="help-guide-left-side-video">
                         <div className="help-guide-video-mask">
-                            <video src={Videos.Streams} autoPlay loop controls />
+                            <img src={Videos.Streams} alt="" />
                         </div>
                     </Flex>
                     <Flex className="help-guide-section-content" vertical>
@@ -95,7 +95,7 @@ export default class HelpPage extends React.PureComponent {
                     </Flex>
                     <Flex className="help-guide-right-side-video">
                         <div className="help-guide-video-mask">
-                            <video src={Videos.SslCertificates} autoPlay loop controls />
+                            <img src={Videos.SslCertificates} alt="" />
                         </div>
                     </Flex>
                 </Flex>
@@ -103,7 +103,7 @@ export default class HelpPage extends React.PureComponent {
                 <Flex className="help-guide-section">
                     <Flex className="help-guide-left-side-video">
                         <div className="help-guide-video-mask">
-                            <video src={Videos.Logs} autoPlay loop controls />
+                            <img src={Videos.Logs} alt="" />
                         </div>
                     </Flex>
                     <Flex className="help-guide-section-content" vertical>
@@ -130,7 +130,7 @@ export default class HelpPage extends React.PureComponent {
                     </Flex>
                     <Flex className="help-guide-right-side-video">
                         <div className="help-guide-video-mask">
-                            <video src={Videos.Integrations} autoPlay loop controls />
+                            <img src={Videos.Integrations} alt="" />
                         </div>
                     </Flex>
                 </Flex>
@@ -138,7 +138,7 @@ export default class HelpPage extends React.PureComponent {
                 <Flex className="help-guide-section">
                     <Flex className="help-guide-left-side-video">
                         <div className="help-guide-video-mask">
-                            <video src={Videos.VPNs} autoPlay loop controls />
+                            <img src={Videos.VPNs} alt="" />
                         </div>
                     </Flex>
                     <Flex className="help-guide-section-content" vertical>
@@ -162,7 +162,7 @@ export default class HelpPage extends React.PureComponent {
                     </Flex>
                     <Flex className="help-guide-right-side-video">
                         <div className="help-guide-video-mask">
-                            <video src={Videos.AccessLists} autoPlay loop controls />
+                            <img src={Videos.AccessLists} alt="" />
                         </div>
                     </Flex>
                 </Flex>
@@ -170,7 +170,7 @@ export default class HelpPage extends React.PureComponent {
                 <Flex className="help-guide-section">
                     <Flex className="help-guide-left-side-video">
                         <div className="help-guide-video-mask">
-                            <video src={Videos.Caches} autoPlay loop controls />
+                            <img src={Videos.Caches} alt="" />
                         </div>
                     </Flex>
                     <Flex className="help-guide-section-content" vertical>
@@ -203,7 +203,7 @@ export default class HelpPage extends React.PureComponent {
                     </Flex>
                     <Flex className="help-guide-right-side-video">
                         <div className="help-guide-video-mask">
-                            <video src={Videos.Settings} autoPlay loop controls />
+                            <img src={Videos.Settings} alt="" />
                         </div>
                     </Flex>
                 </Flex>

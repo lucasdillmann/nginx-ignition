@@ -29,6 +29,17 @@ endif
 .frontend-build: .frontend-prerequisites .generate-i18n-files
 	cd frontend/ && pnpm run build
 
+.capture-prerequisites:
+	cd tools/capture && pnpm install $(PNPM_INSTALL_FLAGS) && pnpm exec playwright install chromium
+
+.docs-screenshots: .capture-prerequisites .frontend-build
+	cd tools/capture && node ./src/capture.mjs screenshots
+
+.docs-videos: .capture-prerequisites .frontend-build
+	cd tools/capture && node ./src/capture.mjs videos
+
+docs-assets: .docs-screenshots .docs-videos
+
 .backend-build: .backend-prerequisites .generate-i18n-files
 	$(MAKE) .backend-build-file OS=linux ARCH=amd64 DIR=linux
 	$(MAKE) .backend-build-file OS=linux ARCH=arm64 DIR=linux
@@ -162,6 +173,7 @@ update-dependencies: .backend-prerequisites .frontend-prerequisites .update-ngin
 	cd tools && go get -u ./... && go mod tidy
 	cd tools/i18n && go get -u ./... && go mod tidy
 	cd frontend && pnpm update
+	cd tools/capture && pnpm update
 
 lint: .frontend-lint .backend-lint
 
