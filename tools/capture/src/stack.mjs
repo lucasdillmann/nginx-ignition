@@ -29,6 +29,8 @@ const expectedVideos = [
     "vpns",
 ]
 
+const serverPidFile = path.join(workspaceDirectory, "server.pid")
+
 const log = message => console.log(`[stack] ${message}`)
 
 const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -89,35 +91,37 @@ function buildBinary() {
     if (result.status !== 0) throw new Error(`go build failed:\n${result.stderr}`)
 }
 
-function stopManagedNginx() {
-    const pidFile = path.join(nginxConfigDirectory, "nginx.pid")
-    if (!fs.existsSync(pidFile)) return
+function readPid(pidFile) {
+    if (!fs.existsSync(pidFile)) return undefined
 
     const pid = Number.parseInt(fs.readFileSync(pidFile, "utf-8").trim(), 10)
-    if (!Number.isInteger(pid) || pid <= 0) return
+
+    return Number.isInteger(pid) && pid > 0 ? pid : undefined
+}
+
+function belongsToCapture(pid, marker) {
+    const result = spawnSync("ps", ["-p", String(pid), "-o", "command="], { encoding: "utf-8" })
+
+    return result.status === 0 && result.stdout.includes(marker)
+}
+
+function stopProcess(pidFile, marker, signal, description) {
+    const pid = readPid(pidFile)
+    if (pid === undefined || pid === process.pid || !belongsToCapture(pid, marker)) return
 
     try {
-        process.kill(pid, "SIGQUIT")
-        log(`stopped the capture nginx instance (pid ${pid})`)
+        process.kill(pid, signal)
+        log(`stopped the ${description} (pid ${pid})`)
     } catch {}
 }
 
+function stopManagedNginx() {
+    stopProcess(path.join(nginxConfigDirectory, "nginx.pid"), nginxConfigDirectory, "SIGQUIT", "capture nginx")
+}
+
 function stopLeftoverStack() {
-    const result = spawnSync("pgrep", ["-f", workspaceDirectory], { stdio: ["ignore", "pipe", "ignore"] })
-    if (result.status !== 0) return
-
-    const pids = result.stdout
-        .toString()
-        .split("\n")
-        .map(line => Number.parseInt(line.trim(), 10))
-        .filter(pid => Number.isInteger(pid) && pid > 0 && pid !== process.pid)
-
-    for (const pid of pids) {
-        try {
-            process.kill(pid, "SIGTERM")
-            log(`stopped a leftover process from a previous run (pid ${pid})`)
-        } catch {}
-    }
+    stopProcess(serverPidFile, binaryPath, "SIGTERM", "server from a previous run")
+    stopProcess(path.join(nginxConfigDirectory, "nginx.pid"), nginxConfigDirectory, "SIGTERM", "nginx from a previous run")
 }
 
 export async function startStack() {
@@ -163,6 +167,8 @@ export async function startStack() {
         },
     })
 
+    fs.writeFileSync(serverPidFile, String(server.pid))
+
     let output = ""
     server.stdout.on("data", chunk => (output += chunk))
     server.stderr.on("data", chunk => (output += chunk))
@@ -198,6 +204,8 @@ export async function startStack() {
             await Promise.race([onExit, sleep(10_000)])
 
             if (!exited) server.kill("SIGKILL")
+
+            fs.rmSync(serverPidFile, { force: true })
 
             if (!keepStack) fs.rmSync(workspaceDirectory, { recursive: true, force: true })
         },

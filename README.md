@@ -38,7 +38,9 @@
 
 ## 📸 A quick look
 
-<img src="docs/images/dashboard.png" alt="nginx ignition dashboard" width="700" />
+<p align="center">
+     <img src="docs/images/dashboard.png" alt="nginx ignition dashboard" width="600" />
+</p>
 
 Manage your hosts, streams, certificates, integrations and users from a single dashboard.
 
