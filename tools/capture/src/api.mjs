@@ -372,8 +372,7 @@ async function generateTraffic() {
             requests.push(fetch(`${origin}${item}`, { redirect: "manual" }))
         }
 
-        requests.push(fetch(origin, proxied))
-        requests.push(fetch(`${origin}/legacy`, proxied))
+        requests.push(fetch(origin, proxied), fetch(`${origin}/legacy`, proxied))
     }
 
     await Promise.all(requests.map(request => request.catch(() => undefined)))
