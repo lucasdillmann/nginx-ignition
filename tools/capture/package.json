@@ -10,7 +10,7 @@
         "capture:videos": "node ./src/capture.mjs videos"
     },
     "devDependencies": {
-        "playwright": "^1.56.0",
-        "sharp": "^0.34.4"
+        "playwright": "^1.64.0",
+        "sharp": "^0.35.5"
     }
 }
