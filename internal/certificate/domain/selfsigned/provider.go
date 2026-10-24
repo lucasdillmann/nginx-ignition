@@ -120,8 +120,13 @@ func buildPEMs(domainNames []string) (
 		return nil, nil, err
 	}
 
+	keyDER, err := x509.MarshalPKCS8PrivateKey(keyData)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	certBase64 := base64.StdEncoding.EncodeToString(certData.Raw)
-	keyBase64 := base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PrivateKey(keyData))
+	keyBase64 := base64.StdEncoding.EncodeToString(keyDER)
 
 	return &certBase64, &keyBase64, nil
 }

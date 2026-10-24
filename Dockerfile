@@ -1,4 +1,4 @@
-FROM nginx:1.31.6-alpine AS builder
+FROM nginx:1.31.8-alpine AS builder
 
 RUN --mount=type=cache,id=nginx-builder-apk,target=/var/cache/apk,sharing=locked \
     apk update && \

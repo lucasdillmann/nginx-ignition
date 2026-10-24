@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2.49.0
+
+- Upgrade of the nginx version from 1.31.6 to 1.31.8 (mainline) on the official Docker image
+- Certificate files are now normalized and validated on input, supporting more private key formats and returning
+  clearer errors.
+- Updated Go to 1.27.3 and other internal dependencies
+
 ## 2.48.0
 
 - The JWT secret used to sign the authentication tokens is now stored in the database and read from there on every
