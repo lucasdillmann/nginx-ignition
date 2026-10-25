@@ -4,7 +4,11 @@
 
 - Upgrade of the nginx version from 1.31.6 to 1.31.8 (mainline) on the official Docker image
 - Certificate files are now normalized and validated on input, supporting more private key formats and returning
-  clearer errors.
+  clearer errors (thanks @mghcool
+  [for the report](https://github.com/lucasdillmann/nginx-ignition/issues/159))
+- Let's Encrypt certificates can now use custom DNS servers for DNS-01 zone discovery and propagation checks, fixing
+  failures caused by system resolvers that return incomplete responses (thanks @mghcool
+  [for the report](https://github.com/lucasdillmann/nginx-ignition/issues/158))
 - Updated Go to 1.27.3 and other internal dependencies
 
 ## 2.48.0

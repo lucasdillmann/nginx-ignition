@@ -15,6 +15,8 @@ const (
 	emailAddressFieldID        = "emailAddress"
 	dnsProviderFieldID         = "challengeDnsProvider"
 	bypassDNSPropagationChecks = "bypassDnsPropagationChecks"
+	overrideDNSServersFieldID  = "overrideDnsServers"
+	customDNSServersFieldID    = "customDnsServers"
 )
 
 func mainDynamicFields(ctx context.Context) ([]dynamicfields.DynamicField, int) {
@@ -24,6 +26,29 @@ func mainDynamicFields(ctx context.Context) ([]dynamicfields.DynamicField, int) 
 		Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsProvider),
 		Required:    true,
 		Type:        dynamicfields.EnumType,
+	}
+
+	overrideDNSServersField := dynamicfields.DynamicField{
+		ID:           overrideDNSServersFieldID,
+		Priority:     96,
+		Description:  i18n.M(ctx, i18n.K.CertificateLetsencryptOverrideDnsServers),
+		HelpText:     i18n.M(ctx, i18n.K.CertificateLetsencryptOverrideDnsServersHelp),
+		Required:     false,
+		DefaultValue: false,
+		Type:         dynamicfields.BooleanType,
+	}
+
+	customDNSServersField := dynamicfields.DynamicField{
+		ID:          customDNSServersFieldID,
+		Priority:    97,
+		Description: i18n.M(ctx, i18n.K.CertificateLetsencryptCustomDnsServers),
+		HelpText:    i18n.M(ctx, i18n.K.CertificateLetsencryptCustomDnsServersHelp),
+		Required:    true,
+		Type:        dynamicfields.MultiLineTextType,
+		Conditions: []dynamicfields.Condition{{
+			ParentField: overrideDNSServersFieldID,
+			Value:       true,
+		}},
 	}
 
 	bypassDNSPropagationChecksField := dynamicfields.DynamicField{
@@ -56,6 +81,8 @@ func mainDynamicFields(ctx context.Context) ([]dynamicfields.DynamicField, int) 
 	return []dynamicfields.DynamicField{
 		dnsField,
 		emailField,
+		overrideDNSServersField,
+		customDNSServersField,
 		bypassDNSPropagationChecksField,
 		tosField,
 	}, 0
