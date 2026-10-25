@@ -8,7 +8,6 @@ import (
 	"net"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/go-acme/lego/v5/certcrypto"
@@ -25,7 +24,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 )
 
-var issuanceMutex sync.Mutex
+var issuanceLock = make(chan struct{}, 1)
 
 func issueCertificate(
 	ctx context.Context,
@@ -34,12 +33,51 @@ func issueCertificate(
 	parameters map[string]any,
 	productionEnvironment bool,
 ) (*certificate.Certificate, error) {
-	issuanceMutex.Lock()
-	defer issuanceMutex.Unlock()
+	if err := acquireIssuanceLock(ctx); err != nil {
+		return nil, err
+	}
+	defer releaseIssuanceLock()
 
+	return withCustomDNSServers(ctx, parameters, func() (*certificate.Certificate, error) {
+		return obtainCertificate(ctx, user, domainNames, parameters, productionEnvironment)
+	})
+}
+
+func acquireIssuanceLock(ctx context.Context) error {
+	select {
+	case issuanceLock <- struct{}{}:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
+func releaseIssuanceLock() {
+	<-issuanceLock
+}
+
+func withCustomDNSServers(
+	ctx context.Context,
+	parameters map[string]any,
+	issue func() (*certificate.Certificate, error),
+) (*certificate.Certificate, error) {
 	previousDNSClient := dns01.DefaultClient()
 	defer dns01.SetDefaultClient(previousDNSClient)
 
+	if err := configureCustomDNSServers(ctx, parameters); err != nil {
+		return nil, err
+	}
+
+	return issue()
+}
+
+func obtainCertificate(
+	ctx context.Context,
+	user userDetails,
+	domainNames []string,
+	parameters map[string]any,
+	productionEnvironment bool,
+) (*certificate.Certificate, error) {
 	caURL := lego.DirectoryURLLetsEncrypt
 	if !productionEnvironment {
 		caURL = lego.DirectoryURLLetsEncryptStaging
@@ -65,11 +103,6 @@ func issueCertificate(
 	propagationBypassCasted, propagationBypass := parameters["bypassDnsPropagationChecks"].(bool)
 	if propagationBypassCasted && propagationBypass {
 		dnsOptions = append(dnsOptions, dns01.PropagationWait(5*time.Second, true))
-	}
-
-	err = configureCustomDNSServers(ctx, parameters)
-	if err != nil {
-		return nil, err
 	}
 
 	err = client.Challenge.SetDNS01Provider(dnsChallenge, dnsOptions...)
