@@ -5,6 +5,8 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
+	"net"
+	"strconv"
 	"time"
 
 	"github.com/go-acme/lego/v5/certcrypto"
@@ -18,10 +20,58 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/coreerror"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/validation"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 )
 
+var issuanceLock = make(chan struct{}, 1)
+
 func issueCertificate(
+	ctx context.Context,
+	user userDetails,
+	domainNames []string,
+	parameters map[string]any,
+	productionEnvironment bool,
+) (*certificate.Certificate, error) {
+	if err := acquireIssuanceLock(ctx); err != nil {
+		return nil, err
+	}
+	defer releaseIssuanceLock()
+
+	return withCustomDNSServers(ctx, parameters, func() (*certificate.Certificate, error) {
+		return obtainCertificate(ctx, user, domainNames, parameters, productionEnvironment)
+	})
+}
+
+func acquireIssuanceLock(ctx context.Context) error {
+	select {
+	case issuanceLock <- struct{}{}:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
+func releaseIssuanceLock() {
+	<-issuanceLock
+}
+
+func withCustomDNSServers(
+	ctx context.Context,
+	parameters map[string]any,
+	issue func() (*certificate.Certificate, error),
+) (*certificate.Certificate, error) {
+	previousDNSClient := dns01.DefaultClient()
+	defer dns01.SetDefaultClient(previousDNSClient)
+
+	if err := configureCustomDNSServers(ctx, parameters); err != nil {
+		return nil, err
+	}
+
+	return issue()
+}
+
+func obtainCertificate(
 	ctx context.Context,
 	user userDetails,
 	domainNames []string,
@@ -98,6 +148,38 @@ func issueCertificate(
 		productionEnvironment,
 		client,
 	)
+}
+
+func configureCustomDNSServers(ctx context.Context, parameters map[string]any) error {
+	servers, violations := resolveCustomDNSServers(ctx, parameters)
+	if len(violations) > 0 {
+		return validation.NewError(violations)
+	}
+
+	if len(servers) == 0 {
+		return nil
+	}
+
+	dns01.SetDefaultClient(dns01.NewClient(&dns01.Options{
+		RecursiveNameservers: servers,
+	}))
+
+	return nil
+}
+
+func isValidDNSServer(value string) bool {
+	host := value
+
+	if parsedHost, port, err := net.SplitHostPort(value); err == nil {
+		portNumber, conversionErr := strconv.Atoi(port)
+		if conversionErr != nil || portNumber < 1 || portNumber > 65535 {
+			return false
+		}
+
+		host = parsedHost
+	}
+
+	return net.ParseIP(host) != nil
 }
 
 func parseResult(
