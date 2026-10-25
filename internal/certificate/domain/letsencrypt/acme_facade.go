@@ -151,6 +151,11 @@ func obtainCertificate(
 }
 
 func configureCustomDNSServers(ctx context.Context, parameters map[string]any) error {
+	bypass, _ := parameters["bypassDnsPropagationChecks"].(bool)
+	if bypass {
+		return nil
+	}
+
 	override, _ := parameters["overrideDnsServers"].(bool)
 	if !override {
 		return nil

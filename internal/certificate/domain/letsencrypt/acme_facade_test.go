@@ -59,6 +59,14 @@ func Test_configureCustomDNSServers(t *testing.T) {
 			},
 		},
 		{
+			name: "propagation checks skipped",
+			parameters: map[string]any{
+				"bypassDnsPropagationChecks": true,
+				"overrideDnsServers":         true,
+				"customDnsServers":           "1.1.1.1",
+			},
+		},
+		{
 			name: "invalid address",
 			parameters: map[string]any{
 				"overrideDnsServers": true,
