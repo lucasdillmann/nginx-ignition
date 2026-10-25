@@ -41,11 +41,46 @@ func Test_validationRules_Validate_customDNSServers(t *testing.T) {
 			expectedViolations: 1,
 		},
 		{
-			name: "empty servers",
+			name: "empty servers without bypass flag",
 			parameters: map[string]any{
 				termsOfServiceFieldID:     true,
 				overrideDNSServersFieldID: true,
 				customDNSServersFieldID:   "",
+			},
+			expectedViolations: 1,
+		},
+		{
+			name: "missing servers without bypass flag",
+			parameters: map[string]any{
+				termsOfServiceFieldID:     true,
+				overrideDNSServersFieldID: true,
+			},
+			expectedViolations: 1,
+		},
+		{
+			name: "empty servers with bypass flag disabled",
+			parameters: map[string]any{
+				termsOfServiceFieldID:      true,
+				bypassDNSPropagationChecks: false,
+				overrideDNSServersFieldID:  true,
+				customDNSServersFieldID:    "",
+			},
+		},
+		{
+			name: "missing servers with bypass flag disabled",
+			parameters: map[string]any{
+				termsOfServiceFieldID:      true,
+				bypassDNSPropagationChecks: false,
+				overrideDNSServersFieldID:  true,
+			},
+		},
+		{
+			name: "empty servers with propagation checks skipped",
+			parameters: map[string]any{
+				termsOfServiceFieldID:      true,
+				bypassDNSPropagationChecks: true,
+				overrideDNSServersFieldID:  true,
+				customDNSServersFieldID:    "",
 			},
 		},
 		{

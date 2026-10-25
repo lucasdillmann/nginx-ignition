@@ -81,6 +81,15 @@ func Test_configureCustomDNSServers(t *testing.T) {
 				"overrideDnsServers": true,
 				"customDnsServers":   "",
 			},
+			expectError: true,
+		},
+		{
+			name: "empty list with propagation checks skipped",
+			parameters: map[string]any{
+				"bypassDnsPropagationChecks": true,
+				"overrideDnsServers":         true,
+				"customDnsServers":           "",
+			},
 		},
 		{
 			name: "whitespace-only list",

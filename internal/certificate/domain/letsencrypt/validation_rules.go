@@ -53,14 +53,30 @@ func resolveCustomDNSServers(
 		return nil, nil
 	}
 
+	path := fmt.Sprintf("parameters.%s", customDNSServersFieldID)
 	raw, _ := parameters[customDNSServersFieldID].(string)
+
 	if raw == "" {
-		return nil, nil
+		if bypassChecks, exists := parameters[bypassDNSPropagationChecks].(bool); exists &&
+			!bypassChecks {
+			return nil, nil
+		}
+
+		return nil, []validation.ConsistencyViolation{{
+			Path:    path,
+			Message: i18n.M(ctx, i18n.K.CommonValueMissing),
+		}}
+	}
+
+	if strings.TrimSpace(raw) == "" {
+		return nil, []validation.ConsistencyViolation{{
+			Path:    path,
+			Message: i18n.M(ctx, i18n.K.CommonValueMissing),
+		}}
 	}
 
 	servers := make([]string, 0)
 	violations := make([]validation.ConsistencyViolation, 0)
-	path := fmt.Sprintf("parameters.%s", customDNSServersFieldID)
 
 	for _, token := range strings.Fields(raw) {
 		if !isValidDNSServer(token) {
