@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/x509"
 	"encoding/base64"
-	"encoding/pem"
 	"os"
 	"time"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/coreerror"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/core/bundle"
 )
 
 func loadCertificateFromParameters(
@@ -27,22 +27,19 @@ func loadCertificateFromParameters(
 
 	privateKeyBytes, err := readPrivateKeyPEMBytes(ctx, privatePath)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateExternalInvalidPrivateKey), true)
+		return nil, err
 	}
 
 	publicCert, err := readCertificate(ctx, publicPath)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateExternalInvalidPublicKey), true)
+		return nil, err
 	}
 
-	chain := make([]x509.Certificate, 0)
+	chain := make([]*x509.Certificate, 0)
 	if chainPath != "" {
 		chain, err = readCertificateChain(ctx, chainPath)
 		if err != nil {
-			return nil, coreerror.New(
-				i18n.M(ctx, i18n.K.CertificateExternalInvalidCertificationChain),
-				true,
-			)
+			return nil, err
 		}
 	}
 
@@ -71,15 +68,12 @@ func readPrivateKeyPEMBytes(ctx context.Context, path string) ([]byte, error) {
 		)
 	}
 
-	block, _ := pem.Decode(raw)
-	if block == nil {
-		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "key"),
-			true,
-		)
+	normalizedKey, err := bundle.NormalizePrivateKey(ctx, raw)
+	if err != nil {
+		return nil, err
 	}
 
-	return block.Bytes, nil
+	return normalizedKey, nil
 }
 
 func readCertificate(ctx context.Context, path string) (*x509.Certificate, error) {
@@ -91,18 +85,15 @@ func readCertificate(ctx context.Context, path string) (*x509.Certificate, error
 		)
 	}
 
-	block, _ := pem.Decode(raw)
-	if block == nil {
-		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "certificate"),
-			true,
-		)
+	parsed, err := bundle.ParseCertificate(ctx, raw)
+	if err != nil {
+		return nil, err
 	}
 
-	return x509.ParseCertificate(block.Bytes)
+	return parsed, nil
 }
 
-func readCertificateChain(ctx context.Context, path string) ([]x509.Certificate, error) {
+func readCertificateChain(ctx context.Context, path string) ([]*x509.Certificate, error) {
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		return nil, coreerror.New(
@@ -111,42 +102,15 @@ func readCertificateChain(ctx context.Context, path string) ([]x509.Certificate,
 		)
 	}
 
-	certificates := make([]x509.Certificate, 0)
-	remaining := raw
-
-	for {
-		block, rest := pem.Decode(remaining)
-		if block == nil {
-			break
-		}
-
-		remaining = rest
-		if block.Type != "CERTIFICATE" {
-			continue
-		}
-
-		parsed, parseErr := x509.ParseCertificate(block.Bytes)
-		if parseErr != nil {
-			return nil, coreerror.New(
-				i18n.M(ctx, i18n.K.CertificateExternalInvalidCertificationChain),
-				true,
-			)
-		}
-
-		certificates = append(certificates, *parsed)
-	}
-
-	if len(certificates) == 0 {
-		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateExternalInvalidCertificationChain),
-			true,
-		)
+	certificates, err := bundle.ParseCertificateChain(ctx, raw)
+	if err != nil {
+		return nil, err
 	}
 
 	return certificates, nil
 }
 
-func encodeChain(chain []x509.Certificate) []string {
+func encodeChain(chain []*x509.Certificate) []string {
 	result := make([]string, len(chain))
 	for index, item := range chain {
 		result[index] = base64.StdEncoding.EncodeToString(item.Raw)

@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/x509"
 	"encoding/base64"
-	"encoding/pem"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,6 +12,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/dynamicfields"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/core/bundle"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/core/validator"
 )
 
@@ -64,22 +64,19 @@ func (p *Provider) Issue(
 
 	privateKey, err := parsePrivateKey(ctx, privateKeyStr, fileUploadMode)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateCustomInvalidPrivateKey), true)
+		return nil, err
 	}
 
 	publicKey, err := parseCertificate(ctx, publicKeyStr, fileUploadMode)
 	if err != nil {
-		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateCustomInvalidPublicKey), true)
+		return nil, err
 	}
 
-	chain := make([]x509.Certificate, 0)
+	chain := make([]*x509.Certificate, 0)
 	if chainPresent && chainStr != "" {
 		chain, err = parseCertificateChain(ctx, chainStr, fileUploadMode)
 		if err != nil {
-			return nil, coreerror.New(
-				i18n.M(ctx, i18n.K.CertificateCustomInvalidCertificationChain),
-				true,
-			)
+			return nil, err
 		}
 	}
 
@@ -119,15 +116,7 @@ func parsePrivateKey(ctx context.Context, key string, base64Encoded bool) ([]byt
 		)
 	}
 
-	block, _ := pem.Decode(decodedKey)
-	if block == nil {
-		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "key"),
-			true,
-		)
-	}
-
-	return block.Bytes, nil
+	return bundle.NormalizePrivateKey(ctx, decodedKey)
 }
 
 func parseCertificate(
@@ -143,22 +132,14 @@ func parseCertificate(
 		)
 	}
 
-	block, _ := pem.Decode(decodedCert)
-	if block == nil {
-		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CommonUnableToParsePem).V("type", "certificate"),
-			true,
-		)
-	}
-
-	return x509.ParseCertificate(block.Bytes)
+	return bundle.ParseCertificate(ctx, decodedCert)
 }
 
 func parseCertificateChain(
 	ctx context.Context,
 	chain string,
 	base64Encoded bool,
-) ([]x509.Certificate, error) {
+) ([]*x509.Certificate, error) {
 	decodedChain, err := stringToByteArray(chain, base64Encoded)
 	if err != nil {
 		return nil, coreerror.New(
@@ -167,42 +148,10 @@ func parseCertificateChain(
 		)
 	}
 
-	certs := make([]x509.Certificate, 0)
-	remaining := decodedChain
-
-	for {
-		block, rest := pem.Decode(remaining)
-		if block == nil {
-			break
-		}
-
-		remaining = rest
-		if block.Type != "CERTIFICATE" {
-			continue
-		}
-
-		parsed, parseErr := x509.ParseCertificate(block.Bytes)
-		if parseErr != nil {
-			return nil, coreerror.New(
-				i18n.M(ctx, i18n.K.CertificateCustomInvalidCertificationChain),
-				true,
-			)
-		}
-
-		certs = append(certs, *parsed)
-	}
-
-	if len(certs) == 0 {
-		return nil, coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateCustomInvalidCertificationChain),
-			true,
-		)
-	}
-
-	return certs, nil
+	return bundle.ParseCertificateChain(ctx, decodedChain)
 }
 
-func encodeChain(chain []x509.Certificate) []string {
+func encodeChain(chain []*x509.Certificate) []string {
 	encodedChain := make([]string, len(chain))
 	for index, cert := range chain {
 		encodedChain[index] = base64.StdEncoding.EncodeToString(cert.Raw)
