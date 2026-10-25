@@ -9,6 +9,8 @@
 - Let's Encrypt certificates can now use custom DNS servers for DNS-01 zone discovery and propagation checks, fixing
   failures caused by system resolvers that return incomplete responses (thanks @mghcool
   [for the report](https://github.com/lucasdillmann/nginx-ignition/issues/158))
+- Fixed certificate issuance and renewal failing when they take longer than 30 seconds, causing the frontend to show
+  an error even though the certificate was issued and saved successfully
 - Updated Go to 1.27.3 and other internal dependencies
 
 ## 2.48.0
