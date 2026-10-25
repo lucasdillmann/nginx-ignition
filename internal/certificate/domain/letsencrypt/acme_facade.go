@@ -7,7 +7,6 @@ import (
 	"encoding/pem"
 	"net"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/go-acme/lego/v5/certcrypto"
@@ -21,6 +20,7 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/coreerror"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/validation"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 )
 
@@ -151,35 +151,13 @@ func obtainCertificate(
 }
 
 func configureCustomDNSServers(ctx context.Context, parameters map[string]any) error {
-	bypass, _ := parameters["bypassDnsPropagationChecks"].(bool)
-	if bypass {
-		return nil
-	}
-
-	override, _ := parameters["overrideDnsServers"].(bool)
-	if !override {
-		return nil
-	}
-
-	raw, _ := parameters["customDnsServers"].(string)
-	servers := make([]string, 0)
-
-	for _, token := range strings.Fields(raw) {
-		if !isValidDNSServer(token) {
-			return coreerror.New(
-				i18n.M(ctx, i18n.K.CertificateLetsencryptInvalidDnsServers).V("value", token),
-				false,
-			)
-		}
-
-		servers = append(servers, token)
+	servers, violations := resolveCustomDNSServers(ctx, parameters)
+	if len(violations) > 0 {
+		return validation.NewError(violations)
 	}
 
 	if len(servers) == 0 {
-		return coreerror.New(
-			i18n.M(ctx, i18n.K.CertificateLetsencryptInvalidDnsServers).V("value", ""),
-			false,
-		)
+		return nil
 	}
 
 	dns01.SetDefaultClient(dns01.NewClient(&dns01.Options{

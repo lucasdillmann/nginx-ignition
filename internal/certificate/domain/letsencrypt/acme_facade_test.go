@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/validation"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 )
 
@@ -80,6 +81,13 @@ func Test_configureCustomDNSServers(t *testing.T) {
 				"overrideDnsServers": true,
 				"customDnsServers":   "",
 			},
+		},
+		{
+			name: "whitespace-only list",
+			parameters: map[string]any{
+				"overrideDnsServers": true,
+				"customDnsServers":   "   \n\t",
+			},
 			expectError: true,
 		},
 	}
@@ -93,6 +101,11 @@ func Test_configureCustomDNSServers(t *testing.T) {
 
 			if test.expectError {
 				require.Error(t, err)
+
+				consistencyError := &validation.ConsistencyError{}
+				require.ErrorAs(t, err, &consistencyError)
+				require.Len(t, consistencyError.Violations, 1)
+				assert.Equal(t, "parameters.customDnsServers", consistencyError.Violations[0].Path)
 			} else {
 				require.NoError(t, err)
 			}
