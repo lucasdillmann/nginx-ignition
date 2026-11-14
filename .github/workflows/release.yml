@@ -22,8 +22,8 @@ jobs:
       BUILDKIT_CACHE: /data/cache/docker
       BUILDKIT_PROGRESS: plain
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
       - uses: pnpm/action-setup@v6
@@ -31,7 +31,7 @@ jobs:
           version: 11
       - name: Configure pnpm store
         run: pnpm config set store-dir /data/cache/pnpm/store --global
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version: 1.27.4
           cache: false

@@ -31,7 +31,7 @@ jobs:
       GOTOOLCHAIN: ""
       PNPM_HOME: /data/cache/pnpm
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Check if CHANGELOG.md was updated
@@ -48,7 +48,7 @@ jobs:
             echo "::error::CHANGELOG.md was not updated in this branch/PR. Please add an entry to the CHANGELOG."
             exit 1
           fi
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
       - uses: pnpm/action-setup@v6
@@ -56,7 +56,7 @@ jobs:
           version: 11
       - name: Configure pnpm store
         run: pnpm config set store-dir /data/cache/pnpm/store --global
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version: 1.27.4
           cache: false
@@ -68,7 +68,7 @@ jobs:
       - name: Lint
         run: make lint
       - name: Sonarqube
-        uses: SonarSource/sonarqube-scan-action@v7
+        uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -89,11 +89,11 @@ jobs:
       BUILDKIT_CACHE: /data/cache/docker
       BUILDKIT_PROGRESS: plain
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Extract version from CHANGELOG.md
         id: version
         run: echo "VERSION=$(grep -m 1 "^## " CHANGELOG.md | sed 's/## //')" >> $GITHUB_OUTPUT
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
       - uses: pnpm/action-setup@v6
@@ -101,7 +101,7 @@ jobs:
           version: 11
       - name: Configure pnpm store
         run: pnpm config set store-dir /data/cache/pnpm/store --global
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version: 1.27.4
           cache: false
