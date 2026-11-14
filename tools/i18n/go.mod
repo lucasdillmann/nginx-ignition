@@ -1,5 +1,5 @@
 module github.com/lucasdillmann/nginx-ignition/tools/i18n
 
-go 1.27.3
+go 1.27.4
 
-require golang.org/x/text v0.43.0
+require golang.org/x/text v0.44.0

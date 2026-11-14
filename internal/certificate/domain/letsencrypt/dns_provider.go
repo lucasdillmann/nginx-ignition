@@ -37,6 +37,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/clouddns"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/cloudflare"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/cloudns"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/cloudpress"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/cloudru"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/com35"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/connbyte"
@@ -96,6 +97,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/glesys"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/gname"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/godaddy"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/godaddyv3"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/gravity"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/hetzner"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/hostingde"
@@ -158,6 +160,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/nifcloud"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/njalla"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/nodion"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/nordname"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/ns1"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/octenium"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/omglol"
@@ -173,6 +176,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/pointdns"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/porkbun"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/poweradmin"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/primedns"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/rackspace"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/rage4"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/rainyun"
@@ -188,6 +192,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/selectel"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/selectelv2"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/selfhostde"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/selfhostdev2"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/servercow"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/shellrent"
 	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns/simply"
@@ -262,6 +267,7 @@ var providers = []dns.Provider{
 	&clouddns.Provider{},
 	&cloudflare.Provider{},
 	&cloudns.Provider{},
+	&cloudpress.Provider{},
 	&cloudru.Provider{},
 	&com35.Provider{},
 	&conohav2.Provider{},
@@ -321,6 +327,7 @@ var providers = []dns.Provider{
 	&glesys.Provider{},
 	&gname.Provider{},
 	&godaddy.Provider{},
+	&godaddyv3.Provider{},
 	&gravity.Provider{},
 	&hetzner.Provider{},
 	&hostingde.Provider{},
@@ -383,6 +390,7 @@ var providers = []dns.Provider{
 	&nifcloud.Provider{},
 	&njalla.Provider{},
 	&nodion.Provider{},
+	&nordname.Provider{},
 	&ns1.Provider{},
 	&octenium.Provider{},
 	&omglol.Provider{},
@@ -398,6 +406,7 @@ var providers = []dns.Provider{
 	&plesk.Provider{},
 	&porkbun.Provider{},
 	&poweradmin.Provider{},
+	&primedns.Provider{},
 	&rackspace.Provider{},
 	&rage4.Provider{},
 	&rainyun.Provider{},
@@ -413,6 +422,7 @@ var providers = []dns.Provider{
 	&selectel.Provider{},
 	&selectelv2.Provider{},
 	&selfhostde.Provider{},
+	&selfhostdev2.Provider{},
 	&servercow.Provider{},
 	&shellrent.Provider{},
 	&simply.Provider{},
