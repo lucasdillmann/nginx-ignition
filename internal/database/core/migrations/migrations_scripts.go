@@ -37,7 +37,7 @@ func (m *Migrations) runScripts(db *sql.DB, driverName string) error {
 	}
 
 	scriptsPath := path.Join("scripts", driverName)
-	log.Infof("Running embedded database migrations from %s", scriptsPath)
+	log.Infof("Running database migrations for %s", driverName)
 
 	sourceInstance, err := iofs.New(scriptsFS, scriptsPath)
 	if err != nil {
