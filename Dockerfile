@@ -75,13 +75,9 @@ ARG TARGETPLATFORM
 WORKDIR /
 
 RUN mkdir -p opt/nginx-ignition/data \
-             opt/nginx-ignition/frontend \
-             opt/nginx-ignition/migrations \
              usr/lib/nginx/modules \
              usr/share/lua/5.1
 
-COPY ./internal/database/core/migrations/scripts /opt/nginx-ignition/migrations
-COPY ./frontend/build /opt/nginx-ignition/frontend
 COPY build/${TARGETPLATFORM} /opt/nginx-ignition/nginx-ignition
 
 COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
@@ -92,9 +88,7 @@ COPY --from=builder /modules-lua/ /usr/share/lua/5.1/
 FROM scratch
 
 ENV NGINX_IGNITION_NGINX_BINARY_PATH="/usr/sbin/nginx" \
-    NGINX_IGNITION_SERVER_FRONTEND_PATH="/opt/nginx-ignition/frontend" \
     NGINX_IGNITION_DATABASE_DRIVER="sqlite" \
-    NGINX_IGNITION_DATABASE_MIGRATIONS_PATH="/opt/nginx-ignition/migrations" \
     NGINX_IGNITION_DATABASE_DATA_PATH="/opt/nginx-ignition/data" \
     GOMEMLIMIT="128MiB"
 

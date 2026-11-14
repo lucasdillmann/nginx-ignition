@@ -28,6 +28,8 @@ endif
 
 .frontend-build: .frontend-prerequisites .generate-i18n-files
 	cd frontend/ && pnpm run build
+	@find internal/api/domain/frontend/static -mindepth 1 -maxdepth 1 ! -name '.gitkeep' -exec rm -rf {} +
+	cp -Rf frontend/build/. internal/api/domain/frontend/static/
 
 .capture-prerequisites:
 	cd tools/capture && pnpm install $(PNPM_INSTALL_FLAGS) && pnpm exec playwright install chromium
@@ -40,7 +42,7 @@ endif
 
 docs-assets: .docs-screenshots .docs-videos
 
-.backend-build: .backend-prerequisites .generate-i18n-files
+.backend-build: .backend-prerequisites .generate-i18n-files .frontend-build
 	$(MAKE) .backend-build-file OS=linux ARCH=amd64 DIR=linux
 	$(MAKE) .backend-build-file OS=linux ARCH=arm64 DIR=linux
 	$(MAKE) .backend-build-file OS=darwin ARCH=arm64 DIR=macos
@@ -89,8 +91,6 @@ docs-assets: .docs-screenshots .docs-videos
 .build-distribution-zip:
 	rm -Rf build/nginx-ignition.$(OS)-$(ARCH).zip
 	mkdir -p build/zip
-	cp -Rf frontend/build build/zip/frontend
-	cp -Rf internal/database/core/migrations/scripts build/zip/migrations
 	cp dist/$(OS)/instructions.md build/zip/instructions.md
 	cp dist/$(OS)/nginx-ignition.properties build/zip/
 	[ -z "$(SERVICE_FILE_EXT)" ] || cp dist/$(OS)/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/
@@ -120,6 +120,7 @@ docs-assets: .docs-screenshots .docs-videos
 
 clean:
 	@find internal -type f -name "*.mock.go" -delete
+	@find internal/api/domain/frontend/static -mindepth 1 -maxdepth 1 ! -name '.gitkeep' -exec rm -rf {} +
 
 .backend-test-mocks: .backend-prerequisites
 	@echo "Generating mock files..."

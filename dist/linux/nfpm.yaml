@@ -19,20 +19,6 @@ contents:
       mode: 0755
       owner: root
       group: root
-  - src: "frontend/build/"
-    dst: "/opt/nginx-ignition/frontend/"
-    type: tree
-    file_info:
-      mode: 0644
-      owner: root
-      group: root
-  - src: "internal/database/core/migrations/scripts/"
-    dst: "/opt/nginx-ignition/migrations/"
-    type: tree
-    file_info:
-      mode: 0644
-      owner: root
-      group: root
   - src: "dist/linux/nginx-ignition.properties"
     dst: "/opt/nginx-ignition/nginx-ignition.properties"
     type: config|noreplace

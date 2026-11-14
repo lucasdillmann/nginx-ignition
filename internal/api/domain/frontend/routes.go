@@ -1,6 +1,7 @@
 package frontend
 
 import (
+	"io/fs"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,18 +21,22 @@ func Install(
 	router.Handle(http.MethodGet, "/api/frontend/configuration", settingsHandlerInstance.handle)
 	authorizer.AllowAllUsers(http.MethodGet, "/api/frontend/configuration")
 
-	var staticHandler staticFilesHandler
-	basePath, err := cfg.Get("nginx-ignition.server.frontend-path")
+	router.NoRoute(newStaticFilesHandler().handle)
+}
 
-	if err != nil || basePath == "" {
-		log.Warnf(
-			"Frontend path is not defined. Every request to it will be rejected with not found status.",
-		)
-		staticHandler = staticFilesHandler{}
-	} else {
-		log.Infof("Serving frontend files from %s", basePath)
-		staticHandler = staticFilesHandler{&basePath}
+func newStaticFilesHandler() staticFilesHandler {
+	files, err := fs.Sub(staticAssets, "static")
+	if err != nil {
+		log.Warnf("Unable to load embedded frontend assets: %s", err)
+		return staticFilesHandler{}
 	}
 
-	router.NoRoute(staticHandler.handle)
+	if _, err := fs.Stat(files, indexFile); err != nil {
+		log.Warnf(
+			"Frontend assets are not embedded in this binary. Build the frontend and rebuild the application.",
+		)
+		return staticFilesHandler{}
+	}
+
+	return staticFilesHandler{files}
 }

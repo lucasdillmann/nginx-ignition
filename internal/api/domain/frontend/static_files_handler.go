@@ -5,9 +5,9 @@ import (
 	"encoding/hex"
 	"errors"
 	"io"
+	"io/fs"
 	"mime"
 	"net/http"
-	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -24,12 +24,12 @@ const (
 )
 
 type staticFilesHandler struct {
-	basePath *string
+	files fs.FS
 }
 
 func (h staticFilesHandler) handle(ctx *gin.Context) {
 	urlPath := ctx.Request.URL.Path
-	if h.basePath == nil || strings.HasPrefix(urlPath, "/api/") {
+	if h.files == nil || strings.HasPrefix(urlPath, "/api/") {
 		ctx.JSON(
 			http.StatusNotFound,
 			gin.H{
@@ -89,11 +89,10 @@ func sanitizePath(p string) (*string, error) {
 }
 
 func (h staticFilesHandler) loadFile(filePath string) ([]byte, *string, error) {
-	baseDir := os.DirFS(*h.basePath)
-	file, err := baseDir.Open(filePath)
-	if errors.Is(err, os.ErrNotExist) || errors.Is(err, os.ErrInvalid) {
+	file, err := h.files.Open(filePath)
+	if errors.Is(err, fs.ErrNotExist) || errors.Is(err, fs.ErrInvalid) {
 		filePath = indexFile
-		file, err = baseDir.Open(filePath)
+		file, err = h.files.Open(filePath)
 	}
 
 	if err != nil {

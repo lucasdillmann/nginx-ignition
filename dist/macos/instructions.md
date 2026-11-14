@@ -4,8 +4,6 @@ These instructions explain how to install and run nginx-ignition on a macOS host
 already includes:
 
 - nginx-ignition binary
-- frontend assets (UI)
-- database migrations
 - default configuration file, nginx-ignition.properties
 - a ready-to-use launchd plist, nginx-ignition.plist
 
@@ -82,5 +80,5 @@ Open http://<your-host>:8090 in your browser. The nginx ignition UI will guide y
 
 ## Upgrading
 1. Stop service: `sudo launchctl stop nginx-ignition && sudo launchctl unload -w /Library/LaunchDaemons/nginx-ignition.plist`
-2. Replace /opt/nginx-ignition/nginx-ignition and any updated assets (frontend, migrations)
+2. Replace the `/opt/nginx-ignition/nginx-ignition` binary with the new version
 3. Start service: `sudo launchctl load -w /Library/LaunchDaemons/nginx-ignition.plist && sudo launchctl start nginx-ignition`

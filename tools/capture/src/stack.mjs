@@ -6,10 +6,9 @@ import {
     baseUrl,
     binaryPath,
     databaseDirectory,
-    frontendBuildDirectory,
+    embeddedFrontendDirectory,
     helpVideosDirectory,
     keepStack,
-    migrationsScriptsDirectory,
     nginxConfigDirectory,
     port,
     repoRoot,
@@ -125,9 +124,9 @@ function stopLeftoverStack() {
 }
 
 export async function startStack() {
-    if (!fs.existsSync(path.join(frontendBuildDirectory, "index.html"))) {
+    if (!fs.existsSync(path.join(embeddedFrontendDirectory, "index.html"))) {
         throw new Error(
-            `The frontend build is missing at ${frontendBuildDirectory}. Run "make .frontend-build" before capturing.`,
+            `The frontend build is missing at ${embeddedFrontendDirectory}. Run "make .frontend-build" before capturing.`,
         )
     }
 
@@ -159,8 +158,6 @@ export async function startStack() {
         env: {
             ...process.env,
             NGINX_IGNITION_SERVER_PORT: String(port),
-            NGINX_IGNITION_SERVER_FRONTEND_PATH: frontendBuildDirectory,
-            NGINX_IGNITION_DATABASE_MIGRATIONS_PATH: migrationsScriptsDirectory,
             NGINX_IGNITION_DATABASE_DRIVER: "sqlite",
             NGINX_IGNITION_DATABASE_DATA_PATH: databaseDirectory,
             NGINX_IGNITION_NGINX_CONFIG_PATH: nginxConfigDirectory,

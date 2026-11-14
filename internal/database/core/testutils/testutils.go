@@ -3,8 +3,6 @@ package testutils
 import (
 	"fmt"
 	"os"
-	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 
@@ -12,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
-	"github.com/lucasdillmann/nginx-ignition/internal/business/core/log"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/database"
 	"github.com/lucasdillmann/nginx-ignition/internal/database/core/migrations"
 )
@@ -33,10 +30,6 @@ func runWithMockedSQLiteDatabase(t *testing.T, executor TestExecutor) {
 	overrides := map[string]string{
 		"nginx-ignition.database.driver":    "sqlite",
 		"nginx-ignition.database.data-path": t.TempDir(),
-		"nginx-ignition.database.migrations-path": getEnvOrDefault(
-			"TEST_MIGRATIONS_PATH",
-			resolveMigrationsPath(),
-		),
 	}
 
 	runWithMockedDatabase(t, overrides, executor, nil, nil)
@@ -66,10 +59,6 @@ func runWithMockedPostgresDatabase(t *testing.T, executor TestExecutor) {
 		),
 		"nginx-ignition.database.schema":   schemaName,
 		"nginx-ignition.database.ssl-mode": "disable",
-		"nginx-ignition.database.migrations-path": getEnvOrDefault(
-			"TEST_MIGRATIONS_PATH",
-			resolveMigrationsPath(),
-		),
 	}
 
 	beforeMigrate := func(db *database.Database) {
@@ -117,15 +106,4 @@ func getEnvOrDefault(key, defaultValue string) string {
 		return value
 	}
 	return defaultValue
-}
-
-func resolveMigrationsPath() string {
-	_, filename, _, ok := runtime.Caller(0)
-	if !ok {
-		log.Warn("Unable to resolve migrations path: Failed to get caller information")
-		return ""
-	}
-
-	baseDir := filepath.Dir(filename)
-	return filepath.Join(baseDir, "..", "migrations", "scripts")
 }

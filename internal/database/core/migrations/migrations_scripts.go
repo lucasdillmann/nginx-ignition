@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"path/filepath"
+	"path"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/log"
 
@@ -12,18 +12,13 @@ import (
 	migratordb "github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
-
-	// Loads the file driver to be dynamically used by gomigrate
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/golang-migrate/migrate/v4/source/iofs"
 )
 
 func (m *Migrations) runScripts(db *sql.DB, driverName string) error {
-	scriptsPath, err := m.configuration.Get("migrations-path")
-	if err != nil {
-		return err
-	}
-
+	var err error
 	var driverInstance migratordb.Driver
+
 	switch driverName {
 	case "postgres":
 		driverInstance, err = postgres.WithInstance(db, &postgres.Config{
@@ -41,14 +36,15 @@ func (m *Migrations) runScripts(db *sql.DB, driverName string) error {
 		return err
 	}
 
-	fullPath := filepath.Join(scriptsPath, driverName)
-	log.Infof("Running database migrations from %s", fullPath)
+	scriptsPath := path.Join("scripts", driverName)
+	log.Infof("Running embedded database migrations from %s", scriptsPath)
 
-	migrator, err := migrate.NewWithDatabaseInstance(
-		fmt.Sprintf("file://%s", filepath.ToSlash(fullPath)),
-		driverName,
-		driverInstance,
-	)
+	sourceInstance, err := iofs.New(scriptsFS, scriptsPath)
+	if err != nil {
+		return err
+	}
+
+	migrator, err := migrate.NewWithInstance("iofs", sourceInstance, driverName, driverInstance)
 	if err != nil {
 		return err
 	}

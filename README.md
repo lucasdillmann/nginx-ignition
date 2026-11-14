@@ -33,6 +33,7 @@
      traffic breakdown by host, domain, and upstream servers.
 - 🚀 **Caching:** Built-in nginx caching configuration to speed up your content delivery.
 - 🏗️ **Flexible execution:** nginx ignition can run nginx for you, or just generate the configuration files for you.
+- 📦 **Single binary:** A single executable is all you need to run the application.
 
 <br />
 
