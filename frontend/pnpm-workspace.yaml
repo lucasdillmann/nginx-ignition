@@ -5,7 +5,7 @@ onlyBuiltDependencies:
 minimumReleaseAge: 0
 
 overrides:
-    minimatch: "^10.2.3"
+    minimatch: ">=11.0.1"
     serialize-javascript: "^7.0.3"
     path-to-regexp: "^8.4.0"
     esbuild: "^0.28.1"
