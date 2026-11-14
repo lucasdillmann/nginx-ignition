@@ -1,0 +1,64 @@
+package nordname
+
+import (
+	"context"
+
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/nordname"
+
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/dynamicfields"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
+	"github.com/lucasdillmann/nginx-ignition/internal/certificate/domain/letsencrypt/dns"
+)
+
+//nolint:gosec
+const (
+	apiKeyFieldID       = "nordNameApiKey"
+	customerUUIDFieldID = "nordNameCustomerUUID"
+	minimumTTL          = 3600
+)
+
+type Provider struct{}
+
+func (p *Provider) ID() string {
+	return "NORDNAME"
+}
+
+func (p *Provider) Name(ctx context.Context) *i18n.Message {
+	return i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNordnameName)
+}
+
+func (p *Provider) DynamicFields(ctx context.Context) []dynamicfields.DynamicField {
+	return dns.LinkedToProvider(p.ID(), []dynamicfields.DynamicField{
+		{
+			ID:          apiKeyFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNordnameApiKey),
+			Required:    true,
+			Sensitive:   true,
+			Type:        dynamicfields.SingleLineTextType,
+		},
+		{
+			ID:          customerUUIDFieldID,
+			Description: i18n.M(ctx, i18n.K.CertificateLetsencryptDnsNordnameCustomerUuid),
+			Type:        dynamicfields.SingleLineTextType,
+		},
+	})
+}
+
+func (p *Provider) ChallengeProvider(
+	_ context.Context,
+	_ []string,
+	parameters map[string]any,
+) (challenge.Provider, error) {
+	apiKey, _ := parameters[apiKeyFieldID].(string)
+	customerUUID, _ := parameters[customerUUIDFieldID].(string)
+
+	cfg := nordname.NewDefaultConfig()
+	cfg.APIKey = apiKey
+	cfg.CustomerUUID = customerUUID
+	cfg.TTL = minimumTTL
+	cfg.PropagationTimeout = dns.PropagationTimeout
+	cfg.PollingInterval = dns.PollingInterval
+
+	return nordname.NewDNSProviderConfig(cfg)
+}

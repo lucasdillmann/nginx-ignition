@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2.50.0
+
+- Added support for 5 new DNS providers for Let's Encrypt certificates: CloudPress, GoDaddy v3, NordName, PrimeDNS and
+  SelfHost.de v2
+- Updated Go to 1.27.4
+- Other minor fixes and improvements
+
 ## 2.49.0
 
 - Upgrade of the nginx version from 1.31.6 to 1.31.8 (mainline) on the official Docker image
