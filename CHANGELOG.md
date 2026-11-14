@@ -5,13 +5,11 @@
 - The frontend assets and database migrations are now embedded in the nginx ignition binary, making it a single-binary
   deployment. Distribution archives and packages no longer include separate `frontend/` and `migrations/` directories.
   - The `NGINX_IGNITION_SERVER_FRONTEND_PATH` and `NGINX_IGNITION_DATABASE_MIGRATIONS_PATH` environment variables, as
-    well as their equivalents in the configuration properties file, are no longer used and can be removed. Upgrading
-    now requires replacing only the nginx ignition binary.
-  - Upgrading from this version onwards requires replacing only the nginx ignition binary.
+    well as their equivalents in the configuration properties file, are no longer used and can be removed. 
+  - Upgrading from this version and onwards requires replacing only the nginx ignition binary.
 - Added support for 5 new DNS providers for Let's Encrypt certificates: CloudPress, GoDaddy v3, NordName, PrimeDNS and
   SelfHost.de v2
-- Updated Go to 1.27.4
-- Updated CI pipeline dependencies
+- Updated Go to 1.27.4 and CI pipeline dependencies to theirs latest versions
 - Security fixes and updates
 - Other minor fixes and improvements
 
