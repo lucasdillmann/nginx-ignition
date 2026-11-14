@@ -12,6 +12,7 @@
   SelfHost.de v2
 - Updated Go to 1.27.4
 - Updated CI pipeline dependencies
+- Security fixes and updates
 - Other minor fixes and improvements
 
 ## 2.49.0
