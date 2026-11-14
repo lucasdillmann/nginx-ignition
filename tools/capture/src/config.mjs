@@ -7,8 +7,14 @@ const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
 
 export const repoRoot = path.resolve(currentDirectory, "..", "..", "..")
 export const frontendRoot = path.join(repoRoot, "frontend")
-export const frontendBuildDirectory = path.join(frontendRoot, "build")
-export const migrationsScriptsDirectory = path.join(repoRoot, "internal", "database", "core", "migrations", "scripts")
+export const embeddedFrontendDirectory = path.join(
+    repoRoot,
+    "internal",
+    "api",
+    "domain",
+    "frontend",
+    "static",
+)
 export const helpVideosDirectory = path.join(frontendRoot, "src", "domain", "help", "videos")
 export const docsImagesDirectory = path.join(repoRoot, "docs", "images")
 export const readmeHeroImage = path.join(repoRoot, "docs", "readme-screenshots.png")

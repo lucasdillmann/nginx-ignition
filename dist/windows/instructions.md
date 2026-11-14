@@ -3,9 +3,7 @@
 These instructions explain how to install and run nginx-ignition on a Windows host. The distribution .zip you downloaded 
 already includes:
 
-- nginx-ignition binary (nginx-ignition.exe)
-- frontend assets (UI)
-- database migrations
+- nginx-ignition binary
 - default configuration file, nginx-ignition.properties
 - a ready-to-use registry file, `nginx-ignition.reg`, capable of installing nginx ignition as a background service
 
@@ -56,5 +54,5 @@ Open http://localhost:8090 in your browser. The nginx ignition UI will guide you
 
 ## Upgrading
 1. Stop the running `nginx-ignition.exe` process.
-2. Replace `nginx-ignition.exe` and any updated assets (`frontend/`, `migrations/`).
+2. Replace `nginx-ignition.exe`.
 3. Start the application again.
