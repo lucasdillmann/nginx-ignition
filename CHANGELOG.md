@@ -8,6 +8,19 @@
   - When running as a Windows service, logs are written to the Windows Event Log under the `nginx-ignition` source
     instead of stdout. The event source is registered automatically when it does not exist.
   - Running the Windows binary from a console is unchanged: it stops on Ctrl+C and keeps logging to stdout.
+- Added a Windows `.exe` installer for amd64 and arm64
+  - Installs the application under `C:\Program Files\nginx-ignition` and keeps configuration and data under
+    `C:\ProgramData\nginx-ignition`.
+  - Offers express and advanced setup modes covering nginx paths, listen address and port, SQLite or PostgreSQL,
+    the service account and startup type, firewall rules and shortcuts.
+  - Registers and updates the Windows service, creates firewall rules, registers the Event Log source and grants the
+    service account access to the configuration and data directories.
+  - Supports silent installation with command-line arguments and `/CONFIG`, and keeps configuration and data across
+    upgrades.
+  - The uninstaller removes the service, firewall rules and shortcuts, and asks before deleting configuration and data.
+    Silent uninstalls keep data unless `/PURGE=1` is passed.
+  - ZIP archives remain available. Existing ZIP installations are not imported automatically; see the migration
+    instructions in `dist/windows/instructions.md`.
 
 ## 2.50.0
 

@@ -105,11 +105,11 @@ jobs:
         with:
           go-version: 1.27.4
           cache: false
-      - name: Install nfpm
+      - name: Install dependencies
         run: |
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
           sudo apt update
-          sudo apt install -y nfpm gettext-base
+          sudo apt install -y nfpm gettext-base nsis
       - uses: docker/setup-qemu-action@v4
         with:
           cache-image: false
