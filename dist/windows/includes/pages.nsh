@@ -55,8 +55,9 @@ Function InstallTypePageCreate
     Abort
   ${EndIf}
 
-  ${NSD_CreateFirstRadioButton} 0 0 100% 12u "$(NI_INSTALLTYPE_EXPRESS)"
+  ${NSD_CreateRadioButton} 0 0 100% 12u "$(NI_INSTALLTYPE_EXPRESS)"
   Pop $hInstallTypeExpress
+  ${NSD_AddStyle} $hInstallTypeExpress ${WS_GROUP}
 
   ${NSD_CreateLabel} 12u 12u 268u 32u "$(NI_INSTALLTYPE_EXPRESS_DESC)"
   Pop $0
@@ -260,8 +261,9 @@ Function DatabasePageCreate
   ${NSD_CreateGroupBox} 0 0 300u 42u "$(NI_DATABASE_TITLE)"
   Pop $0
 
-  ${NSD_CreateFirstRadioButton} 10u 14u 280u 11u "$(NI_DB_SQLITE)"
+  ${NSD_CreateRadioButton} 10u 14u 280u 11u "$(NI_DB_SQLITE)"
   Pop $hDbSqlite
+  ${NSD_AddStyle} $hDbSqlite ${WS_GROUP}
   ${NSD_CreateRadioButton} 10u 27u 280u 11u "$(NI_DB_POSTGRES)"
   Pop $hDbPostgres
 
@@ -424,8 +426,9 @@ Function ServicePageCreate
   ${NSD_CreateGroupBox} 0 0 300u 66u "$(NI_SERVICE_ACCOUNT)"
   Pop $0
 
-  ${NSD_CreateFirstRadioButton} 10u 14u 280u 10u "$(NI_SERVICE_LOCALSYSTEM)"
+  ${NSD_CreateRadioButton} 10u 14u 280u 10u "$(NI_SERVICE_LOCALSYSTEM)"
   Pop $hSvcLocalSystem
+  ${NSD_AddStyle} $hSvcLocalSystem ${WS_GROUP}
   ${NSD_CreateRadioButton} 10u 26u 280u 10u "$(NI_SERVICE_NETWORKSERVICE)"
   Pop $hSvcNetworkService
   ${NSD_CreateRadioButton} 10u 38u 280u 10u "$(NI_SERVICE_LOCALSERVICE)"
@@ -436,8 +439,9 @@ Function ServicePageCreate
   ${NSD_CreateGroupBox} 0 72u 300u 46u "$(NI_SERVICE_STARTTYPE)"
   Pop $0
 
-  ${NSD_CreateFirstRadioButton} 10u 86u 50u 10u "$(NI_SERVICE_AUTO)"
+  ${NSD_CreateRadioButton} 10u 86u 50u 10u "$(NI_SERVICE_AUTO)"
   Pop $hSvcStartAuto
+  ${NSD_AddStyle} $hSvcStartAuto ${WS_GROUP}
   ${NSD_CreateRadioButton} 65u 86u 60u 10u "$(NI_SERVICE_MANUAL)"
   Pop $hSvcStartManual
 
