@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2.51.0
+
+- nginx ignition now runs natively as a Windows service, without requiring NSSM or WinSW
+  - The service reports its startup and shutdown progress to the Windows Service Control Manager, including during 
+    slow operations.
+  - When running as a Windows service, logs are written to the Windows Event Log under the `nginx-ignition` source
+    instead of stdout. The event source is registered automatically when it does not exist.
+  - Running the Windows binary from a console is unchanged: it stops on Ctrl+C and keeps logging to stdout.
+
 ## 2.50.0
 
 - The frontend assets and database migrations are now embedded in the nginx ignition binary, making it a single-binary

@@ -9,7 +9,7 @@ import (
 func main() {
 	log.Infof("Welcome to nginx ignition %s", version.Number)
 
-	if err := application.Start(); err != nil {
+	if err := application.Run(); err != nil {
 		log.Fatalf("Application failed to start: %s", err)
 	}
 }

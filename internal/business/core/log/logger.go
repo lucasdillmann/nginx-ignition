@@ -3,35 +3,24 @@ package log
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var delegate *zap.Logger
 
 func init() {
-	config := zap.Config{
-		Level:            zap.NewAtomicLevelAt(zap.InfoLevel),
-		Development:      false,
-		Encoding:         "console",
-		EncoderConfig:    zap.NewDevelopmentEncoderConfig(),
-		OutputPaths:      []string{"stdout"},
-		ErrorOutputPaths: []string{"stderr"},
-	}
+	encoderConfig := zap.NewDevelopmentEncoderConfig()
+	encoderConfig.EncodeCaller = nil
 
-	config.EncoderConfig.EncodeCaller = nil
-
-	loggerInstance, err := config.Build()
-	if err != nil {
-		panic(err)
-	}
-
-	delegate = loggerInstance.WithOptions(zap.AddCallerSkip(1))
-}
-
-func EnableStackTrace(enabled bool) {
-	enabler := &stacktrace{enabled}
-	delegate = delegate.WithOptions(zap.AddStacktrace(enabler))
+	delegate = zap.New(
+		platformCore(zapcore.NewConsoleEncoder(encoderConfig)),
+		zap.AddCallerSkip(1),
+		zap.AddStacktrace(zapcore.ErrorLevel),
+		zap.ErrorOutput(zapcore.Lock(os.Stderr)),
+	)
 }
 
 func Debug(message string) {
