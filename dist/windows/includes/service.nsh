@@ -208,13 +208,15 @@ Function ConfigureService
 
   Call ServiceExists
   ${If} $R0 == "1"
-    ; Upgrading an existing installation: keep the service object so its
-    ; credentials and current startup type are preserved. Only change the
-    ; start type when /SERVICESTART was explicitly supplied.
-    ${If} $ServiceStartArgGiven == "1"
-      nsExec::ExecToStack 'sc.exe config ${APP_SERVICE} binPath= "\"$INSTDIR\nginx-ignition.exe\" --config \"$CONFIG_FILE\"" start= $StartMode'
-    ${Else}
+    ; A normal upgrade keeps the service object so its credentials and current
+    ; startup type are preserved; only /SERVICESTART changes it. If a service
+    ; exists without the installer's registry entry (fresh install over a
+    ; legacy/manual service), the wizard's startup choice must be applied.
+    ${If} $IsUpgrade == "1"
+    ${AndIf} $ServiceStartArgGiven != "1"
       nsExec::ExecToStack 'sc.exe config ${APP_SERVICE} binPath= "\"$INSTDIR\nginx-ignition.exe\" --config \"$CONFIG_FILE\""'
+    ${Else}
+      nsExec::ExecToStack 'sc.exe config ${APP_SERVICE} binPath= "\"$INSTDIR\nginx-ignition.exe\" --config \"$CONFIG_FILE\"" start= $StartMode'
     ${EndIf}
     Pop $0
     Pop $1
