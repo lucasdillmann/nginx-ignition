@@ -62,6 +62,28 @@ Function ResolveServiceAccount
   ${EndIf}
 FunctionEnd
 
+; Grants SYSTEM, Administrators and the service account access to a
+; configured path (data, nginx config or VPN config) without changing
+; inheritance. Input: $AclPath.
+Function GrantAclPath
+  ${If} $AclPath == ""
+    Return
+  ${EndIf}
+
+  nsExec::ExecToStack 'icacls "$AclPath" /grant:r "*S-1-5-18:(OI)(CI)F" /T /C'
+  Pop $0
+  Pop $1
+  nsExec::ExecToStack 'icacls "$AclPath" /grant:r "*S-1-5-32-544:(OI)(CI)F" /T /C'
+  Pop $0
+  Pop $1
+
+  ${If} $AccountName != "*S-1-5-18"
+    nsExec::ExecToStack 'icacls "$AclPath" /grant:r "$AccountName:(OI)(CI)M" /T /C'
+    Pop $0
+    Pop $1
+  ${EndIf}
+FunctionEnd
+
 Function ApplyPermissions
   DetailPrint "$(NI_DETAIL_ACL)"
 
@@ -144,7 +166,22 @@ Function ApplyPermissions
     nsExec::ExecToStack 'icacls "$CONFIG_FILE" /grant:r "$AccountName:R" /C'
     Pop $0
     Pop $1
+
+    ${If} $NginxBinaryPath != ""
+      nsExec::ExecToStack 'icacls "$NginxBinaryPath" /grant "$AccountName:RX" /C'
+      Pop $0
+      Pop $1
+    ${EndIf}
   ${EndIf}
+
+  ; The data, nginx configuration and VPN directories can be chosen outside
+  ; C:\ProgramData, so make sure the service account can use them too.
+  StrCpy $AclPath "$DataDir"
+  Call GrantAclPath
+  StrCpy $AclPath "$NginxConfigPath"
+  Call GrantAclPath
+  StrCpy $AclPath "$VpnConfigPath"
+  Call GrantAclPath
 FunctionEnd
 
 Function RegisterEventLog
@@ -172,8 +209,13 @@ Function ConfigureService
   Call ServiceExists
   ${If} $R0 == "1"
     ; Upgrading an existing installation: keep the service object so its
-    ; credentials are preserved, and only update the binary path and start type.
-    nsExec::ExecToStack 'sc.exe config ${APP_SERVICE} binPath= "\"$INSTDIR\nginx-ignition.exe\" --config \"$CONFIG_FILE\"" start= $StartMode'
+    ; credentials and current startup type are preserved. Only change the
+    ; start type when /SERVICESTART was explicitly supplied.
+    ${If} $ServiceStartArgGiven == "1"
+      nsExec::ExecToStack 'sc.exe config ${APP_SERVICE} binPath= "\"$INSTDIR\nginx-ignition.exe\" --config \"$CONFIG_FILE\"" start= $StartMode'
+    ${Else}
+      nsExec::ExecToStack 'sc.exe config ${APP_SERVICE} binPath= "\"$INSTDIR\nginx-ignition.exe\" --config \"$CONFIG_FILE\""'
+    ${EndIf}
     Pop $0
     Pop $1
 

@@ -94,8 +94,10 @@ To reuse a complete, pre-prepared properties file instead of generating one, pas
 setup.exe /S /CONFIG="\\fileserver\deploy\nginx-ignition.properties"
 ```
 
-`/CONFIG` takes precedence over the individual configuration arguments and leaves the provided file untouched. Use
-absolute paths in the imported file: the service runs with `C:\Windows\System32` as its working directory.
+`/CONFIG` takes precedence over the individual configuration arguments and leaves the provided file untouched. The
+installer uses its listen address, port and configured data/nginx/VPN directories for the firewall rules, shortcuts
+and service-account permissions. Use absolute paths in the imported file: the service runs with
+`C:\Windows\System32` as its working directory.
 
 Boolean arguments accept `1`/`0`, `true`/`false`, `yes`/`no` and `on`/`off`. `/START` controls whether the service is
 started after installation. `/OPENUI` is `0` by default in silent mode; set `/OPENUI=1` to open the web interface in
@@ -141,6 +143,10 @@ uninstall.exe /S /PURGE=1
 
 A silent uninstall without `/PURGE=1` keeps the data. Custom data directories configured outside
 `C:\ProgramData\nginx-ignition` are never deleted by the uninstaller.
+
+If you reinstall after uninstalling with data kept, setup detects the existing `nginx-ignition.properties` and reuses
+it. A silent reinstall without configuration arguments leaves it untouched; an interactive reinstall pre-fills the
+configuration pages from it.
 
 ## Installing from the ZIP archive
 

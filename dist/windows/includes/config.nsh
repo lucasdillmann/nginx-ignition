@@ -11,12 +11,29 @@ Function LoadExistingConfig
 
   StrCpy $PreviousDriver ""
 
+  ${If} $ConfigLoadPath == ""
+    Goto done
+  ${EndIf}
+  ${IfNot} ${FileExists} "$ConfigLoadPath"
+    Goto done
+  ${EndIf}
+
+  ; The file is UTF-8. Transcode it to UTF-16LE first so FileReadUTF16LE does
+  ; not decode non-ASCII paths or passwords through the ANSI code page.
+  Delete "$PLUGINSDIR\config-read.txt"
+  nsExec::ExecToStack `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$PLUGINSDIR\read-config.ps1" -ConfigPath "$ConfigLoadPath" -OutputPath "$PLUGINSDIR\config-read.txt"`
+  Pop $0
+  Pop $1
+  ${If} $0 != "0"
+    Goto done
+  ${EndIf}
+
   ClearErrors
-  FileOpen $9 "$CONFIG_FILE" r
+  FileOpen $9 "$PLUGINSDIR\config-read.txt" r
   IfErrors done
 
   read:
-    FileRead $9 $0
+    FileReadUTF16LE $9 $0
     IfErrors close
 
     ${StrTrimNewLines} $0 "$0"
@@ -74,6 +91,7 @@ Function LoadExistingConfig
 
   close:
     FileClose $9
+    Delete "$PLUGINSDIR\config-read.txt"
 
   done:
   Pop $9
@@ -114,6 +132,12 @@ Function WriteConfiguration
 
   ${If} $IsUpgrade == "1"
   ${AndIf} $ConfigTouched != "1"
+    ${If} ${FileExists} "$CONFIG_FILE"
+      Return
+    ${EndIf}
+  ${ElseIf} $HasExistingConfig == "1"
+  ${AndIf} $ConfigTouched != "1"
+  ${AndIf} ${Silent}
     ${If} ${FileExists} "$CONFIG_FILE"
       Return
     ${EndIf}

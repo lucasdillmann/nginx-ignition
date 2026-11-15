@@ -363,8 +363,7 @@ Function DatabasePageLeave
       StrCpy $DbPassword "$ExistingDbPassword"
     ${EndIf}
 
-    SendMessage $hDbSslMode ${CB_GETCURSEL} 0 0
-    Pop $0
+    SendMessage $hDbSslMode ${CB_GETCURSEL} 0 0 $0
     ${If} $0 == 0
       StrCpy $DbSslMode "disable"
     ${Else}

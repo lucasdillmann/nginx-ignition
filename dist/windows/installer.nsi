@@ -142,6 +142,7 @@ Var ServicePassword
 Var ServiceStartType
 Var ServiceStartNow
 Var ServiceAccountArgGiven
+Var ServiceStartArgGiven
 Var PreviousServiceRunning
 Var FirewallUI
 Var FirewallHTTP
@@ -153,6 +154,9 @@ Var OpenUI
 Var ConfigImport
 Var ConfigTouched
 Var IsUpgrade
+Var HasExistingConfig
+Var ConfigLoadPath
+Var AclPath
 Var WelcomeText
 Var FinishText
 Var UiUrl
@@ -235,9 +239,8 @@ Function .onInit
 
   SetShellVarContext all
 
-  StrCpy $APPDATA_DIR "$COMMONPROGRAMDATA\${APP_ID}"
+  StrCpy $APPDATA_DIR "$APPDATA\${APP_ID}"
   StrCpy $CONFIG_FILE "$APPDATA_DIR\nginx-ignition.properties"
-  StrCpy $INSTDIR "$PROGRAMFILES64\${APP_ID}"
 
   StrCpy $InstallType "express"
   StrCpy $NginxBinaryPath ""
@@ -262,6 +265,7 @@ Function .onInit
   StrCpy $ServiceStartType "auto"
   StrCpy $ServiceStartNow "1"
   StrCpy $ServiceAccountArgGiven "0"
+  StrCpy $ServiceStartArgGiven "0"
   StrCpy $PreviousServiceRunning "0"
   StrCpy $FirewallUI "1"
   StrCpy $FirewallHTTP "0"
@@ -273,9 +277,12 @@ Function .onInit
   StrCpy $ConfigImport ""
   StrCpy $ConfigTouched "0"
   StrCpy $IsUpgrade "0"
+  StrCpy $HasExistingConfig "0"
+  StrCpy $ConfigLoadPath ""
 
   InitPluginsDir
   File "/oname=$PLUGINSDIR\update-config.ps1" "${SCRIPTDIR}/update-config.ps1"
+  File "/oname=$PLUGINSDIR\read-config.ps1" "${SCRIPTDIR}/read-config.ps1"
   File "/oname=$PLUGINSDIR\wait-service.ps1" "${SCRIPTDIR}/wait-service.ps1"
   File "/oname=$PLUGINSDIR\grant-service-logon.ps1" "${SCRIPTDIR}/grant-service-logon.ps1"
   File "/oname=$PLUGINSDIR\nginx-ignition.sqlite.properties" "${TEMPLATEDIR}/nginx-ignition.sqlite.properties.template"
@@ -340,8 +347,16 @@ Function .onInit
       StrCpy $StartMenuShortcut $0
     ${EndIf}
 
+    StrCpy $HasExistingConfig "1"
+    StrCpy $ConfigLoadPath "$CONFIG_FILE"
     Call LoadExistingConfig
   ${Else}
+    ${If} ${FileExists} "$CONFIG_FILE"
+      StrCpy $HasExistingConfig "1"
+      StrCpy $ConfigLoadPath "$CONFIG_FILE"
+      StrCpy $InstallType "advanced"
+      Call LoadExistingConfig
+    ${EndIf}
     Call DetectNginx
   ${EndIf}
 
@@ -360,6 +375,10 @@ Function .onInit
         Abort
       ${EndIf}
     ${EndIf}
+    StrCpy $ConfigLoadPath "$ConfigImport"
+    Call LoadExistingConfig
+    StrCpy $HasExistingConfig "1"
+    StrCpy $InstallType "advanced"
     StrCpy $ConfigTouched "1"
   ${ElseIf} ${Silent}
     ${If} $DatabaseDriver == "postgres"
@@ -372,10 +391,15 @@ Function .onInit
       ${EndIf}
     ${EndIf}
     ${If} $ServiceAccountKind == "custom"
-      ${If} $ServiceAccount == ""
-      ${OrIf} $ServicePassword == ""
-        MessageBox MB_ICONSTOP|MB_OK "$(NI_SERVICE_CUSTOM_REQUIRED)"
-        Abort
+      ${If} $IsUpgrade == "1"
+      ${AndIf} $ServiceAccountArgGiven != "1"
+        ; Keeping the existing service account; the password is not needed.
+      ${Else}
+        ${If} $ServiceAccount == ""
+        ${OrIf} $ServicePassword == ""
+          MessageBox MB_ICONSTOP|MB_OK "$(NI_SERVICE_CUSTOM_REQUIRED)"
+          Abort
+        ${EndIf}
       ${EndIf}
     ${EndIf}
   ${EndIf}
@@ -499,6 +523,11 @@ Section "$(NI_SECTION_APP)"
   IfErrors dir_error
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
+  ${If} $ConfigImport != ""
+    StrCpy $ConfigLoadPath "$ConfigImport"
+    Call LoadExistingConfig
+  ${EndIf}
+
   Call EnsureDirectories
   Call WriteConfiguration
   Call ApplyPermissions
@@ -534,7 +563,7 @@ Function un.onInit
 
   SetShellVarContext all
 
-  StrCpy $APPDATA_DIR "$COMMONPROGRAMDATA\${APP_ID}"
+  StrCpy $APPDATA_DIR "$APPDATA\${APP_ID}"
   StrCpy $UninstallPurge "0"
 
   ReadRegStr $0 HKLM "${APP_REGKEY}" "InstallDir"

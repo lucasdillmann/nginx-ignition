@@ -92,7 +92,7 @@ Run the installer with `/S`. The following arguments are supported:
 | `/SERVICEACCOUNT=<kind>`    | `localsystem`, `networkservice`, `localservice` or `custom`   |
 | `/SERVICEUSER=<account>`    | Account name for a custom service account                     |
 | `/SERVICEPASS=<password>`   | Password for a custom service account                         |
-| `/SERVICESTART=<type>`      | `auto` or `manual`                                            |
+| `/SERVICESTART=<type>`      | `auto` or `manual` (upgrades only change it when supplied)    |
 | `/START=<bool>`             | Start the service after installation                          |
 | `/FIREWALL=<bool>`          | Allow the web interface port on domain/private profiles       |
 | `/FIREWALLHTTP=<bool>`      | Allow TCP port 80                                             |
@@ -136,10 +136,10 @@ Reusing a prepared configuration:
 nginx-ignition-setup.exe /S /CONFIG="\\fileserver\deploy\nginx-ignition.properties"
 ```
 
-The imported file is used as-is, so it must contain absolute paths (the service runs with `C:\Windows\System32` as its
-working directory). The installer still creates and grants access to the default directories; if the imported file
-points elsewhere, make sure the service account can read the file and write to the configured data, nginx and VPN
-directories.
+The imported file is copied as-is, so it must contain absolute paths (the service runs with
+`C:\Windows\System32` as its working directory). The installer reads its listen address, port and configured
+data/nginx/VPN directories and uses them for the firewall rule, shortcuts, directory creation and service-account
+permissions.
 
 ## Upgrade behavior
 
@@ -153,7 +153,15 @@ An installation is considered an upgrade when the uninstall registry key exists.
 - Copies the new binary over the old one,
 - Restarts the service if it was running before.
 
-Because the service object is preserved, upgrades do not require the password of a custom service account.
+Because the service object is preserved, upgrades do not require the password of a custom service account. The
+existing startup type is kept unless `/SERVICESTART` is explicitly supplied.
+
+If setup finds a properties file left behind by an earlier installation whose registry entry was removed, it loads
+that configuration. A silent install without configuration arguments leaves the file byte-for-byte untouched; an
+interactive install pre-fills the configuration pages from it.
+
+The service account is granted access to the configured data, nginx configuration and VPN directories even when they
+are outside `C:\ProgramData\nginx-ignition`.
 
 ## Uninstallation
 

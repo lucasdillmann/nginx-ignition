@@ -294,6 +294,7 @@ Function ParseArguments
     ${Else}
       StrCpy $ServiceStartType "auto"
     ${EndIf}
+    StrCpy $ServiceStartArgGiven "1"
     StrCpy $ConfigTouched "1"
   ${EndIf}
 
