@@ -27,6 +27,8 @@ const (
 
 	geoLite2CountryAssetName = "GeoLite2-Country.mmdb"
 	geoLite2CityAssetName    = "GeoLite2-City.mmdb"
+
+	geoIPValidationSampleSize = 10
 )
 
 type gitHubRelease struct {
@@ -219,7 +221,15 @@ func validate(data []byte) error {
 		_ = reader.Close()
 	}()
 
-	return reader.Verify()
+	networks := reader.Networks()
+	for count := 0; count < geoIPValidationSampleSize && networks.Next(); count++ {
+		var record any
+		if _, err := networks.Network(&record); err != nil {
+			return err
+		}
+	}
+
+	return networks.Err()
 }
 
 func buildGeoIPFiles(countryData, cityData []byte) []File {

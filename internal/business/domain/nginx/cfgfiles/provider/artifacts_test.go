@@ -189,7 +189,7 @@ func corruptGeoIPDataSection(t *testing.T, data []byte) []byte {
 	dataSectionStart := searchTreeSize + 16
 	require.Less(t, dataSectionStart+1, len(corrupted))
 	corrupted[dataSectionStart] = 0x00
-	corrupted[dataSectionStart+1] = 0xFF
+	corrupted[dataSectionStart+1] = 0x09
 
 	return corrupted
 }
