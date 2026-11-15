@@ -200,20 +200,21 @@ func Test_mainConfigurationProvider(t *testing.T) {
 			config: configuration.New(),
 		}
 		paths := &Paths{
-			Base: "/etc/nginx/",
+			Base:   "/etc/nginx/",
+			Config: "/etc/nginx/",
 		}
 
 		t.Run("returns empty string when disabled", func(t *testing.T) {
 			cfg := &settings.NginxStatsSettings{
 				Enabled: false,
 			}
-			result, err := provider.getStatsDefinitions(paths, cfg)
+			result, err := provider.getStatsDefinitions(paths, cfg, true)
 			assert.NoError(t, err)
 			assert.Equal(t, "", result)
 		})
 
 		t.Run("returns empty string when nil", func(t *testing.T) {
-			result, err := provider.getStatsDefinitions(paths, nil)
+			result, err := provider.getStatsDefinitions(paths, nil, true)
 			assert.NoError(t, err)
 			assert.Equal(t, "", result)
 		})
@@ -224,7 +225,7 @@ func Test_mainConfigurationProvider(t *testing.T) {
 				MaximumSizeMB: 10,
 				Persistent:    false,
 			}
-			result, err := provider.getStatsDefinitions(paths, cfg)
+			result, err := provider.getStatsDefinitions(paths, cfg, true)
 			assert.NoError(t, err)
 			assert.Contains(
 				t,
@@ -238,13 +239,58 @@ func Test_mainConfigurationProvider(t *testing.T) {
 			assert.NotContains(t, result, "vhost_traffic_status_dump")
 		})
 
+		t.Run("includes geoip definitions when available", func(t *testing.T) {
+			cfg := &settings.NginxStatsSettings{
+				Enabled:       true,
+				MaximumSizeMB: 10,
+			}
+			result, err := provider.getStatsDefinitions(paths, cfg, true)
+			assert.NoError(t, err)
+			assert.Contains(t, result, "geoip2 \"/etc/nginx/geoip-country.mmdb\" {")
+			assert.Contains(t, result, "geoip2 \"/etc/nginx/geoip-city.mmdb\" {")
+			assert.Contains(t, result, "$geoip_country_code")
+			assert.Contains(t, result, "$geoip_city_name")
+			assert.Contains(
+				t,
+				result,
+				"vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@global;",
+			)
+			assert.Contains(
+				t,
+				result,
+				"vhost_traffic_status_filter_by_set_key $geoip_city_name city@global;",
+			)
+		})
+
+		t.Run("omits geoip definitions when unavailable", func(t *testing.T) {
+			cfg := &settings.NginxStatsSettings{
+				Enabled:       true,
+				MaximumSizeMB: 10,
+			}
+			result, err := provider.getStatsDefinitions(paths, cfg, false)
+			assert.NoError(t, err)
+			assert.NotContains(t, result, "geoip2")
+			assert.NotContains(t, result, "$geoip_country_code")
+			assert.NotContains(t, result, "$geoip_city_name")
+			assert.Contains(
+				t,
+				result,
+				"vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@global;",
+			)
+			assert.Contains(
+				t,
+				result,
+				"vhost_traffic_status_zone shared:nginx-ignition-traffic-stats:10m;",
+			)
+		})
+
 		t.Run("includes persistent dump with default path", func(t *testing.T) {
 			cfg := &settings.NginxStatsSettings{
 				Enabled:       true,
 				MaximumSizeMB: 10,
 				Persistent:    true,
 			}
-			result, err := provider.getStatsDefinitions(paths, cfg)
+			result, err := provider.getStatsDefinitions(paths, cfg, true)
 			assert.NoError(t, err)
 			assert.Contains(
 				t,
@@ -260,7 +306,7 @@ func Test_mainConfigurationProvider(t *testing.T) {
 				Persistent:       true,
 				DatabaseLocation: new("/var/lib/nginx/traffic-stats.db"),
 			}
-			result, err := provider.getStatsDefinitions(paths, cfg)
+			result, err := provider.getStatsDefinitions(paths, cfg, true)
 			assert.NoError(t, err)
 			assert.Contains(
 				t,

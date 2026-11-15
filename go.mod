@@ -37,11 +37,13 @@ require (
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12
 	github.com/lib/pq v1.12.3
+	github.com/maxmind/mmdbwriter v1.2.0
 	github.com/moby/moby/api v1.57.0
 	github.com/moby/moby/client v0.6.3
 	github.com/ncw/pwhash v0.0.0-20160129162812-b2a8830c6a99
 	github.com/netbirdio/netbird v0.83.1
 	github.com/nrdcg/oci-go-sdk/common/v1065 v1065.130.0
+	github.com/oschwald/maxminddb-golang v1.12.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pquerna/otp v1.5.0
 	github.com/stretchr/testify v1.12.1
@@ -255,6 +257,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.1 // indirect
 	github.com/openshift/gssapi v0.0.0-20260819120910-d6b72669a11e // indirect
+	github.com/oschwald/maxminddb-golang/v2 v2.1.1 // indirect
 	github.com/ovh/go-ovh v1.9.0 // indirect
 	github.com/pandatix/go-abnf v0.5.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect

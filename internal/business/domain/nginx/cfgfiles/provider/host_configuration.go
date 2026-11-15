@@ -87,20 +87,33 @@ func (p *hostConfigurationProvider) buildHost(
 	statsCfg := ctx.Cfg.Nginx.Stats
 
 	if statsCfg.Enabled {
+		geoIPHostFilters := ""
+		geoIPDomainFilters := ""
+		if ctx.GeoIPAvailable {
+			geoIPHostFilters = `
+				vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@host:$stats_host_id;
+				vhost_traffic_status_filter_by_set_key $geoip_city_name city@host:$stats_host_id;
+			`
+			geoIPDomainFilters = `
+				vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@domain:$server_name;
+				vhost_traffic_status_filter_by_set_key $geoip_city_name city@domain:$server_name;
+			`
+		}
+
 		stats = nginxSprintf(
 			`
 			set $stats_host_id %s;
 			vhost_traffic_status %s;
 			vhost_traffic_status_filter_by_set_key $stats_host_id hosts;
-			vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@host:$stats_host_id;
-			vhost_traffic_status_filter_by_set_key $geoip_city_name city@host:$stats_host_id;
+			%s
 			vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@host:$stats_host_id;
-			vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@domain:$server_name;
-			vhost_traffic_status_filter_by_set_key $geoip_city_name city@domain:$server_name;
+			%s
 			vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@domain:$server_name;
 			`,
 			h.ID,
 			directiveFragment(statusFlag(statsCfg.AllHosts || h.FeatureSet.StatsEnabled)),
+			directiveFragment(geoIPHostFilters),
+			directiveFragment(geoIPDomainFilters),
 		)
 	}
 

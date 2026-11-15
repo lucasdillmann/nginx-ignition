@@ -1,9 +1,15 @@
 package provider
 
 import (
+	"bytes"
+	"net"
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/maxmind/mmdbwriter"
+	"github.com/maxmind/mmdbwriter/mmdbtype"
+	"github.com/oschwald/maxminddb-golang"
+	"github.com/stretchr/testify/require"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/accesslist"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/binding"
@@ -137,4 +143,63 @@ func newStream() stream.Stream {
 			},
 		},
 	}
+}
+
+func newGeoIPDatabase(t *testing.T) []byte {
+	t.Helper()
+
+	tree, err := mmdbwriter.New(mmdbwriter.Options{
+		DatabaseType: "GeoLite2-Test",
+		Description:  map[string]string{"en": "Test GeoIP database"},
+		IPVersion:    4,
+		RecordSize:   24,
+		Languages:    []string{"en"},
+	})
+	require.NoError(t, err)
+
+	_, network, err := net.ParseCIDR("8.8.8.0/24")
+	require.NoError(t, err)
+
+	err = tree.Insert(network, mmdbtype.Map{
+		"country": mmdbtype.Map{
+			"iso_code": mmdbtype.String("US"),
+		},
+	})
+	require.NoError(t, err)
+
+	buffer := new(bytes.Buffer)
+	_, err = tree.WriteTo(buffer)
+	require.NoError(t, err)
+
+	return buffer.Bytes()
+}
+
+func corruptGeoIPDataSection(t *testing.T, data []byte) []byte {
+	t.Helper()
+
+	reader, err := maxminddb.FromBytes(data)
+	require.NoError(t, err)
+
+	searchTreeSize := int(reader.Metadata.NodeCount * reader.Metadata.RecordSize / 4)
+	_ = reader.Close()
+
+	corrupted := make([]byte, len(data))
+	copy(corrupted, data)
+
+	dataSectionStart := searchTreeSize + 16
+	require.Less(t, dataSectionStart+1, len(corrupted))
+	corrupted[dataSectionStart] = 0x00
+	corrupted[dataSectionStart+1] = 0x09
+
+	return corrupted
+}
+
+func newGeoIPTestContext(t *testing.T) *Context {
+	t.Helper()
+
+	ctx := newProviderContext(t)
+	ctx.Cfg = newSettings()
+	ctx.Cfg.Nginx.Stats.Enabled = true
+
+	return ctx
 }

@@ -63,7 +63,11 @@ func (p *mainConfigurationProvider) Provide(ctx *Context) ([]File, error) {
 		userStatement = ""
 	}
 
-	statsDefinitions, err := p.getStatsDefinitions(ctx.Paths, cfg.Nginx.Stats)
+	statsDefinitions, err := p.getStatsDefinitions(
+		ctx.Paths,
+		cfg.Nginx.Stats,
+		ctx.GeoIPAvailable,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -242,26 +246,46 @@ func (p *mainConfigurationProvider) getCacheDefinitions(
 func (p *mainConfigurationProvider) getStatsDefinitions(
 	paths *Paths,
 	cfg *settings.NginxStatsSettings,
+	geoIPAvailable bool,
 ) (string, error) {
 	if cfg == nil || !cfg.Enabled {
 		return "", nil
 	}
 
-	geoIPCountryFilePath := filepath.Join(paths.Config, "geoip-country.mmdb")
-	geoIPCityFilePath := filepath.Join(paths.Config, "geoip-city.mmdb")
 	output := strings.Builder{}
+
+	geoIPDefinitions := ""
+	if geoIPAvailable {
+		geoIPCountryFilePath := filepath.Join(paths.Config, "geoip-country.mmdb")
+		geoIPCityFilePath := filepath.Join(paths.Config, "geoip-city.mmdb")
+
+		geoIPDefinitions = nginxSprintf(
+			`
+			geoip2 %s {
+				$geoip_country_code default=Unknown source=$remote_addr country iso_code;
+			}
+
+			geoip2 %s {
+				$geoip_city_name default=Unknown source=$remote_addr city names en;
+			}
+			`,
+			geoIPCountryFilePath,
+			geoIPCityFilePath,
+		)
+	}
+
+	geoIPFilters := ""
+	if geoIPAvailable {
+		geoIPFilters = `
+			vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@global;
+			vhost_traffic_status_filter_by_set_key $geoip_city_name city@global;
+		`
+	}
 
 	nginxFprintf(
 		&output,
 		`
-		geoip2 %s {
-			$geoip_country_code default=Unknown source=$remote_addr country iso_code;
-		}
-
-		geoip2 %s {
-			$geoip_city_name default=Unknown source=$remote_addr city names en;
-		}
-		
+		%s
 		map $http_user_agent $stats_user_agent {
 			default "Unknown";
 			
@@ -279,13 +303,12 @@ func (p *mainConfigurationProvider) getStatsDefinitions(
 		vhost_traffic_status_zone shared:nginx-ignition-traffic-stats:%dm;
 		vhost_traffic_status_filter_by_host on;
 		vhost_traffic_status_stats_by_upstream on;
-		vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@global;
-		vhost_traffic_status_filter_by_set_key $geoip_city_name city@global;
+		%s
 		vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@global;
 		`,
-		geoIPCountryFilePath,
-		geoIPCityFilePath,
+		directiveFragment(geoIPDefinitions),
 		cfg.MaximumSizeMB,
+		directiveFragment(geoIPFilters),
 	)
 
 	if cfg.Persistent {
