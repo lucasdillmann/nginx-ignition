@@ -5,7 +5,6 @@ already includes:
 
 - nginx-ignition binary
 - default configuration file, nginx-ignition.properties
-- a ready-to-use registry file, `nginx-ignition.reg`, capable of installing nginx ignition as a background service
 
 ## Requirements
 - Windows (amd64 or arm64)
@@ -36,11 +35,25 @@ cd C:\nginx-ignition
 ```
 
 ### Installing as a background service
-nginx ignition by itself can't run as a service on Windows since it doesn't support the Windows Service Control Manager.
-However, you can use the following tools to still run it as a background service. 
+nginx ignition supports the Windows Service Control Manager natively. Open a Command Prompt or PowerShell as
+Administrator and register the service with the exact name `nginx-ignition`:
 
-- [NSSM](https://nssm.cc/) - Non-Sucking Service Manager
-- [WinSW](https://github.com/winsw/winsw) - Windows Service Wrapper
+```powershell
+sc.exe create nginx-ignition binPath= "C:\nginx-ignition\nginx-ignition.exe --config C:\nginx-ignition\nginx-ignition.properties" start= auto
+sc.exe start nginx-ignition
+```
+
+When started by the Service Control Manager, nginx ignition writes its logs to the Windows Event Log under the
+`nginx-ignition` source instead of stdout. The event source is registered automatically on the first service start.
+
+### Managing the service
+
+```powershell
+Get-Service nginx-ignition
+Stop-Service nginx-ignition
+Start-Service nginx-ignition
+Restart-Service nginx-ignition
+```
 
 ### Open firewall (if applicable)
 If you have Windows Firewall enabled, you'll need to allow traffic on port 8090:

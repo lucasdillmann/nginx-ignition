@@ -2,9 +2,6 @@ package application
 
 import (
 	"context"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/container"
@@ -12,20 +9,24 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/log"
 )
 
-func Start() error {
+func start(ctx context.Context, onReady func()) error {
 	startTime := time.Now().UnixNano() / int64(time.Millisecond)
-	ctx := context.Background()
 
 	if err := startContainer(ctx); err != nil {
 		return err
 	}
 
-	return container.Run(func(lifecycle *lifecycle.Lifecycle) error {
-		return runLifecycle(ctx, lifecycle, startTime)
+	return container.Run(func(lc *lifecycle.Lifecycle) error {
+		return runLifecycle(ctx, lc, startTime, onReady)
 	})
 }
 
-func runLifecycle(ctx context.Context, lc *lifecycle.Lifecycle, startTime int64) error {
+func runLifecycle(
+	ctx context.Context,
+	lc *lifecycle.Lifecycle,
+	startTime int64,
+	onReady func(),
+) error {
 	if err := lc.FireStartup(ctx); err != nil {
 		return err
 	}
@@ -33,28 +34,15 @@ func runLifecycle(ctx context.Context, lc *lifecycle.Lifecycle, startTime int64)
 	endTime := time.Now().UnixNano() / int64(time.Millisecond)
 	log.Infof("Application started in %d ms", endTime-startTime)
 
-	receivedSignal := waitForShutdownSignal()
+	if onReady != nil {
+		onReady()
+	}
 
-	log.Infof(
-		"Application shutdown signal received (%s). Starting graceful shutdown.",
-		receivedSignal,
-	)
-	lc.FireShutdown(ctx)
+	<-ctx.Done()
 
-	log.Infof("Shutdown complete")
+	log.Info("Application shutdown requested. Starting graceful shutdown.")
+	lc.FireShutdown(context.WithoutCancel(ctx))
+	log.Info("Shutdown complete")
+
 	return nil
-}
-
-func waitForShutdownSignal() os.Signal {
-	channel := make(chan os.Signal, 1)
-	signal.Notify(
-		channel,
-		syscall.SIGHUP,
-		syscall.SIGQUIT,
-		syscall.SIGTERM,
-		syscall.SIGINT,
-		syscall.SIGSEGV,
-	)
-
-	return <-channel
 }
