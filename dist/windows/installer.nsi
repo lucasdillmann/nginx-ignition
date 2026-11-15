@@ -95,7 +95,8 @@ ${Using:StrFunc} StrCase
 ; This keeps the wizard sharp on high-DPI displays (up to 400% scaling)
 ; instead of stretching a 1x bitmap.
 !define MUI_HEADERIMAGE_BITMAP "${ASSETSDIR}/header@4x.bmp"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "${ASSETSDIR}/welcome@4x.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${ASSETSDIR}/sidebar@4x.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${ASSETSDIR}/sidebar@4x.bmp"
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_LINK_LOCATION "${APP_URL}"
 !define MUI_FINISHPAGE_LINK "$(NI_FINISH_LINK)"
