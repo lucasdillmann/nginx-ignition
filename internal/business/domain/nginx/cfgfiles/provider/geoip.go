@@ -20,9 +20,10 @@ import (
 var geoIPReleasesURL = "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases?per_page=1&page=0"
 
 const (
-	geoIPCountryFileName = "geoip-country.mmdb"
-	geoIPCityFileName    = "geoip-city.mmdb"
-	geoIPVersionFileName = "geoip.version"
+	geoIPCountryFileName   = "geoip-country.mmdb"
+	geoIPCityFileName      = "geoip-city.mmdb"
+	geoIPVersionFileName   = "geoip.version"
+	geoIPValidatedFileName = "geoip.validated"
 
 	geoLite2CountryAssetName = "GeoLite2-Country.mmdb"
 	geoLite2CityAssetName    = "GeoLite2-City.mmdb"
@@ -39,21 +40,20 @@ type gitHubReleaseAsset struct {
 }
 
 type geoIPProvider struct {
-	config   *configuration.Configuration
-	validate func(data []byte) error
+	config *configuration.Configuration
 }
 
 func newGeoIPProvider(config *configuration.Configuration) *geoIPProvider {
 	return &geoIPProvider{
-		config:   config,
-		validate: validateGeoIPDatabase,
+		config: config,
 	}
 }
 
 type geoIPCachePaths struct {
-	country string
-	city    string
-	version string
+	country   string
+	city      string
+	version   string
+	validated string
 }
 
 func (p *geoIPProvider) Provide(ctx *Context) ([]File, error) {
@@ -69,9 +69,10 @@ func (p *geoIPProvider) Provide(ctx *Context) ([]File, error) {
 	}
 
 	cache := geoIPCachePaths{
-		country: filepath.Join(dataPath, geoIPCountryFileName),
-		city:    filepath.Join(dataPath, geoIPCityFileName),
-		version: filepath.Join(dataPath, geoIPVersionFileName),
+		country:   filepath.Join(dataPath, geoIPCountryFileName),
+		city:      filepath.Join(dataPath, geoIPCityFileName),
+		version:   filepath.Join(dataPath, geoIPVersionFileName),
+		validated: filepath.Join(dataPath, geoIPValidatedFileName),
 	}
 
 	files := p.resolve(cache)
@@ -113,20 +114,17 @@ func (p *geoIPProvider) resolve(cache geoIPCachePaths) []File {
 		return p.useCacheOrSkip(cache, "Failed to download latest GeoIP City data", err)
 	}
 
-	if err := p.validate(countryData); err != nil {
+	if err := validate(countryData); err != nil {
 		return p.useCacheOrSkip(cache, "Downloaded GeoIP Country database is invalid", err)
 	}
 
-	if err := p.validate(cityData); err != nil {
+	if err := validate(cityData); err != nil {
 		return p.useCacheOrSkip(cache, "Downloaded GeoIP City database is invalid", err)
 	}
 
 	p.updateCache(cache, latestRelease.TagName, countryData, cityData)
 
-	return []File{
-		{Name: geoIPCountryFileName, Contents: string(countryData), Binary: true},
-		{Name: geoIPCityFileName, Contents: string(cityData), Binary: true},
-	}
+	return buildGeoIPFiles(countryData, cityData)
 }
 
 func (p *geoIPProvider) hasCachedFiles(cache geoIPCachePaths) bool {
@@ -167,16 +165,51 @@ func (p *geoIPProvider) useCacheOrSkip(
 }
 
 func (p *geoIPProvider) readCacheOrSkip(cache geoIPCachePaths) []File {
-	files, err := p.readCachedFiles(cache.country, cache.city)
+	countryData, cityData, err := p.readCachedData(cache)
 	if err != nil {
 		log.Warnf("Failed to read cached GeoIP databases, GeoIP will be disabled: %s", err)
 		return nil
 	}
 
-	return files
+	if !p.isCacheValidated(cache) {
+		if err := validate(countryData); err != nil {
+			log.Warnf(
+				"Cached GeoIP Country database is invalid, GeoIP will be disabled: %s",
+				err,
+			)
+
+			return nil
+		}
+
+		if err := validate(cityData); err != nil {
+			log.Warnf(
+				"Cached GeoIP City database is invalid, GeoIP will be disabled: %s",
+				err,
+			)
+
+			return nil
+		}
+
+		p.markCacheValidated(cache)
+	}
+
+	return buildGeoIPFiles(countryData, cityData)
 }
 
-func validateGeoIPDatabase(data []byte) error {
+func (p *geoIPProvider) isCacheValidated(cache geoIPCachePaths) bool {
+	if !p.exists(cache.validated) {
+		return false
+	}
+
+	return p.readCachedVersion(cache.validated) == p.readCachedVersion(cache.version)
+}
+
+func (p *geoIPProvider) markCacheValidated(cache geoIPCachePaths) {
+	version := p.readCachedVersion(cache.version)
+	_ = os.WriteFile(cache.validated, []byte(version), 0o644)
+}
+
+func validate(data []byte) error {
 	reader, err := maxminddb.FromBytes(data)
 	if err != nil {
 		return err
@@ -189,6 +222,21 @@ func validateGeoIPDatabase(data []byte) error {
 	return reader.Verify()
 }
 
+func buildGeoIPFiles(countryData, cityData []byte) []File {
+	return []File{
+		{
+			Name:     geoIPCountryFileName,
+			Contents: string(countryData),
+			Binary:   true,
+		},
+		{
+			Name:     geoIPCityFileName,
+			Contents: string(cityData),
+			Binary:   true,
+		},
+	}
+}
+
 func (p *geoIPProvider) updateCache(
 	cache geoIPCachePaths,
 	version string,
@@ -197,6 +245,7 @@ func (p *geoIPProvider) updateCache(
 	_ = os.WriteFile(cache.country, countryData, 0o644)
 	_ = os.WriteFile(cache.city, cityData, 0o644)
 	_ = os.WriteFile(cache.version, []byte(version), 0o644)
+	_ = os.WriteFile(cache.validated, []byte(version), 0o644)
 }
 
 func (p *geoIPProvider) fetchLatestRelease() (*gitHubRelease, error) {
@@ -280,29 +329,20 @@ func (p *geoIPProvider) readCachedVersion(path string) string {
 	return strings.TrimSpace(string(data))
 }
 
-func (p *geoIPProvider) readCachedFiles(countryPath, cityPath string) ([]File, error) {
-	countryData, err := os.ReadFile(countryPath)
+func (p *geoIPProvider) readCachedData(
+	cache geoIPCachePaths,
+) (countryData, cityData []byte, err error) {
+	countryData, err = os.ReadFile(cache.country)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read cached GeoIP Country file: %w", err)
+		return nil, nil, fmt.Errorf("failed to read cached GeoIP Country file: %w", err)
 	}
 
-	cityData, err := os.ReadFile(cityPath)
+	cityData, err = os.ReadFile(cache.city)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read cached GeoIP City file: %w", err)
+		return nil, nil, fmt.Errorf("failed to read cached GeoIP City file: %w", err)
 	}
 
-	return []File{
-		{
-			Name:     geoIPCountryFileName,
-			Contents: string(countryData),
-			Binary:   true,
-		},
-		{
-			Name:     geoIPCityFileName,
-			Contents: string(cityData),
-			Binary:   true,
-		},
-	}, nil
+	return countryData, cityData, nil
 }
 
 func (p *geoIPProvider) exists(path string) bool {
