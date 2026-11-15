@@ -116,15 +116,19 @@ Use our [docker-compose.yml](docker-compose.yml) for a production-ready setup wi
 ### Native packages for Linux, Windows, and macOS
 Download the latest version for your architecture from the [releases page](https://github.com/lucasdillmann/nginx-ignition/releases):
 
-| Platform           | Package type   | Arch         |
-|:-------------------|:---------------|--------------|
-| **Debian, Ubuntu** | `.deb`         | amd64, arm64 |
-| **RedHat, Fedora** | `.rpm`         | amd64, arm64 |
-| **Alpine Linux**   | `.apk`         | amd64, arm64 |
-| **Arch Linux**     | `.pkg.tar.zst` | amd64, arm64 |
-| **OpenWrt**        | `.ipk`         | amd64, arm64 |
-| **Windows**        | ZIP archive    | amd64, arm64 |
-| **macOS**          | ZIP archive    | arm64        |
+| Platform           | Package type                  | Arch         |
+|:-------------------|:------------------------------|--------------|
+| **Debian, Ubuntu** | `.deb`                        | amd64, arm64 |
+| **RedHat, Fedora** | `.rpm`                        | amd64, arm64 |
+| **Alpine Linux**   | `.apk`                        | amd64, arm64 |
+| **Arch Linux**     | `.pkg.tar.zst`                | amd64, arm64 |
+| **OpenWrt**        | `.ipk`                        | amd64, arm64 |
+| **Windows**        | `.exe` installer, ZIP archive | amd64, arm64 |
+| **macOS**          | ZIP archive                   | arm64        |
+
+On Windows, the `.exe` installer registers the service, firewall rules and Event Log source automatically, supports
+silent installation and keeps your configuration and data across upgrades. See the
+[Windows installer documentation](docs/windows-installer.md) for details.
 
 <br />
 

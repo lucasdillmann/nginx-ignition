@@ -6,6 +6,8 @@ BUILDKIT_CACHE ?= build/cache/docker
 SNAPSHOT_TAG_SUFFIX := $(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,$(VERSION)-snapshot)
 LDFLAGS := -X 'github.com/lucasdillmann/nginx-ignition/internal/business/core/version.Number=$(VERSION)'
 PNPM_INSTALL_FLAGS := $(if $(filter true,$(CI)),--frozen-lockfile,)
+NSIS ?= makensis
+NSIS_COMPRESS ?= lzma
 
 .backend-prerequisites:
 ifeq ($(CI),true)
@@ -87,6 +89,8 @@ docs-assets: .docs-screenshots .docs-videos
 	$(MAKE) .build-distribution-zip ARCH=arm64 OS=windows BIN_EXT=.exe
 	$(MAKE) .build-distribution-packages ARCH=amd64 OS=linux
 	$(MAKE) .build-distribution-packages ARCH=arm64 OS=linux
+	$(MAKE) .build-windows-installer ARCH=amd64
+	$(MAKE) .build-windows-installer ARCH=arm64
 
 .build-distribution-zip:
 	rm -Rf build/nginx-ignition.$(OS)-$(ARCH).zip
@@ -97,6 +101,24 @@ docs-assets: .docs-screenshots .docs-videos
 	cp build/$(OS)/$(ARCH)$(BIN_EXT) build/zip/nginx-ignition$(BIN_EXT)
 	cd build/zip && zip -q -r ../nginx-ignition-$(VERSION).$(OS)-$(ARCH).zip .
 	rm -Rf build/zip
+
+.build-windows-installer:
+	$(NSIS) -V2 \
+		-DARCH=$(ARCH) \
+		-DVERSION=$(VERSION) \
+		-DNSIS_COMPRESS=$(NSIS_COMPRESS) \
+		-DBINARY=$(CURDIR)/build/windows/$(ARCH).exe \
+		-DOUTFILE=$(CURDIR)/build/nginx-ignition-$(VERSION).windows-$(ARCH)-setup.exe \
+		-DASSETSDIR=$(CURDIR)/dist/windows/assets \
+		-DLANGDIR=$(CURDIR)/dist/windows/lang \
+		-DSCRIPTDIR=$(CURDIR)/dist/windows/scripts \
+		-DTEMPLATEDIR=$(CURDIR)/dist/windows/templates \
+		-DROOT=$(CURDIR) \
+		dist/windows/installer.nsi
+
+.build-windows-installers:
+	$(MAKE) .build-windows-installer ARCH=amd64
+	$(MAKE) .build-windows-installer ARCH=arm64
 
 .build-distribution-packages:
 	export VERSION=$(VERSION); \
@@ -186,4 +208,5 @@ build-release: .frontend-build .backend-build .build-release-docker-image .build
 
 build-snapshot:
 	$(MAKE) .frontend-build .backend-build VERSION=0.0.0
+	$(MAKE) .build-windows-installers VERSION=0.0.0 NSIS_COMPRESS=zlib
 	$(MAKE) .build-snapshot-docker-image VERSION=$(VERSION)
