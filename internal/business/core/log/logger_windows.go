@@ -3,6 +3,7 @@
 package log
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"sort"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/constants"
 	"go.uber.org/zap/zapcore"
+	"golang.org/x/sys/windows/registry"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/eventlog"
 )
@@ -43,19 +45,32 @@ func platformCore(encoder zapcore.Encoder) zapcore.Core {
 }
 
 func openEventLog() (*eventlog.Log, error) {
-	eventLog, err := eventlog.Open(constants.ServiceName)
-	if err == nil {
-		return eventLog, nil
-	}
-
-	if installErr := eventlog.InstallAsEventCreate(
-		constants.ServiceName,
-		eventlog.Info|eventlog.Warning|eventlog.Error,
-	); installErr != nil {
+	if err := ensureEventLogSource(); err != nil {
 		return nil, err
 	}
 
 	return eventlog.Open(constants.ServiceName)
+}
+
+func ensureEventLogSource() error {
+	key, err := registry.OpenKey(
+		registry.LOCAL_MACHINE,
+		`SYSTEM\CurrentControlSet\Services\EventLog\Application\`+constants.ServiceName,
+		registry.QUERY_VALUE,
+	)
+	if err == nil {
+		defer key.Close()
+		return nil
+	}
+
+	if !errors.Is(err, registry.ErrNotExist) {
+		return err
+	}
+
+	return eventlog.InstallAsEventCreate(
+		constants.ServiceName,
+		eventlog.Info|eventlog.Warning|eventlog.Error,
+	)
 }
 
 type eventLogCore struct {
@@ -91,7 +106,11 @@ func (c *eventLogCore) Write(entry zapcore.Entry, fields []zapcore.Field) error 
 	allFields = append(allFields, c.fields...)
 	allFields = append(allFields, fields...)
 
-	message := truncateMessage(entry.Message + formatFields(allFields))
+	message := entry.Message + formatFields(allFields)
+	if entry.Stack != "" {
+		message += "\n" + entry.Stack
+	}
+	message = truncateMessage(message)
 
 	switch entry.Level {
 	case zapcore.DebugLevel, zapcore.InfoLevel:

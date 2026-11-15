@@ -71,11 +71,9 @@ func (h *serviceHandler) Execute(
 			}
 
 		case err := <-done:
-			status <- svc.Status{State: svc.Stopped}
-
 			if err != nil {
 				log.Errorf("Service failed to start: %s", err)
-				return false, serviceExitCodeFailed
+				return true, serviceExitCodeFailed
 			}
 
 			return false, 0
@@ -100,11 +98,9 @@ func (h *serviceHandler) run(
 			}
 
 		case err := <-done:
-			status <- svc.Status{State: svc.Stopped}
-
 			if err != nil {
 				log.Errorf("Service stopped unexpectedly: %s", err)
-				return false, serviceExitCodeFailed
+				return true, serviceExitCodeFailed
 			}
 
 			return false, 0
@@ -144,11 +140,9 @@ func (h *serviceHandler) stop(
 			status <- stopPending
 
 		case err := <-done:
-			status <- svc.Status{State: svc.Stopped}
-
 			if err != nil {
 				log.Errorf("Service stopped with error: %s", err)
-				return false, serviceExitCodeFailed
+				return true, serviceExitCodeFailed
 			}
 
 			return false, 0
