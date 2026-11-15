@@ -68,6 +68,7 @@ func Test_hostConfigurationProvider(t *testing.T) {
 		ctx.Hosts = []host.Host{h}
 		ctx.Cfg = newSettings()
 		ctx.Cfg.Nginx.Stats.Enabled = true
+		ctx.GeoIPAvailable = true
 		ctx.SupportedFeatures.StatsType = StaticSupportType
 
 		ctrl := gomock.NewController(t)
@@ -85,6 +86,60 @@ func Test_hostConfigurationProvider(t *testing.T) {
 			t,
 			files[0].Contents,
 			"vhost_traffic_status_filter_by_set_key $stats_host_id hosts;",
+		)
+		assert.Contains(
+			t,
+			files[0].Contents,
+			"vhost_traffic_status_filter_by_set_key $geoip_country_code countryCode@host:$stats_host_id;",
+		)
+		assert.Contains(
+			t,
+			files[0].Contents,
+			"vhost_traffic_status_filter_by_set_key $geoip_city_name city@domain:$server_name;",
+		)
+	})
+
+	t.Run("Provide omits geoip filters when geoip is unavailable", func(t *testing.T) {
+		provider := &hostConfigurationProvider{}
+
+		h := newHost()
+		h.FeatureSet.StatsEnabled = true
+		h.Routes = []host.Route{
+			{
+				Enabled:    true,
+				Type:       host.ProxyRouteType,
+				SourcePath: "/",
+				TargetURI:  new("http://backend:8080"),
+			},
+		}
+
+		ctx := newProviderContext(t)
+		ctx.Hosts = []host.Host{h}
+		ctx.Cfg = newSettings()
+		ctx.Cfg.Nginx.Stats.Enabled = true
+		ctx.GeoIPAvailable = false
+		ctx.SupportedFeatures.StatsType = StaticSupportType
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		integrationCmds := integration.NewMockedCommands(ctrl)
+		provider.integrationCommands = integrationCmds
+
+		files, err := provider.Provide(ctx)
+		assert.NoError(t, err)
+		assert.Len(t, files, 1)
+		assert.NotContains(t, files[0].Contents, "$geoip_country_code")
+		assert.NotContains(t, files[0].Contents, "$geoip_city_name")
+		assert.Contains(
+			t,
+			files[0].Contents,
+			"vhost_traffic_status_filter_by_set_key $stats_host_id hosts;",
+		)
+		assert.Contains(
+			t,
+			files[0].Contents,
+			"vhost_traffic_status_filter_by_set_key $stats_user_agent userAgent@domain:$server_name;",
 		)
 	})
 

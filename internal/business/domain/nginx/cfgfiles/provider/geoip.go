@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oschwald/maxminddb-golang"
+
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/log"
 )
@@ -37,12 +39,14 @@ type gitHubReleaseAsset struct {
 }
 
 type geoIPProvider struct {
-	config *configuration.Configuration
+	config   *configuration.Configuration
+	validate func(data []byte) error
 }
 
 func newGeoIPProvider(config *configuration.Configuration) *geoIPProvider {
 	return &geoIPProvider{
-		config: config,
+		config:   config,
+		validate: validateGeoIPDatabase,
 	}
 }
 
@@ -53,6 +57,8 @@ type geoIPCachePaths struct {
 }
 
 func (p *geoIPProvider) Provide(ctx *Context) ([]File, error) {
+	ctx.GeoIPAvailable = false
+
 	if !ctx.Cfg.Nginx.Stats.Enabled {
 		return nil, nil
 	}
@@ -68,38 +74,59 @@ func (p *geoIPProvider) Provide(ctx *Context) ([]File, error) {
 		version: filepath.Join(dataPath, geoIPVersionFileName),
 	}
 
+	files := p.resolve(cache)
+
+	ctx.GeoIPAvailable = len(files) > 0
+
+	return files, nil
+}
+
+func (p *geoIPProvider) resolve(cache geoIPCachePaths) []File {
 	latestRelease, err := p.fetchLatestRelease()
 	if err != nil {
-		return p.fallbackToCacheOrError(cache, "Failed to fetch latest GeoIP release", err)
+		return p.useCacheOrSkip(cache, "Failed to fetch latest GeoIP release", err)
 	}
 
 	if p.isCacheUpToDate(cache, latestRelease.TagName) {
 		log.Infof("Cached GeoIP databases are up to date (release %s)", latestRelease.TagName)
-		return p.readCachedFiles(cache.country, cache.city)
+		return p.readCacheOrSkip(cache)
 	}
 
 	countryURL := p.findAssetURL(latestRelease, geoLite2CountryAssetName)
 	cityURL := p.findAssetURL(latestRelease, geoLite2CityAssetName)
 
 	if countryURL == "" || cityURL == "" {
-		return p.fallbackToCacheOrError(
+		return p.useCacheOrSkip(
 			cache,
 			"GeoIP data files not found in the latest release assets",
 			nil,
 		)
 	}
 
-	countryData, cityData, err := p.downloadBothDatabases(cache, countryURL, cityURL)
+	countryData, err := p.download(countryURL, "Country")
 	if err != nil {
-		return nil, err
+		return p.useCacheOrSkip(cache, "Failed to download latest GeoIP Country data", err)
+	}
+
+	cityData, err := p.download(cityURL, "City")
+	if err != nil {
+		return p.useCacheOrSkip(cache, "Failed to download latest GeoIP City data", err)
+	}
+
+	if err := p.validate(countryData); err != nil {
+		return p.useCacheOrSkip(cache, "Downloaded GeoIP Country database is invalid", err)
+	}
+
+	if err := p.validate(cityData); err != nil {
+		return p.useCacheOrSkip(cache, "Downloaded GeoIP City database is invalid", err)
 	}
 
 	p.updateCache(cache, latestRelease.TagName, countryData, cityData)
 
 	return []File{
-		{Name: geoIPCountryFileName, Contents: string(countryData)},
-		{Name: geoIPCityFileName, Contents: string(cityData)},
-	}, nil
+		{Name: geoIPCountryFileName, Contents: string(countryData), Binary: true},
+		{Name: geoIPCityFileName, Contents: string(cityData), Binary: true},
+	}
 }
 
 func (p *geoIPProvider) hasCachedFiles(cache geoIPCachePaths) bool {
@@ -111,11 +138,11 @@ func (p *geoIPProvider) isCacheUpToDate(cache geoIPCachePaths, latestVersion str
 	return cachedVersion == latestVersion && p.hasCachedFiles(cache)
 }
 
-func (p *geoIPProvider) fallbackToCacheOrError(
+func (p *geoIPProvider) useCacheOrSkip(
 	cache geoIPCachePaths,
 	message string,
 	err error,
-) ([]File, error) {
+) []File {
 	if p.hasCachedFiles(cache) {
 		if err != nil {
 			log.Warnf("%s, proceeding with cached version: %s", message, err)
@@ -123,49 +150,43 @@ func (p *geoIPProvider) fallbackToCacheOrError(
 			log.Warnf("%s. Proceeding with cached version.", message)
 		}
 
-		return p.readCachedFiles(cache.country, cache.city)
+		return p.readCacheOrSkip(cache)
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("%s and no cached version is available: %w", message, err)
+		log.Warnf(
+			"%s and no cached version is available, GeoIP will be disabled: %s",
+			message,
+			err,
+		)
+	} else {
+		log.Warnf("%s and no cached version is available. GeoIP will be disabled.", message)
 	}
 
-	return nil, errors.New(message + " and no cached version available")
+	return nil
 }
 
-func (p *geoIPProvider) downloadBothDatabases(
-	cache geoIPCachePaths,
-	countryURL, cityURL string,
-) (countryData, cityData []byte, err error) {
-	countryData, err = p.download(countryURL, "Country")
+func (p *geoIPProvider) readCacheOrSkip(cache geoIPCachePaths) []File {
+	files, err := p.readCachedFiles(cache.country, cache.city)
 	if err != nil {
-		files, cacheErr := p.fallbackToCacheOrError(
-			cache,
-			"Failed to download latest GeoIP Country data",
-			err,
-		)
-		if cacheErr != nil {
-			return nil, nil, cacheErr
-		}
-
-		return []byte(files[0].Contents), []byte(files[1].Contents), nil
+		log.Warnf("Failed to read cached GeoIP databases, GeoIP will be disabled: %s", err)
+		return nil
 	}
 
-	cityData, err = p.download(cityURL, "City")
-	if err != nil {
-		files, cacheErr := p.fallbackToCacheOrError(
-			cache,
-			"Failed to download latest GeoIP City data",
-			err,
-		)
-		if cacheErr != nil {
-			return nil, nil, cacheErr
-		}
+	return files
+}
 
-		return []byte(files[0].Contents), []byte(files[1].Contents), nil
+func validateGeoIPDatabase(data []byte) error {
+	reader, err := maxminddb.FromBytes(data)
+	if err != nil {
+		return err
 	}
 
-	return countryData, cityData, nil
+	defer func() {
+		_ = reader.Close()
+	}()
+
+	return reader.Verify()
 }
 
 func (p *geoIPProvider) updateCache(
@@ -274,10 +295,12 @@ func (p *geoIPProvider) readCachedFiles(countryPath, cityPath string) ([]File, e
 		{
 			Name:     geoIPCountryFileName,
 			Contents: string(countryData),
+			Binary:   true,
 		},
 		{
 			Name:     geoIPCityFileName,
 			Contents: string(cityData),
+			Binary:   true,
 		},
 	}, nil
 }

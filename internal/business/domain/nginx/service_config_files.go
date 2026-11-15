@@ -51,7 +51,7 @@ func (s *service) GetConfigFiles(
 			return nil, err
 		}
 
-		if _, err := itemWriter.Write([]byte(file.FormattedContents())); err != nil {
+		if _, err := itemWriter.Write(file.Bytes()); err != nil {
 			return nil, err
 		}
 	}
@@ -201,7 +201,7 @@ func (s *service) emptyConfigFolder(paths *provider.Paths) error {
 
 func (s *service) writeConfigFile(paths *provider.Paths, file provider.File) error {
 	filePath := filepath.Join(paths.Config, file.Name)
-	if err := os.WriteFile(filePath, []byte(file.FormattedContents()), 0o644); err != nil {
+	if err := os.WriteFile(filePath, file.Bytes(), 0o644); err != nil {
 		return fmt.Errorf("unable to write file %s: %w", filePath, err)
 	}
 

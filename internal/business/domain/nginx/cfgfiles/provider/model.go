@@ -34,6 +34,7 @@ type Context struct {
 	Hosts             []host.Host
 	Streams           []stream.Stream
 	Caches            []cache.Cache
+	GeoIPAvailable    bool
 }
 
 type Paths struct {
@@ -51,6 +52,15 @@ type Provider interface {
 type File struct {
 	Name     string
 	Contents string
+	Binary   bool
+}
+
+func (f *File) Bytes() []byte {
+	if f.Binary {
+		return []byte(f.Contents)
+	}
+
+	return []byte(f.FormattedContents())
 }
 
 func (f *File) FormattedContents() string {

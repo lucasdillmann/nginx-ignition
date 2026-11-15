@@ -19,6 +19,7 @@ func newProviders(
 	cfg *configuration.Configuration,
 ) []Provider {
 	return []Provider{
+		newGeoIPProvider(cfg),
 		newAccessListProvider(accessListCommands),
 		newHostCertificateProvider(certificateCommands),
 		newHostConfigurationProvider(integrationCommands),
@@ -27,6 +28,5 @@ func newProviders(
 		newMainConfigurationProvider(cfg),
 		newMimeTypesProvider(),
 		newStreamProvider(),
-		newGeoIPProvider(cfg),
 	}
 }

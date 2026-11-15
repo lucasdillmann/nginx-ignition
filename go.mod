@@ -42,6 +42,7 @@ require (
 	github.com/ncw/pwhash v0.0.0-20160129162812-b2a8830c6a99
 	github.com/netbirdio/netbird v0.83.1
 	github.com/nrdcg/oci-go-sdk/common/v1065 v1065.130.0
+	github.com/oschwald/maxminddb-golang v1.12.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pquerna/otp v1.5.0
 	github.com/stretchr/testify v1.12.1

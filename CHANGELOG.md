@@ -21,6 +21,9 @@
     Silent uninstalls keep data unless `/PURGE=1` is passed.
   - ZIP archives remain available. Existing ZIP installations are not imported automatically; see the migration
     instructions in `dist/windows/instructions.md`.
+- GeoIP databases (used when stats are enabled) are now validated before use. When a downloaded release is corrupt,
+  the last known-good cached copy is used instead, and GeoIP-based traffic statistics are automatically disabled when
+  no valid copy is available, so nginx no longer fails to start because of a bad upstream release
 
 ## 2.50.0
 

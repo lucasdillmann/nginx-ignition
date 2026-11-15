@@ -70,4 +70,21 @@ func Test_File(t *testing.T) {
 			assert.Equal(t, expected, file.FormattedContents())
 		})
 	})
+
+	t.Run("Bytes", func(t *testing.T) {
+		t.Run("formats textual contents", func(t *testing.T) {
+			file := File{Contents: "\nhttp {\nserver {\nlisten 80;\n}\n}"}
+			assert.Equal(
+				t,
+				[]byte("http {\n    server {\n        listen 80;\n    }\n}"),
+				file.Bytes(),
+			)
+		})
+
+		t.Run("returns binary contents verbatim", func(t *testing.T) {
+			binary := "\x00\x01\x0a\x20\x0b\x0c\x0d\x0e"
+			file := File{Contents: binary, Binary: true}
+			assert.Equal(t, []byte(binary), file.Bytes())
+		})
+	})
 }
