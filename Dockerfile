@@ -79,6 +79,7 @@ RUN mkdir -p opt/nginx-ignition/data \
              usr/share/lua/5.1
 
 COPY build/${TARGETPLATFORM} /opt/nginx-ignition/nginx-ignition
+COPY LICENSE /opt/nginx-ignition/LICENSE.txt
 
 COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
 COPY --from=builder /etc/nginx/ /etc/nginx/

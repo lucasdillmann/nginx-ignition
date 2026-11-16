@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.52.0
+
+- The MIT license text is now included in every distribution: ZIP archives, Linux packages, the Docker image and the 
+  Windows installer
+
 ## 2.51.0
 
 - nginx ignition now runs natively as a Windows service, without requiring NSSM or WinSW

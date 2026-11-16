@@ -6,6 +6,7 @@ already includes:
 - nginx-ignition binary
 - default configuration file, nginx-ignition.properties
 - a ready-to-use systemd unit, nginx-ignition.service
+- the MIT license text, LICENSE.txt
 
 ## Requirements
 - Linux (amd64/x86_64 or arm64)

@@ -13,6 +13,12 @@ description: |
   configuration files manually
 
 contents:
+  - src: "LICENSE"
+    dst: "/opt/nginx-ignition/LICENSE.txt"
+    file_info:
+      mode: 0644
+      owner: root
+      group: root
   - src: "build/${OS}/${ARCH}"
     dst: "/opt/nginx-ignition/nginx-ignition"
     file_info:

@@ -6,6 +6,7 @@ already includes:
 - nginx-ignition binary
 - default configuration file, nginx-ignition.properties
 - a ready-to-use launchd plist, nginx-ignition.plist
+- the MIT license text, LICENSE.txt
 
 ## Requirements
 - macOS 12 or newer (Apple Silicon arm64)
