@@ -15,6 +15,8 @@ permissions:
 jobs:
   test-sign:
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -46,21 +48,21 @@ jobs:
 
       - name: Build Windows binaries
         run: |
-          make .backend-build-file OS=windows ARCH=amd64 DIR=windows EXT=.exe VERSION=${{ inputs.version }}
-          make .backend-build-file OS=windows ARCH=arm64 DIR=windows EXT=.exe VERSION=${{ inputs.version }}
+          make .backend-build-file OS=windows ARCH=amd64 DIR=windows EXT=.exe VERSION=${VERSION}
+          make .backend-build-file OS=windows ARCH=arm64 DIR=windows EXT=.exe VERSION=${VERSION}
 
       - name: Build Windows installers
         run: |
-          make .build-windows-installer ARCH=amd64 VERSION=${{ inputs.version }}
-          make .build-windows-installer ARCH=arm64 VERSION=${{ inputs.version }}
+          make .build-windows-installer ARCH=amd64 VERSION=${VERSION}
+          make .build-windows-installer ARCH=arm64 VERSION=${VERSION}
 
       - name: Stage unsigned artifacts
         run: |
           mkdir -p signpath/unsigned
           cp build/windows/amd64.exe signpath/unsigned/nginx-ignition-windows-amd64.exe
           cp build/windows/arm64.exe signpath/unsigned/nginx-ignition-windows-arm64.exe
-          cp "build/nginx-ignition-${{ inputs.version }}.windows-amd64-setup.exe" signpath/unsigned/nginx-ignition-windows-amd64-setup.exe
-          cp "build/nginx-ignition-${{ inputs.version }}.windows-arm64-setup.exe" signpath/unsigned/nginx-ignition-windows-arm64-setup.exe
+          cp "build/nginx-ignition-${VERSION}.windows-amd64-setup.exe" signpath/unsigned/nginx-ignition-windows-amd64-setup.exe
+          cp "build/nginx-ignition-${VERSION}.windows-arm64-setup.exe" signpath/unsigned/nginx-ignition-windows-arm64-setup.exe
           (cd signpath/unsigned && zip -q -r ../unsigned.zip .)
 
       - name: Upload unsigned artifact
