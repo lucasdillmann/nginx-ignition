@@ -1,8 +1,6 @@
 DOCKER_IMAGE ?= dillmann/nginx-ignition
-PRIVATE_DOCKER_IMAGE ?= docker.lan.dillmann.dev/nginx-ignition
 VERSION ?= 0.0.0
 PR_ID ?= 0
-BUILDKIT_CACHE ?= build/cache/docker
 SNAPSHOT_TAG_SUFFIX := $(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,$(VERSION)-snapshot)
 LDFLAGS := -X 'github.com/lucasdillmann/nginx-ignition/internal/business/core/version.Number=$(VERSION)'
 PNPM_INSTALL_FLAGS := $(if $(filter true,$(CI)),--frozen-lockfile,)
@@ -68,26 +66,21 @@ docs-assets: .docs-screenshots .docs-videos
 	cd tools/i18n && go run .
 
 .build-release-docker-image:
-	mkdir -p $(BUILDKIT_CACHE)
 	docker buildx build \
 		--progress=plain \
-		--cache-from type=local,src=$(BUILDKIT_CACHE) \
-		--cache-to type=local,dest=$(BUILDKIT_CACHE),mode=max,reset=true \
+		--cache-from type=gha \
+		--cache-to type=gha,mode=max \
 		--tag $(DOCKER_IMAGE):$(VERSION) \
 		--tag $(DOCKER_IMAGE):latest \
-		--tag $(PRIVATE_DOCKER_IMAGE):$(VERSION) \
-		--tag $(PRIVATE_DOCKER_IMAGE):latest \
 		--platform linux/amd64,linux/arm64 \
 		--push .
 
 .build-snapshot-docker-image:
-	mkdir -p $(BUILDKIT_CACHE)
 	docker buildx build \
 		--progress=plain \
-		--cache-from type=local,src=$(BUILDKIT_CACHE) \
-		--cache-to type=local,dest=$(BUILDKIT_CACHE),mode=max,reset=true \
+		--cache-from type=gha \
+		--cache-to type=gha,mode=max \
 		--tag $(DOCKER_IMAGE):$(SNAPSHOT_TAG_SUFFIX) \
-		--tag $(PRIVATE_DOCKER_IMAGE):$(SNAPSHOT_TAG_SUFFIX) \
 		--platform linux/amd64,linux/arm64 \
 		--push .
 

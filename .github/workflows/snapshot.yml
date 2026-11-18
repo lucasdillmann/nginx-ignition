@@ -9,7 +9,7 @@ on:
 
 jobs:
   quality-checks:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:18-alpine
@@ -24,12 +24,6 @@ jobs:
           --health-retries 5
         ports:
           - 44554:5432
-    env:
-      GOPATH: /data/cache/go
-      GOMODCACHE: /data/cache/go/pkg/mod
-      GOCACHE: /data/cache/go/build
-      GOTOOLCHAIN: ""
-      PNPM_HOME: /data/cache/pnpm
     steps:
       - uses: actions/checkout@v7
         with:
@@ -51,18 +45,22 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
       - uses: pnpm/action-setup@v6
         with:
           version: 11
-      - name: Configure pnpm store
-        run: pnpm config set store-dir /data/cache/pnpm/store --global
       - uses: actions/setup-go@v7
         with:
           go-version: 1.27.4
-          cache: false
+          cache: true
+          cache-dependency-path: |
+            go.sum
+            tools/go.sum
+            tools/i18n/go.sum
       - name: Unit tests
         env:
-          TEST_POSTGRES_HOST: runner.local
+          TEST_POSTGRES_HOST: localhost
           TEST_POSTGRES_PORT: 44554
         run: make test
       - name: Lint
@@ -73,20 +71,13 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     concurrency:
       group: nginx-ignition-image-build
       cancel-in-progress: false
-      queue: max
     env:
-      GOPATH: /data/cache/go
-      GOMODCACHE: /data/cache/go/pkg/mod
-      GOCACHE: /data/cache/go/build
-      GOTOOLCHAIN: ""
-      PNPM_HOME: /data/cache/pnpm
-      BUILDKIT_CACHE: /data/cache/docker
       BUILDKIT_PROGRESS: plain
     steps:
       - uses: actions/checkout@v7
@@ -96,43 +87,32 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
       - uses: pnpm/action-setup@v6
         with:
           version: 11
-      - name: Configure pnpm store
-        run: pnpm config set store-dir /data/cache/pnpm/store --global
       - uses: actions/setup-go@v7
         with:
           go-version: 1.27.4
-          cache: false
+          cache: true
+          cache-dependency-path: |
+            go.sum
+            tools/go.sum
+            tools/i18n/go.sum
       - name: Install dependencies
         run: |
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
           sudo apt update
           sudo apt install -y nfpm gettext-base nsis
       - uses: docker/setup-qemu-action@v4
-        with:
-          cache-image: false
-          platforms: linux/amd64,linux/arm64
       - uses: docker/setup-buildx-action@v4
         with:
-          version: v0.37.1
-          name: nginx-ignition-builder
-          keep-state: true
           driver: docker-container
-          driver-opts: |
-            image=moby/buildkit:v0.33.0
-            network=host
-          platforms: linux/amd64,linux/arm64
       - uses: docker/login-action@v4
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/login-action@v4
-        with:
-          registry: docker.lan.dillmann.dev
-          username: ${{ secrets.PRIVATE_DOCKER_USERNAME }}
-          password: ${{ secrets.PRIVATE_DOCKER_PASSWORD }}
       - name: Build and release
         run: make build-snapshot PR_ID=${{ github.event.pull_request.number }} VERSION=${{ steps.version.outputs.VERSION }}
       - name: Update GitHub Pre-release
