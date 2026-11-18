@@ -1,10 +1,7 @@
 FROM nginx:1.31.8-alpine AS builder
 
-RUN --mount=type=cache,id=nginx-builder-apk,target=/var/cache/apk,sharing=locked \
-    apk update && \
-    apk add \
+RUN apk add --no-cache \
       gcc \
-      ccache \
       libc-dev \
       make \
       pcre2-dev \
@@ -30,11 +27,9 @@ RUN git clone --depth 1 https://github.com/vision5/ngx_devel_kit.git /ngx_devel_
     git clone --depth 1 https://github.com/openresty/lua-resty-lrucache.git /lua-resty-lrucache
 
 ENV LUAJIT_LIB=/usr/lib \
-    LUAJIT_INC=/usr/include/luajit-2.1 \
-    PATH="/usr/lib/ccache/bin:$PATH"
+    LUAJIT_INC=/usr/include/luajit-2.1
 
-RUN --mount=type=cache,id=nginx-ccache,target=/root/.ccache,sharing=shared \
-    cd nginx-${NGINX_VERSION} && \
+RUN cd nginx-${NGINX_VERSION} && \
     ./configure \
       --with-compat \
       --with-http_ssl_module \
@@ -56,9 +51,7 @@ RUN mkdir -p /modules-lua && \
 
 FROM alpine:3 AS workspace
 
-RUN --mount=type=cache,id=nginx-workspace-apk,target=/var/cache/apk,sharing=locked \
-    apk update && \
-    apk add \
+RUN apk add --no-cache \
       luajit \
       libmaxminddb \
       libxml2 \
