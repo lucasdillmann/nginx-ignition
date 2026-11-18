@@ -179,10 +179,10 @@ Custom data directories outside `C:\ProgramData\nginx-ignition` are never delete
 
 ## Troubleshooting
 
-### Windows SmartScreen warns about the installer
+### Code signing
 
-The installer is not Authenticode-signed yet. If SmartScreen shows a warning, choose **More info** and then
-**Run anyway**, or verify the SHA-256 checksum of the download against the release page.
+The Windows binaries and installers are Authenticode-signed with a certificate issued by the
+[SignPath Foundation](https://signpath.org/).
 
 ### The installer refuses the architecture
 

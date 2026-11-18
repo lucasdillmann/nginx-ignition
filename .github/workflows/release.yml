@@ -55,72 +55,50 @@ jobs:
         run: make .build-release-docker-image VERSION=${VERSION}
       - name: Stage raw Windows binaries
         run: |
-          mkdir -p signpath/raw
-          cp build/windows/amd64.exe signpath/raw/nginx-ignition-windows-amd64.exe
-          cp build/windows/arm64.exe signpath/raw/nginx-ignition-windows-arm64.exe
-          (cd signpath/raw && zip -q -r ../raw.zip .)
-      - name: Upload raw Windows binaries
-        id: upload-raw
-        uses: actions/upload-artifact@v7
-        with:
-          name: windows-raw-unsigned
-          path: signpath/raw.zip
-          archive: false
-          if-no-files-found: error
+          mkdir -p build/signpath/raw
+          cp build/windows/amd64.exe build/signpath/raw/nginx-ignition-windows-amd64.exe
+          cp build/windows/arm64.exe build/signpath/raw/nginx-ignition-windows-arm64.exe
+          (cd build/signpath/raw && zip -q -r ../raw.zip .)
       - name: Sign raw Windows binaries
-        uses: signpath/github-action-submit-signing-request@v3
+        uses: ./.github/actions/signpath-sign
         with:
+          artifact-name: windows-raw-unsigned
+          path: build/signpath/raw.zip
+          output-directory: build/signpath/raw-signed
+          version: ${{ github.ref_name }}
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
           organization-id: ${{ secrets.SIGNPATH_ORGANIZATION_ID }}
           project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
           signing-policy-slug: ${{ secrets.SIGNPATH_SIGNING_POLICY_SLUG }}
           artifact-configuration-slug: ${{ vars.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
-          github-artifact-id: ${{ steps.upload-raw.outputs.artifact-id }}
-          wait-for-completion: true
-          wait-for-completion-timeout-in-seconds: 1800
-          skip-decompress: true
-          output-artifact-directory: signpath/raw-signed
-          parameters: |
-            version: ${{ toJSON(github.ref_name) }}
       - name: Restore signed raw Windows binaries
         run: |
-          cp signpath/raw-signed/nginx-ignition-windows-amd64.exe build/windows/amd64.exe
-          cp signpath/raw-signed/nginx-ignition-windows-arm64.exe build/windows/arm64.exe
+          cp build/signpath/raw-signed/nginx-ignition-windows-amd64.exe build/windows/amd64.exe
+          cp build/signpath/raw-signed/nginx-ignition-windows-arm64.exe build/windows/arm64.exe
       - name: Build Windows distribution files
         run: make .build-distribution-windows VERSION=${VERSION}
       - name: Stage Windows installers
         run: |
-          mkdir -p signpath/installers
-          cp "build/nginx-ignition-${VERSION}.windows-amd64-setup.exe" signpath/installers/nginx-ignition-windows-amd64-setup.exe
-          cp "build/nginx-ignition-${VERSION}.windows-arm64-setup.exe" signpath/installers/nginx-ignition-windows-arm64-setup.exe
-          (cd signpath/installers && zip -q -r ../installers.zip .)
-      - name: Upload Windows installers
-        id: upload-installers
-        uses: actions/upload-artifact@v7
-        with:
-          name: windows-installers-unsigned
-          path: signpath/installers.zip
-          archive: false
-          if-no-files-found: error
+          mkdir -p build/signpath/installers
+          cp "build/nginx-ignition-${VERSION}.windows-amd64-setup.exe" build/signpath/installers/nginx-ignition-windows-amd64-setup.exe
+          cp "build/nginx-ignition-${VERSION}.windows-arm64-setup.exe" build/signpath/installers/nginx-ignition-windows-arm64-setup.exe
+          (cd build/signpath/installers && zip -q -r ../installers.zip .)
       - name: Sign Windows installers
-        uses: signpath/github-action-submit-signing-request@v3
+        uses: ./.github/actions/signpath-sign
         with:
+          artifact-name: windows-installers-unsigned
+          path: build/signpath/installers.zip
+          output-directory: build/signpath/installers-signed
+          version: ${{ github.ref_name }}
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
           organization-id: ${{ secrets.SIGNPATH_ORGANIZATION_ID }}
           project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
           signing-policy-slug: ${{ secrets.SIGNPATH_SIGNING_POLICY_SLUG }}
           artifact-configuration-slug: ${{ vars.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
-          github-artifact-id: ${{ steps.upload-installers.outputs.artifact-id }}
-          wait-for-completion: true
-          wait-for-completion-timeout-in-seconds: 1800
-          skip-decompress: true
-          output-artifact-directory: signpath/installers-signed
-          parameters: |
-            version: ${{ toJSON(github.ref_name) }}
       - name: Restore signed Windows installers
         run: |
-          cp signpath/installers-signed/nginx-ignition-windows-amd64-setup.exe "build/nginx-ignition-${VERSION}.windows-amd64-setup.exe"
-          cp signpath/installers-signed/nginx-ignition-windows-arm64-setup.exe "build/nginx-ignition-${VERSION}.windows-arm64-setup.exe"
+          cp build/signpath/installers-signed/nginx-ignition-windows-amd64-setup.exe "build/nginx-ignition-${VERSION}.windows-amd64-setup.exe"
+          cp build/signpath/installers-signed/nginx-ignition-windows-arm64-setup.exe "build/nginx-ignition-${VERSION}.windows-arm64-setup.exe"
       - name: Resolve Docker image hash
         id: docker
         run: |
