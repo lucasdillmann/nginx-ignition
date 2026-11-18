@@ -1,0 +1,100 @@
+name: signpath-test-signing
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to test-sign (must match the version embedded in the binaries, e.g. 2.52.0)'
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  test-sign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: 1.27.4
+          cache: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y nsis
+
+      - name: Download Go modules
+        run: make .backend-prerequisites
+
+      - name: Build frontend (embeds static assets and i18n into the binary)
+        run: make .frontend-build
+
+      - name: Build Windows binaries
+        run: |
+          make .backend-build-file OS=windows ARCH=amd64 DIR=windows EXT=.exe VERSION=${{ inputs.version }}
+          make .backend-build-file OS=windows ARCH=arm64 DIR=windows EXT=.exe VERSION=${{ inputs.version }}
+
+      - name: Build Windows installers
+        run: |
+          make .build-windows-installer ARCH=amd64 VERSION=${{ inputs.version }}
+          make .build-windows-installer ARCH=arm64 VERSION=${{ inputs.version }}
+
+      - name: Stage unsigned artifacts
+        run: |
+          mkdir -p signpath/unsigned
+          cp build/windows/amd64.exe signpath/unsigned/nginx-ignition-windows-amd64.exe
+          cp build/windows/arm64.exe signpath/unsigned/nginx-ignition-windows-arm64.exe
+          cp "build/nginx-ignition-${{ inputs.version }}.windows-amd64-setup.exe" signpath/unsigned/nginx-ignition-windows-amd64-setup.exe
+          cp "build/nginx-ignition-${{ inputs.version }}.windows-arm64-setup.exe" signpath/unsigned/nginx-ignition-windows-arm64-setup.exe
+          (cd signpath/unsigned && zip -q -r ../unsigned.zip .)
+
+      - name: Upload unsigned artifact
+        id: upload-unsigned
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-unsigned
+          path: signpath/unsigned.zip
+          archive: false
+          if-no-files-found: error
+
+      - name: Submit signing request to SignPath
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ secrets.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ secrets.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ secrets.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ secrets.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
+          github-artifact-id: ${{ steps.upload-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 1800
+          skip-decompress: true
+          output-artifact-directory: signpath/signed
+          parameters: |
+            version: ${{ toJSON(inputs.version) }}
+
+      # The test certificate is self-signed, so verification will report "not
+      # trusted". That is expected: the point of this workflow is to validate
+      # the build -> upload -> sign -> download pipeline before enabling
+      # release-signing.
+      - name: Upload signed artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-signed
+          path: signpath/signed
+          if-no-files-found: error

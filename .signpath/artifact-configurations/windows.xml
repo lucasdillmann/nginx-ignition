@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+  </parameters>
+
+  <zip-file>
+    <!-- Raw application binaries (also packaged inside the Windows ZIPs and the installers). -->
+    <pe-file path="nginx-ignition-windows-amd64.exe"
+             product-name="nginx ignition"
+             product-version="${version}"
+             file-version="${version}"
+             company-name="Lucas Dillmann"
+             copyright="Copyright © Lucas Dillmann">
+      <authenticode-sign />
+    </pe-file>
+    <pe-file path="nginx-ignition-windows-arm64.exe"
+             product-name="nginx ignition"
+             product-version="${version}"
+             file-version="${version}"
+             company-name="Lucas Dillmann"
+             copyright="Copyright © Lucas Dillmann">
+      <authenticode-sign />
+    </pe-file>
+
+    <!-- NSIS installers. -->
+    <pe-file path="nginx-ignition-windows-amd64-setup.exe"
+             product-name="nginx ignition"
+             product-version="${version}"
+             file-version="${version}"
+             company-name="Lucas Dillmann"
+             copyright="Copyright © Lucas Dillmann">
+      <authenticode-sign />
+    </pe-file>
+    <pe-file path="nginx-ignition-windows-arm64-setup.exe"
+             product-name="nginx ignition"
+             product-version="${version}"
+             file-version="${version}"
+             company-name="Lucas Dillmann"
+             copyright="Copyright © Lucas Dillmann">
+      <authenticode-sign />
+    </pe-file>
+  </zip-file>
+</artifact-configuration>

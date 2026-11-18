@@ -4,6 +4,8 @@
 
 - The MIT license text is now included in every distribution: ZIP archives, Linux packages, the Docker image and the 
   Windows installer
+- Windows binaries and installers are now code-signed through SignPath Foundation. Free code signing is provided by 
+  SignPath.io, with a certificate issued by the SignPath Foundation.
 
 ## 2.51.0
 

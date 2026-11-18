@@ -151,6 +151,8 @@ We are grateful to our sponsors for supporting the development of nginx ignition
 
 - [**Greptile**](https://www.greptile.com/): AI-powered code review agent that understands ignition's codebase, 
   providing deep, context-aware insights to help us catch bugs and accelerate development.
+- [**SignPath Foundation**](https://signpath.org/): free code signing provided by SignPath.io, with a certificate 
+  issued by the SignPath Foundation.
 
 <br />
 
