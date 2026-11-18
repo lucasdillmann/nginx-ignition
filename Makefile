@@ -52,7 +52,17 @@ docs-assets: .docs-screenshots .docs-videos
 	$(MAKE) .backend-build-file OS=windows ARCH=arm64 DIR=windows EXT=.exe
 
 .backend-build-file:
+	@if [ "$(OS)" = "windows" ]; then $(MAKE) .windows-versioninfo VERSION=$(VERSION); fi
 	GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o build/$(DIR)/$(ARCH)$(EXT) ./cmd
+
+.windows-versioninfo:
+	@rm -f cmd/resource_windows_amd64.syso cmd/resource_windows_arm64.syso
+	@go tool -modfile=tools/go.mod goversioninfo -propagate-ver-strings=true -64 -arm=false \
+		-file-version="$(VERSION)" -product-version="$(VERSION)" \
+		-o cmd/resource_windows_amd64.syso tools/versioninfo.json
+	@go tool -modfile=tools/go.mod goversioninfo -propagate-ver-strings=true -64 -arm=true \
+		-file-version="$(VERSION)" -product-version="$(VERSION)" \
+		-o cmd/resource_windows_arm64.syso tools/versioninfo.json
 
 .generate-i18n-files:
 	cd tools/i18n && go run .
@@ -144,6 +154,7 @@ docs-assets: .docs-screenshots .docs-videos
 clean:
 	@find internal -type f -name "*.mock.go" -delete
 	@find internal/api/domain/frontend/static -mindepth 1 -maxdepth 1 ! -name '.gitkeep' -exec rm -rf {} +
+	@rm -f cmd/resource_windows_*.syso
 
 .backend-test-mocks: .backend-prerequisites
 	@echo "Generating mock files..."

@@ -6,6 +6,7 @@ tool (
 	covdata
 	github.com/golangci/golangci-lint/v2/cmd/golangci-lint
 	github.com/golangci/golines
+	github.com/josephspurrier/goversioninfo/cmd/goversioninfo
 	go.uber.org/mock/mockgen
 	golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment
 	mvdan.cc/gofumpt
@@ -38,6 +39,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
 	github.com/MirrexOne/unqueryvet v1.5.4 // indirect
 	github.com/OpenPeeDeeP/depguard/v2 v2.2.1 // indirect
+	github.com/akavel/rsrc v0.10.2 // indirect
 	github.com/alecthomas/chroma/v2 v2.27.0 // indirect
 	github.com/alecthomas/go-check-sumtype v0.5.1-0.20260828200218-ae6904d28606 // indirect
 	github.com/alecthomas/kingpin/v2 v2.4.0 // indirect
@@ -122,6 +124,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jgautheron/goconst v1.11.0 // indirect
 	github.com/jjti/go-spancheck v0.6.5 // indirect
+	github.com/josephspurrier/goversioninfo v1.7.0 // indirect
 	github.com/julz/importas v0.2.0 // indirect
 	github.com/karamaru-alpha/copyloopvar v1.2.2 // indirect
 	github.com/kisielk/errcheck v1.20.0 // indirect

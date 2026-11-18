@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.52.0
+
+- Windows binaries and installers are now code-signed through SignPath Foundation. Free code signing is provided by
+  SignPath.io, with a certificate issued by the SignPath Foundation.
+
 ## 2.51.1
 
 - Upgrade of the nginx version from 1.31.8 to 1.31.9 (mainline) on the official Docker image

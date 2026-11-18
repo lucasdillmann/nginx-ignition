@@ -22,5 +22,6 @@ build/
 **/*.generated.ts
 i18n/*.md
 coverage.out
+*.syso
 /internal/api/domain/frontend/static/*
 !/internal/api/domain/frontend/static/.gitkeep
