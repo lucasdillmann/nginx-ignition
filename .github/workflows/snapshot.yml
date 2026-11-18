@@ -42,14 +42,14 @@ jobs:
             echo "::error::CHANGELOG.md was not updated in this branch/PR. Please add an entry to the CHANGELOG."
             exit 1
           fi
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11
       - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11
       - uses: actions/setup-go@v7
         with:
           go-version: 1.27.4
@@ -84,14 +84,14 @@ jobs:
       - name: Extract version from CHANGELOG.md
         id: version
         run: echo "VERSION=$(grep -m 1 "^## " CHANGELOG.md | sed 's/## //')" >> $GITHUB_OUTPUT
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11
       - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11
       - uses: actions/setup-go@v7
         with:
           go-version: 1.27.4
