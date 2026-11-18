@@ -68,8 +68,8 @@ docs-assets: .docs-screenshots .docs-videos
 .build-release-docker-image:
 	docker buildx build \
 		--progress=plain \
-		--cache-from type=gha \
-		--cache-to type=gha,mode=max \
+		--cache-from type=registry,ref=$(DOCKER_IMAGE):buildcache \
+		--cache-to type=registry,ref=$(DOCKER_IMAGE):buildcache,mode=max \
 		--tag $(DOCKER_IMAGE):$(VERSION) \
 		--tag $(DOCKER_IMAGE):latest \
 		--platform linux/amd64,linux/arm64 \
@@ -78,8 +78,8 @@ docs-assets: .docs-screenshots .docs-videos
 .build-snapshot-docker-image:
 	docker buildx build \
 		--progress=plain \
-		--cache-from type=gha \
-		--cache-to type=gha,mode=max \
+		--cache-from type=registry,ref=$(DOCKER_IMAGE):buildcache \
+		--cache-to type=registry,ref=$(DOCKER_IMAGE):buildcache,mode=max \
 		--tag $(DOCKER_IMAGE):$(SNAPSHOT_TAG_SUFFIX) \
 		--platform linux/amd64,linux/arm64 \
 		--push .
