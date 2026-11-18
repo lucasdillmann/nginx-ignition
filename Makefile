@@ -84,14 +84,18 @@ docs-assets: .docs-screenshots .docs-videos
 		--platform linux/amd64,linux/arm64 \
 		--push .
 
-.build-distribution-files:
+.build-distribution-files: .build-distribution-non-windows .build-distribution-windows
+
+.build-distribution-non-windows:
 	$(MAKE) .build-distribution-zip ARCH=amd64 OS=linux SERVICE_FILE_EXT=service
 	$(MAKE) .build-distribution-zip ARCH=arm64 OS=linux SERVICE_FILE_EXT=service
 	$(MAKE) .build-distribution-zip ARCH=arm64 OS=macos SERVICE_FILE_EXT=plist
-	$(MAKE) .build-distribution-zip ARCH=amd64 OS=windows BIN_EXT=.exe
-	$(MAKE) .build-distribution-zip ARCH=arm64 OS=windows BIN_EXT=.exe
 	$(MAKE) .build-distribution-packages ARCH=amd64 OS=linux
 	$(MAKE) .build-distribution-packages ARCH=arm64 OS=linux
+
+.build-distribution-windows:
+	$(MAKE) .build-distribution-zip ARCH=amd64 OS=windows BIN_EXT=.exe
+	$(MAKE) .build-distribution-zip ARCH=arm64 OS=windows BIN_EXT=.exe
 	$(MAKE) .build-windows-installer ARCH=amd64
 	$(MAKE) .build-windows-installer ARCH=arm64
 
