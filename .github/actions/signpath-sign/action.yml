@@ -1,0 +1,58 @@
+name: SignPath sign
+description: Upload an artifact and submit it to SignPath for Authenticode signing
+
+inputs:
+  artifact-name:
+    description: Name of the GitHub Actions artifact to create for the unsigned files
+    required: true
+  path:
+    description: Path to the unsigned artifact to upload
+    required: true
+  output-directory:
+    description: Directory where the signed artifact is downloaded
+    required: true
+  version:
+    description: Version embedded in the signed files
+    required: true
+  api-token:
+    description: SignPath API token
+    required: true
+  organization-id:
+    description: SignPath organization ID
+    required: true
+  project-slug:
+    description: SignPath project slug
+    required: true
+  signing-policy-slug:
+    description: SignPath signing policy slug
+    required: true
+  artifact-configuration-slug:
+    description: SignPath artifact configuration slug
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Upload unsigned artifact
+      id: upload
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ inputs.path }}
+        archive: false
+        if-no-files-found: error
+    - name: Submit signing request
+      uses: signpath/github-action-submit-signing-request@v3
+      with:
+        api-token: ${{ inputs.api-token }}
+        organization-id: ${{ inputs.organization-id }}
+        project-slug: ${{ inputs.project-slug }}
+        signing-policy-slug: ${{ inputs.signing-policy-slug }}
+        artifact-configuration-slug: ${{ inputs.artifact-configuration-slug }}
+        github-artifact-id: ${{ steps.upload.outputs.artifact-id }}
+        wait-for-completion: true
+        wait-for-completion-timeout-in-seconds: 1800
+        skip-decompress: true
+        output-artifact-directory: ${{ inputs.output-directory }}
+        parameters: |
+          version: ${{ toJSON(inputs.version) }}

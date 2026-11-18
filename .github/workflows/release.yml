@@ -6,82 +6,113 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: read
     concurrency:
       group: nginx-ignition-image-build
       cancel-in-progress: false
-      queue: max
     env:
-      GOPATH: /data/cache/go
-      GOMODCACHE: /data/cache/go/pkg/mod
-      GOCACHE: /data/cache/go/build
-      GOTOOLCHAIN: ""
-      PNPM_HOME: /data/cache/pnpm
-      BUILDKIT_CACHE: /data/cache/docker
       BUILDKIT_PROGRESS: plain
+      VERSION: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 24
       - uses: pnpm/action-setup@v6
         with:
           version: 11
-      - name: Configure pnpm store
-        run: pnpm config set store-dir /data/cache/pnpm/store --global
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
       - uses: actions/setup-go@v7
         with:
           go-version: 1.27.4
-          cache: false
+          cache: true
+          cache-dependency-path: |
+            go.sum
+            tools/go.sum
+            tools/i18n/go.sum
       - name: Install dependencies
         run: |
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
           sudo apt update
           sudo apt install -y nfpm gettext-base nsis
       - uses: docker/setup-qemu-action@v4
-        with:
-          cache-image: false
-          platforms: linux/amd64,linux/arm64
       - uses: docker/setup-buildx-action@v4
         with:
-          version: v0.37.1
-          name: nginx-ignition-builder
-          keep-state: true
           driver: docker-container
-          driver-opts: |
-            image=moby/buildkit:v0.33.0
-            network=host
-          platforms: linux/amd64,linux/arm64
       - uses: docker/login-action@v4
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/login-action@v4
+      - name: Build binaries
+        run: make .backend-build VERSION=${VERSION}
+      - name: Build non-Windows distribution files
+        run: make .build-distribution-non-windows VERSION=${VERSION}
+      - name: Build and push Docker image
+        run: make .build-release-docker-image VERSION=${VERSION}
+      - name: Stage raw Windows binaries
+        run: |
+          mkdir -p build/signpath/raw
+          cp build/windows/amd64.exe build/signpath/raw/nginx-ignition-windows-amd64.exe
+          cp build/windows/arm64.exe build/signpath/raw/nginx-ignition-windows-arm64.exe
+          (cd build/signpath/raw && zip -q -r ../raw.zip .)
+      - name: Sign raw Windows binaries
+        uses: ./.github/actions/signpath-sign
         with:
-          registry: docker.lan.dillmann.dev
-          username: ${{ secrets.PRIVATE_DOCKER_USERNAME }}
-          password: ${{ secrets.PRIVATE_DOCKER_PASSWORD }}
-      - name: Resolve version number from tag
-        id: tag
-        run: echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
-      - name: Build and release
-        run: make build-release VERSION=${{ steps.tag.outputs.VERSION }}
+          artifact-name: windows-raw-unsigned
+          path: build/signpath/raw.zip
+          output-directory: build/signpath/raw-signed
+          version: ${{ github.ref_name }}
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ secrets.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ secrets.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ vars.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
+      - name: Restore signed raw Windows binaries
+        run: |
+          cp build/signpath/raw-signed/nginx-ignition-windows-amd64.exe build/windows/amd64.exe
+          cp build/signpath/raw-signed/nginx-ignition-windows-arm64.exe build/windows/arm64.exe
+      - name: Build Windows distribution files
+        run: make .build-distribution-windows VERSION=${VERSION}
+      - name: Stage Windows installers
+        run: |
+          mkdir -p build/signpath/installers
+          cp "build/nginx-ignition-${VERSION}.windows-amd64-setup.exe" build/signpath/installers/nginx-ignition-windows-amd64-setup.exe
+          cp "build/nginx-ignition-${VERSION}.windows-arm64-setup.exe" build/signpath/installers/nginx-ignition-windows-arm64-setup.exe
+          (cd build/signpath/installers && zip -q -r ../installers.zip .)
+      - name: Sign Windows installers
+        uses: ./.github/actions/signpath-sign
+        with:
+          artifact-name: windows-installers-unsigned
+          path: build/signpath/installers.zip
+          output-directory: build/signpath/installers-signed
+          version: ${{ github.ref_name }}
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ secrets.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ secrets.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ vars.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
+      - name: Restore signed Windows installers
+        run: |
+          cp build/signpath/installers-signed/nginx-ignition-windows-amd64-setup.exe "build/nginx-ignition-${VERSION}.windows-amd64-setup.exe"
+          cp build/signpath/installers-signed/nginx-ignition-windows-arm64-setup.exe "build/nginx-ignition-${VERSION}.windows-arm64-setup.exe"
       - name: Resolve Docker image hash
         id: docker
         run: |
-          RAW_DIGEST=$(docker buildx imagetools inspect dillmann/nginx-ignition:${{ steps.tag.outputs.VERSION }} --format '{{json .}}' | jq -r '.manifest.manifests[0].digest')
+          RAW_DIGEST=$(docker buildx imagetools inspect dillmann/nginx-ignition:${VERSION} --format '{{json .}}' | jq -r '.manifest.manifests[0].digest')
           echo "DOCKER_IMAGE_HASH=$(echo $RAW_DIGEST | sed 's/:/-/g')" >> $GITHUB_OUTPUT
       - name: Create draft release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ./.github/scripts/update-release.sh "${{ steps.docker.outputs.DOCKER_IMAGE_HASH }}" "false" "${{ steps.tag.outputs.VERSION }}" "true"
+          ./.github/scripts/update-release.sh "${{ steps.docker.outputs.DOCKER_IMAGE_HASH }}" "false" "${VERSION}" "true"
       - name: Upload distribution files
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ steps.tag.outputs.VERSION }}
+          tag_name: ${{ github.ref_name }}
           draft: true
           files: |
             build/nginx-ignition*.zip
@@ -97,4 +128,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ./.github/scripts/update-release.sh "${{ steps.docker.outputs.DOCKER_IMAGE_HASH }}" "false" "${{ steps.tag.outputs.VERSION }}" "false"
+          ./.github/scripts/update-release.sh "${{ steps.docker.outputs.DOCKER_IMAGE_HASH }}" "false" "${VERSION}" "false"

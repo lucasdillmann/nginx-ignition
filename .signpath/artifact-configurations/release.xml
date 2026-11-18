@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+  </parameters>
+
+  <zip-file>
+    <pe-file-set product-name="nginx ignition"
+                 product-version="${version}"
+                 file-version="${version}"
+                 company-name="Lucas Dillmann"
+                 copyright="Copyright © Lucas Dillmann">
+      <include path="*.exe" max-matches="unbounded" />
+      <for-each>
+        <authenticode-sign />
+      </for-each>
+    </pe-file-set>
+  </zip-file>
+</artifact-configuration>

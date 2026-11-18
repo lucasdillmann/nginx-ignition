@@ -1,8 +1,6 @@
 DOCKER_IMAGE ?= dillmann/nginx-ignition
-PRIVATE_DOCKER_IMAGE ?= docker.lan.dillmann.dev/nginx-ignition
 VERSION ?= 0.0.0
 PR_ID ?= 0
-BUILDKIT_CACHE ?= build/cache/docker
 SNAPSHOT_TAG_SUFFIX := $(if $(filter-out 0,$(PR_ID)),pr-$(PR_ID)-snapshot,$(VERSION)-snapshot)
 LDFLAGS := -X 'github.com/lucasdillmann/nginx-ignition/internal/business/core/version.Number=$(VERSION)'
 PNPM_INSTALL_FLAGS := $(if $(filter true,$(CI)),--frozen-lockfile,)
@@ -68,37 +66,36 @@ docs-assets: .docs-screenshots .docs-videos
 	cd tools/i18n && go run .
 
 .build-release-docker-image:
-	mkdir -p $(BUILDKIT_CACHE)
 	docker buildx build \
 		--progress=plain \
-		--cache-from type=local,src=$(BUILDKIT_CACHE) \
-		--cache-to type=local,dest=$(BUILDKIT_CACHE),mode=max,reset=true \
+		--cache-from type=registry,ref=$(DOCKER_IMAGE):buildcache \
+		--cache-to type=registry,ref=$(DOCKER_IMAGE):buildcache,mode=max \
 		--tag $(DOCKER_IMAGE):$(VERSION) \
 		--tag $(DOCKER_IMAGE):latest \
-		--tag $(PRIVATE_DOCKER_IMAGE):$(VERSION) \
-		--tag $(PRIVATE_DOCKER_IMAGE):latest \
 		--platform linux/amd64,linux/arm64 \
 		--push .
 
 .build-snapshot-docker-image:
-	mkdir -p $(BUILDKIT_CACHE)
 	docker buildx build \
 		--progress=plain \
-		--cache-from type=local,src=$(BUILDKIT_CACHE) \
-		--cache-to type=local,dest=$(BUILDKIT_CACHE),mode=max,reset=true \
+		--cache-from type=registry,ref=$(DOCKER_IMAGE):buildcache \
+		--cache-to type=registry,ref=$(DOCKER_IMAGE):buildcache,mode=max \
 		--tag $(DOCKER_IMAGE):$(SNAPSHOT_TAG_SUFFIX) \
-		--tag $(PRIVATE_DOCKER_IMAGE):$(SNAPSHOT_TAG_SUFFIX) \
 		--platform linux/amd64,linux/arm64 \
 		--push .
 
-.build-distribution-files:
+.build-distribution-files: .build-distribution-non-windows .build-distribution-windows
+
+.build-distribution-non-windows:
 	$(MAKE) .build-distribution-zip ARCH=amd64 OS=linux SERVICE_FILE_EXT=service
 	$(MAKE) .build-distribution-zip ARCH=arm64 OS=linux SERVICE_FILE_EXT=service
 	$(MAKE) .build-distribution-zip ARCH=arm64 OS=macos SERVICE_FILE_EXT=plist
-	$(MAKE) .build-distribution-zip ARCH=amd64 OS=windows BIN_EXT=.exe
-	$(MAKE) .build-distribution-zip ARCH=arm64 OS=windows BIN_EXT=.exe
 	$(MAKE) .build-distribution-packages ARCH=amd64 OS=linux
 	$(MAKE) .build-distribution-packages ARCH=arm64 OS=linux
+
+.build-distribution-windows:
+	$(MAKE) .build-distribution-zip ARCH=amd64 OS=windows BIN_EXT=.exe
+	$(MAKE) .build-distribution-zip ARCH=arm64 OS=windows BIN_EXT=.exe
 	$(MAKE) .build-windows-installer ARCH=amd64
 	$(MAKE) .build-windows-installer ARCH=arm64
 

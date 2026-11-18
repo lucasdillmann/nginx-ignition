@@ -2,8 +2,14 @@
 
 ## 2.52.0
 
-- Windows binaries and installers are now code-signed through SignPath Foundation. Free code signing is provided by
-  SignPath.io, with a certificate issued by the SignPath Foundation.
+- Windows binaries and installers are now Authenticode-signed
+  - The application executable (`nginx-ignition.exe`) for amd64 and arm64 is signed, including the copy shipped inside
+    the Windows ZIP archives and the installers.
+  - Both Windows installers (amd64 and arm64) are signed as well.
+  - Signing lets Windows verify the publisher and integrity of the files, reducing SmartScreen and "unknown publisher"
+    warnings when downloading and running nginx ignition.
+  - Free code signing is provided by [SignPath.io](https://signpath.io/), with a certificate issued by the
+    [SignPath Foundation](https://signpath.org/).
 
 ## 2.51.1
 
