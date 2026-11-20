@@ -1,9 +1,11 @@
 # CHANGELOG
 
-## 2.52.0
+## 2.51.1
 
+- Upgrade of the nginx version from 1.31.8 to 1.31.9 (mainline) on the official Docker image
 - The MIT license text is now included in every distribution: ZIP archives, Linux packages, the Docker image and the 
   Windows installer
+- Other security updates and fixes
 
 ## 2.51.0
 
