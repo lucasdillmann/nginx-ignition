@@ -60,10 +60,10 @@ export default class ByDomainTab extends React.Component<ByDomainTabProps> {
                     options={options}
                     value={selectedDomain}
                     onChange={value => onSelectDomain(value)}
-                    showSearch
-                    filterOption={(input, option) =>
-                        (option?.label?.toString() ?? "").toLowerCase().includes(input.toLowerCase())
-                    }
+                    showSearch={{
+                        filterOption: (input, option) =>
+                            (option?.label?.toString() ?? "").toLowerCase().includes(input.toLowerCase()),
+                    }}
                 />
             </Flex>
         )

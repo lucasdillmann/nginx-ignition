@@ -93,7 +93,7 @@ export default class CodeEditorModal extends React.Component<CodeEditorModalProp
             <Drawer
                 title={<I18n id={MessageKey.FrontendComponentsCodeeditorTitle} />}
                 placement="right"
-                width="80vw"
+                size="80vw"
                 onClose={onClose}
                 extra={this.renderLanguageSelector()}
                 open

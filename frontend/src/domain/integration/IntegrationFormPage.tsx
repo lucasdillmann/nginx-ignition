@@ -144,7 +144,7 @@ export default class IntegrationFormPage extends React.Component<any, Integratio
         const { formValues, availableDrivers, validationResult } = this.state
         const provider = availableDrivers.find(item => item.id === formValues.driver)
         return provider?.configurationFields
-            .sort((left, right) => (left.priority > right.priority ? 1 : -1))
+            .toSorted((left, right) => (left.priority > right.priority ? 1 : -1))
             .map(field => (
                 <DynamicInput
                     key={field.id}

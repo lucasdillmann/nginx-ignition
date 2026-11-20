@@ -33,7 +33,7 @@ function showNotification(
         description: <I18n id={message} />,
         key: props?.key,
         actions: props?.actions,
-        message: <I18n id={title} />,
+        title: <I18n id={title} />,
         duration,
         type,
         role,

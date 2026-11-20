@@ -10,6 +10,7 @@
     warnings when downloading and running nginx ignition.
   - Free code signing is provided by [SignPath.io](https://signpath.io/), with a certificate issued by the
     [SignPath Foundation](https://signpath.org/).
+- Internal code quality improvements
 
 ## 2.51.1
 

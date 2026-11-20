@@ -28,7 +28,7 @@ const FormDefaults: FormProps = {
     layout: "horizontal",
     requiredMark: "optional",
     colon: false,
-    labelAlign: "left",
+    labelAlign: "start",
     labelWrap: true,
 }
 

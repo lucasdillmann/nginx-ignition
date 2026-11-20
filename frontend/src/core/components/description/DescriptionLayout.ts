@@ -1,13 +1,14 @@
 import { ProDescriptionsProps } from "@ant-design/pro-components"
 import FormLayout from "../form/FormLayout"
+import "./DescriptionLayout.css"
 
 const Defaults: ProDescriptionsProps = {
     colon: false,
     column: 2,
     layout: "horizontal",
-    size: "middle",
-    labelStyle: {
-        width: 200,
+    size: "medium",
+    classNames: {
+        label: "description-layout-label",
     },
     formProps: FormLayout.FormDefaults,
 }
