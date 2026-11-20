@@ -279,7 +279,7 @@ export default class LogsPage extends React.Component<any, LogsPageState> {
                         value={String(lineCount)}
                         onChange={value => this.handleLineCountChange(value)}
                         onSelect={value => this.setLineCount(Number(value))}
-                        filterOption={false}
+                        showSearch={{ filterOption: false }}
                     />
                 </Flex>
                 <Flex className="log-settings-option log-settings-auto-refresh" vertical>

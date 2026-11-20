@@ -153,7 +153,11 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
         const { allowEmpty, disabled, status, value, onChange, placeholder, disableSearch, autoFocus } = this.props
         return (
             <Select<SelectOption<T>>
-                showSearch={disableSearch !== true}
+                showSearch={
+                    disableSearch !== true
+                        ? { onSearch: searchTerms => this.handleSearch(searchTerms), filterOption: false }
+                        : false
+                }
                 placeholder={placeholder ? <I18n id={placeholder} /> : undefined}
                 disabled={disabled}
                 allowClear={allowEmpty}
@@ -164,8 +168,6 @@ export default class PaginatedSelect<T> extends React.Component<PaginatedSelectP
                 onDeselect={() => onChange?.(undefined)}
                 onPopupScroll={event => this.handleScrollEvent(event)}
                 onOpenChange={open => this.handleDropdownVisibilityChange(open)}
-                onSearch={searchTerms => this.handleSearch(searchTerms)}
-                filterOption={false}
                 autoFocus={autoFocus}
             />
         )

@@ -154,7 +154,7 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
         const { formValues, availableProviders, validationResult } = this.state
         const provider = availableProviders.find(item => item.id === formValues.providerId)
         return provider?.dynamicFields
-            .sort((left, right) => (left.priority > right.priority ? 1 : -1))
+            .toSorted((left, right) => (left.priority > right.priority ? 1 : -1))
             .map(field => (
                 <DynamicInput
                     key={field.id}

@@ -65,10 +65,10 @@ export default class ByUpstreamTab extends React.Component<ByUpstreamTabProps> {
                     options={options}
                     value={selectedUpstream}
                     onChange={value => onSelectUpstream(value)}
-                    showSearch
-                    filterOption={(input, option) =>
-                        (option?.label?.toString() ?? "").toLowerCase().includes(input.toLowerCase())
-                    }
+                    showSearch={{
+                        filterOption: (input, option) =>
+                            (option?.label?.toString() ?? "").toLowerCase().includes(input.toLowerCase()),
+                    }}
                 />
             </Flex>
         )
