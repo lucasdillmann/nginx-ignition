@@ -8,13 +8,9 @@ import If from "../../core/components/flowcontrol/If"
 import FormLayout from "../../core/components/form/FormLayout"
 import DynamicInput from "../../core/components/dynamicfield/DynamicInput"
 import { IssueCertificateRequest } from "./model/IssueCertificateRequest"
-import ModalPreloader from "../../core/components/preloader/ModalPreloader"
-import { IssueCertificateResponse } from "./model/IssueCertificateResponse"
-import Notification from "../../core/components/notification/Notification"
-import { UnexpectedResponseError } from "../../core/apiclient/ApiResponse"
 import ValidationResultConverter from "../../core/validation/ValidationResultConverter"
+import ApiResponse from "../../core/apiclient/ApiResponse"
 import DomainNamesList from "../../core/components/domainnames/DomainNamesList"
-import { navigateTo } from "../../core/components/router/AppRouter"
 import AppShellContext from "../../core/components/shell/AppShellContext"
 import { DynamicFieldType } from "../../core/dynamicfield/DynamicField"
 import CommonNotifications from "../../core/components/notification/CommonNotifications"
@@ -23,7 +19,8 @@ import { isAccessGranted } from "../../core/components/accesscontrol/IsAccessGra
 import { UserAccessLevel } from "../user/model/UserAccessLevel"
 import AccessDeniedPage from "../../core/components/accesscontrol/AccessDeniedPage"
 import MessageKey from "../../core/i18n/model/MessageKey.generated"
-import { I18n, raw } from "../../core/i18n/I18n"
+import { I18n } from "../../core/i18n/I18n"
+import CertificateOperationController from "./components/CertificateOperationController"
 
 interface CertificateIssuePageState {
     availableProviders: AvailableProviderResponse[]
@@ -35,13 +32,11 @@ interface CertificateIssuePageState {
 
 export default class CertificateIssuePage extends React.Component<unknown, CertificateIssuePageState> {
     private readonly service: CertificateService
-    private readonly saveModal: ModalPreloader
     private readonly formRef: React.RefObject<FormInstance | null>
 
     constructor(props: any) {
         super(props)
         this.service = new CertificateService()
-        this.saveModal = new ModalPreloader()
         this.formRef = React.createRef()
         this.state = {
             loading: true,
@@ -81,7 +76,6 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
 
     private async submit() {
         const { formValues } = this.state
-        this.saveModal.show(MessageKey.CommonHangOnTight, MessageKey.FrontendCertificateIssuingPleaseWait)
         this.setState({ validationResult: new ValidationResult() })
 
         const certificateRequest: IssueCertificateRequest = {
@@ -93,36 +87,14 @@ export default class CertificateIssuePage extends React.Component<unknown, Certi
             },
         }
 
-        this.service
-            .issue(certificateRequest)
-            .then(response => this.handleResponse(response))
-            .catch(error => this.handleError(error))
-            .then(() => this.saveModal.close())
-    }
-
-    private handleResponse(response: IssueCertificateResponse) {
-        const { success, errorReason, certificateId } = response
-        if (success) {
-            Notification.success(
-                MessageKey.FrontendCertificateIssued,
-                MessageKey.FrontendCertificateIssueSuccessDescription,
-            )
-            navigateTo(`/certificates/${certificateId}`)
-        } else {
-            Notification.error(
-                MessageKey.FrontendCertificateIssueFailed,
-                errorReason ? raw(errorReason) : MessageKey.FrontendCertificateIssueFailedDescription,
-            )
-        }
-    }
-
-    private handleError(error: Error) {
-        if (error instanceof UnexpectedResponseError) {
-            const validationResult = ValidationResultConverter.parse(error.response)
-            if (validationResult != null) this.setState({ validationResult })
-        }
-
-        Notification.error(MessageKey.CommonThatDidntWork, MessageKey.CommonFormCheckMessage)
+        await CertificateOperationController.issue(certificateRequest, {
+            onValidation: validation => {
+                const validationResult = ValidationResultConverter.parse({
+                    body: validation,
+                } as ApiResponse<any>)
+                if (validationResult !== null) this.setState({ validationResult })
+            },
+        })
     }
 
     private buildProviderSelectOptions() {

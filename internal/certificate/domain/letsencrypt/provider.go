@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"log/slog"
+	"strings"
 	"time"
 
 	acmelog "github.com/go-acme/lego/v5/log"
@@ -61,6 +62,12 @@ func (p *Provider) Issue(
 		return nil, err
 	}
 
+	reportInfo(
+		ctx,
+		"Preparing to issue a certificate for: %s",
+		strings.Join(request.DomainNames, ", "),
+	)
+
 	productionEnvironment, err := p.isProductionEnvironment()
 	if err != nil {
 		return nil, err
@@ -75,6 +82,8 @@ func (p *Provider) Issue(
 			false,
 		)
 	}
+
+	reportInfo(ctx, "Generated the ACME account private key")
 
 	user := userDetails{
 		email:      email,
@@ -95,6 +104,12 @@ func (p *Provider) Renew(
 	ctx context.Context,
 	cert *certificate.Certificate,
 ) (*certificate.Certificate, error) {
+	reportInfo(
+		ctx,
+		"Preparing to renew the certificate for: %s",
+		strings.Join(cert.DomainNames, ", "),
+	)
+
 	var metadata *certificateMetadata
 	if err := json.Unmarshal([]byte(*cert.Metadata), &metadata); err != nil {
 		return nil, coreerror.New(i18n.M(ctx, i18n.K.CertificateLetsencryptParseMetadata), false)

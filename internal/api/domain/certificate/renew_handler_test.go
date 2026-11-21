@@ -1,7 +1,6 @@
 package certificate
 
 import (
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -14,13 +13,9 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 )
 
-func init() {
-	gin.SetMode(gin.TestMode)
-}
-
 func Test_renewHandler(t *testing.T) {
 	t.Run("handle", func(t *testing.T) {
-		t.Run("returns 200 OK with success flag on success", func(t *testing.T) {
+		t.Run("streams a successful result", func(t *testing.T) {
 			controller := gomock.NewController(t)
 			defer controller.Finish()
 
@@ -41,9 +36,11 @@ func Test_renewHandler(t *testing.T) {
 			engine.ServeHTTP(recorder, request)
 
 			assert.Equal(t, http.StatusOK, recorder.Code)
-			var response renewCertificateResponse
-			json.Unmarshal(recorder.Body.Bytes(), &response)
-			assert.True(t, response.Success)
+			assert.Equal(t, "text/event-stream", recorder.Header().Get("Content-Type"))
+
+			frame := lastFrame(t, parseSSE(t, recorder.Body.Bytes()))
+			assert.Equal(t, "result", frame.Event)
+			assert.Equal(t, true, frame.Data["success"])
 		})
 
 		t.Run("returns 404 Not Found on invalid ID", func(t *testing.T) {
@@ -60,7 +57,7 @@ func Test_renewHandler(t *testing.T) {
 			assert.Equal(t, http.StatusNotFound, recorder.Code)
 		})
 
-		t.Run("returns 200 OK with error reasoning on command error", func(t *testing.T) {
+		t.Run("streams a failed result on command error", func(t *testing.T) {
 			controller := gomock.NewController(t)
 			defer controller.Finish()
 
@@ -81,11 +78,10 @@ func Test_renewHandler(t *testing.T) {
 			request := httptest.NewRequest("POST", "/api/certificates/"+id.String()+"/renew", nil)
 			engine.ServeHTTP(recorder, request)
 
-			assert.Equal(t, http.StatusOK, recorder.Code)
-			var response renewCertificateResponse
-			json.Unmarshal(recorder.Body.Bytes(), &response)
-			assert.False(t, response.Success)
-			assert.Equal(t, expectedErr.Error(), *response.ErrorReason)
+			frame := lastFrame(t, parseSSE(t, recorder.Body.Bytes()))
+			assert.Equal(t, "result", frame.Event)
+			assert.Equal(t, false, frame.Data["success"])
+			assert.Equal(t, expectedErr.Error(), frame.Data["errorReason"])
 		})
 	})
 }

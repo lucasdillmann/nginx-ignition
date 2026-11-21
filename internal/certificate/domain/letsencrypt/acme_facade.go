@@ -7,6 +7,7 @@ import (
 	"encoding/pem"
 	"net"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-acme/lego/v5/certcrypto"
@@ -33,14 +34,31 @@ func issueCertificate(
 	parameters map[string]any,
 	productionEnvironment bool,
 ) (*certificate.Certificate, error) {
-	if err := acquireIssuanceLock(ctx); err != nil {
-		return nil, err
+	if !tryAcquireIssuanceLock() {
+		reportInfo(ctx, "Waiting for another certificate operation to finish")
+		if err := acquireIssuanceLock(ctx); err != nil {
+			return nil, err
+		}
 	}
 	defer releaseIssuanceLock()
+
+	restoreReporter := withActiveReporter(ctx)
+	if restoreReporter != nil {
+		defer restoreReporter()
+	}
 
 	return withCustomDNSServers(ctx, parameters, func() (*certificate.Certificate, error) {
 		return obtainCertificate(ctx, user, domainNames, parameters, productionEnvironment)
 	})
+}
+
+func tryAcquireIssuanceLock() bool {
+	select {
+	case issuanceLock <- struct{}{}:
+		return true
+	default:
+		return false
+	}
 }
 
 func acquireIssuanceLock(ctx context.Context) error {
@@ -111,6 +129,7 @@ func obtainCertificate(
 	}
 
 	registerOptions := registration.RegisterOptions{TermsOfServiceAgreed: true}
+	reportInfo(ctx, "Registering the ACME account")
 	if user.newAccount {
 		user.registration, err = client.Registration.Register(ctx, registerOptions)
 	} else {
@@ -133,10 +152,14 @@ func obtainCertificate(
 		request.PreferredChain = "ISRG Root X1"
 	}
 
+	reportInfo(ctx, "Requesting certificate for: %s", strings.Join(domainNames, ", "))
+
 	cert, err := client.Certificate.Obtain(ctx, request)
 	if err != nil {
 		return nil, err
 	}
+
+	reportInfo(ctx, "Parsing the issued certificate")
 
 	return parseResult(
 		ctx,

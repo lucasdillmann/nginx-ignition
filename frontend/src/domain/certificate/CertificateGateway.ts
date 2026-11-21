@@ -1,11 +1,10 @@
 import ApiClient from "../../core/apiclient/ApiClient"
 import ApiResponse from "../../core/apiclient/ApiResponse"
 import PageResponse from "../../core/pagination/PageResponse"
-import { RenewCertificateResponse } from "./model/RenewCertificateResponse"
 import { CertificateResponse } from "./model/CertificateResponse"
 import AvailableProviderResponse from "./model/AvailableProviderResponse"
 import { IssueCertificateRequest } from "./model/IssueCertificateRequest"
-import { IssueCertificateResponse } from "./model/IssueCertificateResponse"
+import { SseEvent } from "../../core/apiclient/SseReader"
 
 export default class CertificateGateway {
     private readonly client: ApiClient
@@ -26,16 +25,20 @@ export default class CertificateGateway {
         return this.client.delete(`/${id}`)
     }
 
-    async renew(id: string): Promise<ApiResponse<RenewCertificateResponse>> {
-        return this.client.post(`/${id}/renew`)
+    async issueStream(
+        certificate: IssueCertificateRequest,
+        onEvent: (event: SseEvent) => void,
+        signal?: AbortSignal,
+    ): Promise<void> {
+        await this.client.postStream("/issue", certificate, onEvent, signal)
+    }
+
+    async renewStream(id: string, onEvent: (event: SseEvent) => void, signal?: AbortSignal): Promise<void> {
+        await this.client.postStream(`/${id}/renew`, undefined, onEvent, signal)
     }
 
     async getAvailableProviders(): Promise<ApiResponse<AvailableProviderResponse[]>> {
         return this.client.get("/available-providers")
-    }
-
-    async issue(certificate: IssueCertificateRequest): Promise<ApiResponse<IssueCertificateResponse>> {
-        return this.client.post("/issue", certificate)
     }
 
     async getById(id: string): Promise<ApiResponse<CertificateResponse>> {
