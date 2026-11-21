@@ -120,36 +120,9 @@ func (s *service) renewAllDue(ctx context.Context) error {
 	renewedCount := 0
 
 	for _, certificate := range certificates {
-		provider := providerByID(providers, certificate.ProviderID)
-		if provider == nil {
-			log.Warnf("Certificate %s: provider not found", certificate.ID)
-			continue
+		if s.renewCertificateIfDue(ctx, providers, &certificate) {
+			renewedCount++
 		}
-
-		if certificate.RenewAfter == nil {
-			due, dueErr := provider.IsDueToRenew(ctx, &certificate)
-			if dueErr != nil {
-				log.Warnf(
-					"Error checking if certificate %s is due to renew: %s",
-					certificate.ID,
-					dueErr,
-				)
-				continue
-			}
-
-			if !due {
-				continue
-			}
-		}
-
-		err = s.Renew(ctx, certificate.ID)
-		if err != nil {
-			log.Warnf("Error renewing certificate %s: %s", certificate.ID, err)
-			continue
-		}
-
-		renewedCount++
-		log.Infof("Certificate %s renewed successfully", certificate.ID)
 	}
 
 	if renewedCount == 0 {
@@ -162,6 +135,42 @@ func (s *service) renewAllDue(ctx context.Context) error {
 	log.Infof("Certificates auto-renew completed, %d were renewed", renewedCount)
 
 	return nil
+}
+
+func (s *service) renewCertificateIfDue(
+	ctx context.Context,
+	providers []AvailableProvider,
+	certificate *Certificate,
+) bool {
+	provider := providerByID(providers, certificate.ProviderID)
+	if provider == nil {
+		log.Warnf("Certificate %s: provider not found", certificate.ID)
+		return false
+	}
+
+	if certificate.RenewAfter == nil {
+		due, err := provider.IsDueToRenew(ctx, certificate)
+		if err != nil {
+			log.Warnf(
+				"Error checking if certificate %s is due to renew: %s",
+				certificate.ID,
+				err,
+			)
+			return false
+		}
+
+		if !due {
+			return false
+		}
+	}
+
+	if err := s.Renew(ctx, certificate.ID); err != nil {
+		log.Warnf("Error renewing certificate %s: %s", certificate.ID, err)
+		return false
+	}
+
+	log.Infof("Certificate %s renewed successfully", certificate.ID)
+	return true
 }
 
 func (s *service) Renew(ctx context.Context, certificateID uuid.UUID) error {

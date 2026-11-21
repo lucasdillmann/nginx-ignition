@@ -43,7 +43,9 @@ func issueCertificate(
 	defer releaseIssuanceLock()
 
 	restoreReporter := withActiveReporter(ctx)
-	defer restoreReporter()
+	if restoreReporter != nil {
+		defer restoreReporter()
+	}
 
 	return withCustomDNSServers(ctx, parameters, func() (*certificate.Certificate, error) {
 		return obtainCertificate(ctx, user, domainNames, parameters, productionEnvironment)

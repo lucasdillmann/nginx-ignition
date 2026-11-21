@@ -19,7 +19,7 @@ var currentReporter atomic.Pointer[activeReporter]
 func withActiveReporter(ctx context.Context) func() {
 	reporter := progress.ReporterFrom(ctx)
 	if reporter == nil {
-		return func() {}
+		return nil
 	}
 
 	previous := currentReporter.Swap(&activeReporter{reporter: reporter})

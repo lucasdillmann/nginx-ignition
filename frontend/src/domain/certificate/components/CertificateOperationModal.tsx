@@ -100,14 +100,22 @@ export default class CertificateOperationModal extends React.Component<
         )
     }
 
-    private renderRunning() {
+    private resolveRunningMessage(): MessageKey {
         const { kind, phase } = this.state.operation
-        const message =
-            phase === "canceling"
-                ? MessageKey.FrontendCertificateOperationCanceling
-                : kind === "issue"
-                  ? MessageKey.FrontendCertificateIssuingPleaseWait
-                  : MessageKey.FrontendCertificateRenewingPleaseWait
+        if (phase === "canceling") return MessageKey.FrontendCertificateOperationCanceling
+        if (kind === "issue") return MessageKey.FrontendCertificateIssuingPleaseWait
+        return MessageKey.FrontendCertificateRenewingPleaseWait
+    }
+
+    private resolveFailureDescription(): I18nMessage {
+        const { kind, errorReason } = this.state.operation
+        if (errorReason) return raw(errorReason)
+        if (kind === "issue") return MessageKey.FrontendCertificateIssueFailedDescription
+        return MessageKey.CommonUnexpectedErrorTryAgain
+    }
+
+    private renderRunning() {
+        const message = this.resolveRunningMessage()
 
         return (
             <Flex className="certificate-operation-status" align="center">
@@ -138,7 +146,7 @@ export default class CertificateOperationModal extends React.Component<
     }
 
     private renderResult() {
-        const { kind, phase, errorReason } = this.state.operation
+        const { kind, phase } = this.state.operation
 
         if (phase === "success") {
             const title =
@@ -164,11 +172,7 @@ export default class CertificateOperationModal extends React.Component<
 
         const title =
             kind === "issue" ? MessageKey.FrontendCertificateIssueFailed : MessageKey.FrontendCertificateRenewFailed
-        const description = errorReason
-            ? raw(errorReason)
-            : kind === "issue"
-              ? MessageKey.FrontendCertificateIssueFailedDescription
-              : MessageKey.CommonUnexpectedErrorTryAgain
+        const description = this.resolveFailureDescription()
 
         return this.renderResultBlock(
             <CloseCircleFilled className="certificate-operation-result-icon certificate-operation-result-icon-error" />,
