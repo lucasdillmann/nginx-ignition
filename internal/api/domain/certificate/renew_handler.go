@@ -1,13 +1,13 @@
 package certificate
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"github.com/lucasdillmann/nginx-ignition/internal/api/core/apierror"
-
+	"github.com/lucasdillmann/nginx-ignition/internal/api/core/eventstream"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 )
 
@@ -22,10 +22,9 @@ func (h renewHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	err = h.commands.Renew(ctx.Request.Context(), id)
-	if apierror.CanHandle(err) {
-		panic(err)
-	}
+	eventstream.Serve(ctx, func(runContext context.Context) (any, error) {
+		err := h.commands.Renew(runContext, id)
 
-	ctx.JSON(http.StatusOK, toRenewCertificateResponse(err))
+		return toRenewCertificateResponse(err), err
+	})
 }

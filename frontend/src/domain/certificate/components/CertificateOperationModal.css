@@ -1,0 +1,96 @@
+.certificate-operation-modal-content {
+    padding-top: 16px;
+}
+
+.certificate-operation-result {
+    padding: 8px 0;
+}
+
+.certificate-operation-result-icon {
+    font-size: 22px;
+    margin-top: 2px;
+}
+
+.certificate-operation-result-icon-success {
+    color: var(--ant-color-success);
+}
+
+.certificate-operation-result-icon-error {
+    color: var(--ant-color-error);
+}
+
+.certificate-operation-result-icon-warning {
+    color: var(--ant-color-warning);
+}
+
+.certificate-operation-status {
+    padding: 8px 0;
+}
+
+.certificate-operation-log-container {
+    height: 320px;
+    overflow: auto;
+    background-color: var(--ant-color-bg-container);
+    border: 1px solid var(--ant-color-border);
+    border-radius: var(--ant-border-radius);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 8px 0;
+}
+
+.certificate-operation-log-line {
+    display: flex;
+    align-items: flex-start;
+    padding: 0 12px;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.certificate-operation-log-line:hover {
+    background-color: var(--ant-color-fill-tertiary);
+}
+
+.certificate-operation-log-time {
+    flex-shrink: 0;
+    color: var(--ant-color-text-quaternary);
+    user-select: none;
+}
+
+.certificate-operation-log-level {
+    flex-shrink: 0;
+    width: 48px;
+    margin-inline-start: 12px;
+    font-weight: 600;
+    user-select: none;
+}
+
+.certificate-operation-log-level-debug {
+    color: var(--ant-color-text-quaternary);
+}
+
+.certificate-operation-log-level-info {
+    color: var(--ant-color-text-tertiary);
+}
+
+.certificate-operation-log-level-warn {
+    color: var(--ant-color-warning-text);
+}
+
+.certificate-operation-log-level-error {
+    color: var(--ant-color-error-text);
+}
+
+.certificate-operation-log-message {
+    flex-grow: 1;
+}
+
+.certificate-operation-log-line-debug .certificate-operation-log-message {
+    color: var(--ant-color-text-quaternary);
+}
+
+.certificate-operation-log-notice {
+    padding: 4px 12px;
+    color: var(--ant-color-text-quaternary);
+    font-style: italic;
+}

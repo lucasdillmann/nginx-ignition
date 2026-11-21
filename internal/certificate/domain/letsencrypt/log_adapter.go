@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	applog "github.com/lucasdillmann/nginx-ignition/internal/business/core/log"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/progress"
 )
 
 type logAdapter struct {
@@ -39,18 +40,33 @@ func (l *logAdapter) Handle(_ context.Context, record slog.Record) error {
 
 	message := builder.String()
 
-	switch record.Level {
-	case slog.LevelWarn:
-		applog.Warn(message)
-	case slog.LevelError:
+	switch {
+	case record.Level >= slog.LevelError:
 		applog.Error(message)
-	case slog.LevelDebug:
+	case record.Level >= slog.LevelWarn:
+		applog.Warn(message)
+	case record.Level <= slog.LevelDebug:
 		applog.Debug(message)
 	default:
 		applog.Info(message)
 	}
 
+	reportActive(toProgressLevel(record.Level), message)
+
 	return nil
+}
+
+func toProgressLevel(level slog.Level) progress.Level {
+	switch {
+	case level >= slog.LevelError:
+		return progress.LevelError
+	case level >= slog.LevelWarn:
+		return progress.LevelWarn
+	case level <= slog.LevelDebug:
+		return progress.LevelDebug
+	default:
+		return progress.LevelInfo
+	}
 }
 
 func (l *logAdapter) WithAttrs(attributes []slog.Attr) slog.Handler {

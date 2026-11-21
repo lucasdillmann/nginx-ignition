@@ -1,12 +1,12 @@
 package certificate
 
 import (
-	"net/http"
+	"context"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/lucasdillmann/nginx-ignition/internal/api/core/apierror"
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/converter"
+	"github.com/lucasdillmann/nginx-ignition/internal/api/core/eventstream"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/certificate"
 )
@@ -23,10 +23,9 @@ func (h issueHandler) handle(ctx *gin.Context) {
 
 	domainModel := converter.Wrap(ctx.Request.Context(), toIssueCertificateRequest, payload)
 
-	cert, err := h.commands.Issue(ctx.Request.Context(), domainModel)
-	if apierror.CanHandle(err) {
-		panic(err)
-	}
+	eventstream.Serve(ctx, func(runContext context.Context) (any, error) {
+		cert, err := h.commands.Issue(runContext, domainModel)
 
-	ctx.JSON(http.StatusOK, toIssueCertificateResponse(cert, err))
+		return toIssueCertificateResponse(cert, err), err
+	})
 }

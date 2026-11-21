@@ -2,6 +2,13 @@
 
 ## 2.52.0
 
+- Certificate issuance and renewal now show live progress
+  - A progress window now shows what is happening in real time while a certificate is being issued or renewed,
+    including the messages from Let's Encrypt, so it is clear that the operation is still running and what it is doing.
+    An optional debug view provides extra details for troubleshooting.
+  - The operation can be canceled at any time. When it ends, the window shows whether it succeeded, failed, or was
+    canceled.
+  - Automatic renewals keep working in the background and continue to be recorded in the application logs.
 - Windows binaries and installers are now Authenticode-signed
   - The application executable (`nginx-ignition.exe`) for amd64 and arm64 is signed, including the copy shipped inside
     the Windows ZIP archives and the installers.

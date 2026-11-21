@@ -11,6 +11,7 @@ import (
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/log"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/pagination"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/core/progress"
 )
 
 type service struct {
@@ -185,6 +186,9 @@ func (s *service) Renew(ctx context.Context, certificateID uuid.UUID) error {
 	}
 
 	certificate.ID = certificateID
+
+	reportInfo(ctx, "Saving the renewed certificate")
+
 	return s.repository.Save(ctx, certificate)
 }
 
@@ -204,12 +208,19 @@ func (s *service) Issue(ctx context.Context, request *IssueRequest) (*Certificat
 		return nil, err
 	}
 
+	reportInfo(ctx, "Saving the issued certificate")
+
 	err = s.repository.Save(ctx, certificate)
 	if err != nil {
 		return nil, err
 	}
 
 	return certificate, nil
+}
+
+func reportInfo(ctx context.Context, message string) {
+	log.Info(message)
+	progress.Report(ctx, progress.LevelInfo, message)
 }
 
 func (s *service) autoRenewSettings(ctx context.Context) (*AutoRenewSettings, error) {
