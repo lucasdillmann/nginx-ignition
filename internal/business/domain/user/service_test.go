@@ -995,6 +995,8 @@ func Test_service(t *testing.T) {
 
 			require.NoError(t, err)
 			require.NotNil(t, result)
+			assert.NotEqual(t, uuid.Nil, result.ID)
+			assert.NotEqual(t, uuid.Nil, result.IterationID)
 			assert.Equal(t, usr.ID, result.UserID)
 			assert.Equal(t, expiresAt, result.ExpiresAt)
 		})
@@ -1088,24 +1090,34 @@ func Test_service(t *testing.T) {
 	})
 
 	t.Run("RotateSession", func(t *testing.T) {
-		t.Run("replaces the old session with a new one", func(t *testing.T) {
+		t.Run("updates the session with a new iteration", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
 			usr := newUser()
-			oldID := uuid.New()
+			sessionID := uuid.New()
+			currentIterationID := uuid.New()
 			expiresAt := time.Now().Add(time.Hour)
 
 			repo := NewMockedRepository(ctrl)
-			repo.EXPECT().RotateSession(t.Context(), oldID, gomock.Any()).Return(nil)
+			repo.EXPECT().
+				RotateSession(t.Context(), gomock.Any(), currentIterationID).
+				Return(nil)
 
 			cfg := &configuration.Configuration{}
 			svc, _ := newCommands(repo, cfg)
-			result, err := svc.RotateSession(t.Context(), oldID, usr.ID, expiresAt)
+			result, err := svc.RotateSession(
+				t.Context(),
+				sessionID,
+				usr.ID,
+				currentIterationID,
+				expiresAt,
+			)
 
 			require.NoError(t, err)
 			require.NotNil(t, result)
-			assert.NotEqual(t, oldID, result.ID)
+			assert.Equal(t, sessionID, result.ID)
+			assert.NotEqual(t, currentIterationID, result.IterationID)
 			assert.Equal(t, usr.ID, result.UserID)
 			assert.Equal(t, expiresAt, result.ExpiresAt)
 		})
@@ -1127,6 +1139,7 @@ func Test_service(t *testing.T) {
 				t.Context(),
 				uuid.New(),
 				uuid.New(),
+				uuid.New(),
 				time.Now().Add(time.Hour),
 			)
 
@@ -1145,6 +1158,7 @@ func Test_service(t *testing.T) {
 			svc, _ := newCommands(repo, cfg)
 			result, err := svc.RotateSession(
 				t.Context(),
+				uuid.New(),
 				uuid.New(),
 				uuid.New(),
 				time.Now(),

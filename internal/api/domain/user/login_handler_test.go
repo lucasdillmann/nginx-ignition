@@ -64,7 +64,11 @@ func Test_loginHandler(t *testing.T) {
 				Return(user.AuthenticationSuccessful, subject, nil)
 			commands.EXPECT().
 				StartSession(gomock.Any(), subject.ID, gomock.Any()).
-				Return(&user.Session{ID: uuid.New(), UserID: subject.ID}, nil)
+				Return(&user.Session{
+					ID:          uuid.New(),
+					IterationID: uuid.New(),
+					UserID:      subject.ID,
+				}, nil)
 
 			recorder := performRequest(engine, payload)
 
@@ -105,7 +109,11 @@ func Test_loginHandler(t *testing.T) {
 				Return(user.AuthenticationSuccessful, subject, nil)
 			commands.EXPECT().
 				StartSession(gomock.Any(), subject.ID, gomock.Any()).
-				Return(&user.Session{ID: uuid.New(), UserID: subject.ID}, nil)
+				Return(&user.Session{
+					ID:          uuid.New(),
+					IterationID: uuid.New(),
+					UserID:      subject.ID,
+				}, nil)
 
 			recorder := performRequest(engine, payload)
 

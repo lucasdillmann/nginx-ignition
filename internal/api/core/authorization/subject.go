@@ -3,15 +3,17 @@ package authorization
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 type Subject struct {
-	User    *user.User
-	claims  *jwt.MapClaims
-	TokenID string
-	Kind    TokenKind
+	User      *user.User
+	claims    *jwt.MapClaims
+	TokenID   string
+	SessionID uuid.UUID
+	Kind      TokenKind
 }
 
 func CurrentSubject(ctx *gin.Context) *Subject {

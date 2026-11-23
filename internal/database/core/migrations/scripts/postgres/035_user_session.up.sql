@@ -1,5 +1,6 @@
 create table user_session (
     id uuid not null,
+    iteration_id uuid not null,
     user_id uuid not null,
     created_at timestamp with time zone not null,
     expires_at timestamp with time zone not null,

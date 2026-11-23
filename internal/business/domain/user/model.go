@@ -50,10 +50,11 @@ type APIToken struct {
 }
 
 type Session struct {
-	CreatedAt time.Time
-	ExpiresAt time.Time
-	ID        uuid.UUID
-	UserID    uuid.UUID
+	CreatedAt   time.Time
+	ExpiresAt   time.Time
+	ID          uuid.UUID
+	IterationID uuid.UUID
+	UserID      uuid.UUID
 }
 
 type NewAPITokenRequest struct {

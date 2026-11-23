@@ -83,9 +83,13 @@ func (j *Jwt) GenerateToken(
 	tokenID *uuid.UUID,
 	expiration *time.Time,
 ) (*string, error) {
-	identifier := uuid.New()
-	if tokenID != nil {
-		identifier = *tokenID
+	claims := jwt.MapClaims{
+		"aud":          uniqueIdentifier,
+		"iss":          uniqueIdentifier,
+		"nbf":          time.Now().Add(time.Second * time.Duration(j.clockSkewSeconds) * -1).Unix(),
+		"iat":          time.Now().Unix(),
+		"sub":          usr.ID.String(),
+		tokenKindClaim: kind,
 	}
 
 	var expiresAt int64
@@ -100,19 +104,19 @@ func (j *Jwt) GenerateToken(
 			return nil, err
 		}
 
-		identifier = session.ID
-	} else if expiration != nil {
-		expiresAt = expiration.Unix()
-	}
+		claims["jti"] = session.IterationID.String()
+		claims[sessionIDClaim] = session.ID.String()
+	} else {
+		identifier := uuid.New()
+		if tokenID != nil {
+			identifier = *tokenID
+		}
 
-	claims := jwt.MapClaims{
-		"aud":          uniqueIdentifier,
-		"iss":          uniqueIdentifier,
-		"nbf":          time.Now().Add(time.Second * time.Duration(j.clockSkewSeconds) * -1).Unix(),
-		"iat":          time.Now().Unix(),
-		"jti":          identifier.String(),
-		"sub":          usr.ID.String(),
-		tokenKindClaim: kind,
+		claims["jti"] = identifier.String()
+
+		if expiration != nil {
+			expiresAt = expiration.Unix()
+		}
 	}
 
 	if expiresAt > 0 {
@@ -143,7 +147,20 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 		return nil, j.invalidTokenError(ctx)
 	}
 
-	usr, err := j.resolveUser(ctx, claims, kind, tokenID)
+	var sessionID uuid.UUID
+	if kind == SessionKind {
+		id, casted := claims[sessionIDClaim].(string)
+		if !casted {
+			return nil, j.invalidTokenError(ctx)
+		}
+
+		sessionID, err = uuid.Parse(id)
+		if err != nil {
+			return nil, j.invalidTokenError(ctx)
+		}
+	}
+
+	usr, err := j.resolveUser(ctx, claims, kind, tokenID, sessionID)
 	if err != nil {
 		return nil, err
 	}
@@ -156,10 +173,11 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 	}
 
 	return &Subject{
-		Kind:    kind,
-		TokenID: tokenID,
-		User:    usr,
-		claims:  &claims,
+		Kind:      kind,
+		TokenID:   tokenID,
+		SessionID: sessionID,
+		User:      usr,
+		claims:    &claims,
 	}, nil
 }
 
@@ -197,6 +215,7 @@ func (j *Jwt) resolveUser(
 	claims jwt.MapClaims,
 	kind TokenKind,
 	tokenID string,
+	sessionID uuid.UUID,
 ) (*user.User, error) {
 	id, casted := claims["sub"].(string)
 	if !casted {
@@ -209,7 +228,7 @@ func (j *Jwt) resolveUser(
 	}
 
 	if kind == SessionKind {
-		if err = j.validateSession(ctx, tokenID, userID); err != nil {
+		if err = j.validateSession(ctx, sessionID, tokenID, userID); err != nil {
 			return nil, err
 		}
 	}
@@ -228,20 +247,24 @@ func (j *Jwt) resolveUser(
 
 func (j *Jwt) validateSession(
 	ctx context.Context,
-	sessionID string,
+	sessionID uuid.UUID,
+	iterationID string,
 	userID uuid.UUID,
 ) error {
-	id, err := uuid.Parse(sessionID)
+	iteration, err := uuid.Parse(iterationID)
 	if err != nil {
 		return j.invalidTokenError(ctx)
 	}
 
-	session, err := j.userCommands.FindSession(ctx, id)
+	session, err := j.userCommands.FindSession(ctx, sessionID)
 	if err != nil {
 		return err
 	}
 
-	if session == nil || session.UserID != userID || time.Now().After(session.ExpiresAt) {
+	if session == nil ||
+		session.UserID != userID ||
+		session.IterationID != iteration ||
+		time.Now().After(session.ExpiresAt) {
 		return j.invalidTokenError(ctx)
 	}
 
@@ -288,7 +311,7 @@ func (j *Jwt) RefreshToken(ctx context.Context, subject *Subject) (*string, erro
 	}
 
 	if time.Now().Add(time.Second * time.Duration(j.renewWindowSeconds)).After(expiration.Time) {
-		oldSessionID, err := uuid.Parse(subject.TokenID)
+		currentIterationID, err := uuid.Parse(subject.TokenID)
 		if err != nil {
 			return nil, err
 		}
@@ -299,8 +322,9 @@ func (j *Jwt) RefreshToken(ctx context.Context, subject *Subject) (*string, erro
 
 		session, err := j.userCommands.RotateSession(
 			ctx,
-			oldSessionID,
+			subject.SessionID,
 			subject.User.ID,
+			currentIterationID,
 			expiresAt,
 		)
 		if err != nil {
@@ -312,10 +336,10 @@ func (j *Jwt) RefreshToken(ctx context.Context, subject *Subject) (*string, erro
 			newClaims[key] = value
 		}
 
-		newClaims["jti"] = session.ID.String()
+		newClaims["jti"] = session.IterationID.String()
 		newClaims["exp"] = expiresAt.Unix()
 
-		subject.TokenID = session.ID.String()
+		subject.TokenID = session.IterationID.String()
 		subject.claims = &newClaims
 
 		return j.sign(&newClaims)

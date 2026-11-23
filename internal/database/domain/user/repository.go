@@ -441,21 +441,16 @@ func (r *repository) DeleteSession(ctx context.Context, id uuid.UUID) error {
 
 func (r *repository) RotateSession(
 	ctx context.Context,
-	oldID uuid.UUID,
 	session *user.Session,
+	currentIterationID uuid.UUID,
 ) error {
-	transaction, err := r.database.Begin()
-	if err != nil {
-		return err
-	}
-
-	//nolint:errcheck
-	defer transaction.Rollback()
-
-	result, err := transaction.NewDelete().
+	result, err := r.database.Update().
 		Model((*sessionModel)(nil)).
-		Where(constants.ByIDFilter, oldID).
+		Set("iteration_id = ?", session.IterationID).
+		Set("expires_at = ?", session.ExpiresAt).
+		Where(constants.ByIDFilter, session.ID).
 		Where(byUserIDFilter, session.UserID).
+		Where("iteration_id = ?", currentIterationID).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -470,12 +465,7 @@ func (r *repository) RotateSession(
 		return errors.New("session no longer exists")
 	}
 
-	model := toSessionModel(session)
-	if _, err = transaction.NewInsert().Model(&model).Exec(ctx); err != nil {
-		return err
-	}
-
-	return transaction.Commit()
+	return nil
 }
 
 func (r *repository) DeleteExpiredSessions(ctx context.Context) error {

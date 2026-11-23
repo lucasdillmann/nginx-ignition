@@ -40,6 +40,10 @@ type Repository interface {
 	SaveSession(ctx context.Context, session *Session) error
 	FindSession(ctx context.Context, id uuid.UUID) (*Session, error)
 	DeleteSession(ctx context.Context, id uuid.UUID) error
-	RotateSession(ctx context.Context, oldID uuid.UUID, session *Session) error
+	RotateSession(
+		ctx context.Context,
+		session *Session,
+		currentIterationID uuid.UUID,
+	) error
 	DeleteExpiredSessions(ctx context.Context) error
 }

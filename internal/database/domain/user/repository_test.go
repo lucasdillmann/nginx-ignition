@@ -631,6 +631,7 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			require.NoError(t, err)
 			require.NotNil(t, saved)
 			assert.Equal(t, session.ID, saved.ID)
+			assert.Equal(t, session.IterationID, saved.IterationID)
 			assert.Equal(t, usr.ID, saved.UserID)
 			assert.True(t, saved.CreatedAt.Equal(session.CreatedAt))
 			assert.True(t, saved.ExpiresAt.Equal(session.ExpiresAt))
@@ -729,63 +730,77 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 	})
 
 	t.Run("RotateSession", func(t *testing.T) {
-		t.Run("replaces the old session with the new one", func(t *testing.T) {
+		t.Run("updates the session with a new iteration", func(t *testing.T) {
 			usr := newUser()
 			require.NoError(t, repo.Save(t.Context(), usr))
-			old := newSession(usr)
-			require.NoError(t, repo.SaveSession(t.Context(), old))
+			session := newSession(usr)
+			require.NoError(t, repo.SaveSession(t.Context(), session))
 
-			replacement := newSession(usr)
-			replacement.ExpiresAt = old.ExpiresAt.Add(time.Hour)
+			updated := newSession(usr)
+			updated.ID = session.ID
+			updated.ExpiresAt = session.ExpiresAt.Add(time.Hour)
 
-			require.NoError(t, repo.RotateSession(t.Context(), old.ID, replacement))
+			require.NoError(t, repo.RotateSession(t.Context(), updated, session.IterationID))
 
-			saved, err := repo.FindSession(t.Context(), old.ID)
-			require.NoError(t, err)
-			assert.Nil(t, saved)
-
-			saved, err = repo.FindSession(t.Context(), replacement.ID)
+			saved, err := repo.FindSession(t.Context(), session.ID)
 			require.NoError(t, err)
 			require.NotNil(t, saved)
-			assert.Equal(t, usr.ID, saved.UserID)
-			assert.True(t, saved.ExpiresAt.Equal(replacement.ExpiresAt))
+			assert.Equal(t, updated.IterationID, saved.IterationID)
+			assert.True(t, saved.ExpiresAt.Equal(updated.ExpiresAt))
+			assert.True(t, saved.CreatedAt.Equal(session.CreatedAt))
 		})
 
-		t.Run("returns an error when the old session no longer exists", func(t *testing.T) {
+		t.Run("returns an error when the session no longer exists", func(t *testing.T) {
 			usr := newUser()
 			require.NoError(t, repo.Save(t.Context(), usr))
 
-			replacement := newSession(usr)
+			updated := newSession(usr)
 
-			err := repo.RotateSession(t.Context(), uuid.New(), replacement)
+			err := repo.RotateSession(t.Context(), updated, uuid.New())
 			require.Error(t, err)
 
-			saved, err := repo.FindSession(t.Context(), replacement.ID)
+			saved, err := repo.FindSession(t.Context(), updated.ID)
 			require.NoError(t, err)
 			assert.Nil(t, saved)
 		})
 
-		t.Run("returns an error when the old session belongs to another user", func(t *testing.T) {
+		t.Run("returns an error when the session belongs to another user", func(t *testing.T) {
 			owner := newUser()
 			require.NoError(t, repo.Save(t.Context(), owner))
 			otherUser := newUser()
 			require.NoError(t, repo.Save(t.Context(), otherUser))
 
-			old := newSession(owner)
-			require.NoError(t, repo.SaveSession(t.Context(), old))
+			session := newSession(owner)
+			require.NoError(t, repo.SaveSession(t.Context(), session))
 
-			replacement := newSession(otherUser)
+			updated := newSession(otherUser)
+			updated.ID = session.ID
 
-			err := repo.RotateSession(t.Context(), old.ID, replacement)
+			err := repo.RotateSession(t.Context(), updated, session.IterationID)
 			require.Error(t, err)
 
-			saved, err := repo.FindSession(t.Context(), old.ID)
+			saved, err := repo.FindSession(t.Context(), session.ID)
 			require.NoError(t, err)
-			assert.NotNil(t, saved)
+			require.NotNil(t, saved)
+			assert.Equal(t, session.IterationID, saved.IterationID)
+		})
 
-			saved, err = repo.FindSession(t.Context(), replacement.ID)
+		t.Run("returns an error when the iteration is stale", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			session := newSession(usr)
+			require.NoError(t, repo.SaveSession(t.Context(), session))
+
+			updated := newSession(usr)
+			updated.ID = session.ID
+
+			err := repo.RotateSession(t.Context(), updated, uuid.New())
+			require.Error(t, err)
+
+			saved, err := repo.FindSession(t.Context(), session.ID)
 			require.NoError(t, err)
-			assert.Nil(t, saved)
+			require.NotNil(t, saved)
+			assert.Equal(t, session.IterationID, saved.IterationID)
 		})
 	})
 

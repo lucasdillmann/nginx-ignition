@@ -489,10 +489,11 @@ func (s *service) StartSession(
 	}
 
 	session := &Session{
-		ID:        uuid.New(),
-		UserID:    userID,
-		CreatedAt: time.Now(),
-		ExpiresAt: expiresAt,
+		ID:          uuid.New(),
+		IterationID: uuid.New(),
+		UserID:      userID,
+		CreatedAt:   time.Now(),
+		ExpiresAt:   expiresAt,
 	}
 
 	if err := s.repository.SaveSession(ctx, session); err != nil {
@@ -512,7 +513,7 @@ func (s *service) StopSession(ctx context.Context, id uuid.UUID) error {
 
 func (s *service) RotateSession(
 	ctx context.Context,
-	oldID, userID uuid.UUID,
+	sessionID, userID, currentIterationID uuid.UUID,
 	expiresAt time.Time,
 ) (*Session, error) {
 	if err := validateSessionExpiration(ctx, expiresAt); err != nil {
@@ -520,13 +521,13 @@ func (s *service) RotateSession(
 	}
 
 	session := &Session{
-		ID:        uuid.New(),
-		UserID:    userID,
-		CreatedAt: time.Now(),
-		ExpiresAt: expiresAt,
+		ID:          sessionID,
+		IterationID: uuid.New(),
+		UserID:      userID,
+		ExpiresAt:   expiresAt,
 	}
 
-	if err := s.repository.RotateSession(ctx, oldID, session); err != nil {
+	if err := s.repository.RotateSession(ctx, session, currentIterationID); err != nil {
 		return nil, err
 	}
 

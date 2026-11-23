@@ -45,7 +45,11 @@ func Test_onboardingFinishHandler(t *testing.T) {
 				Return(user.AuthenticationSuccessful, usr, nil)
 			userCommands.EXPECT().
 				StartSession(gomock.Any(), usr.ID, gomock.Any()).
-				Return(&user.Session{ID: uuid.New(), UserID: usr.ID}, nil)
+				Return(&user.Session{
+					ID:          uuid.New(),
+					IterationID: uuid.New(),
+					UserID:      usr.ID,
+				}, nil)
 
 			authorizer, _ := authorization.New(
 				configuration.New(),

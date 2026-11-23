@@ -36,7 +36,7 @@ func Test_logoutHandler(t *testing.T) {
 			engine.Use(func(ginContext *gin.Context) {
 				ginContext.Set(
 					"ABAC:Subject",
-					&authorization.Subject{TokenID: sessionID.String()},
+					&authorization.Subject{SessionID: sessionID},
 				)
 				ginContext.Next()
 			})

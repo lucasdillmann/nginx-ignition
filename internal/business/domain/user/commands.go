@@ -58,7 +58,7 @@ type Commands interface {
 	StopSession(ctx context.Context, id uuid.UUID) error
 	RotateSession(
 		ctx context.Context,
-		oldID, userID uuid.UUID,
+		sessionID, userID, currentIterationID uuid.UUID,
 		expiresAt time.Time,
 	) (*Session, error)
 }

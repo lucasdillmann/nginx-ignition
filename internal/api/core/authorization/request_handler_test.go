@@ -120,7 +120,8 @@ func Test_RequestHandler(t *testing.T) {
 				"iss":          uniqueIdentifier,
 				"nbf":          time.Now().Add(time.Second * -60).Unix(),
 				"iat":          time.Now().Add(time.Second * -60).Unix(),
-				"jti":          session.ID.String(),
+				"jti":          session.IterationID.String(),
+				sessionIDClaim: session.ID.String(),
 				"sub":          usr.ID.String(),
 				tokenKindClaim: SessionKind,
 				"exp":          time.Now().Add(time.Second * 5).Unix(),
@@ -131,7 +132,7 @@ func Test_RequestHandler(t *testing.T) {
 			setup.commands.EXPECT().FindSession(gomock.Any(), session.ID).Return(session, nil)
 			setup.commands.EXPECT().Get(gomock.Any(), usr.ID).Return(usr, nil)
 			setup.commands.EXPECT().
-				RotateSession(gomock.Any(), session.ID, usr.ID, gomock.Any()).
+				RotateSession(gomock.Any(), session.ID, usr.ID, session.IterationID, gomock.Any()).
 				Return(rotated, nil)
 
 			recorder := performRequest(setup.engine, "GET", "/api/nginx/status", token)
@@ -139,7 +140,7 @@ func Test_RequestHandler(t *testing.T) {
 			assert.Equal(t, http.StatusOK, recorder.Code)
 			assert.NotEmpty(t, recorder.Header().Get("Authorization"))
 			assert.NotEqual(t, "Bearer "+token, recorder.Header().Get("Authorization"))
-			assert.Equal(t, rotated.ID.String(), recorder.Header().Get("X-Session"))
+			assert.Equal(t, session.ID.String(), recorder.Header().Get("X-Session"))
 		})
 
 		t.Run("never refreshes an API token", func(t *testing.T) {
@@ -273,7 +274,7 @@ func newRequestHandlerSetup(t *testing.T, overrides map[string]string) *requestH
 	protectedGroup.Any("/status", func(ctx *gin.Context) {
 		subject := CurrentSubject(ctx)
 		ctx.Header("X-Subject", subject.User.ID.String())
-		ctx.Header("X-Session", subject.TokenID)
+		ctx.Header("X-Session", subject.SessionID.String())
 		ctx.Status(http.StatusOK)
 	})
 

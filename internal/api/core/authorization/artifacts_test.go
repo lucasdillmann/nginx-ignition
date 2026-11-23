@@ -60,10 +60,11 @@ func newSession(usr *user.User) *user.Session {
 	createdAt := time.Now().UTC().Truncate(time.Second)
 
 	return &user.Session{
-		ID:        uuid.New(),
-		UserID:    usr.ID,
-		CreatedAt: createdAt,
-		ExpiresAt: createdAt.Add(time.Hour),
+		ID:          uuid.New(),
+		IterationID: uuid.New(),
+		UserID:      usr.ID,
+		CreatedAt:   createdAt,
+		ExpiresAt:   createdAt.Add(time.Hour),
 	}
 }
 

@@ -43,7 +43,8 @@ func Test_Jwt_GenerateToken(t *testing.T) {
 		assert.Equal(t, uniqueIdentifier, claims["aud"])
 		assert.Equal(t, usr.ID.String(), claims["sub"])
 		assert.Equal(t, SessionKind, TokenKind(claims[tokenKindClaim].(float64)))
-		assert.Equal(t, session.ID.String(), claims["jti"])
+		assert.Equal(t, session.IterationID.String(), claims["jti"])
+		assert.Equal(t, session.ID.String(), claims[sessionIDClaim])
 		assert.NotEmpty(t, claims["exp"])
 	})
 
@@ -108,11 +109,12 @@ func Test_Jwt_GenerateToken(t *testing.T) {
 		require.NoError(t, err)
 
 		claims := parseJwtClaims(t, authorizer, *token)
-		assert.Equal(t, session.ID.String(), claims["jti"])
+		assert.Equal(t, session.IterationID.String(), claims["jti"])
+		assert.Equal(t, session.ID.String(), claims[sessionIDClaim])
 		assert.Less(t, int64(claims["exp"].(float64)), expiration.Unix())
 	})
 
-	t.Run("creates a session and issues a token whose jti is the session ID", func(t *testing.T) {
+	t.Run("creates a session and issues a token with its ids", func(t *testing.T) {
 		authorizer, commands := newAuthorizer(t)
 		usr := newUser()
 		session := newSession(usr)
@@ -132,7 +134,8 @@ func Test_Jwt_GenerateToken(t *testing.T) {
 		require.NotNil(t, token)
 
 		claims := parseJwtClaims(t, authorizer, *token)
-		assert.Equal(t, session.ID.String(), claims["jti"])
+		assert.Equal(t, session.IterationID.String(), claims["jti"])
+		assert.Equal(t, session.ID.String(), claims[sessionIDClaim])
 		assert.Equal(t, usr.ID.String(), claims["sub"])
 		assert.Equal(t, SessionKind, TokenKind(claims[tokenKindClaim].(float64)))
 	})
@@ -236,6 +239,23 @@ func Test_Jwt_ValidateToken(t *testing.T) {
 		token := issueSessionToken(t, authorizer, commands, usr, session)
 
 		commands.EXPECT().FindSession(gomock.Any(), session.ID).Return(nil, nil)
+
+		subject, err := authorizer.Jwt().ValidateToken(context.Background(), *token)
+
+		assert.Error(t, err)
+		assert.Nil(t, subject)
+	})
+
+	t.Run("rejects a session token with a stale iteration", func(t *testing.T) {
+		authorizer, commands := newAuthorizer(t)
+		usr := newUser()
+		session := newSession(usr)
+		token := issueSessionToken(t, authorizer, commands, usr, session)
+
+		stale := newSession(usr)
+		stale.ID = session.ID
+
+		commands.EXPECT().FindSession(gomock.Any(), session.ID).Return(stale, nil)
 
 		subject, err := authorizer.Jwt().ValidateToken(context.Background(), *token)
 
@@ -461,7 +481,7 @@ func Test_Jwt_RefreshToken(t *testing.T) {
 			rotated := newSession(usr)
 
 			commands.EXPECT().
-				RotateSession(gomock.Any(), session.ID, usr.ID, gomock.Any()).
+				RotateSession(gomock.Any(), session.ID, usr.ID, session.IterationID, gomock.Any()).
 				Return(rotated, nil)
 
 			refreshed, err := authorizer.Jwt().RefreshToken(context.Background(), subject)
@@ -471,11 +491,13 @@ func Test_Jwt_RefreshToken(t *testing.T) {
 			claims := parseJwtClaims(t, authorizer, *refreshed)
 			assert.Equal(t, usr.ID.String(), claims["sub"])
 			assert.NotEqual(t, originalTokenID, claims["jti"])
-			assert.Equal(t, rotated.ID.String(), claims["jti"])
+			assert.Equal(t, rotated.IterationID.String(), claims["jti"])
+			assert.Equal(t, session.ID.String(), claims[sessionIDClaim])
 
-			assert.Equal(t, rotated.ID.String(), subject.TokenID)
+			assert.Equal(t, rotated.IterationID.String(), subject.TokenID)
+			assert.Equal(t, session.ID, subject.SessionID)
 			require.NotNil(t, subject.claims)
-			assert.Equal(t, rotated.ID.String(), (*subject.claims)["jti"])
+			assert.Equal(t, rotated.IterationID.String(), (*subject.claims)["jti"])
 		},
 	)
 
@@ -492,7 +514,8 @@ func Test_Jwt_RefreshToken(t *testing.T) {
 			"iss":          uniqueIdentifier,
 			"nbf":          time.Now().Add(time.Second * -60).Unix(),
 			"iat":          time.Now().Add(time.Second * -60).Unix(),
-			"jti":          session.ID.String(),
+			"jti":          session.IterationID.String(),
+			sessionIDClaim: session.ID.String(),
 			"sub":          usr.ID.String(),
 			tokenKindClaim: SessionKind,
 			"exp":          time.Now().Add(time.Second * 5).Unix(),
@@ -500,7 +523,7 @@ func Test_Jwt_RefreshToken(t *testing.T) {
 		subject := subjectFromToken(t, authorizer, token, usr)
 
 		commands.EXPECT().
-			RotateSession(gomock.Any(), session.ID, usr.ID, gomock.Any()).
+			RotateSession(gomock.Any(), session.ID, usr.ID, session.IterationID, gomock.Any()).
 			Return(rotated, nil)
 
 		refreshed, err := authorizer.Jwt().RefreshToken(context.Background(), subject)
@@ -522,7 +545,7 @@ func Test_Jwt_RefreshToken(t *testing.T) {
 		subject := subjectFromToken(t, authorizer, *token, usr)
 
 		commands.EXPECT().
-			RotateSession(gomock.Any(), session.ID, usr.ID, gomock.Any()).
+			RotateSession(gomock.Any(), session.ID, usr.ID, session.IterationID, gomock.Any()).
 			Return(nil, errors.New("failure"))
 
 		refreshed, err := authorizer.Jwt().RefreshToken(context.Background(), subject)
@@ -665,10 +688,16 @@ func subjectFromToken(t *testing.T, authorizer *ABAC, raw string, usr *user.User
 	t.Helper()
 	claims := parseJwtClaims(t, authorizer, raw)
 
+	var sessionID uuid.UUID
+	if sid, casted := claims[sessionIDClaim].(string); casted {
+		sessionID, _ = uuid.Parse(sid)
+	}
+
 	return &Subject{
-		Kind:    SessionKind,
-		User:    usr,
-		TokenID: claims["jti"].(string),
-		claims:  &claims,
+		Kind:      SessionKind,
+		User:      usr,
+		TokenID:   claims["jti"].(string),
+		SessionID: sessionID,
+		claims:    &claims,
 	}
 }

@@ -50,8 +50,8 @@ func Test_updatePasswordHandler(t *testing.T) {
 			engine := gin.New()
 			engine.Use(func(ginContext *gin.Context) {
 				ginContext.Set("ABAC:Subject", &authorization.Subject{
-					User:    &user.User{ID: id},
-					TokenID: sessionID.String(),
+					User:      &user.User{ID: id},
+					SessionID: sessionID,
 				})
 				ginContext.Next()
 			})
