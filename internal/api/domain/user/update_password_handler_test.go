@@ -27,6 +27,7 @@ func Test_updatePasswordHandler(t *testing.T) {
 			defer controller.Finish()
 
 			id := uuid.New()
+			sessionID := uuid.New()
 			payload := userPasswordUpdateRequestDTO{
 				CurrentPassword: new("oldpassword"),
 				NewPassword:     new("newpassword"),
@@ -34,7 +35,13 @@ func Test_updatePasswordHandler(t *testing.T) {
 
 			commands := user.NewMockedCommands(controller)
 			commands.EXPECT().
-				UpdatePassword(gomock.Any(), id, *payload.CurrentPassword, *payload.NewPassword).
+				UpdatePassword(
+					gomock.Any(),
+					id,
+					sessionID,
+					*payload.CurrentPassword,
+					*payload.NewPassword,
+				).
 				Return(nil)
 
 			handler := updatePasswordHandler{
@@ -42,7 +49,10 @@ func Test_updatePasswordHandler(t *testing.T) {
 			}
 			engine := gin.New()
 			engine.Use(func(ginContext *gin.Context) {
-				ginContext.Set("ABAC:Subject", &authorization.Subject{User: &user.User{ID: id}})
+				ginContext.Set("ABAC:Subject", &authorization.Subject{
+					User:    &user.User{ID: id},
+					TokenID: sessionID.String(),
+				})
 				ginContext.Next()
 			})
 			engine.PATCH("/current/update-password", handler.handle)

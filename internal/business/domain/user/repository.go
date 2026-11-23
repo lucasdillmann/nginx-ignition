@@ -32,4 +32,14 @@ type Repository interface {
 	Count(ctx context.Context) (int, error)
 	TryCreateInitialUser(ctx context.Context, user *User) (bool, error)
 	TryUpdateLastUsedTOTPCode(ctx context.Context, id uuid.UUID, code string) (bool, error)
+	SaveAndDeleteSessions(
+		ctx context.Context,
+		user *User,
+		exceptSessionID *uuid.UUID,
+	) error
+	SaveSession(ctx context.Context, session *Session) error
+	FindSession(ctx context.Context, id uuid.UUID) (*Session, error)
+	DeleteSession(ctx context.Context, id uuid.UUID) error
+	RotateSession(ctx context.Context, oldID uuid.UUID, session *Session) error
+	DeleteExpiredSessions(ctx context.Context) error
 }

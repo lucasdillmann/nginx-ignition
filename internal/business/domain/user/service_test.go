@@ -191,6 +191,76 @@ func Test_service(t *testing.T) {
 
 			assert.NoError(t, err)
 		})
+
+		t.Run("revokes the sessions when an existing user's password changes", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+
+			request := newSaveRequest()
+			request.ID = usr.ID
+			request.Username = usr.Username
+			request.Password = new("newpassword")
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), request.ID).Return(usr, nil)
+			repo.EXPECT().FindByUsername(t.Context(), request.Username).Return(usr, nil)
+			repo.EXPECT().
+				SaveAndDeleteSessions(t.Context(), gomock.Any(), nil).
+				Return(nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.Save(t.Context(), request, nil)
+
+			assert.NoError(t, err)
+		})
+
+		t.Run("keeps the sessions when the password is not changed", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+
+			request := newSaveRequest()
+			request.ID = usr.ID
+			request.Username = usr.Username
+			request.Password = nil
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), request.ID).Return(usr, nil)
+			repo.EXPECT().FindByUsername(t.Context(), request.Username).Return(usr, nil)
+			repo.EXPECT().Save(t.Context(), gomock.Any()).Return(nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.Save(t.Context(), request, nil)
+
+			assert.NoError(t, err)
+		})
+	})
+
+	t.Run("resetPassword", func(t *testing.T) {
+		t.Run("persists the new password and revokes the sessions", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByUsername(t.Context(), usr.Username).Return(usr, nil)
+			repo.EXPECT().
+				SaveAndDeleteSessions(t.Context(), gomock.Any(), nil).
+				Return(nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			newPassword, err := svc.resetPassword(t.Context(), usr.Username)
+
+			require.NoError(t, err)
+			assert.Len(t, newPassword, 8)
+		})
 	})
 
 	t.Run("FinishOnboarding", func(t *testing.T) {
@@ -848,6 +918,256 @@ func Test_service(t *testing.T) {
 
 			assert.NoError(t, err)
 			assert.Nil(t, result)
+		})
+	})
+
+	t.Run("UpdatePassword", func(t *testing.T) {
+		cfg := &configuration.Configuration{}
+		ph := passwordhash.New(cfg)
+		password := "password"
+		hash, salt, _ := ph.Hash(password)
+
+		t.Run("persists the new password and deletes the other sessions", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			usr.PasswordHash = hash
+			usr.PasswordSalt = salt
+			currentSessionID := uuid.New()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+			repo.EXPECT().
+				SaveAndDeleteSessions(t.Context(), gomock.Any(), &currentSessionID).
+				Return(nil)
+
+			svc, _ := newCommands(repo, cfg)
+			err := svc.UpdatePassword(
+				t.Context(),
+				usr.ID,
+				currentSessionID,
+				password,
+				"newpassword",
+			)
+
+			assert.NoError(t, err)
+		})
+
+		t.Run("returns error when the current password does not match", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			usr.PasswordHash = hash
+			usr.PasswordSalt = salt
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindByID(t.Context(), usr.ID).Return(usr, nil)
+
+			svc, _ := newCommands(repo, cfg)
+			err := svc.UpdatePassword(
+				t.Context(),
+				usr.ID,
+				uuid.New(),
+				"wrongpassword",
+				"newpassword",
+			)
+
+			assert.Error(t, err)
+		})
+	})
+
+	t.Run("StartSession", func(t *testing.T) {
+		t.Run("persists the new session", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			expiresAt := time.Now().Add(time.Hour)
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().SaveSession(t.Context(), gomock.Any()).Return(nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.StartSession(t.Context(), usr.ID, expiresAt)
+
+			require.NoError(t, err)
+			require.NotNil(t, result)
+			assert.Equal(t, usr.ID, result.UserID)
+			assert.Equal(t, expiresAt, result.ExpiresAt)
+		})
+
+		t.Run("returns error when repository fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			expectedErr := errors.New("failure")
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().SaveSession(t.Context(), gomock.Any()).Return(expectedErr)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.StartSession(t.Context(), uuid.New(), time.Now().Add(time.Hour))
+
+			assert.Error(t, err)
+			assert.Nil(t, result)
+			assert.Equal(t, expectedErr, err)
+		})
+
+		t.Run("returns error when the expiration is not in the future", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			repo := NewMockedRepository(ctrl)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.StartSession(t.Context(), uuid.New(), time.Now())
+
+			assert.Error(t, err)
+			assert.Nil(t, result)
+		})
+	})
+
+	t.Run("FindSession", func(t *testing.T) {
+		t.Run("returns the session when found", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			expected := newSession(usr)
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindSession(t.Context(), expected.ID).Return(expected, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.FindSession(t.Context(), expected.ID)
+
+			assert.NoError(t, err)
+			assert.Equal(t, expected, result)
+		})
+
+		t.Run("returns nil when not found", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			id := uuid.New()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().FindSession(t.Context(), id).Return(nil, nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.FindSession(t.Context(), id)
+
+			assert.NoError(t, err)
+			assert.Nil(t, result)
+		})
+	})
+
+	t.Run("StopSession", func(t *testing.T) {
+		t.Run("deletes the session", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			id := uuid.New()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().DeleteSession(t.Context(), id).Return(nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.StopSession(t.Context(), id)
+
+			assert.NoError(t, err)
+		})
+	})
+
+	t.Run("RotateSession", func(t *testing.T) {
+		t.Run("replaces the old session with a new one", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			usr := newUser()
+			oldID := uuid.New()
+			expiresAt := time.Now().Add(time.Hour)
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().RotateSession(t.Context(), oldID, gomock.Any()).Return(nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.RotateSession(t.Context(), oldID, usr.ID, expiresAt)
+
+			require.NoError(t, err)
+			require.NotNil(t, result)
+			assert.NotEqual(t, oldID, result.ID)
+			assert.Equal(t, usr.ID, result.UserID)
+			assert.Equal(t, expiresAt, result.ExpiresAt)
+		})
+
+		t.Run("returns error when repository fails", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			expectedErr := errors.New("failure")
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().
+				RotateSession(t.Context(), gomock.Any(), gomock.Any()).
+				Return(expectedErr)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.RotateSession(
+				t.Context(),
+				uuid.New(),
+				uuid.New(),
+				time.Now().Add(time.Hour),
+			)
+
+			assert.Error(t, err)
+			assert.Nil(t, result)
+			assert.Equal(t, expectedErr, err)
+		})
+
+		t.Run("returns error when the expiration is not in the future", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			repo := NewMockedRepository(ctrl)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			result, err := svc.RotateSession(
+				t.Context(),
+				uuid.New(),
+				uuid.New(),
+				time.Now(),
+			)
+
+			assert.Error(t, err)
+			assert.Nil(t, result)
+		})
+	})
+
+	t.Run("deleteExpiredSessions", func(t *testing.T) {
+		t.Run("deletes the expired sessions", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			repo := NewMockedRepository(ctrl)
+			repo.EXPECT().DeleteExpiredSessions(t.Context()).Return(nil)
+
+			cfg := &configuration.Configuration{}
+			svc, _ := newCommands(repo, cfg)
+			err := svc.deleteExpiredSessions(t.Context())
+
+			assert.NoError(t, err)
 		})
 	})
 }

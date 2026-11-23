@@ -6,12 +6,12 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
 
-	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
@@ -25,19 +25,19 @@ func Test_logoutHandler(t *testing.T) {
 			controller := gomock.NewController(t)
 			defer controller.Finish()
 
-			userCommands := user.NewMockedCommands(controller)
-			authorizer, _ := authorization.New(
-				configuration.New(),
-				userCommands,
-				newAuthorizationCommands(controller),
-			)
+			sessionID := uuid.New()
+			commands := user.NewMockedCommands(controller)
+			commands.EXPECT().
+				StopSession(gomock.Any(), sessionID).
+				Return(nil)
 
-			handler := logoutHandler{
-				authorizer: authorizer,
-			}
+			handler := logoutHandler{commands: commands}
 			engine := gin.New()
 			engine.Use(func(ginContext *gin.Context) {
-				ginContext.Set("ABAC:Subject", &authorization.Subject{TokenID: "token-id"})
+				ginContext.Set(
+					"ABAC:Subject",
+					&authorization.Subject{TokenID: sessionID.String()},
+				)
 				ginContext.Next()
 			})
 			engine.POST("/api/users/logout", handler.handle)

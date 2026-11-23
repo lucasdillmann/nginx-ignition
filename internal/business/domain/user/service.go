@@ -83,7 +83,7 @@ func (s *service) Authenticate(
 
 func (s *service) UpdatePassword(
 	ctx context.Context,
-	id uuid.UUID,
+	id, currentSessionID uuid.UUID,
 	currentPassword, newPassword string,
 ) error {
 	hash := passwordhash.New(s.configuration)
@@ -126,7 +126,7 @@ func (s *service) UpdatePassword(
 
 	databaseState.PasswordHash = updatedHash
 	databaseState.PasswordSalt = updatedSalt
-	return s.repository.Save(ctx, databaseState)
+	return s.repository.SaveAndDeleteSessions(ctx, databaseState, &currentSessionID)
 }
 
 func (s *service) UpdateProfile(
@@ -242,6 +242,10 @@ func (s *service) Save(ctx context.Context, request *SaveRequest, currentUserID 
 		currentUserID,
 	); err != nil {
 		return err
+	}
+
+	if request.Password != nil && databaseState != nil {
+		return s.repository.SaveAndDeleteSessions(ctx, updatedState, nil)
 	}
 
 	return s.repository.Save(ctx, updatedState)
@@ -401,7 +405,7 @@ func (s *service) resetPassword(ctx context.Context, username string) (string, e
 
 	user.PasswordHash = updatedHash
 	user.PasswordSalt = updatedSalt
-	return newPassword, s.repository.Save(ctx, user)
+	return newPassword, s.repository.SaveAndDeleteSessions(ctx, user, nil)
 }
 
 func (s *service) ListAPITokens(
@@ -473,4 +477,73 @@ func (s *service) FindAPIToken(
 	id, tokenID uuid.UUID,
 ) (*APIToken, error) {
 	return s.repository.FindTokenByID(ctx, id, tokenID)
+}
+
+func (s *service) StartSession(
+	ctx context.Context,
+	userID uuid.UUID,
+	expiresAt time.Time,
+) (*Session, error) {
+	if err := validateSessionExpiration(ctx, expiresAt); err != nil {
+		return nil, err
+	}
+
+	session := &Session{
+		ID:        uuid.New(),
+		UserID:    userID,
+		CreatedAt: time.Now(),
+		ExpiresAt: expiresAt,
+	}
+
+	if err := s.repository.SaveSession(ctx, session); err != nil {
+		return nil, err
+	}
+
+	return session, nil
+}
+
+func (s *service) FindSession(ctx context.Context, id uuid.UUID) (*Session, error) {
+	return s.repository.FindSession(ctx, id)
+}
+
+func (s *service) StopSession(ctx context.Context, id uuid.UUID) error {
+	return s.repository.DeleteSession(ctx, id)
+}
+
+func (s *service) RotateSession(
+	ctx context.Context,
+	oldID, userID uuid.UUID,
+	expiresAt time.Time,
+) (*Session, error) {
+	if err := validateSessionExpiration(ctx, expiresAt); err != nil {
+		return nil, err
+	}
+
+	session := &Session{
+		ID:        uuid.New(),
+		UserID:    userID,
+		CreatedAt: time.Now(),
+		ExpiresAt: expiresAt,
+	}
+
+	if err := s.repository.RotateSession(ctx, oldID, session); err != nil {
+		return nil, err
+	}
+
+	return session, nil
+}
+
+func (s *service) deleteExpiredSessions(ctx context.Context) error {
+	return s.repository.DeleteExpiredSessions(ctx)
+}
+
+func validateSessionExpiration(ctx context.Context, expiresAt time.Time) error {
+	if !expiresAt.After(time.Now()) {
+		return coreerror.New(
+			i18n.M(ctx, i18n.K.CoreUserTokenExpiredDate),
+			false,
+		)
+	}
+
+	return nil
 }

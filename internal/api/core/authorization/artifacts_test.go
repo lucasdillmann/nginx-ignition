@@ -1,8 +1,10 @@
 package authorization
 
 import (
+	"context"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -52,6 +54,42 @@ func newUser() *user.User {
 		Enabled:     true,
 		Permissions: newPermissions(),
 	}
+}
+
+func newSession(usr *user.User) *user.Session {
+	createdAt := time.Now().UTC().Truncate(time.Second)
+
+	return &user.Session{
+		ID:        uuid.New(),
+		UserID:    usr.ID,
+		CreatedAt: createdAt,
+		ExpiresAt: createdAt.Add(time.Hour),
+	}
+}
+
+func issueSessionToken(
+	t *testing.T,
+	authorizer *ABAC,
+	commands *user.MockedCommands,
+	usr *user.User,
+	session *user.Session,
+) *string {
+	t.Helper()
+
+	commands.EXPECT().
+		StartSession(gomock.Any(), usr.ID, gomock.Any()).
+		Return(session, nil)
+
+	token, err := authorizer.Jwt().GenerateToken(
+		context.Background(),
+		usr,
+		SessionKind,
+		nil,
+		nil,
+	)
+	require.NoError(t, err)
+
+	return token
 }
 
 func newAuthorizer(t *testing.T) (*ABAC, *user.MockedCommands) {

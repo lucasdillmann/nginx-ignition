@@ -38,6 +38,17 @@ func newUser() *user.User {
 	}
 }
 
+func newSession(usr *user.User) *user.Session {
+	createdAt := time.Now().UTC().Truncate(time.Second)
+
+	return &user.Session{
+		ID:        uuid.New(),
+		UserID:    usr.ID,
+		CreatedAt: createdAt,
+		ExpiresAt: createdAt.Add(time.Hour),
+	}
+}
+
 func newAPIToken(usr *user.User) *user.APIToken {
 	createdAt := time.Now().UTC().Truncate(time.Second)
 	expiration := createdAt.Add(time.Hour * 24)

@@ -56,6 +56,17 @@ func newSaveRequest() *SaveRequest {
 	}
 }
 
+func newSession(usr *User) *Session {
+	createdAt := time.Now().UTC().Truncate(time.Second)
+
+	return &Session{
+		ID:        uuid.New(),
+		UserID:    usr.ID,
+		CreatedAt: createdAt,
+		ExpiresAt: createdAt.Add(time.Hour),
+	}
+}
+
 func newAPIToken(usr *User) *APIToken {
 	createdAt := time.Now().UTC().Truncate(time.Second)
 	expiration := createdAt.Add(time.Hour * 24)

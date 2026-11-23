@@ -17,6 +17,9 @@
     warnings when downloading and running nginx ignition.
   - Free code signing is provided by [SignPath.io](https://signpath.io/), with a certificate issued by the
     [SignPath Foundation](https://signpath.org/).
+- Active sessions are now tracked and revoked on logout, password change and user deletion (thanks @Liam-G for the
+  suggestion)
+  - All sessions will be invalidated on upgrade, so users will be logged out once after updating to this version.
 - Internal code quality improvements
 
 ## 2.51.1

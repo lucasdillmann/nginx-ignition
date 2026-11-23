@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -24,7 +25,11 @@ type Commands interface {
 	) (*pagination.Page[User], error)
 	Save(ctx context.Context, user *SaveRequest, currentUserID *uuid.UUID) error
 	FinishOnboarding(ctx context.Context, request *SaveRequest) error
-	UpdatePassword(ctx context.Context, id uuid.UUID, oldPassword, newPassword string) error
+	UpdatePassword(
+		ctx context.Context,
+		id, currentSessionID uuid.UUID,
+		oldPassword, newPassword string,
+	) error
 	UpdateProfile(ctx context.Context, id uuid.UUID, name, username string) error
 	OnboardingCompleted(ctx context.Context) (bool, error)
 	GetTOTPStatus(ctx context.Context, id uuid.UUID) (bool, error)
@@ -44,4 +49,16 @@ type Commands interface {
 	) (*APIToken, error)
 	DeleteAPIToken(ctx context.Context, id, tokenID uuid.UUID) error
 	FindAPIToken(ctx context.Context, id, tokenID uuid.UUID) (*APIToken, error)
+	StartSession(
+		ctx context.Context,
+		userID uuid.UUID,
+		expiresAt time.Time,
+	) (*Session, error)
+	FindSession(ctx context.Context, id uuid.UUID) (*Session, error)
+	StopSession(ctx context.Context, id uuid.UUID) error
+	RotateSession(
+		ctx context.Context,
+		oldID, userID uuid.UUID,
+		expiresAt time.Time,
+	) (*Session, error)
 }

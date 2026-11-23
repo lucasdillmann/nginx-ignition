@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
 
@@ -20,11 +21,17 @@ func (h updatePasswordHandler) handle(ctx *gin.Context) {
 		panic(err)
 	}
 
-	currentUserID := authorization.CurrentSubject(ctx).User.ID
+	subject := authorization.CurrentSubject(ctx)
+
+	currentSessionID, err := uuid.Parse(subject.TokenID)
+	if err != nil {
+		panic(err)
+	}
 
 	if err := h.commands.UpdatePassword(
 		ctx.Request.Context(),
-		currentUserID,
+		subject.User.ID,
+		currentSessionID,
 		*payload.CurrentPassword,
 		*payload.NewPassword,
 	); err != nil {
