@@ -64,7 +64,7 @@ func (m *ABAC) HandleRequest(ctx *gin.Context) {
 		}
 	}
 
-	refreshedToken, _ := m.jwt.RefreshToken(subject)
+	refreshedToken, _ := m.jwt.RefreshToken(ctx.Request.Context(), subject)
 	if refreshedToken != nil {
 		ctx.Header("Authorization", "Bearer "+*refreshedToken)
 	}

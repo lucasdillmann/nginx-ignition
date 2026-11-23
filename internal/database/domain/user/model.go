@@ -43,3 +43,13 @@ type userTokenModel struct {
 	ID         uuid.UUID  `bun:"id,pk"`
 	UserID     uuid.UUID  `bun:"user_id,notnull"`
 }
+
+type sessionModel struct {
+	bun.BaseModel `bun:"user_session"`
+
+	CreatedAt   time.Time `bun:"created_at,notnull"`
+	ExpiresAt   time.Time `bun:"expires_at,notnull"`
+	ID          uuid.UUID `bun:"id,pk"`
+	IterationID uuid.UUID `bun:"iteration_id,notnull"`
+	UserID      uuid.UUID `bun:"user_id,notnull"`
+}

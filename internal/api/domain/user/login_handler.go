@@ -48,7 +48,13 @@ func (h loginHandler) handle(ctx *gin.Context) {
 		return
 	}
 
-	token, err := h.authorizer.Jwt().GenerateToken(usr, authorization.SessionKind, nil, nil)
+	token, err := h.authorizer.Jwt().GenerateToken(
+		ctx.Request.Context(),
+		usr,
+		authorization.SessionKind,
+		nil,
+		nil,
+	)
 	if err != nil {
 		panic(err)
 	}

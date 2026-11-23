@@ -13,7 +13,6 @@ import (
 
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/configuration"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/core/i18n"
-	"github.com/lucasdillmann/nginx-ignition/internal/business/core/ttlcache"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/authorization"
 	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
@@ -21,7 +20,6 @@ import (
 type Jwt struct {
 	userCommands          user.Commands
 	authorizationCommands authorization.Commands
-	revokedTokens         *ttlcache.Cache[string, bool]
 	ttlSeconds            int
 	clockSkewSeconds      int
 	renewWindowSeconds    int
@@ -65,19 +63,12 @@ func newJwt(
 		return nil, errors.New("renew-window-seconds cannot be bigger than ttl-seconds")
 	}
 
-	cacheTTL := (time.Duration(ttlSeconds) + time.Duration(clockSkewSeconds) + 1) * time.Second
-	revokedTokens, err := ttlcache.New[string, bool](cacheTTL)
-	if err != nil {
-		return nil, err
-	}
-
 	return &Jwt{
 		userCommands:          userCommands,
 		authorizationCommands: authorizationCommands,
 		ttlSeconds:            ttlSeconds,
 		clockSkewSeconds:      clockSkewSeconds,
 		renewWindowSeconds:    renewWindowSeconds,
-		revokedTokens:         revokedTokens,
 	}, nil
 }
 
@@ -85,39 +76,47 @@ func (j *Jwt) secretKey() []byte {
 	return []byte(j.authorizationCommands.JwtSecret())
 }
 
-func (j *Jwt) RevokeToken(tokenID string) {
-	j.revokedTokens.Set(tokenID, true)
-}
-
 func (j *Jwt) GenerateToken(
+	ctx context.Context,
 	usr *user.User,
 	kind TokenKind,
 	tokenID *uuid.UUID,
 	expiration *time.Time,
 ) (*string, error) {
-	identifier := uuid.New()
-	if tokenID != nil {
-		identifier = *tokenID
-	}
-
-	var expiresAt int64
-	if kind == SessionKind {
-		expiresAt = time.Now().
-			Add(time.Second * time.Duration(j.ttlSeconds)).
-			Add(time.Second * time.Duration(j.clockSkewSeconds)).
-			Unix()
-	} else if expiration != nil {
-		expiresAt = expiration.Unix()
-	}
-
 	claims := jwt.MapClaims{
 		"aud":          uniqueIdentifier,
 		"iss":          uniqueIdentifier,
 		"nbf":          time.Now().Add(time.Second * time.Duration(j.clockSkewSeconds) * -1).Unix(),
 		"iat":          time.Now().Unix(),
-		"jti":          identifier.String(),
 		"sub":          usr.ID.String(),
 		tokenKindClaim: kind,
+	}
+
+	var expiresAt int64
+	if kind == SessionKind {
+		sessionExpiration := time.Now().
+			Add(time.Second * time.Duration(j.ttlSeconds)).
+			Add(time.Second * time.Duration(j.clockSkewSeconds))
+		expiresAt = sessionExpiration.Unix()
+
+		session, err := j.userCommands.StartSession(ctx, usr.ID, sessionExpiration)
+		if err != nil {
+			return nil, err
+		}
+
+		claims["jti"] = session.IterationID.String()
+		claims[sessionIDClaim] = session.ID.String()
+	} else {
+		identifier := uuid.New()
+		if tokenID != nil {
+			identifier = *tokenID
+		}
+
+		claims["jti"] = identifier.String()
+
+		if expiration != nil {
+			expiresAt = expiration.Unix()
+		}
 	}
 
 	if expiresAt > 0 {
@@ -148,26 +147,37 @@ func (j *Jwt) ValidateToken(ctx context.Context, tokenString string) (*Subject, 
 		return nil, j.invalidTokenError(ctx)
 	}
 
-	usr, err := j.resolveUser(ctx, claims, kind, tokenID)
+	var sessionID uuid.UUID
+	if kind == SessionKind {
+		id, casted := claims[sessionIDClaim].(string)
+		if !casted {
+			return nil, j.invalidTokenError(ctx)
+		}
+
+		sessionID, err = uuid.Parse(id)
+		if err != nil {
+			return nil, j.invalidTokenError(ctx)
+		}
+	}
+
+	usr, err := j.resolveUser(ctx, claims, kind, tokenID, sessionID)
 	if err != nil {
 		return nil, err
 	}
 
 	if kind == APIKind {
 		err = j.validateAPIToken(ctx, usr.ID, tokenID)
-	} else if j.isRevoked(tokenID) {
-		err = j.invalidTokenError(ctx)
-	}
-
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &Subject{
-		Kind:    kind,
-		TokenID: tokenID,
-		User:    usr,
-		claims:  &claims,
+		Kind:      kind,
+		TokenID:   tokenID,
+		SessionID: sessionID,
+		User:      usr,
+		claims:    &claims,
 	}, nil
 }
 
@@ -205,6 +215,7 @@ func (j *Jwt) resolveUser(
 	claims jwt.MapClaims,
 	kind TokenKind,
 	tokenID string,
+	sessionID uuid.UUID,
 ) (*user.User, error) {
 	id, casted := claims["sub"].(string)
 	if !casted {
@@ -216,24 +227,48 @@ func (j *Jwt) resolveUser(
 		return nil, err
 	}
 
+	if kind == SessionKind {
+		if err = j.validateSession(ctx, sessionID, tokenID, userID); err != nil {
+			return nil, err
+		}
+	}
+
 	usr, err := j.userCommands.Get(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	if usr == nil {
-		return nil, j.invalidTokenError(ctx)
-	}
-
-	if !usr.Enabled && kind == SessionKind {
-		j.RevokeToken(tokenID)
-	}
-
-	if !usr.Enabled {
+	if usr == nil || !usr.Enabled {
 		return nil, j.invalidTokenError(ctx)
 	}
 
 	return usr, nil
+}
+
+func (j *Jwt) validateSession(
+	ctx context.Context,
+	sessionID uuid.UUID,
+	iterationID string,
+	userID uuid.UUID,
+) error {
+	iteration, err := uuid.Parse(iterationID)
+	if err != nil {
+		return j.invalidTokenError(ctx)
+	}
+
+	session, err := j.userCommands.FindSession(ctx, sessionID)
+	if err != nil {
+		return err
+	}
+
+	if session == nil ||
+		session.UserID != userID ||
+		session.IterationID != iteration ||
+		time.Now().After(session.ExpiresAt) {
+		return j.invalidTokenError(ctx)
+	}
+
+	return nil
 }
 
 func (j *Jwt) validateAPIToken(ctx context.Context, userID uuid.UUID, tokenID string) error {
@@ -265,7 +300,7 @@ func (j *Jwt) invalidTokenError(ctx context.Context) error {
 	)
 }
 
-func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
+func (j *Jwt) RefreshToken(ctx context.Context, subject *Subject) (*string, error) {
 	if subject == nil || subject.Kind != SessionKind || subject.claims == nil {
 		return nil, errors.New("token cannot be refreshed")
 	}
@@ -276,35 +311,41 @@ func (j *Jwt) RefreshToken(subject *Subject) (*string, error) {
 	}
 
 	if time.Now().Add(time.Second * time.Duration(j.renewWindowSeconds)).After(expiration.Time) {
-		newClaims := make(jwt.MapClaims, len(*subject.claims)+1)
-		for key, value := range *subject.claims {
-			newClaims[key] = value
-		}
-
-		newClaims["jti"] = uuid.New().String()
-		newClaims["exp"] = time.Now().
-			Add(time.Second * time.Duration(j.renewWindowSeconds)).
-			Add(time.Second * time.Duration(j.clockSkewSeconds)).
-			Unix()
-
-		result, err := j.sign(&newClaims)
+		currentIterationID, err := uuid.Parse(subject.TokenID)
 		if err != nil {
 			return nil, err
 		}
 
-		if previousJti, casted := (*subject.claims)["jti"].(string); casted {
-			j.revokedTokens.Set(previousJti, true)
+		expiresAt := time.Now().
+			Add(time.Second * time.Duration(j.ttlSeconds)).
+			Add(time.Second * time.Duration(j.clockSkewSeconds))
+
+		session, err := j.userCommands.RotateSession(
+			ctx,
+			subject.SessionID,
+			subject.User.ID,
+			currentIterationID,
+			expiresAt,
+		)
+		if err != nil {
+			return nil, err
 		}
 
-		return result, nil
+		newClaims := make(jwt.MapClaims, len(*subject.claims))
+		for key, value := range *subject.claims {
+			newClaims[key] = value
+		}
+
+		newClaims["jti"] = session.IterationID.String()
+		newClaims["exp"] = expiresAt.Unix()
+
+		subject.TokenID = session.IterationID.String()
+		subject.claims = &newClaims
+
+		return j.sign(&newClaims)
 	}
 
 	return nil, nil
-}
-
-func (j *Jwt) isRevoked(tokenID string) bool {
-	_, ok := j.revokedTokens.Get(tokenID)
-	return ok
 }
 
 func (j *Jwt) sign(claims *jwt.MapClaims) (*string, error) {

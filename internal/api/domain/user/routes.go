@@ -31,7 +31,7 @@ func Install(
 	onboardingPath.GET("/status", onboardingStatusHandler{commands}.handle)
 	onboardingPath.POST("/finish", onboardingFinishHandler{commands, authorizer}.handle)
 
-	basePath.POST("/logout", logoutHandler{authorizer}.handle)
+	basePath.POST("/logout", logoutHandler{commands}.handle)
 	basePath.POST("/login", loginHandler{commands, authorizer}.handle)
 
 	currentPath := basePath.Group("/current")

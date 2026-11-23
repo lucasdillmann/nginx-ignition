@@ -11,7 +11,7 @@ func Install() error {
 		return err
 	}
 
-	return container.Run(registerStartup)
+	return container.Run(registerStartup, registerSessionCleanupTask)
 }
 
 func newCommands(

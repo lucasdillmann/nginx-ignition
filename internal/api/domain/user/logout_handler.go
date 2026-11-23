@@ -6,15 +6,19 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/lucasdillmann/nginx-ignition/internal/api/core/authorization"
+	"github.com/lucasdillmann/nginx-ignition/internal/business/domain/user"
 )
 
 type logoutHandler struct {
-	authorizer *authorization.ABAC
+	commands user.Commands
 }
 
 func (h logoutHandler) handle(ctx *gin.Context) {
 	subject := authorization.CurrentSubject(ctx)
 
-	h.authorizer.Jwt().RevokeToken(subject.TokenID)
+	if err := h.commands.StopSession(ctx.Request.Context(), subject.SessionID); err != nil {
+		panic(err)
+	}
+
 	ctx.Status(http.StatusNoContent)
 }

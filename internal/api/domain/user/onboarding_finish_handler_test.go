@@ -36,11 +36,19 @@ func Test_onboardingFinishHandler(t *testing.T) {
 			userCommands.EXPECT().
 				FinishOnboarding(gomock.Any(), gomock.Any()).
 				Return(nil)
+			usr := &user.User{
+				ID:       uuid.New(),
+				Username: "admin",
+			}
 			userCommands.EXPECT().
 				Authenticate(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
-				Return(user.AuthenticationSuccessful, &user.User{
-					ID:       uuid.New(),
-					Username: "admin",
+				Return(user.AuthenticationSuccessful, usr, nil)
+			userCommands.EXPECT().
+				StartSession(gomock.Any(), usr.ID, gomock.Any()).
+				Return(&user.Session{
+					ID:          uuid.New(),
+					IterationID: uuid.New(),
+					UserID:      usr.ID,
 				}, nil)
 
 			authorizer, _ := authorization.New(

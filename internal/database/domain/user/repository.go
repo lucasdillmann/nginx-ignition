@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
@@ -53,6 +54,14 @@ func (r *repository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 
 	//nolint:errcheck
 	defer transaction.Rollback()
+
+	_, err = transaction.NewDelete().
+		Model((*sessionModel)(nil)).
+		Where(byUserIDFilter, id).
+		Exec(ctx)
+	if err != nil {
+		return err
+	}
 
 	_, err = transaction.NewDelete().
 		Model((*userTokenModel)(nil)).
@@ -227,6 +236,45 @@ func (r *repository) Save(ctx context.Context, u *user.User) error {
 	//nolint:errcheck
 	defer transaction.Rollback()
 
+	if err = r.upsert(ctx, transaction, u); err != nil {
+		return err
+	}
+
+	return transaction.Commit()
+}
+
+func (r *repository) SaveAndDeleteSessions(
+	ctx context.Context,
+	u *user.User,
+	exceptSessionID *uuid.UUID,
+) error {
+	transaction, err := r.database.Begin()
+	if err != nil {
+		return err
+	}
+
+	//nolint:errcheck
+	defer transaction.Rollback()
+
+	if err = r.upsert(ctx, transaction, u); err != nil {
+		return err
+	}
+
+	query := transaction.NewDelete().
+		Model((*sessionModel)(nil)).
+		Where(byUserIDFilter, u.ID)
+	if exceptSessionID != nil {
+		query = query.Where("id <> ?", *exceptSessionID)
+	}
+
+	if _, err = query.Exec(ctx); err != nil {
+		return err
+	}
+
+	return transaction.Commit()
+}
+
+func (r *repository) upsert(ctx context.Context, transaction bun.Tx, u *user.User) error {
 	exists, err := transaction.NewSelect().
 		Model((*userModel)(nil)).
 		Where(constants.ByIDFilter, u.ID).
@@ -242,11 +290,7 @@ func (r *repository) Save(ctx context.Context, u *user.User) error {
 		_, err = transaction.NewInsert().Model(&model).Exec(ctx)
 	}
 
-	if err != nil {
-		return err
-	}
-
-	return transaction.Commit()
+	return err
 }
 
 func (r *repository) TryUpdateLastUsedTOTPCode(
@@ -357,6 +401,77 @@ func (r *repository) DeleteTokenByID(ctx context.Context, userID, id uuid.UUID) 
 		Model((*userTokenModel)(nil)).
 		Where(constants.ByIDFilter, id).
 		Where(byUserIDFilter, userID).
+		Exec(ctx)
+
+	return err
+}
+
+func (r *repository) SaveSession(ctx context.Context, session *user.Session) error {
+	model := toSessionModel(session)
+
+	_, err := r.database.Insert().Model(&model).Exec(ctx)
+
+	return err
+}
+
+func (r *repository) FindSession(ctx context.Context, id uuid.UUID) (*user.Session, error) {
+	var model sessionModel
+
+	err := r.database.Select().Model(&model).Where(constants.ByIDFilter, id).Scan(ctx)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return new(toSessionDomain(&model)), nil
+}
+
+func (r *repository) DeleteSession(ctx context.Context, id uuid.UUID) error {
+	_, err := r.database.Delete().
+		Model((*sessionModel)(nil)).
+		Where(constants.ByIDFilter, id).
+		Exec(ctx)
+
+	return err
+}
+
+func (r *repository) RotateSession(
+	ctx context.Context,
+	session *user.Session,
+	currentIterationID uuid.UUID,
+) error {
+	result, err := r.database.Update().
+		Model((*sessionModel)(nil)).
+		Set("iteration_id = ?", session.IterationID).
+		Set("expires_at = ?", session.ExpiresAt).
+		Where(constants.ByIDFilter, session.ID).
+		Where(byUserIDFilter, session.UserID).
+		Where("iteration_id = ?", currentIterationID).
+		Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affected != 1 {
+		return errors.New("session no longer exists")
+	}
+
+	return nil
+}
+
+func (r *repository) DeleteExpiredSessions(ctx context.Context) error {
+	_, err := r.database.Delete().
+		Model((*sessionModel)(nil)).
+		Where("expires_at < ?", time.Now()).
 		Exec(ctx)
 
 	return err

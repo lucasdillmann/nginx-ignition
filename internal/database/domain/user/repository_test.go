@@ -5,6 +5,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -292,6 +293,19 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			require.NoError(t, repo.DeleteByID(t.Context(), cmd.ID))
 
 			saved, err := repo.FindTokenByID(t.Context(), cmd.ID, token.ID)
+			require.NoError(t, err)
+			assert.Nil(t, saved)
+		})
+
+		t.Run("also removes the user sessions", func(t *testing.T) {
+			cmd := newUser()
+			require.NoError(t, repo.Save(t.Context(), cmd))
+			session := newSession(cmd)
+			require.NoError(t, repo.SaveSession(t.Context(), session))
+
+			require.NoError(t, repo.DeleteByID(t.Context(), cmd.ID))
+
+			saved, err := repo.FindSession(t.Context(), session.ID)
 			require.NoError(t, err)
 			assert.Nil(t, saved)
 		})
@@ -602,6 +616,213 @@ func runRepositoryTests(t *testing.T, db *database.Database) {
 			assert.Equal(t, "300005", saved.TOTP.LastUsedCodes[0])
 			assert.Equal(t, "300004", saved.TOTP.LastUsedCodes[1])
 			assert.Equal(t, "300003", saved.TOTP.LastUsedCodes[2])
+		})
+	})
+
+	t.Run("SaveSession", func(t *testing.T) {
+		t.Run("persists the session attributes", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			session := newSession(usr)
+
+			require.NoError(t, repo.SaveSession(t.Context(), session))
+
+			saved, err := repo.FindSession(t.Context(), session.ID)
+			require.NoError(t, err)
+			require.NotNil(t, saved)
+			assert.Equal(t, session.ID, saved.ID)
+			assert.Equal(t, session.IterationID, saved.IterationID)
+			assert.Equal(t, usr.ID, saved.UserID)
+			assert.True(t, saved.CreatedAt.Equal(session.CreatedAt))
+			assert.True(t, saved.ExpiresAt.Equal(session.ExpiresAt))
+		})
+	})
+
+	t.Run("FindSession", func(t *testing.T) {
+		t.Run("returns nil when not found", func(t *testing.T) {
+			saved, err := repo.FindSession(t.Context(), uuid.New())
+
+			require.NoError(t, err)
+			assert.Nil(t, saved)
+		})
+	})
+
+	t.Run("DeleteSession", func(t *testing.T) {
+		t.Run("removes the session", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			session := newSession(usr)
+			require.NoError(t, repo.SaveSession(t.Context(), session))
+
+			require.NoError(t, repo.DeleteSession(t.Context(), session.ID))
+
+			saved, err := repo.FindSession(t.Context(), session.ID)
+			require.NoError(t, err)
+			assert.Nil(t, saved)
+		})
+
+		t.Run("keeps sessions owned by other users", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			kept := newSession(usr)
+			removed := newSession(usr)
+			require.NoError(t, repo.SaveSession(t.Context(), kept))
+			require.NoError(t, repo.SaveSession(t.Context(), removed))
+
+			require.NoError(t, repo.DeleteSession(t.Context(), removed.ID))
+
+			saved, err := repo.FindSession(t.Context(), kept.ID)
+			require.NoError(t, err)
+			assert.NotNil(t, saved)
+		})
+	})
+
+	t.Run("SaveAndDeleteSessions", func(t *testing.T) {
+		t.Run("saves the user and removes all of its sessions", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			first := newSession(usr)
+			second := newSession(usr)
+			require.NoError(t, repo.SaveSession(t.Context(), first))
+			require.NoError(t, repo.SaveSession(t.Context(), second))
+
+			usr.Name = "Updated Name"
+			require.NoError(t, repo.SaveAndDeleteSessions(t.Context(), usr, nil))
+
+			saved, err := repo.FindByID(t.Context(), usr.ID)
+			require.NoError(t, err)
+			require.NotNil(t, saved)
+			assert.Equal(t, "Updated Name", saved.Name)
+
+			for _, id := range []uuid.UUID{first.ID, second.ID} {
+				session, err := repo.FindSession(t.Context(), id)
+				require.NoError(t, err)
+				assert.Nil(t, session)
+			}
+		})
+
+		t.Run("keeps the excepted session and those of other users", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			otherUser := newUser()
+			require.NoError(t, repo.Save(t.Context(), otherUser))
+			current := newSession(usr)
+			other := newSession(usr)
+			otherUsersSession := newSession(otherUser)
+			require.NoError(t, repo.SaveSession(t.Context(), current))
+			require.NoError(t, repo.SaveSession(t.Context(), other))
+			require.NoError(t, repo.SaveSession(t.Context(), otherUsersSession))
+
+			require.NoError(t, repo.SaveAndDeleteSessions(t.Context(), usr, &current.ID))
+
+			saved, err := repo.FindSession(t.Context(), current.ID)
+			require.NoError(t, err)
+			assert.NotNil(t, saved)
+
+			saved, err = repo.FindSession(t.Context(), other.ID)
+			require.NoError(t, err)
+			assert.Nil(t, saved)
+
+			saved, err = repo.FindSession(t.Context(), otherUsersSession.ID)
+			require.NoError(t, err)
+			assert.NotNil(t, saved)
+		})
+	})
+
+	t.Run("RotateSession", func(t *testing.T) {
+		t.Run("updates the session with a new iteration", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			session := newSession(usr)
+			require.NoError(t, repo.SaveSession(t.Context(), session))
+
+			updated := newSession(usr)
+			updated.ID = session.ID
+			updated.ExpiresAt = session.ExpiresAt.Add(time.Hour)
+
+			require.NoError(t, repo.RotateSession(t.Context(), updated, session.IterationID))
+
+			saved, err := repo.FindSession(t.Context(), session.ID)
+			require.NoError(t, err)
+			require.NotNil(t, saved)
+			assert.Equal(t, updated.IterationID, saved.IterationID)
+			assert.True(t, saved.ExpiresAt.Equal(updated.ExpiresAt))
+			assert.True(t, saved.CreatedAt.Equal(session.CreatedAt))
+		})
+
+		t.Run("returns an error when the session no longer exists", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+
+			updated := newSession(usr)
+
+			err := repo.RotateSession(t.Context(), updated, uuid.New())
+			require.Error(t, err)
+
+			saved, err := repo.FindSession(t.Context(), updated.ID)
+			require.NoError(t, err)
+			assert.Nil(t, saved)
+		})
+
+		t.Run("returns an error when the session belongs to another user", func(t *testing.T) {
+			owner := newUser()
+			require.NoError(t, repo.Save(t.Context(), owner))
+			otherUser := newUser()
+			require.NoError(t, repo.Save(t.Context(), otherUser))
+
+			session := newSession(owner)
+			require.NoError(t, repo.SaveSession(t.Context(), session))
+
+			updated := newSession(otherUser)
+			updated.ID = session.ID
+
+			err := repo.RotateSession(t.Context(), updated, session.IterationID)
+			require.Error(t, err)
+
+			saved, err := repo.FindSession(t.Context(), session.ID)
+			require.NoError(t, err)
+			require.NotNil(t, saved)
+			assert.Equal(t, session.IterationID, saved.IterationID)
+		})
+
+		t.Run("returns an error when the iteration is stale", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			session := newSession(usr)
+			require.NoError(t, repo.SaveSession(t.Context(), session))
+
+			updated := newSession(usr)
+			updated.ID = session.ID
+
+			err := repo.RotateSession(t.Context(), updated, uuid.New())
+			require.Error(t, err)
+
+			saved, err := repo.FindSession(t.Context(), session.ID)
+			require.NoError(t, err)
+			require.NotNil(t, saved)
+			assert.Equal(t, session.IterationID, saved.IterationID)
+		})
+	})
+
+	t.Run("DeleteExpiredSessions", func(t *testing.T) {
+		t.Run("removes only the expired sessions", func(t *testing.T) {
+			usr := newUser()
+			require.NoError(t, repo.Save(t.Context(), usr))
+			expired := newSession(usr)
+			expired.ExpiresAt = time.Now().Add(time.Hour * -1)
+			active := newSession(usr)
+			require.NoError(t, repo.SaveSession(t.Context(), expired))
+			require.NoError(t, repo.SaveSession(t.Context(), active))
+
+			require.NoError(t, repo.DeleteExpiredSessions(t.Context()))
+
+			saved, err := repo.FindSession(t.Context(), expired.ID)
+			require.NoError(t, err)
+			assert.Nil(t, saved)
+
+			saved, err = repo.FindSession(t.Context(), active.ID)
+			require.NoError(t, err)
+			assert.NotNil(t, saved)
 		})
 	})
 }

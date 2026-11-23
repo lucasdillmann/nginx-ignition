@@ -39,6 +39,7 @@ func (h apiTokenCreateHandler) handle(ctx *gin.Context) {
 	}
 
 	accessToken, err := h.authorizer.Jwt().GenerateToken(
+		ctx.Request.Context(),
 		currentSubject.User,
 		authorization.APIKind,
 		&domainModel.ID,

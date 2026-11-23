@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
@@ -61,6 +62,13 @@ func Test_loginHandler(t *testing.T) {
 			commands.EXPECT().
 				Authenticate(gomock.Any(), *payload.Username, *payload.Password, gomock.Any()).
 				Return(user.AuthenticationSuccessful, subject, nil)
+			commands.EXPECT().
+				StartSession(gomock.Any(), subject.ID, gomock.Any()).
+				Return(&user.Session{
+					ID:          uuid.New(),
+					IterationID: uuid.New(),
+					UserID:      subject.ID,
+				}, nil)
 
 			recorder := performRequest(engine, payload)
 
@@ -99,6 +107,13 @@ func Test_loginHandler(t *testing.T) {
 			commands.EXPECT().
 				Authenticate(gomock.Any(), *payload.Username, *payload.Password, "123456").
 				Return(user.AuthenticationSuccessful, subject, nil)
+			commands.EXPECT().
+				StartSession(gomock.Any(), subject.ID, gomock.Any()).
+				Return(&user.Session{
+					ID:          uuid.New(),
+					IterationID: uuid.New(),
+					UserID:      subject.ID,
+				}, nil)
 
 			recorder := performRequest(engine, payload)
 
