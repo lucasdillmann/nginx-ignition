@@ -23,7 +23,9 @@ separately.
 1. Run the `setup.exe` for your architecture. The installer refuses to run on the wrong architecture and requires
    Windows 10/Server 2016 or later.
 2. Choose the display language. It is remembered for upgrades and uninstalls. The Windows binaries and installers are
-   Authenticode-signed with a certificate issued by the [SignPath Foundation](https://signpath.org/).
+   Authenticode-signed. Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by
+   [SignPath Foundation](https://signpath.org). See the
+   [code signing policy](https://github.com/lucasdillmann/nginx-ignition/blob/main/CODE_SIGNING.md).
 3. Choose **Express** or **Advanced**:
    - **Express** uses the detected nginx installation, listens on `127.0.0.1:8090`, stores data in
      `C:\ProgramData\nginx-ignition\data`, uses the embedded SQLite database (recommended for tests; use PostgreSQL for

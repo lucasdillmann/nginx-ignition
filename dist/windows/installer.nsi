@@ -521,6 +521,7 @@ Section "$(NI_SECTION_APP)"
   File "/oname=nginx-ignition.exe" "${BINARY}"
   File "/oname=nginx-ignition.ico" "${ASSETSDIR}/nginx-ignition.ico"
   File "/oname=LICENSE.txt" "${ROOT}/LICENSE"
+  File "/oname=PRIVACY.md" "${ROOT}/PRIVACY.md"
   IfErrors dir_error
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
@@ -678,6 +679,7 @@ Section "Uninstall"
   Delete "$INSTDIR\nginx-ignition.exe"
   Delete "$INSTDIR\nginx-ignition.ico"
   Delete "$INSTDIR\LICENSE.txt"
+  Delete "$INSTDIR\PRIVACY.md"
   Delete "$INSTDIR\uninstall.exe"
   RMDir "$INSTDIR"
 

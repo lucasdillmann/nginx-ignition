@@ -15,8 +15,12 @@
   - Both Windows installers (amd64 and arm64) are signed as well.
   - Signing lets Windows verify the publisher and integrity of the files, reducing SmartScreen and "unknown publisher"
     warnings when downloading and running nginx ignition.
-  - Free code signing is provided by [SignPath.io](https://signpath.io/), with a certificate issued by the
-    [SignPath Foundation](https://signpath.org/).
+  - Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by
+    [SignPath Foundation](https://signpath.org).
+- A privacy policy is now available
+  - It explains that nginx ignition runs locally, collects no usage statistics or telemetry, and describes the
+    optional nginx request statistics, the user-initiated third-party services and the anonymous update check.
+  - It is published in the repository and included in every distribution alongside the LICENSE file.
 - Active sessions are now tracked and revoked on logout, password change and user deletion (thanks @Liam-G for the
   suggestion)
   - All sessions will be invalidated on upgrade, so users will be logged out once after updating to this version.

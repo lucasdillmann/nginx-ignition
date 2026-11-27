@@ -179,10 +179,11 @@ Custom data directories outside `C:\ProgramData\nginx-ignition` are never delete
 
 ## Troubleshooting
 
-### Code signing
+### Code signing policy
 
-The Windows binaries and installers are Authenticode-signed with a certificate issued by the
-[SignPath Foundation](https://signpath.org/).
+The Windows binaries and installers are Authenticode-signed. Free code signing provided by
+[SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). See the
+[code signing policy](../CODE_SIGNING.md).
 
 ### The installer refuses the architecture
 

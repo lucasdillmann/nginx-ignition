@@ -130,6 +130,8 @@ On Windows, the `.exe` installer registers the service, firewall rules and Event
 silent installation and keeps your configuration and data across upgrades. See the
 [Windows installer documentation](docs/windows-installer.md) for details.
 
+Windows binaries and installers are Authenticode-signed. See the [code signing policy](CODE_SIGNING.md).
+
 <br />
 
 ## 🛠️ Advanced configuration
@@ -145,14 +147,27 @@ Need to tune your setup? Explore our detailed guides:
 
 <br />
 
+## 🔐 Code signing policy
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by
+[SignPath Foundation](https://signpath.org). See the full [code signing policy](CODE_SIGNING.md).
+
+<br />
+
 ## 💖 Sponsors
 
 We are grateful to our sponsors for supporting the development of nginx ignition:
 
 - [**Greptile**](https://www.greptile.com/): AI-powered code review agent that understands ignition's codebase, 
   providing deep, context-aware insights to help us catch bugs and accelerate development.
-- [**SignPath Foundation**](https://signpath.org/): free code signing provided by SignPath.io, with a certificate 
-  issued by the SignPath Foundation.
+- [**SignPath Foundation**](https://signpath.org/): free code signing provided by SignPath.io, certificate by
+  SignPath Foundation.
+
+<br />
+
+## 🔒 Privacy policy
+
+nginx ignition runs locally and collects no usage statistics or telemetry. See the full [privacy policy](PRIVACY.md).
 
 <br />
 
