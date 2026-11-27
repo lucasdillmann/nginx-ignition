@@ -8,8 +8,15 @@ statistics, tracking, analytics or telemetry, and it shares nothing with the dev
 nginx ignition may collect nginx request/traffic statistics (such as request rates, response times and a traffic
 breakdown by host, domain and upstream server) **only if you enable that feature**. Those statistics:
 
-- never leave the host machine where nginx ignition is running, and
-- are accessible exclusively by you, and no one else.
+- are stored locally on the host machine where nginx ignition is running, and
+- can be viewed through the web interface or API by users with permission to read traffic statistics, including
+  from remote devices.
+
+When this feature is enabled, nginx ignition may also download GeoIP databases (GeoLite2 Country and City) from the
+[P3TERX/GeoLite.mmdb](https://github.com/P3TERX/GeoLite.mmdb) project on GitHub to enrich the statistics with
+geographic data. These downloads are made anonymously (without authentication) and, as with any HTTPS request, GitHub
+may observe your network connection details (for example your IP address), which is governed by GitHub's own privacy
+policy.
 
 ## Third-party services
 

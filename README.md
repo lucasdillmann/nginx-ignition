@@ -152,6 +152,8 @@ Need to tune your setup? Explore our detailed guides:
 Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by
 [SignPath Foundation](https://signpath.org). See the full [code signing policy](CODE_SIGNING.md).
 
+<br />
+
 ## 💖 Sponsors
 
 We are grateful to our sponsors for supporting the development of nginx ignition:
@@ -160,6 +162,12 @@ We are grateful to our sponsors for supporting the development of nginx ignition
   providing deep, context-aware insights to help us catch bugs and accelerate development.
 - [**SignPath Foundation**](https://signpath.org/): free code signing provided by SignPath.io, certificate by
   SignPath Foundation.
+
+<br />
+
+## 🔒 Privacy policy
+
+nginx ignition runs locally and collects no usage statistics or telemetry. See the full [privacy policy](PRIVACY.md).
 
 <br />
 
