@@ -103,6 +103,7 @@ docs-assets: .docs-screenshots .docs-videos
 	rm -Rf build/nginx-ignition.$(OS)-$(ARCH).zip
 	mkdir -p build/zip
 	cp LICENSE build/zip/LICENSE.txt
+	cp PRIVACY.md build/zip/PRIVACY.md
 	cp dist/$(OS)/instructions.md build/zip/instructions.md
 	cp dist/$(OS)/nginx-ignition.properties build/zip/
 	[ -z "$(SERVICE_FILE_EXT)" ] || cp dist/$(OS)/nginx-ignition.$(SERVICE_FILE_EXT) build/zip/

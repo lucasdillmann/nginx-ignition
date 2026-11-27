@@ -73,6 +73,7 @@ RUN mkdir -p opt/nginx-ignition/data \
 
 COPY build/${TARGETPLATFORM} /opt/nginx-ignition/nginx-ignition
 COPY LICENSE /opt/nginx-ignition/LICENSE.txt
+COPY PRIVACY.md /opt/nginx-ignition/PRIVACY.md
 
 COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
 COPY --from=builder /etc/nginx/ /etc/nginx/
